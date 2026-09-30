@@ -1,0 +1,36 @@
+{
+  "source_commit": "7b71d7b19db29f877948f21c9921b2352d9b7d00",
+  "meaning": "Exact original producer bytes used by QA ee0faee; frozen here because later native samples replace the original evidence folder. No new capture or provider claim.",
+  "files": [
+    {
+      "path": "d68d53bd7333ba67c3a3ed5de3ff008b10d8a18712baace0d01fab7f0489c715.png",
+      "source_path": "docs/verification/web/evidence/windows-retention-sample/frames/d68d53bd7333ba67c3a3ed5de3ff008b10d8a18712baace0d01fab7f0489c715.png",
+      "sha256": "d68d53bd7333ba67c3a3ed5de3ff008b10d8a18712baace0d01fab7f0489c715",
+      "bytes": 563037
+    },
+    {
+      "path": "9dc2b9a3aaa5261e70f7c1473caea09321db34a38ae69f581a3b5409ce898ce4.png",
+      "source_path": "docs/verification/web/evidence/windows-retention-sample/frames/9dc2b9a3aaa5261e70f7c1473caea09321db34a38ae69f581a3b5409ce898ce4.png",
+      "sha256": "9dc2b9a3aaa5261e70f7c1473caea09321db34a38ae69f581a3b5409ce898ce4",
+      "bytes": 285487
+    },
+    {
+      "path": "035b8e37486902a27491bd26d3148b636ba27980f9808e44eb53d506590fe2cd.png",
+      "source_path": "docs/verification/web/evidence/windows-retention-sample/frames/035b8e37486902a27491bd26d3148b636ba27980f9808e44eb53d506590fe2cd.png",
+      "sha256": "035b8e37486902a27491bd26d3148b636ba27980f9808e44eb53d506590fe2cd",
+      "bytes": 274656
+    },
+    {
+      "path": "082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png",
+      "source_path": "docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png",
+      "sha256": "082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546",
+      "bytes": 273978
+    },
+    {
+      "path": "8a695b9896960c695d8c4cd3604aa20d7294baace363fadc3d3177ad07eaffb1.png",
+      "source_path": "docs/verification/web/evidence/windows-retention-sample/frames/8a695b9896960c695d8c4cd3604aa20d7294baace363fadc3d3177ad07eaffb1.png",
+      "sha256": "8a695b9896960c695d8c4cd3604aa20d7294baace363fadc3d3177ad07eaffb1",
+      "bytes": 274877
+    }
+  ]
+}

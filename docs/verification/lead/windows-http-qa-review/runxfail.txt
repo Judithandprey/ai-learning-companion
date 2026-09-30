@@ -1,0 +1,201 @@
+============================= test session starts ==============================
+platform linux -- Python 3.14.4, pytest-9.0.2, pluggy-1.6.0 -- /home/agentsdock/Projects/learning-companion/repo/.venv/bin/python
+rootdir: /tmp/windows-http-qa-ee0faee
+configfile: pyproject.toml
+plugins: anyio-4.15.1
+collecting ... collected 54 items / 49 deselected / 5 selected
+
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_malformed_gap_receipt_does_not_open_a_downgrade[fresh-deleted_int] FAILED [ 20%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_malformed_gap_receipt_does_not_open_a_downgrade[fresh-deleted_true_full_row] FAILED [ 40%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_malformed_gap_receipt_does_not_open_a_downgrade[cached-empty] FAILED [ 60%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_malformed_gap_receipt_does_not_open_a_downgrade[cached-deleted_int] FAILED [ 80%]
+tests/e2e/test_p0_13_windows_ingress_qa.py::test_malformed_gap_receipt_does_not_open_a_downgrade[cached-deleted_true_full_row] FAILED [100%]
+
+=================================== FAILURES ===================================
+___ test_malformed_gap_receipt_does_not_open_a_downgrade[fresh-deleted_int] ____
+
+witness_rig = <test_p0_13_windows_ingress_qa.Rig object at 0x705ce7220980>
+request_kind = 'fresh', damage = 'deleted_int'
+
+    @pytest.mark.parametrize("request_kind,damage", [
+        ("fresh", "empty"),  # refused 503 by the absent-record receipt scan (capture.py:620-625), not by the witness
+        pytest.param("fresh", "deleted_int", marks=QA_WIN0210_01),
+        pytest.param("fresh", "deleted_true_full_row", marks=QA_WIN0210_01),
+        pytest.param("cached", "empty", marks=QA_WIN0210_01),
+        pytest.param("cached", "deleted_int", marks=QA_WIN0210_01),
+        pytest.param("cached", "deleted_true_full_row", marks=QA_WIN0210_01),
+    ])
+    def test_malformed_gap_receipt_does_not_open_a_downgrade(witness_rig, request_kind, damage):
+        """SECOND synthetic fault on top of the lost markers: the witness receipt itself is damaged. Corrupt committed
+        evidence must fail closed (403, or 503 per the contract), never become generic acceptance or cached success.
+        The exact erasure shape {key, deleted:true} is deliberate erasure and is not tested here."""
+        rig = witness_rig
+        row = rig.store._documents[USER][GAP_RECEIPT]
+        if damage == "empty":
+            rig.store._documents[USER][GAP_RECEIPT] = {}
+        elif damage == "deleted_int":
+            row["deleted"] = 1
+        else:
+            row["deleted"] = True  # full receipt fields remain: not the exact erasure shape
+        before = rig.documents()
+        if request_kind == "fresh":  # a structured claim that the pixels-only stream must never admit
+            response = rig.post(raw_body(rig, "structured"), "qa-raw-key", RAW)
+        else:
+            response = rig.post(rig.cached_raw, "qa-raw-cached-key", RAW)
+        if response.status_code == 200:
+>           raise DowngradeAccepted(f"{request_kind}/{damage}: 200, store changed: {rig.documents() != before}, "
+                                    f"cached ACK replayed: {response.json() == rig.cached_ack}")
+E           test_p0_13_windows_ingress_qa.DowngradeAccepted: fresh/deleted_int: 200, store changed: True, cached ACK replayed: False
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:641: DowngradeAccepted
+_ test_malformed_gap_receipt_does_not_open_a_downgrade[fresh-deleted_true_full_row] _
+
+witness_rig = <test_p0_13_windows_ingress_qa.Rig object at 0x705ce5ab0f50>
+request_kind = 'fresh', damage = 'deleted_true_full_row'
+
+    @pytest.mark.parametrize("request_kind,damage", [
+        ("fresh", "empty"),  # refused 503 by the absent-record receipt scan (capture.py:620-625), not by the witness
+        pytest.param("fresh", "deleted_int", marks=QA_WIN0210_01),
+        pytest.param("fresh", "deleted_true_full_row", marks=QA_WIN0210_01),
+        pytest.param("cached", "empty", marks=QA_WIN0210_01),
+        pytest.param("cached", "deleted_int", marks=QA_WIN0210_01),
+        pytest.param("cached", "deleted_true_full_row", marks=QA_WIN0210_01),
+    ])
+    def test_malformed_gap_receipt_does_not_open_a_downgrade(witness_rig, request_kind, damage):
+        """SECOND synthetic fault on top of the lost markers: the witness receipt itself is damaged. Corrupt committed
+        evidence must fail closed (403, or 503 per the contract), never become generic acceptance or cached success.
+        The exact erasure shape {key, deleted:true} is deliberate erasure and is not tested here."""
+        rig = witness_rig
+        row = rig.store._documents[USER][GAP_RECEIPT]
+        if damage == "empty":
+            rig.store._documents[USER][GAP_RECEIPT] = {}
+        elif damage == "deleted_int":
+            row["deleted"] = 1
+        else:
+            row["deleted"] = True  # full receipt fields remain: not the exact erasure shape
+        before = rig.documents()
+        if request_kind == "fresh":  # a structured claim that the pixels-only stream must never admit
+            response = rig.post(raw_body(rig, "structured"), "qa-raw-key", RAW)
+        else:
+            response = rig.post(rig.cached_raw, "qa-raw-cached-key", RAW)
+        if response.status_code == 200:
+>           raise DowngradeAccepted(f"{request_kind}/{damage}: 200, store changed: {rig.documents() != before}, "
+                                    f"cached ACK replayed: {response.json() == rig.cached_ack}")
+E           test_p0_13_windows_ingress_qa.DowngradeAccepted: fresh/deleted_true_full_row: 200, store changed: True, cached ACK replayed: False
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:641: DowngradeAccepted
+______ test_malformed_gap_receipt_does_not_open_a_downgrade[cached-empty] ______
+
+witness_rig = <test_p0_13_windows_ingress_qa.Rig object at 0x705ce5ab0550>
+request_kind = 'cached', damage = 'empty'
+
+    @pytest.mark.parametrize("request_kind,damage", [
+        ("fresh", "empty"),  # refused 503 by the absent-record receipt scan (capture.py:620-625), not by the witness
+        pytest.param("fresh", "deleted_int", marks=QA_WIN0210_01),
+        pytest.param("fresh", "deleted_true_full_row", marks=QA_WIN0210_01),
+        pytest.param("cached", "empty", marks=QA_WIN0210_01),
+        pytest.param("cached", "deleted_int", marks=QA_WIN0210_01),
+        pytest.param("cached", "deleted_true_full_row", marks=QA_WIN0210_01),
+    ])
+    def test_malformed_gap_receipt_does_not_open_a_downgrade(witness_rig, request_kind, damage):
+        """SECOND synthetic fault on top of the lost markers: the witness receipt itself is damaged. Corrupt committed
+        evidence must fail closed (403, or 503 per the contract), never become generic acceptance or cached success.
+        The exact erasure shape {key, deleted:true} is deliberate erasure and is not tested here."""
+        rig = witness_rig
+        row = rig.store._documents[USER][GAP_RECEIPT]
+        if damage == "empty":
+            rig.store._documents[USER][GAP_RECEIPT] = {}
+        elif damage == "deleted_int":
+            row["deleted"] = 1
+        else:
+            row["deleted"] = True  # full receipt fields remain: not the exact erasure shape
+        before = rig.documents()
+        if request_kind == "fresh":  # a structured claim that the pixels-only stream must never admit
+            response = rig.post(raw_body(rig, "structured"), "qa-raw-key", RAW)
+        else:
+            response = rig.post(rig.cached_raw, "qa-raw-cached-key", RAW)
+        if response.status_code == 200:
+>           raise DowngradeAccepted(f"{request_kind}/{damage}: 200, store changed: {rig.documents() != before}, "
+                                    f"cached ACK replayed: {response.json() == rig.cached_ack}")
+E           test_p0_13_windows_ingress_qa.DowngradeAccepted: cached/empty: 200, store changed: False, cached ACK replayed: True
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:641: DowngradeAccepted
+___ test_malformed_gap_receipt_does_not_open_a_downgrade[cached-deleted_int] ___
+
+witness_rig = <test_p0_13_windows_ingress_qa.Rig object at 0x705ce58f82b0>
+request_kind = 'cached', damage = 'deleted_int'
+
+    @pytest.mark.parametrize("request_kind,damage", [
+        ("fresh", "empty"),  # refused 503 by the absent-record receipt scan (capture.py:620-625), not by the witness
+        pytest.param("fresh", "deleted_int", marks=QA_WIN0210_01),
+        pytest.param("fresh", "deleted_true_full_row", marks=QA_WIN0210_01),
+        pytest.param("cached", "empty", marks=QA_WIN0210_01),
+        pytest.param("cached", "deleted_int", marks=QA_WIN0210_01),
+        pytest.param("cached", "deleted_true_full_row", marks=QA_WIN0210_01),
+    ])
+    def test_malformed_gap_receipt_does_not_open_a_downgrade(witness_rig, request_kind, damage):
+        """SECOND synthetic fault on top of the lost markers: the witness receipt itself is damaged. Corrupt committed
+        evidence must fail closed (403, or 503 per the contract), never become generic acceptance or cached success.
+        The exact erasure shape {key, deleted:true} is deliberate erasure and is not tested here."""
+        rig = witness_rig
+        row = rig.store._documents[USER][GAP_RECEIPT]
+        if damage == "empty":
+            rig.store._documents[USER][GAP_RECEIPT] = {}
+        elif damage == "deleted_int":
+            row["deleted"] = 1
+        else:
+            row["deleted"] = True  # full receipt fields remain: not the exact erasure shape
+        before = rig.documents()
+        if request_kind == "fresh":  # a structured claim that the pixels-only stream must never admit
+            response = rig.post(raw_body(rig, "structured"), "qa-raw-key", RAW)
+        else:
+            response = rig.post(rig.cached_raw, "qa-raw-cached-key", RAW)
+        if response.status_code == 200:
+>           raise DowngradeAccepted(f"{request_kind}/{damage}: 200, store changed: {rig.documents() != before}, "
+                                    f"cached ACK replayed: {response.json() == rig.cached_ack}")
+E           test_p0_13_windows_ingress_qa.DowngradeAccepted: cached/deleted_int: 200, store changed: False, cached ACK replayed: True
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:641: DowngradeAccepted
+_ test_malformed_gap_receipt_does_not_open_a_downgrade[cached-deleted_true_full_row] _
+
+witness_rig = <test_p0_13_windows_ingress_qa.Rig object at 0x705ce58f9480>
+request_kind = 'cached', damage = 'deleted_true_full_row'
+
+    @pytest.mark.parametrize("request_kind,damage", [
+        ("fresh", "empty"),  # refused 503 by the absent-record receipt scan (capture.py:620-625), not by the witness
+        pytest.param("fresh", "deleted_int", marks=QA_WIN0210_01),
+        pytest.param("fresh", "deleted_true_full_row", marks=QA_WIN0210_01),
+        pytest.param("cached", "empty", marks=QA_WIN0210_01),
+        pytest.param("cached", "deleted_int", marks=QA_WIN0210_01),
+        pytest.param("cached", "deleted_true_full_row", marks=QA_WIN0210_01),
+    ])
+    def test_malformed_gap_receipt_does_not_open_a_downgrade(witness_rig, request_kind, damage):
+        """SECOND synthetic fault on top of the lost markers: the witness receipt itself is damaged. Corrupt committed
+        evidence must fail closed (403, or 503 per the contract), never become generic acceptance or cached success.
+        The exact erasure shape {key, deleted:true} is deliberate erasure and is not tested here."""
+        rig = witness_rig
+        row = rig.store._documents[USER][GAP_RECEIPT]
+        if damage == "empty":
+            rig.store._documents[USER][GAP_RECEIPT] = {}
+        elif damage == "deleted_int":
+            row["deleted"] = 1
+        else:
+            row["deleted"] = True  # full receipt fields remain: not the exact erasure shape
+        before = rig.documents()
+        if request_kind == "fresh":  # a structured claim that the pixels-only stream must never admit
+            response = rig.post(raw_body(rig, "structured"), "qa-raw-key", RAW)
+        else:
+            response = rig.post(rig.cached_raw, "qa-raw-cached-key", RAW)
+        if response.status_code == 200:
+>           raise DowngradeAccepted(f"{request_kind}/{damage}: 200, store changed: {rig.documents() != before}, "
+                                    f"cached ACK replayed: {response.json() == rig.cached_ack}")
+E           test_p0_13_windows_ingress_qa.DowngradeAccepted: cached/deleted_true_full_row: 200, store changed: False, cached ACK replayed: True
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:641: DowngradeAccepted
+=========================== short test summary info ============================
+FAILED tests/e2e/test_p0_13_windows_ingress_qa.py::test_malformed_gap_receipt_does_not_open_a_downgrade[fresh-deleted_int]
+FAILED tests/e2e/test_p0_13_windows_ingress_qa.py::test_malformed_gap_receipt_does_not_open_a_downgrade[fresh-deleted_true_full_row]
+FAILED tests/e2e/test_p0_13_windows_ingress_qa.py::test_malformed_gap_receipt_does_not_open_a_downgrade[cached-empty]
+FAILED tests/e2e/test_p0_13_windows_ingress_qa.py::test_malformed_gap_receipt_does_not_open_a_downgrade[cached-deleted_int]
+FAILED tests/e2e/test_p0_13_windows_ingress_qa.py::test_malformed_gap_receipt_does_not_open_a_downgrade[cached-deleted_true_full_row]
+======================= 5 failed, 49 deselected in 1.49s =======================

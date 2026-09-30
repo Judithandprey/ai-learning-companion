@@ -43,7 +43,7 @@ from services.api.storage import MemoryStore, _MemoryTransaction  # noqa: E402
 from services.learning.process_context import prepare_observation_window  # noqa: E402
 
 ROOT = Path(__file__).resolve().parents[2]
-FRAMES_DIR = ROOT / "docs/verification/web/evidence/windows-retention-sample/frames"
+FRAMES_DIR = Path(__file__).parent / "fixtures/windows-ingress-originals"
 EXAMPLES = json.loads((ROOT / "packages/contracts/windows_frame/examples/windows-retained.json").read_text())
 NOW = datetime(2026, 9, 30, 15, 0, tzinfo=timezone.utc)
 TOKEN = "qa-windows-0210-token-" + "q" * 20

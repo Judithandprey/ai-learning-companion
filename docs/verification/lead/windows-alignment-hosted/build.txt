@@ -1,0 +1,12 @@
+
+> @learning-companion/windows@0.1.0 build
+> tsc -p tsconfig.json && node scripts/copy-static.mjs
+
+copied src\preload\control.cjs
+copied src\preload\overlay.cjs
+copied src\renderer\control.css
+copied src\renderer\control.html
+copied src\renderer\overlay.css
+copied src\renderer\overlay.html
+copied src\renderer\probe.css
+copied src\renderer\probe.html

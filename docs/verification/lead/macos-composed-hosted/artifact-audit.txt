@@ -1,0 +1,24 @@
+{
+  "checksums": 45,
+  "source_files": 1869,
+  "source_exact": true,
+  "macos_files": 30,
+  "binary_bytes": 1928848,
+  "xctests": 42,
+  "ingress_pass": 83,
+  "ingress_refusals": 26,
+  "composed_validator_positive": 3,
+  "composed_validator_negative": 24,
+  "fixture_kept": 7,
+  "composed": 6,
+  "refused": 1,
+  "revisions": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    4
+  ],
+  "anomalies": []
+}

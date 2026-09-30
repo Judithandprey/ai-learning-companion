@@ -1,0 +1,23 @@
+{
+  "checksums": 13,
+  "git_blobs": 1842,
+  "raw_matches": 412,
+  "CRLF_only": 1430,
+  "archive_reproduction": true,
+  "zip_files": 109,
+  "app_files": 36,
+  "runtime_files": 73,
+  "tests": 85,
+  "test_source_files": 9,
+  "summary": {
+    "tests": 85,
+    "suites": 0,
+    "pass": 85,
+    "fail": 0,
+    "cancelled": 0,
+    "skipped": 0,
+    "todo": 0,
+    "duration_ms": 7271.9122
+  },
+  "anomalies": []
+}

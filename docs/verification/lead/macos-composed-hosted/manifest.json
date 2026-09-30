@@ -1,0 +1,94 @@
+{
+  "dependencies" : [
+
+  ],
+  "manifest_display_name" : "CompanionDesktop",
+  "name" : "CompanionDesktop",
+  "path" : "/Users/runner/work/_temp/desktop-evidence/work/source/apps/macos/CompanionDesktop",
+  "platforms" : [
+    {
+      "name" : "macos",
+      "version" : "15.0"
+    }
+  ],
+  "products" : [
+    {
+      "name" : "CompanionDesktop",
+      "targets" : [
+        "CompanionDesktop"
+      ],
+      "type" : {
+        "executable" : null
+      }
+    }
+  ],
+  "swift_languages_versions" : [
+    "5"
+  ],
+  "targets" : [
+    {
+      "c99name" : "DesktopCaptureTests",
+      "module_type" : "SwiftTarget",
+      "name" : "DesktopCaptureTests",
+      "path" : "Tests/DesktopCaptureTests",
+      "sources" : [
+        "DesktopCaptureTests.swift",
+        "DesktopIngressTests.swift",
+        "InkCompositionTests.swift",
+        "InkTests.swift"
+      ],
+      "target_dependencies" : [
+        "DesktopCapture"
+      ],
+      "type" : "test"
+    },
+    {
+      "c99name" : "DesktopCapture",
+      "module_type" : "SwiftTarget",
+      "name" : "DesktopCapture",
+      "path" : "Sources/DesktopCapture",
+      "product_memberships" : [
+        "CompanionDesktop"
+      ],
+      "sources" : [
+        "CaptureRecorder.swift",
+        "CaptureRecords.swift",
+        "CaptureStart.swift",
+        "DesktopIngress.swift",
+        "DesktopJSON.swift",
+        "FrameFacts.swift",
+        "FrameStore.swift",
+        "Freshness.swift",
+        "HostClock.swift",
+        "Ink.swift",
+        "InkComposition.swift",
+        "LiveGate.swift",
+        "SelectionCrop.swift",
+        "StopReason.swift"
+      ],
+      "type" : "library"
+    },
+    {
+      "c99name" : "CompanionDesktop",
+      "module_type" : "SwiftTarget",
+      "name" : "CompanionDesktop",
+      "path" : "Sources/CompanionDesktop",
+      "product_memberships" : [
+        "CompanionDesktop"
+      ],
+      "sources" : [
+        "CaptureController.swift",
+        "CaptureRun.swift",
+        "CompanionDesktopApp.swift",
+        "ContentView.swift",
+        "InkController.swift",
+        "InkViews.swift"
+      ],
+      "target_dependencies" : [
+        "DesktopCapture"
+      ],
+      "type" : "executable"
+    }
+  ],
+  "tools_version" : "6.0"
+}

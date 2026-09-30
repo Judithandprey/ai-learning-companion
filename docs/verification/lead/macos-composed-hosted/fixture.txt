@@ -1,0 +1,1 @@
+Retained synthetic XCTest fixture at 20260921T141320Z-A8FA05F4; not captured display evidence.

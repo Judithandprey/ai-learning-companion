@@ -1,0 +1,1246 @@
+{
+  "checksums": {
+    "listed": 45,
+    "actual_files": 45,
+    "coverage_exact": true,
+    "sha256sums_sha256": "60276aef584b93e6ca8b976f5c455ad5a0e97e3ec7b2ebb8b3338f2febf6c457",
+    "source_archive_sha256": "147d682aa7c9329a74ee6e8c9c91094a434911355096756af75eb3396bbaa350",
+    "package_sha256": "a882883cbeb72e2aff41ae8081472c76c0e9bf7d97bfdfb6e29f77696857530c",
+    "hashes": {
+      "MacDesktop.zip": "a882883cbeb72e2aff41ae8081472c76c0e9bf7d97bfdfb6e29f77696857530c",
+      "build-package.log": "61f679796da8201441dead42c300cbb79e8937bf5f3db937c42400411ddc1550",
+      "bundle.log": "3c964f3b99f0c222bbea2a238529878c1d2f3b5c2ef25b7a44dc8efd90965e23",
+      "composed-fixture.log": "8508a20f61468f4448e7e4a700971ad20cd96cd95855eaf3f11414c4e719158e",
+      "environment.txt": "7f2a5b7062a0ba3a448efce947c97c5cb8ba5aaa87aacf335ca4992feced3544",
+      "fixture.log": "f43f6ddc9de31808350973f784d3ad35733b30f63cb3d0db2d2ceafb5270ccc0",
+      "ingress-fixture.log": "ca19d3323e6b9febfbb7751e89019da9a298648499eb46e3fdb13f446101c4a6",
+      "macos-composed-fixture/20260921T141320Z-A2ECCA80/composed/00000002.png": "5da53c8650304d850bf6a371d15ae838adfcd7c21c522dff040a141e300e90fa",
+      "macos-composed-fixture/20260921T141320Z-A2ECCA80/composed/00000003.png": "68631e591354a36b3df790fa1890231288d228547e74d075dc695e102fbfaec9",
+      "macos-composed-fixture/20260921T141320Z-A2ECCA80/composed/00000004.png": "5da53c8650304d850bf6a371d15ae838adfcd7c21c522dff040a141e300e90fa",
+      "macos-composed-fixture/20260921T141320Z-A2ECCA80/composed/00000005.png": "68631e591354a36b3df790fa1890231288d228547e74d075dc695e102fbfaec9",
+      "macos-composed-fixture/20260921T141320Z-A2ECCA80/composed/00000006.png": "68631e591354a36b3df790fa1890231288d228547e74d075dc695e102fbfaec9",
+      "macos-composed-fixture/20260921T141320Z-A2ECCA80/events.jsonl": "d5c7840a55150987ee52b566fdd819cba6b4885cd18b4d246cb74b86a0d55033",
+      "macos-composed-fixture/20260921T141320Z-A2ECCA80/frames/00000001.png": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e",
+      "macos-composed-fixture/20260921T141320Z-A2ECCA80/frames/00000002.png": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e",
+      "macos-composed-fixture/20260921T141320Z-A2ECCA80/frames/00000003.png": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e",
+      "macos-composed-fixture/20260921T141320Z-A2ECCA80/frames/00000004.png": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e",
+      "macos-composed-fixture/20260921T141320Z-A2ECCA80/frames/00000005.png": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e",
+      "macos-composed-fixture/20260921T141320Z-A2ECCA80/frames/00000006.png": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e",
+      "macos-composed-fixture/20260921T141320Z-A2ECCA80/frames/00000007.png": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e",
+      "macos-composed-fixture/20260921T141320Z-A2ECCA80/ink/ink.json": "ebffa4bbaaebe02d274b54a63ce996e3f84dcd5a9c43c1a46204e7006bac87d6",
+      "macos-composed-fixture/20260921T141320Z-A2ECCA80/status.json": "ede049b1e10d6072e7aa739fb942d55d5926fbc7918765cb41101083dc7b6d73",
+      "macos-fixture/20260921T141320Z-A8FA05F4/events.jsonl": "b745dbd39be2d12736fba4f2a686ab017f3b5ada2cc89f9135df24659e4d4cf1",
+      "macos-fixture/20260921T141320Z-A8FA05F4/frames/00000001.png": "0c5c148fee8e39b50b421a74a810ea9850bf706e530daa24ad2fcb698d82c9cb",
+      "macos-fixture/20260921T141320Z-A8FA05F4/frames/00000004.png": "0c5c148fee8e39b50b421a74a810ea9850bf706e530daa24ad2fcb698d82c9cb",
+      "macos-fixture/20260921T141320Z-A8FA05F4/status.json": "964e7565e37cb05fecee687f66e5ce032ceb2572c15a1274e22c1e3ca575cf7b",
+      "macos-ingress-fixture/manifest.json": "b503bc021f04374e734d298115856c0406f9ca0d0f546508935d4aa5aa992ba4",
+      "macos-ingress-fixture/native/20260921T141320Z-03D48369/events.jsonl": "8a97b724909f51a8b6355c78951ab9845ffe623a145c954ee0ff1cf1aa85a857",
+      "macos-ingress-fixture/native/20260921T141320Z-03D48369/frames/00000001.png": "fb95c953bd2abb3b818a8d2ed05db68ecc6b6e47396492f8f673609be7135d7a",
+      "macos-ingress-fixture/native/20260921T141320Z-03D48369/frames/00000003.png": "daf9c8fa3ee73c6438d1dd3045ff4131f30f38c46f34356907ef1663f46e6213",
+      "macos-ingress-fixture/native/20260921T141320Z-03D48369/frames/00000006.png": "2217e4e643992238b8e0354f5ea3caa1a05e9748b0f3fd8dac607e3fe8c385e5",
+      "macos-ingress-fixture/native/20260921T141320Z-03D48369/status.json": "983fc775d31a57dcd487ad7e50f04c95ea487b118c763a166c5a53e23bd3e13a",
+      "macos-ingress-fixture/requests/synthetic-batch-framed.json": "d29a13bea596b4d806079870e4ad7c18a953234a9bc78b746ac2bd66951068a4",
+      "macos-ingress-fixture/requests/synthetic-batch-frameless.json": "a7756cd3d536c48cb1b489fa301ea83c4f28d82175efa7f318c1fc0f61ebfda7",
+      "macos-ingress-fixture/requests/synthetic-batch-mixed.json": "9e5d1090547faa25a0d156135e4dcf27194c4df816e11557ed72e18a2f219ab2",
+      "manifest-error.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "manifest.json": "9b34ae031d5257268bf98ad3b625159a4da9797343ac9a205af2e4626e15e21e",
+      "package.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "product.txt": "ef2334a57501b03eb9a5535667948060c4d93c46f247b4b32c9b3643ae07bf65",
+      "result.json": "68bd9b329a4515c2920a4934a98b98d529f56b25b974422aa490536ecfb039b4",
+      "snapshot.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "source.tar.gz": "147d682aa7c9329a74ee6e8c9c91094a434911355096756af75eb3396bbaa350",
+      "targets.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "tests.log": "ce6b05602cb7fb834d1db768b9b35c817ce00ece767ba96f460929b651f53a2d",
+      "toolchain.log": "8e379ed2d345022440c5b7d6c2847856d12c6a9014b15c813dedb8d1d0fade7a"
+    }
+  },
+  "source": {
+    "pax": {
+      "comment": "5f80c0926f96d3afdb8da7a00c295b4f4e8fdd63"
+    },
+    "commit": "5f80c0926f96d3afdb8da7a00c295b4f4e8fdd63",
+    "archive_members": 1869,
+    "git_blobs": 1869,
+    "macos_files": 30,
+    "all_blob_bytes_modes_and_names_match": true,
+    "approved_a17f6c1_tree": "6322ee7f7be852db807be1f23482190e38fec70f",
+    "hosted_native_tree": "6322ee7f7be852db807be1f23482190e38fec70f"
+  },
+  "app": {
+    "entries": [
+      {
+        "path": "CompanionDesktop.app/",
+        "bytes": 0,
+        "mode": "0o40755"
+      },
+      {
+        "path": "CompanionDesktop.app/Contents/",
+        "bytes": 0,
+        "mode": "0o40755"
+      },
+      {
+        "path": "CompanionDesktop.app/Contents/MacOS/",
+        "bytes": 0,
+        "mode": "0o40755"
+      },
+      {
+        "path": "CompanionDesktop.app/Contents/MacOS/CompanionDesktop",
+        "bytes": 1928848,
+        "mode": "0o100755"
+      },
+      {
+        "path": "CompanionDesktop.app/Contents/Info.plist",
+        "bytes": 794,
+        "mode": "0o100644"
+      }
+    ],
+    "binary_sha256": "00d44eb04b9867806c322a5f6099aa3dc31302d0be4da836740169a9b65b821f",
+    "binary_bytes": 1928848,
+    "plist": {
+      "CFBundleDevelopmentRegion": "en",
+      "CFBundleExecutable": "CompanionDesktop",
+      "CFBundleIdentifier": "org.example.learningcompanion.desktop",
+      "CFBundleInfoDictionaryVersion": "6.0",
+      "CFBundleName": "Companion Desktop",
+      "CFBundlePackageType": "APPL",
+      "CFBundleShortVersionString": "0.1.0",
+      "CFBundleVersion": "1",
+      "LSMinimumSystemVersion": "15.0",
+      "NSHighResolutionCapable": true
+    },
+    "architecture": "arm64",
+    "build_versions": [
+      {
+        "platform": 1,
+        "minos": "15.0.0",
+        "sdk": "26.5.0"
+      }
+    ],
+    "dylibs": [
+      "/usr/lib/libSystem.B.dylib",
+      "/System/Library/Frameworks/AppKit.framework/Versions/C/AppKit",
+      "/System/Library/Frameworks/Combine.framework/Versions/A/Combine",
+      "/System/Library/Frameworks/CoreFoundation.framework/Versions/A/CoreFoundation",
+      "/System/Library/Frameworks/CoreGraphics.framework/Versions/A/CoreGraphics",
+      "/System/Library/Frameworks/CoreImage.framework/Versions/A/CoreImage",
+      "/System/Library/Frameworks/CoreMedia.framework/Versions/A/CoreMedia",
+      "/System/Library/Frameworks/CoreVideo.framework/Versions/A/CoreVideo",
+      "/System/Library/Frameworks/CryptoKit.framework/Versions/A/CryptoKit",
+      "/System/Library/Frameworks/Foundation.framework/Versions/C/Foundation",
+      "/System/Library/Frameworks/ImageIO.framework/Versions/A/ImageIO",
+      "/System/Library/Frameworks/ScreenCaptureKit.framework/Versions/A/ScreenCaptureKit",
+      "/System/Library/Frameworks/SwiftUI.framework/Versions/A/SwiftUI",
+      "/usr/lib/libobjc.A.dylib",
+      "/usr/lib/swift/libswiftAVFoundation.dylib",
+      "/usr/lib/swift/libswiftCore.dylib",
+      "/usr/lib/swift/libswiftCoreAudio.dylib",
+      "/usr/lib/swift/libswiftCoreFoundation.dylib",
+      "/usr/lib/swift/libswiftCoreImage.dylib",
+      "/usr/lib/swift/libswiftCoreMIDI.dylib",
+      "/usr/lib/swift/libswiftCoreMedia.dylib",
+      "/usr/lib/swift/libswiftDarwin.dylib",
+      "/usr/lib/swift/libswiftDispatch.dylib",
+      "/usr/lib/swift/libswiftIOKit.dylib",
+      "/usr/lib/swift/libswiftMetal.dylib",
+      "/usr/lib/swift/libswiftOSLog.dylib",
+      "/usr/lib/swift/libswiftObjectiveC.dylib",
+      "/usr/lib/swift/libswiftQuartzCore.dylib",
+      "/usr/lib/swift/libswiftSpatial.dylib",
+      "/usr/lib/swift/libswiftUniformTypeIdentifiers.dylib",
+      "/usr/lib/swift/libswiftXPC.dylib",
+      "/usr/lib/swift/libswift_Builtin_float.dylib",
+      "/usr/lib/swift/libswift_Concurrency.dylib",
+      "/usr/lib/swift/libswiftos.dylib",
+      "/usr/lib/swift/libswiftsimd.dylib"
+    ],
+    "rpaths": [
+      "/usr/lib/swift",
+      "@loader_path",
+      "/Applications/Xcode_26.6.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/swift-6.2/macosx"
+    ],
+    "linker_signature_present": true,
+    "zip_crc_ok": true,
+    "plist_exact_source": true
+  },
+  "tests": {
+    "xctests": 42,
+    "reader_negative_cases": [
+      "DesktopCaptureTests.DesktopCaptureTests testReaderRefusesAlteredEscapingAndUnreadableOriginals",
+      "DesktopCaptureTests.DesktopCaptureTests testReaderRefusesRecognizedEventsWithoutPayload",
+      "DesktopCaptureTests.DesktopCaptureTests testReaderRefusesSymbolicLinksForOriginals"
+    ],
+    "all_test_names_match_source": true,
+    "source_declared_tests": 42,
+    "failures": 0,
+    "swift_testing_footer": "\u2714 Test run with 0 tests in 0 suites passed after 0.001 seconds.",
+    "checker_pass_lines": 83,
+    "checker_fail_lines": 0,
+    "checker_summary": "all desktop ingress fixture checks passed",
+    "new_scope_refusal": [
+      {
+        "expected": "no released 0.2.7 scope value",
+        "name": "ink_overlay_scope",
+        "reason": "the session records that its ink overlay may or may not be in the kept frames; no released 0.2.7 scope value says that, so nothing is mapped and the retained originals stay unchanged",
+        "type": "refusal"
+      }
+    ],
+    "ink_tests_run": [
+      "DesktopCaptureTests.DesktopCaptureTests testAskFinishCropsThePinnedFrameNotALaterOne",
+      "DesktopCaptureTests.DesktopCaptureTests testAskKeepsAnActualCropOfTheExactRetainedOriginal",
+      "DesktopCaptureTests.DesktopCaptureTests testAskRestoresThePreviousModeAndRecordsTheFrameRegion",
+      "DesktopCaptureTests.DesktopCaptureTests testClosingInputKeepsTheStrokeInProgressAndRefusesNewInput",
+      "DesktopCaptureTests.DesktopCaptureTests testErasingCutsTheDrawnLineBetweenSparseSamples",
+      "DesktopCaptureTests.DesktopCaptureTests testInkIsSavedAtomicallyReopenedAndEditedWithoutReplacingOtherFiles",
+      "DesktopCaptureTests.DesktopCaptureTests testMouseWritingNeedsItsSwitchAndPenFactsAreKept",
+      "DesktopCaptureTests.DesktopCaptureTests testReopenFindsAndLoadsNewerConflictCopies",
+      "DesktopCaptureTests.DesktopCaptureTests testUnsavedInkIsHeldUntilSavedExportedOrDiscarded",
+      "DesktopCaptureTests.DesktopCaptureTests testWriteEraseUndoAndRedoKeepEveryStroke"
+    ],
+    "app_excluded_scope_refusal": [
+      {
+        "expected": "excludes this app's windows",
+        "name": "app_excluded_scope",
+        "reason": "the session excludes this app's windows from capture and composes ink separately; no released 0.2.7 scope value says that, so nothing is mapped and the retained originals stay unchanged",
+        "type": "refusal"
+      }
+    ],
+    "composition_tests_run": [
+      "DesktopCaptureTests.DesktopCaptureTests testAskTextInAnAppExcludedSessionMakesNoUnverifiedClaim",
+      "DesktopCaptureTests.DesktopCaptureTests testComposedImagesDrawTheInkCommittedWhenThePixelsWereOnScreen",
+      "DesktopCaptureTests.DesktopCaptureTests testCompositionRefusalsAndFailuresKeepRawOriginalsAndSayWhy",
+      "DesktopCaptureTests.DesktopCaptureTests testEveryKeptFrameGetsOneCompositionOutcomeBeforeTheEnding",
+      "DesktopCaptureTests.DesktopCaptureTests testVisibleStrokesReplayEveryCommittedRevision"
+    ]
+  },
+  "fixtures": [
+    {
+      "path": "macos-fixture/20260921T141320Z-A8FA05F4",
+      "events": 8,
+      "status": {
+        "bytesKept": 358,
+        "callbacks": 4,
+        "callbacksAfterLiveEnded": 0,
+        "callbacksByStatus": {
+          "blank": 1,
+          "complete": 2,
+          "idle": 1
+        },
+        "display": {
+          "displayID": 1,
+          "frame": {
+            "height": 2,
+            "width": 4,
+            "x": 0,
+            "y": 0
+          },
+          "isMain": true,
+          "name": "Synthetic Display",
+          "pointPixelScale": 1,
+          "requestedHeight": 2,
+          "requestedWidth": 4,
+          "rotationDegrees": 0,
+          "scope": "synthetic fixture; not a captured display"
+        },
+        "ending": {
+          "host": 109.5,
+          "liveEndedHost": 109,
+          "reason": "user_stop",
+          "wall": "2026-09-21T14:13:29.750Z"
+        },
+        "eventWriteFailures": 0,
+        "gaps": 1,
+        "keptFrames": 2,
+        "lastCallbackHost": 107,
+        "lastCallbackStatus": "complete",
+        "lastKept": {
+          "byteLength": 179,
+          "callbackHost": 107,
+          "encoding": "png; 8-bit RGBA; sRGB; lossless; native size; not rotated",
+          "facts": {
+            "contentRect": {
+              "height": 2,
+              "width": 4,
+              "x": 0,
+              "y": 0
+            },
+            "contentScale": 1,
+            "dirtyRects": [
+              {
+                "height": 1,
+                "width": 4,
+                "x": 0,
+                "y": 0
+              }
+            ],
+            "displayTimeSeconds": 101,
+            "displayTimeTicks": 2424000000,
+            "presentationTime": 101,
+            "scaleFactor": 1,
+            "status": "complete"
+          },
+          "file": "frames/00000004.png",
+          "height": 2,
+          "mediaType": "image/png",
+          "pixelFormat": "BGRA",
+          "sequence": 4,
+          "sha256": "0c5c148fee8e39b50b421a74a810ea9850bf706e530daa24ad2fcb698d82c9cb",
+          "sourceHost": 101,
+          "width": 4
+        },
+        "lastNewPixelsHost": 107,
+        "lastNewPixelsSequence": 4,
+        "lastNewPixelsSourceHost": 101,
+        "notRetained": {},
+        "permissionPreflightAtStart": false,
+        "pixelsCurrent": false,
+        "session": "20260921T141320Z-A8FA05F4",
+        "settings": {
+          "byteCap": 2147483648,
+          "minimumFrameInterval": 2,
+          "showsCursor": true,
+          "silenceLimit": 6,
+          "sourceTimeLeadTolerance": 0.1
+        },
+        "sourceTimeUnknown": {
+          "missing": 1
+        },
+        "startedHost": 100,
+        "startedWall": "2026-09-21T14:13:20.250Z",
+        "statusWriteFailures": 0,
+        "streamStartedHost": 100.5,
+        "updatedWall": "2026-09-30T15:31:54.856Z"
+      },
+      "frames": [
+        {
+          "sequence": 1,
+          "sha256": "0c5c148fee8e39b50b421a74a810ea9850bf706e530daa24ad2fcb698d82c9cb",
+          "bytes": 179,
+          "width": 4,
+          "height": 2,
+          "bit_depth": 8,
+          "color_type": 6,
+          "display_ticks": 2424000000
+        },
+        {
+          "sequence": 4,
+          "sha256": "0c5c148fee8e39b50b421a74a810ea9850bf706e530daa24ad2fcb698d82c9cb",
+          "bytes": 179,
+          "width": 4,
+          "height": 2,
+          "bit_depth": 8,
+          "color_type": 6,
+          "display_ticks": 2424000000
+        }
+      ],
+      "gaps": [
+        "blank"
+      ]
+    },
+    {
+      "path": "macos-ingress-fixture/native/20260921T141320Z-03D48369",
+      "events": 10,
+      "status": {
+        "bytesKept": 538,
+        "callbacks": 6,
+        "callbacksAfterLiveEnded": 0,
+        "callbacksByStatus": {
+          "blank": 1,
+          "complete": 4,
+          "missing": 1
+        },
+        "display": {
+          "displayID": 7,
+          "frame": {
+            "height": 2,
+            "width": 4,
+            "x": -1440,
+            "y": 0
+          },
+          "isMain": false,
+          "name": "Synthetic Display \u2713",
+          "pointPixelScale": 1,
+          "requestedHeight": 2,
+          "requestedWidth": 4,
+          "rotationDegrees": 90,
+          "scope": "synthetic fixture; not a captured display"
+        },
+        "ending": {
+          "host": 121.5,
+          "liveEndedHost": 121,
+          "reason": "user_stop",
+          "wall": "2026-09-21T14:13:41.750Z"
+        },
+        "eventWriteFailures": 0,
+        "gaps": 4,
+        "keptFrames": 3,
+        "lastCallbackHost": 120,
+        "lastCallbackStatus": "complete",
+        "lastKept": {
+          "byteLength": 180,
+          "callbackHost": 120,
+          "encoding": "png; 8-bit RGBA; sRGB; lossless; native size; not rotated",
+          "facts": {
+            "status": "complete"
+          },
+          "file": "frames/00000006.png",
+          "height": 2,
+          "mediaType": "image/png",
+          "pixelFormat": "BGRA",
+          "sequence": 6,
+          "sha256": "2217e4e643992238b8e0354f5ea3caa1a05e9748b0f3fd8dac607e3fe8c385e5",
+          "width": 4
+        },
+        "lastNewPixelsHost": 120,
+        "lastNewPixelsSequence": 6,
+        "notRetained": {},
+        "permissionPreflightAtStart": false,
+        "pixelsCurrent": false,
+        "session": "20260921T141320Z-03D48369",
+        "settings": {
+          "byteCap": 2147483648,
+          "minimumFrameInterval": 2,
+          "showsCursor": true,
+          "silenceLimit": 6,
+          "sourceTimeLeadTolerance": 0.1
+        },
+        "sourceTimeUnknown": {
+          "after_callback": 1,
+          "missing": 1
+        },
+        "startedHost": 100,
+        "startedWall": "2026-09-21T14:13:20.250Z",
+        "statusWriteFailures": 0,
+        "streamStartedHost": 100.5,
+        "updatedWall": "2026-09-30T15:31:54.638Z"
+      },
+      "frames": [
+        {
+          "sequence": 1,
+          "sha256": "fb95c953bd2abb3b818a8d2ed05db68ecc6b6e47396492f8f673609be7135d7a",
+          "bytes": 178,
+          "width": 4,
+          "height": 2,
+          "bit_depth": 8,
+          "color_type": 6,
+          "display_ticks": 2424000000
+        },
+        {
+          "sequence": 3,
+          "sha256": "daf9c8fa3ee73c6438d1dd3045ff4131f30f38c46f34356907ef1663f46e6213",
+          "bytes": 180,
+          "width": 4,
+          "height": 2,
+          "bit_depth": 8,
+          "color_type": 6,
+          "display_ticks": 18446744073709551615
+        },
+        {
+          "sequence": 6,
+          "sha256": "2217e4e643992238b8e0354f5ea3caa1a05e9748b0f3fd8dac607e3fe8c385e5",
+          "bytes": 180,
+          "width": 4,
+          "height": 2,
+          "bit_depth": 8,
+          "color_type": 6,
+          "display_ticks": null
+        }
+      ],
+      "gaps": [
+        "blank",
+        "complete_without_image",
+        "missing",
+        "no_callbacks"
+      ]
+    }
+  ],
+  "ingress": {
+    "manifest_keys": [
+      "bindings",
+      "cases",
+      "display_source",
+      "generator",
+      "native_session",
+      "synthetic",
+      "user_id"
+    ],
+    "synthetic_label": "synthetic session, identities and display source; real Swift recorder, FrameStore PNGs and mapper output; nothing sent",
+    "generator": "DesktopCaptureTests.testPreparesRequestsAndWritesFixtures",
+    "requests": [
+      {
+        "name": "synthetic-batch-framed",
+        "frames": 3,
+        "records": 3,
+        "gaps": {},
+        "sha256": "d29a13bea596b4d806079870e4ad7c18a953234a9bc78b746ac2bd66951068a4"
+      },
+      {
+        "name": "synthetic-batch-frameless",
+        "frames": 0,
+        "records": 4,
+        "gaps": {
+          "gap-blank": "blank",
+          "gap-complete_without_image": "complete_without_image",
+          "gap-missing": "missing",
+          "gap-no_callbacks": "no_callbacks"
+        },
+        "sha256": "a7756cd3d536c48cb1b489fa301ea83c4f28d82175efa7f318c1fc0f61ebfda7"
+      },
+      {
+        "name": "synthetic-batch-mixed",
+        "frames": 3,
+        "records": 8,
+        "gaps": {
+          "mixed-blank": "blank",
+          "mixed-missing": "missing",
+          "mixed-no-image": "complete_without_image",
+          "mixed-silence": "no_callbacks"
+        },
+        "sha256": "9e5d1090547faa25a0d156135e4dcf27194c4df816e11557ed72e18a2f219ab2"
+      }
+    ],
+    "swift_refusals": 26,
+    "logged_mutation_refusals": 20
+  },
+  "hosted": {
+    "result": {
+      "platform": "macos",
+      "state": "checks-completed",
+      "last_phase": "complete",
+      "exit_code": 0,
+      "interactive_runtime_verified": false,
+      "provider_verified": false,
+      "project_signing_performed": false
+    },
+    "environment": "commit=5f80c0926f96d3afdb8da7a00c295b4f4e8fdd63\nplatform=macos\nsource=apps/macos/CompanionDesktop\nrunner_image=macos26\nrunner_image_version=20260907.0351.1\nrun=https://github.com/Judithandprey/ai-learning-companion/actions/runs/36737163642\nattempt=1\nDarwin arm64\n6322ee7f7be852db807be1f23482190e38fec70f\nc344d8c546a290dec77866b8cbdfa749b12fb475\nde7c5e7aa3bacf97d60ac73baec4ec0944b7e6e0\n8f343a18cf89e0e9ed0af068e42a1e9da0bb8fdc\naac3f9743313ffd783b1952f596589f865b7b341\n",
+    "toolchain": "ProductName:\t\tmacOS\nProductVersion:\t\t26.6.2\nBuildVersion:\t\t25G83\nXcode 26.6\nBuild version 17F113\nswift-driver version: 1.148.6 Apple Swift version 6.3.3 (swiftlang-6.3.3.1.3 clang-2100.1.1.101)\nTarget: arm64-apple-macosx26.0\n",
+    "build_log": "Building for production...\n[0/5] Write sources\n[2/5] Write swift-version-7974D3F7F03D5E95.txt\n[4/6] Compiling DesktopCapture CaptureRecorder.swift\n[5/7] Compiling CompanionDesktop CaptureController.swift\n[5/7] Write Objects.LinkFileList\n[6/7] Linking CompanionDesktop\nBuild of product 'CompanionDesktop' complete! (32.18s)\n/Users/runner/work/_temp/desktop-evidence/work/macos-package/CompanionDesktop.app/Contents/Info.plist: OK\n/Users/runner/work/_temp/desktop-evidence/work/macos-package/CompanionDesktop.app\n",
+    "fixture_log": "Retained synthetic XCTest fixture at 20260921T141320Z-A8FA05F4; not captured display evidence.\n",
+    "manifest": {
+      "dependencies": [],
+      "manifest_display_name": "CompanionDesktop",
+      "name": "CompanionDesktop",
+      "path": "/Users/runner/work/_temp/desktop-evidence/work/source/apps/macos/CompanionDesktop",
+      "platforms": [
+        {
+          "name": "macos",
+          "version": "15.0"
+        }
+      ],
+      "products": [
+        {
+          "name": "CompanionDesktop",
+          "targets": [
+            "CompanionDesktop"
+          ],
+          "type": {
+            "executable": null
+          }
+        }
+      ],
+      "swift_languages_versions": [
+        "5"
+      ],
+      "targets": [
+        {
+          "c99name": "DesktopCaptureTests",
+          "module_type": "SwiftTarget",
+          "name": "DesktopCaptureTests",
+          "path": "Tests/DesktopCaptureTests",
+          "sources": [
+            "DesktopCaptureTests.swift",
+            "DesktopIngressTests.swift",
+            "InkCompositionTests.swift",
+            "InkTests.swift"
+          ],
+          "target_dependencies": [
+            "DesktopCapture"
+          ],
+          "type": "test"
+        },
+        {
+          "c99name": "DesktopCapture",
+          "module_type": "SwiftTarget",
+          "name": "DesktopCapture",
+          "path": "Sources/DesktopCapture",
+          "product_memberships": [
+            "CompanionDesktop"
+          ],
+          "sources": [
+            "CaptureRecorder.swift",
+            "CaptureRecords.swift",
+            "CaptureStart.swift",
+            "DesktopIngress.swift",
+            "DesktopJSON.swift",
+            "FrameFacts.swift",
+            "FrameStore.swift",
+            "Freshness.swift",
+            "HostClock.swift",
+            "Ink.swift",
+            "InkComposition.swift",
+            "LiveGate.swift",
+            "SelectionCrop.swift",
+            "StopReason.swift"
+          ],
+          "type": "library"
+        },
+        {
+          "c99name": "CompanionDesktop",
+          "module_type": "SwiftTarget",
+          "name": "CompanionDesktop",
+          "path": "Sources/CompanionDesktop",
+          "product_memberships": [
+            "CompanionDesktop"
+          ],
+          "sources": [
+            "CaptureController.swift",
+            "CaptureRun.swift",
+            "CompanionDesktopApp.swift",
+            "ContentView.swift",
+            "InkController.swift",
+            "InkViews.swift"
+          ],
+          "target_dependencies": [
+            "DesktopCapture"
+          ],
+          "type": "executable"
+        }
+      ],
+      "tools_version": "6.0"
+    },
+    "input_blobs": {
+      "apps/macos/CompanionDesktop": "6322ee7f7be852db807be1f23482190e38fec70f",
+      "scripts/desktop-checks.sh": "c344d8c546a290dec77866b8cbdfa749b12fb475",
+      ".github/workflows/desktop-checks.yml": "de7c5e7aa3bacf97d60ac73baec4ec0944b7e6e0",
+      "pyproject.toml": "8f343a18cf89e0e9ed0af068e42a1e9da0bb8fdc",
+      "uv.lock": "aac3f9743313ffd783b1952f596589f865b7b341"
+    }
+  },
+  "github_receipts": {
+    "run": {
+      "conclusion": "success",
+      "headSha": "5f80c0926f96d3afdb8da7a00c295b4f4e8fdd63",
+      "jobs": [
+        {
+          "completedAt": "2026-09-30T15:32:10Z",
+          "conclusion": "success",
+          "databaseId": 109961792341,
+          "name": "desktop (macos)",
+          "startedAt": "2026-09-30T15:29:57Z",
+          "status": "completed",
+          "steps": [
+            {
+              "completedAt": "2026-09-30T15:30:00Z",
+              "conclusion": "success",
+              "name": "Set up job",
+              "number": 1,
+              "startedAt": "2026-09-30T15:29:58Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-30T15:30:04Z",
+              "conclusion": "success",
+              "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+              "number": 2,
+              "startedAt": "2026-09-30T15:30:00Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-30T15:30:05Z",
+              "conclusion": "success",
+              "name": "Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+              "number": 3,
+              "startedAt": "2026-09-30T15:30:04Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-30T15:30:06Z",
+              "conclusion": "success",
+              "name": "Set up pinned uv for Mac contract checks",
+              "number": 4,
+              "startedAt": "2026-09-30T15:30:05Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-30T15:30:07Z",
+              "conclusion": "success",
+              "name": "Install locked base Python dependencies for Mac",
+              "number": 5,
+              "startedAt": "2026-09-30T15:30:06Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-30T15:30:07Z",
+              "conclusion": "skipped",
+              "name": "Run actions/setup-node@820762786026740c76f36085b0efc47a31fe5020",
+              "number": 6,
+              "startedAt": "2026-09-30T15:30:07Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-30T15:32:03Z",
+              "conclusion": "success",
+              "name": "Check and package exact desktop source",
+              "number": 7,
+              "startedAt": "2026-09-30T15:30:07Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-30T15:32:06Z",
+              "conclusion": "success",
+              "name": "Upload available source, checks and development artifacts",
+              "number": 8,
+              "startedAt": "2026-09-30T15:32:03Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-30T15:32:06Z",
+              "conclusion": "success",
+              "name": "Post Set up pinned uv for Mac contract checks",
+              "number": 14,
+              "startedAt": "2026-09-30T15:32:06Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-30T15:32:07Z",
+              "conclusion": "success",
+              "name": "Post Run actions/setup-python@5fda3b95a4ea91299a34e894583c3862153e4b97",
+              "number": 15,
+              "startedAt": "2026-09-30T15:32:06Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-30T15:32:07Z",
+              "conclusion": "success",
+              "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+              "number": 16,
+              "startedAt": "2026-09-30T15:32:07Z",
+              "status": "completed"
+            },
+            {
+              "completedAt": "2026-09-30T15:32:08Z",
+              "conclusion": "success",
+              "name": "Complete job",
+              "number": 17,
+              "startedAt": "2026-09-30T15:32:07Z",
+              "status": "completed"
+            }
+          ],
+          "url": "https://github.com/Judithandprey/ai-learning-companion/actions/runs/36737163642/job/109961792341"
+        }
+      ],
+      "status": "completed"
+    },
+    "artifact": {
+      "id": 11108395236,
+      "node_id": "MDg6QXJ0aWZhY3QxMTEwODM5NTIzNg==",
+      "name": "desktop-macos-5f80c0926f96d3afdb8da7a00c295b4f4e8fdd63-1",
+      "size_in_bytes": 22299119,
+      "url": "https://api.github.com/repos/Judithandprey/ai-learning-companion/actions/artifacts/11108395236",
+      "archive_download_url": "https://api.github.com/repos/Judithandprey/ai-learning-companion/actions/artifacts/11108395236/zip",
+      "expired": false,
+      "digest": "sha256:0040f63313979724c5491884dcf945f713af3c47ad065335b73d02cb7e2ef9c8",
+      "created_at": "2026-09-30T15:32:06Z",
+      "updated_at": "2026-09-30T15:32:06Z",
+      "expires_at": "2026-10-14T15:32:04Z",
+      "workflow_run": {
+        "id": 36737163642,
+        "repository_id": 1392031548,
+        "head_repository_id": 1392031548,
+        "head_branch": "main",
+        "head_sha": "5f80c0926f96d3afdb8da7a00c295b4f4e8fdd63"
+      }
+    },
+    "receipt_sha256": {
+      "lc-macos-36737163642-run.json": "2f187121839dd95dc6e6df6d61e500b9e0b376caeebbabbb9192c680782cabd2",
+      "lc-macos-36737163642-artifacts.json": "2b4cf30bc817647a4dc3770699f8d7b53e767ac3de7b063821c46bf48015b83e"
+    },
+    "outer_artifact_zip_digest_recomputed": false
+  },
+  "composed_fixture": {
+    "path": "macos-composed-fixture/20260921T141320Z-A2ECCA80",
+    "event_count": 17,
+    "kept": 7,
+    "compositions": 6,
+    "refusals": [
+      {
+        "detail": {
+          "detail": "before these pixels, the display measured 50\u00d7100 pt at 90\u00b0 at host 105.8 s, not the 100\u00d750 pt at 0\u00b0 recorded when capture started; how frames map to display points since then is unverified, so no pixels are selected. Restart capture to map regions again.",
+          "reason": "refused",
+          "sequence": "7"
+        },
+        "event": "not_composed",
+        "host": 107
+      }
+    ],
+    "revision_sequence": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      4
+    ],
+    "status": {
+      "bytesKept": 4970,
+      "callbacks": 7,
+      "callbacksAfterLiveEnded": 0,
+      "callbacksByStatus": {
+        "complete": 7
+      },
+      "composedBytes": 5034,
+      "composedFrames": 6,
+      "display": {
+        "displayID": 7,
+        "frame": {
+          "height": 50,
+          "width": 100,
+          "x": 0,
+          "y": 0
+        },
+        "isMain": true,
+        "name": "Synthetic Display",
+        "pointPixelScale": 2,
+        "requestedHeight": 100,
+        "requestedWidth": 200,
+        "rotationDegrees": 0,
+        "scope": "whole display, SCContentFilter(display:excludingApplications: [this app], exceptingWindows: []); every window of this app (main window, ink overlay, palette, menu bar item, menus and alerts) is excluded, as far as ScreenCaptureKit's documented application exclusion applies, including to windows it creates after the filter (unverified on a Mac); all other applications' windows on the display are included; cursor shown; BGRA buffers requested in sRGB; no audio"
+      },
+      "ending": {
+        "host": 107.6,
+        "liveEndedHost": 107.5,
+        "reason": "user_stop",
+        "wall": "2026-09-21T14:13:28.000Z"
+      },
+      "eventWriteFailures": 0,
+      "gaps": 0,
+      "keptFrames": 7,
+      "lastCallbackHost": 106.1,
+      "lastCallbackStatus": "complete",
+      "lastKept": {
+        "byteLength": 710,
+        "callbackHost": 106.1,
+        "encoding": "png; 8-bit RGBA; sRGB; lossless; native size; not rotated",
+        "facts": {
+          "displayTimeSeconds": 106,
+          "displayTimeTicks": 2544000000,
+          "presentationTime": 1.5,
+          "status": "complete"
+        },
+        "file": "frames/00000007.png",
+        "height": 100,
+        "mediaType": "image/png",
+        "pixelFormat": "BGRA",
+        "sequence": 7,
+        "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e",
+        "sourceHost": 106,
+        "width": 200
+      },
+      "lastNewPixelsHost": 106.1,
+      "lastNewPixelsSequence": 7,
+      "lastNewPixelsSourceHost": 106,
+      "notComposed": {
+        "refused": 1
+      },
+      "notRetained": {},
+      "permissionPreflightAtStart": true,
+      "pixelsCurrent": false,
+      "session": "20260921T141320Z-A2ECCA80",
+      "settings": {
+        "byteCap": 16777216,
+        "minimumFrameInterval": 2,
+        "showsCursor": true,
+        "silenceLimit": 6,
+        "sourceTimeLeadTolerance": 0.1
+      },
+      "sourceTimeUnknown": {
+        "missing": 1
+      },
+      "startedHost": 100,
+      "startedWall": "2026-09-21T14:13:20.250Z",
+      "statusWriteFailures": 0,
+      "streamStartedHost": 100,
+      "updatedWall": "2026-09-30T15:31:54.353Z"
+    },
+    "pngs": {
+      "frames/00000001.png": {
+        "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e",
+        "bytes": 710,
+        "width": 200,
+        "height": 100,
+        "decoded_rgba_sha256": "39178520a7e85f66a1078f3dd3cecf18c6ea57141920d36a48a9a566ee1bc9d4"
+      },
+      "frames/00000002.png": {
+        "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e",
+        "bytes": 710,
+        "width": 200,
+        "height": 100,
+        "decoded_rgba_sha256": "39178520a7e85f66a1078f3dd3cecf18c6ea57141920d36a48a9a566ee1bc9d4"
+      },
+      "frames/00000003.png": {
+        "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e",
+        "bytes": 710,
+        "width": 200,
+        "height": 100,
+        "decoded_rgba_sha256": "39178520a7e85f66a1078f3dd3cecf18c6ea57141920d36a48a9a566ee1bc9d4"
+      },
+      "frames/00000004.png": {
+        "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e",
+        "bytes": 710,
+        "width": 200,
+        "height": 100,
+        "decoded_rgba_sha256": "39178520a7e85f66a1078f3dd3cecf18c6ea57141920d36a48a9a566ee1bc9d4"
+      },
+      "frames/00000005.png": {
+        "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e",
+        "bytes": 710,
+        "width": 200,
+        "height": 100,
+        "decoded_rgba_sha256": "39178520a7e85f66a1078f3dd3cecf18c6ea57141920d36a48a9a566ee1bc9d4"
+      },
+      "frames/00000006.png": {
+        "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e",
+        "bytes": 710,
+        "width": 200,
+        "height": 100,
+        "decoded_rgba_sha256": "39178520a7e85f66a1078f3dd3cecf18c6ea57141920d36a48a9a566ee1bc9d4"
+      },
+      "frames/00000007.png": {
+        "sha256": "b25a5c1836271a4b6315280296d180e52273b9b5a45bf744893493500bef935e",
+        "bytes": 710,
+        "width": 200,
+        "height": 100,
+        "decoded_rgba_sha256": "39178520a7e85f66a1078f3dd3cecf18c6ea57141920d36a48a9a566ee1bc9d4"
+      },
+      "composed/00000002.png": {
+        "sha256": "5da53c8650304d850bf6a371d15ae838adfcd7c21c522dff040a141e300e90fa",
+        "bytes": 996,
+        "width": 200,
+        "height": 100,
+        "decoded_rgba_sha256": "ebf68b66a936830f89819edd09698e10577d23fcef156ddabf32aba57db0e826"
+      },
+      "composed/00000003.png": {
+        "sha256": "68631e591354a36b3df790fa1890231288d228547e74d075dc695e102fbfaec9",
+        "bytes": 1014,
+        "width": 200,
+        "height": 100,
+        "decoded_rgba_sha256": "52cb7524ed9c24e00adc83474bcc6f35a0baf0fa2b0bbef791ef59b27d957314"
+      },
+      "composed/00000004.png": {
+        "sha256": "5da53c8650304d850bf6a371d15ae838adfcd7c21c522dff040a141e300e90fa",
+        "bytes": 996,
+        "width": 200,
+        "height": 100,
+        "decoded_rgba_sha256": "ebf68b66a936830f89819edd09698e10577d23fcef156ddabf32aba57db0e826"
+      },
+      "composed/00000005.png": {
+        "sha256": "68631e591354a36b3df790fa1890231288d228547e74d075dc695e102fbfaec9",
+        "bytes": 1014,
+        "width": 200,
+        "height": 100,
+        "decoded_rgba_sha256": "52cb7524ed9c24e00adc83474bcc6f35a0baf0fa2b0bbef791ef59b27d957314"
+      },
+      "composed/00000006.png": {
+        "sha256": "68631e591354a36b3df790fa1890231288d228547e74d075dc695e102fbfaec9",
+        "bytes": 1014,
+        "width": 200,
+        "height": 100,
+        "decoded_rgba_sha256": "52cb7524ed9c24e00adc83474bcc6f35a0baf0fa2b0bbef791ef59b27d957314"
+      }
+    },
+    "document_sha256": "ebffa4bbaaebe02d274b54a63ce996e3f84dcd5a9c43c1a46204e7006bac87d6",
+    "original_and_derived_ids": [
+      "s1",
+      "s2",
+      "s3"
+    ],
+    "raw_alias_sequence": 1,
+    "raw_bytes": 4970,
+    "composed_bytes": 5034,
+    "independent_decode": "stdlib PNG chunk CRC, zlib and filter reconstruction; 12 actual saved RGBA8 PNGs",
+    "decoded_spot_checks": {
+      "2": {
+        "40,18": [
+          255,
+          59,
+          48,
+          255
+        ],
+        "40,21": [
+          255,
+          59,
+          48,
+          255
+        ],
+        "160,18": [
+          255,
+          59,
+          48,
+          255
+        ],
+        "160,21": [
+          255,
+          59,
+          48,
+          255
+        ],
+        "100,20": [
+          255,
+          59,
+          48,
+          255
+        ],
+        "100,80": [
+          128,
+          128,
+          128,
+          255
+        ],
+        "100,14": [
+          128,
+          128,
+          128,
+          255
+        ],
+        "100,25": [
+          128,
+          128,
+          128,
+          255
+        ]
+      },
+      "3": {
+        "40,18": [
+          255,
+          59,
+          48,
+          255
+        ],
+        "40,21": [
+          255,
+          59,
+          48,
+          255
+        ],
+        "160,18": [
+          255,
+          59,
+          48,
+          255
+        ],
+        "160,21": [
+          255,
+          59,
+          48,
+          255
+        ],
+        "100,20": [
+          128,
+          128,
+          128,
+          255
+        ],
+        "100,80": [
+          128,
+          128,
+          128,
+          255
+        ],
+        "100,14": [
+          128,
+          128,
+          128,
+          255
+        ],
+        "100,25": [
+          128,
+          128,
+          128,
+          255
+        ]
+      },
+      "4": {
+        "40,18": [
+          255,
+          59,
+          48,
+          255
+        ],
+        "40,21": [
+          255,
+          59,
+          48,
+          255
+        ],
+        "160,18": [
+          255,
+          59,
+          48,
+          255
+        ],
+        "160,21": [
+          255,
+          59,
+          48,
+          255
+        ],
+        "100,20": [
+          255,
+          59,
+          48,
+          255
+        ],
+        "100,80": [
+          128,
+          128,
+          128,
+          255
+        ],
+        "100,14": [
+          128,
+          128,
+          128,
+          255
+        ],
+        "100,25": [
+          128,
+          128,
+          128,
+          255
+        ]
+      },
+      "5": {
+        "40,18": [
+          255,
+          59,
+          48,
+          255
+        ],
+        "40,21": [
+          255,
+          59,
+          48,
+          255
+        ],
+        "160,18": [
+          255,
+          59,
+          48,
+          255
+        ],
+        "160,21": [
+          255,
+          59,
+          48,
+          255
+        ],
+        "100,20": [
+          128,
+          128,
+          128,
+          255
+        ],
+        "100,80": [
+          128,
+          128,
+          128,
+          255
+        ],
+        "100,14": [
+          128,
+          128,
+          128,
+          255
+        ],
+        "100,25": [
+          128,
+          128,
+          128,
+          255
+        ]
+      },
+      "6": {
+        "40,18": [
+          255,
+          59,
+          48,
+          255
+        ],
+        "40,21": [
+          255,
+          59,
+          48,
+          255
+        ],
+        "160,18": [
+          255,
+          59,
+          48,
+          255
+        ],
+        "160,21": [
+          255,
+          59,
+          48,
+          255
+        ],
+        "100,20": [
+          128,
+          128,
+          128,
+          255
+        ],
+        "100,80": [
+          128,
+          128,
+          128,
+          255
+        ],
+        "100,14": [
+          128,
+          128,
+          128,
+          255
+        ],
+        "100,25": [
+          128,
+          128,
+          128,
+          255
+        ]
+      }
+    },
+    "validator_positive_lines": [
+      "PASS the fixture holds exactly one session directory",
+      "PASS the Swift-made session is consistent",
+      "PASS the fixture is not vacuous (empty and two different inked images, several revisions, both time bases, a refusal)"
+    ],
+    "validator_negative_lines": [
+      "PASS negative control reported: a composed record's SHA-256",
+      "PASS negative control reported: a raw original's bytes",
+      "PASS negative control reported: a missing outcome",
+      "PASS negative control reported: a duplicated outcome",
+      "PASS negative control reported: an outcome after the ending",
+      "PASS negative control reported: a wrong raw reference",
+      "PASS negative control reported: a wrong time basis",
+      "PASS negative control reported: a revision without a document",
+      "PASS negative control reported: strokes dropped from an inked image",
+      "PASS negative control reported: another revision's strokes",
+      "PASS negative control reported: an unrecorded file in composed/",
+      "PASS negative control reported: a wrong status count",
+      "PASS negative control reported: wrong composed bytes",
+      "PASS negative control reported: another scope",
+      "PASS negative control reported: an empty-ink image that is not the raw original",
+      "PASS negative control reported: an inked image flipped upside down",
+      "PASS negative control reported: extra ink off the strokes",
+      "PASS negative control reported: ink in a raw original",
+      "PASS negative control reported: a later revision with the same strokes",
+      "PASS negative control reported: an inked frame recorded as empty ink",
+      "PASS negative control reported: another background",
+      "PASS negative control reported: a gap in a stroke",
+      "PASS negative control reported: strokes collapsed to 1 px wide in every inked image",
+      "PASS negative control reported: transparent ink"
+    ],
+    "validator_failures": 0
+  },
+  "anomalies": []
+}

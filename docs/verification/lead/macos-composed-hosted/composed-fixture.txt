@@ -1,0 +1,28 @@
+PASS the fixture holds exactly one session directory
+PASS the Swift-made session is consistent
+PASS the fixture is not vacuous (empty and two different inked images, several revisions, both time bases, a refusal)
+PASS negative control reported: a composed record's SHA-256
+PASS negative control reported: a raw original's bytes
+PASS negative control reported: a missing outcome
+PASS negative control reported: a duplicated outcome
+PASS negative control reported: an outcome after the ending
+PASS negative control reported: a wrong raw reference
+PASS negative control reported: a wrong time basis
+PASS negative control reported: a revision without a document
+PASS negative control reported: strokes dropped from an inked image
+PASS negative control reported: another revision's strokes
+PASS negative control reported: an unrecorded file in composed/
+PASS negative control reported: a wrong status count
+PASS negative control reported: wrong composed bytes
+PASS negative control reported: another scope
+PASS negative control reported: an empty-ink image that is not the raw original
+PASS negative control reported: an inked image flipped upside down
+PASS negative control reported: extra ink off the strokes
+PASS negative control reported: ink in a raw original
+PASS negative control reported: a later revision with the same strokes
+PASS negative control reported: an inked frame recorded as empty ink
+PASS negative control reported: another background
+PASS negative control reported: a gap in a stroke
+PASS negative control reported: strokes collapsed to 1 px wide in every inked image
+PASS negative control reported: transparent ink
+all composed fixture checks passed

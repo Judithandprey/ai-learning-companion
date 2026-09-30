@@ -1,0 +1,1 @@
+/Users/runner/work/_temp/desktop-evidence/work/macos-package/CompanionDesktop.app/Contents/MacOS/CompanionDesktop: Mach-O 64-bit executable arm64

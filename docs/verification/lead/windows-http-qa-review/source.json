@@ -1,0 +1,120 @@
+{
+  "qa_commit": "ee0faee298cded6e4229540e42a46bb123a305dc",
+  "qa_parent": "56f8ecd9078d2b97acb622b2ed101c4b87b1f2cd",
+  "production_commit": "7b71d7b19db29f877948f21c9921b2352d9b7d00",
+  "export": "/tmp/windows-http-qa-ee0faee",
+  "delta_paths": 23,
+  "services_packages_identical_to_production": true,
+  "raw_git_blob_identity_checked": 244,
+  "changed_files": {
+    "docs/verification/qa/p0-13-windows-ingress-7b71d7b.md": {
+      "sha256": "cef08e3ed526515b2f7dd1f631b6c11d795fccd25043c8670cecfb3e39747be2",
+      "bytes": 14159
+    },
+    "docs/verification/qa/p0-13-windows-ingress-7b71d7b/controls.txt": {
+      "sha256": "dfb67818b26b3faeb727f4487ecb40da6a4c3ad1f8e34a594c11e1fe3bf90fa6",
+      "bytes": 652
+    },
+    "docs/verification/qa/p0-13-windows-ingress-7b71d7b/env.txt": {
+      "sha256": "cb12df7ac5deb1d3954212e80e67db8292399b8b55177bb6e91324d59fd4929e",
+      "bytes": 1445
+    },
+    "docs/verification/qa/p0-13-windows-ingress-7b71d7b/future-clock.txt": {
+      "sha256": "33b783da41f841fe5e672b002ebf6ddc3853fba297352364c8ba0564e05dc4bf",
+      "bytes": 616
+    },
+    "docs/verification/qa/p0-13-windows-ingress-7b71d7b/mutation-sensitivity.txt": {
+      "sha256": "5ec0015e65eb3a7c79c6f2d12327506b10f900050af5fa7e57e17f03fbf97374",
+      "bytes": 5194
+    },
+    "docs/verification/qa/p0-13-windows-ingress-7b71d7b/mutations/m10_no_intx_token.py": {
+      "sha256": "709fdae773e3d71fd7a11affd3aca11ba3e48095635034d50db3c7811f96e9eb",
+      "bytes": 381
+    },
+    "docs/verification/qa/p0-13-windows-ingress-7b71d7b/mutations/m11_default_on.py": {
+      "sha256": "e069338af1d9390451cb86f723221917e6a9b61d2d916591633c9be972e24236",
+      "bytes": 360
+    },
+    "docs/verification/qa/p0-13-windows-ingress-7b71d7b/mutations/m12_no_receipt_validation.py": {
+      "sha256": "d4ddd4fd6b901aec27b1988ceb24729564cf5b6ad69c31ed9c38b1e1f4a9d6b0",
+      "bytes": 552
+    },
+    "docs/verification/qa/p0-13-windows-ingress-7b71d7b/mutations/m13_dup_overwrites_time.py": {
+      "sha256": "e4207ddd28ce102537bef5b3eeffb58d9c545141105e8a3b06e953af743afe72",
+      "bytes": 400
+    },
+    "docs/verification/qa/p0-13-windows-ingress-7b71d7b/mutations/m14_no_enabled.py": {
+      "sha256": "9a7d1b9a64c19809f8edf7e0d601ec57f21b7b8a28ad5869a54c20a15098331b",
+      "bytes": 568
+    },
+    "docs/verification/qa/p0-13-windows-ingress-7b71d7b/mutations/m1_cachefirst.py": {
+      "sha256": "b04bfbb855f4a047d3110611c5983187a24066dd916954daa62196ac7a040b7b",
+      "bytes": 902
+    },
+    "docs/verification/qa/p0-13-windows-ingress-7b71d7b/mutations/m1c_cache_after_authority.py": {
+      "sha256": "8fdc10938d777a6db12ec6496587e3b667933ad606ff9166f6d9b2dadec2f660",
+      "bytes": 430
+    },
+    "docs/verification/qa/p0-13-windows-ingress-7b71d7b/mutations/m2_no_witness.py": {
+      "sha256": "8596128b817f18d0f73019f9ffc4d601d7017b33edda5ddd5e50c716fcefa6d6",
+      "bytes": 460
+    },
+    "docs/verification/qa/p0-13-windows-ingress-7b71d7b/mutations/m4_empty_absent.py": {
+      "sha256": "928fddf73bb8a9eb48cddb872baec05905c97577ef4b985282e34daf4f97fb36",
+      "bytes": 464
+    },
+    "docs/verification/qa/p0-13-windows-ingress-7b71d7b/mutations/m5_alias_raw.py": {
+      "sha256": "d704dbd8c6502b8ef9881aa02a754217eac5e5d1cb6d50c1a18ca110bcfdb943",
+      "bytes": 480
+    },
+    "docs/verification/qa/p0-13-windows-ingress-7b71d7b/mutations/m6_sorted_frames.py": {
+      "sha256": "67cc0f90f09c5c321c573a4b2d584036d0d3e60a72035810f2f2e3f9f75b1976",
+      "bytes": 347
+    },
+    "docs/verification/qa/p0-13-windows-ingress-7b71d7b/mutations/m7_member_order.py": {
+      "sha256": "f50fc4c155d8589108c30ba2c7bce888d9c8ec2af3b11185c57fd005cea94a5c",
+      "bytes": 344
+    },
+    "docs/verification/qa/p0-13-windows-ingress-7b71d7b/mutations/m8_nonatomic.py": {
+      "sha256": "e43da005034b950bfea4e1a163836f95411111ac235b7f3e0e49903d27fb195a",
+      "bytes": 508
+    },
+    "docs/verification/qa/p0-13-windows-ingress-7b71d7b/mutations/m9_write_first_record_early.py": {
+      "sha256": "e3889aa845ee183029c2932e6977928ec396fee2a0d012127fad16606a044eed",
+      "bytes": 730
+    },
+    "docs/verification/qa/p0-13-windows-ingress-7b71d7b/pytest-verbose.txt": {
+      "sha256": "1b9b7733f280ca9241a4357996bb0470491276c7a4516fb79b1ba85e41844114",
+      "bytes": 9042
+    },
+    "docs/verification/qa/p0-13-windows-ingress-7b71d7b/regression-sensitivity.txt": {
+      "sha256": "19d0930677296c64d1b5d6b373179ae09b44a724dd7eb99379e5ca4c4b76fb03",
+      "bytes": 709
+    },
+    "docs/verification/qa/p0-13-windows-ingress-7b71d7b/runxfail.txt": {
+      "sha256": "147b637fb02167cf7ecdf69ad5eb29cac2d98c507243faa4547c8f64289f9ee9",
+      "bytes": 1014
+    },
+    "tests/e2e/test_p0_13_windows_ingress_qa.py": {
+      "sha256": "f5546cc4be4f0ac6214e0a8e9d41e0c7dcd6b1b6478a1364040f0390237c3f8c",
+      "bytes": 39941
+    }
+  },
+  "independent_tests": {
+    "all54": {
+      "passed": 49,
+      "xfailed": 5,
+      "seconds": 11.24,
+      "exit": 0
+    },
+    "runxfail_selected5": {
+      "failed": 5,
+      "deselected": 49,
+      "seconds": 1.49,
+      "exit": 1
+    },
+    "all54_log": "/tmp/windows-http-qa-review-pytest.log",
+    "log_scope": "all54 log is the final output chunk; initial 3 PASS lines and part of the fourth were returned before log capture",
+    "runxfail_log": "/tmp/windows-http-qa-review-runxfail.log"
+  }
+}

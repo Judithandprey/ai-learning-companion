@@ -1,0 +1,199 @@
+{
+  "scope": "read-only metadata/log/hash audit; no suite or mutant execution",
+  "test_sha256": "f5546cc4be4f0ac6214e0a8e9d41e0c7dcd6b1b6478a1364040f0390237c3f8c",
+  "log_test_hashes_match": true,
+  "log_test_hashes": {
+    "runxfail.txt": [
+      "f5546cc4be4f0ac6214e0a8e9d41e0c7dcd6b1b6478a1364040f0390237c3f8c"
+    ],
+    "regression-sensitivity.txt": [
+      "f5546cc4be4f0ac6214e0a8e9d41e0c7dcd6b1b6478a1364040f0390237c3f8c"
+    ],
+    "pytest-verbose.txt": [
+      "f5546cc4be4f0ac6214e0a8e9d41e0c7dcd6b1b6478a1364040f0390237c3f8c"
+    ],
+    "mutation-sensitivity.txt": [
+      "f5546cc4be4f0ac6214e0a8e9d41e0c7dcd6b1b6478a1364040f0390237c3f8c"
+    ],
+    "future-clock.txt": [
+      "f5546cc4be4f0ac6214e0a8e9d41e0c7dcd6b1b6478a1364040f0390237c3f8c"
+    ],
+    "env.txt": [
+      "f5546cc4be4f0ac6214e0a8e9d41e0c7dcd6b1b6478a1364040f0390237c3f8c"
+    ],
+    "controls.txt": []
+  },
+  "verbose_node_status_counts": {
+    "PASSED": 49,
+    "XFAIL": 5
+  },
+  "verbose_unique_nodes": 54,
+  "runxfail_outcome_lines": 5,
+  "mutant_variants": 14,
+  "mutants_caught": 13,
+  "mutants": [
+    {
+      "name": "m1",
+      "summary": "8 failed, 41 passed, 5 xfailed, 1 error",
+      "caught": true
+    },
+    {
+      "name": "m1c",
+      "summary": "4 failed, 45 passed, 5 xfailed",
+      "caught": true
+    },
+    {
+      "name": "m2",
+      "summary": "3 failed, 46 passed, 5 xfailed",
+      "caught": true
+    },
+    {
+      "name": "m4",
+      "summary": "1 failed, 48 passed, 5 xfailed",
+      "caught": true
+    },
+    {
+      "name": "m5",
+      "summary": "2 failed, 47 passed, 5 xfailed",
+      "caught": true
+    },
+    {
+      "name": "m6_sorted_frames",
+      "summary": "1 failed, 48 passed, 5 xfailed",
+      "caught": true
+    },
+    {
+      "name": "m7_member_order",
+      "summary": "1 failed, 48 passed, 5 xfailed",
+      "caught": true
+    },
+    {
+      "name": "m8_nonatomic",
+      "summary": "5 failed, 44 passed, 5 xfailed, 3 errors",
+      "caught": true
+    },
+    {
+      "name": "m9_write_first_record_early",
+      "summary": "2 failed, 3 passed, 49 errors",
+      "caught": true
+    },
+    {
+      "name": "m10",
+      "summary": "4 failed, 45 passed, 5 xfailed",
+      "caught": true
+    },
+    {
+      "name": "m11",
+      "summary": "1 failed, 48 passed, 5 xfailed",
+      "caught": true
+    },
+    {
+      "name": "m12",
+      "summary": "2 failed, 47 passed, 5 xfailed, 2 errors",
+      "caught": true
+    },
+    {
+      "name": "m13",
+      "summary": "1 failed, 48 passed, 5 xfailed, 1 error",
+      "caught": true
+    },
+    {
+      "name": "m14",
+      "summary": "49 passed, 5 xfailed",
+      "caught": false
+    }
+  ],
+  "pngs": [
+    {
+      "name": "rawonly",
+      "sha256_matches_name": true,
+      "bytes": 563037,
+      "ihdr": [
+        2560,
+        1600,
+        8,
+        6,
+        0,
+        0,
+        0
+      ],
+      "declared_artifact_matches": true
+    },
+    {
+      "name": "alias",
+      "sha256_matches_name": true,
+      "bytes": 285487,
+      "ihdr": [
+        2560,
+        1600,
+        8,
+        6,
+        0,
+        0,
+        0
+      ],
+      "declared_artifact_matches": true
+    },
+    {
+      "name": "same",
+      "sha256_matches_name": true,
+      "bytes": 274656,
+      "ihdr": [
+        2560,
+        1600,
+        8,
+        6,
+        0,
+        0,
+        0
+      ],
+      "declared_artifact_matches": true
+    },
+    {
+      "name": "raw1",
+      "sha256_matches_name": true,
+      "bytes": 273978,
+      "ihdr": [
+        2560,
+        1600,
+        8,
+        6,
+        0,
+        0,
+        0
+      ],
+      "declared_artifact_matches": true
+    },
+    {
+      "name": "comp1",
+      "sha256_matches_name": true,
+      "bytes": 274877,
+      "ihdr": [
+        2560,
+        1600,
+        8,
+        6,
+        0,
+        0,
+        0
+      ],
+      "declared_artifact_matches": true
+    }
+  ],
+  "trees": {
+    "7b71d7b": {
+      "services": "84e184006f83e9cfb9c1292d11bba8e2d1873527",
+      "packages": "51efe86480359109944751c73372b6567b30928d"
+    },
+    "56f8ecd": {
+      "services": "84e184006f83e9cfb9c1292d11bba8e2d1873527",
+      "packages": "51efe86480359109944751c73372b6567b30928d"
+    },
+    "ee0faee": {
+      "services": "84e184006f83e9cfb9c1292d11bba8e2d1873527",
+      "packages": "51efe86480359109944751c73372b6567b30928d"
+    }
+  },
+  "trees_match": true,
+  "export_commit_mismatches": []
+}

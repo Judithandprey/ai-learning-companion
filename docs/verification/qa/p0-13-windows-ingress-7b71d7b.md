@@ -99,8 +99,8 @@
 - **Regression sensitivity** (`regression-sensitivity.txt`, exact archives):
   - Pre-correction `6546cbe` fails exactly the H1 cases `empty` and `deleted_not_bool`.
   - `e3b4fd0` and `7b71d7b` pass 49 with 5 xfailed.
-- **Mutation sensitivity** (`mutation-sensitivity.txt`): 14 single-point production mutants from the review workflow,
-  built on `/tmp` copies of this exact code. 13 are caught, including:
+- **Mutation sensitivity** (`mutation-sensitivity.txt`): 14 production mutants from the review workflow (m9 combines early staging with m8’s non-atomic store; it does not isolate early staging),
+  built on `/tmp` copies of this exact code. The preserved m9 script references the original temporary `m8_nonatomic.py` path; replaying that historical mutation requires restoring its archived sibling at that path or explicitly adjusting the reference. No mutation campaign was rerun during integration. 13 are caught, including:
   - cached success before fences;
   - the witness removed;
   - `if cached:`;

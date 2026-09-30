@@ -1,0 +1,1908 @@
+FEEEEEEFFFEEEEEEEEEEEEEEEEEEEEEEEEEEEEEFEEEEEEEEEEEEEE                   [100%]
+==================================== ERRORS ====================================
+_ ERROR at setup of test_ordered_batch_commits_with_verified_receipts_and_exact_originals _
+
+    @pytest.fixture
+    def chain():
+        """One ordered batch: a frameless gap, then raw-only, distinct-ID alias, same-ID alias and distinct raw+composed."""
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:209: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_stored_readers_and_learning_keep_order_images_and_unknowns _
+
+    @pytest.fixture
+    def chain():
+        """One ordered batch: a frameless gap, then raw-only, distinct-ID alias, same-ID alias and distinct raw+composed."""
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:209: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_each_image_role_resolves_through_its_own_archive_id[comp1-broken0] _
+
+    @pytest.fixture
+    def chain():
+        """One ordered batch: a frameless gap, then raw-only, distinct-ID alias, same-ID alias and distinct raw+composed."""
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:209: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_each_image_role_resolves_through_its_own_archive_id[alias_copy-broken1] _
+
+    @pytest.fixture
+    def chain():
+        """One ordered batch: a frameless gap, then raw-only, distinct-ID alias, same-ID alias and distinct raw+composed."""
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:209: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_each_image_role_resolves_through_its_own_archive_id[alias-broken2] _
+
+    @pytest.fixture
+    def chain():
+        """One ordered batch: a frameless gap, then raw-only, distinct-ID alias, same-ID alias and distinct raw+composed."""
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:209: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_each_image_role_resolves_through_its_own_archive_id[same-broken3] _
+
+    @pytest.fixture
+    def chain():
+        """One ordered batch: a frameless gap, then raw-only, distinct-ID alias, same-ID alias and distinct raw+composed."""
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:209: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_distinct_id_alias_cannot_contradict_retained_image_facts _
+
+    @pytest.fixture
+    def chain():
+        """One ordered batch: a frameless gap, then raw-only, distinct-ID alias, same-ID alias and distinct raw+composed."""
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:209: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_exact_replay_keeps_the_original_accepted_ack_and_order_is_part_of_the_key _
+
+    @pytest.fixture
+    def chain():
+        """One ordered batch: a frameless gap, then raw-only, distinct-ID alias, same-ID alias and distinct raw+composed."""
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:209: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_present_malformed_receipt_is_503_and_never_rebuilt[empty] _
+
+    @pytest.fixture
+    def chain():
+        """One ordered batch: a frameless gap, then raw-only, distinct-ID alias, same-ID alias and distinct raw+composed."""
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:209: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_present_malformed_receipt_is_503_and_never_rebuilt[deleted_not_bool] _
+
+    @pytest.fixture
+    def chain():
+        """One ordered batch: a frameless gap, then raw-only, distinct-ID alias, same-ID alias and distinct raw+composed."""
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:209: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_present_malformed_receipt_is_503_and_never_rebuilt[bad_fingerprint] _
+
+    @pytest.fixture
+    def chain():
+        """One ordered batch: a frameless gap, then raw-only, distinct-ID alias, same-ID alias and distinct raw+composed."""
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:209: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_present_malformed_receipt_is_503_and_never_rebuilt[invalid_ack_json] _
+
+    @pytest.fixture
+    def chain():
+        """One ordered batch: a frameless gap, then raw-only, distinct-ID alias, same-ID alias and distinct raw+composed."""
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:209: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+__ ERROR at setup of test_deliberate_erasure_marker_is_404_not_a_new_success ___
+
+    @pytest.fixture
+    def chain():
+        """One ordered batch: a frameless gap, then raw-only, distinct-ID alias, same-ID alias and distinct raw+composed."""
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:209: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_current_fences_precede_fresh_and_cached_success[none-fresh] _
+
+    @pytest.fixture
+    def chain():
+        """One ordered batch: a frameless gap, then raw-only, distinct-ID alias, same-ID alias and distinct raw+composed."""
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:209: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_current_fences_precede_fresh_and_cached_success[none-cached] _
+
+    @pytest.fixture
+    def chain():
+        """One ordered batch: a frameless gap, then raw-only, distinct-ID alias, same-ID alias and distinct raw+composed."""
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:209: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_current_fences_precede_fresh_and_cached_success[account_disabled-fresh] _
+
+    @pytest.fixture
+    def chain():
+        """One ordered batch: a frameless gap, then raw-only, distinct-ID alias, same-ID alias and distinct raw+composed."""
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:209: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_current_fences_precede_fresh_and_cached_success[account_disabled-cached] _
+
+    @pytest.fixture
+    def chain():
+        """One ordered batch: a frameless gap, then raw-only, distinct-ID alias, same-ID alias and distinct raw+composed."""
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:209: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_current_fences_precede_fresh_and_cached_success[raw_original_lost-fresh] _
+
+    @pytest.fixture
+    def chain():
+        """One ordered batch: a frameless gap, then raw-only, distinct-ID alias, same-ID alias and distinct raw+composed."""
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:209: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_current_fences_precede_fresh_and_cached_success[raw_original_lost-cached] _
+
+    @pytest.fixture
+    def chain():
+        """One ordered batch: a frameless gap, then raw-only, distinct-ID alias, same-ID alias and distinct raw+composed."""
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:209: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_current_fences_precede_fresh_and_cached_success[source_deleted-fresh] _
+
+    @pytest.fixture
+    def chain():
+        """One ordered batch: a frameless gap, then raw-only, distinct-ID alias, same-ID alias and distinct raw+composed."""
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:209: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_current_fences_precede_fresh_and_cached_success[source_deleted-cached] _
+
+    @pytest.fixture
+    def chain():
+        """One ordered batch: a frameless gap, then raw-only, distinct-ID alias, same-ID alias and distinct raw+composed."""
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:209: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_current_fences_precede_fresh_and_cached_success[source_revoked-fresh] _
+
+    @pytest.fixture
+    def chain():
+        """One ordered batch: a frameless gap, then raw-only, distinct-ID alias, same-ID alias and distinct raw+composed."""
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:209: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_current_fences_precede_fresh_and_cached_success[source_revoked-cached] _
+
+    @pytest.fixture
+    def chain():
+        """One ordered batch: a frameless gap, then raw-only, distinct-ID alias, same-ID alias and distinct raw+composed."""
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:209: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_current_fences_precede_fresh_and_cached_success[stopped-fresh] _
+
+    @pytest.fixture
+    def chain():
+        """One ordered batch: a frameless gap, then raw-only, distinct-ID alias, same-ID alias and distinct raw+composed."""
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:209: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_current_fences_precede_fresh_and_cached_success[stopped-cached] _
+
+    @pytest.fixture
+    def chain():
+        """One ordered batch: a frameless gap, then raw-only, distinct-ID alias, same-ID alias and distinct raw+composed."""
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:209: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_current_fences_precede_fresh_and_cached_success[token_expired-fresh] _
+
+    @pytest.fixture
+    def chain():
+        """One ordered batch: a frameless gap, then raw-only, distinct-ID alias, same-ID alias and distinct raw+composed."""
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:209: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_current_fences_precede_fresh_and_cached_success[token_expired-cached] _
+
+    @pytest.fixture
+    def chain():
+        """One ordered batch: a frameless gap, then raw-only, distinct-ID alias, same-ID alias and distinct raw+composed."""
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:209: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_current_fences_precede_fresh_and_cached_success[token_expired_under_lock-fresh] _
+
+    @pytest.fixture
+    def chain():
+        """One ordered batch: a frameless gap, then raw-only, distinct-ID alias, same-ID alias and distinct raw+composed."""
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:209: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_current_fences_precede_fresh_and_cached_success[token_expired_under_lock-cached] _
+
+    @pytest.fixture
+    def chain():
+        """One ordered batch: a frameless gap, then raw-only, distinct-ID alias, same-ID alias and distinct raw+composed."""
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:209: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_current_fences_precede_fresh_and_cached_success[token_revoked-fresh] _
+
+    @pytest.fixture
+    def chain():
+        """One ordered batch: a frameless gap, then raw-only, distinct-ID alias, same-ID alias and distinct raw+composed."""
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:209: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_current_fences_precede_fresh_and_cached_success[token_revoked-cached] _
+
+    @pytest.fixture
+    def chain():
+        """One ordered batch: a frameless gap, then raw-only, distinct-ID alias, same-ID alias and distinct raw+composed."""
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:209: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_current_fences_precede_fresh_and_cached_success[token_revoked_under_lock-fresh] _
+
+    @pytest.fixture
+    def chain():
+        """One ordered batch: a frameless gap, then raw-only, distinct-ID alias, same-ID alias and distinct raw+composed."""
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:209: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_current_fences_precede_fresh_and_cached_success[token_revoked_under_lock-cached] _
+
+    @pytest.fixture
+    def chain():
+        """One ordered batch: a frameless gap, then raw-only, distinct-ID alias, same-ID alias and distinct raw+composed."""
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:209: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_current_fences_precede_fresh_and_cached_success[withdrawn-fresh] _
+
+    @pytest.fixture
+    def chain():
+        """One ordered batch: a frameless gap, then raw-only, distinct-ID alias, same-ID alias and distinct raw+composed."""
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:209: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_current_fences_precede_fresh_and_cached_success[withdrawn-cached] _
+
+    @pytest.fixture
+    def chain():
+        """One ordered batch: a frameless gap, then raw-only, distinct-ID alias, same-ID alias and distinct raw+composed."""
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:209: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_late_write_failure_rolls_back_the_whole_batch[raw_capture_frame-2] _
+
+    @pytest.fixture
+    def chain():
+        """One ordered batch: a frameless gap, then raw-only, distinct-ID alias, same-ID alias and distinct raw+composed."""
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:209: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_late_write_failure_rolls_back_the_whole_batch[capture_record-2] _
+
+    @pytest.fixture
+    def chain():
+        """One ordered batch: a frameless gap, then raw-only, distinct-ID alias, same-ID alias and distinct raw+composed."""
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:209: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_late_write_failure_rolls_back_the_whole_batch[capture_replay-1] _
+
+    @pytest.fixture
+    def chain():
+        """One ordered batch: a frameless gap, then raw-only, distinct-ID alias, same-ID alias and distinct raw+composed."""
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:209: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_______ ERROR at setup of test_windows_route_refuses_an_unmarked_stream ________
+
+    @pytest.fixture
+    def witness_rig():
+        """A pixels-only stream whose only Windows use is a frameless gap receipt, plus an honest raw commit, then the
+        SYNTHETIC loss of both internal producer_profile fields (no HTTP route can cause it)."""
+>       rig = Rig(raw_ingress=True)
+              ^^^^^^^^^^^^^^^^^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:566: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+__ ERROR at setup of test_windows_gap_receipt_witnesses_lost_markers[honest] ___
+
+    @pytest.fixture
+    def witness_rig():
+        """A pixels-only stream whose only Windows use is a frameless gap receipt, plus an honest raw commit, then the
+        SYNTHETIC loss of both internal producer_profile fields (no HTTP route can cause it)."""
+>       rig = Rig(raw_ingress=True)
+              ^^^^^^^^^^^^^^^^^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:566: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_windows_gap_receipt_witnesses_lost_markers[structured] _
+
+    @pytest.fixture
+    def witness_rig():
+        """A pixels-only stream whose only Windows use is a frameless gap receipt, plus an honest raw commit, then the
+        SYNTHETIC loss of both internal producer_profile fields (no HTTP route can cause it)."""
+>       rig = Rig(raw_ingress=True)
+              ^^^^^^^^^^^^^^^^^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:566: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_windows_gap_receipt_witnesses_lost_markers[cached_retry] _
+
+    @pytest.fixture
+    def witness_rig():
+        """A pixels-only stream whose only Windows use is a frameless gap receipt, plus an honest raw commit, then the
+        SYNTHETIC loss of both internal producer_profile fields (no HTTP route can cause it)."""
+>       rig = Rig(raw_ingress=True)
+              ^^^^^^^^^^^^^^^^^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:566: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+________ ERROR at setup of test_witness_control_without_the_gap_receipt ________
+
+    @pytest.fixture
+    def witness_rig():
+        """A pixels-only stream whose only Windows use is a frameless gap receipt, plus an honest raw commit, then the
+        SYNTHETIC loss of both internal producer_profile fields (no HTTP route can cause it)."""
+>       rig = Rig(raw_ingress=True)
+              ^^^^^^^^^^^^^^^^^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:566: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_malformed_gap_receipt_does_not_open_a_downgrade[fresh-empty] _
+
+    @pytest.fixture
+    def witness_rig():
+        """A pixels-only stream whose only Windows use is a frameless gap receipt, plus an honest raw commit, then the
+        SYNTHETIC loss of both internal producer_profile fields (no HTTP route can cause it)."""
+>       rig = Rig(raw_ingress=True)
+              ^^^^^^^^^^^^^^^^^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:566: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_malformed_gap_receipt_does_not_open_a_downgrade[fresh-deleted_int] _
+
+    @pytest.fixture
+    def witness_rig():
+        """A pixels-only stream whose only Windows use is a frameless gap receipt, plus an honest raw commit, then the
+        SYNTHETIC loss of both internal producer_profile fields (no HTTP route can cause it)."""
+>       rig = Rig(raw_ingress=True)
+              ^^^^^^^^^^^^^^^^^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:566: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_malformed_gap_receipt_does_not_open_a_downgrade[fresh-deleted_true_full_row] _
+
+    @pytest.fixture
+    def witness_rig():
+        """A pixels-only stream whose only Windows use is a frameless gap receipt, plus an honest raw commit, then the
+        SYNTHETIC loss of both internal producer_profile fields (no HTTP route can cause it)."""
+>       rig = Rig(raw_ingress=True)
+              ^^^^^^^^^^^^^^^^^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:566: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_malformed_gap_receipt_does_not_open_a_downgrade[cached-empty] _
+
+    @pytest.fixture
+    def witness_rig():
+        """A pixels-only stream whose only Windows use is a frameless gap receipt, plus an honest raw commit, then the
+        SYNTHETIC loss of both internal producer_profile fields (no HTTP route can cause it)."""
+>       rig = Rig(raw_ingress=True)
+              ^^^^^^^^^^^^^^^^^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:566: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_malformed_gap_receipt_does_not_open_a_downgrade[cached-deleted_int] _
+
+    @pytest.fixture
+    def witness_rig():
+        """A pixels-only stream whose only Windows use is a frameless gap receipt, plus an honest raw commit, then the
+        SYNTHETIC loss of both internal producer_profile fields (no HTTP route can cause it)."""
+>       rig = Rig(raw_ingress=True)
+              ^^^^^^^^^^^^^^^^^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:566: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_ ERROR at setup of test_malformed_gap_receipt_does_not_open_a_downgrade[cached-deleted_true_full_row] _
+
+    @pytest.fixture
+    def witness_rig():
+        """A pixels-only stream whose only Windows use is a frameless gap receipt, plus an honest raw commit, then the
+        SYNTHETIC loss of both internal producer_profile fields (no HTTP route can cause it)."""
+>       rig = Rig(raw_ingress=True)
+              ^^^^^^^^^^^^^^^^^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:566: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+=================================== FAILURES ===================================
+________ test_windows_route_is_default_off_and_needs_its_own_capability ________
+
+    def test_windows_route_is_default_off_and_needs_its_own_capability():
+        closed = {"contract_version": "0.2.4", "error": "not_found", "retryable": False}
+        store = MemoryStore()
+>       rig = Rig(store)
+              ^^^^^^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:228: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+_________ test_changed_path_shape_refusals[frameless_observed_samples] _________
+
+change = 'frameless_observed_samples'
+
+    @pytest.mark.parametrize("change", ["frameless_observed_samples", "frameless_with_artifact", "alias_contradiction_in_envelope"])
+    def test_changed_path_shape_refusals(change):
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:353: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+__________ test_changed_path_shape_refusals[frameless_with_artifact] ___________
+
+change = 'frameless_with_artifact'
+
+    @pytest.mark.parametrize("change", ["frameless_observed_samples", "frameless_with_artifact", "alias_contradiction_in_envelope"])
+    def test_changed_path_shape_refusals(change):
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:353: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+______ test_changed_path_shape_refusals[alias_contradiction_in_envelope] _______
+
+change = 'alias_contradiction_in_envelope'
+
+    @pytest.mark.parametrize("change", ["frameless_observed_samples", "frameless_with_artifact", "alias_contradiction_in_envelope"])
+    def test_changed_path_shape_refusals(change):
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:353: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+___________ test_bounded_validation_failure_leaves_no_partial_state ____________
+
+    def test_bounded_validation_failure_leaves_no_partial_state():
+        """A batch whose last record names an ink original that was never uploaded commits nothing at all."""
+>       rig = Rig()
+              ^^^^^
+
+tests/e2e/test_p0_13_windows_ingress_qa.py:511: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+tests/e2e/test_p0_13_windows_ingress_qa.py:89: in __init__
+    self.bytes = {name: (FRAMES_DIR / f"{digest}.png").read_bytes() for name, digest in PNG_NAMES.items()}
+                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+/usr/lib/python3.14/pathlib/__init__.py:778: in read_bytes
+    with self.open(mode='rb', buffering=0) as f:
+         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ 
+
+self = PosixPath('/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png')
+mode = 'rb', buffering = 0, encoding = None, errors = None, newline = None
+
+    def open(self, mode='r', buffering=-1, encoding=None,
+             errors=None, newline=None):
+        """
+        Open the file pointed to by this path and return a file object, as
+        the built-in open() function does.
+        """
+        if "b" not in mode:
+            encoding = io.text_encoding(encoding)
+>       return io.open(self, mode, buffering, encoding, errors, newline)
+               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E       FileNotFoundError: [Errno 2] No such file or directory: '/home/agentsdock/Projects/learning-companion/repo/docs/verification/web/evidence/windows-retention-sample/frames/082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png'
+
+/usr/lib/python3.14/pathlib/__init__.py:772: FileNotFoundError
+=========================== short test summary info ============================
+FAILED tests/e2e/test_p0_13_windows_ingress_qa.py::test_windows_route_is_default_off_and_needs_its_own_capability
+FAILED tests/e2e/test_p0_13_windows_ingress_qa.py::test_changed_path_shape_refusals[frameless_observed_samples]
+FAILED tests/e2e/test_p0_13_windows_ingress_qa.py::test_changed_path_shape_refusals[frameless_with_artifact]
+FAILED tests/e2e/test_p0_13_windows_ingress_qa.py::test_changed_path_shape_refusals[alias_contradiction_in_envelope]
+FAILED tests/e2e/test_p0_13_windows_ingress_qa.py::test_bounded_validation_failure_leaves_no_partial_state
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_ordered_batch_commits_with_verified_receipts_and_exact_originals
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_stored_readers_and_learning_keep_order_images_and_unknowns
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_each_image_role_resolves_through_its_own_archive_id[comp1-broken0]
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_each_image_role_resolves_through_its_own_archive_id[alias_copy-broken1]
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_each_image_role_resolves_through_its_own_archive_id[alias-broken2]
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_each_image_role_resolves_through_its_own_archive_id[same-broken3]
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_distinct_id_alias_cannot_contradict_retained_image_facts
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_exact_replay_keeps_the_original_accepted_ack_and_order_is_part_of_the_key
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_present_malformed_receipt_is_503_and_never_rebuilt[empty]
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_present_malformed_receipt_is_503_and_never_rebuilt[deleted_not_bool]
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_present_malformed_receipt_is_503_and_never_rebuilt[bad_fingerprint]
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_present_malformed_receipt_is_503_and_never_rebuilt[invalid_ack_json]
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_deliberate_erasure_marker_is_404_not_a_new_success
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[none-fresh]
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[none-cached]
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[account_disabled-fresh]
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[account_disabled-cached]
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[raw_original_lost-fresh]
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[raw_original_lost-cached]
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[source_deleted-fresh]
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[source_deleted-cached]
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[source_revoked-fresh]
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[source_revoked-cached]
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[stopped-fresh]
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[stopped-cached]
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[token_expired-fresh]
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[token_expired-cached]
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[token_expired_under_lock-fresh]
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[token_expired_under_lock-cached]
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[token_revoked-fresh]
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[token_revoked-cached]
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[token_revoked_under_lock-fresh]
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[token_revoked_under_lock-cached]
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[withdrawn-fresh]
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_current_fences_precede_fresh_and_cached_success[withdrawn-cached]
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_late_write_failure_rolls_back_the_whole_batch[raw_capture_frame-2]
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_late_write_failure_rolls_back_the_whole_batch[capture_record-2]
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_late_write_failure_rolls_back_the_whole_batch[capture_replay-1]
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_windows_route_refuses_an_unmarked_stream
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_windows_gap_receipt_witnesses_lost_markers[honest]
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_windows_gap_receipt_witnesses_lost_markers[structured]
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_windows_gap_receipt_witnesses_lost_markers[cached_retry]
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_witness_control_without_the_gap_receipt
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_malformed_gap_receipt_does_not_open_a_downgrade[fresh-empty]
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_malformed_gap_receipt_does_not_open_a_downgrade[fresh-deleted_int]
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_malformed_gap_receipt_does_not_open_a_downgrade[fresh-deleted_true_full_row]
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_malformed_gap_receipt_does_not_open_a_downgrade[cached-empty]
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_malformed_gap_receipt_does_not_open_a_downgrade[cached-deleted_int]
+ERROR tests/e2e/test_p0_13_windows_ingress_qa.py::test_malformed_gap_receipt_does_not_open_a_downgrade[cached-deleted_true_full_row]
+5 failed, 49 errors in 1.53s

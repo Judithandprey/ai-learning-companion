@@ -1,0 +1,49 @@
+{
+  "decision": "approve narrow fixture freeze",
+  "current_head_observed": "1ee43f7da2f09635a3bcf0308719d47c310ebadc",
+  "production_source": "7b71d7b19db29f877948f21c9921b2352d9b7d00",
+  "original_qa_commit": "ee0faee298cded6e4229540e42a46bb123a305dc",
+  "test_only_frames_dir_changed": true,
+  "new_test_sha256": "550f5619cfa75afc8f07318684597c775f7621c6dc194b4caf15e587356fa072",
+  "provenance_sha256": "aa80c32dce1087ed80c10453c9e18f21bcd9dfe058b33dad5029d8c203229879",
+  "files": [
+    {
+      "path": "d68d53bd7333ba67c3a3ed5de3ff008b10d8a18712baace0d01fab7f0489c715.png",
+      "bytes": 563037,
+      "sha256": "d68d53bd7333ba67c3a3ed5de3ff008b10d8a18712baace0d01fab7f0489c715",
+      "git_blob": "97c8b9e64f5faa13923cd80240f7366189cc2a33",
+      "exact_source_bytes": true
+    },
+    {
+      "path": "9dc2b9a3aaa5261e70f7c1473caea09321db34a38ae69f581a3b5409ce898ce4.png",
+      "bytes": 285487,
+      "sha256": "9dc2b9a3aaa5261e70f7c1473caea09321db34a38ae69f581a3b5409ce898ce4",
+      "git_blob": "45edfb9c5e09b3ff7288dd9ea43af3f3a7a75aa4",
+      "exact_source_bytes": true
+    },
+    {
+      "path": "035b8e37486902a27491bd26d3148b636ba27980f9808e44eb53d506590fe2cd.png",
+      "bytes": 274656,
+      "sha256": "035b8e37486902a27491bd26d3148b636ba27980f9808e44eb53d506590fe2cd",
+      "git_blob": "82a6eda16cde3fc6f2778d7ffc7d1b621d382e3b",
+      "exact_source_bytes": true
+    },
+    {
+      "path": "082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546.png",
+      "bytes": 273978,
+      "sha256": "082c0c1e630909906209a7c91dd81a8adb83c0838934c5b72b427763af596546",
+      "git_blob": "e427213151d6c858d2a525dcfe4e9c6c69034ccb",
+      "exact_source_bytes": true
+    },
+    {
+      "path": "8a695b9896960c695d8c4cd3604aa20d7294baace363fadc3d3177ad07eaffb1.png",
+      "bytes": 274877,
+      "sha256": "8a695b9896960c695d8c4cd3604aa20d7294baace363fadc3d3177ad07eaffb1",
+      "git_blob": "24c404406f9bedf8167ad26a3e96f760503e4166",
+      "exact_source_bytes": true
+    }
+  ],
+  "m9_wording_corrected": true,
+  "historical_m8_m9_scripts_and_mutation_log_unchanged": true,
+  "tests_rerun_by_reviewer": false
+}
