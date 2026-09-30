@@ -1,0 +1,7 @@
+# Mac retained-context consumer integration
+
+Actual4633bd74cf56e487f95acd0a109b1924432818b6 / handoff_94f3b718f69988583558fd3a789bb945 integrates as0599a97 after complete changed-call-path review and [independent approval](review.md). Mac0.2.11 and Windows0.2.9 use exact version dispatch; raw/composed bytes, native refusal and unknown outcomes remain distinct. Full metadata and final authorized reread preserve original source, cancellation and current access limits. No provider or API route is activated.
+
+On integrated main0599a97, [495 affected tests pass in4.69s](main-tests.txt). Independent143 overlapping tests plus seven additional probes separately confirm existing Windows packet equality, exact numeric representation, complete Unicode refusal detail with honest budget omission, and final-reread change refusal. Counts are not added together as distinct cases. The optional stronger numeric test assertion is nonblocking; an independent canonical-equality probe already verifies the behavior.
+
+The tests use exact Swift-generated synthetic PNGs and injected reader/resolver functions. Actual Backend read_macos/resolve_macos and0.2.12 transport remain the next named Backend dependency after Lead releases the contract. Lead then composes the real adapters with this callable consumer. This is neither live Mac capture nor provider receipt, immutable original-ink certification or full product acceptance.

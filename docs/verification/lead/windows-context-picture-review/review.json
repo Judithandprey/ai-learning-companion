@@ -1,0 +1,81 @@
+{
+  "verdict": "APPROVE",
+  "candidate": "bb6761109cbca86c65e7b3f2e68deb95cab8b1d8",
+  "parent": "e7bdbde46e7cb7f8f744a0407085b747eb2bc359",
+  "export": "/tmp/lc-windows-context-bb676",
+  "source": [
+    {
+      "path": "apps/windows/src/main/main.ts",
+      "sha256": "3b3f7b3fef3a35bd34f70e64baff5897ab17790809587ec43e3458c35296bb2c",
+      "matches_exact_git": true
+    },
+    {
+      "path": "apps/windows/tests/context-pictures.test.ts",
+      "sha256": "4d0211a94f645f550c37bf0d32e41f496db4115cf242bd4babe2c22f6eb1108b",
+      "matches_exact_git": true
+    },
+    {
+      "path": "docs/verification/web/windows-original-display.md",
+      "sha256": "04c6d41e72e1460367fb258fa350e83b2273c78d46aa4a479c14b78dd805b58d",
+      "matches_exact_git": true
+    }
+  ],
+  "requirements": [
+    {
+      "path": "docs/requirements.md",
+      "sha256": "5d21dcf7e89f618de8cd7005bbf2ceff30e4861b23cc3703d200c2dfff679d91",
+      "matches_manifest": true
+    },
+    {
+      "path": "docs/requirements.en.md",
+      "sha256": "688ad17cc606c3000ba0b51b250bd8738783894333b5a2c1c21c20ad6c07b3c3",
+      "matches_manifest": true
+    },
+    {
+      "path": "docs/requirements/intent-and-decisions.md",
+      "sha256": "33e85192e2c0bdac1efef0dbc50487d61eb9af107ad8f4068451da3b0aae50dd",
+      "matches_manifest": true
+    },
+    {
+      "path": "docs/requirements/intent-and-decisions.en.md",
+      "sha256": "8b6a4b9c98dbd8d04e946a1309f5747e2e266b2d5abe26268fc7e6f24865e687",
+      "matches_manifest": true
+    }
+  ],
+  "focused_tests": {
+    "context_pictures": 5,
+    "ink_original": 12,
+    "main_lifecycle": 13,
+    "passed": 30,
+    "failed": 0
+  },
+  "independent_scenario_groups": 3,
+  "baseline_negative": "Identical probe on e7bdbde exits 1 at expected occupied-address save success assertion",
+  "files": [
+    {
+      "path": "/tmp/windows-context-bb676-probes.mjs",
+      "sha256": "a65dbcddbfd9908f7b774eff4cdc8940d44fad0cac931035e914b6322bd7cc98"
+    },
+    {
+      "path": "/tmp/windows-context-bb676-probes.log",
+      "sha256": "1177c647e1fdf1bcf4b4393ab8a7b37fb90d44d5bdb20ab7ce5eebc99edbbb90"
+    },
+    {
+      "path": "/tmp/windows-context-bb676-probe-results.json",
+      "sha256": "1cf4a336af393005a7ef6e6ef2c7166cf6e938ea3591375a8dc4842ccaeaf9ae"
+    },
+    {
+      "path": "/tmp/windows-context-bb676-baseline.log",
+      "sha256": "215630f274f3b7e8d73e7ad8899c61a3a6d64ef5abd535a952a9dc751734e6de"
+    },
+    {
+      "path": "/tmp/windows-context-bb676-tests.log",
+      "sha256": "c02329cb6644f275c0b39236ee69d3f5514ffeaa1d6ea97d9743407481cb09ba"
+    }
+  ],
+  "limits": [
+    "Synthetic IPC/Electron harness and actual Linux filesystem; no native Windows launch or renderer UI acceptance.",
+    "No hosted CI, build/typecheck, provider, API composition or external actions.",
+    "No repository or worker files changed."
+  ]
+}
