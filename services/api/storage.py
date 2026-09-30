@@ -25,6 +25,7 @@ class ImmutableDocumentError(ValueError):
 
 
 class Transaction(Protocol):
+    def is_empty(self) -> bool: ...
     def get(self, kind: str, key: str) -> dict | None: ...
     def put(self, kind: str, key: str, payload: dict) -> None: ...
     def delete(self, kind: str, key: str) -> None: ...
@@ -81,6 +82,10 @@ class _MemoryTransaction(_TransactionBase):
     def get(self, kind: str, key: str) -> dict | None:
         self.check(kind, key)
         return deepcopy(self.documents.get((kind, key)))
+
+    def is_empty(self) -> bool:
+        self.check("authorization")
+        return not self.documents
 
     def put(self, kind: str, key: str, payload: dict) -> None:
         self.check(kind, key)
@@ -146,6 +151,13 @@ class _PostgresTransaction(_TransactionBase):
             (self.user_id, kind, key),
         ).fetchone()
         return deepcopy(row[0]) if row else None
+
+    def is_empty(self) -> bool:
+        self.check("authorization")
+        return not self.connection.execute(
+            "SELECT EXISTS (SELECT 1 FROM lc_backend.documents WHERE user_id = %s)",
+            (self.user_id,),
+        ).fetchone()[0]
 
     def put(self, kind: str, key: str, payload: dict) -> None:
         from psycopg.types.json import Jsonb

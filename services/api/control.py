@@ -137,6 +137,8 @@ class ControlRegistry:
         if (row is None or row.get("user_id") != user_id or row.get("id") != identifier
                 or row.get("deleted")):
             raise DomainError(404, "not_found")
+        if row.get("revoked"):
+            raise DomainError(403, "forbidden")
         return row
 
     def _authority(self, tx, user_id, device_id, session_id, *, capture=False):
@@ -147,7 +149,7 @@ class ControlRegistry:
         if membership is None or any(membership.get(k) != v for k, v in (
                 ("user_id", user_id), ("device_id", device_id), ("session_id", session_id))):
             raise DomainError(404, "not_found")
-        if membership["active"] is not True:
+        if membership["active"] is not True or membership.get("deleted") or membership.get("revoked"):
             raise DomainError(403, "forbidden")
         if type(membership["revision"]) is not int:
             raise DomainError(503, "unavailable")
@@ -226,17 +228,21 @@ class ControlRegistry:
         _validate("Identifier", user_id)
         _validate("Identifier", producer_id)
         with self.store.transaction(user_id) as tx:
-            authority = self._authority(tx, user_id, body["device_id"], body["session_id"])
-            self._generation(body, authority)
-            self._unused(tx, body["stream_id"])
-            if tx.get("control_start", body["stream_id"]) is not None:
-                raise DomainError(409, "stream_conflict")
-            self._predecessor(tx, user_id, body, producer_id)
-            row = {**{k: body[k] for k in ("device_id", "session_id", "stream_id",
-                    "authorization_generation", "membership_revision")},
-                   "user_id": user_id, "producer_id": producer_id,
-                   "fingerprint": fingerprint(body), "status": "pending"}
-            tx.put("control_start", body["stream_id"], row)
+            self._authorize_start(tx, user_id, body, producer_id)
+
+    def _authorize_start(self, tx, user_id, body, producer_id):
+        """Validated trusted start, reusable inside atomic local initialization."""
+        authority = self._authority(tx, user_id, body["device_id"], body["session_id"])
+        self._generation(body, authority)
+        self._unused(tx, body["stream_id"])
+        if tx.get("control_start", body["stream_id"]) is not None:
+            raise DomainError(409, "stream_conflict")
+        self._predecessor(tx, user_id, body, producer_id)
+        row = {**{k: body[k] for k in ("device_id", "session_id", "stream_id",
+                "authorization_generation", "membership_revision")},
+               "user_id": user_id, "producer_id": producer_id,
+               "fingerprint": fingerprint(body), "status": "pending"}
+        tx.put("control_start", body["stream_id"], row)
 
     def _current(self, tx, user_id, stream_id, *, capture=False):
         self._access(tx, capture=capture)
