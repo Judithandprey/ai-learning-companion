@@ -78,7 +78,10 @@ async function lockWhole(file: string): Promise<() => Promise<void>> {
   // Its end is observed whatever happens: an exit, or a failure to start (then no exit comes).
   const exited = new Promise<void>((resolve) => {
     helper.once('exit', () => resolve());
-    helper.once('error', () => resolve());
+    helper.once('error', () => {
+      // A failed kill is not an exit. Only a failure to spawn has no process to await.
+      if (helper.pid === undefined) resolve();
+    });
   });
   helper.stdin!.on('error', () => undefined); // a helper already gone does not fail the write of its release line
   /** Settles with `value` after `ms`, unless cancelled first (so no timer outlives what it bounds). */

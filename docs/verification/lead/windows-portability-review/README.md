@@ -251,3 +251,41 @@ the owner read or implemented the fix. The subsequent inbox was empty. Next
 dependency is Web's exact correction commit, followed by Lead's changed-path
 review/hosted validation; the existing Mac transport and Windows app-parent
 deliveries remain independent active owner work.
+
+## Actual byte-range owner correction
+
+Actual **handoff_2dcd84ac585789a7896edf049bde6523** delivers the separable
+test/evidence commit **7626321fadf7d103e497af393b651898af1c2364**, whose parent is
+exact99cddcd. It integrates as **9b52289** without changing Web's active app-parent
+worktree. The four-file delta changes the Windows unreadable precondition to a
+whole-file byte-range lock, checks same dev/ino/length and an actual opened-fd
+`EBUSY` read, holds it during upload, requires Windows `cannot be read` at local
+refusal with zero requests, and checks exact bytes after release. POSIX retains
+its actual EACCES/open-denial branch. Production uploader/contracts/workflow are
+byte-identical to the previous release.
+
+Both author runtime receipts match all four exact source hashes: stock Windows
+Node24.19 and Electron Node24.21 each report26 pass/eight conditional skips. Those
+remain owner-local evidence. Lead's exact isolated candidate runs only the changed
+Linux group: **8/8 pass**, no skips,194.097516ms. This does not execute the Windows
+helper. The actual hosted stockNode24.21 gate remains pending at this checkpoint.
+
+Independent review reproduces a P3 cleanup caveat: an `error` after successful
+spawn (e.g. kill EPERM) resolves the helper's exit promise even without an exit.
+It does not establish a false uploader pass: retained-lock byte recovery would
+still fail, but the cleanup claim is incorrect. Lead's minimal integration fix
+resolves `error` as no-process completion only when `helper.pid` is undefined;
+post-spawn errors continue waiting for actual exit or the existing final deadline.
+The same four extracted-helper checks cover normal cleanup, failed spawn, no-exit
+deadline and the failed-kill distinction. These are doubles, not Windows execution.
+No production/helper framework or extra owner implementation task is introduced.
+
+The corrected exact helper passes those **same four checks**,47.080591ms, including
+failed kill remaining pending until its final failing deadline. P3 is closed for
+this demonstrated case. [Final review](byte-range-owner/review.md),
+[before](byte-range-owner/helper-before.json), [after](byte-range-owner/helper-after.json),
+[owner source audit](byte-range-owner/source-audit.json) and
+[changed candidate Linux log](byte-range-owner/changed-linux.tap) retain the scopes.
+The final helper source SHA is
+`3d43294ee5f930affa78d616d5d4b04ee86578d24206b6d854ca10ecc4f1e85e`;
+owner Windows runs predate this tiny cleanup edit, which requires the hosted gate.

@@ -1,0 +1,29 @@
+{
+  "sourcePath": "/tmp/windows-byte-range-owner-corrected-uploader.test.ts",
+  "sourceSha256": "3d43294ee5f930affa78d616d5d4b04ee86578d24206b6d854ca10ecc4f1e85e",
+  "helperSha256": "d8dcfcd68ce71e45f0adaa9b0fdb7eddd7c43c96b91737156b32972fae2c14ad",
+  "scope": "Exact extracted source, Linux Node with EventEmitter/spawn/manual clock doubles. No PowerShell, child process, Windows lock or uploader execution.",
+  "observations": [
+    {
+      "case": "normal",
+      "all_timers_cancelled": true,
+      "release_resolved_after_exit": true
+    },
+    {
+      "case": "spawn-ENOENT",
+      "fails_readiness": true,
+      "all_timers_cancelled": true
+    },
+    {
+      "case": "no-exit",
+      "final_5000ms_deadline_rejects": true
+    },
+    {
+      "case": "kill-EPERM",
+      "release_resolved": false,
+      "exit_observed": false,
+      "live_pid": 12345,
+      "final_deadline_rejects": true
+    }
+  ]
+}

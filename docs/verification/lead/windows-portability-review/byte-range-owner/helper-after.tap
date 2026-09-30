@@ -1,0 +1,36 @@
+(node:9) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+TAP version 13
+# Subtest: normal readiness and release cancel both deadline timers
+ok 1 - normal readiness and release cancel both deadline timers
+  ---
+  duration_ms: 2.204973
+  type: 'test'
+  ...
+# Subtest: failure to spawn rejects readiness without an uncaught child error or live timer
+ok 2 - failure to spawn rejects readiness without an uncaught child error or live timer
+  ---
+  duration_ms: 0.764598
+  type: 'test'
+  ...
+# Subtest: kill with no error and no exit reaches final deadline and fails
+ok 3 - kill with no error and no exit reaches final deadline and fails
+  ---
+  duration_ms: 1.419244
+  type: 'test'
+  ...
+# Subtest: post-spawn kill error does not certify exit and final deadline fails
+ok 4 - post-spawn kill error does not certify exit and final deadline fails
+  ---
+  duration_ms: 0.785097
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 47.080591

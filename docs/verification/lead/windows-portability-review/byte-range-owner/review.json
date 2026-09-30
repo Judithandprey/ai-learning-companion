@@ -1,0 +1,185 @@
+{
+  "candidate": "7626321fadf7d103e497af393b651898af1c2364",
+  "parent": "99cddcdcf532931cb3809fe5c278c35bb021889f",
+  "main_comparison": "03c3688",
+  "verdict": "APPROVE integrated candidate plus narrow lead-owned cleanup; demonstrated P3 resolved by four focused after checks",
+  "production_unchanged_vs_parent_and_main": true,
+  "diff_check_passed": true,
+  "source_hashes": {
+    "apps/windows/scripts/ingress-fixtures.ts": {
+      "sha256": "8bad5c3cb8758fb6ef7c32aedfc9f97b2ebe02dd8e4b0f16ee9ae8e4866b7774",
+      "bytes": 8254
+    },
+    "apps/windows/src/main/uploader.ts": {
+      "sha256": "7bd134b93847ec987f413830cc1e9fbd5f9bb9de6aefd45fac4fceed402afb9d",
+      "bytes": 30606
+    },
+    "apps/windows/src/shared/frame-ingress.ts": {
+      "sha256": "bfdba8bf7f5f2648c761547259e2a0db5c5b5d5ce8fe79ffbd171fdc35830389",
+      "bytes": 36723
+    },
+    "apps/windows/tests/uploader.test.ts": {
+      "sha256": "68b94ad062bfa12c6166f2295485699081e522a08e50f0434851589b05f9f0c3",
+      "bytes": 72055
+    },
+    "docs/verification/web/evidence/windows-upload/windows-node-portability.txt": {
+      "sha256": "3a0dbcccdcef9551fe3d9efa6349d3f5777b3ec5d4cb7856dc8da2245fe02e11",
+      "bytes": 9458
+    },
+    "docs/verification/web/evidence/windows-upload/windows-platform-facts.json": {
+      "sha256": "90da3cc6ce6696cf7dcc4dd03a893bb2624cdf2034e85d4f479658e0da8e1e2f",
+      "bytes": 2260
+    },
+    "docs/verification/web/windows-upload.md": {
+      "sha256": "50aacb13d2e9f5286a6f971ea89f240c82e51b6980fba9d623472de8406f0df5",
+      "bytes": 32663
+    }
+  },
+  "author_windows_receipts": [
+    {
+      "runtime": {
+        "node": "v24.19.0",
+        "electron": null,
+        "platform": "win32",
+        "arch": "x64"
+      },
+      "sha256": {
+        "tests/uploader.test.ts": "68b94ad062bfa12c6166f2295485699081e522a08e50f0434851589b05f9f0c3",
+        "src/main/uploader.ts": "7bd134b93847ec987f413830cc1e9fbd5f9bb9de6aefd45fac4fceed402afb9d",
+        "src/shared/frame-ingress.ts": "bfdba8bf7f5f2648c761547259e2a0db5c5b5d5ce8fe79ffbd171fdc35830389",
+        "scripts/ingress-fixtures.ts": "8bad5c3cb8758fb6ef7c32aedfc9f97b2ebe02dd8e4b0f16ee9ae8e4866b7774"
+      },
+      "raw_git_matches": {
+        "tests/uploader.test.ts": true,
+        "src/main/uploader.ts": true,
+        "src/shared/frame-ingress.ts": true,
+        "scripts/ingress-fixtures.ts": true
+      },
+      "summary": {
+        "tests": 34,
+        "suites": 0,
+        "pass": 26,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 8,
+        "todo": 0,
+        "duration_ms": 4884.9785
+      },
+      "named_pass_lines": 26,
+      "named_skip_lines": 8
+    },
+    {
+      "runtime": {
+        "node": "v24.21.0",
+        "electron": "44.5.1",
+        "platform": "win32",
+        "arch": "x64"
+      },
+      "sha256": {
+        "tests/uploader.test.ts": "68b94ad062bfa12c6166f2295485699081e522a08e50f0434851589b05f9f0c3",
+        "src/main/uploader.ts": "7bd134b93847ec987f413830cc1e9fbd5f9bb9de6aefd45fac4fceed402afb9d",
+        "src/shared/frame-ingress.ts": "bfdba8bf7f5f2648c761547259e2a0db5c5b5d5ce8fe79ffbd171fdc35830389",
+        "scripts/ingress-fixtures.ts": "8bad5c3cb8758fb6ef7c32aedfc9f97b2ebe02dd8e4b0f16ee9ae8e4866b7774"
+      },
+      "raw_git_matches": {
+        "tests/uploader.test.ts": true,
+        "src/main/uploader.ts": true,
+        "src/shared/frame-ingress.ts": true,
+        "scripts/ingress-fixtures.ts": true
+      },
+      "summary": {
+        "tests": 34,
+        "suites": 0,
+        "pass": 26,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 8,
+        "todo": 0,
+        "duration_ms": 3016.2887
+      },
+      "named_pass_lines": 26,
+      "named_skip_lines": 8
+    }
+  ],
+  "independent_helper_checks": {
+    "count": 4,
+    "pass": 4,
+    "fail": 0,
+    "duration_ms": 48.81616,
+    "scope": "Exact extracted helper with EventEmitter/spawn/manual timer doubles only; no Windows or PowerShell execution",
+    "evidence": "/tmp/windows-byte-range-owner-helper-probe.json"
+  },
+  "findings": [
+    {
+      "id": "P3-EXIT-ERROR",
+      "path": "apps/windows/tests/uploader.test.ts",
+      "line": 81,
+      "description": "Any child error settles the promise named exited, including a post-spawn kill failure. After readiness, a kill EPERM without exit makes release resolve and cancels the final deadline.",
+      "reproducer": "/tmp/windows-byte-range-owner-helper-probe.mjs",
+      "severity_boundary": "Nonblocking test-only exceptional cleanup issue; no production effect or actual orphan demonstrated. Exact byte recovery and uploader refusal/no-send assertions remain. A still-held file should fail byte recovery; a live helper can keep the runner alive for outer timeout.",
+      "minimal_fix": "Treat genuine spawn failure separately from exit; a post-spawn kill/child error must not certify termination. Fail or retain the bounded wait for actual exit. No supervisor/framework needed.",
+      "status": "RESOLVED by integration-only pid guard; before/after source and probes retained"
+    }
+  ],
+  "important_lines": {
+    "helper.once('error'": 81,
+    "helper.kill()": 95,
+    "assert.equal(after": 99,
+    "precondition: the same file, whole": 939,
+    "precondition: a read of the opened file is refused": 940,
+    "released: exactly its bytes": 950,
+    "process.platform === 'win32' ? /cannot be read/": 980,
+    "assert.equal(s.seen.length, 0": 1004
+  },
+  "limits": [
+    "Author Windows stock Node24.19 and Electron44.5.1 Node24.21 whole-file evidence each34=26pass+8skip; no hosted stock Node24.21 run of this exact candidate yet.",
+    "Prior hosted Support diagnostic proves byte-range precondition there, not this candidate uploader suite.",
+    "ReadSync opened-fd precondition covers actual read denial, not open denial; POSIX remains its separate EACCES/open path.",
+    "The helper accepts forced/nonzero process exit; the caller checks original-byte restoration. Do not describe this test as proving a graceful unlock protocol.",
+    "Linux8/8 changed-group result is lead-reported, not rerun by reviewer.",
+    "No repository edit, owner patch, Windows/CI/DB/native operation or broad suite executed."
+  ],
+  "original_candidate_verdict": "APPROVE bounded test-only read-denial correction with P3 child-error/exit conflation caveat",
+  "integration_correction": {
+    "base_commit": "9b52289a6ea30fbff51340e8173fc65837a045ac",
+    "scope": "Only child error resolution guarded by helper.pid === undefined; production unchanged",
+    "reviewed_source_path": "/tmp/windows-byte-range-owner-corrected-uploader.test.ts",
+    "reviewed_source_sha256": "3d43294ee5f930affa78d616d5d4b04ee86578d24206b6d854ca10ecc4f1e85e",
+    "actual_repo_diff_read": true,
+    "after_helper_checks": {
+      "count": 4,
+      "pass": 4,
+      "fail": 0,
+      "duration_ms": 47.080591,
+      "successfully_spawned_double_pid": 12345,
+      "failed_spawn_double_pid": null,
+      "kill_EPERM_result": "release remains pending until five-second deadline, then rejects; no exit certified",
+      "observations": [
+        {
+          "case": "normal",
+          "all_timers_cancelled": true,
+          "release_resolved_after_exit": true
+        },
+        {
+          "case": "spawn-ENOENT",
+          "fails_readiness": true,
+          "all_timers_cancelled": true
+        },
+        {
+          "case": "no-exit",
+          "final_5000ms_deadline_rejects": true
+        },
+        {
+          "case": "kill-EPERM",
+          "release_resolved": false,
+          "exit_observed": false,
+          "live_pid": 12345,
+          "final_deadline_rejects": true
+        }
+      ]
+    },
+    "before_probe": "/tmp/windows-byte-range-owner-helper-probe.mjs",
+    "after_probe": "/tmp/windows-byte-range-owner-helper-after.mjs",
+    "scope_limit": "After checks are portable helper doubles only, not Windows execution; old author receipts remain scoped to original candidate bytes."
+  }
+}

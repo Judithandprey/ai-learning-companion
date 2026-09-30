@@ -1,0 +1,29 @@
+{
+  "sourcePath": "/tmp/windows-byte-range-7626321-export/apps/windows/tests/uploader.test.ts",
+  "sourceSha256": "68b94ad062bfa12c6166f2295485699081e522a08e50f0434851589b05f9f0c3",
+  "helperSha256": "47b4bf7dfe65bae34925a6318568a74f8a89924877862700f1aa64a8dda25ea6",
+  "scope": "Exact extracted source, Linux Node with EventEmitter/spawn/manual clock doubles. No PowerShell, child process, Windows lock or uploader execution.",
+  "observations": [
+    {
+      "case": "normal",
+      "all_timers_cancelled": true,
+      "release_resolved_after_exit": true
+    },
+    {
+      "case": "spawn-ENOENT",
+      "fails_readiness": true,
+      "all_timers_cancelled": true
+    },
+    {
+      "case": "no-exit",
+      "final_5000ms_deadline_rejects": true
+    },
+    {
+      "case": "kill-EPERM",
+      "release_resolved": true,
+      "exit_observed": false,
+      "live_pid": 12345,
+      "finding": "post-spawn error must not certify child exit"
+    }
+  ]
+}

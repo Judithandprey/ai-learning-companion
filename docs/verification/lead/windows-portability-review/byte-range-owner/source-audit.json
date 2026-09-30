@@ -1,0 +1,44 @@
+{
+  "candidate": "7626321fadf7d103e497af393b651898af1c2364",
+  "parent": "99cddcdcf532931cb3809fe5c278c35bb021889f",
+  "actual_delivery": "handoff_2dcd84ac585789a7896edf049bde6523",
+  "author_source_receipts": [
+    {
+      "runtime": {
+        "node": "v24.19.0",
+        "electron": null,
+        "platform": "win32",
+        "arch": "x64"
+      },
+      "sha256": {
+        "tests/uploader.test.ts": "68b94ad062bfa12c6166f2295485699081e522a08e50f0434851589b05f9f0c3",
+        "src/main/uploader.ts": "7bd134b93847ec987f413830cc1e9fbd5f9bb9de6aefd45fac4fceed402afb9d",
+        "src/shared/frame-ingress.ts": "bfdba8bf7f5f2648c761547259e2a0db5c5b5d5ce8fe79ffbd171fdc35830389",
+        "scripts/ingress-fixtures.ts": "8bad5c3cb8758fb6ef7c32aedfc9f97b2ebe02dd8e4b0f16ee9ae8e4866b7774"
+      }
+    },
+    {
+      "runtime": {
+        "node": "v24.21.0",
+        "electron": "44.5.1",
+        "platform": "win32",
+        "arch": "x64"
+      },
+      "sha256": {
+        "tests/uploader.test.ts": "68b94ad062bfa12c6166f2295485699081e522a08e50f0434851589b05f9f0c3",
+        "src/main/uploader.ts": "7bd134b93847ec987f413830cc1e9fbd5f9bb9de6aefd45fac4fceed402afb9d",
+        "src/shared/frame-ingress.ts": "bfdba8bf7f5f2648c761547259e2a0db5c5b5d5ce8fe79ffbd171fdc35830389",
+        "scripts/ingress-fixtures.ts": "8bad5c3cb8758fb6ef7c32aedfc9f97b2ebe02dd8e4b0f16ee9ae8e4866b7774"
+      }
+    }
+  ],
+  "production_contracts_workflows_unchanged_from_main": "03c3688",
+  "lead_candidate_linux_group": {
+    "tests": 8,
+    "pass": 8,
+    "fail": 0,
+    "skips": 0,
+    "duration_ms": 194.097516
+  },
+  "hosted_stock_node_24_21": "pending"
+}
