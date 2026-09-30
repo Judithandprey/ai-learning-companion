@@ -3,6 +3,7 @@
 from jsonschema import ValidationError
 
 from packages.contracts import capture_frame, desktop_frame, windows_frame, macos_frame
+from packages.contracts import validate as validate_legacy
 from services.api.errors import DomainError
 
 
@@ -86,37 +87,61 @@ def check_windows_image_consistency(tx, proposed=(), *, conflict=(409, "record_c
 
 
 def check_macos_image_consistency(tx, proposed=(), *, conflict=(409, "record_conflict")):
-    """Compare Mac image facts across batches in the existing actor transaction.
+    """Compare common image facts on Mac admission/read, across retained families.
 
-    Native paths belong to their native session, while archive identities and
-    hashes describe immutable PNGs. Reuse descriptors rather than a second index.
-    Previously retained contradictions are damage; proposed contradictions are
-    client conflicts unless an exact committed replay already attests them.
+    Archive IDs and encoded hashes describe the same original regardless of its
+    descriptor family. Compare only facts each family actually supplies; native
+    paths, clocks, composition and Windows RGBA hashes are not common PNG facts.
+    Mac paths retain their own native-session namespace. Reuse descriptors rather
+    than a second index. Retained contradictions are damage, proposed ones are
+    conflicts unless an exact committed replay already attests them.
     """
     identities, hashes, files = {}, {}, {}
 
-    def remember(frame, refusal):
-        macos_frame.validate(frame)
-        pictures = [frame["raw"]]
-        if frame["composition"]["kind"] == "composed":
-            pictures.append(frame["composition"]["image"])
+    def remember_image(artifact_id, facts, refusal):
+        for index, identity, values in (
+            (identities, artifact_id, facts),
+            (hashes, facts["sha256"], {k: v for k, v in facts.items() if k != "sha256"}),
+        ):
+            previous = index.setdefault(identity, {})
+            if any(name in previous and previous[name] != value for name, value in values.items()):
+                raise DomainError(*refusal)
+            previous.update(values)
+
+    def remember(frame, contract, refusal):
+        contract.validate(frame)
+        if contract in (capture_frame, desktop_frame):
+            pictures = [{"artifact": frame["artifact"],
+                         "width": frame["raw_width"], "height": frame["raw_height"]}]
+        else:
+            pictures = [frame["raw"]]
+            if contract is macos_frame and frame["composition"]["kind"] == "composed":
+                pictures.append(frame["composition"]["image"])
+            elif contract is windows_frame and frame["composed"] is not None:
+                pictures.append(frame["composed"]["image"])
         for picture in pictures:
             artifact = picture["artifact"]
-            facts = (artifact["sha256"], artifact["byte_length"], artifact["media_type"],
-                     picture["width"], picture["height"], picture["encoding"])
-            if identities.setdefault(artifact["artifact_id"], facts) != facts:
-                raise DomainError(*refusal)
-            if hashes.setdefault(artifact["sha256"], facts[1:]) != facts[1:]:
-                raise DomainError(*refusal)
-            native_file = (frame["profile"]["native_session_id"], picture["native_file"])
-            if files.setdefault(native_file, facts) != facts:
-                raise DomainError(*refusal)
+            facts = {name: artifact[name] for name in ("sha256", "byte_length", "media_type")}
+            facts.update(width=picture["width"], height=picture["height"])
+            remember_image(artifact["artifact_id"], facts, refusal)
+            if contract is macos_frame:
+                native_file = (frame["profile"]["native_session_id"], picture["native_file"])
+                native_facts = {**facts, "encoding": picture["encoding"]}
+                if files.setdefault(native_file, native_facts) != native_facts:
+                    raise DomainError(*refusal)
 
     try:
+        for frame in tx.scan("frame"):
+            validate_legacy("Frame", frame)
+            # Legacy frames omit MIME/length. DOM and synthetic fixtures do not
+            # promise PNG pixels; their viewport dimensions are not PNG facts.
+            facts = {"sha256": frame["content_hash"]}
+            if frame["representation"] == "screen_capture":
+                facts.update(width=frame["width"], height=frame["height"])
+            remember_image(frame["artifact_id"], facts, (503, "unavailable"))
         for frame in tx.scan("raw_capture_frame"):
-            if retained_raw_contract(frame) is macos_frame:
-                remember(frame, (503, "unavailable"))
+            remember(frame, retained_raw_contract(frame), (503, "unavailable"))
         for frame in proposed:
-            remember(frame, conflict)
+            remember(frame, macos_frame, conflict)
     except (ValidationError, KeyError, ValueError, TypeError, RecursionError):
         raise DomainError(503, "unavailable") from None

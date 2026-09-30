@@ -62,7 +62,7 @@ def test_exact_metadata_and_explicit_png_roles_preserve_independent_ink(macoscap
     assert documents(c) == before
 
 
-def test_metadata_reads_one_frame_scan_without_decoding_or_writing(macoscaptured, monkeypatch):
+def test_metadata_scans_each_retained_frame_kind_once_without_decoding_or_writing(macoscaptured, monkeypatch):
     c = macoscaptured
     children = [record(c.batch, "second", 2, causal_parents=["process-1"]),
                 record(c.batch, "third", 3, causal_parents=["second"])]
@@ -79,7 +79,7 @@ def test_metadata_reads_one_frame_scan_without_decoding_or_writing(macoscaptured
         return actual_get(tx, kind, identifier)
 
     def scan(tx, kind):
-        assert kind == "raw_capture_frame"
+        assert kind in {"frame", "raw_capture_frame"}
         scans.append(kind)
         return actual_scan(tx, kind)
 
@@ -97,7 +97,7 @@ def test_metadata_reads_one_frame_scan_without_decoding_or_writing(macoscaptured
         for method in ("put", "delete"):
             patch.setattr(_MemoryTransaction, method, denied)
         packet = AuthorizedProcessContextReader(c.store, USER, guard).read_macos(["third", "second"])
-    assert guards == [True, True] and scans == ["raw_capture_frame"]
+    assert guards == [True, True] and scans == ["frame", "raw_capture_frame"]
     assert reads == [c.ref["artifact_id"], c.composed_ref["artifact_id"]]
     assert packet["batch"]["records"] == list(reversed(children))
     assert packet["frames"] == [c.macos_frame] and b"data_base64" not in canonical(packet)

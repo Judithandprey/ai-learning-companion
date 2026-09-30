@@ -10,6 +10,12 @@ recorded in [the contract evidence](macos-ingress-contract.md): R03/R35/R36/R46/
 R51/R52/R59, A12/A14/A30/A31/A44 and source/time/archive fidelity. The released
 contract and actual storage/HTTP/reader/Learning call paths were read again.
 
+Follow-up independent review held this original delivery for a cross-family
+image-fact gap that these initial tests missed. The reproduction, bounded fix and
+new results are recorded in [the correction evidence](macos-cross-family-correction.md).
+The original results below remain execution history, not proof that the held
+revision enforced cross-family consistency.
+
 ## Observable result and design
 
 Explicit `enable_macos_ingress=True` on the existing ingress/composed/runtime

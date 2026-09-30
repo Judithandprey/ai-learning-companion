@@ -525,9 +525,14 @@ receipt erasures keep the existing `{key, deleted: true}` semantics.
 max_bytes=...)` returns the full exact descriptor and selected role with available
 PNG bytes. Mac 0.2.11 and Windows 0.2.9 share a storage kind but dispatch by exact
 version. All distinct images are reauthorized before returning either role.
-Cross-batch archive/hash/native-session-file contradictions fail closed. The
-consistency check scans this actor's retained metadata, separately from returned
-metadata limits; no new index or storage layer is added.
+Cross-batch archive IDs and encoded PNG hashes compare common facts across all
+known retained image families, including old raw/desktop/Windows images. Legacy
+screen frames contribute their known hash/dimensions; absent MIME/length and
+non-image viewport dimensions are not invented. Mac native-session/file facts
+remain separate from Windows pixel digests and platform clocks. Contradictions
+fail closed. The consistency check scans each of this actor's two retained frame
+kinds once, separately from returned metadata limits; no new index or storage
+layer is added. Old ingress contracts and their admission paths remain unchanged.
 
 Pass `reader.read_macos` and `images.resolve_macos` as the existing Learning
 context reader and optional `macos_resolver`. Learning decodes PNG structure and
