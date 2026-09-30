@@ -1,0 +1,18 @@
+# Attribution probe (QA scratch /tmp/qa_mac_attr.py): the same child gaps WITHOUT the contradiction
+    import sys; sys.path[:0] = [".", "tests/e2e"]
+    import test_p0_13_macos_ingress_qa as T
+    rig = T.MacRig().open(windows=True).start()
+    fr = {"f2": rig.frame(1, "qa-mf-2"), "f6": rig.frame(5, "qa-mf-6")}
+    for f in fr.values(): rig.upload(f)
+    assert rig.post(rig.envelope("c", [rig.record("qa-gap", 1), rig.record("qa-r2", 2, fr["f2"], ["qa-gap"]), rig.record("qa-r6", 3, fr["f6"])], list(fr.values())), "ck").status_code == 200
+    assert rig.post(rig.envelope("qa-mid", [rig.record("qa-gap-mid", 6, parents=["qa-r6"], coverage="partial")], []), "qa-mid-key").status_code == 200
+    # No contradiction: the same child gaps are accepted.
+    for parent, k in (("qa-r6", "qa-child-direct"), ("qa-gap-mid", "qa-child-chain")):
+        r = rig.post(rig.envelope(k, [rig.record(k, 10 if k.endswith("direct") else 11, parents=[parent], coverage="partial")], []), k + "-key")
+        print("without contradiction", k, r.status_code)
+    reader, images = rig.readers()
+    print("read r6 without contradiction:", reader.read_macos(["qa-r6"])["frames"] == [fr["f6"]])
+# output:
+without contradiction qa-child-direct 200
+without contradiction qa-child-chain 200
+read r6 without contradiction: True

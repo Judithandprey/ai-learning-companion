@@ -1,0 +1,11 @@
+# Regression sensitivity: the updated QA file on exact archives (git archive REV packages services pyproject.toml tests/e2e/fixtures + audited Mac fixture)
+# test sha256 527694b75078b33b96b68cb0ea0ec25cd1ab7f0a6d0c45d56e8690a604f85ea0 (helpers: tests/e2e/test_p0_13_windows_ingress_qa.py sha256 fbf9acb64ca30123ab590f6a4e0d22ac73f292a13490dd667f427953f2783d93)
+# 0c08415 = published baseline before the scope correction; 17262c8 = reviewed candidate
+== 0c08415 0c08415bdc092d177dd3bcec9f1d7e7e2f265790
+FAILED test_later_old_family_contradiction_withholds_the_affected_mac_frame_only[raw]
+FAILED test_later_old_family_contradiction_withholds_the_affected_mac_frame_only[windows]
+FAILED test_qa_mac_01_withholding_is_limited_to_affected_images_and_dependencies
+FAILED test_learning_final_reread_ignores_an_unrelated_new_contradiction
+4 failed, 40 passed
+== 17262c8 17262c8f441bbd716f290c19efcb1a17576711b9
+44 passed

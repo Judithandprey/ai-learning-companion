@@ -466,10 +466,12 @@ def test_new_mac_frame_contradicting_retained_old_family_facts_is_409_without_wr
 
 
 @pytest.mark.parametrize("family", ["raw", "windows"])
-def test_later_old_family_contradiction_withholds_mac_replay_read_and_resolve(chain, family):
+def test_later_old_family_contradiction_withholds_the_affected_mac_frame_only(chain, family):
     """After the Mac chain, an ordinary older-family write (raw 0.2.6 or Windows 0.2.10) declares Mac composed-6's bytes
-    (alias) at width 201. The old route still accepts it (declared residual); from then on Mac replay, read and resolve
-    are withheld with 503, writing nothing."""
+    (alias) at width 201. The old route still accepts it (declared residual). The affected frame is withheld completely
+    (both roles), and so is anything that includes it (whole-chain replay, mixed read, mixed Learning), atomically and
+    without writes; the unrelated frame 2 and the gap stay readable, resolvable and preparable.
+    (Replaces ..._withholds_mac_replay_read_and_resolve, whose f2 expectation QA-MAC-01 made obsolete at 17262c8.)"""
     rig = chain
     reader, images = rig.readers()
     ids = [r["record_id"] for r in rig.records]
@@ -484,15 +486,25 @@ def test_later_old_family_contradiction_withholds_mac_replay_read_and_resolve(ch
         assert reader.read_windows(["qa-old-contradiction"])["frames"][0]["raw"]["width"] == 201
     refused(rig, rig.body, "qa-mac-chain-key", 503, "unavailable")
     before = rig.documents()
-    with pytest.raises(DomainError) as error:
-        reader.read_macos(ids)
-    assert error.value.status == 503
-    for name in ("f6", "f2"):
-        for role in ("raw", "composed"):
-            assert images.resolve_macos(rig.frames[name], image_role=role, max_bytes=MAX) == {"status": "unavailable"}
+    for selection in (ids, ["qa-r6"], ["qa-r2", "qa-r6"]):
+        with pytest.raises(DomainError) as error:
+            reader.read_macos(selection)
+        assert error.value.status == 503
+    for role in ("raw", "composed"):  # the complete affected frame, including its uncontested raw image
+        assert images.resolve_macos(rig.frames["f6"], image_role=role, max_bytes=MAX) == {"status": "unavailable"}
     with pytest.raises(DomainError) as learning_error:
         prepare_observation_window(ids, reader.read_macos, images, user_id=USER, macos_resolver=images.resolve_macos)
-    assert learning_error.value.status == 503 and rig.documents() == before
+    assert learning_error.value.status == 503
+    unrelated = ["qa-gap", "qa-r2"]
+    stored = reader.read_macos(unrelated)
+    assert stored["batch"]["records"] == rig.records[:2] and stored["frames"] == [rig.frames["f2"]]
+    for role in ("raw", "composed"):
+        resolved = images.resolve_macos(rig.frames["f2"], image_role=role, max_bytes=MAX)
+        picture = rig.frames["f2"]["raw"] if role == "raw" else rig.frames["f2"]["composition"]["image"]
+        assert resolved["status"] == "available" and resolved["data"] == fixture_bytes(picture)
+    packet = prepare_observation_window(unrelated, reader.read_macos, images, user_id=USER, macos_resolver=images.resolve_macos)
+    assert [i["record"]["record_id"] for i in packet["items"]] == unrelated and packet["items"][1]["composed_image"]["status"] == "attached"
+    assert rig.documents() == before
 
 
 # --------------------------------------------------------------------------- cancellation and late failure
@@ -557,15 +569,16 @@ def test_late_failure_or_cancellation_leaves_no_partial_state(failing_kind, occu
     assert retry.status_code == 200 and [r["disposition"] for r in retry.json()["acknowledged"]] == ["accepted", "accepted"], retry.text
 
 
-def test_observation_mac_withholding_scope_qa_mac_01(chain):
-    """QA-MAC-01 (scope observation for the lead's decision, not an acceptance claim). A retained cross-family image-fact
-    contradiction withholds ALL Mac access for the actor: every source, unrelated records and bytes, and new admissions
-    (503 unavailable, retryable:true), while the older routes keep accepting. It also happens when the contradiction lies
-    only between older-family frames and the actor has no Mac data at all. Deleting the source that holds the
-    contradicting declaration restores Mac access (other sources' Mac history is kept)."""
+def test_qa_mac_01_withholding_is_limited_to_affected_images_and_dependencies(chain):
+    """QA-MAC-01 retest at 17262c8 (replaces the historical observation test pinned at 576c62c, where every Mac operation
+    of the actor was withheld). A contradiction on a second source (a same-hash alias of Mac composed-6 declared at width
+    201 through the raw route) now withholds only what depends on the contradicted image: the complete frame, selections
+    that include it, and new records whose stored framed ancestors (directly or through gaps) include it. Unrelated
+    reads, resolution, Learning and parentless gap admission succeed without deleting any source; old routes still accept."""
     rig = chain
     reader, images = rig.readers()
-    # A second display source with an older-family contradiction of Mac composed-6's bytes on it.
+    # Before the contradiction: a gap whose only parent is the soon-affected frame 6 (a gap chain back to it).
+    assert rig.post(rig.envelope("qa-mid", [rig.record("qa-gap-mid", 6, parents=["qa-r6"], coverage="partial")], []), "qa-mid-key").status_code == 200
     second = {"user_id": USER, "source_id": "qa-mac-display-2", "source_version": 1}
     response = call(rig.app, "PUT", "/v2/process/display-sources/qa-mac-display-2",
                     {"contract_version": "0.2.4", "source_id": "qa-mac-display-2", "stream_id": STREAM, "project_id": None, "source_timezone": "UTC"})
@@ -574,22 +587,85 @@ def test_observation_mac_withholding_scope_qa_mac_01(chain):
     body = {"contract_version": "0.2.2", "source": second, "kind": "screen_image", "artifact": alias,
             "data_base64": base64.b64encode(fixture_bytes(rig.frames["f6"]["composition"]["image"])).decode()}
     assert call(rig.app, "PUT", "/v2/process/originals/" + alias["artifact_id"], body).status_code == 200
-    assert rig.post_old("raw", "qa-old-s2", 6, alias, 201, 100, source=second).status_code == 200
-    for ids in (["qa-gap"], ["qa-r2"]):  # source-1 records that do not touch the contradicted image
+    assert rig.post_old("raw", "qa-old-s2", 7, alias, 201, 100, source=second).status_code == 200
+    originals = {k: v for k, v in rig.documents().items() if k[0] == "artifact"}
+    # Unrelated: source-1 gap and frame 2 read, resolve and prepare; new parentless gaps are admitted (and replay).
+    assert reader.read_macos(["qa-gap", "qa-r2"])["frames"] == [rig.frames["f2"]]
+    assert images.resolve_macos(rig.frames["f2"], image_role="raw", max_bytes=MAX)["data"] == fixture_bytes(rig.frames["f2"]["raw"])
+    packet = prepare_observation_window(["qa-r2"], reader.read_macos, images, user_id=USER, macos_resolver=images.resolve_macos)
+    assert packet["items"][0]["composed_image"]["status"] == "attached"
+    later = rig.envelope("qa-mac-gap-later", [rig.record("qa-gap-later", 8, coverage="partial")], [])
+    first = rig.post(later, "qa-gap-later-key")
+    assert first.status_code == 200 and rig.post(later, "qa-gap-later-key").json() == first.json(), first.text
+    ok_child = rig.envelope("qa-child-ok", [rig.record("qa-gap-child-ok", 9, parents=["qa-r2"], coverage="partial")], [])
+    assert rig.post(ok_child, "qa-child-ok-key").status_code == 200  # an unaffected framed ancestor is fine
+    # Affected: the complete frame 6, mixed selections, and records depending on it directly or through the gap chain.
+    for selection in (["qa-r6"], ["qa-r2", "qa-r6"]):
         with pytest.raises(DomainError) as error:
-            reader.read_macos(ids)
-        assert error.value.status == 503
-    assert images.resolve_macos(rig.frames["f2"], image_role="raw", max_bytes=MAX) == {"status": "unavailable"}
-    refused(rig, rig.envelope("qa-mac-gap-later", [rig.record("qa-gap-later", 7, coverage="partial")], []), "qa-gap-later-key", 503, "unavailable")
-    assert rig.post_old("raw", "qa-old-again", 8, alias, 201, 100, source=second).status_code == 200  # older routes still accept
-    Archive(rig.store).delete_source(USER, "qa-mac-display-2")
-    assert reader.read_macos([r["record_id"] for r in rig.records])["frames"] == list(rig.frames.values())  # source-1 Mac history kept
-    assert images.resolve_macos(rig.frames["f6"], image_role="composed", max_bytes=MAX)["status"] == "available"
-    # No Mac data at all: two older-family frames contradicting each other already refuse the first Mac admission.
+            reader.read_macos(selection)
+        assert error.value.status == 503, selection
+    # A read selection keeps its external-parent semantics: the lone gap is returned, its parent is not fetched.
+    assert reader.read_macos(["qa-gap-mid"])["frames"] == []
+    assert all(images.resolve_macos(rig.frames["f6"], image_role=r, max_bytes=MAX) == {"status": "unavailable"} for r in ("raw", "composed"))
+    with pytest.raises(DomainError):
+        prepare_observation_window(["qa-r2", "qa-r6"], reader.read_macos, images, user_id=USER, macos_resolver=images.resolve_macos)
+    for parent, request_key in (("qa-r6", "qa-child-direct"), ("qa-gap-mid", "qa-child-chain")):
+        child = rig.envelope(request_key, [rig.record(request_key, 10, parents=[parent], coverage="partial")], [])
+        refused(rig, child, request_key + "-key", 503, "unavailable")
+    assert rig.post_old("raw", "qa-old-again", 11, alias, 201, 100, source=second).status_code == 200  # older routes still accept
+    assert {k: v for k, v in rig.documents().items() if k[0] == "artifact"} == originals  # nothing deleted or rewritten
+    # No Mac data at all: an ordinary raw/raw disagreement no longer refuses the actor's first parentless Mac gap.
     fresh = MacRig().open().start()
     f = fresh.frame(1, "qa-mf-2")
     raw_alias = {**deepcopy(f["raw"]["artifact"]), "artifact_id": "qa-alias-raw"}
     fresh.put(raw_alias, fixture_bytes(f["raw"]))
     assert fresh.post_old("raw", "qa-old-a", 1, raw_alias, 200, 100).status_code == 200
     assert fresh.post_old("raw", "qa-old-b", 2, raw_alias, 201, 100).status_code == 200
-    refused(fresh, fresh.envelope("qa-mac-first", [fresh.record("qa-gap", 3, coverage="partial")], []), "qa-mac-first-key", 503, "unavailable")
+    assert fresh.post(fresh.envelope("qa-mac-first", [fresh.record("qa-gap", 3, coverage="partial")], []), "qa-mac-first-key").status_code == 200
+
+
+@pytest.mark.parametrize("session", ["same", "other"])
+def test_mac_native_session_path_identity_is_checked_across_sources(chain, session):
+    """A new Mac frame on a second source names frame 2's native file in the same native session with other bytes (a
+    path-only conflict): 409, no write. The same path in a different native session is a different file: accepted."""
+    rig = chain
+    call(rig.app, "PUT", "/v2/process/display-sources/qa-mac-display-2",
+         {"contract_version": "0.2.4", "source_id": "qa-mac-display-2", "stream_id": STREAM, "project_id": None, "source_timezone": "UTC"})
+    second = {"user_id": USER, "source_id": "qa-mac-display-2", "source_version": 1}
+    other_bytes = fixture_bytes(rig.frames["f6"]["composition"]["image"])
+    artifact = {"artifact_id": "qa-other-bytes-at-frame-2-path", "sha256": hashlib.sha256(other_bytes).hexdigest(), "byte_length": len(other_bytes), "media_type": "image/png"}
+    body = {"contract_version": "0.2.2", "source": second, "kind": "screen_image", "artifact": artifact, "data_base64": base64.b64encode(other_bytes).decode()}
+    assert call(rig.app, "PUT", "/v2/process/originals/" + artifact["artifact_id"], body).status_code == 200
+    f = rig.frame(1, "qa-mf-path", UNKNOWN)
+    f["source"] = deepcopy(second)
+    f["raw"]["artifact"] = artifact  # native_file stays frames/00000002.png
+    if session == "other":
+        f["profile"]["native_session_id"] = "20260930T180000Z-QA000001"
+    record = rig.record("qa-path", 6, f, ink=False)  # the QA ink original belongs to source 1
+    record["source"] = deepcopy(second)
+    request = rig.envelope("qa-path", [record], [f])
+    if session == "same":
+        refused(rig, request, "qa-path-key", 409, "record_conflict")
+    else:
+        response = rig.post(request, "qa-path-key")
+        assert response.status_code == 200, response.text
+
+
+def test_learning_final_reread_ignores_an_unrelated_new_contradiction(chain):
+    """Control for the final reread: a contradiction introduced between resolution and the final reread that concerns
+    only an image outside the selection no longer withholds the packet."""
+    rig = chain
+    reader, images = rig.readers()
+    calls = []
+
+    def resolver(frame, *, image_role, max_bytes):
+        result = images.resolve_macos(frame, image_role=image_role, max_bytes=max_bytes)
+        calls.append(image_role)
+        if len(calls) == 2:
+            alias = {**deepcopy(rig.frames["f6"]["composition"]["image"]["artifact"]), "artifact_id": "qa-alias-composed-6"}
+            rig.put(alias, fixture_bytes(rig.frames["f6"]["composition"]["image"]))
+            assert rig.post_old("raw", "qa-old-unrelated", 6, alias, 201, 100).status_code == 200
+        return result
+
+    packet = prepare_observation_window(["qa-r2"], reader.read_macos, images, user_id=USER, macos_resolver=resolver)
+    assert packet["items"][0]["image"]["status"] == packet["items"][0]["composed_image"]["status"] == "attached"
