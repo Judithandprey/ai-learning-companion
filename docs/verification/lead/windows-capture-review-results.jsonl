@@ -1,0 +1,5 @@
+{"case":"stop-during-start-enumeration","result":{"ok":true},"currentAfterStop":true,"overlayShown":true}
+{"case":"concurrent-starts","first":{"ok":true},"second":{"ok":true},"liveOverlays":2,"orphanFirst":true,"firstReceivedStop":false,"secondReceivedStop":true}
+{"case":"display-grant-after-stop","permissionGranted":true,"ending":true,"callbackGrantedVideo":true,"chosen":"screen:1:0"}
+{"case":"display-enumeration-failure","thrown":"enumeration unavailable","callbackReplied":false,"captureState":"used","ending":false,"currentAlive":true}
+{"case":"renderer-stream-resolves-after-stop","ended":true,"hasStream":true,"getDisplayMediaCalls":1,"trackStops":0,"videoPlayCalls":1}
