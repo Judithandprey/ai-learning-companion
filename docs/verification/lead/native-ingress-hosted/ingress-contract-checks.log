@@ -1,0 +1,46 @@
+Using CPython 3.12.10 interpreter at: /usr/local/bin/python3.12
+Creating virtual environment at: /Users/runner/work/_temp/capture-ingress-contracts-venv
+Installed 18 packages in 68ms
+PASS request committed: PUT JSON with a bearer token to the exact original route
+PASS request committed: the strict 0.2.4 reader decodes exactly the original bytes
+PASS request committed: the body is the canonical request, within the raw limit
+PASS request lost-response-first: PUT JSON with a bearer token to the exact original route
+PASS request lost-response-first: the strict 0.2.4 reader decodes exactly the original bytes
+PASS request lost-response-first: the body is the canonical request, within the raw limit
+PASS request lost-response-retry: PUT JSON with a bearer token to the exact original route
+PASS request lost-response-retry: the strict 0.2.4 reader decodes exactly the original bytes
+PASS request lost-response-retry: the body is the canonical request, within the raw limit
+PASS the request retried after a lost response is byte-identical
+PASS receipt escaped-slashes: Swift accepted, Python accepted
+PASS receipt pretty-reordered: Swift accepted, Python accepted
+PASS receipt empty: Swift rejected, Python rejected
+PASS receipt not-json: Swift rejected, Python rejected
+PASS receipt array: Swift rejected, Python rejected
+PASS receipt truncated: Swift rejected, Python rejected
+PASS receipt missing-status: Swift rejected, Python rejected
+PASS receipt missing-sha256: Swift rejected, Python rejected
+PASS receipt extra-member: Swift rejected, Python rejected
+PASS receipt extra-artifact-member: Swift rejected, Python rejected
+PASS receipt status-received: Swift rejected, Python rejected
+PASS receipt version-0.2.4: Swift rejected, Python rejected
+PASS receipt kind-editable-ink: Swift rejected, Python rejected
+PASS receipt null-source: Swift rejected, Python rejected
+PASS receipt foreign-user: Swift rejected, Python rejected
+PASS receipt kelvin-sign-user: Swift rejected, Python rejected
+PASS receipt foreign-source: Swift rejected, Python rejected
+PASS receipt foreign-version: Swift rejected, Python rejected
+PASS receipt version-boolean: Swift rejected, Python rejected
+PASS receipt length-plus-one: Swift rejected, Python rejected
+PASS receipt length-string: Swift rejected, Python rejected
+PASS receipt uppercase-sha256: Swift rejected, Python rejected
+PASS receipt other-artifact-id: Swift rejected, Python rejected
+PASS receipt media-jpeg: Swift rejected, Python rejected
+PASS receipt ingress-error-body: Swift rejected, Python rejected
+PASS request maximum-size: PUT JSON with a bearer token to the exact original route
+PASS request maximum-size: the strict 0.2.4 reader decodes exactly the original bytes
+PASS request maximum-size: the body is the canonical request, within the raw limit
+PASS error capture_stopped: a valid IngressError for HTTP 409
+PASS error forbidden: a valid IngressError for HTTP 403
+PASS error unavailable: a valid IngressError for HTTP 503
+PASS the fixture set is not vacuous (requests, accepted and rejected receipts)
+all fixture checks passed

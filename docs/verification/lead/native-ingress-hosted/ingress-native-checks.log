@@ -1,0 +1,101 @@
+PASS enqueue binds a kept FrameStore PNG to the supplied source with its exact length, SHA-256, media type, kind, version and route
+PASS the exact request is recorded durably before anything is sent, and enqueue sends nothing
+PASS a complete matching receipt commits the original
+PASS one PUT to the exact route, as JSON, with the supplied bearer token and no Idempotency-Key
+PASS the body is canonical JSON of exactly the binding and the file's bytes (compared with JSONSerialization)
+PASS the sent body is the recorded request
+PASS enqueueing a committed original again returns its record, and a pass with nothing pending sends nothing
+PASS a lost response leaves the original pending, with its outcome unknown
+PASS a new uploader, as after a relaunch, reads the same durable state
+PASS the retry after the relaunch sends the byte-identical request to the same route, with the newly supplied token
+PASS the retried original is committed after its receipt
+PASS receipt escaped-slashes is accepted
+PASS receipt pretty-reordered is accepted
+PASS receipt empty is refused
+PASS receipt not-json is refused
+PASS receipt array is refused
+PASS receipt truncated is refused
+PASS receipt missing-status is refused
+PASS receipt missing-sha256 is refused
+PASS receipt extra-member is refused
+PASS receipt extra-artifact-member is refused
+PASS receipt status-received is refused
+PASS receipt version-0.2.4 is refused
+PASS receipt kind-editable-ink is refused
+PASS receipt null-source is refused
+PASS receipt foreign-user is refused
+PASS receipt kelvin-sign-user is refused
+PASS receipt foreign-source is refused
+PASS receipt foreign-version is refused
+PASS receipt version-boolean is refused
+PASS receipt length-plus-one is refused
+PASS receipt length-string is refused
+PASS receipt uppercase-sha256 is refused
+PASS receipt other-artifact-id is refused
+PASS receipt media-jpeg is refused
+PASS receipt ingress-error-body is refused
+PASS a receipt for another source is refused and the original stays pending
+PASS after a refused receipt, that uploader sends nothing more
+PASS a partial receipt (no status) is refused and the original stays pending
+PASS the same request, sent a third time, is committed by a matching receipt
+PASS an original lost after enqueue is refused, not sent
+PASS an original changed after enqueue is refused, not sent, and left as it is
+PASS the remaining original is still sent, and stays unchanged
+PASS enqueue refuses a record whose SHA-256 differs from the file
+PASS enqueue refuses a record whose length differs from the file
+PASS enqueue refuses a missing file
+PASS enqueue refuses a record that is not image/png
+PASS enqueue refuses a file that is not a PNG
+PASS enqueue refuses a file over 32 MiB
+PASS enqueue refuses a path outside frames/
+PASS enqueue refuses a path with ..
+PASS enqueue refuses an unpublished staging file
+PASS enqueue refuses an invalid source identifier
+PASS enqueue refuses source version 0
+PASS enqueue refuses a second source in the same session
+PASS the refusals left every original and the upload state byte-identical
+PASS an original of exactly 32 MiB is accepted, with its recorded request
+PASS after the broadcast finished nothing is sent, and the originals stay pending
+PASS the stop is durable: after a relaunch nothing is sent or enqueued, and the originals are unchanged
+PASS paused, stale or unreadable capture status sends nothing and does not stop the session
+PASS once capture is reported running again, the original is sent
+PASS capture_stopped stops the session durably (reported as stopped after a relaunch, even with stale status); the queue is kept and not drained
+PASS after 403 forbidden the uploader sends nothing more, and the originals stay pending
+PASS a new uploader with a newly supplied authorization may send them
+PASS a receipt that arrives after the stop is recorded only as bytes_committed, and the next original is not sent
+PASS the explicit stop is durable across a relaunch
+PASS a stop saved by another uploader of the session is kept, and nothing more is sent
+PASS a receipt from another URL is not accepted, the original stays pending and that uploader sends nothing more
+PASS a stop saved by another uploader is reported as stopped even when this uploader is disabled
+PASS a cancelled pass sends nothing and records no attempt
+PASS a state corrupted under an open uploader is never overwritten; pass, enqueue and stop write nothing, and nothing is sent
+PASS a state that disappears under an open uploader is not recreated, and nothing is sent
+PASS a second uploader on the same session can neither rebind it nor erase the first uploader's original
+PASS the other uploader sees the saved receipts, keeps them and sends nothing again
+PASS a stale uploader's lost response never overwrites a receipt another uploader saved
+PASS a stop saved by another uploader before any attempt prevents every send, and the queue is kept
+PASS a stop that cannot be saved returns false, also when repeated, and still forbids this uploader's sends
+PASS a retried stop returns true once saved, and the saved stop survives a relaunch
+PASS a refusal that cannot be saved ends the pass as halted, sends nothing and leaves the state as it was
+PASS a receipt that cannot be saved leaves the original pending; the next pass sends the same request and commits it
+PASS a cancelled pass on a session another uploader has stopped reports stopped and sends nothing
+PASS a transport error whose domain and description carry the token is recorded only as "other error"
+PASS a receipt whose duplicate member carries the token never puts it in the state; only the canonical receipt is saved
+PASS an uploader that saw the state only while unreadable neither recreates nor rebinds it after it disappears, and sends nothing
+PASS an uploader opened before the state existed refuses it once lost: no empty queue, no rebinding, no send
+PASS an uploader opened after the loss, as after a relaunch, refuses it too; nothing is recreated or sent
+PASS a new session starts empty, is witnessed when its state is first created, and reopens and sends normally
+PASS a failed first save leaves no state and no witness, so the new session can still be initialized
+PASS a state without a witness is witnessed when read, so its later loss is refused by a new uploader
+PASS an unreadable state without a witness is witnessed when an open uploader reads it, so its later loss is refused by a new uploader
+PASS a 413 that is not the contract's payload_too_large leaves the original pending
+PASS 413 payload_too_large refuses that original and keeps its file; the next original is still sent
+PASS a second pass while one is in flight sends nothing
+PASS cancelling the pass leaves the original pending, with its outcome unknown
+PASS a later explicit pass sends the same request
+PASS an unreadable upload state is refused and left as it is
+PASS only a bare, lowercase https origin and a well-formed bearer token are accepted
+PASS an authorization's descriptions never show its token
+PASS no token is written to any upload state, capture file or fixture (174 files)
+fixtures: /Users/runner/work/_temp/capture-ingress-fixtures/
+all capture ingress checks passed
