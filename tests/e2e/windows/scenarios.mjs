@@ -24,9 +24,86 @@ const hook = control(`(() => { if (!window.__qaHooked) { window.__qa = []; windo
   window.__qaHooked = true; } return true; })()`, 'hooked');
 const mark = (label) => control(`(window.__qaMarks.push({ label: ${JSON.stringify(label)}, samples: window.__qa.length, at: new Date().toISOString() }), true)`);
 const running = (as) => ({ waitEval: '(async () => { const s = await window.lc.sessionState(); return s.running && !s.starting ? JSON.stringify(s) : false })()', target: 'control', timeoutMs: 20000, as });
-const stopped = (as) => ({ waitEval: '(async () => { const s = await window.lc.sessionState(); return !s.running && !s.starting ? JSON.stringify(s) : false })()', target: 'control', timeoutMs: 20000, as });
+// A Stop now waits for the overlay's saves and retained frames (bounded at 60 s by the app).
+const stopped = (as) => ({ waitEval: '(async () => { const s = await window.lc.sessionState(); return !s.running && !s.starting ? JSON.stringify(s) : false })()', target: 'control', timeoutMs: 70000, as });
 const overlayReady = { waitEval: "document.readyState === 'complete'", target: 'overlay', timeoutMs: 15000 };
 const listInk = (as) => control('(async () => JSON.stringify(await window.lc.listInk()))()', as);
+
+// ---- QA-WIN-01 retest at 55478f0 -----------------------------------------------------------------------------
+// The app's own report of each visible stroke (its self-test hook __lcOverlay: labelled as the app's claim and
+// cross-checked against QA's screenshots and the app's retained composed frames), plus the latest sample.
+const appView = (as) => overlay(`JSON.stringify((() => { const st = __lcOverlay.state(); const s = st.samples.at(-1);
+  return { aligned: st.aligned, alignment: __lcOverlay.alignment(), doc: st.doc, pinned: st.pinned, hint: st.hint, gesture: st.gesture,
+    last: s ? { seq: s.seq, sampled_at: s.sampled_at, state: s.state, raw: s.raw && { pixels_sha256: s.raw.pixels_sha256 },
+      composed: s.composed && { ink_session: s.composed.ink_session, ink_revision: s.composed.ink_revision, ink_marks: s.composed.ink_marks, pixels_sha256: s.composed.pixels_sha256 } } : null }; })())`, `app_${as}`);
+const at = (label) => [mark(label), { desktopShot: label }, appView(label)];
+const edge = (expr, as) => ({ eval: expr, target: 'edge', ...(as ? { as } : {}) });
+// One page change in QA's panel; every change also advances a tick far from all strokes, so a new frame is
+// sampled even when the value under a stroke repeats.
+const setText = (id, text) => edge(`(document.getElementById(${JSON.stringify(id)}).textContent = ${JSON.stringify(text)},
+  window.__qaTick = (window.__qaTick || 0) + 1, document.getElementById('qa-tick').textContent = 't' + window.__qaTick, true)`);
+const pen = (points, extra = {}) => ({ stroke: points, pointerType: 'pen', ...extra });
+// Panel geometry: viewport CSS px + (0, 23) DIP is the screen position (measured from the 061efe2 screenshots and
+// re-measured in each run from the 'panel' screenshot). Glyph boxes (screen DIP): sign 102..132 x 85..121,
+// digit 122..152 x 145..181, cross 122..152 x 205..241, step 152..192 x 265..301, still text from 422 x 145..181,
+// tick at 642 x 315 (outside every stroke region, which is the stroke's box + 8 DIP).
+const RETEST = {
+  still: ellipse(492, 163, 78, 24), sign: ellipse(117, 103, 22, 16), digit: ellipse(137, 163, 22, 16),
+  crossA: [[100, 223], [110, 212], [120, 234], [130, 212], [140, 234], [150, 212]],
+  crossB: [[150, 212], [160, 234], [170, 212], [180, 234], [190, 223]],
+  cap: Array.from({ length: 32 }, (_, i) => [[155, 165, 175, 185, 189, 180, 170, 160][i % 8], i % 2 ? 296 : 270]),
+  // Seven changes fill the 8 contexts; beyond the cap: 8 (counted), 8 (repeat), 9 (counted), 9 (repeat), 8 (return, counted), 0 (counted).
+  capValues: ['1', '2', '3', '4', '5', '6', '7', '8', '8', '9', '9', '8', '0'],
+};
+const retest = () => [
+  { window: 'edge', show: 'front' },
+  edge(`(document.getElementById('qa-live').hidden = false, JSON.stringify({ view: { sx: screenX, sy: screenY, ow: outerWidth, oh: outerHeight, iw: innerWidth, ih: innerHeight, dpr: devicePixelRatio, scrollY },
+    rects: Object.fromEntries(['qa-live', 'qa-sign', 'qa-digit', 'qa-cross', 'qa-step', 'qa-tick'].map((id) => { const r = document.getElementById(id).getBoundingClientRect(); return [id, [r.x, r.y, r.width, r.height]]; })) }))`, 'panelGeom'),
+  { sleep: 1200 }, { desktopShot: 'panel' },
+  control('(async () => (window.__qaIds = (await window.lc.listInk()).sessions.map((s) => s.id), JSON.stringify(window.__qaIds)))()', 'idsBefore4'),
+  control("document.getElementById('start').click(), true"),
+  running('session4'), overlayReady, { sleep: 2500 },
+  click('[data-mode=WRITE]'), click('#pen'), overlayState('write4'),
+  // A control stroke over text that never changes, and one stroke each over the sign and the digit.
+  pen(RETEST.still), { sleep: 900 }, pen(RETEST.sign), { sleep: 900 }, pen(RETEST.digit), { sleep: 3500 },
+  ...at('s4-before'),
+  setText('qa-sign', '+'), { sleep: 3500 }, ...at('s4-sign-after'),
+  // ASK while the sign stroke is changed: the card's note counts the strokes drawn dashed.
+  click('[data-mode=ASK]'), pen(ellipse(127, 133, 60, 55)),
+  { waitEval: "!document.getElementById('card').hidden", target: 'overlay', timeoutMs: 8000 },
+  overlay("JSON.stringify({ text: document.getElementById('cardText').textContent, src: document.getElementById('crop').src, aligned: __lcOverlay.state().aligned, mode: __lcOverlay.state().mode })", 'askCard4'),
+  click('#close'), overlayState('card4_closed'),
+  setText('qa-sign', '−'), { sleep: 3500 }, ...at('s4-sign-reverted'),
+  setText('qa-digit', '8'), { sleep: 3500 }, ...at('s4-digit-after'),
+  setText('qa-digit', '3'), { sleep: 3500 }, ...at('s4-digit-reverted'),
+  // Writing across a changed frame: pen down over "2", the page changes to "7" while the pen is held, writing continues.
+  pen(RETEST.crossA, { release: false }), { sleep: 2500 }, mark('s4-cross-start'),
+  setText('qa-cross', '7'), { sleep: 2500 }, mark('s4-cross-changed'), { desktopShot: 's4-cross-changed' },
+  pen(RETEST.crossB, { continue: true }), { sleep: 3500 }, ...at('s4-cross-released'),
+  setText('qa-cross', '2'), { sleep: 3500 }, ...at('s4-cross-reverted'),
+  // The context cap: one held stroke over the step value; two points are written after each sampled change.
+  pen(RETEST.cap.slice(0, 4), { release: false }), { sleep: 2500 }, mark('s4-cap-start'),
+  ...RETEST.capValues.flatMap((v, i) => [setText('qa-step', v), { sleep: 2500 }, mark(`s4-cap-${i + 1}-${v}`), appView(`s4-cap-${i + 1}`),
+    pen(RETEST.cap.slice(3 + 2 * i, 6 + 2 * i), { continue: true, release: false })]),
+  pen(RETEST.cap.slice(29, 32), { continue: true }), { sleep: 3500 }, ...at('s4-cap-released'),
+  { snapshot: 's4-before-stop' },
+  control("document.getElementById('stop').click(), true"), stopped('stopped4'),
+  control('(async () => JSON.stringify(await window.lc.recoveries()))()', 'recoveries4'),
+  { snapshot: 'stopped4' }, mark('stopped4'),
+  // Reopen the saved session-4 ink in a new session (the control page's own Open button for that entry).
+  control("document.getElementById('start').click(), true"),
+  running('session5'), overlayReady, { sleep: 2500 },
+  control(`(async () => { const s = (await window.lc.listInk()).sessions; const i = s.findIndex((x) => !window.__qaIds.includes(x.id)); window.__qaOpened = s[i].id;
+    [...document.querySelectorAll('#ink li')[i].querySelectorAll('button')].find((x) => x.textContent === 'Open').click(); return s[i].id; })()`, 'opened4Id'),
+  { waitEval: "document.getElementById('session').textContent.startsWith('Showing saved ink')", target: 'control', timeoutMs: 10000, as: 'opened4' },
+  { sleep: 3500 }, ...at('s5-reopened'), overlayState('reopened4'), { snapshot: 'reopened4' },
+  control(`(async () => { const r = await window.lc.inkContexts(window.__qaOpened); if (r.ok) r.items = r.items.map((c) => ({ ...c, picture: c.picture ? c.picture.length : null })); return JSON.stringify(r); })()`, 'contexts4'),
+  setText('qa-digit', '8'), { sleep: 3500 }, ...at('s5-digit-after'),
+  setText('qa-digit', '3'), { sleep: 3500 }, ...at('s5-digit-reverted'),
+  control("document.getElementById('stop').click(), true"), stopped('stopped5'),
+  control('(async () => JSON.stringify(await window.lc.recoveries()))()', 'recoveries5'),
+  { snapshot: 'stopped5' }, mark('stopped5'),
+];
 
 const setup = ({ courseUrl, notes, edgeProfile }) => [
   { consoleStart: notes, title: 'QA Lecture 7 notes', as: 'console' },
@@ -82,7 +159,8 @@ export const scenarios = {
     { stroke: line(45, 487, 230, 487), pointerType: 'mouse' }, { sleep: 1800 }, { snapshot: 'continued' }, mark('continued'),
     // Alignment under real content movement: scroll the course page under the ink, then back.
     { eval: 'scrollBy(0, 300), scrollY', target: 'edge' }, { sleep: 3000 }, mark('ink-scrolled'), overlayState('ink_scrolled'),
-    { eval: 'scrollTo(0, 0), scrollY', target: 'edge' }, { sleep: 3500 }, mark('ink-back'), overlayState('ink_back'),
+    { desktopShot: 'ink-scrolled' }, appView('ink-scrolled'),
+    { eval: 'scrollTo(0, 0), scrollY', target: 'edge' }, { sleep: 3500 }, mark('ink-back'), overlayState('ink_back'), appView('ink-back'),
     listInk('ink1'),
     // Stop while a long pen stroke is still being written (its context picture is large, so its save takes
     // longer), with a new pen stroke sent right behind the Stop click, without waiting (raceStop).
@@ -111,6 +189,7 @@ export const scenarios = {
     control('(async () => { await window.lc.stop(); return true; })()'), stopped('stopped3'),
     control("(async () => { const d = (await window.lc.listDisplays()).find((x) => x.primary).source_id; const p = window.lc.start(d); await window.lc.stop(); const r = await p; await new Promise((res) => setTimeout(res, 1500)); return JSON.stringify({ r, state: await window.lc.sessionState() }); })()", 'stopDuringStart'),
     { targets: 'app', as: 'targetsAfterCancel' },
+    ...retest(),
     control('JSON.stringify({ samples: window.__qa, sessions: window.__qaSessions, marks: window.__qaMarks })', 'timeline'),
     listInk('inkFinal'),
     { closeApp: true },

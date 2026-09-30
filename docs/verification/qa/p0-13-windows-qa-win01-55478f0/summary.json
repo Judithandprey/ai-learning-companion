@@ -1,0 +1,1531 @@
+{
+ "run": {
+  "scenario": "full",
+  "started": "2026-09-30T16:14:49.448Z",
+  "ended": "2026-09-30T16:17:48.511Z",
+  "work": "<home>\\AppData\\Local\\Temp\\lc-qa-windows-p013\\qa-full-1790784889373",
+  "steps": 300,
+  "harness_sha256": {
+   "analyze.py": "3bd0e0eeebba00865c1c35fab0be6c5ebb41a7d1e3a8e56bfd2805572b25cbe7",
+   "course.html": "2cecf763803f33e64c283dfb7f0f133bc2b9b0412f08873bb5cb1caf831c03ab",
+   "notes.txt": "ca986c9c569bcdd36100d87df9ce28eeabd3025fc7d5a43f171c4a957f55b53c",
+   "qa-electron-runner.ps1": "2a48c90bb81dc5bb041fa5a584b951320b414e9f1b464a7173e74329d302e319",
+   "qa-png-to-bmp.ps1": "6f887944f49430065891d294ddba78d88e235ad88344890deaa304ac91f4a675",
+   "run.mjs": "14da6677662fcca22e889449938e9d8aa8fe47659cae91ba6bacb7da6216dccd",
+   "scenarios.mjs": "372006ed478ba73f04eca0a97b862c53b03367478a0853e57cdc8bb8bc4cc9b3"
+  }
+ },
+ "counts": {
+  "pass": 44,
+  "limit": 2
+ },
+ "checks": [
+  {
+   "id": "run.shared_desktop_quiet",
+   "status": "pass",
+   "observed": {
+    "foreign_electron_seen": [],
+    "points_checked": 23
+   },
+   "note": "point-in-time and Electron-only: no other Electron app at start, at each desktop screenshot and at the end"
+  },
+  {
+   "id": "run.completed",
+   "status": "pass",
+   "observed": {
+    "aborted": null,
+    "failed_steps": [],
+    "app_exit_code": 0
+   }
+  },
+  {
+   "id": "capture.source_whole_display",
+   "status": "pass",
+   "observed": {
+    "samples": 158,
+    "source_id": "screen:0:0",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale": 2,
+    "mismatched_seq": []
+   }
+  },
+  {
+   "id": "capture.frames_are_display_pixels",
+   "status": "pass",
+   "observed": {
+    "raw_sizes": [
+     [
+      2560,
+      1600
+     ]
+    ],
+    "expected": [
+     2560,
+     1600
+    ]
+   }
+  },
+  {
+   "id": "capture.navigation_changes_pixels",
+   "status": "pass",
+   "observed": {
+    "console_front": {
+     "samples_after_step": 3,
+     "max_change": 0.8094,
+     "hashes": [
+      "2b9ba435",
+      "83ed40e1"
+     ]
+    },
+    "edge_back": {
+     "samples_after_step": 4,
+     "max_change": 0.8094,
+     "hashes": [
+      "efa59323"
+     ]
+    },
+    "scrolled": {
+     "samples_after_step": 2,
+     "max_change": 0.033,
+     "hashes": [
+      "26df00db"
+     ]
+    },
+    "back_to_top": {
+     "samples_after_step": 3,
+     "max_change": 0.033,
+     "hashes": [
+      "efa59323"
+     ]
+    },
+    "edge_hashes_before_console": [
+     "7d99832b",
+     "7ea37d4c",
+     "efa59323"
+    ],
+    "returned_to_earlier_edge_hash": {
+     "edge_back": [
+      "efa59323"
+     ],
+     "back_to_top": [
+      "efa59323"
+     ]
+    },
+    "qa_screenshots_edge_vs_console_changed_px": 3673396
+   },
+   "note": "console to front and scrolling give fresh frames with new pixels; Edge back and back to the top reproduce the earlier Edge pixels exactly"
+  },
+  {
+   "id": "capture.still_display_states",
+   "status": "pass",
+   "observed": {
+    "samples": 5,
+    "states": {
+     "fresh": 5
+    },
+    "max_change": 0,
+    "qa_screenshots_mean_diff_above_taskbar": 0.0
+   },
+   "note": "while nothing moved (QA's own two screenshots identical), frames report change 0; no change is invented"
+  },
+  {
+   "id": "capture.states_stated",
+   "status": "pass",
+   "observed": {
+    "states": {
+     "ended": 5,
+     "fresh": 151,
+     "no_new_frame": 2
+    },
+    "sessions": [
+     {
+      "samples": 48,
+      "last": "ended"
+     },
+     {
+      "samples": 10,
+      "last": "ended"
+     },
+     {
+      "samples": 1,
+      "last": "ended"
+     },
+     {
+      "samples": 84,
+      "last": "ended"
+     },
+     {
+      "samples": 15,
+      "last": "ended"
+     }
+    ]
+   },
+   "note": "each session's last sample says the capture ended (the third, Start-race session produced only its ended sample)"
+  },
+  {
+   "id": "capture.held_frame_facts",
+   "status": "pass",
+   "observed": {
+    "violations": [],
+    "equal_in_all": true
+   },
+   "note": "a consistency check only (the arrival-during-hashing case is unit-tested by the owner)"
+  },
+  {
+   "id": "capture.composed_frames",
+   "status": "pass",
+   "observed": {
+    "violations": []
+   },
+   "note": "composed = raw when no ink is visible, differs when ink is visible; never composed without a raw frame"
+  },
+  {
+   "id": "capture.overlay_not_in_raw_frames",
+   "status": "pass",
+   "observed": {
+    "ink_revisions_seen": [
+     0,
+     1,
+     2,
+     3,
+     4,
+     5,
+     6,
+     7
+    ],
+    "distinct_raw_hashes": 1
+   },
+   "note": "while ink went through several revisions on screen over the unchanged page, the raw frame hash never changed"
+  },
+  {
+   "id": "alignment.content_moved_then_restored",
+   "status": "pass",
+   "observed": {
+    "before_scroll": {
+     "verified": 4,
+     "changed": 0,
+     "unknown": 1,
+     "following_content": 0
+    },
+    "scrolled_300_dip": {
+     "verified": 0,
+     "changed": 4,
+     "unknown": 1,
+     "following_content": 0
+    },
+    "back": {
+     "verified": 4,
+     "changed": 0,
+     "unknown": 1,
+     "following_content": 0
+    }
+   },
+   "note": "scrolling the page under fixed ink marks strokes changed (dashed, nothing moved); scrolling back restores the earlier state"
+  },
+  {
+   "id": "alignment.moved_text_not_verified",
+   "status": "pass",
+   "observed": {
+    "hard_condition_recurred": [
+     "stk_fa4eea68a0ca"
+    ],
+    "false_verified": [],
+    "app_counts": {
+     "verified": 0,
+     "changed": 4,
+     "unknown": 1,
+     "following_content": 0
+    },
+    "model_counts_old_rule": {
+     "verified": 1,
+     "changed": 3,
+     "unknown": 1
+    },
+    "reconstruction_shift_check_mean_diff": 0.347,
+    "strokes": [
+     {
+      "stroke": "stk_4396afbdcc32",
+      "input": "mouse",
+      "region": {
+       "x": 42,
+       "y": 298,
+       "width": 526,
+       "height": 28
+      },
+      "fingerprint_spread": 32.9,
+      "fingerprint_change": 0.1083,
+      "pixels_changed_fraction": 0.137,
+      "model_status": "changed",
+      "direct_pixels_changed_fraction": 0.137,
+      "direct_fingerprint_change": 0.1083,
+      "app_status": "changed",
+      "app_fingerprint_change": 0.0724,
+      "app_detail": {
+       "cols": 263,
+       "rows": 14,
+       "result": "changed",
+       "moved_cells": 978
+      }
+     },
+     {
+      "stroke": "stk_8c836e85d723",
+      "input": "mouse",
+      "region": {
+       "x": 42,
+       "y": 298,
+       "width": 526,
+       "height": 28
+      },
+      "fingerprint_spread": 32.9,
+      "fingerprint_change": 0.1083,
+      "pixels_changed_fraction": 0.137,
+      "model_status": "changed",
+      "direct_pixels_changed_fraction": 0.137,
+      "direct_fingerprint_change": 0.1083,
+      "app_status": "changed",
+      "app_fingerprint_change": 0.0724,
+      "app_detail": {
+       "cols": 263,
+       "rows": 14,
+       "result": "changed",
+       "moved_cells": 978
+      }
+     },
+     {
+      "stroke": "stk_fcb398f55bc7",
+      "input": "mouse",
+      "region": {
+       "x": 292,
+       "y": 515,
+       "width": 62,
+       "height": 58
+      },
+      "fingerprint_spread": 0.0,
+      "fingerprint_change": 0.0155,
+      "pixels_changed_fraction": 0.035,
+      "model_status": "unknown",
+      "direct_pixels_changed_fraction": 0.035,
+      "direct_fingerprint_change": 0.0155,
+      "app_status": "unknown",
+      "app_fingerprint_change": 0.01,
+      "app_detail": {
+       "cols": 62,
+       "rows": 58,
+       "result": "changed",
+       "moved_cells": 187
+      }
+     },
+     {
+      "stroke": "stk_897d6ffa9703",
+      "input": "pen",
+      "region": {
+       "x": 82,
+       "y": 384,
+       "width": 246,
+       "height": 22
+      },
+      "fingerprint_spread": 33.9,
+      "fingerprint_change": 0.1169,
+      "pixels_changed_fraction": 0.113,
+      "model_status": "changed",
+      "direct_pixels_changed_fraction": 0.113,
+      "direct_fingerprint_change": 0.1169,
+      "app_status": "changed",
+      "app_fingerprint_change": 0.1049,
+      "app_detail": {
+       "cols": 164,
+       "rows": 14,
+       "result": "changed",
+       "moved_cells": 546
+      }
+     },
+     {
+      "stroke": "stk_fa4eea68a0ca",
+      "input": "mouse",
+      "region": {
+       "x": 37,
+       "y": 479,
+       "width": 201,
+       "height": 16
+      },
+      "fingerprint_spread": 31.7,
+      "fingerprint_change": 0.049,
+      "pixels_changed_fraction": 0.062,
+      "model_status": "verified",
+      "direct_pixels_changed_fraction": 0.062,
+      "direct_fingerprint_change": 0.049,
+      "app_status": "changed",
+      "app_fingerprint_change": 0.0584,
+      "app_detail": {
+       "cols": 201,
+       "rows": 16,
+       "result": "changed",
+       "moved_cells": 281
+      }
+     }
+    ]
+   },
+   "note": "QA-WIN-01 retest: after the page scrolled 300 DIP under fixed ink, no stroke whose pixels changed (QA's own screenshot) is verified; the hard case (old 16x16 rule would verify: coarse change <= 0.06 although > 2 % of the pixels changed) must read 'changed'. limit if the hard case did not recur"
+  },
+  {
+   "id": "write.mouse_off_refused",
+   "status": "pass",
+   "observed": {
+    "saved_file": false,
+    "hint": "Mouse writing is off: the mouse does not draw. Press ✋ to use your apps, or turn on Mouse writing. Capturing t"
+   }
+  },
+  {
+   "id": "write.mouse_enabled_explicitly",
+   "status": "pass",
+   "observed": {
+    "before": "false",
+    "after": "true"
+   }
+  },
+  {
+   "id": "write.short_draft_saved",
+   "status": "pass",
+   "observed": {
+    "history": [
+     "add",
+     "add",
+     "add"
+    ],
+    "inputs": [
+     "mouse",
+     "mouse",
+     "pen"
+    ]
+   }
+  },
+  {
+   "id": "write.partial_erase",
+   "status": "pass",
+   "observed": {
+    "history": [
+     "add",
+     "add",
+     "add",
+     "erase"
+    ],
+    "pieces": 2,
+    "original_kept_in_history": true,
+    "pieces_x_spans": [
+     [
+      50,
+      288.2
+     ],
+     [
+      313.4,
+      560
+     ]
+    ],
+    "gap_at_eraser_x_300": true,
+    "visible": 4
+   },
+   "note": "the pieces keep the original's evidence through derived_from; they have no evidence entry of their own"
+  },
+  {
+   "id": "write.undo_redo",
+   "status": "pass",
+   "observed": {
+    "undo_visible": 3,
+    "redo_visible": 4,
+    "history": [
+     "add",
+     "add",
+     "add",
+     "erase",
+     "undo",
+     "redo"
+    ]
+   }
+  },
+  {
+   "id": "ask.finish_returns_write",
+   "status": "pass",
+   "observed": {
+    "card_text": "No AI is connected: this selection was not sent anywhere.\nRegion 7,504 316×106 DIP on 整个屏幕 = 632×212 px of frame 36 (captured 09:15:32), with your ink revision 6 drawn over it.\n1 of your strokes are drawn dashed, as on screen: the",
+    "mode_after": "WRITE"
+   }
+  },
+  {
+   "id": "ask.cancel_returns_write",
+   "status": "pass",
+   "observed": {
+    "mode_after_cancel": "WRITE",
+    "card": false
+   }
+  },
+  {
+   "id": "ask.adds_no_ink_and_continue_writing",
+   "status": "pass",
+   "observed": {
+    "history": [
+     "add",
+     "add",
+     "add",
+     "erase",
+     "undo",
+     "redo",
+     "add"
+    ]
+   },
+   "note": "ASK and Cancel add nothing to the ink history; writing continues"
+  },
+  {
+   "id": "stop.in_progress_stroke_kept",
+   "status": "limit",
+   "observed": {
+    "strokes_added": 1,
+    "kept_points": 17,
+    "points_sent": 17,
+    "context": true,
+    "history_tail": [
+     "redo",
+     "add",
+     "add"
+    ]
+   },
+   "note": "kept whole, but the release of this held stroke was sent about 1 ms after the Stop click, so settling on Stop (W-I5) is not isolated from an ordinary pen-up"
+  },
+  {
+   "id": "stop.in_progress_post_stop_stroke_not_persisted",
+   "status": "pass",
+   "observed": {
+    "race_stroke_saved": false,
+    "stop_click_sent": "2026-09-30T16:15:42.5389489Z",
+    "race_input_sent": "2026-09-30T16:15:42.5482194Z",
+    "overlay_events_sent": 15,
+    "overlay_replies": 15,
+    "overlay_errors": 0,
+    "recoveries": [],
+    "ended": "stopped by the user"
+   },
+   "note": "the injected pen stroke sent right behind the Stop click (DevTools answered every event) was not persisted and the recovery list was empty; application-level input refusal was not observed"
+  },
+  {
+   "id": "stop.after_lift_stroke_kept",
+   "status": "pass",
+   "observed": {
+    "strokes_added": 1,
+    "kept_points": 17,
+    "points_sent": 17,
+    "context": true,
+    "history_tail": [
+     "undo",
+     "add",
+     "add"
+    ]
+   },
+   "note": "a lifted 17-point stroke remains saved after the immediately following Stop; overlapping pending save was not observed"
+  },
+  {
+   "id": "stop.after_lift_post_stop_stroke_not_persisted",
+   "status": "pass",
+   "observed": {
+    "race_stroke_saved": false,
+    "stop_click_sent": "2026-09-30T16:15:51.1254270Z",
+    "race_input_sent": "2026-09-30T16:15:51.1355357Z",
+    "overlay_events_sent": 14,
+    "overlay_replies": 14,
+    "overlay_errors": 0,
+    "recoveries": [],
+    "ended": "stopped by the user"
+   },
+   "note": "the injected pen stroke sent right behind the Stop click (DevTools answered every event) was not persisted and the recovery list was empty; application-level input refusal was not observed"
+  },
+  {
+   "id": "stop.input_closed_during_save_observed",
+   "status": "limit",
+   "observed": {
+    "observed": "post-Stop stroke not persisted, no recovery, normal end (both variants)",
+    "not_observed": "refusal itself: no overlay state, hint or toolbar was read between the Stop click and the overlay closing"
+   },
+   "note": "the pre-fix W-I8 defect (new ink accepted, then destroyed with no recovery) would look the same in this data; the owner's deterministic test remains the evidence that input closes"
+  },
+  {
+   "id": "reopen.same_ink",
+   "status": "pass",
+   "observed": {
+    "overlay_composed_after_open": {
+     "ink_revision": 8,
+     "visible": 6
+    },
+    "saved": {
+     "revision": 8,
+     "visible": 6
+    },
+    "hint": "Clicks go to your apps. Capturing this display · frame 4. No AI is connected. Reopened 6 stroke(s) saved on this device."
+   },
+   "note": "the overlay's own composed frames after Open carry the saved revision and stroke count (read from disk; the app was not relaunched)"
+  },
+  {
+   "id": "reopen.continue_editing_same_file",
+   "status": "pass",
+   "observed": {
+    "same_id": true,
+    "history_tail": [
+     "add",
+     "undo",
+     "add"
+    ]
+   }
+  },
+  {
+   "id": "receipt.every_referenced_picture_stored",
+   "status": "pass",
+   "observed": {
+    "contexts": 7,
+    "null_images": [],
+    "missing": [],
+    "hash_mismatch": [],
+    "not_observed_issues": [],
+    "pictures_on_disk": 20
+   },
+   "note": "normal saves only; the 64-picture / 48 MB batching path was not exercised"
+  },
+  {
+   "id": "pixels.context_matches_independent_screenshot",
+   "status": "pass",
+   "observed": [
+    {
+     "stroke": "stk_906f8b0b7fc1",
+     "region_px": {
+      "x": 4,
+      "y": 516,
+      "width": 1212,
+      "height": 216
+     },
+     "geometry_ok": true,
+     "plain": false,
+     "mean_abs_diff": 2.17,
+     "within_24": 0.9805,
+     "ink_coloured_pixels_in_raw": 0
+    },
+    {
+     "stroke": "stk_fcb398f55bc7",
+     "region_px": {
+      "x": 504,
+      "y": 950,
+      "width": 284,
+      "height": 276
+     },
+     "geometry_ok": true,
+     "plain": false,
+     "mean_abs_diff": 1.46,
+     "within_24": 0.9966,
+     "ink_coloured_pixels_in_raw": 0
+    },
+    {
+     "stroke": "stk_897d6ffa9703",
+     "region_px": {
+      "x": 84,
+      "y": 688,
+      "width": 652,
+      "height": 204
+     },
+     "geometry_ok": true,
+     "plain": false,
+     "mean_abs_diff": 2.05,
+     "within_24": 0.9874,
+     "ink_coloured_pixels_in_raw": 0
+    }
+   ],
+   "note": "each draft stroke's saved raw-frame crop equals QA's GDI screenshot at region_px; region_px = region × scale and contains the stroke; plain regions are not informative"
+  },
+  {
+   "id": "pixels.raw_context_over_existing_ink",
+   "status": "pass",
+   "observed": {
+    "stroke": "stk_ba8917bee3f4",
+    "region_px": {
+     "x": 0,
+     "y": 44,
+     "width": 2456,
+     "height": 1492
+    },
+    "geometry_ok": true,
+    "plain": false,
+    "mean_abs_diff": 1.53,
+    "within_24": 0.9902,
+    "ink_coloured_pixels_in_raw": 0
+   },
+   "note": "the long stroke's context covers four solid strokes then on screen; its raw crop has no ink and matches QA's screenshot"
+  },
+  {
+   "id": "pixels.ask_crop_is_selected_region",
+   "status": "pass",
+   "observed": {
+    "crop_px": [
+     632,
+     212
+    ],
+    "expected_origin_px": [
+     14,
+     1008
+    ],
+    "best_offset_px": [
+     0,
+     0
+    ],
+    "best_within_24": 0.9847,
+    "runner_up_within_24": 0.9683,
+    "best_at_8px_or_more_off": 0.9542
+   },
+   "note": "the ASK card's composed crop matches QA's screenshot exactly at the box the card states, apart from the ink drawn into it"
+  },
+  {
+   "id": "start.one_at_a_time",
+   "status": "pass",
+   "observed": {
+    "results": [
+     {
+      "ok": true
+     },
+     {
+      "ok": false,
+      "reason": "a session is starting"
+     }
+    ],
+    "overlays": 1
+   }
+  },
+  {
+   "id": "start.stop_cancels_pending",
+   "status": "pass",
+   "observed": {
+    "result": {
+     "ok": false,
+     "reason": "stopped before the capture started (stopped by the user)"
+    },
+    "state": {
+     "running": false,
+     "starting": false,
+     "ended": "stopped by the user"
+    },
+    "overlays_after": 0
+   }
+  },
+  {
+   "id": "app.closes_cleanly",
+   "status": "pass",
+   "observed": {
+    "exited": true,
+    "exit_code": 0,
+    "killed": false
+   }
+  },
+  {
+   "id": "no_ai.stated",
+   "status": "pass",
+   "observed": {
+    "statements": 4
+   },
+   "note": "the overlay and the ASK card state that no AI is connected; network traffic was not observed"
+  },
+  {
+   "id": "retest.panel_geometry",
+   "status": "pass",
+   "observed": {
+    "page_rects_css": {
+     "qa-live": [
+      40,
+      40,
+      720,
+      300
+     ],
+     "qa-sign": [
+      102,
+      62,
+      30,
+      36
+     ],
+     "qa-digit": [
+      122,
+      122,
+      30,
+      36
+     ],
+     "qa-cross": [
+      122,
+      182,
+      30,
+      36
+     ],
+     "qa-step": [
+      152,
+      242,
+      40,
+      36
+     ],
+     "qa-tick": [
+      642,
+      292,
+      19.1796875,
+      24
+     ]
+    },
+    "window": {
+     "sx": 0,
+     "sy": 0,
+     "ow": 1280,
+     "oh": 752,
+     "iw": 1280,
+     "ih": 729,
+     "dpr": 2,
+     "scrollY": 0
+    },
+    "panel_border_measured": {
+     "top_dip": 63.0,
+     "left_dip": 40.0
+    },
+    "expected_from_origin_0_23": {
+     "top_dip": 63,
+     "left_dip": 40
+    },
+    "strokes_identified": {
+     "still": true,
+     "sign": true,
+     "digit": true,
+     "cross": true,
+     "cap": true
+    }
+   },
+   "note": "QA's glyph coordinates rely on the viewport origin (0, 23) DIP: the panel border in QA's screenshot sits where the page's layout says"
+  },
+  {
+   "id": "run.cursor_clear_of_strokes",
+   "status": "pass",
+   "observed": {
+    "positions_px": [
+     [
+      545,
+      762
+     ]
+    ],
+    "readings": 23,
+    "inside_retest_stroke_regions": []
+   },
+   "note": "read-only GetCursorPos at start, at every screenshot and at the end: the cursor did not move and was not under a retest stroke"
+  },
+  {
+   "id": "alignment.sign_change_under_ink",
+   "status": "pass",
+   "observed": {
+    "app_status": {
+     "s4-before": "verified",
+     "s4-sign-after": "changed",
+     "s4-sign-reverted": "verified"
+    },
+    "qa_screenshot_region_change": {
+     "after": {
+      "changed_px": 98,
+      "fraction": 0.0085
+     },
+     "reverted": {
+      "changed_px": 0,
+      "fraction": 0.0
+     }
+    },
+    "composed_frames": {
+     "s4-before": {
+      "style": "solid",
+      "at_ink": 1.0,
+      "differs_from_raw": 1.0,
+      "raw_at_ink": 0.0,
+      "retained_seq": 11,
+      "state_frame": true
+     },
+     "s4-sign-after": {
+      "style": "dashed",
+      "at_ink": 0.0,
+      "differs_from_raw": 0.858,
+      "raw_at_ink": 0.0,
+      "retained_seq": 15,
+      "state_frame": true
+     },
+     "s4-sign-reverted": {
+      "style": "solid",
+      "at_ink": 1.0,
+      "differs_from_raw": 1.0,
+      "raw_at_ink": 0.0,
+      "retained_seq": 20,
+      "state_frame": true
+     }
+    },
+    "region_dip": [
+     87,
+     79,
+     147,
+     127
+    ],
+    "detail": {
+     "s4-before": {
+      "cols": 60,
+      "rows": 48,
+      "result": "same",
+      "moved_cells": 0,
+      "moved_at": []
+     },
+     "s4-sign-after": {
+      "cols": 60,
+      "rows": 48,
+      "result": "changed",
+      "moved_cells": 26,
+      "moved_at": [
+       [
+        29,
+        19
+       ],
+       [
+        30,
+        19
+       ],
+       [
+        29,
+        20
+       ],
+       [
+        30,
+        20
+       ],
+       [
+        29,
+        21
+       ],
+       [
+        30,
+        21
+       ],
+       [
+        29,
+        22
+       ],
+       [
+        30,
+        22
+       ],
+       [
+        29,
+        23
+       ],
+       [
+        30,
+        23
+       ],
+       [
+        29,
+        24
+       ],
+       [
+        30,
+        24
+       ]
+      ]
+     },
+     "s4-sign-reverted": {
+      "cols": 60,
+      "rows": 48,
+      "result": "same",
+      "moved_cells": 0,
+      "moved_at": []
+     }
+    }
+   },
+   "note": "a one-glyph sign change (x − 1 -> x + 1) under a small finished stroke: verified (solid) -> changed (dashed, in the app's retained composed frame) -> verified when restored"
+  },
+  {
+   "id": "alignment.digit_change_under_ink",
+   "status": "pass",
+   "observed": {
+    "app_status": {
+     "s4-sign-reverted": "verified",
+     "s4-digit-after": "changed",
+     "s4-digit-reverted": "verified"
+    },
+    "qa_screenshot_region_change": {
+     "after": {
+      "changed_px": 700,
+      "fraction": 0.0608
+     },
+     "reverted": {
+      "changed_px": 0,
+      "fraction": 0.0
+     }
+    },
+    "composed_frames": {
+     "s4-sign-reverted": {
+      "style": "solid",
+      "at_ink": 1.0,
+      "differs_from_raw": 1.0,
+      "raw_at_ink": 0.0,
+      "retained_seq": 20,
+      "state_frame": true
+     },
+     "s4-digit-after": {
+      "style": "dashed",
+      "at_ink": 0.0,
+      "differs_from_raw": 0.858,
+      "raw_at_ink": 0.0,
+      "retained_seq": 23,
+      "state_frame": true
+     },
+     "s4-digit-reverted": {
+      "style": "solid",
+      "at_ink": 1.0,
+      "differs_from_raw": 1.0,
+      "raw_at_ink": 0.0,
+      "retained_seq": 27,
+      "state_frame": true
+     }
+    },
+    "region_dip": [
+     107,
+     139,
+     167,
+     187
+    ],
+    "detail": {
+     "s4-sign-reverted": {
+      "cols": 60,
+      "rows": 48,
+      "result": "same",
+      "moved_cells": 0,
+      "moved_at": []
+     },
+     "s4-digit-after": {
+      "cols": 60,
+      "rows": 48,
+      "result": "changed",
+      "moved_cells": 237,
+      "moved_at": [
+       [
+        26,
+        14
+       ],
+       [
+        27,
+        14
+       ],
+       [
+        28,
+        14
+       ],
+       [
+        29,
+        14
+       ],
+       [
+        30,
+        14
+       ],
+       [
+        31,
+        14
+       ],
+       [
+        32,
+        14
+       ],
+       [
+        33,
+        14
+       ],
+       [
+        25,
+        15
+       ],
+       [
+        26,
+        15
+       ],
+       [
+        27,
+        15
+       ],
+       [
+        28,
+        15
+       ]
+      ]
+     },
+     "s4-digit-reverted": {
+      "cols": 60,
+      "rows": 48,
+      "result": "same",
+      "moved_cells": 0,
+      "moved_at": []
+     }
+    }
+   },
+   "note": "a digit change (3 -> 8) under a small finished stroke, then restored"
+  },
+  {
+   "id": "alignment.unchanged_text_stays_verified",
+   "status": "pass",
+   "observed": {
+    "app_status": {
+     "s4-before": "verified",
+     "s4-sign-after": "verified",
+     "s4-sign-reverted": "verified",
+     "s4-digit-after": "verified",
+     "s4-digit-reverted": "verified",
+     "s4-cross-released": "verified",
+     "s4-cross-reverted": "verified",
+     "s4-cap-released": "verified"
+    },
+    "qa_screenshot_changed_px": {
+     "s4-before": 0,
+     "s4-sign-after": 0,
+     "s4-sign-reverted": 0,
+     "s4-digit-after": 0,
+     "s4-digit-reverted": 0,
+     "s4-cross-released": 0,
+     "s4-cross-reverted": 0,
+     "s4-cap-released": 0
+    },
+    "composed_style": {
+     "s4-before": "solid",
+     "s4-sign-after": "solid",
+     "s4-sign-reverted": "solid",
+     "s4-digit-after": "solid",
+     "s4-digit-reverted": "solid",
+     "s4-cross-released": "solid",
+     "s4-cross-reverted": "solid",
+     "s4-cap-released": "solid"
+    }
+   },
+   "note": "control: a stroke over text that never changed stays verified and solid while the other glyphs change"
+  },
+  {
+   "id": "context.write_across_changed_frame",
+   "status": "pass",
+   "observed": {
+    "contexts": [
+     {
+      "reason": "writing_started",
+      "from_point": 0,
+      "frame_seq": 31,
+      "image": true
+     },
+     {
+      "reason": "changed_while_writing",
+      "from_point": 6,
+      "frame_seq": 35,
+      "image": true
+     }
+    ],
+    "points": 10,
+    "changes_not_kept": 0,
+    "app_status": {
+     "s4-cross-released": "changed",
+     "s4-cross-reverted": "unknown"
+    },
+    "composed_style": {
+     "s4-cross-released": "dashed",
+     "s4-cross-reverted": "dashed"
+    },
+    "pictures_vs_qa_screenshots": [
+     {
+      "within_24": 1.0,
+      "ink_in_raw": 0,
+      "screenshot": "s4-digit-reverted"
+     },
+     {
+      "within_24": 1.0,
+      "ink_in_raw": 0,
+      "screenshot": "s4-cross-changed"
+     }
+    ]
+   },
+   "note": "pen down over '2', the page changed to '7' while the pen was held, writing continued: two contexts (start, change), picture 2 shows the changed page; the stroke is changed at release and unknown (never verified) after the page is restored"
+  },
+  {
+   "id": "context.cap_counted_once",
+   "status": "pass",
+   "observed": {
+    "contexts": 8,
+    "reasons": [
+     "writing_started",
+     "changed_while_writing",
+     "changed_while_writing",
+     "changed_while_writing",
+     "changed_while_writing",
+     "changed_while_writing",
+     "changed_while_writing",
+     "changed_while_writing"
+    ],
+    "from_points": [
+     0,
+     4,
+     6,
+     8,
+     10,
+     12,
+     14,
+     16
+    ],
+    "frame_seqs": [
+     45,
+     49,
+     52,
+     54,
+     56,
+     59,
+     61,
+     64
+    ],
+    "changes_not_kept": 4,
+    "expected_from_sampled_values": 4,
+    "every_state_sampled": [
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true,
+     true
+    ],
+    "live_gesture_contexts_per_step": [
+     2,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     8,
+     8,
+     8,
+     8,
+     8,
+     8
+    ],
+    "points_saved": 32,
+    "points_sent": 32,
+    "pinned": {
+     "before": 0,
+     "after_release": 0,
+     "gesture_after_release": null
+    }
+   },
+   "note": "one held stroke over a value that changed 13 times (1..7 fill the 8 contexts; then 8, 8, 9, 9, 8, 0): 8 contexts, repeats not counted, the return 9->8 counted: 4 omitted changes recorded only as a count (no frames, times or pictures for them)"
+  },
+  {
+   "id": "ask.dashed_count_matches_marks",
+   "status": "pass",
+   "observed": {
+    "card_note": "1 of your strokes are drawn dashed",
+    "not_verified_strokes_at_card": 1,
+    "sign_status": "changed",
+    "crop_region": "Region 59,70 136×126 DIP",
+    "crop_sign_style": {
+     "sign": {
+      "style": "dashed",
+      "at_ink": 0.0,
+      "differs_from_raw": 0.858,
+      "raw_at_ink": 0.0
+     },
+     "still_not_in_crop": true
+    },
+    "text": "No AI is connected: this selection was not sent anywhere.\nRegion 59,70 136×126 DIP on 整个屏幕 = 272×252 px of frame 18 (captured 09:16:13), with your ink revision 3 drawn over it.\n1 of your strokes are drawn dashed, as on screen: their alignment with what is under them is not verified."
+   },
+   "note": "the local ASK card states how many strokes are dashed (all visible strokes, as on screen), and its crop draws the changed stroke dashed"
+  },
+  {
+   "id": "pixels.composed_marks_match_status",
+   "status": "pass",
+   "observed": {
+    "states_checked": 11,
+    "per_state": {
+     "s4-before": {
+      "retained_seq": 11,
+      "marks": {
+       "verified": 3,
+       "changed": 0,
+       "unknown": 0,
+       "following_content": 0
+      },
+      "styles": {
+       "still": "solid",
+       "sign": "solid",
+       "digit": "solid"
+      },
+      "files_match_names": true
+     },
+     "s4-cap-released": {
+      "retained_seq": 80,
+      "marks": {
+       "verified": 3,
+       "changed": 0,
+       "unknown": 2,
+       "following_content": 0
+      },
+      "styles": {
+       "still": "solid",
+       "sign": "solid",
+       "digit": "solid",
+       "cross": "dashed",
+       "cap": "dashed"
+      },
+      "files_match_names": true
+     },
+     "s4-cross-released": {
+      "retained_seq": 38,
+      "marks": {
+       "verified": 3,
+       "changed": 1,
+       "unknown": 0,
+       "following_content": 0
+      },
+      "styles": {
+       "still": "solid",
+       "sign": "solid",
+       "digit": "solid",
+       "cross": "dashed"
+      },
+      "files_match_names": true
+     },
+     "s4-cross-reverted": {
+      "retained_seq": 42,
+      "marks": {
+       "verified": 3,
+       "changed": 0,
+       "unknown": 1,
+       "following_content": 0
+      },
+      "styles": {
+       "still": "solid",
+       "sign": "solid",
+       "digit": "solid",
+       "cross": "dashed"
+      },
+      "files_match_names": true
+     },
+     "s4-digit-after": {
+      "retained_seq": 23,
+      "marks": {
+       "verified": 2,
+       "changed": 1,
+       "unknown": 0,
+       "following_content": 0
+      },
+      "styles": {
+       "still": "solid",
+       "sign": "solid",
+       "digit": "dashed"
+      },
+      "files_match_names": true
+     },
+     "s4-digit-reverted": {
+      "retained_seq": 27,
+      "marks": {
+       "verified": 3,
+       "changed": 0,
+       "unknown": 0,
+       "following_content": 0
+      },
+      "styles": {
+       "still": "solid",
+       "sign": "solid",
+       "digit": "solid"
+      },
+      "files_match_names": true
+     },
+     "s4-sign-after": {
+      "retained_seq": 15,
+      "marks": {
+       "verified": 2,
+       "changed": 1,
+       "unknown": 0,
+       "following_content": 0
+      },
+      "styles": {
+       "still": "solid",
+       "sign": "dashed",
+       "digit": "solid"
+      },
+      "files_match_names": true
+     },
+     "s4-sign-reverted": {
+      "retained_seq": 20,
+      "marks": {
+       "verified": 3,
+       "changed": 0,
+       "unknown": 0,
+       "following_content": 0
+      },
+      "styles": {
+       "still": "solid",
+       "sign": "solid",
+       "digit": "solid"
+      },
+      "files_match_names": true
+     },
+     "s5-digit-after": {
+      "retained_seq": 8,
+      "marks": {
+       "verified": 2,
+       "changed": 1,
+       "unknown": 2,
+       "following_content": 0
+      },
+      "styles": {
+       "still": "solid",
+       "sign": "solid",
+       "digit": "dashed",
+       "cross": "dashed",
+       "cap": "dashed"
+      },
+      "files_match_names": true
+     },
+     "s5-digit-reverted": {
+      "retained_seq": 12,
+      "marks": {
+       "verified": 3,
+       "changed": 0,
+       "unknown": 2,
+       "following_content": 0
+      },
+      "styles": {
+       "still": "solid",
+       "sign": "solid",
+       "digit": "solid",
+       "cross": "dashed",
+       "cap": "dashed"
+      },
+      "files_match_names": true
+     },
+     "s5-reopened": {
+      "retained_seq": 4,
+      "marks": {
+       "verified": 3,
+       "changed": 0,
+       "unknown": 2,
+       "following_content": 0
+      },
+      "styles": {
+       "still": "solid",
+       "sign": "solid",
+       "digit": "solid",
+       "cross": "dashed",
+       "cap": "dashed"
+      },
+      "files_match_names": true
+     }
+    },
+    "mismatched": [],
+    "no_state_frame_retained": []
+   },
+   "note": "in the app's own retained composed PNG for each observed state, every stroke the app verifies is solid and every other stroke dashed; the manifest's ink marks count them; the retained raw PNG has no ink on any stroke path"
+  },
+  {
+   "id": "stop.stopped4_saved",
+   "status": "pass",
+   "observed": {
+    "ended": "stopped by the user",
+    "recoveries": [],
+    "visible": 5,
+    "history": [
+     "add",
+     "add",
+     "add",
+     "add",
+     "add"
+    ],
+    "detail_valid": true,
+    "context_pictures_missing_or_wrong": [],
+    "contexts_per_stroke": {
+     "still": 1,
+     "sign": 1,
+     "digit": 1,
+     "cross": 2,
+     "cap": 8
+    }
+   },
+   "note": "after the lifted strokes settled, Stop saved all five strokes with their detail grids and every context picture (hash-checked); no recovery entry"
+  },
+  {
+   "id": "reopen.detail_and_counter_round_trip",
+   "status": "pass",
+   "observed": {
+    "same_document_after_open": true,
+    "app_status_after_open": {
+     "still": "verified",
+     "sign": "verified",
+     "digit": "verified",
+     "cross": "unknown",
+     "cap": "unknown"
+    },
+    "expected": {
+     "still": "verified",
+     "sign": "verified",
+     "digit": "verified",
+     "cross": "unknown",
+     "cap": "unknown"
+    },
+    "hint": "Clicks go to your apps. Capturing this display · frame 7. No AI is connected. Reopened 5 stroke(s) saved on this device.",
+    "digit_change_after_reopen": {
+     "s5-digit-after": "changed",
+     "s5-digit-reverted": "verified"
+    },
+    "pictures": {
+     "items": 13,
+     "states": [
+      "shown"
+     ],
+     "per_stroke": [
+      1,
+      1,
+      1,
+      2,
+      8
+     ]
+    },
+    "stopped5": "stopped by the user",
+    "recoveries5": []
+   },
+   "note": "Open in a new session restores the same file (detail grids, 8 cap contexts and the omitted-change count); alignment is recomputed against the new session's frames: unchanged glyphs verified, multi-context strokes unknown, and a digit change after reopening reads changed then verified; all 13 context pictures open again"
+  }
+ ],
+ "samples": {
+  "total": 158,
+  "states": {
+   "ended": 5,
+   "fresh": 151,
+   "no_new_frame": 2
+  },
+  "sessions": 5
+ },
+ "ink": {
+  "final_id": "420dc45ead8317a8",
+  "history": [
+   "add",
+   "add",
+   "add",
+   "erase",
+   "undo",
+   "redo",
+   "add",
+   "add",
+   "undo",
+   "add",
+   "add"
+  ],
+  "strokes": 9,
+  "visible": 7
+ }
+}

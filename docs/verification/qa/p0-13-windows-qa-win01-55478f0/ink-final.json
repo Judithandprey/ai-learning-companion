@@ -1,0 +1,2012 @@
+{
+ "format": "lc-desktop-ink/v1",
+ "id": "420dc45ead8317a8",
+ "created_at": "2026-09-30T16:14:56.448Z",
+ "forked_from": null,
+ "display": {
+  "display_id": "3071609112",
+  "label": "整个屏幕",
+  "bounds": {
+   "x": 0,
+   "y": 0,
+   "width": 1280,
+   "height": 800
+  },
+  "scale_factor": 2
+ },
+ "ink": {
+  "format": "lc-web-ink/v1",
+  "page": {
+   "origin": "desktop",
+   "address_sha256": "1a2d4b5620caad7e93052de6b4bbebeb8a3794bea2c4c5fc28498c0e14c4afd1"
+  },
+  "revision": 11,
+  "strokes": {
+   "stk_906f8b0b7fc1e9bae49d17333f1d617c": {
+    "id": "stk_906f8b0b7fc1e9bae49d17333f1d617c",
+    "input": "mouse",
+    "display": "screen",
+    "points": [
+     [
+      50,
+      312,
+      0,
+      0
+     ],
+     [
+      71,
+      315,
+      76,
+      0
+     ],
+     [
+      93,
+      317,
+      108,
+      0
+     ],
+     [
+      114,
+      318,
+      139,
+      0
+     ],
+     [
+      135,
+      317,
+      155,
+      0
+     ],
+     [
+      156,
+      316,
+      185,
+      0
+     ],
+     [
+      178,
+      313,
+      200,
+      0
+     ],
+     [
+      199,
+      310,
+      216,
+      0
+     ],
+     [
+      220,
+      307,
+      247,
+      0
+     ],
+     [
+      241,
+      306,
+      263,
+      0
+     ],
+     [
+      263,
+      306,
+      294,
+      0
+     ],
+     [
+      284,
+      308,
+      355,
+      0
+     ],
+     [
+      305,
+      310,
+      370,
+      0
+     ],
+     [
+      326,
+      313,
+      386,
+      0
+     ],
+     [
+      348,
+      316,
+      401,
+      0
+     ],
+     [
+      369,
+      318,
+      417,
+      0
+     ],
+     [
+      390,
+      318,
+      433,
+      0
+     ],
+     [
+      411,
+      317,
+      448,
+      0
+     ],
+     [
+      433,
+      314,
+      480,
+      0
+     ],
+     [
+      454,
+      312,
+      496,
+      0
+     ],
+     [
+      475,
+      309,
+      527,
+      0
+     ],
+     [
+      496,
+      307,
+      542,
+      0
+     ],
+     [
+      518,
+      306,
+      557,
+      0
+     ],
+     [
+      539,
+      307,
+      572,
+      0
+     ],
+     [
+      560,
+      309,
+      604,
+      0
+     ]
+    ],
+    "created_at": "2026-09-30T16:15:23.924Z",
+    "source": {
+     "title": "整个屏幕",
+     "viewport": {
+      "width": 1280,
+      "height": 800,
+      "dpr": 2
+     },
+     "scroll": {
+      "x": 0,
+      "y": 0
+     }
+    },
+    "anchor": null,
+    "derived_from": null
+   },
+   "stk_fcb398f55bc73afaf9a555d9ffeb4dc1": {
+    "id": "stk_fcb398f55bc73afaf9a555d9ffeb4dc1",
+    "input": "mouse",
+    "display": "screen",
+    "points": [
+     [
+      300,
+      545,
+      0,
+      0
+     ],
+     [
+      308,
+      555,
+      52,
+      0
+     ],
+     [
+      316,
+      565,
+      68,
+      0
+     ],
+     [
+      326,
+      551,
+      84,
+      0
+     ],
+     [
+      336,
+      537,
+      100,
+      0
+     ],
+     [
+      346,
+      523,
+      116,
+      0
+     ]
+    ],
+    "created_at": "2026-09-30T16:15:24.872Z",
+    "source": {
+     "title": "整个屏幕",
+     "viewport": {
+      "width": 1280,
+      "height": 800,
+      "dpr": 2
+     },
+     "scroll": {
+      "x": 0,
+      "y": 0
+     }
+    },
+    "anchor": null,
+    "derived_from": null
+   },
+   "stk_897d6ffa97033117404ece03ac19cb9f": {
+    "id": "stk_897d6ffa97033117404ece03ac19cb9f",
+    "input": "pen",
+    "display": "screen",
+    "points": [
+     [
+      90,
+      392,
+      0,
+      0
+     ],
+     [
+      106,
+      392,
+      74,
+      0
+     ],
+     [
+      123,
+      393,
+      122,
+      0
+     ],
+     [
+      139,
+      393,
+      137,
+      0
+     ],
+     [
+      156,
+      394,
+      168,
+      0
+     ],
+     [
+      172,
+      394,
+      199,
+      0
+     ],
+     [
+      189,
+      395,
+      230,
+      0
+     ],
+     [
+      205,
+      395,
+      261,
+      0
+     ],
+     [
+      221,
+      395,
+      292,
+      0
+     ],
+     [
+      238,
+      396,
+      307,
+      0
+     ],
+     [
+      254,
+      396,
+      338,
+      0
+     ],
+     [
+      271,
+      397,
+      369,
+      0
+     ],
+     [
+      287,
+      397,
+      400,
+      0
+     ],
+     [
+      304,
+      398,
+      416,
+      0
+     ],
+     [
+      320,
+      398,
+      432,
+      0
+     ]
+    ],
+    "created_at": "2026-09-30T16:15:26.148Z",
+    "source": {
+     "title": "整个屏幕",
+     "viewport": {
+      "width": 1280,
+      "height": 800,
+      "dpr": 2
+     },
+     "scroll": {
+      "x": 0,
+      "y": 0
+     }
+    },
+    "anchor": null,
+    "derived_from": null
+   },
+   "stk_4396afbdcc320c932444e76a33dcbea9": {
+    "id": "stk_4396afbdcc320c932444e76a33dcbea9",
+    "input": "mouse",
+    "display": "screen",
+    "points": [
+     [
+      50,
+      312,
+      0,
+      0
+     ],
+     [
+      54.2,
+      312.6,
+      15.200000000000001,
+      0
+     ],
+     [
+      58.4,
+      313.2,
+      30.400000000000002,
+      0
+     ],
+     [
+      62.6,
+      313.8,
+      45.6,
+      0
+     ],
+     [
+      66.8,
+      314.4,
+      60.800000000000004,
+      0
+     ],
+     [
+      71,
+      315,
+      76,
+      0
+     ],
+     [
+      75.4,
+      315.4,
+      82.4,
+      0
+     ],
+     [
+      79.8,
+      315.8,
+      88.8,
+      0
+     ],
+     [
+      84.2,
+      316.2,
+      95.2,
+      0
+     ],
+     [
+      88.6,
+      316.6,
+      101.6,
+      0
+     ],
+     [
+      93,
+      317,
+      108,
+      0
+     ],
+     [
+      97.2,
+      317.2,
+      114.2,
+      0
+     ],
+     [
+      101.4,
+      317.4,
+      120.4,
+      0
+     ],
+     [
+      105.6,
+      317.6,
+      126.6,
+      0
+     ],
+     [
+      109.8,
+      317.8,
+      132.8,
+      0
+     ],
+     [
+      114,
+      318,
+      139,
+      0
+     ],
+     [
+      118.2,
+      317.8,
+      142.2,
+      0
+     ],
+     [
+      122.4,
+      317.6,
+      145.4,
+      0
+     ],
+     [
+      126.6,
+      317.4,
+      148.6,
+      0
+     ],
+     [
+      130.8,
+      317.2,
+      151.8,
+      0
+     ],
+     [
+      135,
+      317,
+      155,
+      0
+     ],
+     [
+      139.2,
+      316.8,
+      161,
+      0
+     ],
+     [
+      143.4,
+      316.6,
+      167,
+      0
+     ],
+     [
+      147.6,
+      316.4,
+      173,
+      0
+     ],
+     [
+      151.8,
+      316.2,
+      179,
+      0
+     ],
+     [
+      156,
+      316,
+      185,
+      0
+     ],
+     [
+      160.4,
+      315.4,
+      188,
+      0
+     ],
+     [
+      164.8,
+      314.8,
+      191,
+      0
+     ],
+     [
+      169.2,
+      314.2,
+      194,
+      0
+     ],
+     [
+      173.6,
+      313.6,
+      197,
+      0
+     ],
+     [
+      178,
+      313,
+      200,
+      0
+     ],
+     [
+      182.2,
+      312.4,
+      203.2,
+      0
+     ],
+     [
+      186.4,
+      311.8,
+      206.4,
+      0
+     ],
+     [
+      190.6,
+      311.2,
+      209.6,
+      0
+     ],
+     [
+      194.8,
+      310.6,
+      212.8,
+      0
+     ],
+     [
+      199,
+      310,
+      216,
+      0
+     ],
+     [
+      203.2,
+      309.4,
+      222.2,
+      0
+     ],
+     [
+      207.4,
+      308.8,
+      228.4,
+      0
+     ],
+     [
+      211.6,
+      308.2,
+      234.6,
+      0
+     ],
+     [
+      215.8,
+      307.6,
+      240.8,
+      0
+     ],
+     [
+      220,
+      307,
+      247,
+      0
+     ],
+     [
+      224.2,
+      306.8,
+      250.2,
+      0
+     ],
+     [
+      228.4,
+      306.6,
+      253.4,
+      0
+     ],
+     [
+      232.6,
+      306.4,
+      256.6,
+      0
+     ],
+     [
+      236.8,
+      306.2,
+      259.8,
+      0
+     ],
+     [
+      241,
+      306,
+      263,
+      0
+     ],
+     [
+      245.4,
+      306,
+      269.2,
+      0
+     ],
+     [
+      249.8,
+      306,
+      275.4,
+      0
+     ],
+     [
+      254.2,
+      306,
+      281.6,
+      0
+     ],
+     [
+      258.6,
+      306,
+      287.8,
+      0
+     ],
+     [
+      263,
+      306,
+      294,
+      0
+     ],
+     [
+      267.2,
+      306.4,
+      306.2,
+      0
+     ],
+     [
+      271.4,
+      306.8,
+      318.4,
+      0
+     ],
+     [
+      275.6,
+      307.2,
+      330.6,
+      0
+     ],
+     [
+      279.8,
+      307.6,
+      342.8,
+      0
+     ],
+     [
+      284,
+      308,
+      355,
+      0
+     ],
+     [
+      288.2,
+      308.4,
+      358,
+      0
+     ]
+    ],
+    "created_at": "2026-09-30T16:15:23.924Z",
+    "source": {
+     "title": "整个屏幕",
+     "viewport": {
+      "width": 1280,
+      "height": 800,
+      "dpr": 2
+     },
+     "scroll": {
+      "x": 0,
+      "y": 0
+     }
+    },
+    "anchor": null,
+    "derived_from": "stk_906f8b0b7fc1e9bae49d17333f1d617c"
+   },
+   "stk_8c836e85d723fdf8efc856bb56ff8fa8": {
+    "id": "stk_8c836e85d723fdf8efc856bb56ff8fa8",
+    "input": "mouse",
+    "display": "screen",
+    "points": [
+     [
+      313.4,
+      311.2,
+      376.4,
+      0
+     ],
+     [
+      317.6,
+      311.8,
+      379.6,
+      0
+     ],
+     [
+      321.8,
+      312.4,
+      382.8,
+      0
+     ],
+     [
+      326,
+      313,
+      386,
+      0
+     ],
+     [
+      330.4,
+      313.6,
+      389,
+      0
+     ],
+     [
+      334.8,
+      314.2,
+      392,
+      0
+     ],
+     [
+      339.2,
+      314.8,
+      395,
+      0
+     ],
+     [
+      343.6,
+      315.4,
+      398,
+      0
+     ],
+     [
+      348,
+      316,
+      401,
+      0
+     ],
+     [
+      352.2,
+      316.4,
+      404.2,
+      0
+     ],
+     [
+      356.4,
+      316.8,
+      407.4,
+      0
+     ],
+     [
+      360.6,
+      317.2,
+      410.6,
+      0
+     ],
+     [
+      364.8,
+      317.6,
+      413.8,
+      0
+     ],
+     [
+      369,
+      318,
+      417,
+      0
+     ],
+     [
+      373.2,
+      318,
+      420.2,
+      0
+     ],
+     [
+      377.4,
+      318,
+      423.4,
+      0
+     ],
+     [
+      381.6,
+      318,
+      426.6,
+      0
+     ],
+     [
+      385.8,
+      318,
+      429.8,
+      0
+     ],
+     [
+      390,
+      318,
+      433,
+      0
+     ],
+     [
+      394.2,
+      317.8,
+      436,
+      0
+     ],
+     [
+      398.4,
+      317.6,
+      439,
+      0
+     ],
+     [
+      402.6,
+      317.4,
+      442,
+      0
+     ],
+     [
+      406.8,
+      317.2,
+      445,
+      0
+     ],
+     [
+      411,
+      317,
+      448,
+      0
+     ],
+     [
+      415.4,
+      316.4,
+      454.4,
+      0
+     ],
+     [
+      419.8,
+      315.8,
+      460.8,
+      0
+     ],
+     [
+      424.2,
+      315.2,
+      467.2,
+      0
+     ],
+     [
+      428.6,
+      314.6,
+      473.6,
+      0
+     ],
+     [
+      433,
+      314,
+      480,
+      0
+     ],
+     [
+      437.2,
+      313.6,
+      483.2,
+      0
+     ],
+     [
+      441.4,
+      313.2,
+      486.4,
+      0
+     ],
+     [
+      445.6,
+      312.8,
+      489.6,
+      0
+     ],
+     [
+      449.8,
+      312.4,
+      492.8,
+      0
+     ],
+     [
+      454,
+      312,
+      496,
+      0
+     ],
+     [
+      458.2,
+      311.4,
+      502.2,
+      0
+     ],
+     [
+      462.4,
+      310.8,
+      508.4,
+      0
+     ],
+     [
+      466.6,
+      310.2,
+      514.6,
+      0
+     ],
+     [
+      470.8,
+      309.6,
+      520.8,
+      0
+     ],
+     [
+      475,
+      309,
+      527,
+      0
+     ],
+     [
+      479.2,
+      308.6,
+      530,
+      0
+     ],
+     [
+      483.4,
+      308.2,
+      533,
+      0
+     ],
+     [
+      487.6,
+      307.8,
+      536,
+      0
+     ],
+     [
+      491.8,
+      307.4,
+      539,
+      0
+     ],
+     [
+      496,
+      307,
+      542,
+      0
+     ],
+     [
+      500.4,
+      306.8,
+      545,
+      0
+     ],
+     [
+      504.8,
+      306.6,
+      548,
+      0
+     ],
+     [
+      509.2,
+      306.4,
+      551,
+      0
+     ],
+     [
+      513.6,
+      306.2,
+      554,
+      0
+     ],
+     [
+      518,
+      306,
+      557,
+      0
+     ],
+     [
+      522.2,
+      306.2,
+      560,
+      0
+     ],
+     [
+      526.4,
+      306.4,
+      563,
+      0
+     ],
+     [
+      530.6,
+      306.6,
+      566,
+      0
+     ],
+     [
+      534.8,
+      306.8,
+      569,
+      0
+     ],
+     [
+      539,
+      307,
+      572,
+      0
+     ],
+     [
+      543.2,
+      307.4,
+      578.4,
+      0
+     ],
+     [
+      547.4,
+      307.8,
+      584.8,
+      0
+     ],
+     [
+      551.6,
+      308.2,
+      591.2,
+      0
+     ],
+     [
+      555.8,
+      308.6,
+      597.6,
+      0
+     ],
+     [
+      560,
+      309,
+      604,
+      0
+     ]
+    ],
+    "created_at": "2026-09-30T16:15:23.924Z",
+    "source": {
+     "title": "整个屏幕",
+     "viewport": {
+      "width": 1280,
+      "height": 800,
+      "dpr": 2
+     },
+     "scroll": {
+      "x": 0,
+      "y": 0
+     }
+    },
+    "anchor": null,
+    "derived_from": "stk_906f8b0b7fc1e9bae49d17333f1d617c"
+   },
+   "stk_fa4eea68a0cabb16d436894d14d4d9e1": {
+    "id": "stk_fa4eea68a0cabb16d436894d14d4d9e1",
+    "input": "mouse",
+    "display": "screen",
+    "points": [
+     [
+      45,
+      487,
+      0,
+      0
+     ],
+     [
+      60,
+      487,
+      84,
+      0
+     ],
+     [
+      76,
+      487,
+      99,
+      0
+     ],
+     [
+      91,
+      487,
+      115,
+      0
+     ],
+     [
+      107,
+      487,
+      130,
+      0
+     ],
+     [
+      122,
+      487,
+      161,
+      0
+     ],
+     [
+      138,
+      487,
+      177,
+      0
+     ],
+     [
+      153,
+      487,
+      191,
+      0
+     ],
+     [
+      168,
+      487,
+      222,
+      0
+     ],
+     [
+      184,
+      487,
+      238,
+      0
+     ],
+     [
+      199,
+      487,
+      254,
+      0
+     ],
+     [
+      215,
+      487,
+      269,
+      0
+     ],
+     [
+      230,
+      487,
+      300,
+      0
+     ]
+    ],
+    "created_at": "2026-09-30T16:15:33.019Z",
+    "source": {
+     "title": "整个屏幕",
+     "viewport": {
+      "width": 1280,
+      "height": 800,
+      "dpr": 2
+     },
+     "scroll": {
+      "x": 0,
+      "y": 0
+     }
+    },
+    "anchor": null,
+    "derived_from": null
+   },
+   "stk_ba8917bee3f4243782457a435185dfe2": {
+    "id": "stk_ba8917bee3f4243782457a435185dfe2",
+    "input": "pen",
+    "display": "screen",
+    "points": [
+     [
+      30,
+      70,
+      0,
+      0
+     ],
+     [
+      102,
+      111,
+      91,
+      0
+     ],
+     [
+      174,
+      151,
+      107,
+      0
+     ],
+     [
+      246,
+      192,
+      138,
+      0
+     ],
+     [
+      318,
+      233,
+      152,
+      0
+     ],
+     [
+      389,
+      273,
+      168,
+      0
+     ],
+     [
+      461,
+      314,
+      199,
+      0
+     ],
+     [
+      533,
+      354,
+      231,
+      0
+     ],
+     [
+      605,
+      395,
+      248,
+      0
+     ],
+     [
+      677,
+      436,
+      263,
+      0
+     ],
+     [
+      749,
+      476,
+      295,
+      0
+     ],
+     [
+      821,
+      517,
+      309,
+      0
+     ],
+     [
+      893,
+      558,
+      325,
+      0
+     ],
+     [
+      964,
+      598,
+      341,
+      0
+     ],
+     [
+      1036,
+      639,
+      357,
+      0
+     ],
+     [
+      1108,
+      679,
+      387,
+      0
+     ],
+     [
+      1180,
+      720,
+      402,
+      0
+     ]
+    ],
+    "created_at": "2026-09-30T16:15:42.541Z",
+    "source": {
+     "title": "整个屏幕",
+     "viewport": {
+      "width": 1280,
+      "height": 800,
+      "dpr": 2
+     },
+     "scroll": {
+      "x": 0,
+      "y": 0
+     }
+    },
+    "anchor": null,
+    "derived_from": null
+   },
+   "stk_931aa42890cf5baa6d55ba6e5cd4363c": {
+    "id": "stk_931aa42890cf5baa6d55ba6e5cd4363c",
+    "input": "mouse",
+    "display": "screen",
+    "points": [
+     [
+      45,
+      330,
+      0,
+      0
+     ],
+     [
+      61,
+      330,
+      89,
+      0
+     ],
+     [
+      76,
+      330,
+      105,
+      0
+     ],
+     [
+      92,
+      330,
+      120,
+      0
+     ],
+     [
+      107,
+      330,
+      135,
+      0
+     ],
+     [
+      123,
+      330,
+      151,
+      0
+     ],
+     [
+      138,
+      330,
+      182,
+      0
+     ],
+     [
+      154,
+      330,
+      197,
+      0
+     ],
+     [
+      169,
+      330,
+      228,
+      0
+     ],
+     [
+      185,
+      330,
+      243,
+      0
+     ],
+     [
+      200,
+      330,
+      275,
+      0
+     ]
+    ],
+    "created_at": "2026-09-30T16:15:48.736Z",
+    "source": {
+     "title": "整个屏幕",
+     "viewport": {
+      "width": 1280,
+      "height": 800,
+      "dpr": 2
+     },
+     "scroll": {
+      "x": 0,
+      "y": 0
+     }
+    },
+    "anchor": null,
+    "derived_from": null
+   },
+   "stk_0cf629bdfb7da53ed3cf181260946f78": {
+    "id": "stk_0cf629bdfb7da53ed3cf181260946f78",
+    "input": "pen",
+    "display": "screen",
+    "points": [
+     [
+      30,
+      80,
+      0,
+      0
+     ],
+     [
+      101,
+      121,
+      100,
+      0
+     ],
+     [
+      173,
+      161,
+      130,
+      0
+     ],
+     [
+      244,
+      202,
+      161,
+      0
+     ],
+     [
+      315,
+      243,
+      208,
+      0
+     ],
+     [
+      386,
+      283,
+      239,
+      0
+     ],
+     [
+      458,
+      324,
+      255,
+      0
+     ],
+     [
+      529,
+      364,
+      270,
+      0
+     ],
+     [
+      600,
+      405,
+      286,
+      0
+     ],
+     [
+      671,
+      446,
+      301,
+      0
+     ],
+     [
+      743,
+      486,
+      332,
+      0
+     ],
+     [
+      814,
+      527,
+      364,
+      0
+     ],
+     [
+      885,
+      568,
+      378,
+      0
+     ],
+     [
+      956,
+      608,
+      410,
+      0
+     ],
+     [
+      1028,
+      649,
+      426,
+      0
+     ],
+     [
+      1099,
+      689,
+      457,
+      0
+     ],
+     [
+      1170,
+      730,
+      473,
+      0
+     ]
+    ],
+    "created_at": "2026-09-30T16:15:51.071Z",
+    "source": {
+     "title": "整个屏幕",
+     "viewport": {
+      "width": 1280,
+      "height": 800,
+      "dpr": 2
+     },
+     "scroll": {
+      "x": 0,
+      "y": 0
+     }
+    },
+    "anchor": null,
+    "derived_from": null
+   }
+  },
+  "visible": [
+   "stk_4396afbdcc320c932444e76a33dcbea9",
+   "stk_8c836e85d723fdf8efc856bb56ff8fa8",
+   "stk_fcb398f55bc73afaf9a555d9ffeb4dc1",
+   "stk_897d6ffa97033117404ece03ac19cb9f",
+   "stk_fa4eea68a0cabb16d436894d14d4d9e1",
+   "stk_931aa42890cf5baa6d55ba6e5cd4363c",
+   "stk_0cf629bdfb7da53ed3cf181260946f78"
+  ],
+  "history": [
+   {
+    "at": "2026-09-30T16:15:23.924Z",
+    "op": "add",
+    "added": [
+     "stk_906f8b0b7fc1e9bae49d17333f1d617c"
+    ],
+    "removed": [],
+    "seq": 1
+   },
+   {
+    "at": "2026-09-30T16:15:24.872Z",
+    "op": "add",
+    "added": [
+     "stk_fcb398f55bc73afaf9a555d9ffeb4dc1"
+    ],
+    "removed": [],
+    "seq": 2
+   },
+   {
+    "at": "2026-09-30T16:15:26.148Z",
+    "op": "add",
+    "added": [
+     "stk_897d6ffa97033117404ece03ac19cb9f"
+    ],
+    "removed": [],
+    "seq": 3
+   },
+   {
+    "at": "2026-09-30T16:15:28.912Z",
+    "op": "erase",
+    "added": [
+     "stk_4396afbdcc320c932444e76a33dcbea9",
+     "stk_8c836e85d723fdf8efc856bb56ff8fa8"
+    ],
+    "removed": [
+     "stk_906f8b0b7fc1e9bae49d17333f1d617c"
+    ],
+    "seq": 4
+   },
+   {
+    "at": "2026-09-30T16:15:29.849Z",
+    "op": "undo",
+    "target_seq": 4,
+    "added": [
+     "stk_906f8b0b7fc1e9bae49d17333f1d617c"
+    ],
+    "removed": [
+     "stk_4396afbdcc320c932444e76a33dcbea9",
+     "stk_8c836e85d723fdf8efc856bb56ff8fa8"
+    ],
+    "seq": 5
+   },
+   {
+    "at": "2026-09-30T16:15:30.784Z",
+    "op": "redo",
+    "target_seq": 4,
+    "added": [
+     "stk_4396afbdcc320c932444e76a33dcbea9",
+     "stk_8c836e85d723fdf8efc856bb56ff8fa8"
+    ],
+    "removed": [
+     "stk_906f8b0b7fc1e9bae49d17333f1d617c"
+    ],
+    "seq": 6
+   },
+   {
+    "at": "2026-09-30T16:15:33.019Z",
+    "op": "add",
+    "added": [
+     "stk_fa4eea68a0cabb16d436894d14d4d9e1"
+    ],
+    "removed": [],
+    "seq": 7
+   },
+   {
+    "at": "2026-09-30T16:15:42.541Z",
+    "op": "add",
+    "added": [
+     "stk_ba8917bee3f4243782457a435185dfe2"
+    ],
+    "removed": [],
+    "seq": 8
+   },
+   {
+    "at": "2026-09-30T16:15:47.518Z",
+    "op": "undo",
+    "target_seq": 8,
+    "added": [],
+    "removed": [
+     "stk_ba8917bee3f4243782457a435185dfe2"
+    ],
+    "seq": 9
+   },
+   {
+    "at": "2026-09-30T16:15:48.736Z",
+    "op": "add",
+    "added": [
+     "stk_931aa42890cf5baa6d55ba6e5cd4363c"
+    ],
+    "removed": [],
+    "seq": 10
+   },
+   {
+    "at": "2026-09-30T16:15:51.071Z",
+    "op": "add",
+    "added": [
+     "stk_0cf629bdfb7da53ed3cf181260946f78"
+    ],
+    "removed": [],
+    "seq": 11
+   }
+  ]
+ },
+ "evidence": {
+  "stk_906f8b0b7fc1e9bae49d17333f1d617c": {
+   "frame_seq": 26,
+   "frame_sampled_at": "2026-09-30T16:15:23.319Z",
+   "region": {
+    "x": 42,
+    "y": 298,
+    "width": 526,
+    "height": 28
+   },
+   "fingerprint": "+/v7+/v7+4H7+/v7+/v7+/v7+/v7+/v3+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v76nT6++1U+1P7U/X7+vv7+/v6l/sc+/v7rPv7+jj6+/v78uL7ovv7+7/7+tEc+/r7+yn6+7dZ+/v7+6zEHPf6+/v7+/tb+/r7Vvtg+RvK5/v3WkD7jBv6dWN99Pv3+/t8+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+8P7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+w==",
+   "detail": {
+    "cols": 263,
+    "rows": 14,
+    "luma": "+/vg+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/vDyvv7+/v7+/v7+/v7+/v7+/v7+/v796hg6Pv7+/v7+/v7+9uz+/vBfK7ZjoT7+/v7+/v7+/v7+/v7+/v7+/v7+/v4nXT7+/v7+/v7+/v3lHv7+/v7+/v7+/v7+/v7+/v7+/v7+9HC6fv1wsLT+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v6kcf7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v6z2mz+/vsgpD7+/v76Dn3+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+p+r+/v7+/v7+/v7+/v7+/v7+/v7+/uctNj4+/v7+/v7pPD7woj752js41j21/v7+/v7+/v7+/v7+/v7+/v7+/v7+/u1dfv7+/v7+/v7+/vYUPv7+/v7+/v7+/v7+/v7+/v7+/v720hP9/nAS977+/v7+/v7+/v7+/v2nvv7+/v7+/v7+/v7+/p2vvv7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v6ipv7+/vCbPv7+/ugQLj7+/v7+vv7+vv7+/v7+/r7+/v7+/r7+/r7+/v7+/r7+/r7+/r7+/v7+/r7+/v7+vv6+/v7+/v7+vv7+/v7+/r6+/v6+/r7+/v7+/v7+vv7+/v6+/v7+vr6+/v7+/v6+/v7+mvH+/v7+/v6+/pN5vv6+/u/c/v0P/v7+/v6+/v7+vr7+/v6+/v7+vv7+/v7+4Gq+/v7+/v7+vv7+9hQ+/v7+/v7+/v6+vv7+vv6+vv7+/v7lmSG+/qS+/v6+/v7+vv7+/v6+/NB+/v7+vv7+/r7+vv7+6Pq+/r7+/v7+/v6+/v7+vv7+/v6+vv7+/v7+/v6+/r7+/v7+vuOm/v7+8Rs+/v7+o+eYfv7+/vNK5lrW6ZjaPvfeZ5i+tGJn3n1f6hY9/v71EaXojyynDny+/v6j5qTlvZ1Wo1Cu/v7+995nmL6+/v3gahZ7HJWllG37FpvWYtfk+xacYM91/l2oURw3/v753anddG6Q3fJ+/vKjJx/sTGFxX5j4nBKoY8ukcYsmW1V+faFpm3dvJOWi+t/pmL7+/v6Td60MuH7+8l7pXPt2D2ZWpb7yImbg8Mlv+tayIGoWfL7+/uW6jq/+pf72IKjdNo8l/pS7MBgjC2R47CIoHz4nz2WT5L7+/u8k5aL+/v7l6V4vO6Ap2rq23qjdfubk5mK+oNPkEaq+851qFCc+/v7xGz7rpHHv+sn5fv7+/pE3Po45/kv98Ob8jnol3zoz+BH1NL3+/v6X8H6UdD6O/H7+8dZ+/pF1bRt+692+/v7w5vyOej7++lC0NbztHX74C/4jpXl6KGS+46T+4mc5z77k5f7+/pyrvvQS/poyfv7+46D68/7ROX7zmL7vHX78kD7+kTd+kDmo3XIhX98ke/Pxlrc0Pv7+/I7rND7+/v6POX7mYLYUPv1Md8/w8g35Xel+aPpQtDW8/v7+5b4yTTml/pYr8hKyZuH2Umjw9XrP/vuN/j6c6fiP/rdSfv7+nuR78/7+/pNuO/Yh4zIb5tcyuwx10j7+ljExFr7wWP6Qtv7jpv7+/vEbPuK04iQkE+U+/v7+kTl+j3v+jT23Im8P+nxhjuF+q5QS+z7+/k49PU3+N1P+/v7p277+ly8tHX7tHX7+/vcibw/6fv7+rNUR+e0dfv5KO6Om/v7oZL7jpv7jpv6fptu4vv7+lLC++gv+mjJ+/v774I6jPpE5fvOYvu8dfvyQPv6ROX6ROaDeMLC2ul5OJz5nkdd9vv7xUZB5Pv7+/Yi9vuyZ9hQ+/pMwyTAwsLz00i/3vqzVEfn+/v7lvj7kliV+jqwwsLs5UOj0VKi++s/+9RB+/uLjONI++JI+/v76Xk4nPv7+9FmOMZojsLC4Dra+/q4XPv6b6rEYvvEYvch9fuOm/v7+8Rs+7WYjvv7wz35+/v6ROb6Pe/6NPZ1pvc37ozw+FC9wPqEw/v72VD7y1/7pIL7+/vaSfn2Q+q0dfu0dfv7+nWm9zfv+/vFt/qOurRt+9pL+o6b+/uhkvuOm/uOm/pm7vj7+/v7jJb7vGv6acn7+/qK8vdS+kbY+85i+7x1+/JA+/pE5vpE5rhW+Pe2hffyVabY+mnf+/uSm52D+/v7+lXO+oWi2Ej78UDwUbz7xej6UYP7xbf6jrr7+/qF7vv4WHb6baD719X6U5T6S5377TL69T3r+mDH4kj74kj7+/qF9/JV+/v5hPvFgpxx++++aJf7ydQ/9vlL3cRj+8Rj+lK4+4Cc+/v7xGz6LO9z2PqfU5D6+tZeqdVatc9XvMZln4uappKov9CIp6H5+/vAnfuzqfu+cNv7+/u/mZfK+JBr4I9t5/v7x2Wfi5r7+9aEp5/3tEmmjOTvfnvk9IN24X574X1+839IR0br+/v3mKeR7uNpj/D7+qKTp8P7n2e+n2PckmvWu1i+1l6p1F2u+qBxkOyYlqXMvJCpq/v7+onU82ih+fv754+mn/rgiKKS1PvjcYO1+/unvPvWhKef9/v6wF596vvknfvsen+o+/uu2Pus2vv6dnjY15GhsfuxW9GuXNX7+piWpcz7+/l8op3n+I91lvTqdYK4+8mVm8D6nGTcmWbg43CQiX/r+/qVZ+CTdfv7+/r6+/v7+vr7+/r7+vr7+/r7+/v7+vv7+/v7+/v7+/v7+/v7+/v7+/v7+/v6+/v7+vv7+vv7+/v7+vv7+/v7+/v7+/u0dfv7+/v6+/v7+vv7+vv7+vu0g/v6fsL7+/v7+/v7+/r7+/v7+/r7+/v7+/v6+/v6+vv6+vv7+vv6+vv7+/v7+/v6+/v7+/v7+/v7+/v7+vv7+/v7+vv7+/v7+vv7+/v6+/vn7KH5+/v7+/v7+/v6+vv7+/v7+/v6+/v7+/v7+/v7+/v6+/v7+vv7+/r6+/r6+/v7+/r7+/v7+/r7+/v7+/r7+/v6+/v7+/r7+/v6+/v6+/v7+vv7+/v7+/r7+/r7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v79HtF0/v7+/v7+/v7+/v7+/v7+9pnpKeN9/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+5tOzfv7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+vv7+/v7+/v7+/v7+/v7+/v7+/r7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+w=="
+   },
+   "contexts": [
+    {
+     "reason": "writing_started",
+     "from_point": 0,
+     "frame_seq": 26,
+     "frame_taken_at": "2026-09-30T16:15:23.319Z",
+     "frame_pixels_sha256": "efa59323cadd83945f4a43781f3ecc5389797d079caeba6a8ae4e3c588879408",
+     "region": {
+      "x": 2,
+      "y": 258,
+      "width": 606,
+      "height": 108
+     },
+     "region_px": {
+      "x": 4,
+      "y": 516,
+      "width": 1212,
+      "height": 216
+     },
+     "image": {
+      "sha256": "02421bc37b1351e12d5239657030b85bf6ff45098a94afa7c2bb7070afb38714",
+      "width": 1212,
+      "height": 216
+     },
+     "not_observed": [
+      "source_app",
+      "source_link",
+      "page",
+      "media_position"
+     ]
+    }
+   ],
+   "changes_not_kept": 0
+  },
+  "stk_fcb398f55bc73afaf9a555d9ffeb4dc1": {
+   "frame_seq": 28,
+   "frame_sampled_at": "2026-09-30T16:15:24.651Z",
+   "region": {
+    "x": 292,
+    "y": 515,
+    "width": 62,
+    "height": 58
+   },
+   "fingerprint": "+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+w==",
+   "detail": {
+    "cols": 62,
+    "rows": 58,
+    "luma": "+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/s="
+   },
+   "contexts": [
+    {
+     "reason": "writing_started",
+     "from_point": 0,
+     "frame_seq": 28,
+     "frame_taken_at": "2026-09-30T16:15:24.651Z",
+     "frame_pixels_sha256": "efa59323cadd83945f4a43781f3ecc5389797d079caeba6a8ae4e3c588879408",
+     "region": {
+      "x": 252,
+      "y": 475,
+      "width": 142,
+      "height": 138
+     },
+     "region_px": {
+      "x": 504,
+      "y": 950,
+      "width": 284,
+      "height": 276
+     },
+     "image": {
+      "sha256": "079ca61da2b35da758ec3bcd96310a79084a16ec14aba4be88d130626fe4859d",
+      "width": 284,
+      "height": 276
+     },
+     "not_observed": [
+      "source_app",
+      "source_link",
+      "page",
+      "media_position"
+     ]
+    }
+   ],
+   "changes_not_kept": 0
+  },
+  "stk_897d6ffa97033117404ece03ac19cb9f": {
+   "frame_seq": 29,
+   "frame_sampled_at": "2026-09-30T16:15:25.701Z",
+   "region": {
+    "x": 82,
+    "y": 384,
+    "width": 246,
+    "height": 22
+   },
+   "fingerprint": "8/Pz8/Pz8/Pz8/PzDfPz82Ty8/Pz3/LzL/Pz8+Ov8vPzG/Pz8/Mb8x7z8/MMsxvz8/Pz7vPz8/Mi2POQDTLz8/Pz88vz8/Pz5h/zkPLw8/PzG/Pz8/Mb893z85Dznhvz8/Lz8/Pz8vMj8/OC8xvy8/Lz8/Pz8/Pz5fPzNPND8/Mv8/Pz89bz89bz83XzQ/Pz8/Pz8/Ly8/Pz8/Py8/Lz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8w==",
+   "detail": {
+    "cols": 164,
+    "rows": 14,
+    "luma": "sdLqvLHO8vPz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8+90aPDjtrG96vPz78Kxs+bbs7Pi8vPz8/Pz8/Pz8/Pz8/PxnY/o8/Pz8/Pz8/Pz57mxvvHFsbvy8/Pz8/Pz8+tPnfPz8/Pz8/Pz8/Pv0Ovz8/HR5fLz8rNm15108PPz8960ssTuwrLD7/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8+5bU+02yuyIQM7z8/Pz1ZWUlJSUlJSUltny8/Pz8/Pz8/Pz8/Pz8/Pz73Ro8OhfOsbv8/PxxS1t6+NQfOry8/Pz8/Py0JaUlJSUlJSNPmnn8vPz8/Pz8/PtiCmr8cEwrPLz8/Pz8/Pz60+d8/Pz8/Pz8/Pz7YZv6/Pz8rBV3fLsOjM6cczw8/Pz6HkixfCuNcPx8/Pz0JaUlJSUlJSUmdry8/Pz4ERo8keY2W3M8fPz8/PPe3p6enp6enp80/Lz8/Py8O7u7u7u7u7u8PLwdGjvw1nN8vPz8/PwqEDMrnjm8vPz8/Pz8/LHfHp6enp6ent5XW7h8vPz8/Pz8/PsbmnfgKTv8/Pz8/Lv7u7mTZru7u7w8/Pz8/GtQNvy3c3x739r7fLs6eeaTOzu8fPy3VB83XvA8fPz8/PHfHp6enp6enp+1PLz8/LZPWvzwS5XxvLz8/Pz8/Lw8PDw8PDw8PHy8/Pz8/BIJiYmJiYmJidk8vBzZr9N3fPz8/Pz8/PtajBl7fPz8/Pz8/Pz8/Lx8PDw8PDw8PDXPXHx8/Pz8/Pz8/PaP0aj7/Pz8/Pz1j4mJiUgISYmJ3Lz8/Pz8Ed87/GaS+/yxC6789Y2GD9mGBq68vPx1Cs9sfLz8/Pz8/Lx8PDw8PDw8PHy8/Pz8tk9a/PkTTnU8vPz8/Pzznl5eXl5eXl5etLy8/Pz8czDw8PDw8PDxNLy73NGfTSq8vPz8/Pz8/G/Infv8/Pz8/Pz8/Pyxnt5eXl5eXl5eFtp4fLz8/Pz8/Pz8+52K7Lx8/Pz8/PrycPDvkSBxMPE1fPz8/PoIpnx8ZhJ7vLONJTz7MfB0+TBweXz8/PwZC7H8/Pz8/Pzxnt5eXl5eXl5fdTy8/Pz4URf8pumY2Hr8vPz8/PXmZiYmJiYmJia2/Lz8/Pz8vLy8vLy8vLy8vPvc2jtgDvM8vPz8/Pz3l+4NZ7w8/Pz8/Pz8/LSmZiYmJiYmJJAaOjy8/Pz8/Pz8/PywXubONfz8/Pz8/Py8vLqT5zy8vLy8/Pz8+0rk/HxlUbt8ssznPPz8vLy8vLy8/Pz7qJ8aknf8vPz8/PSmZiYmJiYmJic3PLz8/PvWUrncefROoDr8/Pz8/Lx8fHx8fHx8fHy8/Pz8/Pz8/Pz8/Pz8/Pz8+5vY+/oaknf8fPz8+t3uO6VNcXx8/Pz8/Pz8/Lx8fHx8fHwnYzn8vPz8/Pz8/Pz8s9e2uVYVeDy8/Pz8/Pz8+tPnfPz8/Pz8/Pz8XZT6u5tLtTuoTXZ8/Pz8/Pz8/Pz8/C+cuneSnPv8vPz8/Lx8fHx8fHx8fHy8/Pz8/OzMb+J7NlYR7Hy8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/PzzVRNy/GxP3Dh8/PqhU/H8KtAXNzy8/Pz8/Pz8/Pz8/Pz8/Lm7PLz8/Pz8/Pz8/PcXWPk6XZAiPDz8/Pz8/Pz61Cd8/Pz8/Pz8/Py3W10hYazcI1evfHz8/Pz8/Pz8/PzyVOA7+JoP5vu8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8++eW+Tw6+Dg5vLz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pn4eHn8ebg4e7z8/Dj4enx5ODh6/Lz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8+zh4u7v4uDh8vPz8/Pz8/PulcHz8/Pz8/Pz8/Pz7uLj8fLp4ery8/Pz8/Pz8/Pz8/Pn4eHx6+Hh5fHz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Hm8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8w=="
+   },
+   "contexts": [
+    {
+     "reason": "writing_started",
+     "from_point": 0,
+     "frame_seq": 29,
+     "frame_taken_at": "2026-09-30T16:15:25.701Z",
+     "frame_pixels_sha256": "efa59323cadd83945f4a43781f3ecc5389797d079caeba6a8ae4e3c588879408",
+     "region": {
+      "x": 42,
+      "y": 344,
+      "width": 326,
+      "height": 102
+     },
+     "region_px": {
+      "x": 84,
+      "y": 688,
+      "width": 652,
+      "height": 204
+     },
+     "image": {
+      "sha256": "dfc8efb8bad16abdb84b9cfe346feab6303c4f6b0f408506642b25393bcd85a7",
+      "width": 652,
+      "height": 204
+     },
+     "not_observed": [
+      "source_app",
+      "source_link",
+      "page",
+      "media_position"
+     ]
+    }
+   ],
+   "changes_not_kept": 0
+  },
+  "stk_fa4eea68a0cabb16d436894d14d4d9e1": {
+   "frame_seq": 37,
+   "frame_sampled_at": "2026-09-30T16:15:32.718Z",
+   "region": {
+    "x": 37,
+    "y": 479,
+    "width": 201,
+    "height": 16
+   },
+   "fingerprint": "+zOcGr7wf437s/tO4jTX+mcbJZgdTfkc9/uenkHrL/v6+/pB+vv7+vv7+/r7+/v7+/v7v/v7+/v7+/v7+/v7+/v7+7f7+/v7+/v7+/v7+/v7+/sr+/v7+/v7+/v7+/v7+/v7yPv7+/v7+/v7+/v7+/v7+/r7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+w==",
+   "detail": {
+    "cols": 201,
+    "rows": 16,
+    "luma": "+/v7+/v6+vUzG6D7+/v7+vprG8r7+vprG8r7+ssjK6fp3nCB+/v7+/v7+Dgnc4CFirP5+/qdGkW778tQtfv6kBuf+/v6jhui+/vhMyCU5eaKX/j69iUz+Pv7+ughJLfqmT0bs/v6+T8m8Pv7+/v7+oAft/v63CXO+/FIOuf6+XQm0fv6+T8m8Pv65SEsxeWGShui+/v6eRpn0LTw+ncbwvv76j1G7vr3ZC7c+/r2JTP3+/r1JDX5+/v7+/v7+q4bivr6STba+/uq+/v7+/rwWCobGxs1ufv68nIhGzKf6nEgGzKs+/vSZCIbPaT6+/v7+/v7+9NVGxsbGxtl+vv6s08eHVTD+/qILBsjhvl9LBsnkvv64XIpGzCP9/rMVhsbRaH7+/quMxs9qtk2HmvXXBsbP8T7+/v7+ox8W01eV8P7+/ryiz1gRGza+/vWXBsbP8T7+qwtG0S9khsqmPv62UAbKnrudyEbLqD7+u6CPWJBc+L7+8xWGxtJz8BXGxtP2vv7+/v6nzEbIHf5WZRHWldn+/v7+/v6+vr6+vr7+/v7+vr6+vv7+vr6+vv7+/v7+vr6+/v7+/v7+/v7uTON5fDqzlYczPv7+/v6+/v7+/v7+vr7+/v7+vr7+/v7+vr6+vv7+/v7+/r6+/v7+/v6+vr7+/r7+/v6+/r6+/v7+/v7+/r7+vv6+/v7+/v6+/r6+vv7+/v7+/r6+/v7+/r6+vv7+vr7+/v7+/v6+/v7+/r6+/v7+/r7+vr6+/v7+/v7+vr7+/r7+vr7+/v7+/v7+vr6+/v7+vv6+/r7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/vzKVb6+/v6+rcbtvv7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/vyJE/5+/r6+pEs6/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v6nh5jtdbDfDrI+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7++emi4uRxvn7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/r6+vr7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7"
+   },
+   "contexts": [
+    {
+     "reason": "writing_started",
+     "from_point": 0,
+     "frame_seq": 37,
+     "frame_taken_at": "2026-09-30T16:15:32.718Z",
+     "frame_pixels_sha256": "efa59323cadd83945f4a43781f3ecc5389797d079caeba6a8ae4e3c588879408",
+     "region": {
+      "x": 0,
+      "y": 439,
+      "width": 278,
+      "height": 96
+     },
+     "region_px": {
+      "x": 0,
+      "y": 878,
+      "width": 556,
+      "height": 192
+     },
+     "image": {
+      "sha256": "1f7e5b90f258738fb559faa05e3c05ad02efd392d53691bf48dcc2560c63cffc",
+      "width": 556,
+      "height": 192
+     },
+     "not_observed": [
+      "source_app",
+      "source_link",
+      "page",
+      "media_position"
+     ]
+    }
+   ],
+   "changes_not_kept": 0
+  },
+  "stk_ba8917bee3f4243782457a435185dfe2": {
+   "frame_seq": 47,
+   "frame_sampled_at": "2026-09-30T16:15:42.129Z",
+   "region": {
+    "x": 22,
+    "y": 62,
+    "width": 1166,
+    "height": 666
+   },
+   "fingerprint": "+zL7+9f7MjI+MjLK+vv7+/v7+/v7+/v7+/v7+/v7+/v33vD7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/syijL7+/v7Mt0xN/v7+/v7+/v7+/v7+//////////7+/v7+/v7+/v/////////+/Pz8wzz8/P7//////////v7+/v7+/v6+//////////7+/v7+/v7+/v/////////+/v7+/v7+/v7//////////vz8/Pz+/v7+//////////78/Pz8/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7++/7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+w==",
+   "detail": {
+    "cols": 83,
+    "rows": 47,
+    "luma": "97Tf0N/Pu9DO2Nnew+/uprbHz9DHrsrgss/M1MrNz9XVy6jY7cXR19CWwc/U0OS+rK+H8Nnd0dTLzsnU6sbdztPRz7L7+/v7+/v7+/v7+/v7+/v4uLmkt8ywm7DIwfLX8u+tt6OfqJCvmtm1i5qky7eTtKa3ka7njrafuY+vo7Ol38ipsdjPsb6dsJrHo6Tlj7GJnqu9qvv7+/v7+/v7+/v7+/v7+/r49vX19fb19ff29vn6+ff29PXu4fX19/f09PX29vX19fT09vn19fX19fb19fb28uru9/b29vb19fb29fnb8/Pj5vXy+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v66uru8u7w8PHy6+zv8ezw7uvp8evw8Orz8PHo6+/u8PHq7+f26vLv7+7w7+7u8/Xw8O7w8+7s7+/v7uzz7fHp7u3y8fDr6u7z7+vt7PHw8e7x9vjPzMbLtbnXxr/My77Q0tHEv87T0MDY1NHJ6MnEycnNydLAw9rI2cXBycvQ0sXt2MzFy8DZyMbEu7zUxdLCyLnE0MvWw7u9ud++wcu+x8jO0dfj+ur58PLr7vj58vL09/j29/H7+/v7+/v7+/n5+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+vj49/v7+/v7+/v7+/v7+/v2+fv7+/v1+/v7+/v508jJyNnMycvQxd3Ay8vK1fr7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v6+fn5+vr5+vr5+vn5+vn6+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+vf55+vz9PPk7vX09/Lo9PPz6e/09vr7+/v7+/v7+/v7+/v7+/v7+/v7+vX379vx4vP09PP19fbt8/Pf9Pr7+/v7+/v7+/v7+/v7+/v7+/v7+/v5vurHyJ+hraCwsqfYqtSgpKq1r6qs9/r6+vr6+vr6+vr6+vr6+vr6+vv5zdDgnqunqbW0n7Glyqqzqq2x+Pr6+vr6+vr6+vr6+vr6+vr6+vv7+/rp5ubjxN/i4+Tk4ujl5+Pi5OTk5OXr7e3t7e3t7e3t7e3t7e3t7e3u+vro4+fj4+Tk5uXh5OTm4+Tk5OXs7e3t7e3t7e3t7e3t7e3t7e3t9/v7+/v7+/v7+/v7+/v7+/v7+/v7+vv7+/v7+/v7+vv7+/v7+/v7+/v7+/v7+/j5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+fn5+Pr7+/v67/r7+/v7+/v7+/v4+vv38vLk9/v77/jv+/rs8/n5+vP7+/v76vH6+/v7+//////////////////////////////////////////////9+vv7+/nbzb/Cws7RxOXTt8e1ycfcx7fGvcHI0cDCwdjDtsm93NO/wr/Hxbvf+/v7//////////////////////////////////////////////36+/v7+/n49/f4+Pj4+Pj2+Pf3+Pj39/j3+Pj49/f4+fj3+Pj4+Pf39/j49/n7+/v////////+8P///////////////////////////////////fr7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+//////7883Dzdf4/f////Hx/v/////////+6OX9///////9+vv7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7///+8tfi9+r589/Z9O738NP9//////////Hs7O3///////36+/v7+/f29vb29vb29vb29vb29vby8fb29fb29vb29vH29vX29/v7+/v7+/v7+/v///PU+v/+7////OfF5vvy3en+////////4P385Pz//////fr7+/v79Ovs2+vv7dfs7+vu4Ovp7Nnf7uzb6u/t7+3k1OPc5+H0+/v7+/v7+/v7+//7wvv///7v//732evV/v//2P3///////zb/f/j+P/////9+vv7+/vzzs/F3ujqzNTj3OTP4t7O2tja4NDW483n49XKwdPC1PP7+/v7+/v7+/v7/+z0/////u/+9df6/OL5///q/f/////+4/n+//fg//////36+/v7+/Xz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8/Hy8/Px9Pv7+/v7+/v7+/v/zPr////+7vHY+///7vP//+73/v////7f/v//+t/+/////fr7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/vB8PT09PPhzvHz9PTp2fT08svx9PT089nz9PTz4u709PT8+vv7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7/8f7/v7+/e78/v7+/vPh/v7+0fr+/v745v7+/v7u9P7+/v36+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v/y/v////+7///////7vT////28v///dn9//////vT/////fr7+/v51uP07e/w7uDx4ejo8Ov1+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+//s9f7///7v//////zc+f////rs/f/92v///////dn7///9+vv7+/ne2Ny80NLQ29PZz9TZ3eT7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7//rL+P///u/////969z+/////tr7//vs///////+9vL///36+/v7+/r5+vf5+vn6+vr5+vr6+vv7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v///jY9/3+7////O7Y+///////5/D95vX////////64////fr7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/////nI7/jr+vnV3/v////////75PbY//////////3d9//9+vv7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7//////3w6dHg6/b+///////////26vz///////////7w//36+/v7+/b09PT09PT09PT09PT09PT09fv7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v////////+9P///////////////////////////////////fr7+/v7893P3uLg1+bb1tXk1d3i2NH0+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+///////////////////////////+vHz+vb39PT2+vjz///9+vv7+/vz19La7fDZ59fV0dXZ5+nAzvT7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7///////////////////////////04+n16ezl5Of37OT///36+/v7+/Xz8vL09PPz8vLy8vPz8/Ly9fv7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/f4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pf29vf29vb29vf29vj49/r7+/v7+/r6+vr6+vr6+vr6+vr6+vv7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/r5+vr5+vr6+vn5+vr6+vr6+fn6+fr6+vv7+vr6+vr6+fn6+vn5+vv7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v67tfv8N3k8O3s2Nvr1fPl7fDZ3u7r6O/w7/Hu7ezc7Ozd6Onrzujr+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/no29vj5t3j39zS4dvZ5ubf3Obf3d3a3eHS493d5OLh3Off5uDa3u37+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+ujm3d3h7eXj5eXc4Nf0+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v51NfU19Li1tXo4Nba1+j6+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v5+fn5+fn5+fr5+fn5+vv7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+vf3+ff4+Pb4+fj4+Pn49/f5+fr6+vn49/P3+vXy9/j4+Pf39vf6+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v61uLbzPLZ3uDu393e8Nfe4Ovf6d/o4+HX0dnxz8ra2t3a1N3X3/n7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+w=="
+   },
+   "contexts": [
+    {
+     "reason": "writing_started",
+     "from_point": 0,
+     "frame_seq": 47,
+     "frame_taken_at": "2026-09-30T16:15:42.129Z",
+     "frame_pixels_sha256": "efa59323cadd83945f4a43781f3ecc5389797d079caeba6a8ae4e3c588879408",
+     "region": {
+      "x": 0,
+      "y": 22,
+      "width": 1228,
+      "height": 746
+     },
+     "region_px": {
+      "x": 0,
+      "y": 44,
+      "width": 2456,
+      "height": 1492
+     },
+     "image": {
+      "sha256": "d44bfb608d1857e70bb46880da4fdbffdcf93a733f6eefd0a07a11d4c09bd3ce",
+      "width": 2456,
+      "height": 1492
+     },
+     "not_observed": [
+      "source_app",
+      "source_link",
+      "page",
+      "media_position"
+     ]
+    }
+   ],
+   "changes_not_kept": 0
+  },
+  "stk_931aa42890cf5baa6d55ba6e5cd4363c": {
+   "frame_seq": 6,
+   "frame_sampled_at": "2026-09-30T16:15:48.459Z",
+   "region": {
+    "x": 37,
+    "y": 322,
+    "width": 171,
+    "height": 16
+   },
+   "fingerprint": "+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+w==",
+   "detail": {
+    "cols": 171,
+    "rows": 16,
+    "luma": "+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7"
+   },
+   "contexts": [
+    {
+     "reason": "writing_started",
+     "from_point": 0,
+     "frame_seq": 6,
+     "frame_taken_at": "2026-09-30T16:15:48.459Z",
+     "frame_pixels_sha256": "efa59323cadd83945f4a43781f3ecc5389797d079caeba6a8ae4e3c588879408",
+     "region": {
+      "x": 0,
+      "y": 282,
+      "width": 248,
+      "height": 96
+     },
+     "region_px": {
+      "x": 0,
+      "y": 564,
+      "width": 496,
+      "height": 192
+     },
+     "image": {
+      "sha256": "f78c72624b6fc93fab4fb28b53272c5704782ad7fcb84853cc4cc04dab2bd2ce",
+      "width": 496,
+      "height": 192
+     },
+     "not_observed": [
+      "source_app",
+      "source_link",
+      "page",
+      "media_position"
+     ]
+    }
+   ],
+   "changes_not_kept": 0
+  },
+  "stk_0cf629bdfb7da53ed3cf181260946f78": {
+   "frame_seq": 9,
+   "frame_sampled_at": "2026-09-30T16:15:50.598Z",
+   "region": {
+    "x": 22,
+    "y": 72,
+    "width": 1156,
+    "height": 666
+   },
+   "fingerprint": "+/v7+/v7+/v7Mfv7M/v7+/v7+vvwJBv7IfvWG/tV+vv7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+zG+Mvr7+/v7Mvvb+vv7+/v7+9E3+/v7+//////////7+/v7+/v7+/v/////////+/Pz80bz8/P7//////////v7+/v7+/v7+//////////7+/v7+/v7+/v///////98+/v7+/v7+/v7/zL//+7///vzGvPz+/v7+//////////7+/v7+/v7+/v7+/v7+/v7+yP7+xv7+/v7+/v7+/v7+/v6JFL7+/v7+/v7+/v7+/v7+Udj+/v7+vv7+/v7+/v7+w==",
+   "detail": {
+    "cols": 82,
+    "rows": 47,
+    "luma": "97nPmq3Arp2ur7fnz+PqnLCjlK2OrpLYtI2Xmqqxib2VsYqz6Ii1k7abqKeetsvBvqaz7rKxmLedrqSn6qCii5mXxKX7+/v7+/v7+/v7+/v7+/n18vHy8vLx8vT07vf69/Xy8PHdx/Hy9PTw7/H08/Dy8vDw8/nv8fHx8vLx8vPu7L3n9fPy8/Lw8vPy8/XG8OXQ4Ojv+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/r2+Pr5+fn5+vj5+fn4+vn59Pr2+fn6+vr6+fj2+fr59vn0+vn6+vn2+fn2+fr6+vn5+vr3+Pn5+ff5+vn39/n4+vr59Pj5+vr2+Pn6+fn5+ffBx8rSv8XVz8rGxsbUzdDGwMnSyMnWyNnL4L3AydDP08nKvuXA2crDx9PPzMjh6czLycfQx8+/xMvKy9zBy73G0NrNzcDAxevPvcnD3MjTzM768/n17PHt+fn29vb4+fD27vn5+fn5+fn59fj4+fn5+fn5+fn6+fn5+fn5+fn5+fr5+fn5+vn38O70+fn5+fn5+fn6+fn5+ev5+fn59/H5+fn5+cfBwr/Vv7/ExL3XtcXAv9P6+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v6+/v7+/v7+/v7+/v7+/v6+/v7+/v6+/v7+/rz8PDw8/Lw8fLv9O/w8fDz+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+vr4+Pj4+Pf4+Pj59/j4+Pj3+Pj5+/v7+/v7+/v7+/v7+/v7+/v7+/v7+vr49/f3+Pj4+Pn4+fj4+Pj5+/v7+/v7+/v7+/v7+/v7+/v7+/v7+c7yxcu6ub+pvMS83bjWt7m6v7+7yfj7+/v7+/v7+/v7+/v7+/v7+/v7+M7mx6S8sL3Cx7jJwdWvv8KkzPv7+/v7+/v7+/v7+/v7+/v7+/v7+/na29vUrcnM0dXXzuTX5c3O09XS1NTx8/Pz8/Pz8/Pz8/Pz8/Pz8/P0+vjK0t3N09fT3t3K2NPhz9nUzt/z8/Pz8/Pz8/Pz8/Pz8/Pz8/P0+/v7+vn5+fj4+fn5+fn6+fn5+fn5+fn6+vv7+/v7+/v7+/v7+/v7+/v7+/v6+Pj49/f4+Pj49/j4+Pj4+Pj4+fn5+fn5+fn5+fn5+fn5+fn5+/v7+vn7+/v7+/v7+/v7+vv7+vn59/r7+/n5+vv6+Pn6+/r6+/v7+/j5+/v7+v3+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7++fv7+/ra1cjLytPYy+zcw86/2cray7TMxs7C1MHOyNPJvtTB2tTJx8bQxb/r+/r9//////////////////////////////////////////////n7+/v68u7r6+7x8e/z7+Tu6OLw8Ozq7evv7/Dt6e7y7+/u7PHw7ezt7evw9fv6/f////////71///////////////////////////////////5+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+v3//////Pbr2uzz+/7////4/P///////////vP3/v//////+fv7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/r9///++9TN9OL228j4+/z89eX//////////vDm2/3///////n7+/v7+fj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj4+Pj49/j4+Pj5+/v7+/v7+/v6/f//9sr1/v7q///53N3i9ebR+P////////3b//Dx/v/////5+/v7+/Ty8ujy8/Hm8vPy8+rw8PHf6PPz5vDz8/Py6tzu5fDs9fv7+/v7+/v7+v3//sr6///+6v//9tXP7////eb////////96///zfz/////+fv7+/vyxMm9z+Lcws/jytrC3NbKycrW0cPh3c/b2svHu8q62vX7+/v7+/v7+/r9/t72/v///ur/9df8+dz8//3g///////94ff//+f2//////n7+/v79PHx8fHy8vHx8fHy8fHx8fDx8fHw8vLx8fHx7O7w8O71+/v7+/v7+/v6/f7W/f////7p+Nf8/v7Y+P/+3f7//////NH////48f/////5+/v7+/r6+vr6+vr6+vr6+vr6+vr6+vr6+vr6+vr6+vn5+vn6+vv7+/v7+/v7+v390vr8/Pz65NT3/Pz83+z8/PPj+/z8/PPq/Pz8+t36/Pz8+fv7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/r9+s/29/f39t/x9/f39+Hi9/f31vb39/fs8Pf39/fT8/f39/n7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v6/f7U/f////7q///////b9f///uP+///94Pz/////7+3////5+/v7+u7y9/X19fXx9vHz8/b0+Pv7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+v3+2vz////+6v/////82Pr////p+v7/+dn///////rm/v//+fv7+/nOxsuztri1zbTFuLzHzdz7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/r9/u/Y/f///ur////+9t/+////+tn9/+r1///////95Pv///n7+/v79/b36/X29vb49/b39/f5+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v6/f//3/D9//7q///++NP6///////Y+/7m+v///////+jz///5+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+v3////Z1vj96v//3tX5////////8fT15P/////////63f7/+fv7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/r9/////vnSzsrSzPD9//////////7b2/z///////////Lv//n7+/v79/f39/f39/f39/f39/f39/f3+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v6/f/////+/fvp/Pz+/////////////v7+///////////+/v/5+/v7+/Tu3uTt7+Pt7Ozj7+bp7O3e9Pv7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+v3//////////f////////////////37/P79/fz8/f39/f//+fv7+/vzzMjZ5OLQ4c3Fy9PN2uO8zPT7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/r9///////////////////////////s4uzy4+ng5eny4+z///n7+/v79fHu7fPz8vHw8O7x8vLx7u71+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v6+/z8/Pz8/Pz8/Pz8/Pz8/Pz8/Pz8+vn6+vr6+Pn6+vj6/Pz4+/v7+/r6+vr6+vr6+vr6+vr6+vr6+vv7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/r6+vr6+vr6+vr6+vr6+vr6+vr6+vr6+vr6+vr6+vr6+vr6+vv7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/r7+/r7+/v7+vr7+/v7+/v6+/v7+/v7+/v7+/v7+/v7+/v7+vr7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/To9vbq8Pb19Onp8+j28vT06e318PX19/b29fXx6/T06vPx8+Tx9/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/nSvsDO08HSxsu5zcC229XGv9THyci8wsrKxL3C0dDIxtLF2M29w/D7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v69vLu7vP09O/x8O3w8fb5+Pj4+Pj49/f4+Pj49/j4+Pj4+Pj4+Pf6+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+c/PyMzG3szM4tjL0Mzo+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/rx9/b39/f39/j49/fy+fv7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v6+fj6+Pn5+Pn6+fn5+vn5+fr6+vr6+fn59/n69/f5+fn5+Pj4+fv7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+tDb58/02+Pg7uLl4vbZ4uLr4fHv6uPg4dPi8MnP49zr3tza1t36+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/r08Orw9u/w9Pfz8fD07vD09vPy8vbl8u/s8fjx7vDx8vDv8fD3+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/v7+/s="
+   },
+   "contexts": [
+    {
+     "reason": "writing_started",
+     "from_point": 0,
+     "frame_seq": 9,
+     "frame_taken_at": "2026-09-30T16:15:50.598Z",
+     "frame_pixels_sha256": "efa59323cadd83945f4a43781f3ecc5389797d079caeba6a8ae4e3c588879408",
+     "region": {
+      "x": 0,
+      "y": 32,
+      "width": 1218,
+      "height": 746
+     },
+     "region_px": {
+      "x": 0,
+      "y": 64,
+      "width": 2436,
+      "height": 1492
+     },
+     "image": {
+      "sha256": "9b274e7fb49d2a308f285a6a6f0f15dae89f62b5b0b794606f4b82afb7e211a2",
+      "width": 2436,
+      "height": 1492
+     },
+     "not_observed": [
+      "source_app",
+      "source_link",
+      "page",
+      "media_position"
+     ]
+    }
+   ],
+   "changes_not_kept": 0
+  }
+ }
+}

@@ -14,9 +14,23 @@
   table { border-collapse: collapse; font-size: 18px; }
   td, th { border: 1px solid #8a8a8a; padding: 4px 10px; }
   .note { color: #6b3a00; font-style: italic; }
+  /* QA-WIN-01 retest panel: hidden (no layout) until the harness shows it. Fixed and absolutely laid out, so the
+     changing glyphs sit at exact viewport CSS px: child (x, y) -> viewport (42 + x, 42 + y). */
+  #qa-live { position: fixed; left: 40px; top: 40px; width: 720px; height: 300px; box-sizing: border-box;
+             border: 2px solid #12355b; background: #ffffff; font: 28px/36px Georgia, "Times New Roman", serif; z-index: 5; }
+  #qa-live > span { position: absolute; height: 36px; white-space: nowrap; }
+  #qa-live > span.v { width: 30px; text-align: center; }
 </style>
 </head>
 <body>
+<aside id="qa-live" hidden>
+  <span style="left:20px;top:20px">x</span><span class="v" id="qa-sign" style="left:60px;top:20px">−</span><span style="left:100px;top:20px">1 = 2</span>
+  <span style="left:20px;top:80px">ω =</span><span class="v" id="qa-digit" style="left:80px;top:80px">3</span><span style="left:120px;top:80px">rad/s</span>
+  <span style="left:20px;top:140px">v =</span><span class="v" id="qa-cross" style="left:80px;top:140px">2</span><span style="left:120px;top:140px">m/s</span>
+  <span style="left:20px;top:200px">step</span><span class="v" id="qa-step" style="left:110px;top:200px;width:40px">0</span>
+  <span style="left:380px;top:80px">E = ½ k A²</span>
+  <span id="qa-tick" style="left:600px;top:250px;font-size:20px;line-height:24px;height:24px">t0</span>
+</aside>
 <main>
   <h1>Lecture 7 · Simple harmonic motion (QA course page)</h1>
   <p>This page is written by QA for the P0-13 Windows check. It stands in for a course web page the student is

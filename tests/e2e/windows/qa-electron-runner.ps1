@@ -12,11 +12,12 @@
 #   { "eval": "expr", "target": "control|overlay|edge", "as": "name" }         awaited, stored by value
 #   { "waitEval": "expr", "target": ..., "timeoutMs": n, "as": "name" }        polls until truthy
 #   { "stroke": [[x,y],...], "pointerType": "mouse|pen", "release": true, "delayMs": 12 }   overlay input
+#     ("continue": true skips the press and continues a held gesture from its first point; "release": false keeps it held)
 #   { "raceStop": [[x,y],...], "pointerType": "pen", "releaseFirst": [x,y] }    Stop click + new stroke, unawaited
 #   { "edgeStart": "file:///...", "profile": "C:\\...", "as": "edge" }          real Edge app window
 #   { "consoleStart": "C:\\...\\notes.txt", "title": "...", "as": "console" }   real conhost window
 #   { "window": "edge|console|control", "show": "maximize|minimize|restore|front" }
-#   { "desktopShot": "label" }                                                  physical pixels -> OutDir (BMP)
+#   { "desktopShot": "label" }                                                  physical pixels -> OutDir (BMP), cursor read
 #   { "snapshot": "label" }                                                     copy ink JSON -> OutDir
 #   { "targets": "app|edge", "as": "name" }                                    DevTools target list (type/url/title)
 #   { "closeApp": true }                                                        close control window, await exit
@@ -49,6 +50,10 @@ public static class QaWin {
   [DllImport("user32.dll")] public static extern bool AttachThreadInput(uint a, uint b, bool attach);
   [DllImport("user32.dll")] public static extern void SwitchToThisWindow(IntPtr h, bool alt);
   [DllImport("kernel32.dll")] public static extern uint GetCurrentThreadId();
+  [StructLayout(LayoutKind.Sequential)] public struct Pt { public int X; public int Y; }
+  [DllImport("user32.dll")] public static extern bool GetCursorPos(out Pt p);
+  // Read-only: where the user's cursor is (physical px). It is never moved; a cursor over a stroke is in the frames.
+  public static int[] Cursor() { Pt p; return GetCursorPos(out p) ? new int[] { p.X, p.Y } : null; }
   // Brings a window to the front without synthetic input: attach to the foreground thread's input state for
   // the call (the documented foreground-lock rule), then fall back to SwitchToThisWindow.
   public static bool Front(IntPtr h) {
@@ -78,7 +83,7 @@ public static class QaWin {
 
 $steps = Get-Content -Raw -Encoding UTF8 $StepsFile | ConvertFrom-Json
 New-Item -ItemType Directory -Force -Path $OutDir | Out-Null
-$results = [ordered]@{ steps = @(); values = [ordered]@{}; errors = @(); processes = [ordered]@{}; foreign = [ordered]@{} }
+$results = [ordered]@{ steps = @(); values = [ordered]@{}; errors = @(); processes = [ordered]@{}; foreign = [ordered]@{}; cursor = [ordered]@{} }
 $client = New-Object System.Net.WebClient
 $client.Proxy = $null   # loopback only; never route a debugging port through a proxy
 
@@ -126,6 +131,7 @@ function Invoke-Cdp($socket, [string]$method, [string]$paramsJson) {
 }
 
 $results.foreign.start = Foreign-Electron
+$results.cursor.start = [QaWin]::Cursor()
 # The app: real Windows process, isolated user data, DevTools on loopback only.
 $appPort = Free-Port
 $env:LC_USER_DATA = $UserData
@@ -290,6 +296,7 @@ try {
       elseif ($null -ne $step.desktopShot) {
         $entry.kind = 'desktopShot'; $entry.label = $step.desktopShot
         $entry.foreign = Foreign-Electron
+        $entry.cursor = [QaWin]::Cursor()
         $w = [QaWin]::GetSystemMetrics(0); $hgt = [QaWin]::GetSystemMetrics(1)
         $bmp = New-Object System.Drawing.Bitmap($w, $hgt)
         $g = [System.Drawing.Graphics]::FromImage($bmp)
@@ -339,5 +346,6 @@ finally {
   }
   $results.processes.app.exit_code = $(try { $app.ExitCode } catch { $null })
   $results.foreign.end = Foreign-Electron
+  $results.cursor.end = [QaWin]::Cursor()
   $results | ConvertTo-Json -Depth 20 | Set-Content -Encoding UTF8 -Path (Join-Path $OutDir 'results.json')
 }

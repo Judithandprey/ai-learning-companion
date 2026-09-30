@@ -1,0 +1,16 @@
+{
+ "scenario": "full",
+ "started": "2026-09-30T16:14:49.448Z",
+ "ended": "2026-09-30T16:17:48.511Z",
+ "work": "<home>\\AppData\\Local\\Temp\\lc-qa-windows-p013\\qa-full-1790784889373",
+ "steps": 300,
+ "harness_sha256": {
+  "analyze.py": "3bd0e0eeebba00865c1c35fab0be6c5ebb41a7d1e3a8e56bfd2805572b25cbe7",
+  "course.html": "2cecf763803f33e64c283dfb7f0f133bc2b9b0412f08873bb5cb1caf831c03ab",
+  "notes.txt": "ca986c9c569bcdd36100d87df9ce28eeabd3025fc7d5a43f171c4a957f55b53c",
+  "qa-electron-runner.ps1": "2a48c90bb81dc5bb041fa5a584b951320b414e9f1b464a7173e74329d302e319",
+  "qa-png-to-bmp.ps1": "6f887944f49430065891d294ddba78d88e235ad88344890deaa304ac91f4a675",
+  "run.mjs": "14da6677662fcca22e889449938e9d8aa8fe47659cae91ba6bacb7da6216dccd",
+  "scenarios.mjs": "372006ed478ba73f04eca0a97b862c53b03367478a0853e57cdc8bb8bc4cc9b3"
+ }
+}

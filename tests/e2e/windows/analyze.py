@@ -10,13 +10,16 @@ QA's own course window, with Windows profile paths redacted (desktop screenshots
 Statuses: pass / fail / limit (observed, but the behaviour is not established by this check) / blocked.
 """
 
+import base64
 import glob
 import hashlib
 import json
 import os
 import re
 import shutil
+import struct
 import sys
+import zlib
 
 import numpy as np
 
@@ -227,12 +230,35 @@ for sid in continued["ink"]["visible"]:
     rows.append({"stroke": sid[:16], "input": continued["ink"]["strokes"][sid]["input"], "region": e["region"],
                  "fingerprint_spread": round(spread, 1), "fingerprint_change": round(change, 4), "pixels_changed_fraction": round(pixel_changed, 3),
                  "model_status": expected})
-false_verified = [r for r in rows if r["model_status"] == "verified" and r["pixels_changed_fraction"] > 0.02]
 model_counts = {st: sum(1 for r in rows if r["model_status"] == st) for st in ("verified", "changed", "unknown")}
-screen_check("alignment.moved_text_not_verified", not false_verified,
-             {"reconstruction_shift_check_mean_diff": round(shift_check, 3), "model_counts": model_counts, "app_counts": at_scrolled,
-              "false_verified": false_verified, "strokes": rows},
-             "QA-WIN-01: a stroke over ordinary body text stays verified (solid) after the text under it scrolled away")
+# At 55478f0 the verdict is the app's own per-stroke status after the scroll (app_ink-scrolled), checked against
+# QA's direct GDI screenshot of the scrolled view; "model_status" above is QA's model of the OLD 16x16 rule and only
+# shows whether the hard QA-WIN-01 condition (old-rule verified although the pixels under the stroke changed) recurred.
+app_scrolled = parsed("app_ink-scrolled")
+desk_scrolled = bmp(os.path.join(RUN, "out", "desk-ink-scrolled.bmp"))
+for r in rows:
+    sid = next(v for v in continued["ink"]["visible"] if v.startswith(r["stroke"]))
+    root = sid
+    while continued["evidence"].get(root) is None and continued["ink"]["strokes"][root]["derived_from"]:
+        root = continued["ink"]["strokes"][root]["derived_from"]
+    e = continued["evidence"][root]
+    x, y, w, h = [int(round(e["region"][k] * SCALE)) for k in ("x", "y", "width", "height")]
+    r["direct_pixels_changed_fraction"] = round(float((np.abs(luma(idle_a[y: y + h, x: x + w]) - luma(desk_scrolled[y: y + h, x: x + w])) > 64).mean()), 3)
+    r["direct_fingerprint_change"] = round(float(np.abs(fingerprint(idle_a, e["region"], SCALE) - fingerprint(desk_scrolled, e["region"], SCALE)).mean() / 255), 4)
+    r["app_status"] = app_scrolled["aligned"].get(sid)
+    a = next((a for a in app_scrolled["alignment"] if a["id"] == sid), None)
+    r["app_fingerprint_change"] = None if not a or a["fingerprint_change"] is None else round(a["fingerprint_change"], 4)
+    r["app_detail"] = None if not a or not a["detail"] else {k: a["detail"][k] for k in ("cols", "rows", "result", "moved_cells")}
+hard = [r for r in rows if r["fingerprint_spread"] >= 4 and r["direct_pixels_changed_fraction"] > 0.02 and r["direct_fingerprint_change"] <= 0.06]
+false_verified = [r for r in rows if r["app_status"] == "verified" and r["direct_pixels_changed_fraction"] > 0.02]
+wrong_hard = [r for r in hard if r["app_status"] != "changed"]
+status = "fail" if false_verified or wrong_hard else ("pass" if hard else "limit")
+check("alignment.moved_text_not_verified", "blocked" if contaminated else status,
+      {"hard_condition_recurred": [r["stroke"] for r in hard], "false_verified": false_verified, "app_counts": at_scrolled,
+       "model_counts_old_rule": model_counts, "reconstruction_shift_check_mean_diff": round(shift_check, 3), "strokes": rows},
+      "QA-WIN-01 retest: after the page scrolled 300 DIP under fixed ink, no stroke whose pixels changed (QA's own screenshot) is verified; "
+      "the hard case (old 16x16 rule would verify: coarse change <= 0.06 although > 2 % of the pixels changed) must read 'changed'. "
+      "limit if the hard case did not recur")
 
 # ---------------------------------------------------------------- ink loop
 ov = lambda k: parsed(f"ov_{k}")
@@ -405,6 +431,291 @@ texts = [ov(k)["hint"] for k in ["nav", "write", "mouse_on"]] + [card["text"]]
 check("no_ai.stated", "pass" if all("No AI is connected" in t for t in texts) else "fail", {"statements": len(texts)},
       "the overlay and the ASK card state that no AI is connected; network traffic was not observed")
 
+# ---------------------------------------------------------------- QA-WIN-01 retest at 55478f0 (sessions 4 and 5)
+# App reads (app_*) are the app's own claims through its test hook; each is cross-checked against QA's own GDI
+# screenshots and the app's retained composed frames. All strokes are DevTools-injected pen events (synthetic).
+retained_sel = load(os.path.join(RUN, "retained-selection.json")) if os.path.exists(os.path.join(RUN, "retained-selection.json")) else {}
+doc4_id = values.get("opened4Id")
+
+
+def snap_doc(label, doc_id):
+    f = os.path.join(RUN, "out", f"snap-{label}", f"{doc_id}.json")
+    return load(f) if doc_id and os.path.exists(f) else None
+
+
+def app(label):
+    return parsed(f"app_{label}")
+
+
+def desk(label):
+    return bmp(os.path.join(RUN, "out", f"desk-{label}.bmp"))
+
+
+def box(points, pad=8):
+    xs, ys = [p[0] for p in points], [p[1] for p in points]
+    return min(xs) - pad, min(ys) - pad, max(xs) + pad, max(ys) + pad
+
+
+def region_diff(a, b, points, pad=8):
+    x0, y0, x1, y1 = [int(round(v * SCALE)) for v in box(points, pad)]
+    d = np.abs(luma(a[y0:y1, x0:x1]) - luma(b[y0:y1, x0:x1]))
+    return {"changed_px": int((d > 64).sum()), "fraction": round(float((d > 64).mean()), 4)}
+
+
+def path_samples(points):
+    out = []
+    for (x1, y1), (x2, y2) in zip([p[:2] for p in points], [p[:2] for p in points][1:]):
+        n = max(1, int(np.hypot(x2 - x1, y2 - y1) * SCALE))
+        out += [(int(round((x1 + (x2 - x1) * t / n) * SCALE)), int(round((y1 + (y2 - y1) * t / n) * SCALE))) for t in range(n)]
+    return out
+
+
+def ink_style(composed, raw, points):
+    """Solid ink is the ink colour on the path; dashed ink (alpha 0.55, dash 7/5) is never the ink colour and
+    differs from the raw frame on roughly the dash fraction of the path."""
+    pts = path_samples(points)
+    c = np.array([composed[y, x] for x, y in pts])
+    r = np.array([raw[y, x] for x, y in pts])
+    at_ink = float((np.abs(c - INK).max(axis=1) <= 30).mean())
+    differs = float((np.abs(c - r).max(axis=1) > 24).mean())
+    raw_ink = float((np.abs(r - INK).max(axis=1) <= 30).mean())
+    style = "solid" if at_ink >= 0.85 else ("dashed" if at_ink <= 0.15 and differs >= 0.3 else "unclear")
+    return {"style": style, "at_ink": round(at_ink, 3), "differs_from_raw": round(differs, 3), "raw_at_ink": round(raw_ink, 3)}
+
+
+def frame_of(label):
+    sel = retained_sel.get(f"app_{label}")
+    if not sel:
+        return None
+    paths = [os.path.join(RUN, "pictures", f"frame-{sel[k]}.bmp") for k in ("raw", "composed")]
+    if not all(os.path.exists(p) for p in paths):
+        return None
+    line = None
+    for text in open(os.path.join(RUN, "captures", sel["cap"], "manifest.jsonl"), encoding="utf-8"):
+        cand = json.loads(text)
+        if cand.get("kind") == "retained" and cand.get("sample_seq") == sel["sample_seq"] and cand.get("sampled_at") == sel["sampled_at"]:
+            line = cand
+    ok_files = all(hashlib.sha256(open(os.path.join(RUN, "pictures", f"frame-{sel[k]}.png"), "rb").read()).hexdigest() == sel[k] for k in ("raw", "composed"))
+    return {"sel": sel, "line": line, "raw": bmp(paths[0]), "composed": bmp(paths[1]), "files_match_names": ok_files}
+
+
+doc4 = snap_doc("stopped4", doc4_id)
+retest_ran = bool(doc4 and app("s4-before"))
+if not retest_ran:
+    check("retest.ran", "fail", {"doc4": bool(doc4), "app_s4_before": bool(app("s4-before"))}, "the session-4/5 retest segment did not complete")
+else:
+    START = {"still": (570, 163), "sign": (139, 103), "digit": (159, 163), "cross": (100, 223), "cap": (155, 270)}
+    ids4 = {}
+    for name, (sx, sy) in START.items():
+        found = [sid for sid, st in doc4["ink"]["strokes"].items() if st["derived_from"] is None and near(st["points"][0], (sx, sy), 2)]
+        ids4[name] = found[0] if len(found) == 1 else None
+    pts4 = {n: doc4["ink"]["strokes"][i]["points"] for n, i in ids4.items() if i}
+    ev4 = {n: doc4["evidence"].get(i) for n, i in ids4.items() if i}
+    if not all(ids4.values()):
+        check("retest.strokes_identified", "fail", {n: bool(i) for n, i in ids4.items()}, "a retest stroke was not found in the saved session-4 ink")
+        retest_ran = False
+if retest_ran:
+
+    # Panel geometry: the harness's glyph coordinates versus the page's own layout and QA's screenshot.
+    geom = parsed("panelGeom")
+    panel_shot = desk("panel")
+    border = (np.abs(panel_shot - np.array([18, 53, 91])).max(axis=2) <= 12)
+    rows_b = np.where(border[:, 60 * SCALE: 700 * SCALE].mean(axis=1) > 0.5)[0]
+    cols_b = np.where(border[70 * SCALE: 350 * SCALE].mean(axis=0) > 0.5)[0]
+    measured = {"top_dip": round(rows_b.min() / SCALE, 1) if len(rows_b) else None, "left_dip": round(cols_b.min() / SCALE, 1) if len(cols_b) else None}
+    expected = {"top_dip": geom["rects"]["qa-live"][1] + 23, "left_dip": geom["rects"]["qa-live"][0]}
+    geom_ok = all(measured[k] is not None and abs(measured[k] - expected[k]) <= 1.5 for k in measured)
+    screen_check("retest.panel_geometry", geom_ok and all(ids4.values()),
+                 {"page_rects_css": geom["rects"], "window": geom["view"], "panel_border_measured": measured, "expected_from_origin_0_23": expected,
+                  "strokes_identified": {n: bool(i) for n, i in ids4.items()}},
+                 "QA's glyph coordinates rely on the viewport origin (0, 23) DIP: the panel border in QA's screenshot sits where the page's layout says")
+
+    # Cursor: never moved by QA; a cursor inside a stroke's region would be part of the frames under it.
+    cursors = [results.get("cursor", {}).get("start"), results.get("cursor", {}).get("end")] + [s.get("cursor") for s in steps if s.get("kind") == "desktopShot"]
+    cursors = [tuple(c) for c in cursors if c]
+    regions = {n: box(p) for n, p in pts4.items()}
+    regions["qa_win_01"] = tuple(v for v in box([p for sid in continued["ink"]["visible"] for p in continued["ink"]["strokes"][sid]["points"]], 8))
+    inside = sorted({n for c in cursors for n, (x0, y0, x1, y1) in regions.items() if x0 * SCALE <= c[0] <= x1 * SCALE and y0 * SCALE <= c[1] <= y1 * SCALE and n != "qa_win_01"})
+    check("run.cursor_clear_of_strokes", "pass" if cursors and len(set(cursors)) == 1 and not inside else "limit",
+          {"positions_px": sorted(set(cursors)), "readings": len(cursors), "inside_retest_stroke_regions": inside},
+          "read-only GetCursorPos at start, at every screenshot and at the end: the cursor did not move and was not under a retest stroke")
+
+    def status_series(name, labels):
+        return {l: (app(l) or {}).get("aligned", {}).get(ids4[name]) for l in labels}
+
+    def glyph_case(cid, name, before, after, reverted, note):
+        series = status_series(name, [before, after, reverted])
+        d_after, d_back = region_diff(desk(before), desk(after), pts4[name]), region_diff(desk(before), desk(reverted), pts4[name])
+        styles = {}
+        for l in (before, after, reverted):
+            f = frame_of(l)
+            styles[l] = None if f is None else {**ink_style(f["composed"], f["raw"], pts4[name]), "retained_seq": f["sel"]["sample_seq"],
+                                                "state_frame": bool(f["line"]) and f["line"]["composed"]["ink_marks"] == (app(l)["last"]["composed"] or {}).get("ink_marks")
+                                                and f["line"]["raw"]["pixels_sha256"] == app(l)["last"]["raw"]["pixels_sha256"]}
+        want = {before: ("verified", "solid"), after: ("changed", "dashed"), reverted: ("verified", "solid")}
+        ok_app = all(series[l] == want[l][0] for l in want)
+        ok_px = d_after["changed_px"] > 0 and d_back["changed_px"] == 0
+        style_ok = all(styles[l] and styles[l]["style"] == want[l][1] and styles[l]["raw_at_ink"] == 0 for l in want if styles[l] and styles[l]["state_frame"])
+        state_frames = [l for l in want if styles[l] and styles[l]["state_frame"]]
+        st = "fail" if not ok_app or not style_ok else ("pass" if ok_px and after in state_frames else "limit")
+        check(cid, "blocked" if contaminated else st,
+              {"app_status": series, "qa_screenshot_region_change": {"after": d_after, "reverted": d_back}, "composed_frames": styles,
+               "region_dip": box(pts4[name]), "detail": {l: next((a["detail"] for a in (app(l) or {}).get("alignment", []) if a["id"] == ids4[name]), None) for l in want}},
+              note)
+
+    glyph_case("alignment.sign_change_under_ink", "sign", "s4-before", "s4-sign-after", "s4-sign-reverted",
+               "a one-glyph sign change (x − 1 -> x + 1) under a small finished stroke: verified (solid) -> changed (dashed, in the app's retained composed frame) -> verified when restored")
+    glyph_case("alignment.digit_change_under_ink", "digit", "s4-sign-reverted", "s4-digit-after", "s4-digit-reverted",
+               "a digit change (3 -> 8) under a small finished stroke, then restored")
+    still_labels = ["s4-before", "s4-sign-after", "s4-sign-reverted", "s4-digit-after", "s4-digit-reverted", "s4-cross-released", "s4-cross-reverted", "s4-cap-released"]
+    still_series = status_series("still", still_labels)
+    still_px = {l: region_diff(desk("s4-before"), desk(l), pts4["still"])["changed_px"] for l in still_labels}
+    still_styles = {l: (lambda f: None if f is None else ink_style(f["composed"], f["raw"], pts4["still"])["style"])(frame_of(l)) for l in still_labels}
+    screen_check("alignment.unchanged_text_stays_verified",
+                 all(v == "verified" for v in still_series.values()) and not any(still_px.values()) and all(v in (None, "solid") for v in still_styles.values()),
+                 {"app_status": still_series, "qa_screenshot_changed_px": still_px, "composed_style": still_styles},
+                 "control: a stroke over text that never changed stays verified and solid while the other glyphs change")
+
+    # Writing across a changed frame.
+    cross_ev = ev4.get("cross") or {}
+    ctxs = cross_ev.get("contexts", [])
+    cross_series = status_series("cross", ["s4-cross-released", "s4-cross-reverted"])
+    ctx_dir4 = os.path.join(RUN, "ink", "context")
+
+    def ctx_vs_shot(c, label):
+        f = os.path.join(RUN, "pictures", c["image"]["sha256"] + ".bmp") if c.get("image") else None
+        if not f or not os.path.exists(f):
+            return {"error": "no picture"}
+        img, shot, r = bmp(f), desk(label), c["region_px"]
+        crop = shot[r["y"]: r["y"] + r["height"], r["x"]: r["x"] + r["width"]]
+        if img.shape[:2] != crop.shape[:2]:
+            return {"error": f"size {img.shape[:2]} vs {crop.shape[:2]}"}
+        return {"within_24": round(float((np.abs(img - crop).max(axis=2) <= 24).mean()), 4), "ink_in_raw": ink_pixels(img), "screenshot": label}
+
+    pic_cmp = [ctx_vs_shot(ctxs[0], "s4-digit-reverted"), ctx_vs_shot(ctxs[1], "s4-cross-changed")] if len(ctxs) == 2 else []
+    cross_styles = {l: (lambda f: None if f is None else ink_style(f["composed"], f["raw"], pts4["cross"])["style"])(frame_of(l)) for l in cross_series}
+    ok_cross = (len(ctxs) == 2 and ctxs[0]["reason"] == "writing_started" and ctxs[0]["from_point"] == 0 and ctxs[1]["reason"] == "changed_while_writing"
+                and 0 < ctxs[1]["from_point"] < len(pts4["cross"]) and ctxs[1]["frame_seq"] > ctxs[0]["frame_seq"] and cross_ev.get("changes_not_kept") == 0
+                and all(c.get("image") for c in ctxs) and cross_series == {"s4-cross-released": "changed", "s4-cross-reverted": "unknown"}
+                and all(v in (None, "dashed") for v in cross_styles.values()))
+    pics_ok = len(pic_cmp) == 2 and all("error" not in p and p["within_24"] > 0.97 and p["ink_in_raw"] == 0 for p in pic_cmp)
+    screen_check("context.write_across_changed_frame", ok_cross and pics_ok,
+                 {"contexts": [{k: c[k] for k in ("reason", "from_point", "frame_seq")} | {"image": bool(c.get("image"))} for c in ctxs],
+                  "points": len(pts4["cross"]), "changes_not_kept": cross_ev.get("changes_not_kept"), "app_status": cross_series,
+                  "composed_style": cross_styles, "pictures_vs_qa_screenshots": pic_cmp},
+                 "pen down over '2', the page changed to '7' while the pen was held, writing continued: two contexts (start, change), picture 2 shows the changed page; "
+                 "the stroke is changed at release and unknown (never verified) after the page is restored")
+
+    # The context cap.
+    cap_ev = ev4.get("cap") or {}
+    cctx = cap_ev.get("contexts", [])
+    cap_values = ["1", "2", "3", "4", "5", "6", "7", "8", "8", "9", "9", "8", "0"]
+    step_marks = [f"s4-cap-{i + 1}-{v}" for i, v in enumerate(cap_values)]
+    bounds = ["s4-cap-start"] + step_marks
+    sampled, prev_hashes = [], set(s["raw"]["pixels_sha256"] for s in window("s4-cross-reverted", "s4-cap-start") if s.get("raw"))
+    for a, b in zip(bounds, bounds[1:]):
+        fresh = [s for s in window(a, b) if s.get("raw") and s["state"] == "fresh" and s["raw"]["pixels_sha256"] not in prev_hashes]
+        sampled.append(bool(fresh))
+        prev_hashes = set(s["raw"]["pixels_sha256"] for s in window(a, b) if s.get("raw"))
+    expected_omitted, base = 0, "7"
+    for v, seen in zip(cap_values[7:], sampled[7:]):
+        if seen and v != base:
+            expected_omitted, base = expected_omitted + 1, v
+    gest = [len(((app(f"s4-cap-{i + 1}") or {}).get("gesture") or {}).get("contexts", [])) for i in range(13)]
+    pinned = {"before": app("s4-before")["pinned"], "after_release": app("s4-cap-released")["pinned"], "gesture_after_release": app("s4-cap-released")["gesture"]}
+    ok_cap = (len(cctx) == 8 and cctx[0]["reason"] == "writing_started" and all(c["reason"] == "changed_while_writing" for c in cctx[1:])
+              and all(b["from_point"] > a["from_point"] for a, b in zip(cctx, cctx[1:])) and len(pts4["cap"]) == 32
+              and cap_ev.get("changes_not_kept") == expected_omitted and all(c.get("image") for c in cctx) and pinned["gesture_after_release"] is None and pinned["after_release"] <= pinned["before"] + 2)
+    check("context.cap_counted_once", "blocked" if contaminated else ("pass" if ok_cap and all(sampled) else ("fail" if not ok_cap else "limit")),
+          {"contexts": len(cctx), "reasons": [c["reason"] for c in cctx], "from_points": [c["from_point"] for c in cctx], "frame_seqs": [c["frame_seq"] for c in cctx],
+           "changes_not_kept": cap_ev.get("changes_not_kept"), "expected_from_sampled_values": expected_omitted, "every_state_sampled": sampled,
+           "live_gesture_contexts_per_step": gest, "points_saved": len(pts4["cap"]), "points_sent": 32, "pinned": pinned},
+          "one held stroke over a value that changed 13 times (1..7 fill the 8 contexts; then 8, 8, 9, 9, 8, 0): 8 contexts, repeats not counted, "
+          "the return 9->8 counted: 4 omitted changes recorded only as a count (no frames, times or pictures for them)")
+
+    # ASK while a stroke is changed.
+    card4 = parsed("askCard4")
+    n_dashed = sum(1 for v in card4["aligned"].values() if v != "verified")
+    mnote = re.search(r"(\d+) of your strokes are drawn dashed", card4["text"])
+    crop4 = os.path.join(RUN, "pictures", "ask-crop-4.bmp")
+    reg = re.search(r"Region (-?\d+),(-?\d+) (\d+)×(\d+) DIP", card4["text"])
+    crop_style = None
+    if os.path.exists(crop4) and reg:
+        cimg = bmp(crop4)
+        ox, oy = int(reg.group(1)), int(reg.group(2))
+        shot = desk("s4-sign-after")[oy * SCALE: oy * SCALE + cimg.shape[0], ox * SCALE: ox * SCALE + cimg.shape[1]]
+        local = [[p[0] - ox, p[1] - oy] for p in pts4["sign"]]
+        if shot.shape[:2] == cimg.shape[:2]:
+            crop_style = {"sign": ink_style(cimg, shot, local), "still_not_in_crop": True}
+    ask_ok = (card4["aligned"].get(ids4["sign"]) == "changed" and mnote and int(mnote.group(1)) == n_dashed and "No AI is connected" in card4["text"]
+              and card4["mode"] == "WRITE" and crop_style and crop_style["sign"]["style"] == "dashed")
+    screen_check("ask.dashed_count_matches_marks", bool(ask_ok),
+                 {"card_note": mnote.group(0) if mnote else None, "not_verified_strokes_at_card": n_dashed, "sign_status": card4["aligned"].get(ids4["sign"]),
+                  "crop_region": reg.group(0) if reg else None, "crop_sign_style": crop_style, "text": card4["text"][:300]},
+                 "the local ASK card states how many strokes are dashed (all visible strokes, as on screen), and its crop draws the changed stroke dashed")
+
+    # Composed pixels at every observed state: dashed exactly for the strokes the app does not verify; raw frames carry no ink.
+    per_label, mismatched, stale = {}, [], []
+    for key in sorted(k for k in values if k.startswith("app_s4-") or k.startswith("app_s5-")):
+        label = key[4:]
+        view = app(label)
+        f = frame_of(label)
+        if not f or not view.get("last") or not view["last"].get("composed"):
+            continue
+        state_frame = bool(f["line"]) and f["line"]["composed"]["ink_marks"] == view["last"]["composed"]["ink_marks"] and f["line"]["raw"]["pixels_sha256"] == view["last"]["raw"]["pixels_sha256"]
+        if not state_frame:
+            stale.append(label)
+            continue
+        styles = {n: ink_style(f["composed"], f["raw"], pts4[n]) for n, sid in ids4.items() if sid in view["aligned"]}
+        want = {n: ("solid" if view["aligned"][ids4[n]] == "verified" else "dashed") for n in styles}
+        bad = {n: (styles[n]["style"], want[n]) for n in styles if styles[n]["style"] != want[n] or styles[n]["raw_at_ink"] > 0}
+        marks = f["line"]["composed"]["ink_marks"]
+        counts_ok = marks["verified"] == sum(1 for w in want.values() if w == "solid") and marks["changed"] + marks["unknown"] + marks["following_content"] == sum(1 for w in want.values() if w == "dashed")
+        per_label[label] = {"retained_seq": f["sel"]["sample_seq"], "marks": marks, "styles": {n: styles[n]["style"] for n in styles}, "files_match_names": f["files_match_names"]}
+        if bad or not counts_ok or not f["files_match_names"]:
+            mismatched.append({"label": label, "bad": bad, "counts_ok": counts_ok})
+    screen_check("pixels.composed_marks_match_status", bool(per_label) and not mismatched,
+                 {"states_checked": len(per_label), "per_state": per_label, "mismatched": mismatched, "no_state_frame_retained": stale},
+                 "in the app's own retained composed PNG for each observed state, every stroke the app verifies is solid and every other stroke dashed; "
+                 "the manifest's ink marks count them; the retained raw PNG has no ink on any stroke path")
+
+    # Stop -> save -> reopen of the session-4 ink in session 5.
+    stopped4, reopened4 = parsed("stopped4"), snap_doc("reopened4", doc4_id)
+    details_ok = all(e and e.get("detail") and e["detail"]["cols"] * e["detail"]["rows"] <= 4096
+                     and len(base64.b64decode(e["detail"]["luma"])) == e["detail"]["cols"] * e["detail"]["rows"] for e in ev4.values())
+    missing4 = []
+    for n, e in ev4.items():
+        for c in (e or {}).get("contexts", []):
+            f = os.path.join(ctx_dir4, (c.get("image") or {}).get("sha256", "none") + ".png")
+            if not c.get("image") or not os.path.exists(f) or hashlib.sha256(open(f, "rb").read()).hexdigest() != c["image"]["sha256"] or c["not_observed"] != ["source_app", "source_link", "page", "media_position"]:
+                missing4.append((n, c.get("from_point")))
+    check("stop.stopped4_saved", "pass" if stopped4["ended"] == "stopped by the user" and parsed("recoveries4") == [] and len(doc4["ink"]["visible"]) == 5
+          and [h["op"] for h in doc4["ink"]["history"]] == ["add"] * 5 and details_ok and not missing4 else "fail",
+          {"ended": stopped4["ended"], "recoveries": parsed("recoveries4"), "visible": len(doc4["ink"]["visible"]), "history": [h["op"] for h in doc4["ink"]["history"]],
+           "detail_valid": details_ok, "context_pictures_missing_or_wrong": missing4,
+           "contexts_per_stroke": {n: len((e or {}).get("contexts", [])) for n, e in ev4.items()}},
+          "after the lifted strokes settled, Stop saved all five strokes with their detail grids and every context picture (hash-checked); no recovery entry")
+    items = (parsed("contexts4") or {}).get("items", []) if isinstance(parsed("contexts4"), dict) else []
+    reopened_status = {n: (app("s5-reopened") or {}).get("aligned", {}).get(i) for n, i in ids4.items()}
+    want_reopen = {"still": "verified", "sign": "verified", "digit": "verified", "cross": "unknown", "cap": "unknown"}
+    digit_after = {l: (app(l) or {}).get("aligned", {}).get(ids4["digit"]) for l in ("s5-digit-after", "s5-digit-reverted")}
+    shown = (app("s5-reopened") or {}).get("doc") or {}
+    same_doc = (bool(reopened4) and all(reopened4[k] == doc4[k] for k in ("id", "ink", "evidence")) and shown.get("id") == doc4["id"]
+                and sorted(shown.get("visible", [])) == sorted(doc4["ink"]["visible"]) and shown.get("revision") == doc4["ink"]["revision"])
+    reopen_ok = (same_doc and values.get("opened4Id") == doc4["id"] and reopened_status == want_reopen
+                 and "Reopened 5 stroke(s)" in parsed("ov_reopened4")["hint"] and digit_after == {"s5-digit-after": "changed", "s5-digit-reverted": "verified"}
+                 and len(items) == 13 and all(i["picture_state"] == "shown" for i in items)
+                 and sorted(sum(1 for i in items if i["stroke"] == k) for k in {i["stroke"] for i in items}) == [1, 1, 1, 2, 8]
+                 and parsed("stopped5")["ended"] == "stopped by the user" and parsed("recoveries5") == [])
+    screen_check("reopen.detail_and_counter_round_trip", bool(reopen_ok),
+                 {"same_document_after_open": same_doc, "app_status_after_open": reopened_status, "expected": want_reopen,
+                  "hint": parsed("ov_reopened4")["hint"][:120], "digit_change_after_reopen": digit_after,
+                  "pictures": {"items": len(items), "states": sorted({i["picture_state"] for i in items}), "per_stroke": sorted(sum(1 for i in items if i["stroke"] == k) for k in {i["stroke"] for i in items})},
+                  "stopped5": parsed("stopped5")["ended"], "recoveries5": parsed("recoveries5")},
+                 "Open in a new session restores the same file (detail grids, 8 cap contexts and the omitted-change count); alignment is recomputed against the new "
+                 "session's frames: unchanged glyphs verified, multi-context strokes unknown, and a digit change after reopening reads changed then verified; "
+                 "all 13 context pictures open again")
+
 counts = {}
 for c in checks:
     counts[c["status"]] = counts.get(c["status"], 0) + 1
@@ -428,8 +739,11 @@ if EVIDENCE:
             f.write(redact(value))
 
     run_info = load(os.path.join(RUN, "run.json"))
-    exported = dict(results, values={k: v for k, v in values.items() if k not in ("timeline", "askCard")})
+    exported = dict(results, values={k: v for k, v in values.items() if k not in ("timeline", "askCard", "askCard4")})
     exported["values"]["askCard"] = {"text": card["text"], "src": f"<PNG data URL of {len(card['src'])} characters, exported as ask-crop.png>"}
+    if values.get("askCard4"):
+        c4 = parsed("askCard4")
+        exported["values"]["askCard4"] = {**c4, "src": f"<PNG data URL of {len(c4['src'])} characters, exported as ask-crop-4.png>"}
     write("summary.json", {"run": run_info, "counts": counts, "checks": checks,
                            "samples": {"total": len(samples), "states": states(samples), "sessions": len(segments)},
                            "ink": {"final_id": final["id"], "history": [h["op"] for h in final["ink"]["history"]],
@@ -443,3 +757,25 @@ if EVIDENCE:
     first_ctx = draft["evidence"][draft["ink"]["visible"][0]]["contexts"][0]["image"]["sha256"]
     shutil.copyfile(os.path.join(RUN, "ink", "context", first_ctx + ".png"), os.path.join(EVIDENCE, "context-first-stroke.png"))
     shutil.copyfile(os.path.join(RUN, "pictures", "ask-crop.png"), os.path.join(EVIDENCE, "ask-crop.png"))
+    if retest_ran:
+        write("ink-retest.json", doc4)
+        write("retained-selection.json", retained_sel)
+        if os.path.exists(os.path.join(RUN, "pictures", "ask-crop-4.png")):
+            shutil.copyfile(os.path.join(RUN, "pictures", "ask-crop-4.png"), os.path.join(EVIDENCE, "ask-crop-4.png"))
+        for n in ("cross", "cap"):
+            for k, c in enumerate((ev4.get(n) or {}).get("contexts", [])):
+                if c.get("image"):
+                    shutil.copyfile(os.path.join(RUN, "ink", "context", c["image"]["sha256"] + ".png"), os.path.join(EVIDENCE, f"context-{n}-{k + 1}.png"))
+
+        def write_png(path, rgb):
+            h, w = rgb.shape[:2]
+            data = b"".join(b"\x00" + rgb[y].astype(np.uint8).tobytes() for y in range(h))
+            chunk = lambda t, d: struct.pack(">I", len(d)) + t + d + struct.pack(">I", zlib.crc32(t + d) & 0xFFFFFFFF)
+            with open(path, "wb") as f:
+                f.write(b"\x89PNG\r\n\x1a\n" + chunk(b"IHDR", struct.pack(">IIBBBBB", w, h, 8, 2, 0, 0, 0)) + chunk(b"IDAT", zlib.compress(data, 9)) + chunk(b"IEND", b""))
+
+        # Only QA's own panel (viewport 40..760 x 40..340 CSS px) from the app's retained composed frames.
+        for label in ("s4-before", "s4-sign-after", "s4-digit-after", "s4-cross-released", "s4-cap-released", "s5-reopened"):
+            f = frame_of(label)
+            if f:
+                write_png(os.path.join(EVIDENCE, f"composed-panel-{label}.png"), f["composed"][63 * SCALE: 363 * SCALE, 40 * SCALE: 760 * SCALE].clip(0, 255))

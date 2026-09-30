@@ -1,0 +1,2560 @@
+{
+ "steps": [
+  {
+   "i": 1,
+   "ok": true,
+   "at": "2026-09-30T16:14:50.7531933Z",
+   "kind": "consoleStart"
+  },
+  {
+   "i": 2,
+   "ok": true,
+   "at": "2026-09-30T16:14:51.3807673Z",
+   "kind": "window",
+   "window": "console",
+   "show": "maximize",
+   "is_foreground": false
+  },
+  {
+   "i": 3,
+   "ok": true,
+   "at": "2026-09-30T16:14:52.1652462Z",
+   "kind": "edgeStart"
+  },
+  {
+   "i": 4,
+   "ok": true,
+   "at": "2026-09-30T16:14:52.8836902Z",
+   "kind": "window",
+   "window": "edge",
+   "show": "front",
+   "foreground": true,
+   "is_foreground": true
+  },
+  {
+   "i": 5,
+   "ok": true,
+   "at": "2026-09-30T16:14:53.7207055Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 6,
+   "ok": true,
+   "at": "2026-09-30T16:14:55.2310038Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 7,
+   "ok": true,
+   "at": "2026-09-30T16:14:55.2952287Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "displays"
+  },
+  {
+   "i": 8,
+   "ok": true,
+   "at": "2026-09-30T16:14:55.4939221Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "hooked"
+  },
+  {
+   "i": 9,
+   "ok": true,
+   "at": "2026-09-30T16:14:55.4979199Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 10,
+   "ok": true,
+   "at": "2026-09-30T16:14:55.5184544Z",
+   "kind": "desktopShot",
+   "label": "before-start",
+   "foreign": null,
+   "cursor": [
+    545,
+    762
+   ],
+   "size": "2560 x 1600"
+  },
+  {
+   "i": 11,
+   "ok": true,
+   "at": "2026-09-30T16:14:56.2447278Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "startClicked"
+  },
+  {
+   "i": 12,
+   "ok": true,
+   "at": "2026-09-30T16:14:56.3762917Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "session1"
+  },
+  {
+   "i": 13,
+   "ok": true,
+   "at": "2026-09-30T16:14:56.7925355Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 14,
+   "ok": true,
+   "at": "2026-09-30T16:14:56.7990489Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 15,
+   "ok": true,
+   "at": "2026-09-30T16:15:00.8008929Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 16,
+   "ok": true,
+   "at": "2026-09-30T16:15:00.8038928Z",
+   "kind": "desktopShot",
+   "label": "edge-static",
+   "foreign": null,
+   "cursor": [
+    545,
+    762
+   ],
+   "size": "2560 x 1600"
+  },
+  {
+   "i": 17,
+   "ok": true,
+   "at": "2026-09-30T16:15:01.4797871Z",
+   "kind": "window",
+   "window": "console",
+   "show": "front",
+   "foreground": true,
+   "is_foreground": true
+  },
+  {
+   "i": 18,
+   "ok": true,
+   "at": "2026-09-30T16:15:02.3057045Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 19,
+   "ok": true,
+   "at": "2026-09-30T16:15:05.3102385Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 20,
+   "ok": true,
+   "at": "2026-09-30T16:15:05.3142102Z",
+   "kind": "desktopShot",
+   "label": "console-front",
+   "foreign": null,
+   "cursor": [
+    545,
+    762
+   ],
+   "size": "2560 x 1600"
+  },
+  {
+   "i": 21,
+   "ok": true,
+   "at": "2026-09-30T16:15:05.9526891Z",
+   "kind": "window",
+   "window": "edge",
+   "show": "front",
+   "foreground": true,
+   "is_foreground": true
+  },
+  {
+   "i": 22,
+   "ok": true,
+   "at": "2026-09-30T16:15:06.9521250Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 23,
+   "ok": true,
+   "at": "2026-09-30T16:15:09.9592806Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 24,
+   "ok": true,
+   "at": "2026-09-30T16:15:09.9622841Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": "scrolled"
+  },
+  {
+   "i": 25,
+   "ok": true,
+   "at": "2026-09-30T16:15:09.9662792Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 26,
+   "ok": true,
+   "at": "2026-09-30T16:15:12.9678509Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 27,
+   "ok": true,
+   "at": "2026-09-30T16:15:12.9716753Z",
+   "kind": "desktopShot",
+   "label": "edge-scrolled",
+   "foreign": null,
+   "cursor": [
+    545,
+    762
+   ],
+   "size": "2560 x 1600"
+  },
+  {
+   "i": 28,
+   "ok": true,
+   "at": "2026-09-30T16:15:13.6526438Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": null
+  },
+  {
+   "i": 29,
+   "ok": true,
+   "at": "2026-09-30T16:15:13.6551424Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 30,
+   "ok": true,
+   "at": "2026-09-30T16:15:17.1573057Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 31,
+   "ok": true,
+   "at": "2026-09-30T16:15:17.1607363Z",
+   "kind": "desktopShot",
+   "label": "idle-a",
+   "foreign": null,
+   "cursor": [
+    545,
+    762
+   ],
+   "size": "2560 x 1600"
+  },
+  {
+   "i": 32,
+   "ok": true,
+   "at": "2026-09-30T16:15:17.7703524Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 33,
+   "ok": true,
+   "at": "2026-09-30T16:15:21.7766419Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 34,
+   "ok": true,
+   "at": "2026-09-30T16:15:21.7792147Z",
+   "kind": "desktopShot",
+   "label": "idle-b",
+   "foreign": null,
+   "cursor": [
+    545,
+    762
+   ],
+   "size": "2560 x 1600"
+  },
+  {
+   "i": 35,
+   "ok": true,
+   "at": "2026-09-30T16:15:22.3990871Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_nav"
+  },
+  {
+   "i": 36,
+   "ok": true,
+   "at": "2026-09-30T16:15:22.4155592Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 37,
+   "ok": true,
+   "at": "2026-09-30T16:15:22.4205694Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_write"
+  },
+  {
+   "i": 38,
+   "ok": true,
+   "at": "2026-09-30T16:15:22.4215934Z",
+   "kind": "stroke",
+   "pointerType": "mouse",
+   "points": 13
+  },
+  {
+   "i": 39,
+   "ok": true,
+   "at": "2026-09-30T16:15:22.7961341Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 40,
+   "ok": true,
+   "at": "2026-09-30T16:15:23.3005934Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_mouse_off"
+  },
+  {
+   "i": 41,
+   "ok": true,
+   "at": "2026-09-30T16:15:23.3039720Z",
+   "kind": "snapshot",
+   "label": "mouse-off",
+   "contextPictures": 0
+  },
+  {
+   "i": 42,
+   "ok": true,
+   "at": "2026-09-30T16:15:23.3104474Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 43,
+   "ok": true,
+   "at": "2026-09-30T16:15:23.3129647Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_mouse_on"
+  },
+  {
+   "i": 44,
+   "ok": true,
+   "at": "2026-09-30T16:15:23.3152994Z",
+   "kind": "stroke",
+   "pointerType": "mouse",
+   "points": 25
+  },
+  {
+   "i": 45,
+   "ok": true,
+   "at": "2026-09-30T16:15:23.9419929Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 46,
+   "ok": true,
+   "at": "2026-09-30T16:15:24.7442430Z",
+   "kind": "stroke",
+   "pointerType": "mouse",
+   "points": 6
+  },
+  {
+   "i": 47,
+   "ok": true,
+   "at": "2026-09-30T16:15:24.8901061Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 48,
+   "ok": true,
+   "at": "2026-09-30T16:15:25.6965289Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 15
+  },
+  {
+   "i": 49,
+   "ok": true,
+   "at": "2026-09-30T16:15:26.1823953Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 50,
+   "ok": true,
+   "at": "2026-09-30T16:15:28.0031949Z",
+   "kind": "snapshot",
+   "label": "draft",
+   "contextPictures": 3
+  },
+  {
+   "i": 51,
+   "ok": true,
+   "at": "2026-09-30T16:15:28.0334598Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 52,
+   "ok": true,
+   "at": "2026-09-30T16:15:28.0364710Z",
+   "kind": "desktopShot",
+   "label": "draft",
+   "foreign": null,
+   "cursor": [
+    545,
+    762
+   ],
+   "size": "2560 x 1600"
+  },
+  {
+   "i": 53,
+   "ok": true,
+   "at": "2026-09-30T16:15:28.6914070Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 54,
+   "ok": true,
+   "at": "2026-09-30T16:15:28.6949223Z",
+   "kind": "stroke",
+   "pointerType": "mouse",
+   "points": 11
+  },
+  {
+   "i": 55,
+   "ok": true,
+   "at": "2026-09-30T16:15:28.9293437Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 56,
+   "ok": true,
+   "at": "2026-09-30T16:15:29.8391564Z",
+   "kind": "snapshot",
+   "label": "erase",
+   "contextPictures": 3
+  },
+  {
+   "i": 57,
+   "ok": true,
+   "at": "2026-09-30T16:15:29.8441628Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_erase"
+  },
+  {
+   "i": 58,
+   "ok": true,
+   "at": "2026-09-30T16:15:29.8474322Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 59,
+   "ok": true,
+   "at": "2026-09-30T16:15:29.8638293Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 60,
+   "ok": true,
+   "at": "2026-09-30T16:15:30.7759178Z",
+   "kind": "snapshot",
+   "label": "undo",
+   "contextPictures": 3
+  },
+  {
+   "i": 61,
+   "ok": true,
+   "at": "2026-09-30T16:15:30.7811071Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 62,
+   "ok": true,
+   "at": "2026-09-30T16:15:30.8039404Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 63,
+   "ok": true,
+   "at": "2026-09-30T16:15:31.7098743Z",
+   "kind": "snapshot",
+   "label": "redo",
+   "contextPictures": 3
+  },
+  {
+   "i": 64,
+   "ok": true,
+   "at": "2026-09-30T16:15:31.7148783Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 65,
+   "ok": true,
+   "at": "2026-09-30T16:15:31.7178768Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 66,
+   "ok": true,
+   "at": "2026-09-30T16:15:31.7198976Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_ask"
+  },
+  {
+   "i": 67,
+   "ok": true,
+   "at": "2026-09-30T16:15:31.7231211Z",
+   "kind": "stroke",
+   "pointerType": "mouse",
+   "points": 37
+  },
+  {
+   "i": 68,
+   "ok": true,
+   "at": "2026-09-30T16:15:32.5446805Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 69,
+   "ok": true,
+   "at": "2026-09-30T16:15:32.6645285Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_ask_finished"
+  },
+  {
+   "i": 70,
+   "ok": true,
+   "at": "2026-09-30T16:15:32.6821922Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "askCard"
+  },
+  {
+   "i": 71,
+   "ok": true,
+   "at": "2026-09-30T16:15:32.6874449Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 72,
+   "ok": true,
+   "at": "2026-09-30T16:15:32.6884486Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_card_closed"
+  },
+  {
+   "i": 73,
+   "ok": true,
+   "at": "2026-09-30T16:15:32.6907484Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 74,
+   "ok": true,
+   "at": "2026-09-30T16:15:32.6917480Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_ask2"
+  },
+  {
+   "i": 75,
+   "ok": true,
+   "at": "2026-09-30T16:15:32.6940897Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 76,
+   "ok": true,
+   "at": "2026-09-30T16:15:32.6963135Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_ask_cancelled"
+  },
+  {
+   "i": 77,
+   "ok": true,
+   "at": "2026-09-30T16:15:32.6983163Z",
+   "kind": "stroke",
+   "pointerType": "mouse",
+   "points": 13
+  },
+  {
+   "i": 78,
+   "ok": true,
+   "at": "2026-09-30T16:15:33.0548186Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 79,
+   "ok": true,
+   "at": "2026-09-30T16:15:34.8560026Z",
+   "kind": "snapshot",
+   "label": "continued",
+   "contextPictures": 4
+  },
+  {
+   "i": 80,
+   "ok": true,
+   "at": "2026-09-30T16:15:34.8616252Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 81,
+   "ok": true,
+   "at": "2026-09-30T16:15:34.8646409Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": null
+  },
+  {
+   "i": 82,
+   "ok": true,
+   "at": "2026-09-30T16:15:34.8812428Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 83,
+   "ok": true,
+   "at": "2026-09-30T16:15:37.8869017Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 84,
+   "ok": true,
+   "at": "2026-09-30T16:15:37.8899159Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_ink_scrolled"
+  },
+  {
+   "i": 85,
+   "ok": true,
+   "at": "2026-09-30T16:15:37.8919205Z",
+   "kind": "desktopShot",
+   "label": "ink-scrolled",
+   "foreign": null,
+   "cursor": [
+    545,
+    762
+   ],
+   "size": "2560 x 1600"
+  },
+  {
+   "i": 86,
+   "ok": true,
+   "at": "2026-09-30T16:15:38.5445219Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_ink-scrolled"
+  },
+  {
+   "i": 87,
+   "ok": true,
+   "at": "2026-09-30T16:15:38.5713796Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": null
+  },
+  {
+   "i": 88,
+   "ok": true,
+   "at": "2026-09-30T16:15:38.5733854Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 89,
+   "ok": true,
+   "at": "2026-09-30T16:15:42.0768221Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 90,
+   "ok": true,
+   "at": "2026-09-30T16:15:42.0798297Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_ink_back"
+  },
+  {
+   "i": 91,
+   "ok": true,
+   "at": "2026-09-30T16:15:42.0828300Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_ink-back"
+  },
+  {
+   "i": 92,
+   "ok": true,
+   "at": "2026-09-30T16:15:42.1066809Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "ink1"
+  },
+  {
+   "i": 93,
+   "ok": true,
+   "at": "2026-09-30T16:15:42.1261627Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 17
+  },
+  {
+   "i": 94,
+   "ok": true,
+   "at": "2026-09-30T16:15:42.5349505Z",
+   "kind": "raceStop",
+   "pointerType": "pen",
+   "stop_sent_at": "2026-09-30T16:15:42.5389489Z",
+   "input_sent_at": "2026-09-30T16:15:42.5482194Z",
+   "overlay_events_sent": 15,
+   "overlay_send_errors": 0,
+   "overlay_replies": 15,
+   "overlay_errors": 0
+  },
+  {
+   "i": 95,
+   "ok": true,
+   "at": "2026-09-30T16:15:42.6695285Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "stopped1"
+  },
+  {
+   "i": 96,
+   "ok": true,
+   "at": "2026-09-30T16:15:42.8126232Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "recoveries1"
+  },
+  {
+   "i": 97,
+   "ok": true,
+   "at": "2026-09-30T16:15:42.8166228Z",
+   "kind": "snapshot",
+   "label": "stopped",
+   "contextPictures": 5
+  },
+  {
+   "i": 98,
+   "ok": true,
+   "at": "2026-09-30T16:15:42.8216222Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 99,
+   "ok": true,
+   "at": "2026-09-30T16:15:42.8391713Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 100,
+   "ok": true,
+   "at": "2026-09-30T16:15:42.9669165Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "session2"
+  },
+  {
+   "i": 101,
+   "ok": true,
+   "at": "2026-09-30T16:15:43.3838153Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 102,
+   "ok": true,
+   "at": "2026-09-30T16:15:43.3873434Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 103,
+   "ok": true,
+   "at": "2026-09-30T16:15:45.8903331Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 104,
+   "ok": true,
+   "at": "2026-09-30T16:15:45.8953355Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "opened"
+  },
+  {
+   "i": 105,
+   "ok": true,
+   "at": "2026-09-30T16:15:46.0031433Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 106,
+   "ok": true,
+   "at": "2026-09-30T16:15:47.5056253Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_reopened"
+  },
+  {
+   "i": 107,
+   "ok": true,
+   "at": "2026-09-30T16:15:47.5086223Z",
+   "kind": "snapshot",
+   "label": "reopened",
+   "contextPictures": 5
+  },
+  {
+   "i": 108,
+   "ok": true,
+   "at": "2026-09-30T16:15:47.5111070Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 109,
+   "ok": true,
+   "at": "2026-09-30T16:15:47.5147897Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 110,
+   "ok": true,
+   "at": "2026-09-30T16:15:47.5157835Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 111,
+   "ok": true,
+   "at": "2026-09-30T16:15:47.5409286Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 112,
+   "ok": true,
+   "at": "2026-09-30T16:15:48.4540086Z",
+   "kind": "stroke",
+   "pointerType": "mouse",
+   "points": 11
+  },
+  {
+   "i": 113,
+   "ok": true,
+   "at": "2026-09-30T16:15:48.7799650Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 114,
+   "ok": true,
+   "at": "2026-09-30T16:15:50.5869046Z",
+   "kind": "snapshot",
+   "label": "reopen-edit",
+   "contextPictures": 6
+  },
+  {
+   "i": 115,
+   "ok": true,
+   "at": "2026-09-30T16:15:50.5919898Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 17
+  },
+  {
+   "i": 116,
+   "ok": true,
+   "at": "2026-09-30T16:15:51.1244272Z",
+   "kind": "raceStop",
+   "pointerType": "pen",
+   "stop_sent_at": "2026-09-30T16:15:51.1254270Z",
+   "input_sent_at": "2026-09-30T16:15:51.1355357Z",
+   "overlay_events_sent": 14,
+   "overlay_send_errors": 0,
+   "overlay_replies": 14,
+   "overlay_errors": 0
+  },
+  {
+   "i": 117,
+   "ok": true,
+   "at": "2026-09-30T16:15:51.2616586Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "stopped2"
+  },
+  {
+   "i": 118,
+   "ok": true,
+   "at": "2026-09-30T16:15:51.4104987Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "recoveries2"
+  },
+  {
+   "i": 119,
+   "ok": true,
+   "at": "2026-09-30T16:15:51.4129658Z",
+   "kind": "snapshot",
+   "label": "stopped2",
+   "contextPictures": 7
+  },
+  {
+   "i": 120,
+   "ok": true,
+   "at": "2026-09-30T16:15:51.4169689Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "doubleStart"
+  },
+  {
+   "i": 121,
+   "ok": true,
+   "at": "2026-09-30T16:15:52.0071466Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "session3"
+  },
+  {
+   "i": 122,
+   "ok": true,
+   "at": "2026-09-30T16:15:52.0262555Z",
+   "kind": "targets",
+   "as": "targetsDouble"
+  },
+  {
+   "i": 123,
+   "ok": true,
+   "at": "2026-09-30T16:15:52.0423600Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 124,
+   "ok": true,
+   "at": "2026-09-30T16:15:52.1747979Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "stopped3"
+  },
+  {
+   "i": 125,
+   "ok": true,
+   "at": "2026-09-30T16:15:52.1945757Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "stopDuringStart"
+  },
+  {
+   "i": 126,
+   "ok": true,
+   "at": "2026-09-30T16:15:54.9478459Z",
+   "kind": "targets",
+   "as": "targetsAfterCancel"
+  },
+  {
+   "i": 127,
+   "ok": true,
+   "at": "2026-09-30T16:15:54.9483519Z",
+   "kind": "window",
+   "window": "edge",
+   "show": "front",
+   "foreground": true,
+   "is_foreground": true
+  },
+  {
+   "i": 128,
+   "ok": true,
+   "at": "2026-09-30T16:15:55.7678424Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": "panelGeom"
+  },
+  {
+   "i": 129,
+   "ok": true,
+   "at": "2026-09-30T16:15:55.7739468Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 130,
+   "ok": true,
+   "at": "2026-09-30T16:15:56.9832922Z",
+   "kind": "desktopShot",
+   "label": "panel",
+   "foreign": null,
+   "cursor": [
+    545,
+    762
+   ],
+   "size": "2560 x 1600"
+  },
+  {
+   "i": 131,
+   "ok": true,
+   "at": "2026-09-30T16:15:57.6066130Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "idsBefore4"
+  },
+  {
+   "i": 132,
+   "ok": true,
+   "at": "2026-09-30T16:15:57.6106184Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 133,
+   "ok": true,
+   "at": "2026-09-30T16:15:57.7302997Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "session4"
+  },
+  {
+   "i": 134,
+   "ok": true,
+   "at": "2026-09-30T16:15:58.1288163Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 135,
+   "ok": true,
+   "at": "2026-09-30T16:15:58.1324157Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 136,
+   "ok": true,
+   "at": "2026-09-30T16:16:00.6386851Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 137,
+   "ok": true,
+   "at": "2026-09-30T16:16:00.6436920Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 138,
+   "ok": true,
+   "at": "2026-09-30T16:16:00.6624508Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_write4"
+  },
+  {
+   "i": 139,
+   "ok": true,
+   "at": "2026-09-30T16:16:00.6654517Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 37
+  },
+  {
+   "i": 140,
+   "ok": true,
+   "at": "2026-09-30T16:16:01.4653279Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 141,
+   "ok": true,
+   "at": "2026-09-30T16:16:02.3818002Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 37
+  },
+  {
+   "i": 142,
+   "ok": true,
+   "at": "2026-09-30T16:16:03.3491453Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 143,
+   "ok": true,
+   "at": "2026-09-30T16:16:04.2642531Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 37
+  },
+  {
+   "i": 144,
+   "ok": true,
+   "at": "2026-09-30T16:16:05.1643867Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 145,
+   "ok": true,
+   "at": "2026-09-30T16:16:08.6674919Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 146,
+   "ok": true,
+   "at": "2026-09-30T16:16:08.6714859Z",
+   "kind": "desktopShot",
+   "label": "s4-before",
+   "foreign": null,
+   "cursor": [
+    545,
+    762
+   ],
+   "size": "2560 x 1600"
+  },
+  {
+   "i": 147,
+   "ok": true,
+   "at": "2026-09-30T16:16:09.3637247Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_s4-before"
+  },
+  {
+   "i": 148,
+   "ok": true,
+   "at": "2026-09-30T16:16:09.3810791Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": null
+  },
+  {
+   "i": 149,
+   "ok": true,
+   "at": "2026-09-30T16:16:09.3844170Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 150,
+   "ok": true,
+   "at": "2026-09-30T16:16:12.8972677Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 151,
+   "ok": true,
+   "at": "2026-09-30T16:16:12.9003920Z",
+   "kind": "desktopShot",
+   "label": "s4-sign-after",
+   "foreign": null,
+   "cursor": [
+    545,
+    762
+   ],
+   "size": "2560 x 1600"
+  },
+  {
+   "i": 152,
+   "ok": true,
+   "at": "2026-09-30T16:16:13.5253816Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_s4-sign-after"
+  },
+  {
+   "i": 153,
+   "ok": true,
+   "at": "2026-09-30T16:16:13.5418851Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 154,
+   "ok": true,
+   "at": "2026-09-30T16:16:13.5448809Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 37
+  },
+  {
+   "i": 155,
+   "ok": true,
+   "at": "2026-09-30T16:16:14.3507812Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 156,
+   "ok": true,
+   "at": "2026-09-30T16:16:14.3582708Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "askCard4"
+  },
+  {
+   "i": 157,
+   "ok": true,
+   "at": "2026-09-30T16:16:14.3612666Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 158,
+   "ok": true,
+   "at": "2026-09-30T16:16:14.3637074Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_card4_closed"
+  },
+  {
+   "i": 159,
+   "ok": true,
+   "at": "2026-09-30T16:16:14.3652403Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": null
+  },
+  {
+   "i": 160,
+   "ok": true,
+   "at": "2026-09-30T16:16:14.3667979Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 161,
+   "ok": true,
+   "at": "2026-09-30T16:16:17.8697621Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 162,
+   "ok": true,
+   "at": "2026-09-30T16:16:17.8727617Z",
+   "kind": "desktopShot",
+   "label": "s4-sign-reverted",
+   "foreign": null,
+   "cursor": [
+    545,
+    762
+   ],
+   "size": "2560 x 1600"
+  },
+  {
+   "i": 163,
+   "ok": true,
+   "at": "2026-09-30T16:16:18.5244646Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_s4-sign-reverted"
+  },
+  {
+   "i": 164,
+   "ok": true,
+   "at": "2026-09-30T16:16:18.5428499Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": null
+  },
+  {
+   "i": 165,
+   "ok": true,
+   "at": "2026-09-30T16:16:18.5609368Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 166,
+   "ok": true,
+   "at": "2026-09-30T16:16:22.0757095Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 167,
+   "ok": true,
+   "at": "2026-09-30T16:16:22.0797068Z",
+   "kind": "desktopShot",
+   "label": "s4-digit-after",
+   "foreign": null,
+   "cursor": [
+    545,
+    762
+   ],
+   "size": "2560 x 1600"
+  },
+  {
+   "i": 168,
+   "ok": true,
+   "at": "2026-09-30T16:16:22.6847880Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_s4-digit-after"
+  },
+  {
+   "i": 169,
+   "ok": true,
+   "at": "2026-09-30T16:16:22.7052027Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": null
+  },
+  {
+   "i": 170,
+   "ok": true,
+   "at": "2026-09-30T16:16:22.7079310Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 171,
+   "ok": true,
+   "at": "2026-09-30T16:16:26.2104434Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 172,
+   "ok": true,
+   "at": "2026-09-30T16:16:26.2136455Z",
+   "kind": "desktopShot",
+   "label": "s4-digit-reverted",
+   "foreign": null,
+   "cursor": [
+    545,
+    762
+   ],
+   "size": "2560 x 1600"
+  },
+  {
+   "i": 173,
+   "ok": true,
+   "at": "2026-09-30T16:16:26.8492952Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_s4-digit-reverted"
+  },
+  {
+   "i": 174,
+   "ok": true,
+   "at": "2026-09-30T16:16:26.8640350Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 6
+  },
+  {
+   "i": 175,
+   "ok": true,
+   "at": "2026-09-30T16:16:27.0192487Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 176,
+   "ok": true,
+   "at": "2026-09-30T16:16:29.5203576Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 177,
+   "ok": true,
+   "at": "2026-09-30T16:16:29.5243835Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": null
+  },
+  {
+   "i": 178,
+   "ok": true,
+   "at": "2026-09-30T16:16:29.5263903Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 179,
+   "ok": true,
+   "at": "2026-09-30T16:16:32.0314406Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 180,
+   "ok": true,
+   "at": "2026-09-30T16:16:32.0350533Z",
+   "kind": "desktopShot",
+   "label": "s4-cross-changed",
+   "foreign": null,
+   "cursor": [
+    545,
+    762
+   ],
+   "size": "2560 x 1600"
+  },
+  {
+   "i": 181,
+   "ok": true,
+   "at": "2026-09-30T16:16:32.6829859Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 5
+  },
+  {
+   "i": 182,
+   "ok": true,
+   "at": "2026-09-30T16:16:32.8312898Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 183,
+   "ok": true,
+   "at": "2026-09-30T16:16:36.3334429Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 184,
+   "ok": true,
+   "at": "2026-09-30T16:16:36.3374533Z",
+   "kind": "desktopShot",
+   "label": "s4-cross-released",
+   "foreign": null,
+   "cursor": [
+    545,
+    762
+   ],
+   "size": "2560 x 1600"
+  },
+  {
+   "i": 185,
+   "ok": true,
+   "at": "2026-09-30T16:16:36.9447413Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_s4-cross-released"
+  },
+  {
+   "i": 186,
+   "ok": true,
+   "at": "2026-09-30T16:16:37.0249399Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": null
+  },
+  {
+   "i": 187,
+   "ok": true,
+   "at": "2026-09-30T16:16:37.0279378Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 188,
+   "ok": true,
+   "at": "2026-09-30T16:16:40.5397149Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 189,
+   "ok": true,
+   "at": "2026-09-30T16:16:40.5432687Z",
+   "kind": "desktopShot",
+   "label": "s4-cross-reverted",
+   "foreign": null,
+   "cursor": [
+    545,
+    762
+   ],
+   "size": "2560 x 1600"
+  },
+  {
+   "i": 190,
+   "ok": true,
+   "at": "2026-09-30T16:16:41.1893951Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_s4-cross-reverted"
+  },
+  {
+   "i": 191,
+   "ok": true,
+   "at": "2026-09-30T16:16:41.2112364Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 4
+  },
+  {
+   "i": 192,
+   "ok": true,
+   "at": "2026-09-30T16:16:41.3848719Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 193,
+   "ok": true,
+   "at": "2026-09-30T16:16:43.8929815Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 194,
+   "ok": true,
+   "at": "2026-09-30T16:16:43.8954423Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": null
+  },
+  {
+   "i": 195,
+   "ok": true,
+   "at": "2026-09-30T16:16:43.8977201Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 196,
+   "ok": true,
+   "at": "2026-09-30T16:16:46.4011778Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 197,
+   "ok": true,
+   "at": "2026-09-30T16:16:46.4051752Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_s4-cap-1"
+  },
+  {
+   "i": 198,
+   "ok": true,
+   "at": "2026-09-30T16:16:46.4251077Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 3
+  },
+  {
+   "i": 199,
+   "ok": true,
+   "at": "2026-09-30T16:16:46.4832621Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": null
+  },
+  {
+   "i": 200,
+   "ok": true,
+   "at": "2026-09-30T16:16:46.4852738Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 201,
+   "ok": true,
+   "at": "2026-09-30T16:16:48.9993074Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 202,
+   "ok": true,
+   "at": "2026-09-30T16:16:49.0024298Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_s4-cap-2"
+  },
+  {
+   "i": 203,
+   "ok": true,
+   "at": "2026-09-30T16:16:49.0236699Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 3
+  },
+  {
+   "i": 204,
+   "ok": true,
+   "at": "2026-09-30T16:16:49.0636950Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": null
+  },
+  {
+   "i": 205,
+   "ok": true,
+   "at": "2026-09-30T16:16:49.0668920Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 206,
+   "ok": true,
+   "at": "2026-09-30T16:16:51.5793100Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 207,
+   "ok": true,
+   "at": "2026-09-30T16:16:51.5823104Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_s4-cap-3"
+  },
+  {
+   "i": 208,
+   "ok": true,
+   "at": "2026-09-30T16:16:51.6021158Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 3
+  },
+  {
+   "i": 209,
+   "ok": true,
+   "at": "2026-09-30T16:16:51.6579208Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": null
+  },
+  {
+   "i": 210,
+   "ok": true,
+   "at": "2026-09-30T16:16:51.6603710Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 211,
+   "ok": true,
+   "at": "2026-09-30T16:16:54.1686129Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 212,
+   "ok": true,
+   "at": "2026-09-30T16:16:54.1709934Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_s4-cap-4"
+  },
+  {
+   "i": 213,
+   "ok": true,
+   "at": "2026-09-30T16:16:54.2380082Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 3
+  },
+  {
+   "i": 214,
+   "ok": true,
+   "at": "2026-09-30T16:16:54.2814415Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": null
+  },
+  {
+   "i": 215,
+   "ok": true,
+   "at": "2026-09-30T16:16:54.2837368Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 216,
+   "ok": true,
+   "at": "2026-09-30T16:16:56.7842484Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 217,
+   "ok": true,
+   "at": "2026-09-30T16:16:56.7872876Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_s4-cap-5"
+  },
+  {
+   "i": 218,
+   "ok": true,
+   "at": "2026-09-30T16:16:56.8092673Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 3
+  },
+  {
+   "i": 219,
+   "ok": true,
+   "at": "2026-09-30T16:16:56.8498350Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": null
+  },
+  {
+   "i": 220,
+   "ok": true,
+   "at": "2026-09-30T16:16:56.8523294Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 221,
+   "ok": true,
+   "at": "2026-09-30T16:16:59.3678643Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 222,
+   "ok": true,
+   "at": "2026-09-30T16:16:59.3708836Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_s4-cap-6"
+  },
+  {
+   "i": 223,
+   "ok": true,
+   "at": "2026-09-30T16:16:59.3928944Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 3
+  },
+  {
+   "i": 224,
+   "ok": true,
+   "at": "2026-09-30T16:16:59.4344069Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": null
+  },
+  {
+   "i": 225,
+   "ok": true,
+   "at": "2026-09-30T16:16:59.4366338Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 226,
+   "ok": true,
+   "at": "2026-09-30T16:17:01.9389481Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 227,
+   "ok": true,
+   "at": "2026-09-30T16:17:01.9544754Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_s4-cap-7"
+  },
+  {
+   "i": 228,
+   "ok": true,
+   "at": "2026-09-30T16:17:01.9791437Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 3
+  },
+  {
+   "i": 229,
+   "ok": true,
+   "at": "2026-09-30T16:17:02.0202455Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": null
+  },
+  {
+   "i": 230,
+   "ok": true,
+   "at": "2026-09-30T16:17:02.0232470Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 231,
+   "ok": true,
+   "at": "2026-09-30T16:17:04.5362752Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 232,
+   "ok": true,
+   "at": "2026-09-30T16:17:04.5402763Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_s4-cap-8"
+  },
+  {
+   "i": 233,
+   "ok": true,
+   "at": "2026-09-30T16:17:04.5660258Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 3
+  },
+  {
+   "i": 234,
+   "ok": true,
+   "at": "2026-09-30T16:17:04.6039913Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": null
+  },
+  {
+   "i": 235,
+   "ok": true,
+   "at": "2026-09-30T16:17:04.6240828Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 236,
+   "ok": true,
+   "at": "2026-09-30T16:17:07.1338657Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 237,
+   "ok": true,
+   "at": "2026-09-30T16:17:07.1368652Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_s4-cap-9"
+  },
+  {
+   "i": 238,
+   "ok": true,
+   "at": "2026-09-30T16:17:07.1620504Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 3
+  },
+  {
+   "i": 239,
+   "ok": true,
+   "at": "2026-09-30T16:17:07.2141069Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": null
+  },
+  {
+   "i": 240,
+   "ok": true,
+   "at": "2026-09-30T16:17:07.2169498Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 241,
+   "ok": true,
+   "at": "2026-09-30T16:17:09.7251783Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 242,
+   "ok": true,
+   "at": "2026-09-30T16:17:09.7282974Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_s4-cap-10"
+  },
+  {
+   "i": 243,
+   "ok": true,
+   "at": "2026-09-30T16:17:09.7539376Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 3
+  },
+  {
+   "i": 244,
+   "ok": true,
+   "at": "2026-09-30T16:17:09.8002906Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": null
+  },
+  {
+   "i": 245,
+   "ok": true,
+   "at": "2026-09-30T16:17:09.8022886Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 246,
+   "ok": true,
+   "at": "2026-09-30T16:17:12.3130990Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 247,
+   "ok": true,
+   "at": "2026-09-30T16:17:12.3171058Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_s4-cap-11"
+  },
+  {
+   "i": 248,
+   "ok": true,
+   "at": "2026-09-30T16:17:12.3413105Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 3
+  },
+  {
+   "i": 249,
+   "ok": true,
+   "at": "2026-09-30T16:17:12.3770739Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": null
+  },
+  {
+   "i": 250,
+   "ok": true,
+   "at": "2026-09-30T16:17:12.3795862Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 251,
+   "ok": true,
+   "at": "2026-09-30T16:17:14.8930664Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 252,
+   "ok": true,
+   "at": "2026-09-30T16:17:14.8960653Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_s4-cap-12"
+  },
+  {
+   "i": 253,
+   "ok": true,
+   "at": "2026-09-30T16:17:14.9211925Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 3
+  },
+  {
+   "i": 254,
+   "ok": true,
+   "at": "2026-09-30T16:17:14.9871482Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": null
+  },
+  {
+   "i": 255,
+   "ok": true,
+   "at": "2026-09-30T16:17:14.9901721Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 256,
+   "ok": true,
+   "at": "2026-09-30T16:17:17.5046858Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 257,
+   "ok": true,
+   "at": "2026-09-30T16:17:17.5081888Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_s4-cap-13"
+  },
+  {
+   "i": 258,
+   "ok": true,
+   "at": "2026-09-30T16:17:17.5312942Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 3
+  },
+  {
+   "i": 259,
+   "ok": true,
+   "at": "2026-09-30T16:17:17.5704598Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 3
+  },
+  {
+   "i": 260,
+   "ok": true,
+   "at": "2026-09-30T16:17:17.6716630Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 261,
+   "ok": true,
+   "at": "2026-09-30T16:17:21.1744276Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 262,
+   "ok": true,
+   "at": "2026-09-30T16:17:21.1769382Z",
+   "kind": "desktopShot",
+   "label": "s4-cap-released",
+   "foreign": null,
+   "cursor": [
+    545,
+    762
+   ],
+   "size": "2560 x 1600"
+  },
+  {
+   "i": 263,
+   "ok": true,
+   "at": "2026-09-30T16:17:21.8108811Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_s4-cap-released"
+  },
+  {
+   "i": 264,
+   "ok": true,
+   "at": "2026-09-30T16:17:21.8353692Z",
+   "kind": "snapshot",
+   "label": "s4-before-stop",
+   "contextPictures": 20
+  },
+  {
+   "i": 265,
+   "ok": true,
+   "at": "2026-09-30T16:17:21.8405070Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 266,
+   "ok": true,
+   "at": "2026-09-30T16:17:21.8425185Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "stopped4"
+  },
+  {
+   "i": 267,
+   "ok": true,
+   "at": "2026-09-30T16:17:21.9574637Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "recoveries4"
+  },
+  {
+   "i": 268,
+   "ok": true,
+   "at": "2026-09-30T16:17:21.9796161Z",
+   "kind": "snapshot",
+   "label": "stopped4",
+   "contextPictures": 20
+  },
+  {
+   "i": 269,
+   "ok": true,
+   "at": "2026-09-30T16:17:21.9846196Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 270,
+   "ok": true,
+   "at": "2026-09-30T16:17:21.9906192Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 271,
+   "ok": true,
+   "at": "2026-09-30T16:17:22.1164717Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "session5"
+  },
+  {
+   "i": 272,
+   "ok": true,
+   "at": "2026-09-30T16:17:22.4924399Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 273,
+   "ok": true,
+   "at": "2026-09-30T16:17:22.5042374Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 274,
+   "ok": true,
+   "at": "2026-09-30T16:17:25.0157203Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "opened4Id"
+  },
+  {
+   "i": 275,
+   "ok": true,
+   "at": "2026-09-30T16:17:25.0222323Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "opened4"
+  },
+  {
+   "i": 276,
+   "ok": true,
+   "at": "2026-09-30T16:17:25.1418593Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 277,
+   "ok": true,
+   "at": "2026-09-30T16:17:28.6568537Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 278,
+   "ok": true,
+   "at": "2026-09-30T16:17:28.6601702Z",
+   "kind": "desktopShot",
+   "label": "s5-reopened",
+   "foreign": null,
+   "cursor": [
+    545,
+    762
+   ],
+   "size": "2560 x 1600"
+  },
+  {
+   "i": 279,
+   "ok": true,
+   "at": "2026-09-30T16:17:29.3118875Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_s5-reopened"
+  },
+  {
+   "i": 280,
+   "ok": true,
+   "at": "2026-09-30T16:17:29.3362650Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_reopened4"
+  },
+  {
+   "i": 281,
+   "ok": true,
+   "at": "2026-09-30T16:17:29.3397186Z",
+   "kind": "snapshot",
+   "label": "reopened4",
+   "contextPictures": 20
+  },
+  {
+   "i": 282,
+   "ok": true,
+   "at": "2026-09-30T16:17:29.3453785Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "contexts4"
+  },
+  {
+   "i": 283,
+   "ok": true,
+   "at": "2026-09-30T16:17:29.3996608Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": null
+  },
+  {
+   "i": 284,
+   "ok": true,
+   "at": "2026-09-30T16:17:29.4026608Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 285,
+   "ok": true,
+   "at": "2026-09-30T16:17:32.9057554Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 286,
+   "ok": true,
+   "at": "2026-09-30T16:17:32.9092056Z",
+   "kind": "desktopShot",
+   "label": "s5-digit-after",
+   "foreign": null,
+   "cursor": [
+    545,
+    762
+   ],
+   "size": "2560 x 1600"
+  },
+  {
+   "i": 287,
+   "ok": true,
+   "at": "2026-09-30T16:17:33.4998307Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_s5-digit-after"
+  },
+  {
+   "i": 288,
+   "ok": true,
+   "at": "2026-09-30T16:17:33.5594300Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": null
+  },
+  {
+   "i": 289,
+   "ok": true,
+   "at": "2026-09-30T16:17:33.5628190Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 290,
+   "ok": true,
+   "at": "2026-09-30T16:17:37.0730426Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 291,
+   "ok": true,
+   "at": "2026-09-30T16:17:37.0760422Z",
+   "kind": "desktopShot",
+   "label": "s5-digit-reverted",
+   "foreign": null,
+   "cursor": [
+    545,
+    762
+   ],
+   "size": "2560 x 1600"
+  },
+  {
+   "i": 292,
+   "ok": true,
+   "at": "2026-09-30T16:17:37.6936066Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_s5-digit-reverted"
+  },
+  {
+   "i": 293,
+   "ok": true,
+   "at": "2026-09-30T16:17:37.7191380Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 294,
+   "ok": true,
+   "at": "2026-09-30T16:17:37.7221661Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "stopped5"
+  },
+  {
+   "i": 295,
+   "ok": true,
+   "at": "2026-09-30T16:17:37.8356919Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "recoveries5"
+  },
+  {
+   "i": 296,
+   "ok": true,
+   "at": "2026-09-30T16:17:37.8692528Z",
+   "kind": "snapshot",
+   "label": "stopped5",
+   "contextPictures": 20
+  },
+  {
+   "i": 297,
+   "ok": true,
+   "at": "2026-09-30T16:17:37.8737619Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 298,
+   "ok": true,
+   "at": "2026-09-30T16:17:37.8757682Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "timeline"
+  },
+  {
+   "i": 299,
+   "ok": true,
+   "at": "2026-09-30T16:17:37.9140103Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "inkFinal"
+  },
+  {
+   "i": 300,
+   "ok": true,
+   "at": "2026-09-30T16:17:37.9195318Z",
+   "kind": "closeApp",
+   "exited": true
+  }
+ ],
+ "values": {
+  "displays": {
+   "label": "整个屏幕",
+   "primary": true,
+   "bounds": {
+    "x": 0,
+    "y": 0,
+    "width": 1280,
+    "height": 800
+   },
+   "scale_factor": 2,
+   "source_id": "screen:0:0"
+  },
+  "hooked": true,
+  "startClicked": true,
+  "session1": "{\"running\":true,\"starting\":false,\"ending\":false,\"display\":{\"display_id\":\"3071609112\",\"label\":\"整个屏幕\",\"bounds\":{\"x\":0,\"y\":0,\"width\":1280,\"height\":800},\"scale_factor\":2},\"session_id\":\"2\"}",
+  "scrolled": 420,
+  "ov_nav": "{\"mode\":\"NAV\",\"tool\":\"pen\",\"mouse\":\"false\",\"hint\":\"Clicks go to your apps. Capturing this display · frame 24. No AI is connected. Ink is saved on this device at every change.\",\"card\":false,\"cancel\":false,\"disabled\":2}",
+  "ov_write": "{\"mode\":\"WRITE\",\"tool\":\"pen\",\"mouse\":\"false\",\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 24. No AI is connected. Ink is saved on this device at every change.\",\"card\":false,\"cancel\":false,\"disabled\":2}",
+  "ov_mouse_off": "{\"mode\":\"WRITE\",\"tool\":\"pen\",\"mouse\":\"false\",\"hint\":\"Mouse writing is off: the mouse does not draw. Press ✋ to use your apps, or turn on Mouse writing. Capturing this display · frame 25. No AI is connected. Ink is saved on this device at every change.\",\"card\":false,\"cancel\":false,\"disabled\":2}",
+  "ov_mouse_on": "{\"mode\":\"WRITE\",\"tool\":\"pen\",\"mouse\":\"true\",\"hint\":\"Pen and mouse write; new ink fixed on the screen. Capturing this display · frame 25. No AI is connected. Ink is saved on this device at every change.\",\"card\":false,\"cancel\":false,\"disabled\":2}",
+  "ov_erase": "{\"mode\":\"WRITE\",\"tool\":\"eraser\",\"mouse\":\"true\",\"hint\":\"Pen and mouse write; new ink fixed on the screen. Capturing this display · frame 33. No AI is connected. Saved on this device at 09:15:28. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"card\":false,\"cancel\":false,\"disabled\":1}",
+  "ov_ask": "{\"mode\":\"ASK\",\"tool\":\"pen\",\"mouse\":\"true\",\"hint\":\"Circle a region. Esc or Cancel returns. Capturing this display · frame 35. No AI is connected. Saved on this device at 09:15:30. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"card\":false,\"cancel\":true,\"disabled\":1}",
+  "ov_ask_finished": "{\"mode\":\"WRITE\",\"tool\":\"pen\",\"mouse\":\"true\",\"hint\":\"Pen and mouse write; new ink fixed on the screen. Capturing this display · frame 36. No AI is connected. Saved on this device at 09:15:30. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"card\":true,\"cancel\":false,\"disabled\":1}",
+  "ov_card_closed": "{\"mode\":\"WRITE\",\"tool\":\"pen\",\"mouse\":\"true\",\"hint\":\"Pen and mouse write; new ink fixed on the screen. Capturing this display · frame 36. No AI is connected. Saved on this device at 09:15:30. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"card\":false,\"cancel\":false,\"disabled\":1}",
+  "ov_ask2": "{\"mode\":\"ASK\",\"tool\":\"pen\",\"mouse\":\"true\",\"hint\":\"Circle a region. Esc or Cancel returns. Capturing this display · frame 36. No AI is connected. Saved on this device at 09:15:30. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"card\":false,\"cancel\":true,\"disabled\":1}",
+  "ov_ask_cancelled": "{\"mode\":\"WRITE\",\"tool\":\"pen\",\"mouse\":\"true\",\"hint\":\"Pen and mouse write; new ink fixed on the screen. Capturing this display · frame 36. No AI is connected. Saved on this device at 09:15:30. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"card\":false,\"cancel\":false,\"disabled\":1}",
+  "ov_ink_scrolled": "{\"mode\":\"WRITE\",\"tool\":\"pen\",\"mouse\":\"true\",\"hint\":\"Pen and mouse write; new ink fixed on the screen. Capturing this display · frame 42. No AI is connected. Saved on this device at 09:15:33. 4 stroke(s) dashed: the pixels under them changed. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"card\":false,\"cancel\":false,\"disabled\":1}",
+  "app_ink-scrolled": "{\"aligned\":{\"stk_4396afbdcc320c932444e76a33dcbea9\":\"changed\",\"stk_8c836e85d723fdf8efc856bb56ff8fa8\":\"changed\",\"stk_fcb398f55bc73afaf9a555d9ffeb4dc1\":\"unknown\",\"stk_897d6ffa97033117404ece03ac19cb9f\":\"changed\",\"stk_fa4eea68a0cabb16d436894d14d4d9e1\":\"changed\"},\"alignment\":[{\"id\":\"stk_4396afbdcc320c932444e76a33dcbea9\",\"region\":{\"x\":42,\"y\":298,\"width\":526,\"height\":28},\"aligned\":\"changed\",\"fingerprint_change\":0.07239583333333334,\"detail\":{\"cols\":263,\"rows\":14,\"result\":\"changed\",\"moved_cells\":978,\"moved_at\":[[2,0],[80,0],[81,0],[103,0],[104,0],[105,0],[115,0],[116,0],[119,0],[120,0],[121,0],[122,0]]}},{\"id\":\"stk_8c836e85d723fdf8efc856bb56ff8fa8\",\"region\":{\"x\":42,\"y\":298,\"width\":526,\"height\":28},\"aligned\":\"changed\",\"fingerprint_change\":0.07239583333333334,\"detail\":{\"cols\":263,\"rows\":14,\"result\":\"changed\",\"moved_cells\":978,\"moved_at\":[[2,0],[80,0],[81,0],[103,0],[104,0],[105,0],[115,0],[116,0],[119,0],[120,0],[121,0],[122,0]]}},{\"id\":\"stk_fcb398f55bc73afaf9a555d9ffeb4dc1\",\"region\":{\"x\":292,\"y\":515,\"width\":62,\"height\":58},\"aligned\":\"unknown\",\"fingerprint_change\":0.010049019607843138,\"detail\":{\"cols\":62,\"rows\":58,\"result\":\"changed\",\"moved_cells\":187,\"moved_at\":[[0,10],[1,10],[2,10],[3,10],[4,10],[5,10],[6,10],[7,10],[8,10],[9,10],[10,10],[11,10]]}},{\"id\":\"stk_897d6ffa97033117404ece03ac19cb9f\",\"region\":{\"x\":82,\"y\":384,\"width\":246,\"height\":22},\"aligned\":\"changed\",\"fingerprint_change\":0.10490196078431373,\"detail\":{\"cols\":164,\"rows\":14,\"result\":\"changed\",\"moved_cells\":546,\"moved_at\":[[0,0],[1,0],[2,0],[3,0],[4,0],[5,0],[38,0],[39,0],[41,0],[42,0],[43,0],[44,0]]}},{\"id\":\"stk_fa4eea68a0cabb16d436894d14d4d9e1\",\"region\":{\"x\":37,\"y\":479,\"width\":201,\"height\":16},\"aligned\":\"changed\",\"fingerprint_change\":0.058409926470588236,\"detail\":{\"cols\":201,\"rows\":16,\"result\":\"changed\",\"moved_cells\":281,\"moved_at\":[[8,0],[9,0],[10,0],[17,0],[18,0],[19,0],[23,0],[24,0],[25,0],[28,0],[29,0],[30,0]]}}],\"doc\":{\"id\":\"420dc45ead8317a8\",\"revision\":7,\"visible\":[\"stk_4396afbdcc320c932444e76a33dcbea9\",\"stk_8c836e85d723fdf8efc856bb56ff8fa8\",\"stk_fcb398f55bc73afaf9a555d9ffeb4dc1\",\"stk_897d6ffa97033117404ece03ac19cb9f\",\"stk_fa4eea68a0cabb16d436894d14d4d9e1\"],\"history\":[\"add\",\"add\",\"add\",\"erase\",\"undo\",\"redo\",\"add\"],\"strokes\":6},\"pinned\":0,\"hint\":\"Pen and mouse write; new ink fixed on the screen. Capturing this display · frame 42. No AI is connected. Saved on this device at 09:15:33. 4 stroke(s) dashed: the pixels under them changed. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"gesture\":null,\"last\":{\"seq\":42,\"sampled_at\":\"2026-09-30T16:15:37.589Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"a5d252832ab1412a5d7e2d17d4490bcf96b70747f34cd89568f170b917dc0b8c\"},\"composed\":{\"ink_session\":\"420dc45ead8317a8\",\"ink_revision\":7,\"ink_marks\":{\"verified\":0,\"changed\":4,\"unknown\":1,\"following_content\":0},\"pixels_sha256\":\"d0eea4a04e3cdfea4e9decc7e708e760e8a19556d6aa123c6b15905865d33294\"}}}",
+  "ov_ink_back": "{\"mode\":\"WRITE\",\"tool\":\"pen\",\"mouse\":\"true\",\"hint\":\"Pen and mouse write; new ink fixed on the screen. Capturing this display · frame 46. No AI is connected. Saved on this device at 09:15:33. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"card\":false,\"cancel\":false,\"disabled\":1}",
+  "app_ink-back": "{\"aligned\":{\"stk_4396afbdcc320c932444e76a33dcbea9\":\"verified\",\"stk_8c836e85d723fdf8efc856bb56ff8fa8\":\"verified\",\"stk_fcb398f55bc73afaf9a555d9ffeb4dc1\":\"unknown\",\"stk_897d6ffa97033117404ece03ac19cb9f\":\"verified\",\"stk_fa4eea68a0cabb16d436894d14d4d9e1\":\"verified\"},\"alignment\":[{\"id\":\"stk_4396afbdcc320c932444e76a33dcbea9\",\"region\":{\"x\":42,\"y\":298,\"width\":526,\"height\":28},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":263,\"rows\":14,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_8c836e85d723fdf8efc856bb56ff8fa8\",\"region\":{\"x\":42,\"y\":298,\"width\":526,\"height\":28},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":263,\"rows\":14,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_fcb398f55bc73afaf9a555d9ffeb4dc1\",\"region\":{\"x\":292,\"y\":515,\"width\":62,\"height\":58},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":62,\"rows\":58,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_897d6ffa97033117404ece03ac19cb9f\",\"region\":{\"x\":82,\"y\":384,\"width\":246,\"height\":22},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":164,\"rows\":14,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_fa4eea68a0cabb16d436894d14d4d9e1\",\"region\":{\"x\":37,\"y\":479,\"width\":201,\"height\":16},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":201,\"rows\":16,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}}],\"doc\":{\"id\":\"420dc45ead8317a8\",\"revision\":7,\"visible\":[\"stk_4396afbdcc320c932444e76a33dcbea9\",\"stk_8c836e85d723fdf8efc856bb56ff8fa8\",\"stk_fcb398f55bc73afaf9a555d9ffeb4dc1\",\"stk_897d6ffa97033117404ece03ac19cb9f\",\"stk_fa4eea68a0cabb16d436894d14d4d9e1\"],\"history\":[\"add\",\"add\",\"add\",\"erase\",\"undo\",\"redo\",\"add\"],\"strokes\":6},\"pinned\":0,\"hint\":\"Pen and mouse write; new ink fixed on the screen. Capturing this display · frame 46. No AI is connected. Saved on this device at 09:15:33. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"gesture\":null,\"last\":{\"seq\":46,\"sampled_at\":\"2026-09-30T16:15:41.893Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"efa59323cadd83945f4a43781f3ecc5389797d079caeba6a8ae4e3c588879408\"},\"composed\":{\"ink_session\":\"420dc45ead8317a8\",\"ink_revision\":7,\"ink_marks\":{\"verified\":4,\"changed\":0,\"unknown\":1,\"following_content\":0},\"pixels_sha256\":\"3d94557dbae9697991d475c4a68fd2f70280c351d106d16ddfb6730f60a97d09\"}}}",
+  "ink1": "{\"sessions\":[{\"id\":\"420dc45ead8317a8\",\"created_at\":\"2026-09-30T16:14:56.448Z\",\"forked_from\":null,\"display_label\":\"整个屏幕\",\"strokes\":5,\"revision\":7}],\"unreadable\":0}",
+  "stopped1": "{\"running\":false,\"starting\":false,\"ended\":\"stopped by the user\"}",
+  "recoveries1": "[]",
+  "session2": "{\"running\":true,\"starting\":false,\"ending\":false,\"display\":{\"display_id\":\"3071609112\",\"label\":\"整个屏幕\",\"bounds\":{\"x\":0,\"y\":0,\"width\":1280,\"height\":800},\"scale_factor\":2},\"session_id\":\"3\"}",
+  "opened": true,
+  "ov_reopened": "{\"mode\":\"NAV\",\"tool\":\"pen\",\"mouse\":\"false\",\"hint\":\"Clicks go to your apps. Capturing this display · frame 4. No AI is connected. Reopened 6 stroke(s) saved on this device. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"card\":false,\"cancel\":false,\"disabled\":1}",
+  "stopped2": "{\"running\":false,\"starting\":false,\"ended\":\"stopped by the user\"}",
+  "recoveries2": "[]",
+  "doubleStart": "[{\"ok\":true},{\"ok\":false,\"reason\":\"a session is starting\"}]",
+  "session3": "{\"running\":true,\"starting\":false,\"ending\":false,\"display\":{\"display_id\":\"3071609112\",\"label\":\"整个屏幕\",\"bounds\":{\"x\":0,\"y\":0,\"width\":1280,\"height\":800},\"scale_factor\":2},\"session_id\":\"4\"}",
+  "targetsDouble": [
+   {
+    "type": "page",
+    "url": "app://bundle/apps/windows/src/renderer/overlay.html",
+    "title": "Learning Companion overlay"
+   },
+   {
+    "type": "page",
+    "url": "app://bundle/apps/windows/src/renderer/control.html",
+    "title": "Learning Companion"
+   }
+  ],
+  "stopped3": "{\"running\":false,\"starting\":false,\"ended\":\"stopped by the user\"}",
+  "stopDuringStart": "{\"r\":{\"ok\":false,\"reason\":\"stopped before the capture started (stopped by the user)\"},\"state\":{\"running\":false,\"starting\":false,\"ended\":\"stopped by the user\"}}",
+  "targetsAfterCancel": [
+   {
+    "type": "page",
+    "url": "app://bundle/apps/windows/src/renderer/control.html",
+    "title": "Learning Companion"
+   }
+  ],
+  "panelGeom": "{\"view\":{\"sx\":0,\"sy\":0,\"ow\":1280,\"oh\":752,\"iw\":1280,\"ih\":729,\"dpr\":2,\"scrollY\":0},\"rects\":{\"qa-live\":[40,40,720,300],\"qa-sign\":[102,62,30,36],\"qa-digit\":[122,122,30,36],\"qa-cross\":[122,182,30,36],\"qa-step\":[152,242,40,36],\"qa-tick\":[642,292,19.1796875,24]}}",
+  "idsBefore4": "[\"420dc45ead8317a8\"]",
+  "session4": "{\"running\":true,\"starting\":false,\"ending\":false,\"display\":{\"display_id\":\"3071609112\",\"label\":\"整个屏幕\",\"bounds\":{\"x\":0,\"y\":0,\"width\":1280,\"height\":800},\"scale_factor\":2},\"session_id\":\"5\"}",
+  "ov_write4": "{\"mode\":\"WRITE\",\"tool\":\"pen\",\"mouse\":\"false\",\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 3. No AI is connected. Ink is saved on this device at every change.\",\"card\":false,\"cancel\":false,\"disabled\":2}",
+  "app_s4-before": "{\"aligned\":{\"stk_fca575fd08d6fb986b825d276056b399\":\"verified\",\"stk_26221f3540cc8ae5e679452f1f35c187\":\"verified\",\"stk_ca44abe6cf6f400294335b9701017e91\":\"verified\"},\"alignment\":[{\"id\":\"stk_fca575fd08d6fb986b825d276056b399\",\"region\":{\"x\":406,\"y\":131,\"width\":172,\"height\":64},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":86,\"rows\":32,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_26221f3540cc8ae5e679452f1f35c187\",\"region\":{\"x\":87,\"y\":79,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_ca44abe6cf6f400294335b9701017e91\",\"region\":{\"x\":107,\"y\":139,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}}],\"doc\":{\"id\":\"9d3842416eedffaf\",\"revision\":3,\"visible\":[\"stk_fca575fd08d6fb986b825d276056b399\",\"stk_26221f3540cc8ae5e679452f1f35c187\",\"stk_ca44abe6cf6f400294335b9701017e91\"],\"history\":[\"add\",\"add\",\"add\"],\"strokes\":3},\"pinned\":0,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 14. No AI is connected. Saved on this device at 09:16:05.\",\"gesture\":null,\"last\":{\"seq\":14,\"sampled_at\":\"2026-09-30T16:16:09.099Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"2b97146b60268a11099b98a4891fbd1e2a9c5e013b27ed2471d624c8b1496c5a\"},\"composed\":{\"ink_session\":\"9d3842416eedffaf\",\"ink_revision\":3,\"ink_marks\":{\"verified\":3,\"changed\":0,\"unknown\":0,\"following_content\":0},\"pixels_sha256\":\"b3b77171ba9e3f7f558ca62c591eeb46f2c43018077e3f181f5d1edb095a227c\"}}}",
+  "app_s4-sign-after": "{\"aligned\":{\"stk_fca575fd08d6fb986b825d276056b399\":\"verified\",\"stk_26221f3540cc8ae5e679452f1f35c187\":\"changed\",\"stk_ca44abe6cf6f400294335b9701017e91\":\"verified\"},\"alignment\":[{\"id\":\"stk_fca575fd08d6fb986b825d276056b399\",\"region\":{\"x\":406,\"y\":131,\"width\":172,\"height\":64},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":86,\"rows\":32,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_26221f3540cc8ae5e679452f1f35c187\",\"region\":{\"x\":87,\"y\":79,\"width\":60,\"height\":48},\"aligned\":\"changed\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"changed\",\"moved_cells\":26,\"moved_at\":[[29,19],[30,19],[29,20],[30,20],[29,21],[30,21],[29,22],[30,22],[29,23],[30,23],[29,24],[30,24]]}},{\"id\":\"stk_ca44abe6cf6f400294335b9701017e91\",\"region\":{\"x\":107,\"y\":139,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}}],\"doc\":{\"id\":\"9d3842416eedffaf\",\"revision\":3,\"visible\":[\"stk_fca575fd08d6fb986b825d276056b399\",\"stk_26221f3540cc8ae5e679452f1f35c187\",\"stk_ca44abe6cf6f400294335b9701017e91\"],\"history\":[\"add\",\"add\",\"add\"],\"strokes\":3},\"pinned\":0,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 18. No AI is connected. Saved on this device at 09:16:05. 1 stroke(s) dashed: the pixels under them changed.\",\"gesture\":null,\"last\":{\"seq\":18,\"sampled_at\":\"2026-09-30T16:16:13.392Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"310d488f5d706e7100579ee55e890e38313b8725c3576b26bb51aa7555a7ceb6\"},\"composed\":{\"ink_session\":\"9d3842416eedffaf\",\"ink_revision\":3,\"ink_marks\":{\"verified\":2,\"changed\":1,\"unknown\":0,\"following_content\":0},\"pixels_sha256\":\"b4b8833b50097abc913945fd1efe7abf59c7b982b6de4e7e36a2d08e5f6accc8\"}}}",
+  "ov_card4_closed": "{\"mode\":\"WRITE\",\"tool\":\"pen\",\"mouse\":\"false\",\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 18. No AI is connected. Saved on this device at 09:16:05. 1 stroke(s) dashed: the pixels under them changed.\",\"card\":false,\"cancel\":false,\"disabled\":1}",
+  "app_s4-sign-reverted": "{\"aligned\":{\"stk_fca575fd08d6fb986b825d276056b399\":\"verified\",\"stk_26221f3540cc8ae5e679452f1f35c187\":\"verified\",\"stk_ca44abe6cf6f400294335b9701017e91\":\"verified\"},\"alignment\":[{\"id\":\"stk_fca575fd08d6fb986b825d276056b399\",\"region\":{\"x\":406,\"y\":131,\"width\":172,\"height\":64},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":86,\"rows\":32,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_26221f3540cc8ae5e679452f1f35c187\",\"region\":{\"x\":87,\"y\":79,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_ca44abe6cf6f400294335b9701017e91\",\"region\":{\"x\":107,\"y\":139,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}}],\"doc\":{\"id\":\"9d3842416eedffaf\",\"revision\":3,\"visible\":[\"stk_fca575fd08d6fb986b825d276056b399\",\"stk_26221f3540cc8ae5e679452f1f35c187\",\"stk_ca44abe6cf6f400294335b9701017e91\"],\"history\":[\"add\",\"add\",\"add\"],\"strokes\":3},\"pinned\":0,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 22. No AI is connected. Saved on this device at 09:16:05.\",\"gesture\":null,\"last\":{\"seq\":22,\"sampled_at\":\"2026-09-30T16:16:17.668Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"f089467e3e0459d3bd4c0b7369a153ad7acdb6d6b2f8ef55f733d5328d3bd336\"},\"composed\":{\"ink_session\":\"9d3842416eedffaf\",\"ink_revision\":3,\"ink_marks\":{\"verified\":3,\"changed\":0,\"unknown\":0,\"following_content\":0},\"pixels_sha256\":\"ceabfc286167bf7c5c42569cfd749b18698dc5ee67c750d06f33c86a87eaf6dd\"}}}",
+  "app_s4-digit-after": "{\"aligned\":{\"stk_fca575fd08d6fb986b825d276056b399\":\"verified\",\"stk_26221f3540cc8ae5e679452f1f35c187\":\"verified\",\"stk_ca44abe6cf6f400294335b9701017e91\":\"changed\"},\"alignment\":[{\"id\":\"stk_fca575fd08d6fb986b825d276056b399\",\"region\":{\"x\":406,\"y\":131,\"width\":172,\"height\":64},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":86,\"rows\":32,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_26221f3540cc8ae5e679452f1f35c187\",\"region\":{\"x\":87,\"y\":79,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_ca44abe6cf6f400294335b9701017e91\",\"region\":{\"x\":107,\"y\":139,\"width\":60,\"height\":48},\"aligned\":\"changed\",\"fingerprint_change\":0.05954350490196078,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"changed\",\"moved_cells\":237,\"moved_at\":[[26,14],[27,14],[28,14],[29,14],[30,14],[31,14],[32,14],[33,14],[25,15],[26,15],[27,15],[28,15]]}}],\"doc\":{\"id\":\"9d3842416eedffaf\",\"revision\":3,\"visible\":[\"stk_fca575fd08d6fb986b825d276056b399\",\"stk_26221f3540cc8ae5e679452f1f35c187\",\"stk_ca44abe6cf6f400294335b9701017e91\"],\"history\":[\"add\",\"add\",\"add\"],\"strokes\":3},\"pinned\":0,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 26. No AI is connected. Saved on this device at 09:16:05. 1 stroke(s) dashed: the pixels under them changed.\",\"gesture\":null,\"last\":{\"seq\":26,\"sampled_at\":\"2026-09-30T16:16:21.962Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"b48408899babd0edbdd92f3775ab3424f21d8c44eb10c308742136651697d857\"},\"composed\":{\"ink_session\":\"9d3842416eedffaf\",\"ink_revision\":3,\"ink_marks\":{\"verified\":2,\"changed\":1,\"unknown\":0,\"following_content\":0},\"pixels_sha256\":\"6e148b04af102652a20d70739537aab81c5d1c51d693a0d383cc0fbbadb0a8dd\"}}}",
+  "app_s4-digit-reverted": "{\"aligned\":{\"stk_fca575fd08d6fb986b825d276056b399\":\"verified\",\"stk_26221f3540cc8ae5e679452f1f35c187\":\"verified\",\"stk_ca44abe6cf6f400294335b9701017e91\":\"verified\"},\"alignment\":[{\"id\":\"stk_fca575fd08d6fb986b825d276056b399\",\"region\":{\"x\":406,\"y\":131,\"width\":172,\"height\":64},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":86,\"rows\":32,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_26221f3540cc8ae5e679452f1f35c187\",\"region\":{\"x\":87,\"y\":79,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_ca44abe6cf6f400294335b9701017e91\",\"region\":{\"x\":107,\"y\":139,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}}],\"doc\":{\"id\":\"9d3842416eedffaf\",\"revision\":3,\"visible\":[\"stk_fca575fd08d6fb986b825d276056b399\",\"stk_26221f3540cc8ae5e679452f1f35c187\",\"stk_ca44abe6cf6f400294335b9701017e91\"],\"history\":[\"add\",\"add\",\"add\"],\"strokes\":3},\"pinned\":0,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 30. No AI is connected. Saved on this device at 09:16:05.\",\"gesture\":null,\"last\":{\"seq\":30,\"sampled_at\":\"2026-09-30T16:16:26.254Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"573c7969bb3190842a7b18419ba271298e566e6d28671a38633dbede0da56307\"},\"composed\":{\"ink_session\":\"9d3842416eedffaf\",\"ink_revision\":3,\"ink_marks\":{\"verified\":3,\"changed\":0,\"unknown\":0,\"following_content\":0},\"pixels_sha256\":\"b9f6af2157822a74b22194ef5750e609d0add36ad060e52295f8af9776892270\"}}}",
+  "app_s4-cross-released": "{\"aligned\":{\"stk_fca575fd08d6fb986b825d276056b399\":\"verified\",\"stk_26221f3540cc8ae5e679452f1f35c187\":\"verified\",\"stk_ca44abe6cf6f400294335b9701017e91\":\"verified\",\"stk_731c5661fc3a9c30ad1f7422b19f5c86\":\"changed\"},\"alignment\":[{\"id\":\"stk_fca575fd08d6fb986b825d276056b399\",\"region\":{\"x\":406,\"y\":131,\"width\":172,\"height\":64},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":86,\"rows\":32,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_26221f3540cc8ae5e679452f1f35c187\",\"region\":{\"x\":87,\"y\":79,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_ca44abe6cf6f400294335b9701017e91\",\"region\":{\"x\":107,\"y\":139,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_731c5661fc3a9c30ad1f7422b19f5c86\",\"region\":{\"x\":92,\"y\":204,\"width\":106,\"height\":38},\"aligned\":\"changed\",\"fingerprint_change\":0.020848651960784313,\"detail\":{\"cols\":106,\"rows\":38,\"result\":\"changed\",\"moved_cells\":138,\"moved_at\":[[39,14],[40,14],[41,14],[42,14],[46,14],[47,14],[48,14],[49,14],[50,14],[51,14],[52,14],[39,15]]}}],\"doc\":{\"id\":\"9d3842416eedffaf\",\"revision\":4,\"visible\":[\"stk_fca575fd08d6fb986b825d276056b399\",\"stk_26221f3540cc8ae5e679452f1f35c187\",\"stk_ca44abe6cf6f400294335b9701017e91\",\"stk_731c5661fc3a9c30ad1f7422b19f5c86\"],\"history\":[\"add\",\"add\",\"add\",\"add\"],\"strokes\":4},\"pinned\":0,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 41. No AI is connected. Saved on this device at 09:16:32. 1 stroke(s) dashed: the pixels under them changed.\",\"gesture\":null,\"last\":{\"seq\":41,\"sampled_at\":\"2026-09-30T16:16:37.004Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"96a57bd16c5d259c1a6781626ff792e15ef11d6c632446acbca9c8494ea1fc96\"},\"composed\":{\"ink_session\":\"9d3842416eedffaf\",\"ink_revision\":4,\"ink_marks\":{\"verified\":3,\"changed\":1,\"unknown\":0,\"following_content\":0},\"pixels_sha256\":\"83e2efb5609a7575d44ba24f3576c8268927a1912ab6f36ea2acca4b7b300327\"}}}",
+  "app_s4-cross-reverted": "{\"aligned\":{\"stk_fca575fd08d6fb986b825d276056b399\":\"verified\",\"stk_26221f3540cc8ae5e679452f1f35c187\":\"verified\",\"stk_ca44abe6cf6f400294335b9701017e91\":\"verified\",\"stk_731c5661fc3a9c30ad1f7422b19f5c86\":\"unknown\"},\"alignment\":[{\"id\":\"stk_fca575fd08d6fb986b825d276056b399\",\"region\":{\"x\":406,\"y\":131,\"width\":172,\"height\":64},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":86,\"rows\":32,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_26221f3540cc8ae5e679452f1f35c187\",\"region\":{\"x\":87,\"y\":79,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_ca44abe6cf6f400294335b9701017e91\",\"region\":{\"x\":107,\"y\":139,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_731c5661fc3a9c30ad1f7422b19f5c86\",\"region\":{\"x\":92,\"y\":204,\"width\":106,\"height\":38},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":106,\"rows\":38,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}}],\"doc\":{\"id\":\"9d3842416eedffaf\",\"revision\":4,\"visible\":[\"stk_fca575fd08d6fb986b825d276056b399\",\"stk_26221f3540cc8ae5e679452f1f35c187\",\"stk_ca44abe6cf6f400294335b9701017e91\",\"stk_731c5661fc3a9c30ad1f7422b19f5c86\"],\"history\":[\"add\",\"add\",\"add\",\"add\"],\"strokes\":4},\"pinned\":0,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 44. No AI is connected. Saved on this device at 09:16:32. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"gesture\":null,\"last\":{\"seq\":44,\"sampled_at\":\"2026-09-30T16:16:40.230Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"65130757645da0fe855201fb2808047ad448816f9d0e44524231b29c5de3bfa1\"},\"composed\":{\"ink_session\":\"9d3842416eedffaf\",\"ink_revision\":4,\"ink_marks\":{\"verified\":3,\"changed\":0,\"unknown\":1,\"following_content\":0},\"pixels_sha256\":\"928c38ccc51c0c1f6af0eec22039cc03b453a077ac9c144f4e5bcc151a827e17\"}}}",
+  "app_s4-cap-1": "{\"aligned\":{\"stk_fca575fd08d6fb986b825d276056b399\":\"verified\",\"stk_26221f3540cc8ae5e679452f1f35c187\":\"verified\",\"stk_ca44abe6cf6f400294335b9701017e91\":\"verified\",\"stk_731c5661fc3a9c30ad1f7422b19f5c86\":\"unknown\"},\"alignment\":[{\"id\":\"stk_fca575fd08d6fb986b825d276056b399\",\"region\":{\"x\":406,\"y\":131,\"width\":172,\"height\":64},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":86,\"rows\":32,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_26221f3540cc8ae5e679452f1f35c187\",\"region\":{\"x\":87,\"y\":79,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_ca44abe6cf6f400294335b9701017e91\",\"region\":{\"x\":107,\"y\":139,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_731c5661fc3a9c30ad1f7422b19f5c86\",\"region\":{\"x\":92,\"y\":204,\"width\":106,\"height\":38},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":106,\"rows\":38,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}}],\"doc\":{\"id\":\"9d3842416eedffaf\",\"revision\":4,\"visible\":[\"stk_fca575fd08d6fb986b825d276056b399\",\"stk_26221f3540cc8ae5e679452f1f35c187\",\"stk_ca44abe6cf6f400294335b9701017e91\",\"stk_731c5661fc3a9c30ad1f7422b19f5c86\"],\"history\":[\"add\",\"add\",\"add\",\"add\"],\"strokes\":4},\"pinned\":2,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 50. No AI is connected. Saved on this device at 09:16:32. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"gesture\":{\"kind\":\"ink\",\"points\":4,\"contexts\":[{\"seq\":45,\"reason\":\"writing_started\",\"from_point\":0},{\"seq\":49,\"reason\":\"changed_while_writing\",\"from_point\":4}]},\"last\":{\"seq\":50,\"sampled_at\":\"2026-09-30T16:16:45.611Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"64d917eb51a2cf0959823da9eb6fb46350056bacc0b661853019decf283478d0\"},\"composed\":{\"ink_session\":\"9d3842416eedffaf\",\"ink_revision\":4,\"ink_marks\":{\"verified\":3,\"changed\":0,\"unknown\":1,\"following_content\":0},\"pixels_sha256\":\"1dbc96646d2961c847489d61ccd23fc5c2789e256a54baa3b864321d1490bcd2\"}}}",
+  "app_s4-cap-2": "{\"aligned\":{\"stk_fca575fd08d6fb986b825d276056b399\":\"verified\",\"stk_26221f3540cc8ae5e679452f1f35c187\":\"verified\",\"stk_ca44abe6cf6f400294335b9701017e91\":\"verified\",\"stk_731c5661fc3a9c30ad1f7422b19f5c86\":\"unknown\"},\"alignment\":[{\"id\":\"stk_fca575fd08d6fb986b825d276056b399\",\"region\":{\"x\":406,\"y\":131,\"width\":172,\"height\":64},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":86,\"rows\":32,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_26221f3540cc8ae5e679452f1f35c187\",\"region\":{\"x\":87,\"y\":79,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_ca44abe6cf6f400294335b9701017e91\",\"region\":{\"x\":107,\"y\":139,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_731c5661fc3a9c30ad1f7422b19f5c86\",\"region\":{\"x\":92,\"y\":204,\"width\":106,\"height\":38},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":106,\"rows\":38,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}}],\"doc\":{\"id\":\"9d3842416eedffaf\",\"revision\":4,\"visible\":[\"stk_fca575fd08d6fb986b825d276056b399\",\"stk_26221f3540cc8ae5e679452f1f35c187\",\"stk_ca44abe6cf6f400294335b9701017e91\",\"stk_731c5661fc3a9c30ad1f7422b19f5c86\"],\"history\":[\"add\",\"add\",\"add\",\"add\"],\"strokes\":4},\"pinned\":3,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 53. No AI is connected. Saved on this device at 09:16:32. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"gesture\":{\"kind\":\"ink\",\"points\":6,\"contexts\":[{\"seq\":45,\"reason\":\"writing_started\",\"from_point\":0},{\"seq\":49,\"reason\":\"changed_while_writing\",\"from_point\":4},{\"seq\":52,\"reason\":\"changed_while_writing\",\"from_point\":6}]},\"last\":{\"seq\":53,\"sampled_at\":\"2026-09-30T16:16:48.833Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"be637824dcdf7a964746ba15bbba4b053db034097653438de62493c685225720\"},\"composed\":{\"ink_session\":\"9d3842416eedffaf\",\"ink_revision\":4,\"ink_marks\":{\"verified\":3,\"changed\":0,\"unknown\":1,\"following_content\":0},\"pixels_sha256\":\"78d731420c567208ac13aec5fd75cf0c8649cdb9ef558da1532c03be0712d481\"}}}",
+  "app_s4-cap-3": "{\"aligned\":{\"stk_fca575fd08d6fb986b825d276056b399\":\"verified\",\"stk_26221f3540cc8ae5e679452f1f35c187\":\"verified\",\"stk_ca44abe6cf6f400294335b9701017e91\":\"verified\",\"stk_731c5661fc3a9c30ad1f7422b19f5c86\":\"unknown\"},\"alignment\":[{\"id\":\"stk_fca575fd08d6fb986b825d276056b399\",\"region\":{\"x\":406,\"y\":131,\"width\":172,\"height\":64},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":86,\"rows\":32,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_26221f3540cc8ae5e679452f1f35c187\",\"region\":{\"x\":87,\"y\":79,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_ca44abe6cf6f400294335b9701017e91\",\"region\":{\"x\":107,\"y\":139,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_731c5661fc3a9c30ad1f7422b19f5c86\",\"region\":{\"x\":92,\"y\":204,\"width\":106,\"height\":38},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":106,\"rows\":38,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}}],\"doc\":{\"id\":\"9d3842416eedffaf\",\"revision\":4,\"visible\":[\"stk_fca575fd08d6fb986b825d276056b399\",\"stk_26221f3540cc8ae5e679452f1f35c187\",\"stk_ca44abe6cf6f400294335b9701017e91\",\"stk_731c5661fc3a9c30ad1f7422b19f5c86\"],\"history\":[\"add\",\"add\",\"add\",\"add\"],\"strokes\":4},\"pinned\":4,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 55. No AI is connected. Saved on this device at 09:16:32. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"gesture\":{\"kind\":\"ink\",\"points\":8,\"contexts\":[{\"seq\":45,\"reason\":\"writing_started\",\"from_point\":0},{\"seq\":49,\"reason\":\"changed_while_writing\",\"from_point\":4},{\"seq\":52,\"reason\":\"changed_while_writing\",\"from_point\":6},{\"seq\":54,\"reason\":\"changed_while_writing\",\"from_point\":8}]},\"last\":{\"seq\":55,\"sampled_at\":\"2026-09-30T16:16:50.987Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"5f263ea9c15d86ef7af97d086819fa71a76ad9d30d62116eded679245259955d\"},\"composed\":{\"ink_session\":\"9d3842416eedffaf\",\"ink_revision\":4,\"ink_marks\":{\"verified\":3,\"changed\":0,\"unknown\":1,\"following_content\":0},\"pixels_sha256\":\"d44abc2a08da67ac31b96ba17533638b9526191e814cf4d4002eeea82cda7180\"}}}",
+  "app_s4-cap-4": "{\"aligned\":{\"stk_fca575fd08d6fb986b825d276056b399\":\"verified\",\"stk_26221f3540cc8ae5e679452f1f35c187\":\"verified\",\"stk_ca44abe6cf6f400294335b9701017e91\":\"verified\",\"stk_731c5661fc3a9c30ad1f7422b19f5c86\":\"unknown\"},\"alignment\":[{\"id\":\"stk_fca575fd08d6fb986b825d276056b399\",\"region\":{\"x\":406,\"y\":131,\"width\":172,\"height\":64},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":86,\"rows\":32,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_26221f3540cc8ae5e679452f1f35c187\",\"region\":{\"x\":87,\"y\":79,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_ca44abe6cf6f400294335b9701017e91\",\"region\":{\"x\":107,\"y\":139,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_731c5661fc3a9c30ad1f7422b19f5c86\",\"region\":{\"x\":92,\"y\":204,\"width\":106,\"height\":38},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":106,\"rows\":38,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}}],\"doc\":{\"id\":\"9d3842416eedffaf\",\"revision\":4,\"visible\":[\"stk_fca575fd08d6fb986b825d276056b399\",\"stk_26221f3540cc8ae5e679452f1f35c187\",\"stk_ca44abe6cf6f400294335b9701017e91\",\"stk_731c5661fc3a9c30ad1f7422b19f5c86\"],\"history\":[\"add\",\"add\",\"add\",\"add\"],\"strokes\":4},\"pinned\":5,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 58. No AI is connected. Saved on this device at 09:16:32. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"gesture\":{\"kind\":\"ink\",\"points\":10,\"contexts\":[{\"seq\":45,\"reason\":\"writing_started\",\"from_point\":0},{\"seq\":49,\"reason\":\"changed_while_writing\",\"from_point\":4},{\"seq\":52,\"reason\":\"changed_while_writing\",\"from_point\":6},{\"seq\":54,\"reason\":\"changed_while_writing\",\"from_point\":8},{\"seq\":56,\"reason\":\"changed_while_writing\",\"from_point\":10}]},\"last\":{\"seq\":58,\"sampled_at\":\"2026-09-30T16:16:54.220Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"bd0ca15debd169d1514352af83b7c6096636b0cd579f4b38d3eeac62daf65d6c\"},\"composed\":{\"ink_session\":\"9d3842416eedffaf\",\"ink_revision\":4,\"ink_marks\":{\"verified\":3,\"changed\":0,\"unknown\":1,\"following_content\":0},\"pixels_sha256\":\"4443398f3e60408d179a5ae0a2f4b486213503b65c187c3d8ed98d5b08c5f138\"}}}",
+  "app_s4-cap-5": "{\"aligned\":{\"stk_fca575fd08d6fb986b825d276056b399\":\"verified\",\"stk_26221f3540cc8ae5e679452f1f35c187\":\"verified\",\"stk_ca44abe6cf6f400294335b9701017e91\":\"verified\",\"stk_731c5661fc3a9c30ad1f7422b19f5c86\":\"unknown\"},\"alignment\":[{\"id\":\"stk_fca575fd08d6fb986b825d276056b399\",\"region\":{\"x\":406,\"y\":131,\"width\":172,\"height\":64},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":86,\"rows\":32,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_26221f3540cc8ae5e679452f1f35c187\",\"region\":{\"x\":87,\"y\":79,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_ca44abe6cf6f400294335b9701017e91\",\"region\":{\"x\":107,\"y\":139,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_731c5661fc3a9c30ad1f7422b19f5c86\",\"region\":{\"x\":92,\"y\":204,\"width\":106,\"height\":38},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":106,\"rows\":38,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}}],\"doc\":{\"id\":\"9d3842416eedffaf\",\"revision\":4,\"visible\":[\"stk_fca575fd08d6fb986b825d276056b399\",\"stk_26221f3540cc8ae5e679452f1f35c187\",\"stk_ca44abe6cf6f400294335b9701017e91\",\"stk_731c5661fc3a9c30ad1f7422b19f5c86\"],\"history\":[\"add\",\"add\",\"add\",\"add\"],\"strokes\":4},\"pinned\":6,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 60. No AI is connected. Saved on this device at 09:16:32. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"gesture\":{\"kind\":\"ink\",\"points\":12,\"contexts\":[{\"seq\":45,\"reason\":\"writing_started\",\"from_point\":0},{\"seq\":49,\"reason\":\"changed_while_writing\",\"from_point\":4},{\"seq\":52,\"reason\":\"changed_while_writing\",\"from_point\":6},{\"seq\":54,\"reason\":\"changed_while_writing\",\"from_point\":8},{\"seq\":56,\"reason\":\"changed_while_writing\",\"from_point\":10},{\"seq\":59,\"reason\":\"changed_while_writing\",\"from_point\":12}]},\"last\":{\"seq\":60,\"sampled_at\":\"2026-09-30T16:16:56.373Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"fe964891d8a2b385bbca6a779c856717cabefc8905f5612982943de7a78f1143\"},\"composed\":{\"ink_session\":\"9d3842416eedffaf\",\"ink_revision\":4,\"ink_marks\":{\"verified\":3,\"changed\":0,\"unknown\":1,\"following_content\":0},\"pixels_sha256\":\"a22e330226b541f729d8c077e209a844f22b300120d62198b778857ab540a355\"}}}",
+  "app_s4-cap-6": "{\"aligned\":{\"stk_fca575fd08d6fb986b825d276056b399\":\"verified\",\"stk_26221f3540cc8ae5e679452f1f35c187\":\"verified\",\"stk_ca44abe6cf6f400294335b9701017e91\":\"verified\",\"stk_731c5661fc3a9c30ad1f7422b19f5c86\":\"unknown\"},\"alignment\":[{\"id\":\"stk_fca575fd08d6fb986b825d276056b399\",\"region\":{\"x\":406,\"y\":131,\"width\":172,\"height\":64},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":86,\"rows\":32,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_26221f3540cc8ae5e679452f1f35c187\",\"region\":{\"x\":87,\"y\":79,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_ca44abe6cf6f400294335b9701017e91\",\"region\":{\"x\":107,\"y\":139,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_731c5661fc3a9c30ad1f7422b19f5c86\",\"region\":{\"x\":92,\"y\":204,\"width\":106,\"height\":38},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":106,\"rows\":38,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}}],\"doc\":{\"id\":\"9d3842416eedffaf\",\"revision\":4,\"visible\":[\"stk_fca575fd08d6fb986b825d276056b399\",\"stk_26221f3540cc8ae5e679452f1f35c187\",\"stk_ca44abe6cf6f400294335b9701017e91\",\"stk_731c5661fc3a9c30ad1f7422b19f5c86\"],\"history\":[\"add\",\"add\",\"add\",\"add\"],\"strokes\":4},\"pinned\":7,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 62. No AI is connected. Saved on this device at 09:16:32. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"gesture\":{\"kind\":\"ink\",\"points\":14,\"contexts\":[{\"seq\":45,\"reason\":\"writing_started\",\"from_point\":0},{\"seq\":49,\"reason\":\"changed_while_writing\",\"from_point\":4},{\"seq\":52,\"reason\":\"changed_while_writing\",\"from_point\":6},{\"seq\":54,\"reason\":\"changed_while_writing\",\"from_point\":8},{\"seq\":56,\"reason\":\"changed_while_writing\",\"from_point\":10},{\"seq\":59,\"reason\":\"changed_while_writing\",\"from_point\":12},{\"seq\":61,\"reason\":\"changed_while_writing\",\"from_point\":14}]},\"last\":{\"seq\":62,\"sampled_at\":\"2026-09-30T16:16:58.520Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"22cab6263cc8de76d9014e53b5cf053aa4b2cf0e96fb14f141687af08128ef51\"},\"composed\":{\"ink_session\":\"9d3842416eedffaf\",\"ink_revision\":4,\"ink_marks\":{\"verified\":3,\"changed\":0,\"unknown\":1,\"following_content\":0},\"pixels_sha256\":\"aab98b3809fc705e2f148a603fce9c0e7625c8c2cba7f7df0caa876c5ce267fe\"}}}",
+  "app_s4-cap-7": "{\"aligned\":{\"stk_fca575fd08d6fb986b825d276056b399\":\"verified\",\"stk_26221f3540cc8ae5e679452f1f35c187\":\"verified\",\"stk_ca44abe6cf6f400294335b9701017e91\":\"verified\",\"stk_731c5661fc3a9c30ad1f7422b19f5c86\":\"unknown\"},\"alignment\":[{\"id\":\"stk_fca575fd08d6fb986b825d276056b399\",\"region\":{\"x\":406,\"y\":131,\"width\":172,\"height\":64},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":86,\"rows\":32,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_26221f3540cc8ae5e679452f1f35c187\",\"region\":{\"x\":87,\"y\":79,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_ca44abe6cf6f400294335b9701017e91\",\"region\":{\"x\":107,\"y\":139,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_731c5661fc3a9c30ad1f7422b19f5c86\",\"region\":{\"x\":92,\"y\":204,\"width\":106,\"height\":38},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":106,\"rows\":38,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}}],\"doc\":{\"id\":\"9d3842416eedffaf\",\"revision\":4,\"visible\":[\"stk_fca575fd08d6fb986b825d276056b399\",\"stk_26221f3540cc8ae5e679452f1f35c187\",\"stk_ca44abe6cf6f400294335b9701017e91\",\"stk_731c5661fc3a9c30ad1f7422b19f5c86\"],\"history\":[\"add\",\"add\",\"add\",\"add\"],\"strokes\":4},\"pinned\":8,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 65. No AI is connected. Saved on this device at 09:16:32. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"gesture\":{\"kind\":\"ink\",\"points\":16,\"contexts\":[{\"seq\":45,\"reason\":\"writing_started\",\"from_point\":0},{\"seq\":49,\"reason\":\"changed_while_writing\",\"from_point\":4},{\"seq\":52,\"reason\":\"changed_while_writing\",\"from_point\":6},{\"seq\":54,\"reason\":\"changed_while_writing\",\"from_point\":8},{\"seq\":56,\"reason\":\"changed_while_writing\",\"from_point\":10},{\"seq\":59,\"reason\":\"changed_while_writing\",\"from_point\":12},{\"seq\":61,\"reason\":\"changed_while_writing\",\"from_point\":14},{\"seq\":64,\"reason\":\"changed_while_writing\",\"from_point\":16}]},\"last\":{\"seq\":65,\"sampled_at\":\"2026-09-30T16:17:01.759Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"7a9bac46ed4a896795738d017077bfe16c6e8a8f5fe38bf098a4de6f227c8b40\"},\"composed\":{\"ink_session\":\"9d3842416eedffaf\",\"ink_revision\":4,\"ink_marks\":{\"verified\":3,\"changed\":0,\"unknown\":1,\"following_content\":0},\"pixels_sha256\":\"05bfbcc98f4c027bd955f8887104970cf157af75af3db5b37f74e4523a167f86\"}}}",
+  "app_s4-cap-8": "{\"aligned\":{\"stk_fca575fd08d6fb986b825d276056b399\":\"verified\",\"stk_26221f3540cc8ae5e679452f1f35c187\":\"verified\",\"stk_ca44abe6cf6f400294335b9701017e91\":\"verified\",\"stk_731c5661fc3a9c30ad1f7422b19f5c86\":\"unknown\"},\"alignment\":[{\"id\":\"stk_fca575fd08d6fb986b825d276056b399\",\"region\":{\"x\":406,\"y\":131,\"width\":172,\"height\":64},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":86,\"rows\":32,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_26221f3540cc8ae5e679452f1f35c187\",\"region\":{\"x\":87,\"y\":79,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_ca44abe6cf6f400294335b9701017e91\",\"region\":{\"x\":107,\"y\":139,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_731c5661fc3a9c30ad1f7422b19f5c86\",\"region\":{\"x\":92,\"y\":204,\"width\":106,\"height\":38},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":106,\"rows\":38,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}}],\"doc\":{\"id\":\"9d3842416eedffaf\",\"revision\":4,\"visible\":[\"stk_fca575fd08d6fb986b825d276056b399\",\"stk_26221f3540cc8ae5e679452f1f35c187\",\"stk_ca44abe6cf6f400294335b9701017e91\",\"stk_731c5661fc3a9c30ad1f7422b19f5c86\"],\"history\":[\"add\",\"add\",\"add\",\"add\"],\"strokes\":4},\"pinned\":9,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 67. No AI is connected. Saved on this device at 09:16:32. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"gesture\":{\"kind\":\"ink\",\"points\":18,\"contexts\":[{\"seq\":45,\"reason\":\"writing_started\",\"from_point\":0},{\"seq\":49,\"reason\":\"changed_while_writing\",\"from_point\":4},{\"seq\":52,\"reason\":\"changed_while_writing\",\"from_point\":6},{\"seq\":54,\"reason\":\"changed_while_writing\",\"from_point\":8},{\"seq\":56,\"reason\":\"changed_while_writing\",\"from_point\":10},{\"seq\":59,\"reason\":\"changed_while_writing\",\"from_point\":12},{\"seq\":61,\"reason\":\"changed_while_writing\",\"from_point\":14},{\"seq\":64,\"reason\":\"changed_while_writing\",\"from_point\":16}]},\"last\":{\"seq\":67,\"sampled_at\":\"2026-09-30T16:17:03.901Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"40c1e3b3ca4aa60eabb905f840af9572c2fe131373e8acc75f054948b0d4e6ca\"},\"composed\":{\"ink_session\":\"9d3842416eedffaf\",\"ink_revision\":4,\"ink_marks\":{\"verified\":3,\"changed\":0,\"unknown\":1,\"following_content\":0},\"pixels_sha256\":\"f1a01661482ab57458004f3da5ecc8f2a40eddb92b9487811f6e236cc361351b\"}}}",
+  "app_s4-cap-9": "{\"aligned\":{\"stk_fca575fd08d6fb986b825d276056b399\":\"verified\",\"stk_26221f3540cc8ae5e679452f1f35c187\":\"verified\",\"stk_ca44abe6cf6f400294335b9701017e91\":\"verified\",\"stk_731c5661fc3a9c30ad1f7422b19f5c86\":\"unknown\"},\"alignment\":[{\"id\":\"stk_fca575fd08d6fb986b825d276056b399\",\"region\":{\"x\":406,\"y\":131,\"width\":172,\"height\":64},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":86,\"rows\":32,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_26221f3540cc8ae5e679452f1f35c187\",\"region\":{\"x\":87,\"y\":79,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_ca44abe6cf6f400294335b9701017e91\",\"region\":{\"x\":107,\"y\":139,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_731c5661fc3a9c30ad1f7422b19f5c86\",\"region\":{\"x\":92,\"y\":204,\"width\":106,\"height\":38},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":106,\"rows\":38,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}}],\"doc\":{\"id\":\"9d3842416eedffaf\",\"revision\":4,\"visible\":[\"stk_fca575fd08d6fb986b825d276056b399\",\"stk_26221f3540cc8ae5e679452f1f35c187\",\"stk_ca44abe6cf6f400294335b9701017e91\",\"stk_731c5661fc3a9c30ad1f7422b19f5c86\"],\"history\":[\"add\",\"add\",\"add\",\"add\"],\"strokes\":4},\"pinned\":9,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 70. No AI is connected. Saved on this device at 09:16:32. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"gesture\":{\"kind\":\"ink\",\"points\":20,\"contexts\":[{\"seq\":45,\"reason\":\"writing_started\",\"from_point\":0},{\"seq\":49,\"reason\":\"changed_while_writing\",\"from_point\":4},{\"seq\":52,\"reason\":\"changed_while_writing\",\"from_point\":6},{\"seq\":54,\"reason\":\"changed_while_writing\",\"from_point\":8},{\"seq\":56,\"reason\":\"changed_while_writing\",\"from_point\":10},{\"seq\":59,\"reason\":\"changed_while_writing\",\"from_point\":12},{\"seq\":61,\"reason\":\"changed_while_writing\",\"from_point\":14},{\"seq\":64,\"reason\":\"changed_while_writing\",\"from_point\":16}]},\"last\":{\"seq\":70,\"sampled_at\":\"2026-09-30T16:17:07.141Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"2488df40f773c985511692b3d4760ce9b956c2a9200898c3a26303c254dc9c9c\"},\"composed\":{\"ink_session\":\"9d3842416eedffaf\",\"ink_revision\":4,\"ink_marks\":{\"verified\":3,\"changed\":0,\"unknown\":1,\"following_content\":0},\"pixels_sha256\":\"f9876806f966906b94472d89e8b9d45f7554a95fac83ac37e6e94792156bcc3f\"}}}",
+  "app_s4-cap-10": "{\"aligned\":{\"stk_fca575fd08d6fb986b825d276056b399\":\"verified\",\"stk_26221f3540cc8ae5e679452f1f35c187\":\"verified\",\"stk_ca44abe6cf6f400294335b9701017e91\":\"verified\",\"stk_731c5661fc3a9c30ad1f7422b19f5c86\":\"unknown\"},\"alignment\":[{\"id\":\"stk_fca575fd08d6fb986b825d276056b399\",\"region\":{\"x\":406,\"y\":131,\"width\":172,\"height\":64},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":86,\"rows\":32,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_26221f3540cc8ae5e679452f1f35c187\",\"region\":{\"x\":87,\"y\":79,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_ca44abe6cf6f400294335b9701017e91\",\"region\":{\"x\":107,\"y\":139,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_731c5661fc3a9c30ad1f7422b19f5c86\",\"region\":{\"x\":92,\"y\":204,\"width\":106,\"height\":38},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":106,\"rows\":38,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}}],\"doc\":{\"id\":\"9d3842416eedffaf\",\"revision\":4,\"visible\":[\"stk_fca575fd08d6fb986b825d276056b399\",\"stk_26221f3540cc8ae5e679452f1f35c187\",\"stk_ca44abe6cf6f400294335b9701017e91\",\"stk_731c5661fc3a9c30ad1f7422b19f5c86\"],\"history\":[\"add\",\"add\",\"add\",\"add\"],\"strokes\":4},\"pinned\":9,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 72. No AI is connected. Saved on this device at 09:16:32. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"gesture\":{\"kind\":\"ink\",\"points\":22,\"contexts\":[{\"seq\":45,\"reason\":\"writing_started\",\"from_point\":0},{\"seq\":49,\"reason\":\"changed_while_writing\",\"from_point\":4},{\"seq\":52,\"reason\":\"changed_while_writing\",\"from_point\":6},{\"seq\":54,\"reason\":\"changed_while_writing\",\"from_point\":8},{\"seq\":56,\"reason\":\"changed_while_writing\",\"from_point\":10},{\"seq\":59,\"reason\":\"changed_while_writing\",\"from_point\":12},{\"seq\":61,\"reason\":\"changed_while_writing\",\"from_point\":14},{\"seq\":64,\"reason\":\"changed_while_writing\",\"from_point\":16}]},\"last\":{\"seq\":72,\"sampled_at\":\"2026-09-30T16:17:09.291Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"61f10c377dbd6315ca2c6d532afdd4bf0c0f2152b31937f5fa2a61790e9e3415\"},\"composed\":{\"ink_session\":\"9d3842416eedffaf\",\"ink_revision\":4,\"ink_marks\":{\"verified\":3,\"changed\":0,\"unknown\":1,\"following_content\":0},\"pixels_sha256\":\"ca7b467718e77f6c748b64a1678470bf579f2a628bae63e32ad88a4563fee22e\"}}}",
+  "app_s4-cap-11": "{\"aligned\":{\"stk_fca575fd08d6fb986b825d276056b399\":\"verified\",\"stk_26221f3540cc8ae5e679452f1f35c187\":\"verified\",\"stk_ca44abe6cf6f400294335b9701017e91\":\"verified\",\"stk_731c5661fc3a9c30ad1f7422b19f5c86\":\"unknown\"},\"alignment\":[{\"id\":\"stk_fca575fd08d6fb986b825d276056b399\",\"region\":{\"x\":406,\"y\":131,\"width\":172,\"height\":64},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":86,\"rows\":32,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_26221f3540cc8ae5e679452f1f35c187\",\"region\":{\"x\":87,\"y\":79,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_ca44abe6cf6f400294335b9701017e91\",\"region\":{\"x\":107,\"y\":139,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_731c5661fc3a9c30ad1f7422b19f5c86\",\"region\":{\"x\":92,\"y\":204,\"width\":106,\"height\":38},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":106,\"rows\":38,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}}],\"doc\":{\"id\":\"9d3842416eedffaf\",\"revision\":4,\"visible\":[\"stk_fca575fd08d6fb986b825d276056b399\",\"stk_26221f3540cc8ae5e679452f1f35c187\",\"stk_ca44abe6cf6f400294335b9701017e91\",\"stk_731c5661fc3a9c30ad1f7422b19f5c86\"],\"history\":[\"add\",\"add\",\"add\",\"add\"],\"strokes\":4},\"pinned\":9,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 74. No AI is connected. Saved on this device at 09:16:32. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"gesture\":{\"kind\":\"ink\",\"points\":24,\"contexts\":[{\"seq\":45,\"reason\":\"writing_started\",\"from_point\":0},{\"seq\":49,\"reason\":\"changed_while_writing\",\"from_point\":4},{\"seq\":52,\"reason\":\"changed_while_writing\",\"from_point\":6},{\"seq\":54,\"reason\":\"changed_while_writing\",\"from_point\":8},{\"seq\":56,\"reason\":\"changed_while_writing\",\"from_point\":10},{\"seq\":59,\"reason\":\"changed_while_writing\",\"from_point\":12},{\"seq\":61,\"reason\":\"changed_while_writing\",\"from_point\":14},{\"seq\":64,\"reason\":\"changed_while_writing\",\"from_point\":16}]},\"last\":{\"seq\":74,\"sampled_at\":\"2026-09-30T16:17:11.467Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"8658393015bf16c056ee8cf04d6508ba9587c8165343124094a0bd7b95b2950a\"},\"composed\":{\"ink_session\":\"9d3842416eedffaf\",\"ink_revision\":4,\"ink_marks\":{\"verified\":3,\"changed\":0,\"unknown\":1,\"following_content\":0},\"pixels_sha256\":\"27d7b18283301a9c3af017733465f127cf344a9ea0890104ead274f29ca95490\"}}}",
+  "app_s4-cap-12": "{\"aligned\":{\"stk_fca575fd08d6fb986b825d276056b399\":\"verified\",\"stk_26221f3540cc8ae5e679452f1f35c187\":\"verified\",\"stk_ca44abe6cf6f400294335b9701017e91\":\"verified\",\"stk_731c5661fc3a9c30ad1f7422b19f5c86\":\"unknown\"},\"alignment\":[{\"id\":\"stk_fca575fd08d6fb986b825d276056b399\",\"region\":{\"x\":406,\"y\":131,\"width\":172,\"height\":64},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":86,\"rows\":32,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_26221f3540cc8ae5e679452f1f35c187\",\"region\":{\"x\":87,\"y\":79,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_ca44abe6cf6f400294335b9701017e91\",\"region\":{\"x\":107,\"y\":139,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_731c5661fc3a9c30ad1f7422b19f5c86\",\"region\":{\"x\":92,\"y\":204,\"width\":106,\"height\":38},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":106,\"rows\":38,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}}],\"doc\":{\"id\":\"9d3842416eedffaf\",\"revision\":4,\"visible\":[\"stk_fca575fd08d6fb986b825d276056b399\",\"stk_26221f3540cc8ae5e679452f1f35c187\",\"stk_ca44abe6cf6f400294335b9701017e91\",\"stk_731c5661fc3a9c30ad1f7422b19f5c86\"],\"history\":[\"add\",\"add\",\"add\",\"add\"],\"strokes\":4},\"pinned\":9,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 77. No AI is connected. Saved on this device at 09:16:32. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"gesture\":{\"kind\":\"ink\",\"points\":26,\"contexts\":[{\"seq\":45,\"reason\":\"writing_started\",\"from_point\":0},{\"seq\":49,\"reason\":\"changed_while_writing\",\"from_point\":4},{\"seq\":52,\"reason\":\"changed_while_writing\",\"from_point\":6},{\"seq\":54,\"reason\":\"changed_while_writing\",\"from_point\":8},{\"seq\":56,\"reason\":\"changed_while_writing\",\"from_point\":10},{\"seq\":59,\"reason\":\"changed_while_writing\",\"from_point\":12},{\"seq\":61,\"reason\":\"changed_while_writing\",\"from_point\":14},{\"seq\":64,\"reason\":\"changed_while_writing\",\"from_point\":16}]},\"last\":{\"seq\":77,\"sampled_at\":\"2026-09-30T16:17:14.694Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"3bbbd74dde108e6e88fb0d28da5adf9ceaf44cb5b89fd80c1e8503be47bb74d7\"},\"composed\":{\"ink_session\":\"9d3842416eedffaf\",\"ink_revision\":4,\"ink_marks\":{\"verified\":3,\"changed\":0,\"unknown\":1,\"following_content\":0},\"pixels_sha256\":\"ad368abd8588ba08519328f9b386df1b915bf45ede9d88fb75e6b86b1721f961\"}}}",
+  "app_s4-cap-13": "{\"aligned\":{\"stk_fca575fd08d6fb986b825d276056b399\":\"verified\",\"stk_26221f3540cc8ae5e679452f1f35c187\":\"verified\",\"stk_ca44abe6cf6f400294335b9701017e91\":\"verified\",\"stk_731c5661fc3a9c30ad1f7422b19f5c86\":\"unknown\"},\"alignment\":[{\"id\":\"stk_fca575fd08d6fb986b825d276056b399\",\"region\":{\"x\":406,\"y\":131,\"width\":172,\"height\":64},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":86,\"rows\":32,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_26221f3540cc8ae5e679452f1f35c187\",\"region\":{\"x\":87,\"y\":79,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_ca44abe6cf6f400294335b9701017e91\",\"region\":{\"x\":107,\"y\":139,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_731c5661fc3a9c30ad1f7422b19f5c86\",\"region\":{\"x\":92,\"y\":204,\"width\":106,\"height\":38},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":106,\"rows\":38,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}}],\"doc\":{\"id\":\"9d3842416eedffaf\",\"revision\":4,\"visible\":[\"stk_fca575fd08d6fb986b825d276056b399\",\"stk_26221f3540cc8ae5e679452f1f35c187\",\"stk_ca44abe6cf6f400294335b9701017e91\",\"stk_731c5661fc3a9c30ad1f7422b19f5c86\"],\"history\":[\"add\",\"add\",\"add\",\"add\"],\"strokes\":4},\"pinned\":9,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 79. No AI is connected. Saved on this device at 09:16:32. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"gesture\":{\"kind\":\"ink\",\"points\":28,\"contexts\":[{\"seq\":45,\"reason\":\"writing_started\",\"from_point\":0},{\"seq\":49,\"reason\":\"changed_while_writing\",\"from_point\":4},{\"seq\":52,\"reason\":\"changed_while_writing\",\"from_point\":6},{\"seq\":54,\"reason\":\"changed_while_writing\",\"from_point\":8},{\"seq\":56,\"reason\":\"changed_while_writing\",\"from_point\":10},{\"seq\":59,\"reason\":\"changed_while_writing\",\"from_point\":12},{\"seq\":61,\"reason\":\"changed_while_writing\",\"from_point\":14},{\"seq\":64,\"reason\":\"changed_while_writing\",\"from_point\":16}]},\"last\":{\"seq\":79,\"sampled_at\":\"2026-09-30T16:17:16.858Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"e3fd91662f388b971ed03acd0e8ec35db82e31b3ec9a8ccfd9cf9b4963508aa5\"},\"composed\":{\"ink_session\":\"9d3842416eedffaf\",\"ink_revision\":4,\"ink_marks\":{\"verified\":3,\"changed\":0,\"unknown\":1,\"following_content\":0},\"pixels_sha256\":\"b4f52e40a5f61dd7061d375f5d047baabba9da20f83bf0645c45ba7cf9f438a7\"}}}",
+  "app_s4-cap-released": "{\"aligned\":{\"stk_fca575fd08d6fb986b825d276056b399\":\"verified\",\"stk_26221f3540cc8ae5e679452f1f35c187\":\"verified\",\"stk_ca44abe6cf6f400294335b9701017e91\":\"verified\",\"stk_731c5661fc3a9c30ad1f7422b19f5c86\":\"unknown\",\"stk_f2e65d943ffc6a4ae37925dd26e6e1a1\":\"unknown\"},\"alignment\":[{\"id\":\"stk_fca575fd08d6fb986b825d276056b399\",\"region\":{\"x\":406,\"y\":131,\"width\":172,\"height\":64},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":86,\"rows\":32,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_26221f3540cc8ae5e679452f1f35c187\",\"region\":{\"x\":87,\"y\":79,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_ca44abe6cf6f400294335b9701017e91\",\"region\":{\"x\":107,\"y\":139,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_731c5661fc3a9c30ad1f7422b19f5c86\",\"region\":{\"x\":92,\"y\":204,\"width\":106,\"height\":38},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":106,\"rows\":38,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_f2e65d943ffc6a4ae37925dd26e6e1a1\",\"region\":{\"x\":147,\"y\":262,\"width\":50,\"height\":42},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":50,\"rows\":42,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}}],\"doc\":{\"id\":\"9d3842416eedffaf\",\"revision\":5,\"visible\":[\"stk_fca575fd08d6fb986b825d276056b399\",\"stk_26221f3540cc8ae5e679452f1f35c187\",\"stk_ca44abe6cf6f400294335b9701017e91\",\"stk_731c5661fc3a9c30ad1f7422b19f5c86\",\"stk_f2e65d943ffc6a4ae37925dd26e6e1a1\"],\"history\":[\"add\",\"add\",\"add\",\"add\",\"add\"],\"strokes\":5},\"pinned\":0,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 83. No AI is connected. Saved on this device at 09:17:17. 2 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"gesture\":null,\"last\":{\"seq\":83,\"sampled_at\":\"2026-09-30T16:17:21.163Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"e3fd91662f388b971ed03acd0e8ec35db82e31b3ec9a8ccfd9cf9b4963508aa5\"},\"composed\":{\"ink_session\":\"9d3842416eedffaf\",\"ink_revision\":5,\"ink_marks\":{\"verified\":3,\"changed\":0,\"unknown\":2,\"following_content\":0},\"pixels_sha256\":\"cb8aaf8371e8d63e6017283ff4105f9c22374576326abba2031a89f861ad743e\"}}}",
+  "stopped4": "{\"running\":false,\"starting\":false,\"ended\":\"stopped by the user\"}",
+  "recoveries4": "[]",
+  "session5": "{\"running\":true,\"starting\":false,\"ending\":false,\"display\":{\"display_id\":\"3071609112\",\"label\":\"整个屏幕\",\"bounds\":{\"x\":0,\"y\":0,\"width\":1280,\"height\":800},\"scale_factor\":2},\"session_id\":\"6\"}",
+  "opened4Id": "9d3842416eedffaf",
+  "opened4": true,
+  "app_s5-reopened": "{\"aligned\":{\"stk_fca575fd08d6fb986b825d276056b399\":\"verified\",\"stk_26221f3540cc8ae5e679452f1f35c187\":\"verified\",\"stk_ca44abe6cf6f400294335b9701017e91\":\"verified\",\"stk_731c5661fc3a9c30ad1f7422b19f5c86\":\"unknown\",\"stk_f2e65d943ffc6a4ae37925dd26e6e1a1\":\"unknown\"},\"alignment\":[{\"id\":\"stk_fca575fd08d6fb986b825d276056b399\",\"region\":{\"x\":406,\"y\":131,\"width\":172,\"height\":64},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":86,\"rows\":32,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_26221f3540cc8ae5e679452f1f35c187\",\"region\":{\"x\":87,\"y\":79,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_ca44abe6cf6f400294335b9701017e91\",\"region\":{\"x\":107,\"y\":139,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_731c5661fc3a9c30ad1f7422b19f5c86\",\"region\":{\"x\":92,\"y\":204,\"width\":106,\"height\":38},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":106,\"rows\":38,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_f2e65d943ffc6a4ae37925dd26e6e1a1\",\"region\":{\"x\":147,\"y\":262,\"width\":50,\"height\":42},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":50,\"rows\":42,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}}],\"doc\":{\"id\":\"9d3842416eedffaf\",\"revision\":5,\"visible\":[\"stk_fca575fd08d6fb986b825d276056b399\",\"stk_26221f3540cc8ae5e679452f1f35c187\",\"stk_ca44abe6cf6f400294335b9701017e91\",\"stk_731c5661fc3a9c30ad1f7422b19f5c86\",\"stk_f2e65d943ffc6a4ae37925dd26e6e1a1\"],\"history\":[\"add\",\"add\",\"add\",\"add\",\"add\"],\"strokes\":5},\"pinned\":0,\"hint\":\"Clicks go to your apps. Capturing this display · frame 7. No AI is connected. Reopened 5 stroke(s) saved on this device. 2 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"gesture\":null,\"last\":{\"seq\":7,\"sampled_at\":\"2026-09-30T16:17:29.217Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"e3fd91662f388b971ed03acd0e8ec35db82e31b3ec9a8ccfd9cf9b4963508aa5\"},\"composed\":{\"ink_session\":\"9d3842416eedffaf\",\"ink_revision\":5,\"ink_marks\":{\"verified\":3,\"changed\":0,\"unknown\":2,\"following_content\":0},\"pixels_sha256\":\"cb8aaf8371e8d63e6017283ff4105f9c22374576326abba2031a89f861ad743e\"}}}",
+  "ov_reopened4": "{\"mode\":\"NAV\",\"tool\":\"pen\",\"mouse\":\"false\",\"hint\":\"Clicks go to your apps. Capturing this display · frame 7. No AI is connected. Reopened 5 stroke(s) saved on this device. 2 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"card\":false,\"cancel\":false,\"disabled\":1}",
+  "contexts4": "{\"ok\":true,\"items\":[{\"stroke\":1,\"written_at\":\"2026-09-30T16:16:01.453Z\",\"visible\":\"visible\",\"reason\":\"writing_started\",\"from_point\":0,\"frame_seq\":4,\"frame_taken_at\":\"2026-09-30T16:16:00.669Z\",\"frame_pixels_sha256\":\"2b97146b60268a11099b98a4891fbd1e2a9c5e013b27ed2471d624c8b1496c5a\",\"region\":{\"x\":366,\"y\":91,\"width\":252,\"height\":144},\"region_px\":{\"x\":732,\"y\":182,\"width\":504,\"height\":288},\"image\":{\"sha256\":\"0a30e9976b26a17bc90128fe09b2db1160f8c14884955ce139d3ed477bc5c1fc\",\"width\":504,\"height\":288},\"not_observed\":[\"source_app\",\"source_link\",\"page\",\"media_position\"],\"picture\":12826,\"picture_state\":\"shown\"},{\"stroke\":2,\"written_at\":\"2026-09-30T16:16:03.331Z\",\"visible\":\"visible\",\"reason\":\"writing_started\",\"from_point\":0,\"frame_seq\":6,\"frame_taken_at\":\"2026-09-30T16:16:02.386Z\",\"frame_pixels_sha256\":\"2b97146b60268a11099b98a4891fbd1e2a9c5e013b27ed2471d624c8b1496c5a\",\"region\":{\"x\":47,\"y\":39,\"width\":140,\"height\":128},\"region_px\":{\"x\":94,\"y\":78,\"width\":280,\"height\":256},\"image\":{\"sha256\":\"d820a4ec67e271aa7e84dcd061fc7f83fcc7d897689df800388013356c5f3c2c\",\"width\":280,\"height\":256},\"not_observed\":[\"source_app\",\"source_link\",\"page\",\"media_position\"],\"picture\":8318,\"picture_state\":\"shown\"},{\"stroke\":3,\"written_at\":\"2026-09-30T16:16:05.141Z\",\"visible\":\"visible\",\"reason\":\"writing_started\",\"from_point\":0,\"frame_seq\":9,\"frame_taken_at\":\"2026-09-30T16:16:04.269Z\",\"frame_pixels_sha256\":\"2b97146b60268a11099b98a4891fbd1e2a9c5e013b27ed2471d624c8b1496c5a\",\"region\":{\"x\":67,\"y\":99,\"width\":140,\"height\":128},\"region_px\":{\"x\":134,\"y\":198,\"width\":280,\"height\":256},\"image\":{\"sha256\":\"a5d41d8256c01a314d4795df23dd551d0c1bf7c13f4a62bdee1778986f09fe63\",\"width\":280,\"height\":256},\"not_observed\":[\"source_app\",\"source_link\",\"page\",\"media_position\"],\"picture\":14942,\"picture_state\":\"shown\"},{\"stroke\":4,\"written_at\":\"2026-09-30T16:16:32.799Z\",\"visible\":\"visible\",\"reason\":\"writing_started\",\"from_point\":0,\"frame_seq\":31,\"frame_taken_at\":\"2026-09-30T16:16:26.868Z\",\"frame_pixels_sha256\":\"573c7969bb3190842a7b18419ba271298e566e6d28671a38633dbede0da56307\",\"region\":{\"x\":52,\"y\":164,\"width\":186,\"height\":118},\"region_px\":{\"x\":104,\"y\":328,\"width\":372,\"height\":236},\"image\":{\"sha256\":\"0890407803d46f70cf477b7336b44bca3e5d2a9673090441db3120dccbdce488\",\"width\":372,\"height\":236},\"not_observed\":[\"source_app\",\"source_link\",\"page\",\"media_position\"],\"picture\":16350,\"picture_state\":\"shown\"},{\"stroke\":4,\"written_at\":\"2026-09-30T16:16:32.799Z\",\"visible\":\"visible\",\"reason\":\"changed_while_writing\",\"from_point\":6,\"frame_seq\":35,\"frame_taken_at\":\"2026-09-30T16:16:30.482Z\",\"frame_pixels_sha256\":\"96a57bd16c5d259c1a6781626ff792e15ef11d6c632446acbca9c8494ea1fc96\",\"region\":{\"x\":52,\"y\":164,\"width\":186,\"height\":118},\"region_px\":{\"x\":104,\"y\":328,\"width\":372,\"height\":236},\"image\":{\"sha256\":\"cdab85efc35e48e6175285c028c81173ed36a686b8947de02121a2af688b00c6\",\"width\":372,\"height\":236},\"not_observed\":[\"source_app\",\"source_link\",\"page\",\"media_position\"],\"picture\":16190,\"picture_state\":\"shown\"},{\"stroke\":5,\"written_at\":\"2026-09-30T16:17:17.633Z\",\"visible\":\"visible\",\"reason\":\"writing_started\",\"from_point\":0,\"frame_seq\":45,\"frame_taken_at\":\"2026-09-30T16:16:41.214Z\",\"frame_pixels_sha256\":null,\"region\":{\"x\":107,\"y\":222,\"width\":130,\"height\":122},\"region_px\":{\"x\":214,\"y\":444,\"width\":260,\"height\":244},\"image\":{\"sha256\":\"48364294c035496f67bd07b862eab7b8cf6b9e31aed0c0ed50bef3f90b9fb148\",\"width\":260,\"height\":244},\"not_observed\":[\"source_app\",\"source_link\",\"page\",\"media_position\"],\"picture\":8406,\"picture_state\":\"shown\"},{\"stroke\":5,\"written_at\":\"2026-09-30T16:17:17.633Z\",\"visible\":\"visible\",\"reason\":\"changed_while_writing\",\"from_point\":4,\"frame_seq\":49,\"frame_taken_at\":\"2026-09-30T16:16:44.471Z\",\"frame_pixels_sha256\":null,\"region\":{\"x\":107,\"y\":222,\"width\":130,\"height\":122},\"region_px\":{\"x\":214,\"y\":444,\"width\":260,\"height\":244},\"image\":{\"sha256\":\"3413df9929f9ce32bfae6234d1f395868417d1839545a80721d85c825977c7b4\",\"width\":260,\"height\":244},\"not_observed\":[\"source_app\",\"source_link\",\"page\",\"media_position\"],\"picture\":7382,\"picture_state\":\"shown\"},{\"stroke\":5,\"written_at\":\"2026-09-30T16:17:17.633Z\",\"visible\":\"visible\",\"reason\":\"changed_while_writing\",\"from_point\":6,\"frame_seq\":52,\"frame_taken_at\":\"2026-09-30T16:16:47.690Z\",\"frame_pixels_sha256\":\"be637824dcdf7a964746ba15bbba4b053db034097653438de62493c685225720\",\"region\":{\"x\":107,\"y\":222,\"width\":130,\"height\":122},\"region_px\":{\"x\":214,\"y\":444,\"width\":260,\"height\":244},\"image\":{\"sha256\":\"6cfc62dd87bb03b07c2150c819b00635cc1046874b8fa10e9f4ceadf62808006\",\"width\":260,\"height\":244},\"not_observed\":[\"source_app\",\"source_link\",\"page\",\"media_position\"],\"picture\":8230,\"picture_state\":\"shown\"},{\"stroke\":5,\"written_at\":\"2026-09-30T16:17:17.633Z\",\"visible\":\"visible\",\"reason\":\"changed_while_writing\",\"from_point\":8,\"frame_seq\":54,\"frame_taken_at\":\"2026-09-30T16:16:49.842Z\",\"frame_pixels_sha256\":\"5f263ea9c15d86ef7af97d086819fa71a76ad9d30d62116eded679245259955d\",\"region\":{\"x\":107,\"y\":222,\"width\":130,\"height\":122},\"region_px\":{\"x\":214,\"y\":444,\"width\":260,\"height\":244},\"image\":{\"sha256\":\"a08acc86bba73c968fa8c9a1486ea05e11821fd78df5f31ebfe1e5d7fa589f04\",\"width\":260,\"height\":244},\"not_observed\":[\"source_app\",\"source_link\",\"page\",\"media_position\"],\"picture\":8706,\"picture_state\":\"shown\"},{\"stroke\":5,\"written_at\":\"2026-09-30T16:17:17.633Z\",\"visible\":\"visible\",\"reason\":\"changed_while_writing\",\"from_point\":10,\"frame_seq\":56,\"frame_taken_at\":\"2026-09-30T16:16:51.995Z\",\"frame_pixels_sha256\":\"bd0ca15debd169d1514352af83b7c6096636b0cd579f4b38d3eeac62daf65d6c\",\"region\":{\"x\":107,\"y\":222,\"width\":130,\"height\":122},\"region_px\":{\"x\":214,\"y\":444,\"width\":260,\"height\":244},\"image\":{\"sha256\":\"f9defa3717a25360d33407f37bb49219cce30580c38828b2f06b860702343228\",\"width\":260,\"height\":244},\"not_observed\":[\"source_app\",\"source_link\",\"page\",\"media_position\"],\"picture\":7618,\"picture_state\":\"shown\"},{\"stroke\":5,\"written_at\":\"2026-09-30T16:17:17.633Z\",\"visible\":\"visible\",\"reason\":\"changed_while_writing\",\"from_point\":12,\"frame_seq\":59,\"frame_taken_at\":\"2026-09-30T16:16:55.227Z\",\"frame_pixels_sha256\":\"fe964891d8a2b385bbca6a779c856717cabefc8905f5612982943de7a78f1143\",\"region\":{\"x\":107,\"y\":222,\"width\":130,\"height\":122},\"region_px\":{\"x\":214,\"y\":444,\"width\":260,\"height\":244},\"image\":{\"sha256\":\"5497b8d4497fa9c2e6a8006f13d05ebf8dc445bd0970f1d17ea85ef03d907a4f\",\"width\":260,\"height\":244},\"not_observed\":[\"source_app\",\"source_link\",\"page\",\"media_position\"],\"picture\":8518,\"picture_state\":\"shown\"},{\"stroke\":5,\"written_at\":\"2026-09-30T16:17:17.633Z\",\"visible\":\"visible\",\"reason\":\"changed_while_writing\",\"from_point\":14,\"frame_seq\":61,\"frame_taken_at\":\"2026-09-30T16:16:57.378Z\",\"frame_pixels_sha256\":\"22cab6263cc8de76d9014e53b5cf053aa4b2cf0e96fb14f141687af08128ef51\",\"region\":{\"x\":107,\"y\":222,\"width\":130,\"height\":122},\"region_px\":{\"x\":214,\"y\":444,\"width\":260,\"height\":244},\"image\":{\"sha256\":\"77c7e44728fb89bb87ed93fc156212c4e064aae320b2928431d712e7c8737f0a\",\"width\":260,\"height\":244},\"not_observed\":[\"source_app\",\"source_link\",\"page\",\"media_position\"],\"picture\":8730,\"picture_state\":\"shown\"},{\"stroke\":5,\"written_at\":\"2026-09-30T16:17:17.633Z\",\"visible\":\"visible\",\"reason\":\"changed_while_writing\",\"from_point\":16,\"frame_seq\":64,\"frame_taken_at\":\"2026-09-30T16:17:00.601Z\",\"frame_pixels_sha256\":\"7a9bac46ed4a896795738d017077bfe16c6e8a8f5fe38bf098a4de6f227c8b40\",\"region\":{\"x\":107,\"y\":222,\"width\":130,\"height\":122},\"region_px\":{\"x\":214,\"y\":444,\"width\":260,\"height\":244},\"image\":{\"sha256\":\"d4decc801e14807ec30d0a0a8ec321975bb6a0b7565483a451017bc3b67d6907\",\"width\":260,\"height\":244},\"not_observed\":[\"source_app\",\"source_link\",\"page\",\"media_position\"],\"picture\":7982,\"picture_state\":\"shown\"}],\"not_shown\":0}",
+  "app_s5-digit-after": "{\"aligned\":{\"stk_fca575fd08d6fb986b825d276056b399\":\"verified\",\"stk_26221f3540cc8ae5e679452f1f35c187\":\"verified\",\"stk_ca44abe6cf6f400294335b9701017e91\":\"changed\",\"stk_731c5661fc3a9c30ad1f7422b19f5c86\":\"unknown\",\"stk_f2e65d943ffc6a4ae37925dd26e6e1a1\":\"unknown\"},\"alignment\":[{\"id\":\"stk_fca575fd08d6fb986b825d276056b399\",\"region\":{\"x\":406,\"y\":131,\"width\":172,\"height\":64},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":86,\"rows\":32,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_26221f3540cc8ae5e679452f1f35c187\",\"region\":{\"x\":87,\"y\":79,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_ca44abe6cf6f400294335b9701017e91\",\"region\":{\"x\":107,\"y\":139,\"width\":60,\"height\":48},\"aligned\":\"changed\",\"fingerprint_change\":0.05954350490196078,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"changed\",\"moved_cells\":237,\"moved_at\":[[26,14],[27,14],[28,14],[29,14],[30,14],[31,14],[32,14],[33,14],[25,15],[26,15],[27,15],[28,15]]}},{\"id\":\"stk_731c5661fc3a9c30ad1f7422b19f5c86\",\"region\":{\"x\":92,\"y\":204,\"width\":106,\"height\":38},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":106,\"rows\":38,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_f2e65d943ffc6a4ae37925dd26e6e1a1\",\"region\":{\"x\":147,\"y\":262,\"width\":50,\"height\":42},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":50,\"rows\":42,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}}],\"doc\":{\"id\":\"9d3842416eedffaf\",\"revision\":5,\"visible\":[\"stk_fca575fd08d6fb986b825d276056b399\",\"stk_26221f3540cc8ae5e679452f1f35c187\",\"stk_ca44abe6cf6f400294335b9701017e91\",\"stk_731c5661fc3a9c30ad1f7422b19f5c86\",\"stk_f2e65d943ffc6a4ae37925dd26e6e1a1\"],\"history\":[\"add\",\"add\",\"add\",\"add\",\"add\"],\"strokes\":5},\"pinned\":0,\"hint\":\"Clicks go to your apps. Capturing this display · frame 11. No AI is connected. Reopened 5 stroke(s) saved on this device. 1 stroke(s) dashed: the pixels under them changed. 2 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"gesture\":null,\"last\":{\"seq\":11,\"sampled_at\":\"2026-09-30T16:17:33.532Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"edbc75f0f912dee881deecb9da2cfadca1cb9c9ef1887b5880b95c8b50732c6e\"},\"composed\":{\"ink_session\":\"9d3842416eedffaf\",\"ink_revision\":5,\"ink_marks\":{\"verified\":2,\"changed\":1,\"unknown\":2,\"following_content\":0},\"pixels_sha256\":\"bb5977868a6da17b3f985edfc0c616f2b91a961b20719c8503c3d7b3e2da1f95\"}}}",
+  "app_s5-digit-reverted": "{\"aligned\":{\"stk_fca575fd08d6fb986b825d276056b399\":\"verified\",\"stk_26221f3540cc8ae5e679452f1f35c187\":\"verified\",\"stk_ca44abe6cf6f400294335b9701017e91\":\"verified\",\"stk_731c5661fc3a9c30ad1f7422b19f5c86\":\"unknown\",\"stk_f2e65d943ffc6a4ae37925dd26e6e1a1\":\"unknown\"},\"alignment\":[{\"id\":\"stk_fca575fd08d6fb986b825d276056b399\",\"region\":{\"x\":406,\"y\":131,\"width\":172,\"height\":64},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":86,\"rows\":32,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_26221f3540cc8ae5e679452f1f35c187\",\"region\":{\"x\":87,\"y\":79,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_ca44abe6cf6f400294335b9701017e91\",\"region\":{\"x\":107,\"y\":139,\"width\":60,\"height\":48},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":60,\"rows\":48,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_731c5661fc3a9c30ad1f7422b19f5c86\",\"region\":{\"x\":92,\"y\":204,\"width\":106,\"height\":38},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":106,\"rows\":38,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_f2e65d943ffc6a4ae37925dd26e6e1a1\",\"region\":{\"x\":147,\"y\":262,\"width\":50,\"height\":42},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":50,\"rows\":42,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}}],\"doc\":{\"id\":\"9d3842416eedffaf\",\"revision\":5,\"visible\":[\"stk_fca575fd08d6fb986b825d276056b399\",\"stk_26221f3540cc8ae5e679452f1f35c187\",\"stk_ca44abe6cf6f400294335b9701017e91\",\"stk_731c5661fc3a9c30ad1f7422b19f5c86\",\"stk_f2e65d943ffc6a4ae37925dd26e6e1a1\"],\"history\":[\"add\",\"add\",\"add\",\"add\",\"add\"],\"strokes\":5},\"pinned\":0,\"hint\":\"Clicks go to your apps. Capturing this display · frame 14. No AI is connected. Reopened 5 stroke(s) saved on this device. 2 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"gesture\":null,\"last\":{\"seq\":14,\"sampled_at\":\"2026-09-30T16:17:36.765Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"2b7574b5b11df3f5a2d3bffa3d7516184f2f9d314be30231109056aaedc2e51c\"},\"composed\":{\"ink_session\":\"9d3842416eedffaf\",\"ink_revision\":5,\"ink_marks\":{\"verified\":3,\"changed\":0,\"unknown\":2,\"following_content\":0},\"pixels_sha256\":\"4317e11fe083c94be9342a5461442c98007e9cdea5a07cc4325ca22b85d6a45e\"}}}",
+  "stopped5": "{\"running\":false,\"starting\":false,\"ended\":\"stopped by the user\"}",
+  "recoveries5": "[]",
+  "inkFinal": "{\"sessions\":[{\"id\":\"9d3842416eedffaf\",\"created_at\":\"2026-09-30T16:15:57.801Z\",\"forked_from\":null,\"display_label\":\"整个屏幕\",\"strokes\":5,\"revision\":5},{\"id\":\"420dc45ead8317a8\",\"created_at\":\"2026-09-30T16:14:56.448Z\",\"forked_from\":null,\"display_label\":\"整个屏幕\",\"strokes\":7,\"revision\":11}],\"unreadable\":0}",
+  "askCard": {
+   "text": "No AI is connected: this selection was not sent anywhere.\nRegion 7,504 316×106 DIP on 整个屏幕 = 632×212 px of frame 36 (captured 09:15:32), with your ink revision 6 drawn over it.\n1 of your strokes are drawn dashed, as on screen: their alignment with what is under them is not verified.",
+   "src": "<PNG data URL of 34330 characters, exported as ask-crop.png>"
+  },
+  "askCard4": {
+   "text": "No AI is connected: this selection was not sent anywhere.\nRegion 59,70 136×126 DIP on 整个屏幕 = 272×252 px of frame 18 (captured 09:16:13), with your ink revision 3 drawn over it.\n1 of your strokes are drawn dashed, as on screen: their alignment with what is under them is not verified.",
+   "src": "<PNG data URL of 15878 characters, exported as ask-crop-4.png>",
+   "aligned": {
+    "stk_fca575fd08d6fb986b825d276056b399": "verified",
+    "stk_26221f3540cc8ae5e679452f1f35c187": "changed",
+    "stk_ca44abe6cf6f400294335b9701017e91": "verified"
+   },
+   "mode": "WRITE"
+  }
+ },
+ "errors": [],
+ "processes": {
+  "app": {
+   "pid": 31068,
+   "devtools": "127.0.0.1:57273",
+   "exited": true,
+   "exit_code": 0
+  },
+  "console": {
+   "pid": 73908
+  },
+  "edge": {
+   "pid": 68796
+  }
+ },
+ "foreign": {
+  "start": null,
+  "end": null
+ },
+ "cursor": {
+  "start": [
+   545,
+   762
+  ],
+  "end": [
+   545,
+   762
+  ]
+ }
+}
