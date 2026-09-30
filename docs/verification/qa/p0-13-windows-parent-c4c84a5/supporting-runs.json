@@ -1,0 +1,285 @@
+{
+ "note": "Facts extracted from the two earlier runs of the same candidate. Launch refusals there are the harness guard \"the previous app process has not exited\" (qa-electron-runner.ps1), not the app. Raw frames stay local.",
+ "run1": {
+  "window_utc": [
+   "2026-09-30T23:20:41Z",
+   "2026-09-30T23:23:46Z"
+  ],
+  "aborted": "the previous app process has not exited",
+  "last_steps": [
+   {
+    "i": 153,
+    "ok": true,
+    "at": "2026-09-30T23:22:00.5912815Z",
+    "kind": "closeApp",
+    "exited": false
+   },
+   {
+    "i": 154,
+    "ok": true,
+    "at": "2026-09-30T23:22:30.6071368Z",
+    "kind": "hashTree",
+    "as": "h_after-close1"
+   },
+   {
+    "i": 155,
+    "ok": false,
+    "at": "2026-09-30T23:22:30.7380281Z",
+    "kind": "launchApp",
+    "error": "the previous app process has not exited"
+   }
+  ],
+  "app_link_process": {
+   "exited": false,
+   "killed": true,
+   "exit_code": -1
+  },
+  "control_without_link": {
+   "exited": true,
+   "exit_code": 0
+  },
+  "host_watch": [
+   {
+    "event": "watch_start",
+    "at": "2026-09-30T23:20:42.449779+00:00",
+    "monotonic": 148046.73147331
+   },
+   {
+    "event": "appear",
+    "pid": 993378,
+    "ppid": 993373,
+    "start_ticks": 14807097,
+    "at": "2026-09-30T23:21:06.718501+00:00"
+   },
+   {
+    "event": "exit",
+    "pid": 993378,
+    "at": "2026-09-30T23:21:59.896456+00:00"
+   },
+   {
+    "event": "watch_end",
+    "at": "2026-09-30T23:23:41.588294+00:00",
+    "remaining": []
+   }
+  ],
+  "readback": {
+   "stream": "stream-8c8d60bedf747ac86034e00f",
+   "final": "stopped",
+   "records_read": 21,
+   "frames_compared": 26,
+   "mismatches": 0,
+   "ink_originals_compared": 13,
+   "ink_equal": true,
+   "database_unchanged_by_readback": true
+  },
+  "cleanup": {
+   "after": {
+    "actor_row": false,
+    "documents": 0
+   },
+   "at": "2026-09-30T23:25:13.911999+00:00",
+   "before": {
+    "actor_row": true,
+    "documents": 140
+   },
+   "cleanup": "this run's proven actor only"
+  }
+ },
+ "parentquit_variant_a": {
+  "window_utc": [
+   "2026-09-30T23:25:47Z",
+   "2026-09-30T23:27:38Z"
+  ],
+  "what": "link configured, never started (idle), control window closed",
+  "steps": [
+   {
+    "i": 1,
+    "ok": true,
+    "at": "2026-09-30T23:25:49.1378407Z",
+    "kind": "consoleStart"
+   },
+   {
+    "i": 2,
+    "ok": true,
+    "at": "2026-09-30T23:25:49.7738602Z",
+    "kind": "window",
+    "window": "console",
+    "show": "maximize",
+    "is_foreground": false
+   },
+   {
+    "i": 3,
+    "ok": true,
+    "at": "2026-09-30T23:25:50.5556101Z",
+    "kind": "edgeStart"
+   },
+   {
+    "i": 4,
+    "ok": true,
+    "at": "2026-09-30T23:25:51.3001770Z",
+    "kind": "window",
+    "window": "edge",
+    "show": "front",
+    "foreground": true,
+    "is_foreground": true
+   },
+   {
+    "i": 5,
+    "ok": true,
+    "at": "2026-09-30T23:25:52.1096468Z",
+    "kind": "sleep"
+   },
+   {
+    "i": 6,
+    "ok": true,
+    "at": "2026-09-30T23:25:53.6162439Z",
+    "kind": "waitEval",
+    "target": "control",
+    "as": null
+   },
+   {
+    "i": 7,
+    "ok": true,
+    "at": "2026-09-30T23:25:53.6587730Z",
+    "kind": "eval",
+    "target": "control",
+    "as": "displays"
+   },
+   {
+    "i": 8,
+    "ok": true,
+    "at": "2026-09-30T23:25:53.8687029Z",
+    "kind": "closeApp",
+    "exited": true
+   },
+   {
+    "i": 9,
+    "ok": true,
+    "at": "2026-09-30T23:25:53.9989718Z",
+    "kind": "seedLinkRecord"
+   },
+   {
+    "i": 10,
+    "ok": true,
+    "at": "2026-09-30T23:25:54.0642124Z",
+    "kind": "launchApp",
+    "pid": 53716
+   },
+   {
+    "i": 11,
+    "ok": true,
+    "at": "2026-09-30T23:25:55.6884152Z",
+    "kind": "waitEval",
+    "target": "control",
+    "as": null
+   },
+   {
+    "i": 12,
+    "ok": true,
+    "at": "2026-09-30T23:25:56.2094249Z",
+    "kind": "eval",
+    "target": "control",
+    "as": "link_hooked"
+   },
+   {
+    "i": 13,
+    "ok": true,
+    "at": "2026-09-30T23:25:56.2125967Z",
+    "kind": "sleep"
+   },
+   {
+    "i": 14,
+    "ok": true,
+    "at": "2026-09-30T23:25:59.2225397Z",
+    "kind": "eval",
+    "target": "control",
+    "as": "a_idle"
+   },
+   {
+    "i": 15,
+    "ok": true,
+    "at": "2026-09-30T23:25:59.2277789Z",
+    "kind": "targets",
+    "as": "a_targets_before"
+   },
+   {
+    "i": 16,
+    "ok": true,
+    "at": "2026-09-30T23:25:59.2423144Z",
+    "kind": "children"
+   },
+   {
+    "i": 17,
+    "ok": true,
+    "at": "2026-09-30T23:25:59.8934638Z",
+    "kind": "closeApp",
+    "exited": false
+   },
+   {
+    "i": 18,
+    "ok": true,
+    "at": "2026-09-30T23:26:29.9237660Z",
+    "kind": "targets",
+    "as": "a_targets_after"
+   },
+   {
+    "i": 19,
+    "ok": true,
+    "at": "2026-09-30T23:26:29.9247669Z",
+    "kind": "children"
+   },
+   {
+    "i": 20,
+    "ok": false,
+    "at": "2026-09-30T23:26:30.5383717Z",
+    "kind": "launchApp",
+    "error": "the previous app process has not exited"
+   }
+  ],
+  "idle_status": {
+   "mode": "development",
+   "state": "idle",
+   "stored": 0,
+   "unknown": 0,
+   "refused": 0,
+   "not_sent": 0,
+   "detail": null,
+   "earlier_unknown": 0,
+   "sends_stopped": false
+  },
+  "targets_before": 1,
+  "targets_after": 0,
+  "children_before": 3,
+  "children_after_30s": 2,
+  "linked_process": {
+   "exited": false,
+   "killed": true,
+   "exit_code": -1
+  },
+  "control_without_link": {
+   "exited": true,
+   "exit_code": 0,
+   "started_at": "2026-09-30T23:25:49.1279647Z",
+   "exited_at": "2026-09-30T23:25:53.9979718Z"
+  },
+  "host_watch": [
+   {
+    "event": "watch_start",
+    "at": "2026-09-30T23:25:47.878134+00:00",
+    "monotonic": 148352.159831901
+   },
+   {
+    "event": "watch_end",
+    "at": "2026-09-30T23:27:36.856168+00:00",
+    "remaining": []
+   }
+  ],
+  "aborted": "the previous app process has not exited",
+  "database_after": {
+   "at": "2026-09-30T23:50:01.866029+00:00",
+   "actor_row": false,
+   "documents": 0,
+   "method": "qa_parent_db.py readback (read-only)"
+  }
+ }
+}

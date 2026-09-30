@@ -159,6 +159,25 @@ const newestContextSha = control(`(async () => { const r = await window.lc.inkCo
   if (mine.length !== 1 || mine[0].reason !== 'writing_started' || mine[0].picture_state !== 'shown') throw new Error('unexpected contexts ' + JSON.stringify(mine.map((i) => [i.reason, i.picture_state])));
   return mine[0].image.sha256; })()`, 'pc_sha');
 
+// ---- the app's development capture link to the local test service (c4c84a5) ----------------------------------------
+const ROOTS_P = ['ink', 'captures', 'capture-host'];
+const hashesP = (label, frames = false) => ({ hashTree: ROOTS_P, frames, as: `h_${label}` });
+const stateP = (label) => [{ sleep: 3500 }, settled(label), mark(label), appView(label), overlayState(label), { snapshot: label }, hashesP(label)];
+// Every link status change the control page receives, with its receipt time (read-only IPC events).
+const linkHook = control(`(() => { if (!window.__qaLinkHooked) { window.__qaLink = [];
+  window.lc.onLink((l) => window.__qaLink.push({ ...l, qa_at: new Date().toISOString() })); window.__qaLinkHooked = true; } return true; })()`, 'link_hooked');
+const linkNow = (as) => control(`(async () => JSON.stringify({ at: new Date().toISOString(), l: await window.lc.linkState(), ai: document.getElementById('ai').textContent,
+  line: document.getElementById('link').textContent, hidden: document.getElementById('link').hidden, session: document.getElementById('session').textContent }))()`, as);
+const linkUntil = (cond, as, ms = 40000) => ({ waitEval: `(async () => { const l = await window.lc.linkState(); return l && l.mode === 'development' && (${cond}) && JSON.stringify({ at: new Date().toISOString(), l }); })()`,
+  target: 'control', timeoutMs: ms, as, required: false });
+const linkEvents = (as) => control('JSON.stringify(window.__qaLink || [])', as);
+const waitDisplays = { waitEval: "document.querySelectorAll('#displays li[role=option]').length > 0", target: 'control', timeoutMs: 20000 };
+const showPanel = edge("(document.getElementById('qa-live').hidden = false, true)");
+const askOnce = (as) => [click('[data-mode=ASK]'), pen(ellipse(165, 557, 150, 45)),
+  { waitEval: "!document.getElementById('card').hidden", target: 'overlay', timeoutMs: 8000 },
+  overlay("JSON.stringify({ text: document.getElementById('cardText').textContent, revision: __lcOverlay.state().doc.revision, mode: __lcOverlay.state().mode })", as),
+  click('#close')];
+
 export const scenarios = {
   full: (p) => [
     ...setup(p),
@@ -305,6 +324,79 @@ export const scenarios = {
     ...state('reopened3'), contexts('contexts_final'),
     ...stopSession('stopped3'), recoveries('recoveries3'), timeline('timeline2'), listInk('inkFinal'),
     { closeApp: true }, hashes('final', true),
+  ],
+
+  // One changed-workflow pass of the development capture link (next-qa-task.md): default off; Start on the visible course
+  // with automatic retained frames to the local test service; one short ink loop; Stop; relaunch the same profile and
+  // reopen; one controlled failure (the test service unavailable). Strokes are DevTools-injected pen events (synthetic).
+  parent: (p) => [
+    ...setup(p), inkHook, linkHook,
+    // 1. Default off (this first launch has no development configuration): capture works locally and nothing is sent.
+    linkNow('link_off'), hashesP('off0'), { children: true, as: 'kids_off0', required: false },
+    ...startSession('s0'), { sleep: 4500 }, overlayState('off_running'), linkNow('link_off_running'), { children: true, as: 'kids_off1', required: false },
+    ...stopSession('s0_stopped'), hashesP('off1'), { closeApp: true },
+    // The explicit development configuration, with a QA-minted actor checked pristine in lc_p0_test; nothing before Start.
+    { seedLinkRecord: true, actor: p.actor, as: 'seed' },
+    { launchApp: true, as: 'app-link', link: 'main' }, waitDisplays, inkHook, linkHook, { sleep: 3000 },
+    linkNow('link_idle'), { children: true, as: 'kids_pre', required: false }, hashesP('pre-start'),
+    // 2. Start on the visible QA course (no import); visible changes on the page, the QA panel and a second native window.
+    { window: 'edge', show: 'front' }, showPanel, { sleep: 1200 }, mark('before-start'), { desktopShot: 'before-start' },
+    ...startSession('s1'), linkUntil("l.state === 'sending'", 'link_sending'), { children: true, as: 'kids_s1', required: false },
+    { sleep: 3500 }, ...at('c0-start'), linkNow('link_c0'),
+    setText('qa-sign', '+'), { sleep: 3500 }, ...at('c1-panel'), linkNow('link_c1'),
+    { window: 'console', show: 'front' }, { sleep: 3500 }, ...at('c2-console'), linkNow('link_c2'),
+    { window: 'edge', show: 'front' }, { eval: 'scrollBy(0, 420), scrollY', target: 'edge' }, { sleep: 3500 }, ...at('c3-scroll'), linkNow('link_c3'),
+    { eval: 'scrollTo(0, 0), scrollY', target: 'edge' }, { sleep: 3500 }, ...at('c4-back'),
+    linkUntil('l.stored >= 5 && l.unknown === 0', 'link_after_changes'),
+    // 3. One short ink loop; no stroke asks anything; the card says no AI is connected.
+    click('[data-mode=WRITE]'), click('#pen'), pen(INK.wave), { sleep: 800 }, pen(INK.check), { sleep: 800 }, pen(INK.line), ...stateP('write'),
+    click('#eraser'), pen(INK.erase), ...stateP('erase'), click('#undo'), ...stateP('undo'), click('#redo'), ...stateP('redo'), click('#pen'),
+    ...askOnce('askCard'), overlayState('ask_finished'),
+    click('[data-mode=ASK]'), overlayState('ask2'), click('#cancel'), overlayState('ask_cancelled'), ...stateP('ask-done'),
+    pen(INK.c1), ...stateP('continued'),
+    linkUntil('l.unknown === 0 && l.not_sent === 0 && l.stored > 0', 'link_pre_stop'), linkNow('link_pre_stop_now'),
+    { copyTree: 'userdata', path: 'capture-host', to: 'coord-pre-stop', required: false },
+    // 4. Stop through the app: read the link status immediately after the click (the synchronous latch), then the end.
+    control("document.getElementById('stop').click(), true"), linkNow('link_stop_latched'),
+    stopped('stopped1'), linkUntil("l.state === 'stopped'", 'link_stopped1', 65000), { children: true, as: 'kids_stopped1', required: false },
+    { copyTree: 'userdata', path: 'capture-host', to: 'coord-stopped1', required: false }, hashesP('stopped1', true), { snapshot: 'stopped1' },
+    linkEvents('link_events1'), timeline('timeline1'), { closeApp: true }, { endHungApp: true, as: 'hung1' }, hashesP('after-close1', true),
+    // 5. Relaunch the same profile: read/control-only recovery (no replay, no fresh consent), then reopen and continue.
+    { launchApp: true, as: 'app-relaunch', link: 'main' }, waitDisplays, inkHook, linkHook, { sleep: 10000 },
+    linkNow('link_relaunched'), keptDom('kept_relaunched'), { children: true, as: 'kids_relaunch', required: false }, hashesP('relaunched', true),
+    { window: 'edge', show: 'front' },
+    ...startSession('s2'), linkUntil("l.state === 'sending'", 'link_sending2'), { children: true, as: 'kids_s2', required: false },
+    ...openSaved('opened2'), ...stateP('reopened2'),
+    click('[data-mode=WRITE]'), click('#pen'), pen(INK.relaunch), ...stateP('reopen-edit'),
+    linkUntil('l.stored >= 1 && l.unknown === 0 && l.not_sent === 0', 'link_healthy'),
+    ...stopSession('stopped2'), linkUntil("l.state === 'stopped'", 'link_stopped2', 65000), { children: true, as: 'kids_stopped2', required: false },
+    { copyTree: 'userdata', path: 'capture-host', to: 'coord-stopped2', required: false }, { snapshot: 'stopped2' },
+    linkEvents('link_events2'), timeline('timeline2'), { closeApp: true }, { endHungApp: true, as: 'hung2' }, hashesP('after-close2', true),
+    // 6. Controlled failure: the same host pointed at a test service that does not exist (healthy control: steps 2-5).
+    { launchApp: true, as: 'app-fail', link: 'unavail' }, waitDisplays, inkHook, linkHook, { sleep: 3000 },
+    linkNow('link_fail_idle'), { children: true, as: 'kids_fail_idle', required: false },
+    ...startSession('s3'), linkUntil("l.state !== 'connecting' && l.state !== 'idle'", 'link_fail', 40000), { children: true, as: 'kids_fail', required: false },
+    { sleep: 4000 }, ...at('f1'), linkNow('link_fail_now'),
+    click('[data-mode=WRITE]'), click('#pen'), pen(INK.c2), ...stateP('fail-write'),
+    ...askOnce('askFail'), linkNow('link_fail_after_ask'), hashesP('fail', true),
+    ...stopSession('stopped3'), { sleep: 3000 }, linkNow('link_fail_stopped'), { children: true, as: 'kids_fail_stopped', required: false },
+    { copyTree: 'userdata', path: 'capture-host', to: 'coord-fail', required: false }, linkEvents('link_events3'), timeline('timeline3'),
+    { closeApp: true }, { endHungApp: true, as: 'hung3' }, hashesP('final', true),
+  ],
+
+  // Diagnostic for the quit that did not end after a linked Stop (run 1 of the parent pass): A) link configured, never
+  // started; B) Start on the QA course, Stop, then close. Windows and children are listed before and after each close.
+  parentquit: (p) => [
+    ...setup(p), { closeApp: true },
+    { seedLinkRecord: true, actor: p.actor, as: 'seed' },
+    { launchApp: true, as: 'app-a', link: 'main' }, waitDisplays, linkHook, { sleep: 3000 }, linkNow('a_idle'),
+    { targets: 'app', as: 'a_targets_before' }, { children: true, as: 'a_kids_before', required: false },
+    { closeApp: true }, { targets: 'app', as: 'a_targets_after', required: false }, { children: true, as: 'a_kids_after', required: false },
+    { launchApp: true, as: 'app-b', link: 'main' }, waitDisplays, linkHook, { sleep: 3000 }, linkNow('b_idle'),
+    { window: 'edge', show: 'front' }, ...startSession('b1'), linkUntil("l.state === 'sending'", 'b_sending'), { sleep: 6000 },
+    linkNow('b_before_stop'), ...stopSession('b_stopped'), linkUntil("l.state === 'stopped'", 'b_link_stopped', 65000),
+    { sleep: 3000 }, { targets: 'app', as: 'b_targets_before' }, { children: true, as: 'b_kids_before', required: false },
+    { closeApp: true }, { targets: 'app', as: 'b_targets_after', required: false }, { children: true, as: 'b_kids_after', required: false },
   ],
 
   smoke: (p) => [

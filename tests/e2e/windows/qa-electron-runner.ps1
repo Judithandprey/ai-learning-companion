@@ -26,6 +26,10 @@
 #   { "plantFile": "ink/context/{value}.png", "fromValue": "name", "fill": "text" }   TEST corruption: same-length bytes in place
 #   { "moveAside": "ink/context/{value}.png", "fromValue": "name", "expectValue": "name", "to": "qa-aside" }   move a TEST entry
 #   { "copyTree": "apptemp|userdata", "path": "relative", "to": "label" }       copy a test-owned folder into OutDir
+#   { "launchApp": true, "as": "x", "link": "main" }   ... with LC_DEV_CAPTURE_HOST=<LinkDir>\link-main.json for that process only
+#   { "seedLinkRecord": true, "actor": {user_id,...}, "as": "seed" }   write a QA-minted actor as a fresh coordination record
+#   { "children": true, "as": "name" }                                  the app's child processes (name, pid, start; no command line)
+#   { "endHungApp": true, "as": "name" }   if the owned app did not exit after closeApp: record it, then end that PID only
 # The file steps only touch paths inside this run's user-data folder (or its test-owned temp folder), never elsewhere.
 param(
   [Parameter(Mandatory = $true)][string]$Electron,
@@ -34,7 +38,9 @@ param(
   [Parameter(Mandatory = $true)][string]$StepsFile,
   [Parameter(Mandatory = $true)][string]$OutDir,
   [Parameter(Mandatory = $true)][string]$Edge,
-  [string]$AppTemp = ''
+  [string]$AppTemp = '',
+  [string]$LinkDir = '',
+  [switch]$AllowForeign
 )
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Drawing
@@ -143,17 +149,33 @@ $started = @{}      # name -> process (edge, console)
 $sockets = @{}      # target -> @{ ws; id }
 # The app: real Windows process, isolated user data, DevTools on loopback only. With -AppTemp, TMP/TEMP point to a
 # test-owned folder for the app process only (its spare copies of unsaved ink land there, not in the user's %TEMP%).
-function Start-App([string]$key) {
+function Start-App([string]$key, [string]$link = '') {
+  $linkFile = $null
+  if ($link) {
+    # The development capture link, for this app process only (the file names no secret; the app reads the DSN itself).
+    if ($link -notmatch '^[a-z0-9-]+$' -or -not $LinkDir) { throw "bad link name $link" }
+    $linkFile = Join-Path $LinkDir "link-$link.json"
+    if (-not (Test-Path -LiteralPath $linkFile -PathType Leaf)) { throw "no link config $link" }
+  }
   $script:appPort = Free-Port
   $saved = @{ TMP = $env:TMP; TEMP = $env:TEMP }
   $env:LC_USER_DATA = $UserData
   if ($AppTemp) { New-Item -ItemType Directory -Force -Path $AppTemp | Out-Null; $env:TMP = $AppTemp; $env:TEMP = $AppTemp }
+  if ($linkFile) { $env:LC_DEV_CAPTURE_HOST = $linkFile }
   try { $script:app = Start-Process -FilePath $Electron -ArgumentList @("`"$Stage`"", "--remote-debugging-port=$($script:appPort)", '--remote-debugging-address=127.0.0.1') -PassThru }
-  finally { Remove-Item Env:\LC_USER_DATA; $env:TMP = $saved.TMP; $env:TEMP = $saved.TEMP }
+  finally { Remove-Item Env:\LC_USER_DATA; Remove-Item Env:\LC_DEV_CAPTURE_HOST -ErrorAction SilentlyContinue; $env:TMP = $saved.TMP; $env:TEMP = $saved.TEMP }
   $script:appKey = $key
   foreach ($t in @('control', 'overlay')) { if ($sockets[$t]) { try { $sockets[$t].ws.Dispose() } catch { }; $sockets.Remove($t) } }
-  $results.processes[$key] = [ordered]@{ pid = $script:app.Id; devtools = "127.0.0.1:$($script:appPort)"; started_at = (Get-Date).ToUniversalTime().ToString('o') }
+  $results.processes[$key] = [ordered]@{ pid = $script:app.Id; devtools = "127.0.0.1:$($script:appPort)"; started_at = (Get-Date).ToUniversalTime().ToString('o'); link = $link }
+  if ($linkFile) { $results.processes[$key].link_config_sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $linkFile).Hash.ToLower() }
 }
+# The shared display: another Electron app (for example a self-test) means another owner; do not start over it.
+if ($results.foreign.start -and -not $AllowForeign) {
+  $results.aborted = 'another Electron app is running on the shared display; nothing was started'
+  $results | ConvertTo-Json -Depth 20 | Set-Content -Encoding UTF8 -Path (Join-Path $OutDir 'results.json')
+  exit 3
+}
+$script:wslSeen = @{}
 Start-App 'app'
 Set-Content -Encoding ASCII -Path (Join-Path $OutDir 'app.pid') -Value $app.Id
 $UdFull = [IO.Path]::GetFullPath($UserData).TrimEnd('\')
@@ -362,12 +384,49 @@ try {
         $results.processes[$script:appKey].exited = $entry.exited
         if ($entry.exited) { $results.processes[$script:appKey].exit_code = $script:app.ExitCode; $results.processes[$script:appKey].exited_at = (Get-Date).ToUniversalTime().ToString('o') }
       }
+      elseif ($null -ne $step.endHungApp) {
+        # QA-WIN-03: after closeApp the window is gone but the owned app process may not exit. Recorded, then only that
+        # owned PID is ended (never by name); its remaining DevTools pages are listed first.
+        $entry.kind = 'endHungApp'
+        $entry.was_running = -not $script:app.HasExited
+        if ($entry.was_running) {
+          try { $entry.pages_left = @(($client.DownloadString("http://127.0.0.1:$($script:appPort)/json/list") | ConvertFrom-Json) | Where-Object { $_.type -eq 'page' }).Count } catch { $entry.pages_left = 'no DevTools answer' }
+          $entry.children = @(Get-CimInstance Win32_Process -Filter "ParentProcessId=$($script:app.Id)" | ForEach-Object { $_.Name })
+          Stop-Process -Id $script:app.Id -Force -ErrorAction SilentlyContinue
+          $entry.ended = $script:app.WaitForExit(10000)
+          $results.processes[$script:appKey].killed = $true
+          $results.processes[$script:appKey].hung_after_close = $true
+          $results.processes[$script:appKey].exited_at = (Get-Date).ToUniversalTime().ToString('o')
+        }
+        $results.values[[string]$step.as] = [ordered]@{ was_running = $entry.was_running; pages_left = $entry.pages_left; children = $entry.children; ended = $entry.ended }
+      }
       elseif ($null -ne $step.launchApp) {
         $entry.kind = 'launchApp'
         if (-not $script:app.HasExited) { throw 'the previous app process has not exited' }
         Start-Sleep -Milliseconds 1500
-        Start-App ([string]$step.as)
+        Start-App ([string]$step.as) ([string]$step.link)
         $entry.pid = $script:app.Id
+      }
+      elseif ($null -ne $step.seedLinkRecord) {
+        # A QA-minted actor (checked pristine in the test database first) as a new coordination record.
+        $entry.kind = 'seedLinkRecord'
+        $dir = Inside 'capture-host'
+        if (Test-Path -LiteralPath $dir) { throw 'a capture link record already exists' }
+        New-Item -ItemType Directory -Force -Path $dir | Out-Null
+        $a = $step.actor
+        $record = [ordered]@{ format = 'lc-windows-capture-link/v1'; actor = [ordered]@{ user_id = [string]$a.user_id; device_id = [string]$a.device_id;
+          session_id = [string]$a.session_id; producer_id = [string]$a.producer_id }; last_registered_stream = $null; streams = @() }
+        $json = ($record | ConvertTo-Json -Depth 5 -Compress) + "`n"
+        [IO.File]::WriteAllBytes((Join-Path $dir 'coordination.json'), [Text.Encoding]::UTF8.GetBytes($json))
+        $results.values[[string]$step.as] = [ordered]@{ sha256 = (Sha (Join-Path $dir 'coordination.json')); user_id = [string]$a.user_id }
+      }
+      elseif ($null -ne $step.children) {
+        # Read-only: the app's direct child processes (no command line is read); every wsl.exe seen is remembered.
+        $entry.kind = 'children'
+        $kids = @(Get-CimInstance Win32_Process -Filter "ParentProcessId=$($script:app.Id)" | ForEach-Object {
+            if ($_.Name -eq 'wsl.exe') { $script:wslSeen[[string]$_.ProcessId] = $true }
+            [ordered]@{ name = $_.Name; pid = $_.ProcessId; created = $_.CreationDate.ToUniversalTime().ToString('o') } })
+        $results.values[[string]$step.as] = [ordered]@{ app_pid = $script:app.Id; at = (Get-Date).ToUniversalTime().ToString('o'); children = $kids }
       }
       elseif ($null -ne $step.hashTree) {
         $entry.kind = 'hashTree'; $entry.as = $step.as
@@ -423,7 +482,9 @@ try {
         $dest = Join-Path $OutDir ('copy-' + [string]$step.to)
         New-Item -ItemType Directory -Force -Path $dest | Out-Null
         $entry.files = 0
-        if (Test-Path -LiteralPath $src) { Get-ChildItem -LiteralPath $src -File -Force | ForEach-Object { Copy-Item -LiteralPath $_.FullName (Join-Path $dest $_.Name); $entry.files++ } }
+        # Shared-delete reads (never blocking the app's atomic renames); its temporary files are not copied.
+        if (Test-Path -LiteralPath $src) { Get-ChildItem -LiteralPath $src -File -Force | Where-Object { $_.Name -notlike '*.tmp' } | ForEach-Object {
+            try { [IO.File]::WriteAllBytes((Join-Path $dest $_.Name), (Read-Shared $_.FullName)); $entry.files++ } catch { $entry.vanished++ } } }
       }
       else { throw 'unknown step' }
     }
@@ -438,13 +499,18 @@ try {
 }
 catch { $results.aborted = $_.Exception.Message }
 finally {
+  # An app still running (for example after an aborted step) is asked to close itself first: its close ends a running
+  # session gracefully, with the capture link's Stop, instead of being killed.
+  if ($script:app -and -not $script:app.HasExited) { try { [void](Eval 'control' 'window.close(), true') } catch { } }
   foreach ($s in $sockets.Values) { try { $s.ws.Dispose() } catch { } }
   foreach ($name in @($started.Keys)) { try { Stop-Process -Id $started[$name].Id -Force -ErrorAction SilentlyContinue } catch { } }
   if (-not $script:app.HasExited) {
-    if (-not $script:app.WaitForExit(5000)) { Stop-Process -Id $script:app.Id -Force -ErrorAction SilentlyContinue; $results.processes[$script:appKey].killed = $true }
+    # The app holds its quit while the capture link's Stop runs (bounded at 20 s); wait for that before any kill.
+    if (-not $script:app.WaitForExit(30000)) { Stop-Process -Id $script:app.Id -Force -ErrorAction SilentlyContinue; $results.processes[$script:appKey].killed = $true }
   }
   $results.processes[$script:appKey].exit_code = $(try { $script:app.ExitCode } catch { $null })
   $results.foreign.end = Foreign-Electron
+  $results.wsl_seen = @($script:wslSeen.Keys | ForEach-Object { [ordered]@{ pid = [int]$_; running_at_end = [bool](Get-Process -Id ([int]$_) -ErrorAction SilentlyContinue) } })
   $results.cursor.end = [QaWin]::Cursor()
   $results | ConvertTo-Json -Depth 20 | Set-Content -Encoding UTF8 -Path (Join-Path $OutDir 'results.json')
 }

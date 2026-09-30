@@ -1,0 +1,2392 @@
+{
+ "steps": [
+  {
+   "i": 1,
+   "ok": true,
+   "at": "2026-09-30T23:29:03.7574387Z",
+   "kind": "consoleStart"
+  },
+  {
+   "i": 2,
+   "ok": true,
+   "at": "2026-09-30T23:29:04.3653076Z",
+   "kind": "window",
+   "window": "console",
+   "show": "maximize",
+   "is_foreground": false
+  },
+  {
+   "i": 3,
+   "ok": true,
+   "at": "2026-09-30T23:29:05.1466267Z",
+   "kind": "edgeStart"
+  },
+  {
+   "i": 4,
+   "ok": true,
+   "at": "2026-09-30T23:29:05.9072144Z",
+   "kind": "window",
+   "window": "edge",
+   "show": "front",
+   "foreground": true,
+   "is_foreground": true
+  },
+  {
+   "i": 5,
+   "ok": true,
+   "at": "2026-09-30T23:29:06.7456281Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 6,
+   "ok": true,
+   "at": "2026-09-30T23:29:08.2670297Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 7,
+   "ok": true,
+   "at": "2026-09-30T23:29:08.3147647Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "displays"
+  },
+  {
+   "i": 8,
+   "ok": true,
+   "at": "2026-09-30T23:29:08.5173030Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "hooked"
+  },
+  {
+   "i": 9,
+   "ok": true,
+   "at": "2026-09-30T23:29:08.5213118Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "link_hooked"
+  },
+  {
+   "i": 10,
+   "ok": true,
+   "at": "2026-09-30T23:29:08.5243115Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "link_off"
+  },
+  {
+   "i": 11,
+   "ok": true,
+   "at": "2026-09-30T23:29:08.5282298Z",
+   "kind": "hashTree",
+   "as": "h_off0"
+  },
+  {
+   "i": 12,
+   "ok": true,
+   "at": "2026-09-30T23:29:08.5647503Z",
+   "kind": "children"
+  },
+  {
+   "i": 13,
+   "ok": true,
+   "at": "2026-09-30T23:29:09.2167952Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 14,
+   "ok": true,
+   "at": "2026-09-30T23:29:09.3413575Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "s0"
+  },
+  {
+   "i": 15,
+   "ok": true,
+   "at": "2026-09-30T23:29:09.7754468Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 16,
+   "ok": true,
+   "at": "2026-09-30T23:29:09.8020806Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 17,
+   "ok": true,
+   "at": "2026-09-30T23:29:12.3115032Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 18,
+   "ok": true,
+   "at": "2026-09-30T23:29:16.8166007Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_off_running"
+  },
+  {
+   "i": 19,
+   "ok": true,
+   "at": "2026-09-30T23:29:16.8196009Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "link_off_running"
+  },
+  {
+   "i": 20,
+   "ok": true,
+   "at": "2026-09-30T23:29:16.8226070Z",
+   "kind": "children"
+  },
+  {
+   "i": 21,
+   "ok": true,
+   "at": "2026-09-30T23:29:17.4475123Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 22,
+   "ok": true,
+   "at": "2026-09-30T23:29:17.4525311Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "s0_stopped"
+  },
+  {
+   "i": 23,
+   "ok": true,
+   "at": "2026-09-30T23:29:17.5580391Z",
+   "kind": "hashTree",
+   "as": "h_off1"
+  },
+  {
+   "i": 24,
+   "ok": true,
+   "at": "2026-09-30T23:29:17.6148678Z",
+   "kind": "closeApp",
+   "exited": true
+  },
+  {
+   "i": 25,
+   "ok": true,
+   "at": "2026-09-30T23:29:17.7642627Z",
+   "kind": "seedLinkRecord"
+  },
+  {
+   "i": 26,
+   "ok": true,
+   "at": "2026-09-30T23:29:17.7882678Z",
+   "kind": "launchApp",
+   "pid": 74672
+  },
+  {
+   "i": 27,
+   "ok": true,
+   "at": "2026-09-30T23:29:19.4183313Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 28,
+   "ok": true,
+   "at": "2026-09-30T23:29:19.9405217Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "hooked"
+  },
+  {
+   "i": 29,
+   "ok": true,
+   "at": "2026-09-30T23:29:19.9425205Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "link_hooked"
+  },
+  {
+   "i": 30,
+   "ok": true,
+   "at": "2026-09-30T23:29:19.9435202Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 31,
+   "ok": true,
+   "at": "2026-09-30T23:29:22.9525219Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "link_idle"
+  },
+  {
+   "i": 32,
+   "ok": true,
+   "at": "2026-09-30T23:29:22.9564443Z",
+   "kind": "children"
+  },
+  {
+   "i": 33,
+   "ok": true,
+   "at": "2026-09-30T23:29:23.5723624Z",
+   "kind": "hashTree",
+   "as": "h_pre-start"
+  },
+  {
+   "i": 34,
+   "ok": true,
+   "at": "2026-09-30T23:29:23.5811992Z",
+   "kind": "window",
+   "window": "edge",
+   "show": "front",
+   "foreground": true,
+   "is_foreground": true
+  },
+  {
+   "i": 35,
+   "ok": true,
+   "at": "2026-09-30T23:29:24.3719680Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": null
+  },
+  {
+   "i": 36,
+   "ok": true,
+   "at": "2026-09-30T23:29:24.3751554Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 37,
+   "ok": true,
+   "at": "2026-09-30T23:29:25.5860017Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 38,
+   "ok": true,
+   "at": "2026-09-30T23:29:25.5900165Z",
+   "kind": "desktopShot",
+   "label": "before-start",
+   "foreign": null,
+   "cursor": [
+    1586,
+    949
+   ],
+   "size": "2560 x 1600"
+  },
+  {
+   "i": 39,
+   "ok": true,
+   "at": "2026-09-30T23:29:26.2354235Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 40,
+   "ok": true,
+   "at": "2026-09-30T23:29:26.3656009Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "s1"
+  },
+  {
+   "i": 41,
+   "ok": true,
+   "at": "2026-09-30T23:29:26.8616014Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 42,
+   "ok": true,
+   "at": "2026-09-30T23:29:26.8917904Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 43,
+   "ok": true,
+   "at": "2026-09-30T23:29:29.4061619Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "link_sending"
+  },
+  {
+   "i": 44,
+   "ok": true,
+   "at": "2026-09-30T23:29:29.4103887Z",
+   "kind": "children"
+  },
+  {
+   "i": 45,
+   "ok": true,
+   "at": "2026-09-30T23:29:30.0288712Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 46,
+   "ok": true,
+   "at": "2026-09-30T23:29:33.5364939Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 47,
+   "ok": true,
+   "at": "2026-09-30T23:29:33.5408820Z",
+   "kind": "desktopShot",
+   "label": "c0-start",
+   "foreign": null,
+   "cursor": [
+    1586,
+    949
+   ],
+   "size": "2560 x 1600"
+  },
+  {
+   "i": 48,
+   "ok": true,
+   "at": "2026-09-30T23:29:34.1779700Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_c0-start"
+  },
+  {
+   "i": 49,
+   "ok": true,
+   "at": "2026-09-30T23:29:34.1812611Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "link_c0"
+  },
+  {
+   "i": 50,
+   "ok": true,
+   "at": "2026-09-30T23:29:34.1833137Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": null
+  },
+  {
+   "i": 51,
+   "ok": true,
+   "at": "2026-09-30T23:29:34.1865586Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 52,
+   "ok": true,
+   "at": "2026-09-30T23:29:37.7019735Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 53,
+   "ok": true,
+   "at": "2026-09-30T23:29:37.7256623Z",
+   "kind": "desktopShot",
+   "label": "c1-panel",
+   "foreign": null,
+   "cursor": [
+    1586,
+    949
+   ],
+   "size": "2560 x 1600"
+  },
+  {
+   "i": 54,
+   "ok": true,
+   "at": "2026-09-30T23:29:38.3905729Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_c1-panel"
+  },
+  {
+   "i": 55,
+   "ok": true,
+   "at": "2026-09-30T23:29:38.3938674Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "link_c1"
+  },
+  {
+   "i": 56,
+   "ok": true,
+   "at": "2026-09-30T23:29:38.3958675Z",
+   "kind": "window",
+   "window": "console",
+   "show": "front",
+   "foreground": true,
+   "is_foreground": true
+  },
+  {
+   "i": 57,
+   "ok": true,
+   "at": "2026-09-30T23:29:39.2159626Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 58,
+   "ok": true,
+   "at": "2026-09-30T23:29:42.7236373Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 59,
+   "ok": true,
+   "at": "2026-09-30T23:29:42.7271977Z",
+   "kind": "desktopShot",
+   "label": "c2-console",
+   "foreign": null,
+   "cursor": [
+    1586,
+    949
+   ],
+   "size": "2560 x 1600"
+  },
+  {
+   "i": 60,
+   "ok": true,
+   "at": "2026-09-30T23:29:43.4000764Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_c2-console"
+  },
+  {
+   "i": 61,
+   "ok": true,
+   "at": "2026-09-30T23:29:43.4040959Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "link_c2"
+  },
+  {
+   "i": 62,
+   "ok": true,
+   "at": "2026-09-30T23:29:43.4103847Z",
+   "kind": "window",
+   "window": "edge",
+   "show": "front",
+   "foreground": true,
+   "is_foreground": true
+  },
+  {
+   "i": 63,
+   "ok": true,
+   "at": "2026-09-30T23:29:44.3584278Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": null
+  },
+  {
+   "i": 64,
+   "ok": true,
+   "at": "2026-09-30T23:29:44.3614408Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 65,
+   "ok": true,
+   "at": "2026-09-30T23:29:47.8618068Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 66,
+   "ok": true,
+   "at": "2026-09-30T23:29:47.8648069Z",
+   "kind": "desktopShot",
+   "label": "c3-scroll",
+   "foreign": null,
+   "cursor": [
+    1586,
+    949
+   ],
+   "size": "2560 x 1600"
+  },
+  {
+   "i": 67,
+   "ok": true,
+   "at": "2026-09-30T23:29:48.5182612Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_c3-scroll"
+  },
+  {
+   "i": 68,
+   "ok": true,
+   "at": "2026-09-30T23:29:48.5367942Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "link_c3"
+  },
+  {
+   "i": 69,
+   "ok": true,
+   "at": "2026-09-30T23:29:48.5397951Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": null
+  },
+  {
+   "i": 70,
+   "ok": true,
+   "at": "2026-09-30T23:29:48.5417958Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 71,
+   "ok": true,
+   "at": "2026-09-30T23:29:52.0549664Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 72,
+   "ok": true,
+   "at": "2026-09-30T23:29:52.0579728Z",
+   "kind": "desktopShot",
+   "label": "c4-back",
+   "foreign": null,
+   "cursor": [
+    1586,
+    949
+   ],
+   "size": "2560 x 1600"
+  },
+  {
+   "i": 73,
+   "ok": true,
+   "at": "2026-09-30T23:29:52.6971608Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_c4-back"
+  },
+  {
+   "i": 74,
+   "ok": true,
+   "at": "2026-09-30T23:29:52.7001587Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "link_after_changes"
+  },
+  {
+   "i": 75,
+   "ok": true,
+   "at": "2026-09-30T23:29:52.7021616Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 76,
+   "ok": true,
+   "at": "2026-09-30T23:29:52.7055227Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 77,
+   "ok": true,
+   "at": "2026-09-30T23:29:52.7075258Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 25
+  },
+  {
+   "i": 78,
+   "ok": true,
+   "at": "2026-09-30T23:29:53.3814578Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 79,
+   "ok": true,
+   "at": "2026-09-30T23:29:54.2006195Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 6
+  },
+  {
+   "i": 80,
+   "ok": true,
+   "at": "2026-09-30T23:29:54.4392618Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 81,
+   "ok": true,
+   "at": "2026-09-30T23:29:55.2589358Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 15
+  },
+  {
+   "i": 82,
+   "ok": true,
+   "at": "2026-09-30T23:29:55.6892094Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 83,
+   "ok": true,
+   "at": "2026-09-30T23:29:59.2009171Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": "saved_write"
+  },
+  {
+   "i": 84,
+   "ok": true,
+   "at": "2026-09-30T23:29:59.2039185Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 85,
+   "ok": true,
+   "at": "2026-09-30T23:29:59.2059169Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_write"
+  },
+  {
+   "i": 86,
+   "ok": true,
+   "at": "2026-09-30T23:29:59.2220278Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_write"
+  },
+  {
+   "i": 87,
+   "ok": true,
+   "at": "2026-09-30T23:29:59.2243614Z",
+   "kind": "snapshot",
+   "label": "write",
+   "contextPictures": 3
+  },
+  {
+   "i": 88,
+   "ok": true,
+   "at": "2026-09-30T23:29:59.2358093Z",
+   "kind": "hashTree",
+   "as": "h_write"
+  },
+  {
+   "i": 89,
+   "ok": true,
+   "at": "2026-09-30T23:29:59.2640083Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 90,
+   "ok": true,
+   "at": "2026-09-30T23:29:59.2864062Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 11
+  },
+  {
+   "i": 91,
+   "ok": true,
+   "at": "2026-09-30T23:29:59.5847030Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 92,
+   "ok": true,
+   "at": "2026-09-30T23:30:03.0853829Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": "saved_erase"
+  },
+  {
+   "i": 93,
+   "ok": true,
+   "at": "2026-09-30T23:30:03.0887705Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 94,
+   "ok": true,
+   "at": "2026-09-30T23:30:03.0907703Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_erase"
+  },
+  {
+   "i": 95,
+   "ok": true,
+   "at": "2026-09-30T23:30:03.1120647Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_erase"
+  },
+  {
+   "i": 96,
+   "ok": true,
+   "at": "2026-09-30T23:30:03.1150968Z",
+   "kind": "snapshot",
+   "label": "erase",
+   "contextPictures": 3
+  },
+  {
+   "i": 97,
+   "ok": true,
+   "at": "2026-09-30T23:30:03.1200937Z",
+   "kind": "hashTree",
+   "as": "h_erase"
+  },
+  {
+   "i": 98,
+   "ok": true,
+   "at": "2026-09-30T23:30:03.1486145Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 99,
+   "ok": true,
+   "at": "2026-09-30T23:30:03.1655691Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 100,
+   "ok": true,
+   "at": "2026-09-30T23:30:06.6661835Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": "saved_undo"
+  },
+  {
+   "i": 101,
+   "ok": true,
+   "at": "2026-09-30T23:30:06.6691900Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 102,
+   "ok": true,
+   "at": "2026-09-30T23:30:06.6711876Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_undo"
+  },
+  {
+   "i": 103,
+   "ok": true,
+   "at": "2026-09-30T23:30:06.6862198Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_undo"
+  },
+  {
+   "i": 104,
+   "ok": true,
+   "at": "2026-09-30T23:30:06.6881966Z",
+   "kind": "snapshot",
+   "label": "undo",
+   "contextPictures": 3
+  },
+  {
+   "i": 105,
+   "ok": true,
+   "at": "2026-09-30T23:30:06.6934820Z",
+   "kind": "hashTree",
+   "as": "h_undo"
+  },
+  {
+   "i": 106,
+   "ok": true,
+   "at": "2026-09-30T23:30:06.7256344Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 107,
+   "ok": true,
+   "at": "2026-09-30T23:30:06.7480985Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 108,
+   "ok": true,
+   "at": "2026-09-30T23:30:10.2513722Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": "saved_redo"
+  },
+  {
+   "i": 109,
+   "ok": true,
+   "at": "2026-09-30T23:30:10.2729070Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 110,
+   "ok": true,
+   "at": "2026-09-30T23:30:10.2762823Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_redo"
+  },
+  {
+   "i": 111,
+   "ok": true,
+   "at": "2026-09-30T23:30:10.2963151Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_redo"
+  },
+  {
+   "i": 112,
+   "ok": true,
+   "at": "2026-09-30T23:30:10.2993287Z",
+   "kind": "snapshot",
+   "label": "redo",
+   "contextPictures": 3
+  },
+  {
+   "i": 113,
+   "ok": true,
+   "at": "2026-09-30T23:30:10.3028102Z",
+   "kind": "hashTree",
+   "as": "h_redo"
+  },
+  {
+   "i": 114,
+   "ok": true,
+   "at": "2026-09-30T23:30:10.3302742Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 115,
+   "ok": true,
+   "at": "2026-09-30T23:30:10.3329965Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 116,
+   "ok": true,
+   "at": "2026-09-30T23:30:10.3352939Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 37
+  },
+  {
+   "i": 117,
+   "ok": true,
+   "at": "2026-09-30T23:30:11.3629654Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 118,
+   "ok": true,
+   "at": "2026-09-30T23:30:11.3725664Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "askCard"
+  },
+  {
+   "i": 119,
+   "ok": true,
+   "at": "2026-09-30T23:30:11.3765683Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 120,
+   "ok": true,
+   "at": "2026-09-30T23:30:11.3794924Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_ask_finished"
+  },
+  {
+   "i": 121,
+   "ok": true,
+   "at": "2026-09-30T23:30:11.4012808Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 122,
+   "ok": true,
+   "at": "2026-09-30T23:30:11.4032812Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_ask2"
+  },
+  {
+   "i": 123,
+   "ok": true,
+   "at": "2026-09-30T23:30:11.4057471Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 124,
+   "ok": true,
+   "at": "2026-09-30T23:30:11.4077471Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_ask_cancelled"
+  },
+  {
+   "i": 125,
+   "ok": true,
+   "at": "2026-09-30T23:30:11.4087482Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 126,
+   "ok": true,
+   "at": "2026-09-30T23:30:14.9104088Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": "saved_ask-done"
+  },
+  {
+   "i": 127,
+   "ok": true,
+   "at": "2026-09-30T23:30:14.9133563Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 128,
+   "ok": true,
+   "at": "2026-09-30T23:30:14.9170386Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_ask-done"
+  },
+  {
+   "i": 129,
+   "ok": true,
+   "at": "2026-09-30T23:30:14.9385167Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_ask-done"
+  },
+  {
+   "i": 130,
+   "ok": true,
+   "at": "2026-09-30T23:30:14.9613688Z",
+   "kind": "snapshot",
+   "label": "ask-done",
+   "contextPictures": 3
+  },
+  {
+   "i": 131,
+   "ok": true,
+   "at": "2026-09-30T23:30:14.9663948Z",
+   "kind": "hashTree",
+   "as": "h_ask-done"
+  },
+  {
+   "i": 132,
+   "ok": true,
+   "at": "2026-09-30T23:30:14.9869218Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 13
+  },
+  {
+   "i": 133,
+   "ok": true,
+   "at": "2026-09-30T23:30:15.4061859Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 134,
+   "ok": true,
+   "at": "2026-09-30T23:30:18.9170854Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": "saved_continued"
+  },
+  {
+   "i": 135,
+   "ok": true,
+   "at": "2026-09-30T23:30:18.9381171Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 136,
+   "ok": true,
+   "at": "2026-09-30T23:30:18.9401191Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_continued"
+  },
+  {
+   "i": 137,
+   "ok": true,
+   "at": "2026-09-30T23:30:18.9629854Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_continued"
+  },
+  {
+   "i": 138,
+   "ok": true,
+   "at": "2026-09-30T23:30:18.9659870Z",
+   "kind": "snapshot",
+   "label": "continued",
+   "contextPictures": 4
+  },
+  {
+   "i": 139,
+   "ok": true,
+   "at": "2026-09-30T23:30:18.9709938Z",
+   "kind": "hashTree",
+   "as": "h_continued"
+  },
+  {
+   "i": 140,
+   "ok": true,
+   "at": "2026-09-30T23:30:19.0021025Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "link_pre_stop"
+  },
+  {
+   "i": 141,
+   "ok": true,
+   "at": "2026-09-30T23:30:19.0051037Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "link_pre_stop_now"
+  },
+  {
+   "i": 142,
+   "ok": true,
+   "at": "2026-09-30T23:30:19.0071034Z",
+   "kind": "copyTree",
+   "files": 1
+  },
+  {
+   "i": 143,
+   "ok": true,
+   "at": "2026-09-30T23:30:19.0270999Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 144,
+   "ok": true,
+   "at": "2026-09-30T23:30:19.0361141Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "link_stop_latched"
+  },
+  {
+   "i": 145,
+   "ok": true,
+   "at": "2026-09-30T23:30:19.1583908Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "stopped1"
+  },
+  {
+   "i": 146,
+   "ok": true,
+   "at": "2026-09-30T23:30:19.1806311Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "link_stopped1"
+  },
+  {
+   "i": 147,
+   "ok": true,
+   "at": "2026-09-30T23:30:19.5472933Z",
+   "kind": "children"
+  },
+  {
+   "i": 148,
+   "ok": true,
+   "at": "2026-09-30T23:30:20.1824476Z",
+   "kind": "copyTree",
+   "files": 1
+  },
+  {
+   "i": 149,
+   "ok": true,
+   "at": "2026-09-30T23:30:20.1994872Z",
+   "kind": "hashTree",
+   "as": "h_stopped1"
+  },
+  {
+   "i": 150,
+   "ok": true,
+   "at": "2026-09-30T23:30:20.3238651Z",
+   "kind": "snapshot",
+   "label": "stopped1",
+   "contextPictures": 4
+  },
+  {
+   "i": 151,
+   "ok": true,
+   "at": "2026-09-30T23:30:20.3298860Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "link_events1"
+  },
+  {
+   "i": 152,
+   "ok": true,
+   "at": "2026-09-30T23:30:20.3338961Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "timeline1"
+  },
+  {
+   "i": 153,
+   "ok": true,
+   "at": "2026-09-30T23:30:20.3422731Z",
+   "kind": "closeApp",
+   "exited": false
+  },
+  {
+   "i": 154,
+   "ok": true,
+   "at": "2026-09-30T23:30:50.3572798Z",
+   "kind": "endHungApp",
+   "was_running": true,
+   "pages_left": 0,
+   "children": [
+    "electron.exe",
+    "electron.exe"
+   ],
+   "ended": true
+  },
+  {
+   "i": 155,
+   "ok": true,
+   "at": "2026-09-30T23:30:51.0655612Z",
+   "kind": "hashTree",
+   "as": "h_after-close1"
+  },
+  {
+   "i": 156,
+   "ok": true,
+   "at": "2026-09-30T23:30:51.1569830Z",
+   "kind": "launchApp",
+   "pid": 56792
+  },
+  {
+   "i": 157,
+   "ok": true,
+   "at": "2026-09-30T23:30:52.6896106Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 158,
+   "ok": true,
+   "at": "2026-09-30T23:30:53.2109342Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "hooked"
+  },
+  {
+   "i": 159,
+   "ok": true,
+   "at": "2026-09-30T23:30:53.2119263Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "link_hooked"
+  },
+  {
+   "i": 160,
+   "ok": true,
+   "at": "2026-09-30T23:30:53.2139297Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 161,
+   "ok": true,
+   "at": "2026-09-30T23:31:03.2144976Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "link_relaunched"
+  },
+  {
+   "i": 162,
+   "ok": true,
+   "at": "2026-09-30T23:31:03.2396816Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "kept_relaunched"
+  },
+  {
+   "i": 163,
+   "ok": true,
+   "at": "2026-09-30T23:31:03.2426814Z",
+   "kind": "children"
+  },
+  {
+   "i": 164,
+   "ok": true,
+   "at": "2026-09-30T23:31:03.8533905Z",
+   "kind": "hashTree",
+   "as": "h_relaunched"
+  },
+  {
+   "i": 165,
+   "ok": true,
+   "at": "2026-09-30T23:31:03.9266059Z",
+   "kind": "window",
+   "window": "edge",
+   "show": "front",
+   "foreground": true,
+   "is_foreground": true
+  },
+  {
+   "i": 166,
+   "ok": true,
+   "at": "2026-09-30T23:31:04.7211323Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 167,
+   "ok": true,
+   "at": "2026-09-30T23:31:04.8418492Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "s2"
+  },
+  {
+   "i": 168,
+   "ok": true,
+   "at": "2026-09-30T23:31:05.3103476Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 169,
+   "ok": true,
+   "at": "2026-09-30T23:31:05.3179451Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 170,
+   "ok": true,
+   "at": "2026-09-30T23:31:07.8304816Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "link_sending2"
+  },
+  {
+   "i": 171,
+   "ok": true,
+   "at": "2026-09-30T23:31:07.8344852Z",
+   "kind": "children"
+  },
+  {
+   "i": 172,
+   "ok": true,
+   "at": "2026-09-30T23:31:08.4032750Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "opened2"
+  },
+  {
+   "i": 173,
+   "ok": true,
+   "at": "2026-09-30T23:31:08.4086725Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 174,
+   "ok": true,
+   "at": "2026-09-30T23:31:08.5180218Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 175,
+   "ok": true,
+   "at": "2026-09-30T23:31:12.0214241Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": "saved_reopened2"
+  },
+  {
+   "i": 176,
+   "ok": true,
+   "at": "2026-09-30T23:31:12.0246486Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 177,
+   "ok": true,
+   "at": "2026-09-30T23:31:12.0417294Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_reopened2"
+  },
+  {
+   "i": 178,
+   "ok": true,
+   "at": "2026-09-30T23:31:12.1380214Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_reopened2"
+  },
+  {
+   "i": 179,
+   "ok": true,
+   "at": "2026-09-30T23:31:12.1420204Z",
+   "kind": "snapshot",
+   "label": "reopened2",
+   "contextPictures": 4
+  },
+  {
+   "i": 180,
+   "ok": true,
+   "at": "2026-09-30T23:31:12.1460239Z",
+   "kind": "hashTree",
+   "as": "h_reopened2"
+  },
+  {
+   "i": 181,
+   "ok": true,
+   "at": "2026-09-30T23:31:12.1790336Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 182,
+   "ok": true,
+   "at": "2026-09-30T23:31:12.1830368Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 183,
+   "ok": true,
+   "at": "2026-09-30T23:31:12.1859751Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 15
+  },
+  {
+   "i": 184,
+   "ok": true,
+   "at": "2026-09-30T23:31:12.6327490Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 185,
+   "ok": true,
+   "at": "2026-09-30T23:31:16.1428092Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": "saved_reopen-edit"
+  },
+  {
+   "i": 186,
+   "ok": true,
+   "at": "2026-09-30T23:31:16.1468077Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 187,
+   "ok": true,
+   "at": "2026-09-30T23:31:16.1488130Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_reopen-edit"
+  },
+  {
+   "i": 188,
+   "ok": true,
+   "at": "2026-09-30T23:31:16.1753578Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_reopen-edit"
+  },
+  {
+   "i": 189,
+   "ok": true,
+   "at": "2026-09-30T23:31:16.1783707Z",
+   "kind": "snapshot",
+   "label": "reopen-edit",
+   "contextPictures": 5
+  },
+  {
+   "i": 190,
+   "ok": true,
+   "at": "2026-09-30T23:31:16.1824188Z",
+   "kind": "hashTree",
+   "as": "h_reopen-edit"
+  },
+  {
+   "i": 191,
+   "ok": true,
+   "at": "2026-09-30T23:31:16.2184618Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "link_healthy"
+  },
+  {
+   "i": 192,
+   "ok": true,
+   "at": "2026-09-30T23:31:16.2224652Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 193,
+   "ok": true,
+   "at": "2026-09-30T23:31:16.2532005Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "stopped2"
+  },
+  {
+   "i": 194,
+   "ok": true,
+   "at": "2026-09-30T23:31:16.3976177Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "link_stopped2"
+  },
+  {
+   "i": 195,
+   "ok": true,
+   "at": "2026-09-30T23:31:16.8349732Z",
+   "kind": "children"
+  },
+  {
+   "i": 196,
+   "ok": true,
+   "at": "2026-09-30T23:31:17.4474347Z",
+   "kind": "copyTree",
+   "files": 1
+  },
+  {
+   "i": 197,
+   "ok": true,
+   "at": "2026-09-30T23:31:17.4629461Z",
+   "kind": "snapshot",
+   "label": "stopped2",
+   "contextPictures": 5
+  },
+  {
+   "i": 198,
+   "ok": true,
+   "at": "2026-09-30T23:31:17.4689621Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "link_events2"
+  },
+  {
+   "i": 199,
+   "ok": true,
+   "at": "2026-09-30T23:31:17.4724762Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "timeline2"
+  },
+  {
+   "i": 200,
+   "ok": true,
+   "at": "2026-09-30T23:31:17.4764783Z",
+   "kind": "closeApp",
+   "exited": false
+  },
+  {
+   "i": 201,
+   "ok": true,
+   "at": "2026-09-30T23:31:47.5105096Z",
+   "kind": "endHungApp",
+   "was_running": true,
+   "pages_left": 0,
+   "children": [
+    "electron.exe",
+    "electron.exe"
+   ],
+   "ended": true
+  },
+  {
+   "i": 202,
+   "ok": true,
+   "at": "2026-09-30T23:31:48.2087977Z",
+   "kind": "hashTree",
+   "as": "h_after-close2"
+  },
+  {
+   "i": 203,
+   "ok": true,
+   "at": "2026-09-30T23:31:48.3274835Z",
+   "kind": "launchApp",
+   "pid": 72656
+  },
+  {
+   "i": 204,
+   "ok": true,
+   "at": "2026-09-30T23:31:49.8639604Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 205,
+   "ok": true,
+   "at": "2026-09-30T23:31:50.3821667Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "hooked"
+  },
+  {
+   "i": 206,
+   "ok": true,
+   "at": "2026-09-30T23:31:50.3843999Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "link_hooked"
+  },
+  {
+   "i": 207,
+   "ok": true,
+   "at": "2026-09-30T23:31:50.3864038Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 208,
+   "ok": true,
+   "at": "2026-09-30T23:31:53.4012475Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "link_fail_idle"
+  },
+  {
+   "i": 209,
+   "ok": true,
+   "at": "2026-09-30T23:31:53.4047761Z",
+   "kind": "children"
+  },
+  {
+   "i": 210,
+   "ok": true,
+   "at": "2026-09-30T23:31:54.0098355Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 211,
+   "ok": true,
+   "at": "2026-09-30T23:31:54.0907980Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "s3"
+  },
+  {
+   "i": 212,
+   "ok": true,
+   "at": "2026-09-30T23:31:54.4838738Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 213,
+   "ok": true,
+   "at": "2026-09-30T23:31:54.5106270Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 214,
+   "ok": true,
+   "at": "2026-09-30T23:31:57.0125172Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "link_fail"
+  },
+  {
+   "i": 215,
+   "ok": true,
+   "at": "2026-09-30T23:31:57.0160409Z",
+   "kind": "children"
+  },
+  {
+   "i": 216,
+   "ok": true,
+   "at": "2026-09-30T23:31:57.6119976Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 217,
+   "ok": true,
+   "at": "2026-09-30T23:32:01.6175115Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 218,
+   "ok": true,
+   "at": "2026-09-30T23:32:01.6205117Z",
+   "kind": "desktopShot",
+   "label": "f1",
+   "foreign": null,
+   "cursor": [
+    1586,
+    949
+   ],
+   "size": "2560 x 1600"
+  },
+  {
+   "i": 219,
+   "ok": true,
+   "at": "2026-09-30T23:32:02.3111790Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_f1"
+  },
+  {
+   "i": 220,
+   "ok": true,
+   "at": "2026-09-30T23:32:02.3131902Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "link_fail_now"
+  },
+  {
+   "i": 221,
+   "ok": true,
+   "at": "2026-09-30T23:32:02.3151942Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 222,
+   "ok": true,
+   "at": "2026-09-30T23:32:02.3191895Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 223,
+   "ok": true,
+   "at": "2026-09-30T23:32:02.3411984Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 15
+  },
+  {
+   "i": 224,
+   "ok": true,
+   "at": "2026-09-30T23:32:02.7232785Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 225,
+   "ok": true,
+   "at": "2026-09-30T23:32:06.2301484Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": "saved_fail-write"
+  },
+  {
+   "i": 226,
+   "ok": true,
+   "at": "2026-09-30T23:32:06.2550235Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 227,
+   "ok": true,
+   "at": "2026-09-30T23:32:06.2591152Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_fail-write"
+  },
+  {
+   "i": 228,
+   "ok": true,
+   "at": "2026-09-30T23:32:06.2672413Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_fail-write"
+  },
+  {
+   "i": 229,
+   "ok": true,
+   "at": "2026-09-30T23:32:06.2706378Z",
+   "kind": "snapshot",
+   "label": "fail-write",
+   "contextPictures": 6
+  },
+  {
+   "i": 230,
+   "ok": true,
+   "at": "2026-09-30T23:32:06.2772356Z",
+   "kind": "hashTree",
+   "as": "h_fail-write"
+  },
+  {
+   "i": 231,
+   "ok": true,
+   "at": "2026-09-30T23:32:06.3366136Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 232,
+   "ok": true,
+   "at": "2026-09-30T23:32:06.3395988Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 37
+  },
+  {
+   "i": 233,
+   "ok": true,
+   "at": "2026-09-30T23:32:07.2848703Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 234,
+   "ok": true,
+   "at": "2026-09-30T23:32:07.4247755Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "askFail"
+  },
+  {
+   "i": 235,
+   "ok": true,
+   "at": "2026-09-30T23:32:07.4287789Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 236,
+   "ok": true,
+   "at": "2026-09-30T23:32:07.4317772Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "link_fail_after_ask"
+  },
+  {
+   "i": 237,
+   "ok": true,
+   "at": "2026-09-30T23:32:07.4347735Z",
+   "kind": "hashTree",
+   "as": "h_fail"
+  },
+  {
+   "i": 238,
+   "ok": true,
+   "at": "2026-09-30T23:32:07.5556578Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 239,
+   "ok": true,
+   "at": "2026-09-30T23:32:07.5591752Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "stopped3"
+  },
+  {
+   "i": 240,
+   "ok": true,
+   "at": "2026-09-30T23:32:07.6632789Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 241,
+   "ok": true,
+   "at": "2026-09-30T23:32:10.6688738Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "link_fail_stopped"
+  },
+  {
+   "i": 242,
+   "ok": true,
+   "at": "2026-09-30T23:32:10.6730382Z",
+   "kind": "children"
+  },
+  {
+   "i": 243,
+   "ok": true,
+   "at": "2026-09-30T23:32:11.3115927Z",
+   "kind": "copyTree",
+   "files": 1
+  },
+  {
+   "i": 244,
+   "ok": true,
+   "at": "2026-09-30T23:32:11.3168620Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "link_events3"
+  },
+  {
+   "i": 245,
+   "ok": true,
+   "at": "2026-09-30T23:32:11.3205064Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "timeline3"
+  },
+  {
+   "i": 246,
+   "ok": true,
+   "at": "2026-09-30T23:32:11.3234004Z",
+   "kind": "closeApp",
+   "exited": false
+  },
+  {
+   "i": 247,
+   "ok": true,
+   "at": "2026-09-30T23:32:41.3337582Z",
+   "kind": "endHungApp",
+   "was_running": true,
+   "pages_left": 0,
+   "children": [
+    "electron.exe",
+    "electron.exe"
+   ],
+   "ended": true
+  },
+  {
+   "i": 248,
+   "ok": true,
+   "at": "2026-09-30T23:32:42.0870644Z",
+   "kind": "hashTree",
+   "as": "h_final"
+  }
+ ],
+ "values": {
+  "displays": {
+   "label": "整个屏幕",
+   "primary": true,
+   "bounds": {
+    "x": 0,
+    "y": 0,
+    "width": 1280,
+    "height": 800
+   },
+   "scale_factor": 2,
+   "source_id": "screen:0:0"
+  },
+  "hooked": true,
+  "link_hooked": true,
+  "link_off": "{\"at\":\"2026-09-30T23:29:08.525Z\",\"l\":{\"mode\":\"off\"},\"ai\":\"No AI is connected: captured frames and ink stay on this device, and nothing is sent anywhere.\",\"line\":\"\",\"hidden\":true,\"session\":\"Not capturing.\"}",
+  "kids_off0": {
+   "app_pid": 77788,
+   "at": "2026-09-30T23:29:09.2157980Z",
+   "children": [
+    {
+     "name": "electron.exe",
+     "pid": 67908,
+     "created": "2026-09-30T23:29:03.8548400Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 71776,
+     "created": "2026-09-30T23:29:03.8596770Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 75924,
+     "created": "2026-09-30T23:29:03.8715060Z"
+    }
+   ]
+  },
+  "s0": "{\"running\":true,\"starting\":false,\"ending\":false,\"display\":{\"display_id\":\"3071609112\",\"label\":\"整个屏幕\",\"bounds\":{\"x\":0,\"y\":0,\"width\":1280,\"height\":800},\"scale_factor\":2},\"session_id\":\"2\"}",
+  "ov_off_running": "{\"mode\":\"NAV\",\"tool\":\"pen\",\"mouse\":\"false\",\"hint\":\"Clicks go to your apps. Capturing this display · frame 7. No AI is connected. Ink is saved on this device at every change.\",\"card\":false,\"cancel\":false,\"disabled\":2}",
+  "link_off_running": "{\"at\":\"2026-09-30T23:29:16.821Z\",\"l\":{\"mode\":\"off\"},\"ai\":\"No AI is connected: captured frames and ink stay on this device, and nothing is sent anywhere.\",\"line\":\"\",\"hidden\":true,\"session\":\"Capturing 整个屏幕 (1280×800 at 2×). The overlay is on that display: ✋ passes clicks to your apps, ✎ writes, ? selects.\"}",
+  "kids_off1": {
+   "app_pid": 77788,
+   "at": "2026-09-30T23:29:17.4475123Z",
+   "children": [
+    {
+     "name": "electron.exe",
+     "pid": 67908,
+     "created": "2026-09-30T23:29:03.8548400Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 71776,
+     "created": "2026-09-30T23:29:03.8596770Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 75924,
+     "created": "2026-09-30T23:29:03.8715060Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 67444,
+     "created": "2026-09-30T23:29:09.4330840Z"
+    }
+   ]
+  },
+  "s0_stopped": "{\"running\":false,\"starting\":false,\"ended\":\"stopped by the user\"}",
+  "seed": {
+   "sha256": "71dbc3c5efd44e540b9ab4da32b1dee81a7440bd4be9866a083a8d2247359c8a",
+   "user_id": "lc-windows-http-2d2be3c7191141d08927414f2478d438"
+  },
+  "link_idle": "{\"at\":\"2026-09-30T23:29:22.955Z\",\"l\":{\"mode\":\"development\",\"state\":\"idle\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false},\"ai\":\"Development mode: captured frames and ink are kept on this device and, while capturing, also stored in a local test capture service on it. No AI is connected; nothing is sent to any AI.\",\"line\":\"Capture storage (development): connected when you press Start. 0 record(s) stored. AI: not connected.\",\"hidden\":false,\"session\":\"Not capturing.\"}",
+  "kids_pre": {
+   "app_pid": 74672,
+   "at": "2026-09-30T23:29:23.5713638Z",
+   "children": [
+    {
+     "name": "electron.exe",
+     "pid": 54776,
+     "created": "2026-09-30T23:29:19.4402220Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 37028,
+     "created": "2026-09-30T23:29:19.4431010Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 64900,
+     "created": "2026-09-30T23:29:19.4557010Z"
+    }
+   ]
+  },
+  "s1": "{\"running\":true,\"starting\":false,\"ending\":false,\"display\":{\"display_id\":\"3071609112\",\"label\":\"整个屏幕\",\"bounds\":{\"x\":0,\"y\":0,\"width\":1280,\"height\":800},\"scale_factor\":2},\"session_id\":\"2\"}",
+  "link_sending": "{\"at\":\"2026-09-30T23:29:29.409Z\",\"l\":{\"mode\":\"development\",\"state\":\"sending\",\"stored\":1,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false}}",
+  "kids_s1": {
+   "app_pid": 74672,
+   "at": "2026-09-30T23:29:30.0278669Z",
+   "children": [
+    {
+     "name": "electron.exe",
+     "pid": 54776,
+     "created": "2026-09-30T23:29:19.4402220Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 37028,
+     "created": "2026-09-30T23:29:19.4431010Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 64900,
+     "created": "2026-09-30T23:29:19.4557010Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 73320,
+     "created": "2026-09-30T23:29:26.4601080Z"
+    },
+    {
+     "name": "wsl.exe",
+     "pid": 75416,
+     "created": "2026-09-30T23:29:26.4703340Z"
+    }
+   ]
+  },
+  "app_c0-start": "{\"aligned\":{},\"alignment\":[],\"doc\":{\"id\":\"42a8c660a2d3ee48\",\"revision\":0,\"visible\":[],\"history\":[],\"strokes\":0},\"pinned\":0,\"hint\":\"Clicks go to your apps. Capturing this display · frame 7. No AI is connected. Ink is saved on this device at every change.\",\"gesture\":null,\"last\":{\"seq\":7,\"sampled_at\":\"2026-09-30T23:29:33.568Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"b5050890efb65a713a6fe53bde3ae81901cf10d6ef831527f70f617ece18efa6\"},\"composed\":{\"ink_session\":\"42a8c660a2d3ee48\",\"ink_revision\":0,\"ink_marks\":{\"verified\":0,\"changed\":0,\"unknown\":0,\"following_content\":0},\"pixels_sha256\":\"b5050890efb65a713a6fe53bde3ae81901cf10d6ef831527f70f617ece18efa6\"}}}",
+  "link_c0": "{\"at\":\"2026-09-30T23:29:34.182Z\",\"l\":{\"mode\":\"development\",\"state\":\"sending\",\"stored\":1,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false},\"ai\":\"Development mode: captured frames and ink are kept on this device and, while capturing, also stored in a local test capture service on it. No AI is connected; nothing is sent to any AI.\",\"line\":\"Capture storage (development): storing. 1 record(s) stored. AI: not connected.\",\"hidden\":false,\"session\":\"Capturing 整个屏幕 (1280×800 at 2×). The overlay is on that display: ✋ passes clicks to your apps, ✎ writes, ? selects.\"}",
+  "app_c1-panel": "{\"aligned\":{},\"alignment\":[],\"doc\":{\"id\":\"42a8c660a2d3ee48\",\"revision\":0,\"visible\":[],\"history\":[],\"strokes\":0},\"pinned\":0,\"hint\":\"Clicks go to your apps. Capturing this display · frame 11. No AI is connected. Ink is saved on this device at every change.\",\"gesture\":null,\"last\":{\"seq\":11,\"sampled_at\":\"2026-09-30T23:29:37.811Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"55904f24b994e5013fc35da030bc60b3b6f5fc39c1bf7f44042020a1764141f0\"},\"composed\":{\"ink_session\":\"42a8c660a2d3ee48\",\"ink_revision\":0,\"ink_marks\":{\"verified\":0,\"changed\":0,\"unknown\":0,\"following_content\":0},\"pixels_sha256\":\"55904f24b994e5013fc35da030bc60b3b6f5fc39c1bf7f44042020a1764141f0\"}}}",
+  "link_c1": "{\"at\":\"2026-09-30T23:29:38.395Z\",\"l\":{\"mode\":\"development\",\"state\":\"sending\",\"stored\":2,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false},\"ai\":\"Development mode: captured frames and ink are kept on this device and, while capturing, also stored in a local test capture service on it. No AI is connected; nothing is sent to any AI.\",\"line\":\"Capture storage (development): storing. 2 record(s) stored. AI: not connected.\",\"hidden\":false,\"session\":\"Capturing 整个屏幕 (1280×800 at 2×). The overlay is on that display: ✋ passes clicks to your apps, ✎ writes, ? selects.\"}",
+  "app_c2-console": "{\"aligned\":{},\"alignment\":[],\"doc\":{\"id\":\"42a8c660a2d3ee48\",\"revision\":0,\"visible\":[],\"history\":[],\"strokes\":0},\"pinned\":0,\"hint\":\"Clicks go to your apps. Capturing this display · frame 16. No AI is connected. Ink is saved on this device at every change.\",\"gesture\":null,\"last\":{\"seq\":16,\"sampled_at\":\"2026-09-30T23:29:43.115Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"8553ccb85f7526e31cd653d465a7e1557aa5ee02f5438077b2708c50ad57c37b\"},\"composed\":{\"ink_session\":\"42a8c660a2d3ee48\",\"ink_revision\":0,\"ink_marks\":{\"verified\":0,\"changed\":0,\"unknown\":0,\"following_content\":0},\"pixels_sha256\":\"8553ccb85f7526e31cd653d465a7e1557aa5ee02f5438077b2708c50ad57c37b\"}}}",
+  "link_c2": "{\"at\":\"2026-09-30T23:29:43.409Z\",\"l\":{\"mode\":\"development\",\"state\":\"sending\",\"stored\":3,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false},\"ai\":\"Development mode: captured frames and ink are kept on this device and, while capturing, also stored in a local test capture service on it. No AI is connected; nothing is sent to any AI.\",\"line\":\"Capture storage (development): storing. 3 record(s) stored. AI: not connected.\",\"hidden\":false,\"session\":\"Capturing 整个屏幕 (1280×800 at 2×). The overlay is on that display: ✋ passes clicks to your apps, ✎ writes, ? selects.\"}",
+  "app_c3-scroll": "{\"aligned\":{},\"alignment\":[],\"doc\":{\"id\":\"42a8c660a2d3ee48\",\"revision\":0,\"visible\":[],\"history\":[],\"strokes\":0},\"pinned\":0,\"hint\":\"Clicks go to your apps. Capturing this display · frame 21. No AI is connected. Ink is saved on this device at every change.\",\"gesture\":null,\"last\":{\"seq\":21,\"sampled_at\":\"2026-09-30T23:29:48.410Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"84c6a563745d5c2ee66cec8b2c6c5454b8f18de0bc85c5abe48b34bdabcaa28b\"},\"composed\":{\"ink_session\":\"42a8c660a2d3ee48\",\"ink_revision\":0,\"ink_marks\":{\"verified\":0,\"changed\":0,\"unknown\":0,\"following_content\":0},\"pixels_sha256\":\"84c6a563745d5c2ee66cec8b2c6c5454b8f18de0bc85c5abe48b34bdabcaa28b\"}}}",
+  "link_c3": "{\"at\":\"2026-09-30T23:29:48.539Z\",\"l\":{\"mode\":\"development\",\"state\":\"sending\",\"stored\":5,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false},\"ai\":\"Development mode: captured frames and ink are kept on this device and, while capturing, also stored in a local test capture service on it. No AI is connected; nothing is sent to any AI.\",\"line\":\"Capture storage (development): storing. 5 record(s) stored. AI: not connected.\",\"hidden\":false,\"session\":\"Capturing 整个屏幕 (1280×800 at 2×). The overlay is on that display: ✋ passes clicks to your apps, ✎ writes, ? selects.\"}",
+  "app_c4-back": "{\"aligned\":{},\"alignment\":[],\"doc\":{\"id\":\"42a8c660a2d3ee48\",\"revision\":0,\"visible\":[],\"history\":[],\"strokes\":0},\"pinned\":0,\"hint\":\"Clicks go to your apps. Capturing this display · frame 25. No AI is connected. Ink is saved on this device at every change.\",\"gesture\":null,\"last\":{\"seq\":25,\"sampled_at\":\"2026-09-30T23:29:52.648Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"75643993adf79d1f02e12a5a87d3b91cf00862a042458f1e52dae4e566966a1d\"},\"composed\":{\"ink_session\":\"42a8c660a2d3ee48\",\"ink_revision\":0,\"ink_marks\":{\"verified\":0,\"changed\":0,\"unknown\":0,\"following_content\":0},\"pixels_sha256\":\"75643993adf79d1f02e12a5a87d3b91cf00862a042458f1e52dae4e566966a1d\"}}}",
+  "link_after_changes": "{\"at\":\"2026-09-30T23:29:52.702Z\",\"l\":{\"mode\":\"development\",\"state\":\"sending\",\"stored\":6,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false}}",
+  "saved_write": "{\"doc\":{\"id\":\"42a8c660a2d3ee48\",\"revision\":3,\"visible\":[\"stk_3959c35872d8838ad84c30c4366b367b\",\"stk_b1681b45f6ab9efb881566a8e907ccb0\",\"stk_b01263e3eb6794bd2c46d9975a5d723e\"],\"history\":[\"add\",\"add\",\"add\"],\"strokes\":3},\"saveText\":\"Saved on this device at 16:29:55.\",\"retention\":{\"retained\":8,\"refused\":0,\"lastRefusal\":\"\",\"deferred\":0}}",
+  "app_write": "{\"aligned\":{\"stk_3959c35872d8838ad84c30c4366b367b\":\"unknown\",\"stk_b1681b45f6ab9efb881566a8e907ccb0\":\"unknown\",\"stk_b01263e3eb6794bd2c46d9975a5d723e\":\"unknown\"},\"alignment\":[{\"id\":\"stk_3959c35872d8838ad84c30c4366b367b\",\"region\":{\"x\":42,\"y\":298,\"width\":526,\"height\":28},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":263,\"rows\":14,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_b1681b45f6ab9efb881566a8e907ccb0\",\"region\":{\"x\":292,\"y\":515,\"width\":62,\"height\":58},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":62,\"rows\":58,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_b01263e3eb6794bd2c46d9975a5d723e\",\"region\":{\"x\":352,\"y\":432,\"width\":256,\"height\":22},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":170,\"rows\":14,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}}],\"doc\":{\"id\":\"42a8c660a2d3ee48\",\"revision\":3,\"visible\":[\"stk_3959c35872d8838ad84c30c4366b367b\",\"stk_b1681b45f6ab9efb881566a8e907ccb0\",\"stk_b01263e3eb6794bd2c46d9975a5d723e\"],\"history\":[\"add\",\"add\",\"add\"],\"strokes\":3},\"pinned\":0,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 34. No AI is connected. Saved on this device at 16:29:55. 3 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"gesture\":null,\"last\":{\"seq\":34,\"sampled_at\":\"2026-09-30T23:29:59.072Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"75643993adf79d1f02e12a5a87d3b91cf00862a042458f1e52dae4e566966a1d\"},\"composed\":{\"ink_session\":\"42a8c660a2d3ee48\",\"ink_revision\":3,\"ink_marks\":{\"verified\":0,\"changed\":0,\"unknown\":3,\"following_content\":0},\"pixels_sha256\":\"b0a0ed5967f12752fa9483c7f7f5ed4d7682e5307d9c6c9036bdac53ff87d75c\"}}}",
+  "ov_write": "{\"mode\":\"WRITE\",\"tool\":\"pen\",\"mouse\":\"false\",\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 34. No AI is connected. Saved on this device at 16:29:55. 3 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"card\":false,\"cancel\":false,\"disabled\":1}",
+  "saved_erase": "{\"doc\":{\"id\":\"42a8c660a2d3ee48\",\"revision\":4,\"visible\":[\"stk_0f538e616dca6ac6a86c3533bcc30973\",\"stk_f807ae752fde2f8a8cb3f164a1b679a8\",\"stk_b1681b45f6ab9efb881566a8e907ccb0\",\"stk_b01263e3eb6794bd2c46d9975a5d723e\"],\"history\":[\"add\",\"add\",\"add\",\"erase\"],\"strokes\":5},\"saveText\":\"Saved on this device at 16:29:59.\",\"retention\":{\"retained\":9,\"refused\":0,\"lastRefusal\":\"\",\"deferred\":0}}",
+  "app_erase": "{\"aligned\":{\"stk_0f538e616dca6ac6a86c3533bcc30973\":\"unknown\",\"stk_f807ae752fde2f8a8cb3f164a1b679a8\":\"unknown\",\"stk_b1681b45f6ab9efb881566a8e907ccb0\":\"unknown\",\"stk_b01263e3eb6794bd2c46d9975a5d723e\":\"unknown\"},\"alignment\":[{\"id\":\"stk_0f538e616dca6ac6a86c3533bcc30973\",\"region\":{\"x\":42,\"y\":298,\"width\":526,\"height\":28},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":263,\"rows\":14,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_f807ae752fde2f8a8cb3f164a1b679a8\",\"region\":{\"x\":42,\"y\":298,\"width\":526,\"height\":28},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":263,\"rows\":14,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_b1681b45f6ab9efb881566a8e907ccb0\",\"region\":{\"x\":292,\"y\":515,\"width\":62,\"height\":58},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":62,\"rows\":58,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_b01263e3eb6794bd2c46d9975a5d723e\",\"region\":{\"x\":352,\"y\":432,\"width\":256,\"height\":22},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":170,\"rows\":14,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}}],\"doc\":{\"id\":\"42a8c660a2d3ee48\",\"revision\":4,\"visible\":[\"stk_0f538e616dca6ac6a86c3533bcc30973\",\"stk_f807ae752fde2f8a8cb3f164a1b679a8\",\"stk_b1681b45f6ab9efb881566a8e907ccb0\",\"stk_b01263e3eb6794bd2c46d9975a5d723e\"],\"history\":[\"add\",\"add\",\"add\",\"erase\"],\"strokes\":5},\"pinned\":0,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 37. No AI is connected. Saved on this device at 16:29:59. 4 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"gesture\":null,\"last\":{\"seq\":37,\"sampled_at\":\"2026-09-30T23:30:02.327Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"75643993adf79d1f02e12a5a87d3b91cf00862a042458f1e52dae4e566966a1d\"},\"composed\":{\"ink_session\":\"42a8c660a2d3ee48\",\"ink_revision\":4,\"ink_marks\":{\"verified\":0,\"changed\":0,\"unknown\":4,\"following_content\":0},\"pixels_sha256\":\"10b44c79571fa26f53965900b3ca064522642bfe686b3f1ef4f8ae0dab7d997f\"}}}",
+  "ov_erase": "{\"mode\":\"WRITE\",\"tool\":\"eraser\",\"mouse\":\"false\",\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 37. No AI is connected. Saved on this device at 16:29:59. 4 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"card\":false,\"cancel\":false,\"disabled\":1}",
+  "saved_undo": "{\"doc\":{\"id\":\"42a8c660a2d3ee48\",\"revision\":5,\"visible\":[\"stk_3959c35872d8838ad84c30c4366b367b\",\"stk_b1681b45f6ab9efb881566a8e907ccb0\",\"stk_b01263e3eb6794bd2c46d9975a5d723e\"],\"history\":[\"add\",\"add\",\"add\",\"erase\",\"undo\"],\"strokes\":5},\"saveText\":\"Saved on this device at 16:30:03.\",\"retention\":{\"retained\":10,\"refused\":0,\"lastRefusal\":\"\",\"deferred\":0}}",
+  "app_undo": "{\"aligned\":{\"stk_3959c35872d8838ad84c30c4366b367b\":\"unknown\",\"stk_b1681b45f6ab9efb881566a8e907ccb0\":\"unknown\",\"stk_b01263e3eb6794bd2c46d9975a5d723e\":\"unknown\"},\"alignment\":[{\"id\":\"stk_3959c35872d8838ad84c30c4366b367b\",\"region\":{\"x\":42,\"y\":298,\"width\":526,\"height\":28},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":263,\"rows\":14,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_b1681b45f6ab9efb881566a8e907ccb0\",\"region\":{\"x\":292,\"y\":515,\"width\":62,\"height\":58},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":62,\"rows\":58,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_b01263e3eb6794bd2c46d9975a5d723e\",\"region\":{\"x\":352,\"y\":432,\"width\":256,\"height\":22},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":170,\"rows\":14,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}}],\"doc\":{\"id\":\"42a8c660a2d3ee48\",\"revision\":5,\"visible\":[\"stk_3959c35872d8838ad84c30c4366b367b\",\"stk_b1681b45f6ab9efb881566a8e907ccb0\",\"stk_b01263e3eb6794bd2c46d9975a5d723e\"],\"history\":[\"add\",\"add\",\"add\",\"erase\",\"undo\"],\"strokes\":5},\"pinned\":0,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 41. No AI is connected. Saved on this device at 16:30:03. 3 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"gesture\":null,\"last\":{\"seq\":41,\"sampled_at\":\"2026-09-30T23:30:06.623Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"75643993adf79d1f02e12a5a87d3b91cf00862a042458f1e52dae4e566966a1d\"},\"composed\":{\"ink_session\":\"42a8c660a2d3ee48\",\"ink_revision\":5,\"ink_marks\":{\"verified\":0,\"changed\":0,\"unknown\":3,\"following_content\":0},\"pixels_sha256\":\"b0a0ed5967f12752fa9483c7f7f5ed4d7682e5307d9c6c9036bdac53ff87d75c\"}}}",
+  "ov_undo": "{\"mode\":\"WRITE\",\"tool\":\"eraser\",\"mouse\":\"false\",\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 41. No AI is connected. Saved on this device at 16:30:03. 3 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"card\":false,\"cancel\":false,\"disabled\":0}",
+  "saved_redo": "{\"doc\":{\"id\":\"42a8c660a2d3ee48\",\"revision\":6,\"visible\":[\"stk_0f538e616dca6ac6a86c3533bcc30973\",\"stk_f807ae752fde2f8a8cb3f164a1b679a8\",\"stk_b1681b45f6ab9efb881566a8e907ccb0\",\"stk_b01263e3eb6794bd2c46d9975a5d723e\"],\"history\":[\"add\",\"add\",\"add\",\"erase\",\"undo\",\"redo\"],\"strokes\":5},\"saveText\":\"Saved on this device at 16:30:06.\",\"retention\":{\"retained\":11,\"refused\":0,\"lastRefusal\":\"\",\"deferred\":0}}",
+  "app_redo": "{\"aligned\":{\"stk_0f538e616dca6ac6a86c3533bcc30973\":\"unknown\",\"stk_f807ae752fde2f8a8cb3f164a1b679a8\":\"unknown\",\"stk_b1681b45f6ab9efb881566a8e907ccb0\":\"unknown\",\"stk_b01263e3eb6794bd2c46d9975a5d723e\":\"unknown\"},\"alignment\":[{\"id\":\"stk_0f538e616dca6ac6a86c3533bcc30973\",\"region\":{\"x\":42,\"y\":298,\"width\":526,\"height\":28},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":263,\"rows\":14,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_f807ae752fde2f8a8cb3f164a1b679a8\",\"region\":{\"x\":42,\"y\":298,\"width\":526,\"height\":28},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":263,\"rows\":14,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_b1681b45f6ab9efb881566a8e907ccb0\",\"region\":{\"x\":292,\"y\":515,\"width\":62,\"height\":58},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":62,\"rows\":58,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_b01263e3eb6794bd2c46d9975a5d723e\",\"region\":{\"x\":352,\"y\":432,\"width\":256,\"height\":22},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":170,\"rows\":14,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}}],\"doc\":{\"id\":\"42a8c660a2d3ee48\",\"revision\":6,\"visible\":[\"stk_0f538e616dca6ac6a86c3533bcc30973\",\"stk_f807ae752fde2f8a8cb3f164a1b679a8\",\"stk_b1681b45f6ab9efb881566a8e907ccb0\",\"stk_b01263e3eb6794bd2c46d9975a5d723e\"],\"history\":[\"add\",\"add\",\"add\",\"erase\",\"undo\",\"redo\"],\"strokes\":5},\"pinned\":0,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 44. No AI is connected. Saved on this device at 16:30:06. 4 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"gesture\":null,\"last\":{\"seq\":44,\"sampled_at\":\"2026-09-30T23:30:09.869Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"75643993adf79d1f02e12a5a87d3b91cf00862a042458f1e52dae4e566966a1d\"},\"composed\":{\"ink_session\":\"42a8c660a2d3ee48\",\"ink_revision\":6,\"ink_marks\":{\"verified\":0,\"changed\":0,\"unknown\":4,\"following_content\":0},\"pixels_sha256\":\"10b44c79571fa26f53965900b3ca064522642bfe686b3f1ef4f8ae0dab7d997f\"}}}",
+  "ov_redo": "{\"mode\":\"WRITE\",\"tool\":\"eraser\",\"mouse\":\"false\",\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 44. No AI is connected. Saved on this device at 16:30:06. 4 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"card\":false,\"cancel\":false,\"disabled\":1}",
+  "ov_ask_finished": "{\"mode\":\"WRITE\",\"tool\":\"pen\",\"mouse\":\"false\",\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 45. No AI is connected. Saved on this device at 16:30:06. 4 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"card\":false,\"cancel\":false,\"disabled\":1}",
+  "ov_ask2": "{\"mode\":\"ASK\",\"tool\":\"pen\",\"mouse\":\"false\",\"hint\":\"Circle a region. Esc or Cancel returns. Capturing this display · frame 45. No AI is connected. Saved on this device at 16:30:06. 4 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"card\":false,\"cancel\":true,\"disabled\":1}",
+  "ov_ask_cancelled": "{\"mode\":\"WRITE\",\"tool\":\"pen\",\"mouse\":\"false\",\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 45. No AI is connected. Saved on this device at 16:30:06. 4 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"card\":false,\"cancel\":false,\"disabled\":1}",
+  "saved_ask-done": "{\"doc\":{\"id\":\"42a8c660a2d3ee48\",\"revision\":6,\"visible\":[\"stk_0f538e616dca6ac6a86c3533bcc30973\",\"stk_f807ae752fde2f8a8cb3f164a1b679a8\",\"stk_b1681b45f6ab9efb881566a8e907ccb0\",\"stk_b01263e3eb6794bd2c46d9975a5d723e\"],\"history\":[\"add\",\"add\",\"add\",\"erase\",\"undo\",\"redo\"],\"strokes\":5},\"saveText\":\"Saved on this device at 16:30:06.\",\"retention\":{\"retained\":11,\"refused\":0,\"lastRefusal\":\"\",\"deferred\":0}}",
+  "app_ask-done": "{\"aligned\":{\"stk_0f538e616dca6ac6a86c3533bcc30973\":\"unknown\",\"stk_f807ae752fde2f8a8cb3f164a1b679a8\":\"unknown\",\"stk_b1681b45f6ab9efb881566a8e907ccb0\":\"unknown\",\"stk_b01263e3eb6794bd2c46d9975a5d723e\":\"unknown\"},\"alignment\":[{\"id\":\"stk_0f538e616dca6ac6a86c3533bcc30973\",\"region\":{\"x\":42,\"y\":298,\"width\":526,\"height\":28},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":263,\"rows\":14,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_f807ae752fde2f8a8cb3f164a1b679a8\",\"region\":{\"x\":42,\"y\":298,\"width\":526,\"height\":28},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":263,\"rows\":14,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_b1681b45f6ab9efb881566a8e907ccb0\",\"region\":{\"x\":292,\"y\":515,\"width\":62,\"height\":58},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":62,\"rows\":58,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_b01263e3eb6794bd2c46d9975a5d723e\",\"region\":{\"x\":352,\"y\":432,\"width\":256,\"height\":22},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":170,\"rows\":14,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}}],\"doc\":{\"id\":\"42a8c660a2d3ee48\",\"revision\":6,\"visible\":[\"stk_0f538e616dca6ac6a86c3533bcc30973\",\"stk_f807ae752fde2f8a8cb3f164a1b679a8\",\"stk_b1681b45f6ab9efb881566a8e907ccb0\",\"stk_b01263e3eb6794bd2c46d9975a5d723e\"],\"history\":[\"add\",\"add\",\"add\",\"erase\",\"undo\",\"redo\"],\"strokes\":5},\"pinned\":0,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 48. No AI is connected. Saved on this device at 16:30:06. 4 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"gesture\":null,\"last\":{\"seq\":48,\"sampled_at\":\"2026-09-30T23:30:14.162Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"75643993adf79d1f02e12a5a87d3b91cf00862a042458f1e52dae4e566966a1d\"},\"composed\":{\"ink_session\":\"42a8c660a2d3ee48\",\"ink_revision\":6,\"ink_marks\":{\"verified\":0,\"changed\":0,\"unknown\":4,\"following_content\":0},\"pixels_sha256\":\"10b44c79571fa26f53965900b3ca064522642bfe686b3f1ef4f8ae0dab7d997f\"}}}",
+  "ov_ask-done": "{\"mode\":\"WRITE\",\"tool\":\"pen\",\"mouse\":\"false\",\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 48. No AI is connected. Saved on this device at 16:30:06. 4 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"card\":false,\"cancel\":false,\"disabled\":1}",
+  "saved_continued": "{\"doc\":{\"id\":\"42a8c660a2d3ee48\",\"revision\":7,\"visible\":[\"stk_0f538e616dca6ac6a86c3533bcc30973\",\"stk_f807ae752fde2f8a8cb3f164a1b679a8\",\"stk_b1681b45f6ab9efb881566a8e907ccb0\",\"stk_b01263e3eb6794bd2c46d9975a5d723e\",\"stk_7c9348d085873fdd61d4c65473574cc3\"],\"history\":[\"add\",\"add\",\"add\",\"erase\",\"undo\",\"redo\",\"add\"],\"strokes\":6},\"saveText\":\"Saved on this device at 16:30:15.\",\"retention\":{\"retained\":12,\"refused\":0,\"lastRefusal\":\"\",\"deferred\":0}}",
+  "app_continued": "{\"aligned\":{\"stk_0f538e616dca6ac6a86c3533bcc30973\":\"unknown\",\"stk_f807ae752fde2f8a8cb3f164a1b679a8\":\"unknown\",\"stk_b1681b45f6ab9efb881566a8e907ccb0\":\"unknown\",\"stk_b01263e3eb6794bd2c46d9975a5d723e\":\"unknown\",\"stk_7c9348d085873fdd61d4c65473574cc3\":\"verified\"},\"alignment\":[{\"id\":\"stk_0f538e616dca6ac6a86c3533bcc30973\",\"region\":{\"x\":42,\"y\":298,\"width\":526,\"height\":28},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":263,\"rows\":14,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_f807ae752fde2f8a8cb3f164a1b679a8\",\"region\":{\"x\":42,\"y\":298,\"width\":526,\"height\":28},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":263,\"rows\":14,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_b1681b45f6ab9efb881566a8e907ccb0\",\"region\":{\"x\":292,\"y\":515,\"width\":62,\"height\":58},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":62,\"rows\":58,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_b01263e3eb6794bd2c46d9975a5d723e\",\"region\":{\"x\":352,\"y\":432,\"width\":256,\"height\":22},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":170,\"rows\":14,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_7c9348d085873fdd61d4c65473574cc3\",\"region\":{\"x\":37,\"y\":479,\"width\":201,\"height\":16},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":201,\"rows\":16,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}}],\"doc\":{\"id\":\"42a8c660a2d3ee48\",\"revision\":7,\"visible\":[\"stk_0f538e616dca6ac6a86c3533bcc30973\",\"stk_f807ae752fde2f8a8cb3f164a1b679a8\",\"stk_b1681b45f6ab9efb881566a8e907ccb0\",\"stk_b01263e3eb6794bd2c46d9975a5d723e\",\"stk_7c9348d085873fdd61d4c65473574cc3\"],\"history\":[\"add\",\"add\",\"add\",\"erase\",\"undo\",\"redo\",\"add\"],\"strokes\":6},\"pinned\":0,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 53. No AI is connected. Saved on this device at 16:30:15. 4 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"gesture\":null,\"last\":{\"seq\":53,\"sampled_at\":\"2026-09-30T23:30:18.466Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"75643993adf79d1f02e12a5a87d3b91cf00862a042458f1e52dae4e566966a1d\"},\"composed\":{\"ink_session\":\"42a8c660a2d3ee48\",\"ink_revision\":7,\"ink_marks\":{\"verified\":1,\"changed\":0,\"unknown\":4,\"following_content\":0},\"pixels_sha256\":\"43e282ae7a27ae1dbf438977933727ed5aac34842610ac6a173469d75d48c873\"}}}",
+  "ov_continued": "{\"mode\":\"WRITE\",\"tool\":\"pen\",\"mouse\":\"false\",\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 53. No AI is connected. Saved on this device at 16:30:15. 4 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"card\":false,\"cancel\":false,\"disabled\":1}",
+  "link_pre_stop": "{\"at\":\"2026-09-30T23:30:19.005Z\",\"l\":{\"mode\":\"development\",\"state\":\"sending\",\"stored\":12,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false}}",
+  "link_pre_stop_now": "{\"at\":\"2026-09-30T23:30:19.007Z\",\"l\":{\"mode\":\"development\",\"state\":\"sending\",\"stored\":12,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false},\"ai\":\"Development mode: captured frames and ink are kept on this device and, while capturing, also stored in a local test capture service on it. No AI is connected; nothing is sent to any AI.\",\"line\":\"Capture storage (development): storing. 12 record(s) stored. AI: not connected.\",\"hidden\":false,\"session\":\"Capturing 整个屏幕 (1280×800 at 2×). The overlay is on that display: ✋ passes clicks to your apps, ✎ writes, ? selects.\"}",
+  "link_stop_latched": "{\"at\":\"2026-09-30T23:30:19.148Z\",\"l\":{\"mode\":\"development\",\"state\":\"stopping\",\"stored\":12,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false},\"ai\":\"Development mode: captured frames and ink are kept on this device and, while capturing, also stored in a local test capture service on it. No AI is connected; nothing is sent to any AI.\",\"line\":\"Capture storage (development): stopping: nothing new is sent. 12 record(s) stored. AI: not connected.\",\"hidden\":false,\"session\":\"Not capturing: stopped by the user.\"}",
+  "stopped1": "{\"running\":false,\"starting\":false,\"ended\":\"stopped by the user\"}",
+  "link_stopped1": "{\"at\":\"2026-09-30T23:30:19.546Z\",\"l\":{\"mode\":\"development\",\"state\":\"stopped\",\"stored\":12,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":\"stream stopped\",\"earlier_unknown\":0,\"sends_stopped\":false}}",
+  "kids_stopped1": {
+   "app_pid": 74672,
+   "at": "2026-09-30T23:30:20.1824476Z",
+   "children": [
+    {
+     "name": "electron.exe",
+     "pid": 54776,
+     "created": "2026-09-30T23:29:19.4402220Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 37028,
+     "created": "2026-09-30T23:29:19.4431010Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 64900,
+     "created": "2026-09-30T23:29:19.4557010Z"
+    }
+   ]
+  },
+  "link_events1": "[{\"mode\":\"development\",\"state\":\"connecting\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:29:26.449Z\"},{\"mode\":\"development\",\"state\":\"connecting\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:29:26.459Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:29:27.651Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":1,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:29:27.825Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":1,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:29:27.825Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":2,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:29:34.869Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":2,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:29:34.869Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":3,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:29:40.172Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":3,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:29:40.172Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":4,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:29:44.448Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":4,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:29:44.448Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":5,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:29:46.540Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":5,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:29:46.540Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":6,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:29:49.740Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":6,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:29:49.740Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":7,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:29:54.067Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":7,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:29:54.067Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":8,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:29:56.228Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":8,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:29:56.228Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":9,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:30:00.531Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":9,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:30:00.531Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":10,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:30:03.732Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":10,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:30:03.733Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":11,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:30:08.045Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":11,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:30:08.046Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":12,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:30:16.731Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":12,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:30:16.732Z\"},{\"mode\":\"development\",\"state\":\"stopping\",\"stored\":12,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:30:19.030Z\"},{\"mode\":\"development\",\"state\":\"stopped\",\"stored\":12,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":\"stream stopped\",\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:30:19.490Z\"},{\"mode\":\"development\",\"state\":\"stopped\",\"stored\":12,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":\"stream stopped\",\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:30:19.490Z\"}]",
+  "hung1": {
+   "was_running": true,
+   "pages_left": 0,
+   "children": [
+    "electron.exe",
+    "electron.exe"
+   ],
+   "ended": true
+  },
+  "link_relaunched": "{\"at\":\"2026-09-30T23:31:03.217Z\",\"l\":{\"mode\":\"development\",\"state\":\"stopped\",\"stored\":12,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":\"the host ended\",\"earlier_unknown\":0,\"sends_stopped\":false},\"ai\":\"Development mode: captured frames and ink are kept on this device and, while capturing, also stored in a local test capture service on it. No AI is connected; nothing is sent to any AI.\",\"line\":\"Capture storage (development): stopped. 12 record(s) stored. the host ended. AI: not connected.\",\"hidden\":false,\"session\":\"Not capturing.\"}",
+  "kept_relaunched": "{\"hidden\":true,\"text\":\"\",\"buttons\":[],\"session\":\"Not capturing.\"}",
+  "kids_relaunch": {
+   "app_pid": 56792,
+   "at": "2026-09-30T23:31:03.8533905Z",
+   "children": [
+    {
+     "name": "electron.exe",
+     "pid": 65244,
+     "created": "2026-09-30T23:30:52.7941710Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 73776,
+     "created": "2026-09-30T23:30:52.7965590Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 71996,
+     "created": "2026-09-30T23:30:52.8077020Z"
+    }
+   ]
+  },
+  "s2": "{\"running\":true,\"starting\":false,\"ending\":false,\"display\":{\"display_id\":\"3071609112\",\"label\":\"整个屏幕\",\"bounds\":{\"x\":0,\"y\":0,\"width\":1280,\"height\":800},\"scale_factor\":2},\"session_id\":\"2\"}",
+  "link_sending2": "{\"at\":\"2026-09-30T23:31:07.834Z\",\"l\":{\"mode\":\"development\",\"state\":\"sending\",\"stored\":1,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false}}",
+  "kids_s2": {
+   "app_pid": 56792,
+   "at": "2026-09-30T23:31:08.4022800Z",
+   "children": [
+    {
+     "name": "electron.exe",
+     "pid": 65244,
+     "created": "2026-09-30T23:30:52.7941710Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 73776,
+     "created": "2026-09-30T23:30:52.7965590Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 71996,
+     "created": "2026-09-30T23:30:52.8077020Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 62712,
+     "created": "2026-09-30T23:31:04.9385040Z"
+    },
+    {
+     "name": "wsl.exe",
+     "pid": 59164,
+     "created": "2026-09-30T23:31:04.9511140Z"
+    }
+   ]
+  },
+  "opened2": "42a8c660a2d3ee48",
+  "saved_reopened2": "{\"doc\":{\"id\":\"42a8c660a2d3ee48\",\"revision\":7,\"visible\":[\"stk_0f538e616dca6ac6a86c3533bcc30973\",\"stk_f807ae752fde2f8a8cb3f164a1b679a8\",\"stk_b1681b45f6ab9efb881566a8e907ccb0\",\"stk_b01263e3eb6794bd2c46d9975a5d723e\",\"stk_7c9348d085873fdd61d4c65473574cc3\"],\"history\":[\"add\",\"add\",\"add\",\"erase\",\"undo\",\"redo\",\"add\"],\"strokes\":6},\"saveText\":\"Reopened 5 stroke(s) saved on this device.\",\"retention\":{\"retained\":2,\"refused\":0,\"lastRefusal\":\"\",\"deferred\":0}}",
+  "app_reopened2": "{\"aligned\":{\"stk_0f538e616dca6ac6a86c3533bcc30973\":\"unknown\",\"stk_f807ae752fde2f8a8cb3f164a1b679a8\":\"unknown\",\"stk_b1681b45f6ab9efb881566a8e907ccb0\":\"unknown\",\"stk_b01263e3eb6794bd2c46d9975a5d723e\":\"unknown\",\"stk_7c9348d085873fdd61d4c65473574cc3\":\"verified\"},\"alignment\":[{\"id\":\"stk_0f538e616dca6ac6a86c3533bcc30973\",\"region\":{\"x\":42,\"y\":298,\"width\":526,\"height\":28},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":263,\"rows\":14,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_f807ae752fde2f8a8cb3f164a1b679a8\",\"region\":{\"x\":42,\"y\":298,\"width\":526,\"height\":28},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":263,\"rows\":14,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_b1681b45f6ab9efb881566a8e907ccb0\",\"region\":{\"x\":292,\"y\":515,\"width\":62,\"height\":58},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":62,\"rows\":58,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_b01263e3eb6794bd2c46d9975a5d723e\",\"region\":{\"x\":352,\"y\":432,\"width\":256,\"height\":22},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":170,\"rows\":14,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_7c9348d085873fdd61d4c65473574cc3\",\"region\":{\"x\":37,\"y\":479,\"width\":201,\"height\":16},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":201,\"rows\":16,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}}],\"doc\":{\"id\":\"42a8c660a2d3ee48\",\"revision\":7,\"visible\":[\"stk_0f538e616dca6ac6a86c3533bcc30973\",\"stk_f807ae752fde2f8a8cb3f164a1b679a8\",\"stk_b1681b45f6ab9efb881566a8e907ccb0\",\"stk_b01263e3eb6794bd2c46d9975a5d723e\",\"stk_7c9348d085873fdd61d4c65473574cc3\"],\"history\":[\"add\",\"add\",\"add\",\"erase\",\"undo\",\"redo\",\"add\"],\"strokes\":6},\"pinned\":0,\"hint\":\"Clicks go to your apps. Capturing this display · frame 7. No AI is connected. Reopened 5 stroke(s) saved on this device. 4 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"gesture\":null,\"last\":{\"seq\":7,\"sampled_at\":\"2026-09-30T23:31:12.108Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"55904f24b994e5013fc35da030bc60b3b6f5fc39c1bf7f44042020a1764141f0\"},\"composed\":{\"ink_session\":\"42a8c660a2d3ee48\",\"ink_revision\":7,\"ink_marks\":{\"verified\":1,\"changed\":0,\"unknown\":4,\"following_content\":0},\"pixels_sha256\":\"9180730547d617f51b8a4a584bf0f24adb599126beb0bafdfc0868f52b2fa182\"}}}",
+  "ov_reopened2": "{\"mode\":\"NAV\",\"tool\":\"pen\",\"mouse\":\"false\",\"hint\":\"Clicks go to your apps. Capturing this display · frame 7. No AI is connected. Reopened 5 stroke(s) saved on this device. 4 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"card\":false,\"cancel\":false,\"disabled\":1}",
+  "saved_reopen-edit": "{\"doc\":{\"id\":\"42a8c660a2d3ee48\",\"revision\":8,\"visible\":[\"stk_0f538e616dca6ac6a86c3533bcc30973\",\"stk_f807ae752fde2f8a8cb3f164a1b679a8\",\"stk_b1681b45f6ab9efb881566a8e907ccb0\",\"stk_b01263e3eb6794bd2c46d9975a5d723e\",\"stk_7c9348d085873fdd61d4c65473574cc3\",\"stk_7c616e955601ce47196d1faeb672a74d\"],\"history\":[\"add\",\"add\",\"add\",\"erase\",\"undo\",\"redo\",\"add\",\"add\"],\"strokes\":7},\"saveText\":\"Saved on this device at 16:31:12.\",\"retention\":{\"retained\":3,\"refused\":0,\"lastRefusal\":\"\",\"deferred\":0}}",
+  "app_reopen-edit": "{\"aligned\":{\"stk_0f538e616dca6ac6a86c3533bcc30973\":\"unknown\",\"stk_f807ae752fde2f8a8cb3f164a1b679a8\":\"unknown\",\"stk_b1681b45f6ab9efb881566a8e907ccb0\":\"unknown\",\"stk_b01263e3eb6794bd2c46d9975a5d723e\":\"unknown\",\"stk_7c9348d085873fdd61d4c65473574cc3\":\"verified\",\"stk_7c616e955601ce47196d1faeb672a74d\":\"unknown\"},\"alignment\":[{\"id\":\"stk_0f538e616dca6ac6a86c3533bcc30973\",\"region\":{\"x\":42,\"y\":298,\"width\":526,\"height\":28},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":263,\"rows\":14,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_f807ae752fde2f8a8cb3f164a1b679a8\",\"region\":{\"x\":42,\"y\":298,\"width\":526,\"height\":28},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":263,\"rows\":14,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_b1681b45f6ab9efb881566a8e907ccb0\",\"region\":{\"x\":292,\"y\":515,\"width\":62,\"height\":58},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":62,\"rows\":58,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_b01263e3eb6794bd2c46d9975a5d723e\",\"region\":{\"x\":352,\"y\":432,\"width\":256,\"height\":22},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":170,\"rows\":14,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_7c9348d085873fdd61d4c65473574cc3\",\"region\":{\"x\":37,\"y\":479,\"width\":201,\"height\":16},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":201,\"rows\":16,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_7c616e955601ce47196d1faeb672a74d\",\"region\":{\"x\":412,\"y\":592,\"width\":196,\"height\":22},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":130,\"rows\":14,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}}],\"doc\":{\"id\":\"42a8c660a2d3ee48\",\"revision\":8,\"visible\":[\"stk_0f538e616dca6ac6a86c3533bcc30973\",\"stk_f807ae752fde2f8a8cb3f164a1b679a8\",\"stk_b1681b45f6ab9efb881566a8e907ccb0\",\"stk_b01263e3eb6794bd2c46d9975a5d723e\",\"stk_7c9348d085873fdd61d4c65473574cc3\",\"stk_7c616e955601ce47196d1faeb672a74d\"],\"history\":[\"add\",\"add\",\"add\",\"erase\",\"undo\",\"redo\",\"add\",\"add\"],\"strokes\":7},\"pinned\":0,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 11. No AI is connected. Saved on this device at 16:31:12. 5 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"gesture\":null,\"last\":{\"seq\":11,\"sampled_at\":\"2026-09-30T23:31:15.360Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"55904f24b994e5013fc35da030bc60b3b6f5fc39c1bf7f44042020a1764141f0\"},\"composed\":{\"ink_session\":\"42a8c660a2d3ee48\",\"ink_revision\":8,\"ink_marks\":{\"verified\":1,\"changed\":0,\"unknown\":5,\"following_content\":0},\"pixels_sha256\":\"33aba640e9e25d7df8a669d10e344d814b85e140bc94d681e1b3e4293c9840af\"}}}",
+  "ov_reopen-edit": "{\"mode\":\"WRITE\",\"tool\":\"pen\",\"mouse\":\"false\",\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 11. No AI is connected. Saved on this device at 16:31:12. 5 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"card\":false,\"cancel\":false,\"disabled\":1}",
+  "link_healthy": "{\"at\":\"2026-09-30T23:31:16.222Z\",\"l\":{\"mode\":\"development\",\"state\":\"sending\",\"stored\":3,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false}}",
+  "stopped2": "{\"running\":false,\"starting\":false,\"ended\":\"stopped by the user\"}",
+  "link_stopped2": "{\"at\":\"2026-09-30T23:31:16.835Z\",\"l\":{\"mode\":\"development\",\"state\":\"stopped\",\"stored\":3,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":\"stream stopped\",\"earlier_unknown\":0,\"sends_stopped\":false}}",
+  "kids_stopped2": {
+   "app_pid": 56792,
+   "at": "2026-09-30T23:31:17.4474347Z",
+   "children": [
+    {
+     "name": "electron.exe",
+     "pid": 65244,
+     "created": "2026-09-30T23:30:52.7941710Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 73776,
+     "created": "2026-09-30T23:30:52.7965590Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 71996,
+     "created": "2026-09-30T23:30:52.8077020Z"
+    }
+   ]
+  },
+  "link_events2": "[{\"mode\":\"development\",\"state\":\"connecting\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:31:04.928Z\"},{\"mode\":\"development\",\"state\":\"connecting\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:31:04.939Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:31:06.728Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":1,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:31:07.022Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":1,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:31:07.022Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":2,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:31:09.293Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":2,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:31:09.293Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":3,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:31:13.619Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":3,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:31:13.619Z\"},{\"mode\":\"development\",\"state\":\"stopping\",\"stored\":3,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:31:16.247Z\"},{\"mode\":\"development\",\"state\":\"stopped\",\"stored\":3,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":\"stream stopped\",\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:31:16.736Z\"},{\"mode\":\"development\",\"state\":\"stopped\",\"stored\":3,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":\"stream stopped\",\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:31:16.736Z\"}]",
+  "hung2": {
+   "was_running": true,
+   "pages_left": 0,
+   "children": [
+    "electron.exe",
+    "electron.exe"
+   ],
+   "ended": true
+  },
+  "link_fail_idle": "{\"at\":\"2026-09-30T23:31:53.404Z\",\"l\":{\"mode\":\"development\",\"state\":\"stopped\",\"stored\":3,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":\"the host ended\",\"earlier_unknown\":0,\"sends_stopped\":false},\"ai\":\"Development mode: captured frames and ink are kept on this device and, while capturing, also stored in a local test capture service on it. No AI is connected; nothing is sent to any AI.\",\"line\":\"Capture storage (development): stopped. 3 record(s) stored. the host ended. AI: not connected.\",\"hidden\":false,\"session\":\"Not capturing.\"}",
+  "kids_fail_idle": {
+   "app_pid": 72656,
+   "at": "2026-09-30T23:31:54.0098355Z",
+   "children": [
+    {
+     "name": "electron.exe",
+     "pid": 55524,
+     "created": "2026-09-30T23:31:49.9679300Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 67492,
+     "created": "2026-09-30T23:31:49.9714430Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 76572,
+     "created": "2026-09-30T23:31:49.9826880Z"
+    }
+   ]
+  },
+  "s3": "{\"running\":true,\"starting\":false,\"ending\":false,\"display\":{\"display_id\":\"3071609112\",\"label\":\"整个屏幕\",\"bounds\":{\"x\":0,\"y\":0,\"width\":1280,\"height\":800},\"scale_factor\":2},\"session_id\":\"2\"}",
+  "link_fail": "{\"at\":\"2026-09-30T23:31:57.016Z\",\"l\":{\"mode\":\"development\",\"state\":\"not connected\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":\"the host ended without READY (unavailable)\",\"earlier_unknown\":0,\"sends_stopped\":false}}",
+  "kids_fail": {
+   "app_pid": 72656,
+   "at": "2026-09-30T23:31:57.6119976Z",
+   "children": [
+    {
+     "name": "electron.exe",
+     "pid": 55524,
+     "created": "2026-09-30T23:31:49.9679300Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 67492,
+     "created": "2026-09-30T23:31:49.9714430Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 76572,
+     "created": "2026-09-30T23:31:49.9826880Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 72016,
+     "created": "2026-09-30T23:31:54.1581180Z"
+    }
+   ]
+  },
+  "app_f1": "{\"aligned\":{},\"alignment\":[],\"doc\":{\"id\":\"4c05d7a3ac7f0104\",\"revision\":0,\"visible\":[],\"history\":[],\"strokes\":0},\"pinned\":0,\"hint\":\"Clicks go to your apps. Capturing this display · frame 8. No AI is connected. Ink is saved on this device at every change.\",\"gesture\":null,\"last\":{\"seq\":8,\"sampled_at\":\"2026-09-30T23:32:02.222Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"862f1818833b92b5f0bcbcee9437a0e4ee3294ca1d41bda322739910476481e7\"},\"composed\":{\"ink_session\":\"4c05d7a3ac7f0104\",\"ink_revision\":0,\"ink_marks\":{\"verified\":0,\"changed\":0,\"unknown\":0,\"following_content\":0},\"pixels_sha256\":\"862f1818833b92b5f0bcbcee9437a0e4ee3294ca1d41bda322739910476481e7\"}}}",
+  "link_fail_now": "{\"at\":\"2026-09-30T23:32:02.315Z\",\"l\":{\"mode\":\"development\",\"state\":\"not connected\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":\"the host ended without READY (unavailable)\",\"earlier_unknown\":0,\"sends_stopped\":false},\"ai\":\"Development mode: captured frames and ink are kept on this device and, while capturing, also stored in a local test capture service on it. No AI is connected; nothing is sent to any AI.\",\"line\":\"Capture storage (development): not connected (the frames stay on this device). 0 record(s) stored. the host ended without READY (unavailable). AI: not connected.\",\"hidden\":false,\"session\":\"Capturing 整个屏幕 (1280×800 at 2×). The overlay is on that display: ✋ passes clicks to your apps, ✎ writes, ? selects.\"}",
+  "saved_fail-write": "{\"doc\":{\"id\":\"4c05d7a3ac7f0104\",\"revision\":1,\"visible\":[\"stk_ba1759d7259889ecabc7d84585bac38d\"],\"history\":[\"add\"],\"strokes\":1},\"saveText\":\"Saved on this device at 16:32:02.\",\"retention\":{\"retained\":2,\"refused\":0,\"lastRefusal\":\"\",\"deferred\":0}}",
+  "app_fail-write": "{\"aligned\":{\"stk_ba1759d7259889ecabc7d84585bac38d\":\"unknown\"},\"alignment\":[{\"id\":\"stk_ba1759d7259889ecabc7d84585bac38d\",\"region\":{\"x\":52,\"y\":592,\"width\":196,\"height\":22},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":130,\"rows\":14,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}}],\"doc\":{\"id\":\"4c05d7a3ac7f0104\",\"revision\":1,\"visible\":[\"stk_ba1759d7259889ecabc7d84585bac38d\"],\"history\":[\"add\"],\"strokes\":1},\"pinned\":0,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 12. No AI is connected. Saved on this device at 16:32:02. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"gesture\":null,\"last\":{\"seq\":12,\"sampled_at\":\"2026-09-30T23:32:05.396Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"862f1818833b92b5f0bcbcee9437a0e4ee3294ca1d41bda322739910476481e7\"},\"composed\":{\"ink_session\":\"4c05d7a3ac7f0104\",\"ink_revision\":1,\"ink_marks\":{\"verified\":0,\"changed\":0,\"unknown\":1,\"following_content\":0},\"pixels_sha256\":\"97251966c5c0ae79fc0bb87fca9dd4e88c40589db40f13c0c357796ab774fa67\"}}}",
+  "ov_fail-write": "{\"mode\":\"WRITE\",\"tool\":\"pen\",\"mouse\":\"false\",\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 12. No AI is connected. Saved on this device at 16:32:02. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"card\":false,\"cancel\":false,\"disabled\":1}",
+  "link_fail_after_ask": "{\"at\":\"2026-09-30T23:32:07.433Z\",\"l\":{\"mode\":\"development\",\"state\":\"not connected\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":\"the host ended without READY (unavailable)\",\"earlier_unknown\":0,\"sends_stopped\":false},\"ai\":\"Development mode: captured frames and ink are kept on this device and, while capturing, also stored in a local test capture service on it. No AI is connected; nothing is sent to any AI.\",\"line\":\"Capture storage (development): not connected (the frames stay on this device). 0 record(s) stored. the host ended without READY (unavailable). AI: not connected.\",\"hidden\":false,\"session\":\"Capturing 整个屏幕 (1280×800 at 2×). The overlay is on that display: ✋ passes clicks to your apps, ✎ writes, ? selects.\"}",
+  "stopped3": "{\"running\":false,\"starting\":false,\"ended\":\"stopped by the user\"}",
+  "link_fail_stopped": "{\"at\":\"2026-09-30T23:32:10.672Z\",\"l\":{\"mode\":\"development\",\"state\":\"stopped\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":\"the stream was never confirmed registered; whether it or a grant exists is not known\",\"earlier_unknown\":1,\"sends_stopped\":false},\"ai\":\"Development mode: captured frames and ink are kept on this device and, while capturing, also stored in a local test capture service on it. No AI is connected; nothing is sent to any AI.\",\"line\":\"Capture storage (development): stopped. 0 record(s) stored; 1 earlier stream(s) whose end is not known. the stream was never confirmed registered; whether it or a grant exists is not known. AI: not connected.\",\"hidden\":false,\"session\":\"Not capturing: stopped by the user.\"}",
+  "kids_fail_stopped": {
+   "app_pid": 72656,
+   "at": "2026-09-30T23:32:11.3105981Z",
+   "children": [
+    {
+     "name": "electron.exe",
+     "pid": 55524,
+     "created": "2026-09-30T23:31:49.9679300Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 67492,
+     "created": "2026-09-30T23:31:49.9714430Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 76572,
+     "created": "2026-09-30T23:31:49.9826880Z"
+    }
+   ]
+  },
+  "link_events3": "[{\"mode\":\"development\",\"state\":\"connecting\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:31:54.152Z\"},{\"mode\":\"development\",\"state\":\"connecting\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:31:54.158Z\"},{\"mode\":\"development\",\"state\":\"not connected\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":\"the host ended without READY (unavailable)\",\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:31:54.736Z\"},{\"mode\":\"development\",\"state\":\"stopping\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:32:07.558Z\"},{\"mode\":\"development\",\"state\":\"stopped\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":\"the stream was never confirmed registered; whether it or a grant exists is not known\",\"earlier_unknown\":0,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:32:07.560Z\"},{\"mode\":\"development\",\"state\":\"stopped\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":\"the stream was never confirmed registered; whether it or a grant exists is not known\",\"earlier_unknown\":1,\"sends_stopped\":false,\"qa_at\":\"2026-09-30T23:32:07.560Z\"}]",
+  "hung3": {
+   "was_running": true,
+   "pages_left": 0,
+   "children": [
+    "electron.exe",
+    "electron.exe"
+   ],
+   "ended": true
+  }
+ },
+ "errors": [],
+ "processes": {
+  "app": {
+   "pid": 77788,
+   "devtools": "127.0.0.1:51735",
+   "started_at": "2026-09-30T23:29:03.7462860Z",
+   "link": "",
+   "exited": true,
+   "exit_code": 0,
+   "exited_at": "2026-09-30T23:29:17.7642627Z"
+  },
+  "console": {
+   "pid": 45552
+  },
+  "edge": {
+   "pid": 35232
+  },
+  "app-link": {
+   "pid": 74672,
+   "devtools": "127.0.0.1:51946",
+   "started_at": "2026-09-30T23:29:19.3339398Z",
+   "link": "main",
+   "link_config_sha256": "78c760d13300f9fdd16e793277ec06561b407ff13a6d712f0688d1b21f6b737e",
+   "exited": false,
+   "killed": true,
+   "hung_after_close": true,
+   "exited_at": "2026-09-30T23:30:51.0614316Z"
+  },
+  "app-relaunch": {
+   "pid": 56792,
+   "devtools": "127.0.0.1:49679",
+   "started_at": "2026-09-30T23:30:52.6875469Z",
+   "link": "main",
+   "link_config_sha256": "78c760d13300f9fdd16e793277ec06561b407ff13a6d712f0688d1b21f6b737e",
+   "exited": false,
+   "killed": true,
+   "hung_after_close": true,
+   "exited_at": "2026-09-30T23:31:48.2087977Z"
+  },
+  "app-fail": {
+   "pid": 72656,
+   "devtools": "127.0.0.1:65351",
+   "started_at": "2026-09-30T23:31:49.8619540Z",
+   "link": "unavail",
+   "link_config_sha256": "d829e6cd289d9307123c3a8b900feeaaa4a6f0379c1c64d21ef6e0d833e246ba",
+   "exited": false,
+   "killed": true,
+   "hung_after_close": true,
+   "exited_at": "2026-09-30T23:32:42.0860676Z",
+   "exit_code": -1
+  }
+ },
+ "foreign": {
+  "start": null,
+  "end": null
+ },
+ "cursor": {
+  "start": [
+   1586,
+   949
+  ],
+  "end": [
+   1586,
+   949
+  ]
+ },
+ "wsl_seen": [
+  {
+   "pid": 75416,
+   "running_at_end": false
+  },
+  {
+   "pid": 59164,
+   "running_at_end": false
+  }
+ ]
+}

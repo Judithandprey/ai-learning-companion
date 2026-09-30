@@ -6,7 +6,7 @@
 // Every run uses a fresh user-data folder, content folder and Edge profile inside that stage; the Windows-side
 // copies are removed after they are copied to the out dir. Desktop screenshots stay in the out dir only.
 
-import { execFileSync, spawnSync } from 'node:child_process';
+import { execFileSync, spawn, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
@@ -17,7 +17,7 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 // copyFile can fail with EPERM on the Windows drive mount; write the bytes instead.
 const copyFileSync = (from, to) => writeFileSync(to, readFileSync(from));
 const [scenario, outArg] = process.argv.slice(2);
-if (!scenarios[scenario] || !outArg) throw new Error('usage: run.mjs <smoke|full|ink> <out dir>');
+if (!scenarios[scenario] || !outArg) throw new Error('usage: run.mjs <smoke|full|ink|parent> <out dir>');
 const out = resolve(outArg);
 const run = (cmd, argv) => execFileSync(cmd, argv, { encoding: 'utf8', cwd: '/mnt/c' }).trim();
 const toWin = (p) => run('wslpath', ['-w', p]);
@@ -39,13 +39,44 @@ copyFileSync(join(HERE, 'course.html'), join(paths.content, 'course.html'));
 copyFileSync(join(HERE, 'notes.txt'), join(paths.content, 'notes.txt'));
 copyFileSync(join(HERE, 'qa-electron-runner.ps1'), join(work, 'qa-electron-runner.ps1'));
 const courseUrl = 'file:///' + toWin(join(paths.content, 'course.html')).replace(/\\/g, '/');
-const steps = scenarios[scenario]({ courseUrl, notes: toWin(join(paths.content, 'notes.txt')), edgeProfile: toWin(paths.edgeProfile), userData: toWin(paths.userData) });
+
+// Parent mode: the app's development capture link to the local test service (lc_p0_test) through a private
+// exact-source Backend copy (QA_BACKEND, made with git archive) and the released WSL private-stdin host.
+const parent = scenario.startsWith('parent');
+const PY = '/home/agentsdock/Projects/learning-companion/repo/.venv/bin/python';
+const HELPER = join(HERE, 'qa_parent_db.py');
+let actor = null, watcher = null, preflightFile = null, watchFile = null, stopFile = null;
+const extraArgs = [];
+if (parent) {
+  const backendCopy = process.env.QA_BACKEND;
+  if (!backendCopy || !backendCopy.startsWith('/') || !existsSync(join(backendCopy, 'services', 'api', 'desktop_local.py'))) throw new Error('set QA_BACKEND to the absolute private Backend copy');
+  if (existsSync(out) && readdirSync(out).length) throw new Error('the out dir must be new and empty');
+  mkdirSync(out, { recursive: true });
+  preflightFile = join(out, 'preflight.json');
+  // Guards and a pristine QA-minted actor; the helper reads the DSN itself and prints only non-secret facts.
+  execFileSync(PY, [HELPER, 'preflight', '--backend', backendCopy, '--out', preflightFile], { cwd: '/tmp', stdio: 'inherit', env: { ...process.env, PYTHONDONTWRITEBYTECODE: '1' } });
+  actor = JSON.parse(readFileSync(preflightFile, 'utf8')).actor;
+  const linkDir = join(work, 'link');
+  mkdirSync(linkDir, { recursive: true });
+  const launch = { kind: 'wsl', distribution: 'Ubuntu', user: 'agentsdock', cd: backendCopy, python: PY };
+  const dsnFile = toWin('/home/agentsdock/Projects/learning-companion/automation/local-test-postgres/test-database.dsn');
+  writeFileSync(join(linkDir, 'link-main.json'), JSON.stringify({ format: 'lc-windows-dev-capture-host/v1', dsn_file: dsnFile, launch }));
+  // The controlled failure: the same host, pointed at a test service that does not exist (no secret in this file).
+  writeFileSync(join(linkDir, 'unavailable.dsn'), 'host=/nonexistent-qa-socket port=5432 dbname=lc_p0_test\n');
+  writeFileSync(join(linkDir, 'link-unavail.json'), JSON.stringify({ format: 'lc-windows-dev-capture-host/v1', dsn_file: toWin(join(linkDir, 'unavailable.dsn')), launch }));
+  extraArgs.push('-LinkDir', toWin(linkDir));
+  watchFile = join(out, 'host-watch.jsonl');
+  stopFile = join(out, 'host-watch.stop');
+  const { openSync } = await import('node:fs');
+  watcher = spawn(PY, [HELPER, 'watch', '--backend', backendCopy, '--out', watchFile, '--stop', stopFile], { cwd: '/tmp', stdio: ['ignore', 'ignore', openSync(join(out, 'host-watch.stderr'), 'w')], env: { ...process.env, PYTHONDONTWRITEBYTECODE: '1' } });
+}
+const steps = scenarios[scenario]({ courseUrl, notes: toWin(join(paths.content, 'notes.txt')), edgeProfile: toWin(paths.edgeProfile), userData: toWin(paths.userData), actor });
 writeFileSync(join(work, 'steps.json'), JSON.stringify(steps, null, 1));
 
 const started = new Date().toISOString();
 const r = spawnSync('powershell.exe', ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', toWin(join(work, 'qa-electron-runner.ps1')),
   '-Electron', electron, '-Stage', toWin(stage), '-UserData', toWin(paths.userData), '-StepsFile', toWin(join(work, 'steps.json')),
-  '-OutDir', toWin(paths.winOut), '-Edge', edge, '-AppTemp', toWin(paths.appTemp)], { cwd: '/mnt/c', encoding: 'utf8', timeout: 600000 });
+  '-OutDir', toWin(paths.winOut), '-Edge', edge, '-AppTemp', toWin(paths.appTemp), ...extraArgs], { cwd: '/mnt/c', encoding: 'utf8', timeout: 900000 });
 mkdirSync(out, { recursive: true });
 try {
   writeFileSync(join(out, 'runner-stdio.txt'), `${r.stdout ?? ''}\n--- stderr ---\n${r.stderr ?? ''}\nstatus ${r.status} signal ${r.signal}\n`);
@@ -103,10 +134,17 @@ try {
   cpSync(convert, join(out, 'pictures'), { recursive: true });
   const ink = join(paths.userData, 'ink'); // only the app's saved ink and context pictures are kept
   if (existsSync(ink)) cpSync(ink, join(out, 'ink'), { recursive: true });
-  for (const [from, to] of [[join(paths.userData, 'qa-aside'), 'qa-aside'], [paths.appTemp, 'apptemp']]) if (existsSync(from)) cpSync(from, join(out, to), { recursive: true });
+  for (const [from, to] of [[join(paths.userData, 'qa-aside'), 'qa-aside'], [paths.appTemp, 'apptemp'], [join(paths.userData, 'capture-host'), 'capture-host']]) if (existsSync(from)) cpSync(from, join(out, to), { recursive: true });
+  if (parent && existsSync(join(paths.userData, 'captures'))) cpSync(join(paths.userData, 'captures'), join(out, 'captures'), { recursive: true }); // private: whole-display frames
   writeFileSync(join(out, 'run.json'), JSON.stringify({ scenario, started, ended: new Date().toISOString(), work: toWin(work), steps: steps.length, harness_sha256: harness }, null, 1));
   writeFileSync(join(out, 'steps.json'), JSON.stringify(steps, null, 1));
 } finally {
+  if (watcher) {
+    // Hosts end within their own bounds after the app closes; keep watching briefly, then stop this run's watcher only.
+    await new Promise((res) => setTimeout(res, 15000));
+    writeFileSync(stopFile, 'stop');
+    await new Promise((res) => (watcher.exitCode !== null || watcher.signalCode !== null ? res() : watcher.on('exit', res)));
+  }
   rmSync(work, { recursive: true, force: true }); // fresh per run; nothing stays on the Windows side
 }
 console.log(readFileSync(join(out, 'out', 'results.json'), 'utf8').slice(0, 400));

@@ -1,0 +1,43 @@
+{
+ "candidate": "c4c84a57bb7752d2bdbeeff8a0482711cae8fb38",
+ "qa_head_at_run": "dd6c22f9c01b206641b5a5c1a513a6db0e57bd1b",
+ "apps_windows_equal": {
+  "c4c84a5_vs_5871981": true,
+  "c4c84a5_vs_15501b6": true,
+  "qa_head_apps_and_services_vs_c4c84a5": true
+ },
+ "stage": {
+  "files": 56,
+  "tree_sha256": "b9aaf734396ad8088fb17e7e0809600227abb4c3f014c0fc936dac01cf9e5107",
+  "clean_rebuild_from_c4c84a5_tree_sha256": "b9aaf734396ad8088fb17e7e0809600227abb4c3f014c0fc936dac01cf9e5107",
+  "method": "sha256 of sorted sha256sum lines over package.json + dist/**; rebuild = git archive c4c84a5 (package.json tsconfig.json apps packages) + tsc -p apps/windows/tsconfig.json + copy-static.mjs"
+ },
+ "backend_copy": {
+  "equal_to_c4c84a5": true,
+  "paths": [
+   "packages",
+   "services"
+  ],
+  "excluded": "__pycache__ written by the host at run time (19 directories)"
+ },
+ "runtime": {
+  "electron": "44.5.1 (apps/windows/package.json pin, fetched by windows-runtime.mjs)",
+  "node": "24.21.0",
+  "postgresql": "18.6",
+  "database": "lc_p0_test",
+  "migrations": [
+   "0001_documents",
+   "0002_capture_immutability",
+   "0003_raw_capture_frame"
+  ],
+  "windows": "10.0.26200.9457 (cmd ver, read 2026-09-30 after the run)"
+ },
+ "harness_at_run2": "run.json harness_sha256 holds the executed files. analyze_parent.py was corrected after the run (host-before-Start windows; retained frames never planned counted from retained lines only) and the committed version produced summary.json",
+ "owner_unit_tests_apps_windows": {
+  "tests": 226,
+  "pass": 221,
+  "skipped": 5,
+  "fail": 0,
+  "command": "node --test --test-timeout=8000 tests/*.test.ts (apps/windows, c4c84a5 tree)"
+ }
+}

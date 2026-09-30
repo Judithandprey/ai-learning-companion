@@ -1,0 +1,19 @@
+{
+ "scenario": "parent",
+ "started": "2026-09-30T23:29:02.478Z",
+ "ended": "2026-09-30T23:32:47.675Z",
+ "work": "<home>\\AppData\\Local\\Temp\\lc-qa-windows-parent\\qa-parent-1790810941891",
+ "steps": 248,
+ "harness_sha256": {
+  "analyze.py": "3bd0e0eeebba00865c1c35fab0be6c5ebb41a7d1e3a8e56bfd2805572b25cbe7",
+  "analyze_ink.py": "f497dd24f101d61fca273128060d8cd39d4c8f0bbf94b08a5b81e8a4f450d4c1",
+  "analyze_parent.py": "96928a39b8901c9bf6a2a995ca08c220b4b28863d37dfadb4e12f4d5f5578e15",
+  "course.html": "2cecf763803f33e64c283dfb7f0f133bc2b9b0412f08873bb5cb1caf831c03ab",
+  "notes.txt": "ca986c9c569bcdd36100d87df9ce28eeabd3025fc7d5a43f171c4a957f55b53c",
+  "qa-electron-runner.ps1": "d93d4297ee44be1fbc3cf463bdaa32f672f330c87e30fe0d35604b42baedf918",
+  "qa-png-to-bmp.ps1": "6f887944f49430065891d294ddba78d88e235ad88344890deaa304ac91f4a675",
+  "qa_parent_db.py": "a68e0d8982455a7bd6cbd1262131cf329239c1930ee3e0ad35512e4f41f343bf",
+  "run.mjs": "5284373ac8cf754cab4a88bf54257b4d57d0a2e28c6a491c37d01d8c802da9ce",
+  "scenarios.mjs": "c30fe0c003f6f2c0543ef1c0f29cd554de88971f85181daafa48ed59973a318e"
+ }
+}

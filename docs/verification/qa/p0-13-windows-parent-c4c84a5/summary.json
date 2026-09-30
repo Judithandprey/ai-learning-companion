@@ -1,0 +1,635 @@
+{
+ "counts": {
+  "pass": 13,
+  "fail": 2
+ },
+ "checks": [
+  {
+   "id": "run.shared_desktop_quiet",
+   "status": "pass",
+   "observed": {
+    "foreign_electron_seen": []
+   },
+   "note": "no other Electron app at start, at each screenshot and at the end (point-in-time)"
+  },
+  {
+   "id": "run.completed",
+   "status": "pass",
+   "observed": {
+    "aborted": null,
+    "failed_steps": []
+   },
+   "note": "optional status waits that timed out are listed, not hidden"
+  },
+  {
+   "id": "run.cursor_static",
+   "status": "pass",
+   "observed": {
+    "positions_px": [
+     [
+      1586,
+      949
+     ]
+    ]
+   }
+  },
+  {
+   "id": "link.default_off_local_only",
+   "status": "pass",
+   "observed": {
+    "status": {
+     "mode": "off"
+    },
+    "link_line_hidden": true,
+    "header": "No AI is connected: captured frames and ink stay on this device, and nothing is sent anywhere.",
+    "status_while_capturing": {
+     "mode": "off"
+    },
+    "capture_host_folder": false,
+    "wsl_children": [],
+    "hosts_before_link_launch": [],
+    "local_retained_frames_in_default_session": 2
+   },
+   "note": "without the development configuration: link off, default header, capture retained locally, no host and no link record"
+  },
+  {
+   "id": "link.enabled_nothing_before_start",
+   "status": "pass",
+   "observed": {
+    "status": {
+     "mode": "development",
+     "state": "idle",
+     "stored": 0,
+     "unknown": 0,
+     "refused": 0,
+     "not_sent": 0,
+     "detail": null,
+     "earlier_unknown": 0,
+     "sends_stopped": false
+    },
+    "header": "Development mode: captured frames and ink are kept on this device and, while capturing, also stored in a local test capture service on it. No AI is connected; nothing is sent to any AI.",
+    "record_is_seed": true,
+    "wsl_children": [
+     "electron.exe",
+     "electron.exe",
+     "electron.exe"
+    ],
+    "hosts_before_start": [],
+    "database_documents_before_start": 0,
+    "actor_pristine_at_preflight": true
+   },
+   "note": "with the development configuration, before Start: idle, the QA-seeded record untouched, no host, no grant and no documents"
+  },
+  {
+   "id": "storage.start_automatic_frames_and_server_originals",
+   "status": "pass",
+   "observed": {
+    "stream": {
+     "stream_id": "stream-40141bbd6e89d718d302f11d",
+     "source_id": "src-b70a9a340fd48c10705dcf56",
+     "grant": "consumed",
+     "final": "stopped",
+     "planned_through": 13
+    },
+    "registration_continuity": {
+     "kind": "initial"
+    },
+    "wsl_children_at_start": [
+     "electron.exe",
+     "electron.exe",
+     "electron.exe",
+     "electron.exe",
+     "wsl.exe"
+    ],
+    "hosts_during_session": [
+     {
+      "pid": 995810,
+      "appeared": 1790810966.551119,
+      "exited": 1790811019.520368
+     }
+    ],
+    "retained_frames": 12,
+    "retained_per_change_window": {
+     "c1-panel": 2,
+     "c2-console": 2,
+     "c3-scroll": 3,
+     "c4-back": 2
+    },
+    "distinct_raw_frames_through_changes": 6,
+    "manifest_events": {
+     "gap": 0,
+     "not_retained": 0,
+     "refused": 0,
+     "unfinished": 0,
+     "ended": 1
+    },
+    "jobs": [
+     {
+      "key": "src-b70a9a340fd48c10705dcf56.b2-2",
+      "status": "committed",
+      "records": 1
+     },
+     {
+      "key": "src-b70a9a340fd48c10705dcf56.b3-3",
+      "status": "committed",
+      "records": 1
+     },
+     {
+      "key": "src-b70a9a340fd48c10705dcf56.b4-4",
+      "status": "committed",
+      "records": 1
+     },
+     {
+      "key": "src-b70a9a340fd48c10705dcf56.b5-5",
+      "status": "committed",
+      "records": 1
+     },
+     {
+      "key": "src-b70a9a340fd48c10705dcf56.b6-6",
+      "status": "committed",
+      "records": 1
+     },
+     {
+      "key": "src-b70a9a340fd48c10705dcf56.b7-7",
+      "status": "committed",
+      "records": 1
+     },
+     {
+      "key": "src-b70a9a340fd48c10705dcf56.b8-8",
+      "status": "committed",
+      "records": 1
+     },
+     {
+      "key": "src-b70a9a340fd48c10705dcf56.b9-9",
+      "status": "committed",
+      "records": 1
+     },
+     {
+      "key": "src-b70a9a340fd48c10705dcf56.b10-10",
+      "status": "committed",
+      "records": 1
+     },
+     {
+      "key": "src-b70a9a340fd48c10705dcf56.b11-11",
+      "status": "committed",
+      "records": 1
+     },
+     {
+      "key": "src-b70a9a340fd48c10705dcf56.b12-12",
+      "status": "committed",
+      "records": 1
+     },
+     {
+      "key": "src-b70a9a340fd48c10705dcf56.b13-13",
+      "status": "committed",
+      "records": 1
+     }
+    ],
+    "records_committed_by_app": 12,
+    "server_records": 12,
+    "server_frames_compared_raw_and_composed": 24,
+    "server_mismatches": [],
+    "ink_originals_compared": 12,
+    "sample_to_server_latency_s": {
+     "n": 12,
+     "min": 0.17,
+     "median": 0.24,
+     "max": 0.57
+    }
+   },
+   "note": "explicit Start on the visible course (no import, no region selection); every change produced retained whole-display frames without any selection; the local test service holds records for what the app counts as stored, and its raw PNG, composed PNG and editable ink bytes equal the local originals (sha256)"
+  },
+  {
+   "id": "ink.loop_on_linked_session",
+   "status": "pass",
+   "observed": {
+    "history": {
+     "write": [
+      "add",
+      "add",
+      "add"
+     ],
+     "erase": [
+      "add",
+      "add",
+      "add",
+      "erase"
+     ],
+     "undo": [
+      "add",
+      "add",
+      "add",
+      "erase",
+      "undo"
+     ],
+     "redo": [
+      "add",
+      "add",
+      "add",
+      "erase",
+      "undo",
+      "redo"
+     ],
+     "ask-done": [
+      "add",
+      "add",
+      "add",
+      "erase",
+      "undo",
+      "redo"
+     ],
+     "continued": [
+      "add",
+      "add",
+      "add",
+      "erase",
+      "undo",
+      "redo",
+      "add"
+     ]
+    },
+    "ask_card": "No AI is connected: this selection was not sent to any AI. (Development mode: the whole-display frames kept on this device are also stored in a local test capture service.)\nRegion 7,504 316×106 DIP on 整个屏幕 = 632×212 px of frame 45 (captured 16:30:10), with you",
+    "modes_after_ask": [
+     "WRITE",
+     "WRITE"
+    ],
+    "card_after_plain_strokes": false,
+    "link_line": "Capture storage (development): storing. 12 record(s) stored. AI: not connected."
+   },
+   "note": "WRITE, partial erase, undo, redo, ASK finish and cancel back to WRITE, continue: exact history; no stroke produced an answer; no AI is stated"
+  },
+  {
+   "id": "originals.immutable_locally",
+   "status": "pass",
+   "observed": {
+    "checkpoints": 18,
+    "originals": 30,
+    "changed": []
+   },
+   "note": "every retained frame PNG and frame-bound ink original keeps its bytes from first sight through Stop, relaunch, reopen and the failure"
+  },
+  {
+   "id": "stop.latch_host_end_and_server_state",
+   "status": "pass",
+   "observed": {
+    "status_right_after_click": {
+     "mode": "development",
+     "state": "stopping",
+     "stored": 12,
+     "unknown": 0,
+     "refused": 0,
+     "not_sent": 0,
+     "detail": null,
+     "earlier_unknown": 0,
+     "sends_stopped": false
+    },
+    "status_sequence": [
+     "connecting",
+     "connecting",
+     "sending",
+     "sending",
+     "sending",
+     "sending",
+     "sending",
+     "sending",
+     "sending",
+     "sending",
+     "sending",
+     "sending",
+     "sending",
+     "sending",
+     "sending",
+     "sending",
+     "sending",
+     "sending",
+     "sending",
+     "sending",
+     "sending",
+     "sending",
+     "sending",
+     "sending",
+     "sending",
+     "sending",
+     "sending",
+     "stopping",
+     "stopped",
+     "stopped"
+    ],
+    "ended": "stopped by the user",
+    "final_status": {
+     "mode": "development",
+     "state": "stopped",
+     "stored": 12,
+     "unknown": 0,
+     "refused": 0,
+     "not_sent": 0,
+     "detail": "stream stopped",
+     "earlier_unknown": 0,
+     "sends_stopped": false
+    },
+    "stops": [
+     {
+      "key": "stream-40141bbd6e89d718d302f11d.stop.1",
+      "body": {
+       "contract_version": "0.2.1",
+       "device_id": "windows-qa1b1a5f6431274d",
+       "session_id": "learning-qabea9be869f5c41",
+       "stream_id": "stream-40141bbd6e89d718d302f11d",
+       "expected_revision": 1,
+       "action": {
+        "kind": "stop",
+        "pre_stop_sequence": null
+       }
+      },
+      "outcome": "stopped"
+     }
+    ],
+    "server_stream": {
+     "pre_stop_sequence": null,
+     "revision": 2,
+     "state": "stopped"
+    },
+    "notes": [
+     "the host ended"
+    ],
+    "hosts": [
+     {
+      "pid": 995810,
+      "appeared": 1790810966.551119,
+      "exited": 1790811019.520368
+     }
+    ],
+    "wsl_children_after": [
+     "electron.exe",
+     "electron.exe",
+     "electron.exe"
+    ],
+    "retained_frames_never_planned": 0,
+    "counts": {
+     "stored": 12,
+     "unknown": 0,
+     "not_sent": 0
+    }
+   },
+   "note": "Stop latches at once ('stopping'), the server stream is stopped with a null pre-Stop sequence (not invented), the host gets EOF and its Linux process exits (watcher), and local lines retained after the latch stay local and are not labelled stored"
+  },
+  {
+   "id": "relaunch.recovery_reopen_continue",
+   "status": "pass",
+   "observed": {
+    "status_after_relaunch": {
+     "mode": "development",
+     "state": "stopped",
+     "stored": 12,
+     "unknown": 0,
+     "refused": 0,
+     "not_sent": 0,
+     "detail": "the host ended",
+     "earlier_unknown": 0,
+     "sends_stopped": false
+    },
+    "hosts_between_relaunch_and_start": [],
+    "start2_click_to_host": 0.49,
+    "wsl_children": [
+     "electron.exe",
+     "electron.exe",
+     "electron.exe"
+    ],
+    "server_documents_created_between_close_and_next_start": 0,
+    "stream2_continuity": {
+     "kind": "restart",
+     "previous_stream_id": "stream-40141bbd6e89d718d302f11d",
+     "gap": "unknown"
+    },
+    "stream2_grant": "consumed",
+    "reopened_same_document": true,
+    "history_after_edit": [
+     "add",
+     "add",
+     "add",
+     "erase",
+     "undo",
+     "redo",
+     "add",
+     "add"
+    ],
+    "stream2_server_records": 3,
+    "stream2_mismatches": []
+   },
+   "note": "after closing and relaunching the same profile: no host, no replay and no fresh grant until the next explicit Start; that Start is a new stream continuing the previous one; the saved original reopens byte-for-byte and editing continues in the same document. The previous process had to be ended by its owned PID (QA-WIN-03), so this is not a clean own-app exit"
+  },
+  {
+   "id": "failure.service_unavailable_local_kept_nothing_sent",
+   "status": "pass",
+   "observed": {
+    "status_before_start": {
+     "mode": "development",
+     "state": "stopped",
+     "stored": 3,
+     "unknown": 0,
+     "refused": 0,
+     "not_sent": 0,
+     "detail": "the host ended",
+     "earlier_unknown": 0,
+     "sends_stopped": false
+    },
+    "status_after_start": {
+     "mode": "development",
+     "state": "not connected",
+     "stored": 0,
+     "unknown": 0,
+     "refused": 0,
+     "not_sent": 0,
+     "detail": "the host ended without READY (unavailable)",
+     "earlier_unknown": 0,
+     "sends_stopped": false
+    },
+    "status_later": {
+     "mode": "development",
+     "state": "not connected",
+     "stored": 0,
+     "unknown": 0,
+     "refused": 0,
+     "not_sent": 0,
+     "detail": "the host ended without READY (unavailable)",
+     "earlier_unknown": 0,
+     "sends_stopped": false
+    },
+    "link_line": "Capture storage (development): not connected (the frames stay on this device). 0 record(s) stored. the host ended without READY (unavailable). AI: not connected.",
+    "stream3": {
+     "grant": "requested_unknown",
+     "final": null,
+     "registered": false,
+     "planned_through": 0,
+     "notes": [
+      "not connected: the host ended without READY (unavailable)"
+     ]
+    },
+    "hosts": [
+     {
+      "pid": 996551,
+      "appeared": 1790811114.346306,
+      "exited": 1790811114.750697
+     }
+    ],
+    "server_documents_created_after_failure_launch": 0,
+    "local_retained_frames": 2,
+    "local_ink_saved": true,
+    "status_after_stop": {
+     "mode": "development",
+     "state": "stopped",
+     "stored": 0,
+     "unknown": 0,
+     "refused": 0,
+     "not_sent": 0,
+     "detail": "the stream was never confirmed registered; whether it or a grant exists is not known",
+     "earlier_unknown": 1,
+     "sends_stopped": false
+    }
+   },
+   "note": "the same host pointed at a test service that does not exist: it ends without READY; capture and ink stay local; nothing reaches the database; counts do not claim storage (healthy control: the earlier linked sessions)"
+  },
+  {
+   "id": "failure.ui_does_not_claim_storage",
+   "status": "fail",
+   "observed": {
+    "ask_card": "No AI is connected: this selection was not sent to any AI. (Development mode: the whole-display frames kept on this device are also stored in a local test capture service.)\nRegion 7,504 316×106 DIP on 整个屏幕 = 632×212 px of frame 13 (captured 16:32:06), with you",
+    "header": "Development mode: captured frames and ink are kept on this device and, while capturing, also stored in a local test capture service on it. No AI is connected; nothing is sent to any AI.",
+    "claims": {
+     "ask_card": true,
+     "header": true
+    },
+    "status": {
+     "mode": "development",
+     "state": "not connected",
+     "stored": 0,
+     "unknown": 0,
+     "refused": 0,
+     "not_sent": 0,
+     "detail": "the host ended without READY (unavailable)",
+     "earlier_unknown": 0,
+     "sends_stopped": false
+    }
+   },
+   "note": "while the test service is unavailable (status not sending, nothing stored), the ASK card and the header must not say frames are also stored"
+  },
+  {
+   "id": "quit.linked_app_exits_after_close",
+   "status": "fail",
+   "observed": {
+    "self_exit_code_0": {
+     "app": true,
+     "app-link": false,
+     "app-relaunch": false,
+     "app-fail": false
+    },
+    "hung_after_close": {
+     "app-link": {
+      "was_running": true,
+      "pages_left": 0,
+      "children": [
+       "electron.exe",
+       "electron.exe"
+      ],
+      "ended": true
+     },
+     "app-relaunch": {
+      "was_running": true,
+      "pages_left": 0,
+      "children": [
+       "electron.exe",
+       "electron.exe"
+      ],
+      "ended": true
+     },
+     "app-fail": {
+      "was_running": true,
+      "pages_left": 0,
+      "children": [
+       "electron.exe",
+       "electron.exe"
+      ],
+      "ended": true
+     }
+    },
+    "control_without_link": {
+     "exited": true,
+     "exit_code": 0,
+     "killed": null
+    }
+   },
+   "note": "closing the control window must end the app process by itself; with the development link configured it stayed alive with no page until QA ended that owned PID (the app without the link exits at once)"
+  },
+  {
+   "id": "release.owned_processes_ended",
+   "status": "pass",
+   "observed": {
+    "apps": {
+     "app": {
+      "pid": 77788,
+      "exited": true,
+      "exit_code": 0,
+      "killed": null
+     },
+     "app-link": {
+      "pid": 74672,
+      "exited": false,
+      "exit_code": null,
+      "killed": true
+     },
+     "app-relaunch": {
+      "pid": 56792,
+      "exited": false,
+      "exit_code": null,
+      "killed": true
+     },
+     "app-fail": {
+      "pid": 72656,
+      "exited": false,
+      "exit_code": -1,
+      "killed": true
+     }
+    },
+    "wsl_exe_seen": [
+     {
+      "pid": 75416,
+      "running_at_end": false
+     },
+     {
+      "pid": 59164,
+      "running_at_end": false
+     }
+    ],
+    "hosts_remaining_at_watch_end": [],
+    "hosts_seen": 3
+   },
+   "note": "every owned app process ended (by itself, or by QA ending that PID after QA-WIN-03), no wsl.exe child and no host of this run remains"
+  },
+  {
+   "id": "database.readback_read_only",
+   "status": "pass",
+   "observed": {
+    "by_kind": {
+     "artifact": 23,
+     "authorization": 1,
+     "capture_artifact_ref": 23,
+     "capture_binding": 2,
+     "capture_record": 15,
+     "capture_replay": 15,
+     "capture_slot": 15,
+     "control_lineage": 1,
+     "control_membership": 1,
+     "control_replay": 4,
+     "control_start": 2,
+     "control_stream": 2,
+     "device": 1,
+     "raw_capture_frame": 15,
+     "session": 1,
+     "snapshot": 2,
+     "source": 2
+    },
+    "unchanged": true
+   }
+  }
+ ]
+}
