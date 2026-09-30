@@ -91,3 +91,37 @@ Backend reader/binding adoption. Learning consumer adoption follows that release
 No real provider, interactive display/pen, §7.1 gate, Notability import or complete
 R59/A44 acceptance is claimed. Existing source files, main, devices and previews
 remain under their assigned owners.
+
+## Pre-release integer-representation correction
+
+Lead review `handoff_7e09a93d1233303dbcc8cf4ce65d7b25` found a runtime mismatch
+with the generated schema at candidate `794fbd910051ffda253abf38229f2f40be7dce09`.
+JSON Schema accepts integral JSON numeric forms such as `3.0` and `3e0`, but
+Python's integer filename format raised an unhandled ValueError for these
+callback ordinals. Likewise, reopened revision `2.0`/`2e0` incorrectly demanded
+the non-native text `revision 2.0 ...` instead of the truthful `revision 2 ...`.
+The original independent nine-case reproduction remains at
+`/tmp/macos-frame-contract-negative-probe.py` and its results JSON; neither was
+overwritten. The candidate checkpoint and earlier passing evidence are retained.
+
+New regression cases first reproduced **4 failed, 10 passed, 182 deselected in
+0.17 s** using:
+
+```sh
+/home/agentsdock/Projects/learning-companion/repo/.venv/bin/python -m pytest packages/contracts/tests/test_macos_frame.py -k 'json_integer_representations or fractional_and_boolean' -q --tb=short
+```
+
+The correction converts only the two local formatting operands to Python int
+**after** existing integer/range schema validation. It does not modify the
+payload, change the schema, round fractional values or admit booleans. Tests
+decode actual JSON integer, decimal and exponent forms, check generated-schema
+and runtime agreement, and compare serialized inputs to detect a `3.0` to `3`
+mutation that Python deep equality alone would miss. Negative cases include
+`2.5`, `2.0000000000000004`, `true` and `false` for both affected fields.
+
+After the correction, the focused command above without `-k` passed **196 tests
+in 0.53 s**. `python -m packages.contracts.macos_frame.generate --check` and
+`git diff --check` exited 0. No generated outputs changed; no full-suite,
+retrieval, native/device or provider campaign was rerun. Lead next reviews this
+correction before registration/release; 0.2.11 remains unreleased. No further
+fixture merge was attempted.

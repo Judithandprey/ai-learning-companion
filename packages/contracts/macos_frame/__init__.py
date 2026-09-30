@@ -151,7 +151,9 @@ def validate(frame):
               and display_seconds <= clock["callback_seconds"] + clock["source_time_lead_tolerance_seconds"])
     if clock["source_seconds"] != (display_seconds if usable else None):
         raise ValidationError("sourceHost must be the producer's validated display time, or unknown")
-    filename = f"{frame['callback_sequence']:08d}.png"
+    # JSON Schema integers include 3.0/3e0. Format locally only after integer
+    # validation; keep the caller's representation and never round fractions.
+    filename = f"{int(frame['callback_sequence']):08d}.png"
     if raw["native_file"] != "frames/" + filename:
         raise ValidationError("Raw native file must name this callback sequence")
     if result["kind"] == "unknown":
@@ -190,7 +192,7 @@ def validate(frame):
         if ink["revision"] == 0 and (ink["strokes"] or ink["revision_host_seconds"] is not None):
             raise ValidationError("Revision zero has no committed strokes or commit time")
     reopened = [limit for limit in limits if re.fullmatch(REOPENED_LIMIT.format(r"[0-9]+"), limit)]
-    expected_reopened = ([REOPENED_LIMIT.format(ink["revision"])]
+    expected_reopened = ([REOPENED_LIMIT.format(int(ink["revision"]))]
                          if ink["revision"] not in (None, 0) and ink["revision_host_seconds"] is None else [])
     if reopened != expected_reopened:
         raise ValidationError("A prior-reopen revision must retain exactly its unknown-clock limitation")

@@ -255,6 +255,43 @@ def test_reopened_document_keeps_unknown_commit_time_and_independent_native_loca
     # No operation history or immutable ink bytes were supplied or manufactured.
 
 
+@pytest.mark.parametrize("field,token", [
+    ("callback_sequence", "3"), ("callback_sequence", "3.0"), ("callback_sequence", "3e0"),
+    ("revision", "2"), ("revision", "2.0"), ("revision", "2e0"),
+])
+def test_json_integer_representations_agree_with_schema_without_input_coercion(mac, field, token):
+    frame = mac[2]
+    value = json.loads(token)
+    if field == "callback_sequence":
+        frame[field] = value
+    else:
+        ink = frame["composition"]["ink"]
+        ink.update(revision=value, revision_host_seconds=None)
+        # Actual producer text formats the validated integer, not Python's float.
+        ink["limits"].append(REOPENED_LIMIT.format(2))
+    before = json.dumps(mac, sort_keys=True)
+    generated_schema = json.loads(outputs()["schema.json"])
+    Draft202012Validator(generated_schema).validate(frame)
+    validate_binding(*mac)
+    # Deep equality alone misses a mutation from 3.0 to 3; serialized numbers do not.
+    assert json.dumps(mac, sort_keys=True) == before
+
+
+@pytest.mark.parametrize("field", ["callback_sequence", "revision"])
+@pytest.mark.parametrize("token", ["2.5", "2.0000000000000004", "true", "false"])
+def test_fractional_and_boolean_json_values_are_not_rounded_to_integers(mac, field, token):
+    frame = mac[2]
+    target = frame if field == "callback_sequence" else frame["composition"]["ink"]
+    target[field] = json.loads(token)
+    before = json.dumps(mac, sort_keys=True)
+    generated_schema = json.loads(outputs()["schema.json"])
+    with pytest.raises(ValidationError):
+        Draft202012Validator(generated_schema).validate(frame)
+    with pytest.raises(ValidationError):
+        validate_binding(*mac)
+    assert json.dumps(mac, sort_keys=True) == before
+
+
 @pytest.mark.parametrize("no_document", [False, True])
 def test_empty_ink_is_raw_alias_not_missing_result(observation, display, no_document):
     frame = examples()[0]
