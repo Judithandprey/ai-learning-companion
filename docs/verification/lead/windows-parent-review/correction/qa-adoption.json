@@ -5,5 +5,20 @@
   "exact_release_is_ancestor": true,
   "apps_windows_services_packages_equal": true,
   "evidence": "Read-only Git check; actual adoption, not GUI execution or acceptance.",
-  "explicit_start_reply": "not_yet_observed"
+  "explicit_start_reply": {
+    "message_id": "handoff_4c2695bdcd564eb80142244a84f818d0",
+    "created_at": "2026-09-30T23:20:33Z",
+    "reply_to_message_id": "handoff_0dfeecb564bd00a8d0839fce2ff72e69",
+    "body_sha256": "2f08352d70af0c11659e36d38c68c839e0420f572cd3424f589cbcee60f60f62",
+    "display_precheck_at": "2026-09-30T23:20:12Z",
+    "display_claim": "QA owns this bounded Windows pass; no release received yet",
+    "reported_preparation": [
+      "Fresh app build and isolated staging, Electron 44.5.1; staged files equal build",
+      "Private exact-source Backend snapshot from c4c84a5",
+      "Dedicated lc_p0_test read-only preflight: PostgreSQL 18.6, three migrations, fresh actor guard",
+      "No foreign Electron or owned private Backend host at display precheck"
+    ],
+    "input": "DevTools-injected pen only; synthetic, not physical pen",
+    "validation_state": "QA reports actual task start and display claim; behavior results and release pending. Preparation evidence awaits delivery audit."
+  }
 }

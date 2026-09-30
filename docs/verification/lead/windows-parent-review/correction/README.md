@@ -85,13 +85,24 @@ the remote main SHA was checked after the ordinary push. Native QA task
 `handoff_0dfeecb564bd00a8d0839fce2ff72e69` was accepted with `state: unread`
 and `execution_started: false` at delivery. This releases the full linked task
 and the next sole team display window, subject to a current conflict check;
-actual adoption/start remains to be observed.
+actual adoption/start was unobserved at that initial receipt.
 
 Subsequent read-only Git evidence establishes actual adoption:
 QA merge `dd6c22f9c01b206641b5a5c1a513a6db0e57bd1b` contains this exact
 release and its `apps/windows`, `services` and `packages` trees match.
 [Adoption receipt](qa-adoption.json). No explicit start reply or actual GUI
-result had arrived at this checkpoint; neither is inferred from the merge.
+result had arrived at that earlier checkpoint; neither was inferred from the merge.
+
+Actual subsequent start arrived as `handoff_4c2695bdcd564eb80142244a84f818d0`
+at 2026-09-30 23:20:33 UTC. QA reports a fresh exact build/stage, private exact
+Backend snapshot, and successful read-only `lc_p0_test` preflight (PostgreSQL
+18.6, three migrations, fresh actor). A 23:20:12 UTC conflict check found no
+foreign Electron or private-copy host; QA claims the display for this one run.
+Input is DevTools-injected pen, explicitly synthetic. Lead rechecked the exact
+Git merge and complete apps/services/packages equality; build/preflight/raw
+behavior evidence awaits the actual delivery. **QA is in progress, not passed;
+its explicit display/process release has not arrived.** No competing desktop
+run, duplicate task or acknowledgement was sent.
 
 Web received the integration result and no-competing-GUI coordination as
 accepted `handoff_552469562978643bf844cc8adcde53db`, replying to its actual
