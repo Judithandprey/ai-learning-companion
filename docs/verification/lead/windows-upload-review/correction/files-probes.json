@@ -1,0 +1,101 @@
+{
+  "candidate": "c09c1518024555afcc3f646195f2c1d0b617ed9d",
+  "platform": "linux",
+  "node": "v24.21.0",
+  "mode": "Actual source; synthetic fetch receipts/ACK; controlled actual local filesystem swaps; no socket/backend/native Windows",
+  "probe_data": "/tmp/windows-uploader-c09-files-data-zKbjNK",
+  "passed": 11,
+  "failed": 0,
+  "checks": [
+    {
+      "name": "valid exact originals and body remain unchanged",
+      "assertions_passed": true,
+      "status_with_response_double": "committed",
+      "puts": 7,
+      "exact_body_and_originals": true,
+      "local_files_unchanged": true
+    },
+    {
+      "name": "static outside leaf symlink refuses before request",
+      "assertions_passed": true,
+      "status": "refused",
+      "requests": 0
+    },
+    {
+      "name": "static outside parent symlink refuses before request",
+      "assertions_passed": true,
+      "status": "refused",
+      "requests": 0
+    },
+    {
+      "name": "after-check leaf replacement refuses without reading outside bytes",
+      "assertions_passed": true,
+      "status": "refused",
+      "requests": 0,
+      "swapped": true,
+      "outside_content_read": false,
+      "nofollow_deliberately_removed": false
+    },
+    {
+      "name": "after-check leaf-follow replacement refuses without reading outside bytes",
+      "assertions_passed": true,
+      "status": "refused",
+      "requests": 0,
+      "swapped": true,
+      "outside_content_read": false,
+      "nofollow_deliberately_removed": true
+    },
+    {
+      "name": "after-check parent replacement refuses without reading outside bytes",
+      "assertions_passed": true,
+      "status": "refused",
+      "requests": 0,
+      "swapped": true,
+      "outside_content_read": false,
+      "nofollow_deliberately_removed": false
+    },
+    {
+      "name": "post-open name replacement reads original fd bytes",
+      "assertions_passed": true,
+      "status_with_response_double": "committed",
+      "replaced": true,
+      "puts": 7,
+      "all_sent_hashes_exact": true
+    },
+    {
+      "name": "caller mutation during first response cannot change source IDs body directory or authority",
+      "assertions_passed": true,
+      "status_with_response_double": "committed",
+      "puts": 7,
+      "snapshotted_ids_body_key_owner_origin_token_and_directory": true
+    },
+    {
+      "name": "later changed bytes refuse at send-time after one exact original",
+      "assertions_passed": true,
+      "status": "refused",
+      "requests": 1,
+      "no_changed_bytes_sent": true,
+      "prior_original_retained": true
+    },
+    {
+      "name": "documented multi-lookup folder flip reads outside identical bytes",
+      "assertions_passed": true,
+      "status_with_response_double": "committed",
+      "requests": 8,
+      "actual_outside_content_read": true,
+      "checked_and_opened_outside_identity_equal": true,
+      "exactly_expected_sha256": true,
+      "classification": "Known non-atomic folder lookup limitation; requires ability to rewrite trusted capture directory at multiple lookup boundaries; not arbitrary-content exfiltration"
+    },
+    {
+      "name": "documented multi-lookup folder flip reads outside different bytes",
+      "assertions_passed": true,
+      "status_with_response_double": "refused",
+      "requests": 0,
+      "actual_outside_content_read": true,
+      "checked_and_opened_outside_identity_equal": true,
+      "exactly_expected_sha256": false,
+      "classification": "Known non-atomic folder lookup limitation; requires ability to rewrite trusted capture directory at multiple lookup boundaries; not arbitrary-content exfiltration"
+    }
+  ]
+}

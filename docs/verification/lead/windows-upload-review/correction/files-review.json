@@ -1,0 +1,185 @@
+{
+  "verdict": "APPROVE bounded trusted-main/app-owned-directory file/snapshot correction; residual hostile-directory containment limit remains explicit",
+  "candidate": "c09c1518024555afcc3f646195f2c1d0b617ed9d",
+  "parent": "6c4ac03a43a4681bc1466fd0c894854a0b14df04",
+  "export": "/tmp/windows-uploader-c09-files-export",
+  "current_guidance_read_at": "1f2a41257dd1fa88d7327827eff73800919ead6a",
+  "changed_files": {
+    "apps/windows/src/main/uploader.ts": {
+      "raw_git_blob_exact": true,
+      "sha256": "2e3695dfcaa219ef8752791d65f6f2d857558744a5673d6acfc28e90474bae68",
+      "bytes": 29859
+    },
+    "apps/windows/tests/uploader.test.ts": {
+      "raw_git_blob_exact": true,
+      "sha256": "b7c22ce875917b3afe9242578091bee3604c2129a04a457beda9e3934ce48e6a",
+      "bytes": 62199
+    },
+    "docs/verification/web/evidence/windows-upload/committed.json": {
+      "raw_git_blob_exact": true,
+      "sha256": "eb49b5fb107384f1273f3dd4b71e48dac7a05784fc83980494a9359f3bfc8f2b",
+      "bytes": 4364
+    },
+    "docs/verification/web/evidence/windows-upload/first-200.json": {
+      "raw_git_blob_exact": true,
+      "sha256": "db330a45d965476afd132cf3fc0051747efa91e969b1dcb87656bcbbf6c55133",
+      "bytes": 11012
+    },
+    "docs/verification/web/evidence/windows-upload/in-doubt.json": {
+      "raw_git_blob_exact": true,
+      "sha256": "f57bbc1965eb39fa71fbaadc126624ca7a80a332030a55c8986ffa43c080da6b",
+      "bytes": 1163
+    },
+    "docs/verification/web/evidence/windows-upload/recovery.json": {
+      "raw_git_blob_exact": true,
+      "sha256": "6663d0e601e9daa741f7f7719da528003b1fe667a764c2a041a6786950320b2a",
+      "bytes": 5509
+    },
+    "docs/verification/web/windows-upload.md": {
+      "raw_git_blob_exact": true,
+      "sha256": "2f741de77bb45d6d6926a19954c703776c4a5a857c13f156de52553dd44d2b79",
+      "bytes": 28038
+    }
+  },
+  "probe_evidence": {
+    "candidate": "c09c1518024555afcc3f646195f2c1d0b617ed9d",
+    "platform": "linux",
+    "node": "v24.21.0",
+    "mode": "Actual source; synthetic fetch receipts/ACK; controlled actual local filesystem swaps; no socket/backend/native Windows",
+    "probe_data": "/tmp/windows-uploader-c09-files-data-zKbjNK",
+    "passed": 11,
+    "failed": 0,
+    "checks": [
+      {
+        "name": "valid exact originals and body remain unchanged",
+        "assertions_passed": true,
+        "status_with_response_double": "committed",
+        "puts": 7,
+        "exact_body_and_originals": true,
+        "local_files_unchanged": true
+      },
+      {
+        "name": "static outside leaf symlink refuses before request",
+        "assertions_passed": true,
+        "status": "refused",
+        "requests": 0
+      },
+      {
+        "name": "static outside parent symlink refuses before request",
+        "assertions_passed": true,
+        "status": "refused",
+        "requests": 0
+      },
+      {
+        "name": "after-check leaf replacement refuses without reading outside bytes",
+        "assertions_passed": true,
+        "status": "refused",
+        "requests": 0,
+        "swapped": true,
+        "outside_content_read": false,
+        "nofollow_deliberately_removed": false
+      },
+      {
+        "name": "after-check leaf-follow replacement refuses without reading outside bytes",
+        "assertions_passed": true,
+        "status": "refused",
+        "requests": 0,
+        "swapped": true,
+        "outside_content_read": false,
+        "nofollow_deliberately_removed": true
+      },
+      {
+        "name": "after-check parent replacement refuses without reading outside bytes",
+        "assertions_passed": true,
+        "status": "refused",
+        "requests": 0,
+        "swapped": true,
+        "outside_content_read": false,
+        "nofollow_deliberately_removed": false
+      },
+      {
+        "name": "post-open name replacement reads original fd bytes",
+        "assertions_passed": true,
+        "status_with_response_double": "committed",
+        "replaced": true,
+        "puts": 7,
+        "all_sent_hashes_exact": true
+      },
+      {
+        "name": "caller mutation during first response cannot change source IDs body directory or authority",
+        "assertions_passed": true,
+        "status_with_response_double": "committed",
+        "puts": 7,
+        "snapshotted_ids_body_key_owner_origin_token_and_directory": true
+      },
+      {
+        "name": "later changed bytes refuse at send-time after one exact original",
+        "assertions_passed": true,
+        "status": "refused",
+        "requests": 1,
+        "no_changed_bytes_sent": true,
+        "prior_original_retained": true
+      },
+      {
+        "name": "documented multi-lookup folder flip reads outside identical bytes",
+        "assertions_passed": true,
+        "status_with_response_double": "committed",
+        "requests": 8,
+        "actual_outside_content_read": true,
+        "checked_and_opened_outside_identity_equal": true,
+        "exactly_expected_sha256": true,
+        "classification": "Known non-atomic folder lookup limitation; requires ability to rewrite trusted capture directory at multiple lookup boundaries; not arbitrary-content exfiltration"
+      },
+      {
+        "name": "documented multi-lookup folder flip reads outside different bytes",
+        "assertions_passed": true,
+        "status_with_response_double": "refused",
+        "requests": 0,
+        "actual_outside_content_read": true,
+        "checked_and_opened_outside_identity_equal": true,
+        "exactly_expected_sha256": false,
+        "classification": "Known non-atomic folder lookup limitation; requires ability to rewrite trusted capture directory at multiple lookup boundaries; not arbitrary-content exfiltration"
+      }
+    ]
+  },
+  "issues": [],
+  "limitations": [
+    {
+      "id": "W-U-F1-residual",
+      "blocking_in_current_disconnected_trusted_main_scope": false,
+      "path": "apps/windows/src/main/uploader.ts",
+      "lines": [
+        205,
+        212,
+        228,
+        240,
+        243,
+        251
+      ],
+      "finding": "Real directory flips between lstat/realpath/open can bind checked/opened identities to an outside copy while containment sees inside. Two actual-filesystem probes read outside; expected-byte copy emits seven PUTs and batch under synthetic ACK; changed-byte copy emits zero requests.",
+      "required_boundary": "No hostile-directory atomic confinement claim; never promote this callable into a renderer/untrusted-path API without revisiting boundary."
+    }
+  ],
+  "scope_exclusions": [
+    "No native Windows race/reparse-point/file-ID test",
+    "No backend/listener/socket/provider",
+    "No complete author suite/mutant campaign rerun",
+    "No HTTP review verdict",
+    "No source or repository edits"
+  ],
+  "command": "LC_UPLOAD_REVIEW_ROOT=/tmp/windows-uploader-c09-files-export /home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node --test --test-isolation=none --test-reporter=tap /tmp/windows-uploader-c09-files-probes.mjs",
+  "files": {
+    "/tmp/windows-uploader-c09-files-probes.mjs": {
+      "sha256": "370a37eedf355a494daa5a7e379fe0b096c804ebf86968963fad3821841c19d8",
+      "bytes": 13377
+    },
+    "/tmp/windows-uploader-c09-files-probes.json": {
+      "sha256": "82c8eeeaa75b8239e78886f7620405ad62c7986abf55a251e882a4b5ac0597fa",
+      "bytes": 3627
+    },
+    "/tmp/windows-uploader-c09-files-probes.log": {
+      "sha256": "f584ac1a3d6d777d68233c0fb0e1726460fe799d7d7ebe7aec08fe02bea2a247",
+      "bytes": 2286
+    }
+  }
+}

@@ -88,5 +88,10 @@ real provider receipt/understanding, both per-OS §7.1 gates, audio and Notabili
 acceptance remain open. The disabled product provider and unconfirmed interactive
 Mac are specific dependencies, not reasons to stop independent parent integration.
 
-Publication and substantive dispatch receipts follow the actual operations;
-no receipt or future check is represented as acceptance.
+Normal authorized push of `aebd668607f17710f4255f48233f65ce75fca731`
+succeeded; `git ls-remote` returned that exact main SHA. Its normal P0 CI
+`36757015015` was observed in progress, not passed. Web received the substantive
+next app task as `handoff_661e0a4cb6a23819b96b2e1e112673b4`, initially unread
+with execution not started. It follows the same uploader's narrow current
+privacy correction, not a parallel duplicate. The actual accepted Support
+bridge task remains pending a substantive result. No receipt is acceptance.

@@ -1,0 +1,98 @@
+TAP version 13
+# Subtest: control: seven exact originals then corresponding ACK commit
+ok 1 - control: seven exact originals then corresponding ACK commit
+  ---
+  duration_ms: 22.917698
+  type: 'test'
+  ...
+# Subtest: corrected: reflected response bodies are unknown and content-free
+ok 2 - corrected: reflected response bodies are unknown and content-free
+  ---
+  duration_ms: 19.241676
+  type: 'test'
+  ...
+# Subtest: corrected: first wrong ACK stays unknown, then valid retry resolves exactly
+ok 3 - corrected: first wrong ACK stays unknown, then valid retry resolves exactly
+  ---
+  duration_ms: 8.257207
+  type: 'test'
+  ...
+# Subtest: corrected: first wrong original receipt stays unknown, no batch; typed refusal cannot erase doubt
+ok 4 - corrected: first wrong original receipt stays unknown, no batch; typed refusal cannot erase doubt
+  ---
+  duration_ms: 7.24627
+  type: 'test'
+  ...
+# Subtest: corrected: 503 followed by capture_stopped preserves batch doubt and exact retry
+ok 5 - corrected: 503 followed by capture_stopped preserves batch doubt and exact retry
+  ---
+  duration_ms: 3.75874
+  type: 'test'
+  ...
+# Subtest: typed error boundary: closed route version/status/retryable and dependency_missing
+ok 6 - typed error boundary: closed route version/status/retryable and dependency_missing
+  ---
+  duration_ms: 20.488758
+  type: 'test'
+  ...
+# Subtest: corrected: real-calendar ACK and expiry boundaries
+ok 7 - corrected: real-calendar ACK and expiry boundaries
+  ---
+  duration_ms: 6.488295
+  type: 'test'
+  ...
+# Subtest: control: ACK closed identity/artifacts/sequence and verified-only
+ok 8 - control: ACK closed identity/artifacts/sequence and verified-only
+  ---
+  duration_ms: 0.545616
+  type: 'test'
+  ...
+# Subtest: control: in-flight abort and retry-pause abort retain uncertainty; no next send
+ok 9 - control: in-flight abort and retry-pause abort retain uncertainty; no next send
+  ---
+  duration_ms: 7.478575
+  type: 'test'
+  ...
+# Subtest: control: lost answer then typed403 retains unknown; later separate call refusal does not assert historical absence
+ok 10 - control: lost answer then typed403 retains unknown; later separate call refusal does not assert historical absence
+  ---
+  duration_ms: 3.358453
+  type: 'test'
+  ...
+# Subtest: control: later caller mutation cannot change authority, body, retry key or acknowledged IDs
+ok 11 - control: later caller mutation cannot change authority, body, retry key or acknowledged IDs
+  ---
+  duration_ms: 2.238614
+  type: 'test'
+  ...
+# Subtest: redaction edge: a short code-shaped bearer must not survive a fetch cause.code
+not ok 12 - redaction edge: a short code-shaped bearer must not survive a fetch cause.code
+  ---
+  duration_ms: 1.480159
+  type: 'test'
+  location: '/tmp/windows-uploader-c09-http-probes.test.mjs:120:1'
+  failureType: 'testCodeFailure'
+  error: |-
+    a supported 32-character bearer survives the short-code shape filter
+    
+    true !== false
+    
+  code: 'ERR_ASSERTION'
+  name: 'AssertionError'
+  expected: false
+  actual: true
+  operator: 'strictEqual'
+  stack: |-
+    TestContext.<anonymous> (file:///tmp/windows-uploader-c09-http-probes.test.mjs:128:10)
+    async Test.run (node:internal/test_runner/test:1409:7)
+    async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  ...
+1..12
+# tests 12
+# suites 0
+# pass 11
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 150.413414

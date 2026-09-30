@@ -1,0 +1,56 @@
+{
+  "qa": "4fd6b2860a207a5b71971be08a3f22f0d92d5d92",
+  "baseline": "576c62c6679cf0db4d6d18307abd0e727553ee9a",
+  "current_main": "1f2a41257dd1fa88d7327827eff73800919ead6a",
+  "changed_files": [
+    "docs/verification/qa/p0-13-macos-ingress-576c62c.md",
+    "docs/verification/qa/p0-13-macos-ingress-576c62c/controls.txt",
+    "docs/verification/qa/p0-13-macos-ingress-576c62c/future-clock.txt",
+    "docs/verification/qa/p0-13-macos-ingress-576c62c/pytest-verbose.txt",
+    "docs/verification/qa/p0-13-macos-ingress-576c62c/regression-sensitivity.txt",
+    "tests/e2e/test_p0_13_macos_ingress_qa.py"
+  ],
+  "qa_services_packages_identical": true,
+  "family_sources": {
+    "services/api/frame_variants.py": {
+      "baseline": "6e9081158764a90a00a0859ff329c2f1d234b971",
+      "qa": "6e9081158764a90a00a0859ff329c2f1d234b971",
+      "current_main": "6e9081158764a90a00a0859ff329c2f1d234b971"
+    },
+    "services/api/capture.py": {
+      "baseline": "9de95c27746ce768925eb0959374123c9d5f9125",
+      "qa": "9de95c27746ce768925eb0959374123c9d5f9125",
+      "current_main": "9de95c27746ce768925eb0959374123c9d5f9125"
+    },
+    "services/api/process_context.py": {
+      "baseline": "1d09879768dab0adc371e9a09268c1c12669999e",
+      "qa": "1d09879768dab0adc371e9a09268c1c12669999e",
+      "current_main": "1d09879768dab0adc371e9a09268c1c12669999e"
+    },
+    "services/api/image_resolver.py": {
+      "baseline": "6189dd19609b851dd76a4cd1a7198a7ab41e46ea",
+      "qa": "6189dd19609b851dd76a4cd1a7198a7ab41e46ea",
+      "current_main": "6189dd19609b851dd76a4cd1a7198a7ab41e46ea"
+    },
+    "services/learning/process_context.py": {
+      "baseline": "a7916ee5d209f5845188cdc672abb2424fa75442",
+      "qa": "a7916ee5d209f5845188cdc672abb2424fa75442",
+      "current_main": "a7916ee5d209f5845188cdc672abb2424fa75442"
+    },
+    "services/api/capture_runtime.py": {
+      "baseline": "fa736356090768ab63da9705bf6e7fb17b740e5b",
+      "qa": "fa736356090768ab63da9705bf6e7fb17b740e5b",
+      "current_main": "fa736356090768ab63da9705bf6e7fb17b740e5b"
+    }
+  },
+  "test_sha256": "dcdf901c7cacc284d9dedb10ce2ed0d6b94f245f2c55cadd762cf865e6cb4fee",
+  "helper_sha256": "fbf9acb64ca30123ab590f6a4e0d22ac73f292a13490dd667f427953f2783d93",
+  "executed_case_ids_equal": true,
+  "independent_result": "41 passed in 6.04s",
+  "source_tree_unchanged_for_six_paths": true,
+  "result_sha256": "0f3be5030a237c24a94437d6bffc2c319465a600a60e7acd1acac63ed45cb405",
+  "fixture_path": "docs/verification/lead/macos-composed-hosted/macos-composed-fixture/20260921T141320Z-A2ECCA80",
+  "fixture_tree_baseline": "65dd82a9013bb2445c420b1ac88d27318d4dc431",
+  "fixture_tree_qa": "65dd82a9013bb2445c420b1ac88d27318d4dc431",
+  "fixture_tree_main": "65dd82a9013bb2445c420b1ac88d27318d4dc431"
+}

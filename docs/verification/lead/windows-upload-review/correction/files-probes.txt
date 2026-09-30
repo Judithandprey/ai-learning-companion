@@ -1,0 +1,76 @@
+TAP version 13
+# Subtest: valid exact originals and body remain unchanged
+ok 1 - valid exact originals and body remain unchanged
+  ---
+  duration_ms: 24.957673
+  type: 'test'
+  ...
+# Subtest: static outside leaf symlink refuses before request
+ok 2 - static outside leaf symlink refuses before request
+  ---
+  duration_ms: 1.457345
+  type: 'test'
+  ...
+# Subtest: static outside parent symlink refuses before request
+ok 3 - static outside parent symlink refuses before request
+  ---
+  duration_ms: 1.562386
+  type: 'test'
+  ...
+# Subtest: after-check leaf replacement refuses without reading outside bytes
+ok 4 - after-check leaf replacement refuses without reading outside bytes
+  ---
+  duration_ms: 2.093385
+  type: 'test'
+  ...
+# Subtest: after-check leaf-follow replacement refuses without reading outside bytes
+ok 5 - after-check leaf-follow replacement refuses without reading outside bytes
+  ---
+  duration_ms: 1.723987
+  type: 'test'
+  ...
+# Subtest: after-check parent replacement refuses without reading outside bytes
+ok 6 - after-check parent replacement refuses without reading outside bytes
+  ---
+  duration_ms: 1.482003
+  type: 'test'
+  ...
+# Subtest: post-open name replacement reads original fd bytes
+ok 7 - post-open name replacement reads original fd bytes
+  ---
+  duration_ms: 3.595126
+  type: 'test'
+  ...
+# Subtest: caller mutation during first response cannot change source IDs body directory or authority
+ok 8 - caller mutation during first response cannot change source IDs body directory or authority
+  ---
+  duration_ms: 2.658799
+  type: 'test'
+  ...
+# Subtest: later changed bytes refuse at send-time after one exact original
+ok 9 - later changed bytes refuse at send-time after one exact original
+  ---
+  duration_ms: 2.924748
+  type: 'test'
+  ...
+# Subtest: documented multi-lookup folder flip reads outside identical bytes
+ok 10 - documented multi-lookup folder flip reads outside identical bytes
+  ---
+  duration_ms: 3.344676
+  type: 'test'
+  ...
+# Subtest: documented multi-lookup folder flip reads outside different bytes
+ok 11 - documented multi-lookup folder flip reads outside different bytes
+  ---
+  duration_ms: 1.518944
+  type: 'test'
+  ...
+1..11
+# tests 11
+# suites 0
+# pass 11
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 105.378057

@@ -1,0 +1,283 @@
+{
+  "verdict": "HOLD",
+  "candidate": "c09c1518024555afcc3f646195f2c1d0b617ed9d",
+  "parent": "6c4ac03a43a4681bc1466fd0c894854a0b14df04",
+  "export": "/tmp/lc-windows-uploader-c09",
+  "scope": "response certainty, retry/cancellation, redaction, calendar/ACK only",
+  "finding": {
+    "severity": "P2",
+    "path": "apps/windows/src/main/uploader.ts",
+    "lines": [
+      318,
+      319,
+      320,
+      404
+    ],
+    "title": "Supported 32-character bearer survives code-shaped fetch exception diagnostic",
+    "actual": "unknown with correct in_doubt but full synthetic bearer inside reason",
+    "provenance": "Injected fetch exception, matching author test seam; actual native Node transport source for token-bearing cause.code NOT established."
+  },
+  "source_bytes": [
+    {
+      "path": "apps/windows/src/main/uploader.ts",
+      "sha256": "2e3695dfcaa219ef8752791d65f6f2d857558744a5673d6acfc28e90474bae68",
+      "exact_git_bytes": true
+    },
+    {
+      "path": "apps/windows/tests/uploader.test.ts",
+      "sha256": "b7c22ce875917b3afe9242578091bee3604c2129a04a457beda9e3934ce48e6a",
+      "exact_git_bytes": true
+    },
+    {
+      "path": "docs/verification/web/windows-upload.md",
+      "sha256": "2f741de77bb45d6d6926a19954c703776c4a5a857c13f156de52553dd44d2b79",
+      "exact_git_bytes": true
+    }
+  ],
+  "checks": [
+    {
+      "command": "/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node --test --test-isolation=none --test-reporter=tap /tmp/windows-uploader-c09-http-probes.test.mjs",
+      "exit_code": 1,
+      "groups": 12,
+      "passed": 11,
+      "failed": 1,
+      "milliseconds": 150.413414
+    },
+    {
+      "command": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python - <<'PY'\nimport json\nfrom jsonschema import ValidationError\nfrom packages.contracts import validate\np=json.load(open('/tmp/windows-uploader-c09-http-probes.json'))\ncases=next(x for x in p if x['name']=='timestamp_boundary')['dates']\nfor case in cases:\n    try:\n        validate('UtcTimestamp', case['value'])\n        valid=True\n    except ValidationError:\n        valid=False\n    assert valid == case['valid'], case\n    print(json.dumps({'value':case['value'],'uploader':case['valid'],'released_contract':valid}))\nprint('PASS: 11 focused timestamps agree with released validator')\nPY",
+      "exit_code": 0,
+      "focused_timestamp_comparisons": 11
+    }
+  ],
+  "evidence": {
+    "/tmp/windows-uploader-c09-http-review.md": "4036f7335e19e9879b842784d54b9f6b78b83652dc034da5c5cd94f5883cbe71",
+    "/tmp/windows-uploader-c09-http-probes.test.mjs": "e03c0d1cc6be045e77ab673d71fdb3a704ead12192c80575fce8bac4236fa476",
+    "/tmp/windows-uploader-c09-http-probes.log": "aa37344f97f0868f51bd6cec6503d431abb40830bbf788c64c59ca063b0e321f",
+    "/tmp/windows-uploader-c09-http-probes.json": "25b92539bc756cb39914e6e1585fb7d0e90d1182aa10e0ae094b4c4c05b6d127",
+    "/tmp/windows-uploader-c09-http-probes-initial-harness.log": "969ca3257c176cc79d02c71da17351c6beaa5d48cd105626f5f3b74e660c9d57",
+    "/tmp/windows-uploader-c09-calendar.log": "b45bbe9440ad904dd6bb1c771e673ecc90b1001404bf1e764e74300265a827e7"
+  },
+  "observations": [
+    {
+      "name": "valid_control",
+      "status": "committed",
+      "stage": null,
+      "in_doubt": null,
+      "originals": 7,
+      "requests": 8,
+      "http_status": null,
+      "error": null
+    },
+    {
+      "name": "response_body_redaction",
+      "cases": 4,
+      "bounded_requests_each": 3,
+      "pass": true
+    },
+    {
+      "name": "first_200_wrong_ack",
+      "status": "unknown",
+      "stage": "batch",
+      "in_doubt": "batch",
+      "originals": 7,
+      "requests": 10,
+      "http_status": 200,
+      "error": null,
+      "retry_can_resolve": true
+    },
+    {
+      "name": "first_200_wrong_original",
+      "status": "unknown",
+      "stage": "original",
+      "in_doubt": "example-png-eb1ce1ead5dbf130",
+      "originals": 0,
+      "requests": 3,
+      "http_status": 200,
+      "error": null,
+      "subsequent_refusal_preserves_doubt": true
+    },
+    {
+      "name": "503_then_409",
+      "status": "unknown",
+      "stage": "batch",
+      "in_doubt": "batch",
+      "originals": 7,
+      "requests": 9,
+      "http_status": 409,
+      "error": "capture_stopped"
+    },
+    {
+      "name": "typed_error_boundary",
+      "unknown_cases": 5,
+      "valid_refusal": {
+        "status": "refused",
+        "stage": "original",
+        "in_doubt": null,
+        "originals": 0,
+        "requests": 1,
+        "http_status": 403,
+        "error": "forbidden"
+      },
+      "dependency_missing": {
+        "status": "unknown",
+        "stage": "original",
+        "in_doubt": null,
+        "originals": 0,
+        "requests": 1,
+        "http_status": 409,
+        "error": "dependency_missing"
+      }
+    },
+    {
+      "name": "timestamp_boundary",
+      "dates": [
+        {
+          "value": "2026-02-30T17:00:00Z",
+          "valid": false
+        },
+        {
+          "value": "1900-02-29T00:00:00Z",
+          "valid": false
+        },
+        {
+          "value": "0000-01-01T00:00:00Z",
+          "valid": false
+        },
+        {
+          "value": "2026-09-30T24:00:00Z",
+          "valid": false
+        },
+        {
+          "value": "2026-09-30T00:00:60Z",
+          "valid": false
+        },
+        {
+          "value": "2026-09-30T00:00:00z",
+          "valid": false
+        },
+        {
+          "value": "2026-09-30T00:00:00+00:00",
+          "valid": false
+        },
+        {
+          "value": "2000-02-29T23:59:59.123456789Z",
+          "valid": true
+        },
+        {
+          "value": "0001-01-01T00:00:00Z",
+          "valid": true
+        },
+        {
+          "value": "0099-01-01t00:00:00Z",
+          "valid": true
+        },
+        {
+          "value": "9999-12-31T23:59:59Z",
+          "valid": true
+        }
+      ],
+      "expires_at_equality_refused": true,
+      "expiry_after_uncertainty": {
+        "status": "unknown",
+        "stage": "original",
+        "in_doubt": "example-png-eb1ce1ead5dbf130",
+        "originals": 0,
+        "requests": 1,
+        "http_status": null,
+        "error": null
+      }
+    },
+    {
+      "name": "ack_closed_boundaries",
+      "cases": 7,
+      "pass": true
+    },
+    {
+      "name": "cancellation_controls",
+      "in_flight": {
+        "status": "cancelled",
+        "stage": "original",
+        "in_doubt": "example-png-eb1ce1ead5dbf130",
+        "originals": 0,
+        "requests": 1,
+        "http_status": null,
+        "error": null
+      },
+      "retry_pause": {
+        "status": "cancelled",
+        "stage": "original",
+        "in_doubt": "example-png-eb1ce1ead5dbf130",
+        "originals": 0,
+        "requests": 1,
+        "http_status": null,
+        "error": null
+      },
+      "preflight": {
+        "status": "cancelled",
+        "stage": "local",
+        "in_doubt": null,
+        "originals": 0,
+        "requests": 0,
+        "http_status": null,
+        "error": null
+      }
+    },
+    {
+      "name": "call_scope_limit",
+      "first_call": {
+        "status": "unknown",
+        "stage": "original",
+        "in_doubt": "example-png-eb1ce1ead5dbf130",
+        "originals": 0,
+        "requests": 2,
+        "http_status": 403,
+        "error": "forbidden"
+      },
+      "later_call": {
+        "status": "refused",
+        "stage": "original",
+        "in_doubt": null,
+        "originals": 0,
+        "requests": 1,
+        "http_status": 403,
+        "error": "forbidden"
+      },
+      "requirement": "Future trusted parent must keep first-call doubt; no historical absence inferred."
+    },
+    {
+      "name": "owned_inputs_control",
+      "status": "committed",
+      "stage": null,
+      "in_doubt": null,
+      "originals": 7,
+      "requests": 8,
+      "http_status": null,
+      "error": null,
+      "exact_batch": true
+    },
+    {
+      "name": "short_code_redaction_edge",
+      "status": "unknown",
+      "stage": "original",
+      "in_doubt": "example-png-eb1ce1ead5dbf130",
+      "originals": 0,
+      "requests": 1,
+      "http_status": null,
+      "error": null,
+      "token_in_result": true,
+      "boundary": "Injected fetch exception; native Node transport origin for such code NOT established."
+    }
+  ],
+  "original_failure_evidence_unchanged": {
+    "docs/verification/lead/windows-upload-review/http-probes.test.mjs": "9162d0ea4a19433d7957fec398554f9861307eed9c8b974885c0d69f7efad7ef",
+    "docs/verification/lead/windows-upload-review/http-probes.json": "5e6205bbc28545992091f5b59fbc20ef09c5092fa35ee81810bb5ae11baf0680"
+  },
+  "harness_correction": "Initial 33-character fixture length typo corrected to 32 before final run. Initial log separately preserved; not product evidence.",
+  "limitations": [
+    "No real native fetch error provenance shown for token-valued cause.code",
+    "No real HTTP listener or Backend execution; classification tests use injected responses",
+    "Separate-call uncertainty must remain with future trusted parent",
+    "Filesystem separate reviewer; no native/display/DB/provider/user-preview/activation",
+    "No repository or worker changes; root owns integration and full focused suite"
+  ]
+}
