@@ -1,0 +1,3 @@
+/* Known greens in a 10 px checker: textured enough for the pixel evidence under test strokes. */
+html, body { margin: 0; height: 100%; background: repeating-conic-gradient(#00a040 0% 25%, #00c853 0% 50%) 0 0 / 20px 20px; }
+p { margin: 0; position: absolute; left: 12px; bottom: 8px; font: 28px/1 monospace; color: #003d1a; background: #00c853; }

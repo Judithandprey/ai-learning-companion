@@ -1,0 +1,464 @@
+{
+  "kind": "lc-windows-selftest/v1",
+  "started_at": "2026-09-30T09:55:24.426Z",
+  "electron": "44.5.1",
+  "chrome": "152.0.7977.130",
+  "os": "Windows 10.0.26200",
+  "displays": [
+    {
+      "source_id": "screen:0:0",
+      "display_id": "3071609112",
+      "label": "整个屏幕",
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 800
+      },
+      "scale_factor": 2,
+      "primary": true
+    }
+  ],
+  "sample_example": {
+    "seq": 7,
+    "sampled_at": "2026-09-30T09:55:32.082Z",
+    "monotonic_ms": 6883,
+    "state": "fresh",
+    "gap_ms": null,
+    "source": {
+      "kind": "display",
+      "display_id": "3071609112",
+      "source_id": "screen:0:0",
+      "label": "整个屏幕",
+      "bounds": {
+        "x": 0,
+        "y": 0,
+        "width": 1280,
+        "height": 800
+      },
+      "scale_factor": 2
+    },
+    "raw": {
+      "width": 2560,
+      "height": 1600,
+      "presented_frames": 47,
+      "frame_age_ms": 51,
+      "taken_at": "2026-09-30T09:55:32.041Z",
+      "pixels_sha256": "7f0149339b9c9052fcf48a1e533f2fe5ea2138e2f8bc7513f91eda2147ba38d4",
+      "change": 0.0001685049019607843
+    },
+    "composed": {
+      "ink_session": "67334bbe635e52b8",
+      "ink_revision": 2,
+      "visible_strokes": 2,
+      "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 2, 2 visible stroke(s)) drawn over it at 2.000 px per DIP; the overlay itself is excluded from capture, so the ink is added once",
+      "pixels_sha256": "0dc35247b0ea2af85e88ba6def6aa651bd6d5c0da4edc8bb2218d99293a101f5"
+    }
+  },
+  "display_count": 1,
+  "checks": [
+    {
+      "id": "session.start",
+      "description": "Start on the chosen display opens the overlay on it and begins the capture",
+      "pass": true,
+      "observed": {
+        "ok": true
+      }
+    },
+    {
+      "id": "overlay.covers_display",
+      "description": "the overlay covers the whole chosen display, taskbar included",
+      "pass": true,
+      "observed": {
+        "overlay": {
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 800
+        },
+        "display": {
+          "x": 0,
+          "y": 0,
+          "width": 1280,
+          "height": 800
+        }
+      }
+    },
+    {
+      "id": "capture.frames",
+      "description": "actual whole-display frames arrive at the display size times its scale",
+      "pass": true,
+      "observed": {
+        "frame": [
+          2560,
+          1600
+        ],
+        "display": [
+          1280,
+          800
+        ],
+        "scale": 2
+      }
+    },
+    {
+      "id": "capture.changing",
+      "description": "the captured display changes between samples (the probe counter): fresh frames with different pixels, without any further selection",
+      "pass": true,
+      "observed": {
+        "distinct_raw_pixels": 5,
+        "samples": [
+          {
+            "seq": 1,
+            "state": "fresh",
+            "change": null
+          },
+          {
+            "seq": 2,
+            "state": "fresh",
+            "change": 0.000050551470588235295
+          },
+          {
+            "seq": 3,
+            "state": "fresh",
+            "change": 0
+          },
+          {
+            "seq": 4,
+            "state": "fresh",
+            "change": 0
+          },
+          {
+            "seq": 5,
+            "state": "fresh",
+            "change": 0
+          }
+        ]
+      }
+    },
+    {
+      "id": "nav.click_through",
+      "description": "NAV (default) passes clicks through: the overlay window ignores mouse input and is not interactive",
+      "pass": true,
+      "observed": {
+        "mode": "NAV",
+        "ignoring": true,
+        "interactive": false
+      }
+    },
+    {
+      "id": "write.mode",
+      "description": "WRITE makes the overlay take pointer input",
+      "pass": true,
+      "observed": {
+        "mode": "WRITE",
+        "ignoring": false
+      }
+    },
+    {
+      "id": "write.mouse_off_by_default",
+      "description": "with mouse writing off, a mouse drag in WRITE draws nothing and says why",
+      "pass": true,
+      "observed": {
+        "visible": 0,
+        "hint": "Mouse writing is off: the mouse does not draw. Press ✋ to use your apps, or turn on Mouse writing. Capturing this display · frame 5. No AI is connected. Ink is saved on this device at every change."
+      }
+    },
+    {
+      "id": "write.mouse_and_pen",
+      "description": "after turning mouse writing on, a mouse stroke and a pen stroke are ink, saved on this device",
+      "pass": true,
+      "observed": {
+        "history": [
+          "add",
+          "add"
+        ],
+        "saveText": "Saved on this device at 02:55:31."
+      }
+    },
+    {
+      "id": "capture.overlay_excluded_ink_once",
+      "description": "the raw frame under the pen stroke shows the probe (the overlay is excluded from capture), the composed frame shows the ink there once, and away from ink both agree",
+      "pass": true,
+      "observed": {
+        "rawAt": [
+          65,
+          161,
+          71,
+          255
+        ],
+        "composedAt": [
+          110,
+          63,
+          209,
+          255
+        ],
+        "rawBeside": [
+          65,
+          161,
+          71,
+          255
+        ],
+        "composedBeside": [
+          65,
+          161,
+          71,
+          255
+        ]
+      }
+    },
+    {
+      "id": "capture.composed_pinned",
+      "description": "each sample keeps the raw frame and a composed frame pinned to the ink revision: with ink they differ, with no visible ink the composed pixels equal the raw pixels",
+      "pass": true,
+      "observed": {
+        "last": {
+          "raw": "7f0149339b9c",
+          "composed": {
+            "ink_session": "67334bbe635e52b8",
+            "ink_revision": 2,
+            "visible_strokes": 2,
+            "transformation": "raw frame 2560×1600 px with this app's editable ink (revision 2, 2 visible stroke(s)) drawn over it at 2.000 px per DIP; the overlay itself is excluded from capture, so the ink is added once",
+            "pixels_sha256": "0dc35247b0ea"
+          }
+        },
+        "no_ink_samples": [
+          {
+            "seq": 1,
+            "equal": true
+          },
+          {
+            "seq": 2,
+            "equal": true
+          },
+          {
+            "seq": 3,
+            "equal": true
+          },
+          {
+            "seq": 4,
+            "equal": true
+          },
+          {
+            "seq": 5,
+            "equal": true
+          }
+        ]
+      }
+    },
+    {
+      "id": "write.partial_erase",
+      "description": "the eraser across the mouse stroke leaves two pieces and keeps the original (history erase)",
+      "pass": true,
+      "observed": {
+        "history": [
+          "add",
+          "add",
+          "erase"
+        ],
+        "visible": 3,
+        "strokes": 4
+      }
+    },
+    {
+      "id": "write.undo_redo",
+      "description": "undo restores the whole stroke; redo erases it again",
+      "pass": true,
+      "observed": {
+        "undone": 2,
+        "redone": 3
+      }
+    },
+    {
+      "id": "write.content_placement_labelled",
+      "description": "the content-following placement is stated as not established on the desktop, its ink is kept where written and is drawn as not verified",
+      "pass": true,
+      "observed": {
+        "placement": "content",
+        "hint": "Pen and mouse write; following content is not established here: ink stays where written. Capturing this display · frame 8. No AI is connected. Saved on this device at 02:55:33. 1 stroke(s) set to follow content, dashed: following content is not established, they stay where written."
+      }
+    },
+    {
+      "id": "ask.finish_returns_write",
+      "description": "an ASK circle shows the selected composed pixels with \"No AI is connected\", and WRITE returns",
+      "pass": true,
+      "observed": {
+        "card": {
+          "text": "No AI is connected: this selection was not sent anywhere.\nRegion 52,302 336×216 DIP on 整个屏幕 = 672×432 px of frame 9 (captured 02:55:34), with your ink revision 6 drawn over it.",
+          "image": true
+        },
+        "mode": "WRITE"
+      }
+    },
+    {
+      "id": "ask.cancel_returns_write",
+      "description": "Cancel in ASK returns to WRITE",
+      "pass": true,
+      "observed": {
+        "asking": "ASK",
+        "after": "WRITE"
+      }
+    },
+    {
+      "id": "write.continue_after_ask",
+      "description": "writing continues after ASK and every change is saved",
+      "pass": true,
+      "observed": {
+        "history": [
+          "add",
+          "add",
+          "erase",
+          "undo",
+          "redo",
+          "add",
+          "add"
+        ]
+      }
+    },
+    {
+      "id": "save.on_disk",
+      "description": "the saved file holds the same history",
+      "pass": true,
+      "observed": {
+        "listed": {
+          "id": "67334bbe635e52b8",
+          "created_at": "2026-09-30T09:55:25.198Z",
+          "forked_from": null,
+          "display_label": "整个屏幕",
+          "strokes": 5,
+          "revision": 7
+        },
+        "file": [
+          "add",
+          "add",
+          "erase",
+          "undo",
+          "redo",
+          "add",
+          "add"
+        ]
+      }
+    },
+    {
+      "id": "stop.ends",
+      "description": "Stop ends the session: the overlay is gone and nothing is captured",
+      "pass": true,
+      "observed": {
+        "session": false,
+        "destroyed": true,
+        "ms": 103
+      }
+    },
+    {
+      "id": "stop.restart_at_once",
+      "description": "Start right after Stop gives a session that the earlier Stop does not end",
+      "pass": true,
+      "observed": {
+        "restarted_after_ms": "immediately after the overlay closed",
+        "waited_ms": 5601,
+        "alive": true
+      }
+    },
+    {
+      "id": "reopen.same_ink",
+      "description": "the saved ink reopens over the new session with the same strokes and history, verified where the pixels under it are unchanged",
+      "pass": true,
+      "observed": {
+        "opened": {
+          "ok": true
+        },
+        "visible": 5,
+        "history": [
+          "add",
+          "add",
+          "erase",
+          "undo",
+          "redo",
+          "add",
+          "add"
+        ],
+        "aligned": {
+          "stk_fd5514223cd6eb7044deb768735ba6d7": "verified",
+          "stk_fb823568c667384b1dcc16c108b02f27": "verified",
+          "stk_fb9b03759387b5ac6805946af9c2742b": "verified",
+          "stk_c5cfadb1b61d888185e5ca0dbfa0c119": "verified",
+          "stk_8955784a4895c393ebb9943f21fe8656": "verified"
+        }
+      }
+    },
+    {
+      "id": "reopen.continue_editing",
+      "description": "undo continues the reopened history and is saved to the same file",
+      "pass": true,
+      "observed": {
+        "history": [
+          "add",
+          "add",
+          "erase",
+          "undo",
+          "redo",
+          "add",
+          "add",
+          "undo"
+        ],
+        "visible": 4
+      }
+    },
+    {
+      "id": "save.unreadable_kept_copy",
+      "description": "an unreadable stored file is left untouched and the whole ink, with its history, is saved as a separate copy (the unchanged second session saved nothing of its own)",
+      "pass": true,
+      "observed": {
+        "copy": {
+          "forked_from": "67334bbe635e52b8",
+          "history": [
+            "add",
+            "add",
+            "erase",
+            "undo",
+            "redo",
+            "add",
+            "add",
+            "undo",
+            "redo"
+          ]
+        },
+        "saveText": "Saved as a separate copy on this device at 02:55:43: the ink stored for this session could not be continued and was left untouched.",
+        "listed": [
+          "copy"
+        ],
+        "unreadable": 1
+      }
+    },
+    {
+      "id": "alignment.pixels_changed",
+      "description": "after the probe under the ink is gone, the ink over it is shown as changed (dashed); nothing is moved",
+      "pass": true,
+      "observed": {
+        "aligned": {
+          "stk_fd5514223cd6eb7044deb768735ba6d7": "changed",
+          "stk_fb823568c667384b1dcc16c108b02f27": "changed",
+          "stk_fb9b03759387b5ac6805946af9c2742b": "changed",
+          "stk_c5cfadb1b61d888185e5ca0dbfa0c119": "changed",
+          "stk_8955784a4895c393ebb9943f21fe8656": "changed"
+        }
+      }
+    },
+    {
+      "id": "stop.overlay_close_saves",
+      "description": "closing the overlay window ends capture the normal way, and the change made just before is saved",
+      "pass": true,
+      "observed": {
+        "session": false,
+        "ended": "the overlay window was closed",
+        "saved_last_op": "undo",
+        "ms": 97
+      }
+    }
+  ],
+  "summary": {
+    "total": 24,
+    "passed": 24,
+    "failed": []
+  },
+  "finished_at": "2026-09-30T09:55:46.800Z"
+}
