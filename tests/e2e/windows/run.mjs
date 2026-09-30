@@ -17,7 +17,7 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 // copyFile can fail with EPERM on the Windows drive mount; write the bytes instead.
 const copyFileSync = (from, to) => writeFileSync(to, readFileSync(from));
 const [scenario, outArg] = process.argv.slice(2);
-if (!scenarios[scenario] || !outArg) throw new Error('usage: run.mjs <smoke|full> <out dir>');
+if (!scenarios[scenario] || !outArg) throw new Error('usage: run.mjs <smoke|full|ink> <out dir>');
 const out = resolve(outArg);
 const run = (cmd, argv) => execFileSync(cmd, argv, { encoding: 'utf8', cwd: '/mnt/c' }).trim();
 const toWin = (p) => run('wslpath', ['-w', p]);
@@ -31,7 +31,8 @@ const edge = 'C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe'
 const harness = Object.fromEntries(readdirSync(HERE).sort().filter((f) => statSync(join(HERE, f)).isFile()).map((f) => [f, createHash('sha256').update(readFileSync(join(HERE, f))).digest('hex')]));
 const id = `${scenario}-${Date.now()}`;
 const work = join(stage, `qa-${id}`);
-const paths = { userData: join(work, 'userdata'), content: join(work, 'content'), edgeProfile: join(work, 'edge-profile'), winOut: join(work, 'out') };
+// appTemp: TMP/TEMP of the app process only (spare copies of unsaved ink stay in this run's folder).
+const paths = { userData: join(work, 'userdata'), content: join(work, 'content'), edgeProfile: join(work, 'edge-profile'), winOut: join(work, 'out'), appTemp: join(work, 'apptemp') };
 for (const p of Object.values(paths)) mkdirSync(p, { recursive: true });
 rmSync(paths.userData, { recursive: true, force: true }); // the app creates it: a fresh, empty user-data folder
 copyFileSync(join(HERE, 'course.html'), join(paths.content, 'course.html'));
@@ -44,7 +45,7 @@ writeFileSync(join(work, 'steps.json'), JSON.stringify(steps, null, 1));
 const started = new Date().toISOString();
 const r = spawnSync('powershell.exe', ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', toWin(join(work, 'qa-electron-runner.ps1')),
   '-Electron', electron, '-Stage', toWin(stage), '-UserData', toWin(paths.userData), '-StepsFile', toWin(join(work, 'steps.json')),
-  '-OutDir', toWin(paths.winOut), '-Edge', edge], { cwd: '/mnt/c', encoding: 'utf8', timeout: 600000 });
+  '-OutDir', toWin(paths.winOut), '-Edge', edge, '-AppTemp', toWin(paths.appTemp)], { cwd: '/mnt/c', encoding: 'utf8', timeout: 600000 });
 mkdirSync(out, { recursive: true });
 try {
   writeFileSync(join(out, 'runner-stdio.txt'), `${r.stdout ?? ''}\n--- stderr ---\n${r.stderr ?? ''}\nstatus ${r.status} signal ${r.signal}\n`);
@@ -53,7 +54,11 @@ try {
   const convert = join(work, 'convert');
   mkdirSync(convert, { recursive: true });
   const ctxDir = join(paths.userData, 'ink', 'context');
-  if (existsSync(ctxDir)) for (const name of readdirSync(ctxDir)) copyFileSync(join(ctxDir, name), join(convert, name));
+  // Only pictures whose bytes are their name (a test-corrupted entry is never converted).
+  if (existsSync(ctxDir)) for (const name of readdirSync(ctxDir)) {
+    const bytes = readFileSync(join(ctxDir, name));
+    if (name === `${createHash('sha256').update(bytes).digest('hex')}.png`) writeFileSync(join(convert, name), bytes);
+  }
   try {
     const results = JSON.parse(readFileSync(join(paths.winOut, 'results.json'), 'utf8').replace(/^\uFEFF/, ''));
     const card = results.values?.askCard ? JSON.parse(results.values.askCard) : null;
@@ -70,6 +75,8 @@ try {
       if (!existsSync(manifest)) continue;
       mkdirSync(join(out, 'captures', cap), { recursive: true });
       copyFileSync(manifest, join(out, 'captures', cap, 'manifest.jsonl'));
+      const originals = join(captures, cap, 'ink'); // frame-bound ink originals (JSON) of this capture
+      if (existsSync(originals)) cpSync(originals, join(out, 'captures', cap, 'ink'), { recursive: true });
       for (const text of readFileSync(manifest, 'utf8').split('\n').filter(Boolean)) {
         try { const line = JSON.parse(text); if (line.kind === 'retained') lines.push({ cap, line }); } catch { /* reported by the analysis */ }
       }
@@ -79,8 +86,10 @@ try {
       if (!key.startsWith('app_') || /^app_s4-cap-\d+$/.test(key)) continue; // per-step cap reads need no pictures
       const last = JSON.parse(value).last;
       if (!last?.composed) { selection[key] = null; continue; }
-      const pick = lines.filter(({ line }) => line.composed?.ink_session === last.composed.ink_session && Date.parse(line.sampled_at) <= Date.parse(last.sampled_at))
-        .sort((a, b) => Date.parse(b.line.sampled_at) - Date.parse(a.line.sampled_at))[0];
+      const earlier = lines.filter(({ line }) => line.composed?.ink_session === last.composed.ink_session && Date.parse(line.sampled_at) <= Date.parse(last.sampled_at))
+        .sort((a, b) => Date.parse(b.line.sampled_at) - Date.parse(a.line.sampled_at));
+      // Prefer the latest retained frame of the same ink revision as the state's latest sample.
+      const pick = earlier.find(({ line }) => line.composed.ink_revision === last.composed.ink_revision) ?? earlier[0];
       selection[key] = pick ? { cap: pick.cap, sample_seq: pick.line.sample_seq, sampled_at: pick.line.sampled_at, raw: pick.line.raw.sha256, composed: pick.line.composed.sha256 } : null;
       if (pick) for (const sha of [pick.line.raw.sha256, pick.line.composed.sha256]) {
         const from = join(captures, pick.cap, 'frames', `${sha}.png`);
@@ -94,6 +103,7 @@ try {
   cpSync(convert, join(out, 'pictures'), { recursive: true });
   const ink = join(paths.userData, 'ink'); // only the app's saved ink and context pictures are kept
   if (existsSync(ink)) cpSync(ink, join(out, 'ink'), { recursive: true });
+  for (const [from, to] of [[join(paths.userData, 'qa-aside'), 'qa-aside'], [paths.appTemp, 'apptemp']]) if (existsSync(from)) cpSync(from, join(out, to), { recursive: true });
   writeFileSync(join(out, 'run.json'), JSON.stringify({ scenario, started, ended: new Date().toISOString(), work: toWin(work), steps: steps.length, harness_sha256: harness }, null, 1));
   writeFileSync(join(out, 'steps.json'), JSON.stringify(steps, null, 1));
 } finally {

@@ -21,13 +21,20 @@
 #   { "snapshot": "label" }                                                     copy ink JSON -> OutDir
 #   { "targets": "app|edge", "as": "name" }                                    DevTools target list (type/url/title)
 #   { "closeApp": true }                                                        close control window, await exit
+#   { "launchApp": true, "as": "app2" }         relaunch the same staged app with the SAME user data (previous one must have exited)
+#   { "hashTree": ["ink", ...], "frames": false, "as": "name" }   read-only sha256/size/mtime of files under user-data roots
+#   { "plantFile": "ink/context/{value}.png", "fromValue": "name", "fill": "text" }   TEST corruption: same-length bytes in place
+#   { "moveAside": "ink/context/{value}.png", "fromValue": "name", "expectValue": "name", "to": "qa-aside" }   move a TEST entry
+#   { "copyTree": "apptemp|userdata", "path": "relative", "to": "label" }       copy a test-owned folder into OutDir
+# The file steps only touch paths inside this run's user-data folder (or its test-owned temp folder), never elsewhere.
 param(
   [Parameter(Mandatory = $true)][string]$Electron,
   [Parameter(Mandatory = $true)][string]$Stage,
   [Parameter(Mandatory = $true)][string]$UserData,
   [Parameter(Mandatory = $true)][string]$StepsFile,
   [Parameter(Mandatory = $true)][string]$OutDir,
-  [Parameter(Mandatory = $true)][string]$Edge
+  [Parameter(Mandatory = $true)][string]$Edge,
+  [string]$AppTemp = ''
 )
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Drawing
@@ -132,15 +139,43 @@ function Invoke-Cdp($socket, [string]$method, [string]$paramsJson) {
 
 $results.foreign.start = Foreign-Electron
 $results.cursor.start = [QaWin]::Cursor()
-# The app: real Windows process, isolated user data, DevTools on loopback only.
-$appPort = Free-Port
-$env:LC_USER_DATA = $UserData
-$app = Start-Process -FilePath $Electron -ArgumentList @("`"$Stage`"", "--remote-debugging-port=$appPort", '--remote-debugging-address=127.0.0.1') -PassThru
-Remove-Item Env:\LC_USER_DATA
-$results.processes.app = [ordered]@{ pid = $app.Id; devtools = "127.0.0.1:$appPort" }
-Set-Content -Encoding ASCII -Path (Join-Path $OutDir 'app.pid') -Value $app.Id
 $started = @{}      # name -> process (edge, console)
 $sockets = @{}      # target -> @{ ws; id }
+# The app: real Windows process, isolated user data, DevTools on loopback only. With -AppTemp, TMP/TEMP point to a
+# test-owned folder for the app process only (its spare copies of unsaved ink land there, not in the user's %TEMP%).
+function Start-App([string]$key) {
+  $script:appPort = Free-Port
+  $saved = @{ TMP = $env:TMP; TEMP = $env:TEMP }
+  $env:LC_USER_DATA = $UserData
+  if ($AppTemp) { New-Item -ItemType Directory -Force -Path $AppTemp | Out-Null; $env:TMP = $AppTemp; $env:TEMP = $AppTemp }
+  try { $script:app = Start-Process -FilePath $Electron -ArgumentList @("`"$Stage`"", "--remote-debugging-port=$($script:appPort)", '--remote-debugging-address=127.0.0.1') -PassThru }
+  finally { Remove-Item Env:\LC_USER_DATA; $env:TMP = $saved.TMP; $env:TEMP = $saved.TEMP }
+  $script:appKey = $key
+  foreach ($t in @('control', 'overlay')) { if ($sockets[$t]) { try { $sockets[$t].ws.Dispose() } catch { }; $sockets.Remove($t) } }
+  $results.processes[$key] = [ordered]@{ pid = $script:app.Id; devtools = "127.0.0.1:$($script:appPort)"; started_at = (Get-Date).ToUniversalTime().ToString('o') }
+}
+Start-App 'app'
+Set-Content -Encoding ASCII -Path (Join-Path $OutDir 'app.pid') -Value $app.Id
+$UdFull = [IO.Path]::GetFullPath($UserData).TrimEnd('\')
+# A relative path under this run's user data (or test temp): no rooted path, '..', wildcard or colon; no reparse point.
+function Inside([string]$rel, [string]$root = $UdFull) {
+  if (-not $rel -or [IO.Path]::IsPathRooted($rel) -or $rel -match '(^|[\\/])\.\.([\\/]|$)|[:*?"<>|]') { throw "refused path $rel" }
+  $f = [IO.Path]::GetFullPath((Join-Path $root $rel))
+  if (-not $f.StartsWith("$root\", [StringComparison]::OrdinalIgnoreCase)) { throw "outside the test folder: $rel" }
+  for ($q = $f; $q.Length -gt $root.Length; $q = Split-Path $q) {
+    if ((Test-Path -LiteralPath $q) -and ((Get-Item -LiteralPath $q -Force).Attributes -band [IO.FileAttributes]::ReparsePoint)) { throw "reparse point: $rel" }
+  }
+  return $f
+}
+# Read with read/write/delete sharing, so the app's atomic renames and appends are never blocked by a QA read; the hash and
+# the length come from the same bytes (a manifest line appended meanwhile cannot split them).
+function Read-Shared([string]$f) {
+  $st = [IO.File]::Open($f, [IO.FileMode]::Open, [IO.FileAccess]::Read, [IO.FileShare]'ReadWrite, Delete')
+  try { $m = New-Object IO.MemoryStream; $st.CopyTo($m); return ,$m.ToArray() } finally { $st.Dispose() }
+}
+function Sha-Of([byte[]]$b) { return ([BitConverter]::ToString([Security.Cryptography.SHA256]::Create().ComputeHash($b)) -replace '-').ToLower() }
+function Sha([string]$f) { return Sha-Of (Read-Shared $f) }
+function Value-Of([string]$name) { $v = [string]$results.values[$name]; if ($v -notmatch '^[0-9a-f]{64}$') { throw "value $name is not a sha256" }; return $v }
 $edgePort = $null
 
 function Target-Url([string]$target) {
@@ -152,11 +187,11 @@ function Get-Socket([string]$target) {
   $cached = $sockets[$target]
   if ($cached -and $cached.ws.State -eq [System.Net.WebSockets.WebSocketState]::Open) {
     # The overlay window is replaced per session: reconnect when its target id changed.
-    $port = if ($target -eq 'edge') { $script:edgePort } else { $appPort }
+    $port = if ($target -eq 'edge') { $script:edgePort } else { $script:appPort }
     $list = $client.DownloadString("http://127.0.0.1:$port/json/list") | ConvertFrom-Json
     if (@($list | Where-Object { $_.id -eq $cached.id }).Count -eq 1) { return $cached.ws }
   }
-  $port = if ($target -eq 'edge') { $script:edgePort } else { $appPort }
+  $port = if ($target -eq 'edge') { $script:edgePort } else { $script:appPort }
   $deadline = (Get-Date).AddSeconds(20)
   while ($true) {
     try {
@@ -181,7 +216,7 @@ function Eval([string]$target, [string]$expression) {
   return $r.result.result.value
 }
 function Window-Handle([string]$name) {
-  if ($name -eq 'control') { return [QaWin]::Find(@([uint32]$app.Id), 'Learning Companion', $true) }
+  if ($name -eq 'control') { return [QaWin]::Find(@([uint32]$script:app.Id), 'Learning Companion', $true) }
   $p = $started[$name]
   if (-not $p) { throw "unknown window $name" }
   $pids = @([uint32]$p.Id) + @(Get-CimInstance Win32_Process -Filter "ParentProcessId=$($p.Id)" | ForEach-Object { [uint32]$_.ProcessId })
@@ -316,15 +351,79 @@ try {
       }
       elseif ($null -ne $step.targets) {
         $entry.kind = 'targets'; $entry.as = $step.as
-        $port = if ([string]$step.targets -eq 'edge') { $script:edgePort } else { $appPort }
+        $port = if ([string]$step.targets -eq 'edge') { $script:edgePort } else { $script:appPort }
         $list = $client.DownloadString("http://127.0.0.1:$port/json/list") | ConvertFrom-Json
         $results.values[$step.as] = @($list | ForEach-Object { [ordered]@{ type = $_.type; url = $_.url; title = $_.title } })
       }
       elseif ($null -ne $step.closeApp) {
         $entry.kind = 'closeApp'
         try { [void](Eval 'control' 'window.close(), true') } catch { $entry.closeNote = 'control socket closed while closing' }
-        $entry.exited = $app.WaitForExit(30000)
-        $results.processes.app.exited = $entry.exited
+        $entry.exited = $script:app.WaitForExit(30000)
+        $results.processes[$script:appKey].exited = $entry.exited
+        if ($entry.exited) { $results.processes[$script:appKey].exit_code = $script:app.ExitCode; $results.processes[$script:appKey].exited_at = (Get-Date).ToUniversalTime().ToString('o') }
+      }
+      elseif ($null -ne $step.launchApp) {
+        $entry.kind = 'launchApp'
+        if (-not $script:app.HasExited) { throw 'the previous app process has not exited' }
+        Start-Sleep -Milliseconds 1500
+        Start-App ([string]$step.as)
+        $entry.pid = $script:app.Id
+      }
+      elseif ($null -ne $step.hashTree) {
+        $entry.kind = 'hashTree'; $entry.as = $step.as
+        $tree = [ordered]@{}
+        foreach ($root in @($step.hashTree)) {
+          $dir = Inside ([string]$root)
+          if (-not (Test-Path -LiteralPath $dir)) { continue }
+          Get-ChildItem -LiteralPath $dir -File -Recurse -Force | Sort-Object FullName | ForEach-Object {
+            $rel = $_.FullName.Substring($UdFull.Length + 1) -replace '\\', '/'
+            if (-not $step.frames -and $rel -match '^captures/[^/]+/frames/') { return }
+            try { $b = Read-Shared $_.FullName; $tree[$rel] = [ordered]@{ sha256 = (Sha-Of $b); bytes = $b.Length; mtime_utc = $_.LastWriteTimeUtc.ToString('o') } }
+            catch { $tree[$rel] = 'vanished' }
+          }
+        }
+        $results.values[$step.as] = $tree
+      }
+      elseif ($null -ne $step.plantFile) {
+        # TEST corruption inside this run's profile only: an existing entry whose bytes are exactly the named sha256 is
+        # overwritten in place with other bytes of the same length (so it occupies the address with foreign content).
+        $entry.kind = 'plantFile'
+        $v = Value-Of ([string]$step.fromValue)
+        $f = Inside (([string]$step.plantFile).Replace('{value}', $v))
+        if (-not (Test-Path -LiteralPath $f -PathType Leaf)) { throw "nothing at $($step.plantFile)" }
+        $before = Sha $f
+        if ($before -ne $v) { throw 'the entry is not the expected picture' }
+        $len = (Get-Item -LiteralPath $f).Length
+        $fill = [Text.Encoding]::ASCII.GetBytes([string]$step.fill)
+        $bytes = New-Object byte[] $len
+        for ($k = 0; $k -lt $len; $k++) { $bytes[$k] = $fill[$k % $fill.Length] }
+        [IO.File]::WriteAllBytes($f, $bytes)
+        $item = Get-Item -LiteralPath $f
+        $results.values[[string]$step.as] = [ordered]@{ rel = ($f.Substring($UdFull.Length + 1) -replace '\\', '/'); before = $before; bytes = $len; after = (Sha $f); after_bytes = $item.Length; after_mtime_utc = $item.LastWriteTimeUtc.ToString('o') }
+      }
+      elseif ($null -ne $step.moveAside) {
+        # Moves only the planted TEST entry (its current bytes must be the planted ones), to a new name inside the profile.
+        $entry.kind = 'moveAside'
+        $v = Value-Of ([string]$step.fromValue)
+        $f = Inside (([string]$step.moveAside).Replace('{value}', $v))
+        $expect = $results.values[[string]$step.expectValue].after
+        $before = Sha $f
+        if ($before -ne $expect) { throw 'the entry is not the planted test entry' }
+        $destDir = Inside ([string]$step.to)
+        New-Item -ItemType Directory -Force -Path $destDir | Out-Null
+        $dest = Inside ((Join-Path ([string]$step.to) ((Split-Path $f -Leaf) + '.qa-bad')))
+        if (Test-Path -LiteralPath $dest) { throw 'destination exists' }
+        [IO.File]::Move($f, $dest)
+        $results.values[[string]$step.as] = [ordered]@{ from = ($f.Substring($UdFull.Length + 1) -replace '\\', '/'); to = ($dest.Substring($UdFull.Length + 1) -replace '\\', '/'); before = $before; after = (Sha $dest); source_absent = -not (Test-Path -LiteralPath $f) }
+      }
+      elseif ($null -ne $step.copyTree) {
+        $entry.kind = 'copyTree'
+        $root = if ([string]$step.copyTree -eq 'apptemp') { if (-not $AppTemp) { throw 'no test temp folder' }; [IO.Path]::GetFullPath($AppTemp).TrimEnd('\') } else { $UdFull }
+        $src = Inside ([string]$step.path) $root
+        $dest = Join-Path $OutDir ('copy-' + [string]$step.to)
+        New-Item -ItemType Directory -Force -Path $dest | Out-Null
+        $entry.files = 0
+        if (Test-Path -LiteralPath $src) { Get-ChildItem -LiteralPath $src -File -Force | ForEach-Object { Copy-Item -LiteralPath $_.FullName (Join-Path $dest $_.Name); $entry.files++ } }
       }
       else { throw 'unknown step' }
     }
@@ -341,10 +440,10 @@ catch { $results.aborted = $_.Exception.Message }
 finally {
   foreach ($s in $sockets.Values) { try { $s.ws.Dispose() } catch { } }
   foreach ($name in @($started.Keys)) { try { Stop-Process -Id $started[$name].Id -Force -ErrorAction SilentlyContinue } catch { } }
-  if (-not $app.HasExited) {
-    if (-not $app.WaitForExit(5000)) { Stop-Process -Id $app.Id -Force -ErrorAction SilentlyContinue; $results.processes.app.killed = $true }
+  if (-not $script:app.HasExited) {
+    if (-not $script:app.WaitForExit(5000)) { Stop-Process -Id $script:app.Id -Force -ErrorAction SilentlyContinue; $results.processes[$script:appKey].killed = $true }
   }
-  $results.processes.app.exit_code = $(try { $app.ExitCode } catch { $null })
+  $results.processes[$script:appKey].exit_code = $(try { $script:app.ExitCode } catch { $null })
   $results.foreign.end = Foreign-Electron
   $results.cursor.end = [QaWin]::Cursor()
   $results | ConvertTo-Json -Depth 20 | Set-Content -Encoding UTF8 -Path (Join-Path $OutDir 'results.json')

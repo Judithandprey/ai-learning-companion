@@ -1,0 +1,17 @@
+{
+ "scenario": "ink",
+ "started": "2026-09-30T17:28:21.031Z",
+ "ended": "2026-09-30T17:29:39.408Z",
+ "work": "<home>\\AppData\\Local\\Temp\\lc-qa-windows-p013\\qa-ink-1790789300956",
+ "steps": 188,
+ "harness_sha256": {
+  "analyze.py": "3bd0e0eeebba00865c1c35fab0be6c5ebb41a7d1e3a8e56bfd2805572b25cbe7",
+  "analyze_ink.py": "f497dd24f101d61fca273128060d8cd39d4c8f0bbf94b08a5b81e8a4f450d4c1",
+  "course.html": "2cecf763803f33e64c283dfb7f0f133bc2b9b0412f08873bb5cb1caf831c03ab",
+  "notes.txt": "ca986c9c569bcdd36100d87df9ce28eeabd3025fc7d5a43f171c4a957f55b53c",
+  "qa-electron-runner.ps1": "f005241feabb77dfbc24a57f7632f4a4afb53d0614cb5a195b78ea36e0f79608",
+  "qa-png-to-bmp.ps1": "6f887944f49430065891d294ddba78d88e235ad88344890deaa304ac91f4a675",
+  "run.mjs": "6347873edfad5cb49da21bc99bd313ac8598877dfc88cf88204ee72a39704506",
+  "scenarios.mjs": "6d6c2f5fcddc80e1ebf9714bca424da1ca949794d59b3c3a797eb75b1755b201"
+ }
+}

@@ -115,6 +115,50 @@ const setup = ({ courseUrl, notes, edgeProfile }) => [
   control("(async () => (await window.lc.listDisplays()).map(d => ({ label: d.label, primary: d.primary, bounds: d.bounds, scale_factor: d.scale_factor, source_id: d.source_id })))()", 'displays'),
 ];
 
+// ---- frame-bound ink originals, relaunch and context-picture recovery (8e2094e) -------------------------------------
+// hashTree roots inside this run's user data; frames only at the checkpoints that ask for them.
+const ROOTS = ['ink', 'captures', 'qa-aside'];
+const hashes = (label, frames = false) => ({ hashTree: ROOTS, frames, as: `h_${label}` });
+// The ink is settled: saved, no picture pending, no gesture, not saving.
+// Also: nothing waits for retention and the latest sample composes this revision, so its retained frame exists.
+const settled = (label) => ({ waitEval: `(() => { const s = __lcOverlay.state(); return s.unsaved === null && s.pendingImages === 0 && !s.gesture && s.saveText !== 'Saving…'
+  && s.retention.deferred === 0 && s.samples.at(-1)?.composed?.ink_revision === s.doc.revision
+  && JSON.stringify({ doc: s.doc, saveText: s.saveText, retention: s.retention }); })()`, target: 'overlay', timeoutMs: 20000, as: `saved_${label}` });
+// 3.5 s > the 2 s retention interval + the 1 s sampling period, so each state's revision gets a retained frame.
+const state = (label) => [{ sleep: 3500 }, settled(label), mark(label), appView(label), overlayState(label), { snapshot: label }, hashes(label)];
+const recoveries = (as) => control('(async () => JSON.stringify(await window.lc.recoveries()))()', as);
+const keptButton = (text) => ({ ...control(`([...document.querySelectorAll('#keptList li button')].find((b) => b.textContent === ${JSON.stringify(text)})?.click(), true)`), required: false });
+const keptDom = (as) => control(`JSON.stringify({ hidden: document.getElementById('kept').hidden, text: document.getElementById('keptList').textContent,
+  buttons: [...document.querySelectorAll('#keptList li button')].map((b) => b.textContent), session: document.getElementById('session').textContent })`, as);
+const inkHook = control(`(() => { if (!window.__qaHooked) { window.__qa = []; window.__qaSessions = []; window.__qaMarks = []; window.__qaInkSaved = [];
+  window.lc.onSample((s) => window.__qa.push({ ...s, qa_received_at: new Date().toISOString() }));
+  window.lc.onSession((s) => window.__qaSessions.push({ ...s, qa_at: new Date().toISOString() }));
+  window.lc.onInkSaved(() => window.__qaInkSaved.push(new Date().toISOString())); window.__qaHooked = true; } return true; })()`, 'hooked');
+// Pictures view data for the saved session, with each shown picture's own sha256 computed in the page.
+const contexts = (as) => control(`(async () => { const r = await window.lc.inkContexts(window.__qaD); if (r.ok) for (const i of r.items) if (i.picture) {
+  const b = Uint8Array.from(atob(i.picture.slice(22)), (c) => c.charCodeAt(0));
+  i.picture_sha256 = [...new Uint8Array(await crypto.subtle.digest('SHA-256', b))].map((x) => x.toString(16).padStart(2, '0')).join(''); i.picture = i.picture.length; }
+  return JSON.stringify(r); })()`, as);
+const timeline = (as) => control('JSON.stringify({ samples: window.__qa, sessions: window.__qaSessions, marks: window.__qaMarks, inkSaved: window.__qaInkSaved })', as);
+const startSession = (as) => [control("document.querySelector('#displays li[aria-selected=true]').click(), document.getElementById('start').click(), true"), running(as), overlayReady, { sleep: 2500 }];
+// Opens the one saved session through its own Open button (the list must hold exactly that session).
+const openSaved = (as) => [control(`(async () => { const s = (await window.lc.listInk()).sessions; if (s.length !== 1) throw new Error('saved sessions: ' + s.length);
+  if (window.__qaD && window.__qaD !== s[0].id) throw new Error('another session'); window.__qaD = s[0].id;
+  [...document.querySelectorAll('#ink li')[0].querySelectorAll('button')].find((b) => b.textContent === 'Open').click(); return s[0].id; })()`, as),
+  { waitEval: "document.getElementById('session').textContent.startsWith('Showing saved ink')", target: 'control', timeoutMs: 10000 }];
+const stopSession = (as) => [control("document.getElementById('stop').click(), true"), stopped(as)];
+// Stroke geometry (overlay DIP): clear of the cursor (272, 381), the toolbar (top right), the card (bottom right), the taskbar.
+const INK = {
+  wave: wave(50, 312, 560), check: check(300, 545), line: line(360, 440, 600, 446, 14), erase: line(300, 285, 300, 340, 10),
+  ask: ellipse(165, 557, 150, 45), c1: line(45, 487, 230, 487), c2: line(60, 600, 240, 606, 14), relaunch: line(420, 600, 600, 606, 14),
+  // The corruption stroke is written twice with identical points over static page content (context crop 192..408 x 598..722).
+  same: ellipse(300, 660, 60, 14),
+};
+const newestContextSha = control(`(async () => { const r = await window.lc.inkContexts(window.__qaD); const n = Math.max(...r.items.map((i) => i.stroke));
+  const mine = r.items.filter((i) => i.stroke === n);
+  if (mine.length !== 1 || mine[0].reason !== 'writing_started' || mine[0].picture_state !== 'shown') throw new Error('unexpected contexts ' + JSON.stringify(mine.map((i) => [i.reason, i.picture_state])));
+  return mine[0].image.sha256; })()`, 'pc_sha');
+
 export const scenarios = {
   full: (p) => [
     ...setup(p),
@@ -193,6 +237,74 @@ export const scenarios = {
     control('JSON.stringify({ samples: window.__qa, sessions: window.__qaSessions, marks: window.__qaMarks })', 'timeline'),
     listInk('inkFinal'),
     { closeApp: true },
+  ],
+
+  // Frame-bound ink originals across the editing loop, a clean exit and relaunch of the saved session, and one controlled
+  // context-picture corruption recovery in this run's own fresh profile. Every stroke is DevTools-injected pen input.
+  ink: (p) => [
+    { edgeStart: p.courseUrl, profile: p.edgeProfile, as: 'edge' },
+    { window: 'edge', show: 'front' },
+    { sleep: 1500 },
+    { waitEval: "document.querySelectorAll('#displays li[role=option]').length > 0", target: 'control', timeoutMs: 20000 },
+    control("(async () => (await window.lc.listDisplays()).map(d => ({ label: d.label, primary: d.primary, bounds: d.bounds, scale_factor: d.scale_factor, source_id: d.source_id })))()", 'displays'),
+    inkHook, hashes('fresh', true), listInk('ink0'),
+    mark('before-start'), { desktopShot: 'before-start' },
+    ...startSession('session1'), { sleep: 1500 },
+    click('[data-mode=WRITE]'), click('#pen'), overlayState('write_mode'),
+    pen(INK.wave), { sleep: 800 }, pen(INK.check), { sleep: 800 }, pen(INK.line),
+    ...state('write'),
+    click('#eraser'), pen(INK.erase), ...state('erase'),
+    click('#undo'), ...state('undo'),
+    click('#redo'), ...state('redo'),
+    click('#pen'),
+    mark('ask-start'),
+    click('[data-mode=ASK]'), overlayState('ask'), pen(INK.ask),
+    { waitEval: "!document.getElementById('card').hidden", target: 'overlay', timeoutMs: 8000 },
+    overlayState('ask_finished'),
+    overlay("JSON.stringify({ text: document.getElementById('cardText').textContent, src: document.getElementById('crop').src, revision: __lcOverlay.state().doc.revision })", 'askCard'),
+    click('#close'), overlayState('card_closed'),
+    click('[data-mode=ASK]'), overlayState('ask2'), click('#cancel'), overlayState('ask_cancelled'),
+    ...state('ask-done'),
+    // Continue writing; the second stroke is held across a retained frame (uncommitted in the composition), then finished.
+    pen(INK.c1), pen(INK.c2.slice(0, 8), { release: false }), { sleep: 3000 }, appView('held'), pen(INK.c2.slice(7), { continue: true }),
+    ...state('continued'),
+    ...stopSession('stopped1'), recoveries('recoveries1'), { snapshot: 'stopped1' }, hashes('before-close', true), timeline('timeline1'),
+    { closeApp: true }, hashes('after-exit', true),
+    // Relaunch the same app with the same profile; reopen the saved session and keep editing it.
+    { launchApp: true, as: 'app2' },
+    { waitEval: "document.querySelectorAll('#displays li[role=option]').length > 0", target: 'control', timeoutMs: 20000 },
+    inkHook, hashes('relaunched', true), listInk('ink2'), keptDom('kept_relaunched'),
+    { window: 'edge', show: 'front' },
+    ...startSession('session2'),
+    ...openSaved('opened2'),
+    ...state('reopened2'), contexts('contexts_reopened2'),
+    click('[data-mode=WRITE]'), click('#pen'), pen(INK.relaunch), ...state('relaunch-edit'),
+    // Controlled corruption (TEST entry in this fresh profile only): write the same stroke twice over unchanged content, and
+    // between the two replace the first stroke's stored picture with same-length foreign bytes.
+    pen(INK.same), ...state('c1'),
+    newestContextSha,
+    { plantFile: 'ink/context/{value}.png', fromValue: 'pc_sha', fill: 'QA-TEST-CORRUPTION ', as: 'planted' },
+    contexts('contexts_planted'), hashes('planted'),
+    pen(INK.same), { sleep: 3500 },
+    { waitEval: '__lcOverlay.state().unsaved', target: 'overlay', timeoutMs: 20000, as: 'unsaved_c2', required: false },
+    overlay("JSON.stringify((() => { const s = __lcOverlay.state(); return { unsaved: s.unsaved, saveText: s.saveText, hint: s.hint, pendingImages: s.pendingImages, doc: s.doc }; })())", 'ov_failed'),
+    appView('c2-failed'), recoveries('recoveries_failed'), keptDom('kept_failed'), { snapshot: 'c2-failed' }, hashes('c2-failed'),
+    // Retry while the address is still occupied: refused again, the entry untouched.
+    keptButton('Retry saving'), { sleep: 2500 }, recoveries('recoveries_retry_occupied'), keptDom('kept_retry_occupied'), hashes('retry-occupied'),
+    // Stop with the ink still kept: the app writes its spare copy (the Export payload) into the test-owned temp folder.
+    ...stopSession('stopped2'), recoveries('recoveries_stopped2'), keptDom('kept_stopped2'),
+    { copyTree: 'apptemp', path: 'Learning Companion unsaved ink', to: 'spare' }, hashes('stopped2'),
+    // Move the TEST entry aside inside the profile, then Retry saving.
+    { moveAside: 'ink/context/{value}.png', fromValue: 'pc_sha', expectValue: 'planted', to: 'qa-aside', as: 'movedAside', required: false },
+    keptButton('Retry saving'),
+    { waitEval: '(async () => (await window.lc.recoveries()).length === 0)()', target: 'control', timeoutMs: 15000, required: false },
+    recoveries('recoveries_retried'), keptDom('kept_retried'), hashes('retried'), { snapshot: 'retried' }, listInk('ink_retried'),
+    // Reopen after the recovery and look at every picture again.
+    ...startSession('session3'),
+    ...openSaved('opened3'),
+    ...state('reopened3'), contexts('contexts_final'),
+    ...stopSession('stopped3'), recoveries('recoveries3'), timeline('timeline2'), listInk('inkFinal'),
+    { closeApp: true }, hashes('final', true),
   ],
 
   smoke: (p) => [

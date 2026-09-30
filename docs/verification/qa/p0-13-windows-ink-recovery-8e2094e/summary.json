@@ -1,0 +1,908 @@
+{
+ "run": {
+  "scenario": "ink",
+  "started": "2026-09-30T17:28:21.031Z",
+  "ended": "2026-09-30T17:29:39.408Z",
+  "work": "<home>\\AppData\\Local\\Temp\\lc-qa-windows-p013\\qa-ink-1790789300956",
+  "steps": 188,
+  "harness_sha256": {
+   "analyze.py": "3bd0e0eeebba00865c1c35fab0be6c5ebb41a7d1e3a8e56bfd2805572b25cbe7",
+   "analyze_ink.py": "f497dd24f101d61fca273128060d8cd39d4c8f0bbf94b08a5b81e8a4f450d4c1",
+   "course.html": "2cecf763803f33e64c283dfb7f0f133bc2b9b0412f08873bb5cb1caf831c03ab",
+   "notes.txt": "ca986c9c569bcdd36100d87df9ce28eeabd3025fc7d5a43f171c4a957f55b53c",
+   "qa-electron-runner.ps1": "f005241feabb77dfbc24a57f7632f4a4afb53d0614cb5a195b78ea36e0f79608",
+   "qa-png-to-bmp.ps1": "6f887944f49430065891d294ddba78d88e235ad88344890deaa304ac91f4a675",
+   "run.mjs": "6347873edfad5cb49da21bc99bd313ac8598877dfc88cf88204ee72a39704506",
+   "scenarios.mjs": "6d6c2f5fcddc80e1ebf9714bca424da1ca949794d59b3c3a797eb75b1755b201"
+  }
+ },
+ "counts": {
+  "pass": 22
+ },
+ "checks": [
+  {
+   "id": "run.shared_desktop_quiet",
+   "status": "pass",
+   "observed": {
+    "foreign_electron_seen": [],
+    "points_checked": 3
+   },
+   "note": "point-in-time, Electron-only: no other Electron app at start, at each desktop screenshot and at the end"
+  },
+  {
+   "id": "run.completed",
+   "status": "pass",
+   "observed": {
+    "aborted": null,
+    "failed_steps": []
+   }
+  },
+  {
+   "id": "run.cursor_static",
+   "status": "pass",
+   "observed": {
+    "positions_px": [
+     [
+      545,
+      762
+     ]
+    ],
+    "readings": 3
+   },
+   "note": "read-only GetCursorPos: the user's cursor was never moved and stayed clear of every stroke region"
+  },
+  {
+   "id": "originals.bound",
+   "status": "pass",
+   "observed": {
+    "retained_composed_lines": 15,
+    "distinct_originals": 13,
+    "revisions": [
+     0,
+     1,
+     3,
+     4,
+     5,
+     6,
+     7,
+     8,
+     9,
+     10,
+     11
+    ],
+    "problems": [],
+    "refused": [],
+    "captures": 3,
+    "header_ink_originals": [
+     "ink/<sha256>.json: the exact editable ink document (lc-desktop-ink/v1 JSON) a composed frame was drawn from, taken with the composition. composed.ink_original names its file, sha256 and bytes, or says why none was retained (refused). A gesture still in progress then (composed.uncommitted_gesture) is in neither the composition nor that document; for strokes whose evidence was still being made (composed.evidence_pending), that document has no evidence entry yet or evidence whose context pictures are null: pending, not failed. Lines written before this have no ink_original: their ink is unknown."
+    ]
+   },
+   "note": "every retained composed frame names its ink original; the file's sha256 is its name and the manifest's, its length the manifest's; the parsed document is that frame's session, revision (= history length) and visible-stroke count"
+  },
+  {
+   "id": "originals.match_saved_state",
+   "status": "pass",
+   "observed": {
+    "states": {
+     "write": {
+      "saved_revision": 3,
+      "expected": 3,
+      "app_revision": 3,
+      "frame_revision": 3,
+      "same_ink": true,
+      "evidence_equal_except_pending": true,
+      "pending": 0,
+      "byte_identical_to_saved": true
+     },
+     "erase": {
+      "saved_revision": 4,
+      "expected": 4,
+      "app_revision": 4,
+      "frame_revision": 4,
+      "same_ink": true,
+      "evidence_equal_except_pending": true,
+      "pending": 0,
+      "byte_identical_to_saved": true
+     },
+     "undo": {
+      "saved_revision": 5,
+      "expected": 5,
+      "app_revision": 5,
+      "frame_revision": 5,
+      "same_ink": true,
+      "evidence_equal_except_pending": true,
+      "pending": 0,
+      "byte_identical_to_saved": true
+     },
+     "redo": {
+      "saved_revision": 6,
+      "expected": 6,
+      "app_revision": 6,
+      "frame_revision": 6,
+      "same_ink": true,
+      "evidence_equal_except_pending": true,
+      "pending": 0,
+      "byte_identical_to_saved": true
+     },
+     "ask-done": {
+      "saved_revision": 6,
+      "expected": 6,
+      "app_revision": 6,
+      "frame_revision": 6,
+      "same_ink": true,
+      "evidence_equal_except_pending": true,
+      "pending": 0,
+      "byte_identical_to_saved": true
+     },
+     "continued": {
+      "saved_revision": 8,
+      "expected": 8,
+      "app_revision": 8,
+      "frame_revision": 8,
+      "same_ink": true,
+      "evidence_equal_except_pending": true,
+      "pending": 0,
+      "byte_identical_to_saved": true
+     },
+     "reopened2": {
+      "saved_revision": 8,
+      "expected": 8,
+      "app_revision": 8,
+      "frame_revision": 8,
+      "same_ink": true,
+      "evidence_equal_except_pending": true,
+      "pending": 0,
+      "byte_identical_to_saved": true
+     },
+     "relaunch-edit": {
+      "saved_revision": 9,
+      "expected": 9,
+      "app_revision": 9,
+      "frame_revision": 9,
+      "same_ink": true,
+      "evidence_equal_except_pending": true,
+      "pending": 0,
+      "byte_identical_to_saved": true
+     },
+     "c1": {
+      "saved_revision": 10,
+      "expected": 10,
+      "app_revision": 10,
+      "frame_revision": 10,
+      "same_ink": true,
+      "evidence_equal_except_pending": true,
+      "pending": 0,
+      "byte_identical_to_saved": true
+     },
+     "reopened3": {
+      "saved_revision": 11,
+      "expected": 11,
+      "app_revision": 11,
+      "frame_revision": 11,
+      "same_ink": true,
+      "evidence_equal_except_pending": true,
+      "pending": 0,
+      "byte_identical_to_saved": true
+     }
+    },
+    "bad": []
+   },
+   "note": "at every state the retained frame's own ink original is exactly the saved ink of that revision (strokes, visible order, history; evidence equal except strokes whose pictures were still pending when the frame was taken)"
+  },
+  {
+   "id": "history.sequence",
+   "status": "pass",
+   "observed": {
+    "history": {
+     "write": [
+      "add",
+      "add",
+      "add"
+     ],
+     "erase": [
+      "add",
+      "add",
+      "add",
+      "erase"
+     ],
+     "undo": [
+      "add",
+      "add",
+      "add",
+      "erase",
+      "undo"
+     ],
+     "redo": [
+      "add",
+      "add",
+      "add",
+      "erase",
+      "undo",
+      "redo"
+     ],
+     "ask-done": [
+      "add",
+      "add",
+      "add",
+      "erase",
+      "undo",
+      "redo"
+     ],
+     "continued": [
+      "add",
+      "add",
+      "add",
+      "erase",
+      "undo",
+      "redo",
+      "add",
+      "add"
+     ],
+     "stopped1": [
+      "add",
+      "add",
+      "add",
+      "erase",
+      "undo",
+      "redo",
+      "add",
+      "add"
+     ],
+     "reopened2": [
+      "add",
+      "add",
+      "add",
+      "erase",
+      "undo",
+      "redo",
+      "add",
+      "add"
+     ],
+     "relaunch-edit": [
+      "add",
+      "add",
+      "add",
+      "erase",
+      "undo",
+      "redo",
+      "add",
+      "add",
+      "add"
+     ],
+     "c1": [
+      "add",
+      "add",
+      "add",
+      "erase",
+      "undo",
+      "redo",
+      "add",
+      "add",
+      "add",
+      "add"
+     ],
+     "c2-failed": [
+      "add",
+      "add",
+      "add",
+      "erase",
+      "undo",
+      "redo",
+      "add",
+      "add",
+      "add",
+      "add"
+     ],
+     "retried": [
+      "add",
+      "add",
+      "add",
+      "erase",
+      "undo",
+      "redo",
+      "add",
+      "add",
+      "add",
+      "add",
+      "add"
+     ],
+     "reopened3": [
+      "add",
+      "add",
+      "add",
+      "erase",
+      "undo",
+      "redo",
+      "add",
+      "add",
+      "add",
+      "add",
+      "add"
+     ]
+    },
+    "erase_pieces": 2,
+    "pieces_from_one_original": true
+   },
+   "note": "the saved history is exactly the operations performed, in order; the partial erase leaves two pieces derived from one original kept in history"
+  },
+  {
+   "id": "pixels.composed_is_bound_original",
+   "status": "pass",
+   "observed": {
+    "states_checked": 10,
+    "per_state": {
+     "write": {
+      "retained_seq": 9,
+      "revision": 3,
+      "visible": 3,
+      "hidden": 0,
+      "styles": {
+       "stk_fc74105e": "solid",
+       "stk_65f33069": "dashed",
+       "stk_cc83048a": "dashed"
+      },
+      "hidden_styles": {},
+      "marks": {
+       "verified": 1,
+       "changed": 0,
+       "unknown": 2,
+       "following_content": 0
+      }
+     },
+     "erase": {
+      "retained_seq": 13,
+      "revision": 4,
+      "visible": 4,
+      "hidden": 1,
+      "styles": {
+       "stk_66f73d6b": "solid",
+       "stk_62d3cdfd": "solid",
+       "stk_65f33069": "dashed",
+       "stk_cc83048a": "dashed"
+      },
+      "hidden_styles": {
+       "stk_fc74105e": {
+        "style": "absent",
+        "at_ink": 0.0,
+        "differs": 0.0,
+        "raw_at_ink": 0.0
+       }
+      },
+      "marks": {
+       "verified": 2,
+       "changed": 0,
+       "unknown": 2,
+       "following_content": 0
+      }
+     },
+     "undo": {
+      "retained_seq": 16,
+      "revision": 5,
+      "visible": 3,
+      "hidden": 2,
+      "styles": {
+       "stk_fc74105e": "solid",
+       "stk_65f33069": "dashed",
+       "stk_cc83048a": "dashed"
+      },
+      "hidden_styles": {
+       "stk_66f73d6b": null,
+       "stk_62d3cdfd": null
+      },
+      "marks": {
+       "verified": 1,
+       "changed": 0,
+       "unknown": 2,
+       "following_content": 0
+      }
+     },
+     "redo": {
+      "retained_seq": 19,
+      "revision": 6,
+      "visible": 4,
+      "hidden": 1,
+      "styles": {
+       "stk_66f73d6b": "solid",
+       "stk_62d3cdfd": "solid",
+       "stk_65f33069": "dashed",
+       "stk_cc83048a": "dashed"
+      },
+      "hidden_styles": {
+       "stk_fc74105e": {
+        "style": "absent",
+        "at_ink": 0.0,
+        "differs": 0.0,
+        "raw_at_ink": 0.0
+       }
+      },
+      "marks": {
+       "verified": 2,
+       "changed": 0,
+       "unknown": 2,
+       "following_content": 0
+      }
+     },
+     "ask-done": {
+      "retained_seq": 19,
+      "revision": 6,
+      "visible": 4,
+      "hidden": 1,
+      "styles": {
+       "stk_66f73d6b": "solid",
+       "stk_62d3cdfd": "solid",
+       "stk_65f33069": "dashed",
+       "stk_cc83048a": "dashed"
+      },
+      "hidden_styles": {
+       "stk_fc74105e": {
+        "style": "absent",
+        "at_ink": 0.0,
+        "differs": 0.0,
+        "raw_at_ink": 0.0
+       }
+      },
+      "marks": {
+       "verified": 2,
+       "changed": 0,
+       "unknown": 2,
+       "following_content": 0
+      }
+     },
+     "continued": {
+      "retained_seq": 33,
+      "revision": 8,
+      "visible": 6,
+      "hidden": 1,
+      "styles": {
+       "stk_66f73d6b": "solid",
+       "stk_62d3cdfd": "solid",
+       "stk_65f33069": "dashed",
+       "stk_cc83048a": "dashed",
+       "stk_1777452d": "solid",
+       "stk_0dd1d01b": "dashed"
+      },
+      "hidden_styles": {
+       "stk_fc74105e": {
+        "style": "absent",
+        "at_ink": 0.0,
+        "differs": 0.0,
+        "raw_at_ink": 0.0
+       }
+      },
+      "marks": {
+       "verified": 3,
+       "changed": 0,
+       "unknown": 3,
+       "following_content": 0
+      }
+     },
+     "reopened2": {
+      "retained_seq": 4,
+      "revision": 8,
+      "visible": 6,
+      "hidden": 1,
+      "styles": {
+       "stk_66f73d6b": "solid",
+       "stk_62d3cdfd": "solid",
+       "stk_65f33069": "dashed",
+       "stk_cc83048a": "dashed",
+       "stk_1777452d": "solid",
+       "stk_0dd1d01b": "dashed"
+      },
+      "hidden_styles": {
+       "stk_fc74105e": {
+        "style": "absent",
+        "at_ink": 0.0,
+        "differs": 0.0,
+        "raw_at_ink": 0.0
+       }
+      },
+      "marks": {
+       "verified": 3,
+       "changed": 0,
+       "unknown": 3,
+       "following_content": 0
+      }
+     },
+     "relaunch-edit": {
+      "retained_seq": 9,
+      "revision": 9,
+      "visible": 7,
+      "hidden": 1,
+      "styles": {
+       "stk_66f73d6b": "solid",
+       "stk_62d3cdfd": "solid",
+       "stk_65f33069": "dashed",
+       "stk_cc83048a": "dashed",
+       "stk_1777452d": "solid",
+       "stk_0dd1d01b": "dashed",
+       "stk_51ba4cad": "dashed"
+      },
+      "hidden_styles": {
+       "stk_fc74105e": {
+        "style": "absent",
+        "at_ink": 0.0,
+        "differs": 0.0,
+        "raw_at_ink": 0.0
+       }
+      },
+      "marks": {
+       "verified": 3,
+       "changed": 0,
+       "unknown": 4,
+       "following_content": 0
+      }
+     },
+     "c1": {
+      "retained_seq": 14,
+      "revision": 10,
+      "visible": 8,
+      "hidden": 1,
+      "styles": {
+       "stk_66f73d6b": "solid",
+       "stk_62d3cdfd": "solid",
+       "stk_65f33069": "dashed",
+       "stk_cc83048a": "dashed",
+       "stk_1777452d": "solid",
+       "stk_0dd1d01b": "dashed",
+       "stk_51ba4cad": "dashed",
+       "stk_da2da84d": "solid"
+      },
+      "hidden_styles": {
+       "stk_fc74105e": {
+        "style": "absent",
+        "at_ink": 0.0,
+        "differs": 0.0,
+        "raw_at_ink": 0.0
+       }
+      },
+      "marks": {
+       "verified": 4,
+       "changed": 0,
+       "unknown": 4,
+       "following_content": 0
+      }
+     },
+     "reopened3": {
+      "retained_seq": 4,
+      "revision": 11,
+      "visible": 9,
+      "hidden": 1,
+      "styles": {
+       "stk_66f73d6b": "solid",
+       "stk_62d3cdfd": "solid",
+       "stk_65f33069": "dashed",
+       "stk_cc83048a": "dashed",
+       "stk_1777452d": "solid",
+       "stk_0dd1d01b": "dashed",
+       "stk_51ba4cad": "dashed",
+       "stk_da2da84d": "solid",
+       "stk_30fc7970": "solid"
+      },
+      "hidden_styles": {
+       "stk_fc74105e": {
+        "style": "absent",
+        "at_ink": 0.0,
+        "differs": 0.0,
+        "raw_at_ink": 0.0
+       }
+      },
+      "marks": {
+       "verified": 5,
+       "changed": 0,
+       "unknown": 4,
+       "following_content": 0
+      }
+     }
+    },
+    "bad": [],
+    "no_state_frame": []
+   },
+   "note": "in the app's retained composed PNG of each state, every visible stroke of the bound original is drawn (solid when the app verifies it, dashed otherwise) and every hidden stroke (the erased original, undone pieces) is not; the retained raw PNG has no ink on any path"
+  },
+  {
+   "id": "originals.uncommitted_gesture_not_bound",
+   "status": "pass",
+   "observed": {
+    "lines": [
+     {
+      "seq": 28,
+      "rev": 7,
+      "gesture": {
+       "kind": "ink",
+       "points": 1
+      },
+      "strokes_in_original": 6,
+      "history_in_original": 7
+     }
+    ]
+   },
+   "note": "a frame retained while a stroke was held records it only as uncommitted_gesture; its bound original holds the committed ink only (limit if no such frame fell due)"
+  },
+  {
+   "id": "ask.no_new_revision",
+   "status": "pass",
+   "observed": {
+    "card_revision": 6,
+    "card_text": "No AI is connected: this selection was not sent anywhere.\nRegion 7,504 316×106 DIP on 整个屏幕 = 632×212 px of frame 22 (captured 10:28:49), with your ink revision 6 drawn over it.\n2 of your strokes are drawn dashed, as on s",
+    "modes": [
+     "ASK",
+     "WRITE",
+     "ASK",
+     "WRITE"
+    ],
+    "sample_revisions_during_ask": [
+     6
+    ]
+   },
+   "note": "ASK finish and cancel return to WRITE and add no operation, revision or ink; the card states the revision it composed and that no AI is connected"
+  },
+  {
+   "id": "originals.immutable",
+   "status": "pass",
+   "observed": {
+    "checkpoints": 20,
+    "originals_tracked": 35,
+    "changed_later": [],
+    "name_not_hash": [],
+    "missing_at_final": [],
+    "manifest_not_append_only": []
+   },
+   "note": "every retained frame PNG, frame-bound ink original and context picture keeps its bytes (= its name) from first sight to the end, through later edits, ASK, exit, relaunch, reopen, continued editing and the recovery (only QA's planted TEST entry differs, and it was moved aside); every manifest only grew"
+  },
+  {
+   "id": "relaunch.clean_exit_reopen_continue",
+   "status": "pass",
+   "observed": {
+    "app1": {
+     "pid": 35308,
+     "exited": true,
+     "exit_code": 0,
+     "killed": null,
+     "started_at": "2026-09-30T17:28:22.7410952Z",
+     "exited_at": "2026-09-30T17:29:02.3418045Z"
+    },
+    "app2": {
+     "pid": 67780,
+     "started_at": "2026-09-30T17:29:03.9462990Z"
+    },
+    "new_devtools_port": true,
+    "files_equal_before_close_after_exit_relaunched": true,
+    "saved_list_after_relaunch": [
+     {
+      "id": "7b496f1260c5ea78",
+      "created_at": "2026-09-30T17:28:27.321Z",
+      "forked_from": null,
+      "display_label": "整个屏幕",
+      "strokes": 6,
+      "revision": 8
+     }
+    ],
+    "hint": "Clicks go to your apps. Capturing this display · frame 6. No AI is connected. Reopened 6 stroke(s) saved on this device.",
+    "reopened_equals_saved": true,
+    "continued_same_file": true,
+    "history_after_edit": [
+     "add",
+     "add",
+     "add",
+     "erase",
+     "undo",
+     "redo",
+     "add",
+     "add",
+     "add"
+    ],
+    "pictures_after_relaunch": {
+     "items": 5,
+     "states": [
+      "shown"
+     ]
+    },
+    "new_capture_folders": 2,
+    "first_post_relaunch_original_equals_saved_ink": true,
+    "first_post_relaunch_original_byte_identical": true
+   },
+   "note": "the app closes itself cleanly (exit 0), a new process on the same profile lists the session, Open restores it exactly, editing continues in the same file (history extended, no fork), all pictures open, and the new capture binds originals that start from the saved ink; every file is unchanged across exit and relaunch"
+  },
+  {
+   "id": "app.closes_cleanly.app",
+   "status": "pass",
+   "observed": {
+    "exited": true,
+    "exit_code": 0,
+    "killed": null
+   }
+  },
+  {
+   "id": "app.closes_cleanly.app2",
+   "status": "pass",
+   "observed": {
+    "exited": true,
+    "exit_code": 0,
+    "killed": null
+   }
+  },
+  {
+   "id": "corruption.reproduced",
+   "status": "pass",
+   "observed": {
+    "planted_address_sha": "37702e3c7903b3f43a4893cb4be05fbe673696bd2b8c9e95d63cd32d1fa8a310",
+    "second_stroke_context": [
+     [
+      "writing_started",
+      "37702e3c7903b3f43a4893cb4be05fbe673696bd2b8c9e95d63cd32d1fa8a310"
+     ]
+    ]
+   },
+   "note": "the second, identical stroke over unchanged content produced exactly the picture whose address QA had occupied (else the case was not reproduced)"
+  },
+  {
+   "id": "corruption.save_reported_failure",
+   "status": "pass",
+   "observed": {
+    "overlay_unsaved": "the context picture already stored as <home>\\AppData\\Local\\Temp\\lc-qa-windows-p013\\qa-ink-1790789300956\\userdata\\ink\\context\\37702e3c7903b3f43a4893cb4be05fbe673696bd2b8c9e95d63cd32d1fa8a310.png is not its bytes (the file there has other bytes of the same length); it is left untouched. Move it away, then Retry; or export this ink; the ink is kept in this app",
+    "hint_start": "Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 21. No AI is connected. Not s",
+    "recoveries": [
+     {
+      "id": "7b496f1260c5ea78",
+      "revision": 11,
+      "strokes": 9,
+      "exported_to": null
+     }
+    ],
+    "save_text": "Not saved: the context picture already stored as <home>\\AppData\\Local\\Temp\\lc-qa-windows-p013\\qa-ink-1790789300956\\userdata\\ink\\context\\37702e3c7903b3f43a",
+    "kept_list": {
+     "hidden": false,
+     "buttons": [
+      "Retry saving",
+      "Export…",
+      "Discard…"
+     ],
+     "text": "2026/9/30 10:28:27 · 整个屏幕 · 9 stroke(s): not saved because the context picture already stored as <home>\\AppData\\Local\\Temp\\lc-qa-windows-p013\\qa-ink-1790789300956\\userdata\\ink\\context\\37702e3c7903b3f43a4893cb4be05fbe673696bd2b8c9e95d63cd32d1fa8a310.png is not its bytes (the file there has othe"
+    },
+    "saved_file_not_advanced": true
+   },
+   "note": "the save is refused and says so (overlay and control), naming the untouched entry; the ink is kept with Retry saving, Export… and Discard…; the saved file stays at the last good revision"
+  },
+  {
+   "id": "corruption.bad_entry_untouched",
+   "status": "pass",
+   "observed": {
+    "planted": {
+     "rel": "ink/context/37702e3c7903b3f43a4893cb4be05fbe673696bd2b8c9e95d63cd32d1fa8a310.png",
+     "bytes": 38095,
+     "after": "1bf09f974bfa38b5a3c2a71b608ed19025f64c842bb484d22d121017e3a2c783"
+    },
+    "at_checkpoints": [
+     {
+      "sha256": "1bf09f974bfa38b5a3c2a71b608ed19025f64c842bb484d22d121017e3a2c783",
+      "bytes": 38095,
+      "mtime_utc": "2026-09-30T17:29:21.0595427Z"
+     },
+     {
+      "sha256": "1bf09f974bfa38b5a3c2a71b608ed19025f64c842bb484d22d121017e3a2c783",
+      "bytes": 38095,
+      "mtime_utc": "2026-09-30T17:29:21.0595427Z"
+     },
+     {
+      "sha256": "1bf09f974bfa38b5a3c2a71b608ed19025f64c842bb484d22d121017e3a2c783",
+      "bytes": 38095,
+      "mtime_utc": "2026-09-30T17:29:21.0595427Z"
+     },
+     {
+      "sha256": "1bf09f974bfa38b5a3c2a71b608ed19025f64c842bb484d22d121017e3a2c783",
+      "bytes": 38095,
+      "mtime_utc": "2026-09-30T17:29:21.0595427Z"
+     }
+    ],
+    "moved_aside": {
+     "from": "ink/context/37702e3c7903b3f43a4893cb4be05fbe673696bd2b8c9e95d63cd32d1fa8a310.png",
+     "to": "qa-aside/37702e3c7903b3f43a4893cb4be05fbe673696bd2b8c9e95d63cd32d1fa8a310.png.qa-bad",
+     "before": "1bf09f974bfa38b5a3c2a71b608ed19025f64c842bb484d22d121017e3a2c783",
+     "after": "1bf09f974bfa38b5a3c2a71b608ed19025f64c842bb484d22d121017e3a2c783",
+     "source_absent": true
+    },
+    "aside_at_retried_and_final": [
+     {
+      "sha256": "1bf09f974bfa38b5a3c2a71b608ed19025f64c842bb484d22d121017e3a2c783",
+      "bytes": 38095,
+      "mtime_utc": "2026-09-30T17:29:21.0595427Z"
+     },
+     {
+      "sha256": "1bf09f974bfa38b5a3c2a71b608ed19025f64c842bb484d22d121017e3a2c783",
+      "bytes": 38095,
+      "mtime_utc": "2026-09-30T17:29:21.0595427Z"
+     }
+    ],
+    "tmp_files_left": []
+   },
+   "note": "QA's TEST entry keeps its exact bytes, size and time through the refused save, the refused Retry and Stop, until QA moves it aside; the app never renames, overwrites or deletes it"
+  },
+  {
+   "id": "corruption.retry_while_occupied_refused",
+   "status": "pass",
+   "observed": {
+    "recoveries_after_retry": [
+     {
+      "id": "7b496f1260c5ea78",
+      "revision": 11
+     }
+    ],
+    "entry_unchanged": true
+   },
+   "note": "Retry saving while the address is still occupied is refused again: the ink stays kept, the entry and the saved file are unchanged"
+  },
+  {
+   "id": "corruption.export_payload_keeps_good_picture",
+   "status": "pass",
+   "observed": {
+    "spare_copy": true,
+    "format": "lc-desktop-ink-export/v1",
+    "good_picture_bytes": 38095,
+    "good_picture_sha_matches_address": true,
+    "missing": [],
+    "not_matching": [],
+    "spare_ink_equals_saved_after_retry": true,
+    "export_button_offered": true
+   },
+   "note": "the app's export payload of the kept ink (its spare copy written at Stop into the test-owned temp folder) holds the kept document and the good picture bytes for the occupied address; the Export… button is offered (its native Save dialog was not driven)"
+  },
+  {
+   "id": "corruption.retry_after_move_restores",
+   "status": "pass",
+   "observed": {
+    "recoveries": [],
+    "kept_hidden": true,
+    "address_now_holds_good_picture": true,
+    "history": [
+     "add",
+     "add",
+     "add",
+     "erase",
+     "undo",
+     "redo",
+     "add",
+     "add",
+     "add",
+     "add",
+     "add"
+    ],
+    "same_session_no_fork": true
+   },
+   "note": "after QA moved its TEST entry aside, Retry saving writes the good picture to its address and the kept document to the same session file (no fork)"
+  },
+  {
+   "id": "corruption.reopen_after_recovery",
+   "status": "pass",
+   "observed": {
+    "reopened_equals_saved": true,
+    "pictures": 8,
+    "picture_states": [
+     "shown"
+    ],
+    "items_at_recovered_address": 2,
+    "stopped3": "stopped by the user"
+   },
+   "note": "Open after the recovery restores the exact history and evidence; every picture, including both uses of the recovered address, opens with its own bytes"
+  },
+  {
+   "id": "corruption.stop_with_kept_ink_reported",
+   "status": "pass",
+   "observed": {
+    "ended": "stopped by the user. The newest ink could not be saved: the context picture already stored as <home>\\AppData\\Local\\Temp\\lc-qa-windows-p013\\qa-ink-1790789300956\\userdata\\ink\\context\\37702e3c7903b3f43a4893cb4be05fbe673696bd2b8c9e95d63cd32d1fa8a310.png is not its bytes (the file there has other bytes of the same length); it is left untouched. Move it . It is kept in this app: retry, export or d",
+    "recoveries": 1,
+    "kept_list_visible": true
+   },
+   "note": "Stop with ink still kept ends the session and keeps the ink listed for Retry/Export (the end text is recorded as observed)"
+  },
+  {
+   "id": "no_ai.stated",
+   "status": "pass",
+   "observed": {
+    "statements": 12,
+    "missing": []
+   },
+   "note": "every overlay state read and the ASK card say that no AI is connected; network traffic was not observed"
+  }
+ ]
+}
