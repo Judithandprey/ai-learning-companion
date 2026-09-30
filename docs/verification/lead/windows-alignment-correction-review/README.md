@@ -1,4 +1,8 @@
-# Windows alignment correction — original defect fixed; cap residual held
+# Windows alignment correction — historical cap residual
+
+Current disposition: the [separate cap correction](../windows-cap-correction/README.md)
+is source-approved and integrated as c753c23. Historical failures below remain
+unchanged; independent native QA-WIN-01 is still open.
 
 Exact owner **e03fefcc9d68676f172993ac18545091d3c8c4f3**, delivered as
 **handoff_6e023e769030b65726fe92cf092adb87**, follows preserved80da708/85de89e.

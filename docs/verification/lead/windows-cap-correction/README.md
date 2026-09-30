@@ -32,3 +32,10 @@ The prior cap P2 is closed for these source/save cases. Next: normal integration
 focused resulting-main check/build, then ONE independent Windows QA-WIN-01
 changed-behavior retest after current API QA. Neither §7.1 product gate is passed;
 real provider/physical pen/interactive Mac/audio/Notability remain separate.
+
+Integrated as **c753c23**. Whole apps/windows tree equals ownerf277362. On
+resulting main, pinned TypeScript build and the two alignment/Stop test files pass,
+with zero failures; [main output](main-tests.txt). No Backend or mapper logic
+changed, so the previous exact-producer HTTP evidence remains applicable.
+Next exact native QA candidate includes this repair; no independent native or
+hosted result has been inferred from these portable checks.
