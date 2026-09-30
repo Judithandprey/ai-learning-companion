@@ -9,7 +9,7 @@ import XCTest
 /// Synthetic buffers and attachments only: these tests exercise the recorder and the facts parser,
 /// not ScreenCaptureKit, permission or a real display.
 final class DesktopCaptureTests: XCTestCase {
-    private var root: URL!
+    var root: URL!
 
     override func setUpWithError() throws {
         root = FileManager.default.temporaryDirectory
@@ -22,11 +22,11 @@ final class DesktopCaptureTests: XCTestCase {
 
     // MARK: - Fixtures
 
-    private let display = DisplayFacts(
+    let display = DisplayFacts(
         displayID: 7, name: "Test Display", frame: RecordedRect(CGRect(x: 0, y: 0, width: 4, height: 2)),
         pointPixelScale: 1, requestedWidth: 4, requestedHeight: 2, rotationDegrees: 0, isMain: true, scope: "test")
 
-    private func recorder(byteCap: Int = 1 << 20) throws -> CaptureRecorder {
+    func recorder(byteCap: Int = 1 << 20) throws -> CaptureRecorder {
         try CaptureRecorder(
             root: root, display: display,
             settings: CaptureSettings(minimumFrameInterval: 2, byteCap: byteCap, silenceLimit: 6, showsCursor: true),
@@ -35,12 +35,13 @@ final class DesktopCaptureTests: XCTestCase {
 
     /// Pixels (BGRA) of a 4×2 frame: top row red, green, blue, white; bottom row black, black,
     /// black, red. Distinct corners show whether the stored image was rotated or flipped.
-    private let pattern: [[UInt8]] = [
+    let pattern: [[UInt8]] = [
         [0, 0, 255, 255], [0, 255, 0, 255], [255, 0, 0, 255], [255, 255, 255, 255],
         [0, 0, 0, 255], [0, 0, 0, 255], [0, 0, 0, 255], [0, 0, 255, 255],
     ]
 
-    private func buffer() throws -> CVPixelBuffer {
+    /// `marker` replaces the bottom-left (black) pixel's grey level, so frames can differ.
+    func buffer(marker: UInt8 = 0) throws -> CVPixelBuffer {
         var created: CVPixelBuffer?
         let attributes = [kCVPixelBufferIOSurfacePropertiesKey as String: [String: Any]()] as CFDictionary
         let result = CVPixelBufferCreate(nil, 4, 2, kCVPixelFormatType_32BGRA, attributes, &created)
@@ -53,7 +54,8 @@ final class DesktopCaptureTests: XCTestCase {
         for y in 0..<2 {
             for x in 0..<4 {
                 for channel in 0..<4 {
-                    base[y * rowBytes + x * 4 + channel] = pattern[y * 4 + x][channel]
+                    let marked = y == 1 && x == 0 && channel < 3
+                    base[y * rowBytes + x * 4 + channel] = marked ? marker : pattern[y * 4 + x][channel]
                 }
             }
         }
@@ -61,7 +63,7 @@ final class DesktopCaptureTests: XCTestCase {
     }
 
     /// Facts with a status and, when `source` is given, a `displayTime` at that host second.
-    private func facts(_ status: SCFrameStatus, source: Double? = nil) -> FrameFacts {
+    func facts(_ status: SCFrameStatus, source: Double? = nil) -> FrameFacts {
         var attachments: [SCStreamFrameInfo: Any] = [.status: NSNumber(value: status.rawValue)]
         if let source {
             attachments[.displayTime] = NSNumber(value: HostClock.ticks(seconds: source))
@@ -71,7 +73,7 @@ final class DesktopCaptureTests: XCTestCase {
 
     /// A sample buffer carrying `image`, `pts` and the given attachments, as ScreenCaptureKit
     /// attaches them.
-    private func sampleBuffer(_ image: CVPixelBuffer, pts: CMTime,
+    func sampleBuffer(_ image: CVPixelBuffer, pts: CMTime,
                               attachments: [SCStreamFrameInfo: Any]) throws -> CMSampleBuffer {
         var format: CMVideoFormatDescription?
         let formatResult = CMVideoFormatDescriptionCreateForImageBuffer(
@@ -95,22 +97,22 @@ final class DesktopCaptureTests: XCTestCase {
         return sample
     }
 
-    private func events(_ recorder: CaptureRecorder) throws -> [CaptureEvent] {
+    func events(_ recorder: CaptureRecorder) throws -> [CaptureEvent] {
         let data = try Data(contentsOf: recorder.directory.appending(path: "events.jsonl"))
         return try data.split(separator: 0x0A).map { try CaptureFiles.decoder.decode(CaptureEvent.self, from: Data($0)) }
     }
 
-    private func savedStatus(_ recorder: CaptureRecorder) throws -> SessionStatus {
+    func savedStatus(_ recorder: CaptureRecorder) throws -> SessionStatus {
         try CaptureFiles.decoder.decode(SessionStatus.self,
                                         from: Data(contentsOf: recorder.directory.appending(path: "status.json")))
     }
 
-    private func files(in directory: URL) throws -> [String] {
+    func files(in directory: URL) throws -> [String] {
         try FileManager.default.contentsOfDirectory(atPath: directory.path(percentEncoded: false)).sorted()
     }
 
     /// Width, height and RGBA bytes (top row first) of a PNG, drawn into an sRGB bitmap.
-    private func rgba(_ url: URL) throws -> (width: Int, height: Int, bytes: [UInt8]) {
+    func rgba(_ url: URL) throws -> (width: Int, height: Int, bytes: [UInt8]) {
         let source = try XCTUnwrap(CGImageSourceCreateWithURL(url as CFURL, nil))
         let image = try XCTUnwrap(CGImageSourceCreateImageAtIndex(source, 0, nil))
         var bytes = [UInt8](repeating: 0, count: image.width * image.height * 4)

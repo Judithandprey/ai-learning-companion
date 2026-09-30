@@ -403,3 +403,18 @@ Lead task `handoff_e90ac1b9b47e3765d03439117009d406` (baseline `07e6691`, merged
 
 It is capture only and not AI connected. The source is uncompiled on this Linux host. The hosted
 build/test, the actual Mac runtime and the overlay ink are separate, open steps.
+
+## macOS retained session to desktop frame 0.2.7 / ingress 0.2.8 (2026-09-30 UTC)
+
+Lead consumer `handoff_eabebbfa7e6ee1a1d7d065e710d93c2e` (baseline `59ee862`, merged as `e504b70`).
+[`macos-desktop-ingress-mapping.md`](macos-desktop-ingress-mapping.md) records the pure, uncalled
+mapper:
+- it reads a retained session without changing it, re-hashing each PNG;
+- UInt64 display ticks become lossless decimal strings;
+- frames and framed/frameless records use trusted, supplied identities and process sequences;
+- output is standard Foundation JSON;
+- refusals are explicit and never change the original.
+
+The Swift mapper is uncompiled. The validator passed on a Python simulation, and the hosted run's
+actual native records mapped through a Python port. Swift fixtures, transmission and runtime
+evidence are not run.

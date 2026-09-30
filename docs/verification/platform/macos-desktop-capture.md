@@ -187,7 +187,11 @@ COMPANION_DESKTOP_FIXTURE_DIR="$RUNNER_TEMP/companion-desktop-fixture" \
 apps/macos/CompanionDesktop/package-app.sh "$RUNNER_TEMP/companion-desktop"   # must be a new directory
 ```
 
-- `swift test` runs 20 tests.
+- `swift test` runs 25 tests: 20 for capture, and 5 for the
+  [desktop ingress mapper](macos-desktop-ingress-mapping.md). With a separate, new
+  `COMPANION_DESKTOP_INGRESS_FIXTURE_DIR`, the ingress tests also write fixtures there, which
+  `checks/validate_desktop_ingress.py` checks. `COMPANION_DESKTOP_FIXTURE_DIR` still holds exactly
+  one sample session.
 - **Fixture.** With the variable set, `testWritesSampleSessionForMapping` leaves one session
   directory under `$RUNNER_TEMP/companion-desktop-fixture/`. It holds `status.json`,
   `events.jsonl` and two PNGs, written by the real Swift encoders from **synthetic** inputs. Keep it
