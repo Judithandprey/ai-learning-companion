@@ -546,3 +546,72 @@ tombstones. No migration or dependency change is required. See
 [macOS HTTP evidence](../../docs/verification/backend/macos-http-ingress.md) for
 portable HTTP/archive/Learning checks and the remaining native, database and
 provider acceptance boundaries.
+
+## Foreground local desktop capture host
+
+`python -m services.api.desktop_local` exposes the existing capture runtime to a
+trusted desktop main process. It uses `PostgresStore` and the installed uvicorn
+in this single foreground child; it performs no migration, dependency setup,
+capture, provider call or public enrollment. The normal app and local preview
+remain separate. The parent owns explicit OS/user consent, private credentials,
+child supervision and final UI integration.
+
+Pass no command-line options or credentials. Send one UTF-8 JSON object followed
+by LF through the child's private stdin pipe, keeping that pipe open for the
+entire child lifetime. The record, including LF, is limited to 65,536 bytes.
+Regular-file/terminal stdin, duplicate/unknown/missing fields, invalid JSON and
+invalid authority are refused. The exact required startup fields are:
+
+| Fields | Value |
+| --- | --- |
+| `format` | `lc-desktop-capture-host-v1` |
+| `port` | Integer `0` for an OS-assigned port, or an explicit port 1–65535. There is no host override; binding is numeric `127.0.0.1` only. |
+| `database_dsn` | Explicit PostgreSQL DSN from the trusted parent, at most 8192 characters; keep it out of argv, logs, source metadata and committed files. |
+| `user_id`, `device_id`, `session_id`, `producer_id` | Existing exact identifiers supplied by the trusted parent. |
+| `registration` | Exact released 0.2.1 `StreamRegistration`, including original authorization/membership pins and continuity. No replacement with current revisions. |
+| `token`, `expires_at` | Explicit ephemeral bearer token and future UTC timestamp using the existing `Z` spelling. Neither is stored with source documents or returned in readiness. |
+| `scopes`, `capabilities` | Explicit unique arrays of strings allowed by `capture_runtime`; no inferred authority. |
+| `fresh_consent` | Explicit boolean. `true` is a fresh scoped trusted decision, never a saved auto-start preference. Reconciliation/relaunch uses `false`. |
+| `producer_profile` | Explicit `null` or `desktop_pixels`; enabled desktop/Windows/Mac paths require the latter. |
+| `enable_raw_ingress`, `enable_desktop_ingress`, `enable_windows_ingress`, `enable_macos_ingress` | Four explicit booleans, with the existing corresponding scopes/capabilities required. |
+
+Only after successful startup and listening does stdout emit one bounded JSON
+record, for example:
+
+```json
+{"format":"lc-desktop-capture-host-ready-v1","status":"ready","origin":"http://127.0.0.1:54321","start_status":"pending"}
+```
+
+The actual assigned port replaces the example. `start_status` is `pending` or
+`consumed`; it reports reconciliation of the existing start grant, not physical
+capture or live permission. The parent must POST the same registration with its
+retained idempotency key, read current stream state, and obey stopped/withdrawn
+refusals before producing. Use the returned origin only in the trusted main
+process. Do not pass its token or runtime configuration to course content,
+renderers or browser extensions. HTTP requires the exact numeric Host and rejects
+browser Origin/fetch-metadata requests; CORS and proxy-header trust are disabled.
+
+A 10-second startup deadline requests shutdown; if synchronous startup blocks,
+the watchdog forces exit after at most 5 more seconds. EOF/loss of the parent
+pipe, unexpected further input or SIGTERM ends only this host, with a 5-second
+shutdown bound. Forced termination is an abnormal failure, not a completed
+control transition. The parent also bounds its waits and reaps only its own
+child. Normal EOF/SIGTERM returns exit code 0; refusals and timeout failures return
+1 with a fixed stderr record such as
+`{"format":"lc-desktop-capture-host-error-v1","error":"invalid_startup"}`.
+Other fixed codes are `unavailable`, `parent_input_lost`, `unexpected_input`,
+`startup_timeout` and `shutdown_timeout`. No input, credentials or exception text
+is echoed; access logging is disabled.
+
+Host exit does **not** attest server Stop or physical capture stop. The trusted
+desktop must stop its own production/transmission and reconcile the existing
+control API separately. After an unknown startup/HTTP outcome, preserve IDs,
+registration and keys and reopen with `fresh_consent=false`; never manufacture a
+new consent decision. Retained originals, ACKs and restrictive control states
+survive via PostgreSQL. Unavailable DB/schema/authority fails startup rather than
+falling back to memory or repairing identity state.
+
+Disable this host by ending its owned process; no archive downgrade or migration
+is needed. See [foreground host evidence](../../docs/verification/backend/desktop-local-host.md)
+for focused process and real isolated PostgreSQL checks, including remaining
+Windows/macOS executable packaging, native permission and provider limits.

@@ -1,0 +1,232 @@
+{
+  "ack_sha256": "9711ce8d394045cbf5a0202337a4e5fbc46a9174ba82fd6689ce37de61eaff5d",
+  "actor": "lc-windows-http-f655e67671784c50817c0f8ecfab41bc",
+  "all_owned_children_reaped": true,
+  "cleanup": "own actor only, completed",
+  "contract_version": "0.2.10",
+  "credentials_in_args_env_or_output": false,
+  "envelope_sha256": "e56e890ea56c4d8ac257ce6f421f6a9a603a7e2107f34391c0b97f457c4d2020",
+  "final_documents_sha256": "1d8b456591791e0fae619a5b1c81d8996ccaff156b0bb72860ca88a2072616d4",
+  "frame_sha256": "588cd4a50ccbf5948ecc5916c8c3965f2a61c5ec466b2eea02a3fff79f5697a6",
+  "groups": [
+    "private stdin executable, pending registration, exact HTTP PNG/ink/frame/ACK and EOF shutdown",
+    "rotated-token false-consent reopen preserves exact originals/ACK; HTTP Stop and TERM shutdown",
+    "Stop survives host restart with unknown physical boundary; authorized originals remain readable",
+    "withdraw survives restart and refuses live/historical transmission without deleting originals"
+  ],
+  "http": [
+    {
+      "check": "register",
+      "status": 200
+    },
+    {
+      "check": "current_live",
+      "status": 200
+    },
+    {
+      "check": "source_put",
+      "status": 200
+    },
+    {
+      "check": "put_raw",
+      "status": 200
+    },
+    {
+      "check": "put_composed",
+      "status": 200
+    },
+    {
+      "check": "put_ink",
+      "status": 200
+    },
+    {
+      "check": "frame_commit",
+      "status": 200
+    },
+    {
+      "check": "exact_retry",
+      "status": 200
+    },
+    {
+      "check": "saved_raw",
+      "status": 200
+    },
+    {
+      "check": "saved_composed",
+      "status": 200
+    },
+    {
+      "check": "saved_ink",
+      "status": 200
+    },
+    {
+      "check": "wrong_auth",
+      "status": 401
+    },
+    {
+      "check": "registration_replay",
+      "status": 200
+    },
+    {
+      "check": "reopened_live",
+      "status": 200
+    },
+    {
+      "check": "source_reopened",
+      "status": 200
+    },
+    {
+      "check": "reopened_raw",
+      "status": 200
+    },
+    {
+      "check": "reopened_composed",
+      "status": 200
+    },
+    {
+      "check": "reopened_ink",
+      "status": 200
+    },
+    {
+      "check": "reopened_exact_ack",
+      "status": 200
+    },
+    {
+      "check": "old_token",
+      "status": 401
+    },
+    {
+      "check": "stop",
+      "status": 200
+    },
+    {
+      "check": "stopped_retry",
+      "status": 409
+    },
+    {
+      "check": "reopened_stopped",
+      "status": 200
+    },
+    {
+      "check": "stopped_registration",
+      "status": 200
+    },
+    {
+      "check": "reopened_stop_refusal",
+      "status": 409
+    },
+    {
+      "check": "stopped_originals_raw",
+      "status": 200
+    },
+    {
+      "check": "stopped_originals_composed",
+      "status": 200
+    },
+    {
+      "check": "stopped_originals_ink",
+      "status": 200
+    },
+    {
+      "check": "withdraw",
+      "status": 200
+    },
+    {
+      "check": "withdrawn_retry",
+      "status": 403
+    },
+    {
+      "check": "reopened_withdrawn",
+      "status": 200
+    },
+    {
+      "check": "withdrawn_registration",
+      "status": 200
+    },
+    {
+      "check": "reopened_withdraw_refusal",
+      "status": 403
+    },
+    {
+      "check": "withdrawn_historical_refusal",
+      "status": 403
+    },
+    {
+      "check": "withdrawn_originals_raw",
+      "status": 200
+    },
+    {
+      "check": "withdrawn_originals_composed",
+      "status": 200
+    },
+    {
+      "check": "withdrawn_originals_ink",
+      "status": 200
+    }
+  ],
+  "input": "synthetic consent/identity, Windows metadata and project-authored PNG/ink",
+  "migrations": [
+    "0001_documents",
+    "0002_capture_immutability",
+    "0003_raw_capture_frame"
+  ],
+  "native_capture": "not_exercised",
+  "original_refs": [
+    {
+      "artifact_id": "composed-png",
+      "byte_length": 124,
+      "media_type": "image/png",
+      "sha256": "a042b4d9e741c392455ccd962af84be20215ba6d4922cdaf903b7cc77de490f4"
+    },
+    {
+      "artifact_id": "windows-composed-png",
+      "byte_length": 123,
+      "media_type": "image/png",
+      "sha256": "93360bb3842af00473009b7be0237693b884bc950a5e0bec7555bb51aa187f48"
+    },
+    {
+      "artifact_id": "composed-ink",
+      "byte_length": 52,
+      "media_type": "application/json",
+      "sha256": "9891f1ae31dfa8cadc5ac812936e9ede3d0b735dfa015e03e2d511a10bcbddc0"
+    }
+  ],
+  "physical_stop": "not_attested",
+  "postgresql": "18.6 (Ubuntu 18.6-0ubuntu0.26.04.1)",
+  "processes": [
+    {
+      "fresh_consent": true,
+      "origin": "http://127.0.0.1:37911",
+      "pid": 813216,
+      "returncode": 0,
+      "shutdown": "eof",
+      "start_status": "pending"
+    },
+    {
+      "fresh_consent": false,
+      "origin": "http://127.0.0.1:46521",
+      "pid": 813298,
+      "returncode": 0,
+      "shutdown": "term",
+      "start_status": "consumed"
+    },
+    {
+      "fresh_consent": false,
+      "origin": "http://127.0.0.1:46409",
+      "pid": 813335,
+      "returncode": 0,
+      "shutdown": "eof",
+      "start_status": "consumed"
+    },
+    {
+      "fresh_consent": false,
+      "origin": "http://127.0.0.1:45655",
+      "pid": 813351,
+      "returncode": 0,
+      "shutdown": "term",
+      "start_status": "consumed"
+    }
+  ],
+  "provider": "not_activated",
+  "saved_documents_sha256": "fb357cd9106935e3649b07dc23e09f1ce98d73e0dc52694ab331d89e6deee35d"
+}
