@@ -206,3 +206,24 @@ neither was repeated unnecessarily. No native/DB/device/provider campaign ran.
 The code/QA-evidence milestone is ready for ordinary publication and the already
 assigned independent QA retest, including coherent removal of the five markers
 and update of helper baseline metadata after actual verification.
+
+## Publication and actual final retest dispatch
+
+Reviewed/tested release **`00f4f0bcda9107ecc75b88c8f435e6c2a4ce7625`** was pushed
+normally to `origin/main`; `git ls-remote` confirmed the exact SHA. Existing
+[P0 CI36685793026](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36685793026)
+completed successfully for that exact source: Python3.12 / Node24.21 in4m15s
+and Python3.14 / Node24.21 in4m30s. No native workflow was rerun for this
+API/QA-only correction.
+
+The already assigned final QA continuation was released with this exact baseline
+as `handoff_8ce7c067616782573b6e850f42dcf106`. Its accepted receipt is initially
+unread with `execution_started:false`, not an execution result. Subsequent
+read-only worktree inspection observes actual QA baseline merge
+`aa96c1287564a17d3b9a2a2825f1b3e575868c23`; Git ancestry confirms it contains
+exact `00f4f0b`. This establishes baseline adoption/activity, not a passing retest.
+It includes the
+five original cases, the one ancestor omission and relevant conflict/current-fence
+controls; no broader campaign or duplicated task is requested. Backend received
+the actual integration/next-dependency notice as
+`handoff_6c3f85f91540a52767db477fb21f3691`, with no acknowledgement requested.
