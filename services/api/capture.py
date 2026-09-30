@@ -50,13 +50,38 @@ def _decode(stored):
         raise DomainError(503, "unavailable") from None
 
 
-def _decode_ack(replay):
+def _decode_ack(replay, *, expected_key=None):
+    """Decode an active receipt; only the exact erasure shape has no ACK."""
     try:
+        if (not isinstance(replay, dict) or type(replay.get("key")) is not str
+                or not replay["key"] or (expected_key is not None and replay["key"] != expected_key)):
+            raise ValueError("invalid retained replay key")
+        if replay.get("deleted") is True and set(replay) == {"key", "deleted"}:
+            return None
+        if (set(replay) != {"key", "fingerprint", "response_json", "source_ids", "deleted"}
+                or replay["deleted"] is not False
+                or type(replay["fingerprint"]) is not str
+                or len(replay["fingerprint"]) != 64
+                or any(c not in "0123456789abcdef" for c in replay["fingerprint"])
+                or type(replay["response_json"]) is not str
+                or type(replay["source_ids"]) is not list or not replay["source_ids"]):
+            raise ValueError("invalid retained replay receipt")
+        for source_id in replay["source_ids"]:
+            validate("Identifier", source_id)
+        if replay["source_ids"] != sorted(set(replay["source_ids"])):
+            raise ValueError("invalid retained source inventory")
         response = json.loads(replay["response_json"])
         validate("ProcessBatchAck", response)
         return response
     except (ValidationError, KeyError, ValueError, TypeError, RecursionError):
         raise DomainError(503, "unavailable") from None
+
+
+def _active_acks(tx):
+    for replay in tx.scan("capture_replay"):
+        ack = _decode_ack(replay)
+        if ack is not None:
+            yield ack
 
 
 def _stream_committed(tx, stream_id):
@@ -74,8 +99,7 @@ def _stream_committed(tx, stream_id):
             return True
     if any(row.get("stream_id") == stream_id for row in tx.scan("raw_capture_frame")):
         return True
-    return any(_decode_ack(row)["stream_id"] == stream_id
-               for row in tx.scan("capture_replay") if not row.get("deleted"))
+    return any(ack["stream_id"] == stream_id for ack in _active_acks(tx))
 
 
 def capture_artifact_ids(tx):
@@ -136,8 +160,8 @@ class CaptureArchive:
                         key("POST", "/v2/process/windows-frames:batch")[:-1] + ",",
                         key("internal_windows_capture_frames")[:-1] + ",")
             for replay in tx.scan("capture_replay"):
-                if not replay.get("deleted") and replay.get("key", "").startswith(prefixes):
-                    ack = _decode_ack(replay)
+                ack = _decode_ack(replay)
+                if ack is not None and replay["key"].startswith(prefixes):
                     if ack["user_id"] == user_id and ack["stream_id"] == batch["stream_id"]:
                         raise DomainError(403, "forbidden")
             return
@@ -346,8 +370,8 @@ class CaptureArchive:
                                 or any(record_id in _decode(r)["record"]["causal_parents"]
                                        for r in tx.scan("capture_record"))
                                 or any(receipt["record_id"] == record_id
-                                       for replay in tx.scan("capture_replay") if not replay.get("deleted")
-                                       for receipt in _decode_ack(replay)["acknowledged"])):
+                                       for ack in _active_acks(tx)
+                                       for receipt in ack["acknowledged"])):
                             raise DomainError(503, "unavailable")
                         raise DomainError(409, "dependency_missing")
                     node = _decode(stored)
@@ -444,8 +468,8 @@ class CaptureArchive:
             raw_frame = any(ref["artifact_id"] == artifact_id for row in tx.scan("raw_capture_frame")
                             for ref in raw_artifact_references(row))
             acknowledged = any(ref["artifact_id"] == artifact_id
-                               for replay in tx.scan("capture_replay") if not replay.get("deleted")
-                               for receipt in _decode_ack(replay)["acknowledged"]
+                               for ack in _active_acks(tx)
+                               for receipt in ack["acknowledged"]
                                for ref in receipt["artifacts"])
             if recorded or raw_frame or acknowledged:
                 raise DomainError(503, "unavailable")
@@ -582,26 +606,9 @@ class CaptureArchive:
             if cached is not None:
                 # A present corrupt receipt is never permission to reconstruct
                 # its ordered request identity or ACK from a submitted retry.
-                if not isinstance(cached, dict) or cached.get("key") != cache_key:
-                    raise DomainError(503, "unavailable")
-                if cached.get("deleted") is True and set(cached) == {"key", "deleted"}:
+                response = _decode_ack(cached, expected_key=cache_key)
+                if response is None:
                     raise DomainError(404, "not_found")
-                try:
-                    if (set(cached) != {"key", "fingerprint", "response_json", "source_ids", "deleted"}
-                            or cached["deleted"] is not False
-                            or type(cached["fingerprint"]) is not str
-                            or len(cached["fingerprint"]) != 64
-                            or any(c not in "0123456789abcdef" for c in cached["fingerprint"])
-                            or type(cached["response_json"]) is not str
-                            or type(cached["source_ids"]) is not list or not cached["source_ids"]):
-                        raise ValueError("invalid retained replay receipt")
-                    for source_id in cached["source_ids"]:
-                        validate("Identifier", source_id)
-                    if cached["source_ids"] != sorted(set(cached["source_ids"])):
-                        raise ValueError("invalid retained source inventory")
-                    response = _decode_ack(cached)
-                except (ValidationError, KeyError, ValueError, TypeError, RecursionError):
-                    raise DomainError(503, "unavailable") from None
                 if cached["fingerprint"] != request_hash:
                     raise DomainError(409, "idempotency_conflict")
             exact_raw_replay = raw and (request_envelope is not None or desktop or windows) and cached is not None
@@ -617,10 +624,7 @@ class CaptureArchive:
                 # capture cannot release a witnessed, previously committed ID.
                 if any(row["record_id"] in absent_records for row in tx.scan("capture_slot")):
                     raise DomainError(503, "unavailable")
-                for replay in tx.scan("capture_replay"):
-                    if replay.get("deleted") is True and "response_json" not in replay:
-                        continue  # Erasure leaves only key/deleted; tombstones fence IDs.
-                    response = _decode_ack(replay)
+                for response in _active_acks(tx):
                     if any(r["record_id"] in absent_records for r in response["acknowledged"]):
                         raise DomainError(503, "unavailable")
             absent_frames = set()
