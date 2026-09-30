@@ -101,7 +101,7 @@ def _resolve_frame_image(frame, resolver, *, max_bytes, max_pixels, content_hash
 
     Pass the original descriptor to the resolver, even for a raw frame. Dimensions
     describe delivered pixels, never a manufactured legacy Frame or upright view.
-    A Windows image_role selects raw/composed on that same descriptor and must be
+    An image_role selects raw/composed on that same descriptor and must be
     echoed exactly in an available result. Legacy resolver calls have no role arg.
     Resolver exceptions propagate.
     """

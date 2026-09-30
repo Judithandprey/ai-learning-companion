@@ -200,7 +200,8 @@ authorized history without becoming live.
 The existing three process/window callables accept keyword-only
 `windows_resolver=None`. It is required when WindowsFrame descriptors are supplied;
 the existing positional resolver keeps its previous signature and results for
-all other frame families. The injected Windows callable receives the **same full
+legacy, 0.2.5 and 0.2.7 frames; Mac 0.2.11 uses the separate seam below.
+The injected Windows callable receives the **same full
 descriptor**, `image_role="raw"` or `"composed"`, and `max_bytes`. An available
 result must return that exact descriptor and role plus `media_type="image/png"`
 and `data: bytes`. Role or descriptor substitution becomes an explicit image gap,
@@ -232,6 +233,52 @@ tests explicitly synthetic injected equivalents. Lead owns actual Backend
 composition and later transport/QA. The held Windows producer is not accepted by
 these tests. Current-source/full-selection final recheck and cancellation remain
 mandatory; neither preparation nor composed pixels grant disclosure permission.
+
+### Mac raw and composed images (0.2.11)
+
+The same three callables additionally accept keyword-only `macos_resolver=None`.
+It is required for released MacRetainedFrame 0.2.11, including raw-only outcomes.
+The existing `resolver` and `windows_resolver` signatures remain unchanged.
+Mac and Windows share `kind: retained_capture_frame`; **exact contract versions**
+select their validators and resolver seams. An invalid/missing version or mismatched
+profile cannot be inferred from that kind or downgraded to another family.
+
+`macos_resolver(detached_frame, *, image_role, max_bytes)` receives the complete
+unchanged descriptor with role `raw` or `composed`. An available result must echo
+the exact descriptor and role, plus `media_type: image/png` and `data: bytes`.
+The existing bounded PNG decoder verifies file hash/length, declared dimensions,
+CRC/chunk structure, supported static format, decompressed scanlines and pixel
+limits. The complete source/incarnation/record/PNG-reference binding is checked
+through the released 0.2.11 validator before any bytes, including budget-omitted
+records. This validates proposed references, not a stored-original receipt.
+
+Raw pixels remain `item.image` with `image_role: raw`; `item.composed_image`
+always has `image_role: composed` for a supplied Mac frame:
+
+| Native composition outcome | Composed image result |
+| --- | --- |
+| `composed` with verified available bytes | `attached`; empty ink may alias the raw file but still resolves its own role and counts its payload toward the shared byte budget. |
+| `not_composed` | `not_composed` and the exact native reason; full detail/host/raw metadata stays in `item.frame`. No composed resolver call. |
+| `unknown` | `unknown` / `no_retained_outcome`; no successful empty-ink outcome or composed bytes are invented. |
+| Declared composition whose bytes are missing, denied, invalid or over budget | Explicit per-role gap; raw is never substituted for composed, nor composed for raw. |
+
+Metadata admission includes both role/status/reason results and the entire
+descriptor, excluding only attached binary payloads from the metadata count.
+Both images share existing per-image/total/pixel limits. SourceHost, callbackHost,
+PTS, processing time, startup scope/geometry, ordered strokes, reopened revision
+unknowns and native limitations remain exact metadata. Window comparisons use
+actual attached bytes independently for raw/composed; native clock comparisons,
+capture chronology, semantic change, reasoning and mastery remain unknown or
+not inferred. A document path/revision and separate ink reference do not prove
+editable-ink retention, rendering or the full operation history.
+
+Stored preparation keeps the same `{batch, sources, frames}` reader envelope,
+frozen selection, complete final authorized reread and mutation/cancellation
+guards. The current tests use audited **Swift-generated synthetic PNGs** with
+explicitly synthetic bindings and injected test readers/resolvers. Production
+Backend `read_macos` / `resolve_macos`, 0.2.12 ingress and Lead's actual adapter
+composition are subsequent dependencies. No provider, capture or disclosure
+permission is granted, and no real device or AI-receipt acceptance is claimed.
 
 ### Comparing an explicit observation window
 

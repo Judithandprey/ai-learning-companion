@@ -7,6 +7,7 @@ from packages.contracts import validate as validate_legacy
 from packages.contracts.capture_frame import validate as validate_raw, validate_binding as validate_raw_binding
 from packages.contracts.desktop_frame import validate as validate_desktop, validate_binding as validate_desktop_binding
 from packages.contracts.display_source import validate as validate_display, validate_display_record
+from packages.contracts.macos_frame import validate as validate_macos, validate_binding as validate_macos_binding
 from packages.contracts.original_artifact import validate_capture_frame
 from packages.contracts.process_v2 import validate as validate_process, validate_record_frame
 from packages.contracts.windows_frame import validate as validate_windows, validate_binding as validate_windows_binding
@@ -21,17 +22,34 @@ def _is_raw_frame(frame):
 
 
 def _is_windows_frame(frame):
-    return isinstance(frame, dict) and (frame.get("kind") == "retained_capture_frame"
-                                      or frame.get("contract_version") == "0.2.9")
+    return isinstance(frame, dict) and frame.get("contract_version") == "0.2.9"
 
 
-def prepare_stored_process_context(record_ids, reader, resolver, *, user_id, windows_resolver=None,
+def _is_macos_frame(frame):
+    return isinstance(frame, dict) and frame.get("contract_version") == "0.2.11"
+
+
+def _composed_picture(frame):
+    if _is_macos_frame(frame):
+        result = frame["composition"]
+        return result["image"] if result["kind"] == "composed" else None
+    return frame["composed"]["image"] if frame["composed"] else None
+
+
+def _composition_gap(frame):
+    if _is_macos_frame(frame):
+        result = frame["composition"]
+        return {"status": result["kind"], "reason": result["reason"]}
+    return {"status": "not_present"}
+
+
+def prepare_stored_process_context(record_ids, reader, resolver, *, user_id, windows_resolver=None, macos_resolver=None,
                                    max_metadata_bytes=64 * 1024, max_image_bytes=4 * 1024 * 1024,
                                    max_total_bytes=8 * 1024 * 1024, max_pixels=16_000_000):
     """Prepare stored evidence only if a final complete authorized read agrees.
 
-    Inject the current-authorized Backend reader and image resolver. Windows
-    frames additionally require windows_resolver with explicit raw/composed roles.
+    Inject the current-authorized Backend reader and image resolver. Windows/Mac
+    retained frames require windows_resolver/macos_resolver with raw/composed roles.
     The reader
     returns exactly {batch, sources, frames}; its selection envelope is historical
     context, not an original transport batch/ACK. It must perform fresh coherent
@@ -66,7 +84,8 @@ def prepare_stored_process_context(record_ids, reader, resolver, *, user_id, win
     original_metadata = canonical(snapshot)
     if len(original_metadata) > 4 * 1024 * 1024:
         raise ValueError("Complete stored metadata exceeds 4 MiB")
-    packet = compose_process_context(**snapshot, resolver=resolver, user_id=user_id, windows_resolver=windows_resolver,
+    packet = compose_process_context(**snapshot, resolver=resolver, user_id=user_id,
+        windows_resolver=windows_resolver, macos_resolver=macos_resolver,
         max_metadata_bytes=max_metadata_bytes, max_image_bytes=max_image_bytes,
         max_total_bytes=max_total_bytes, max_pixels=max_pixels)
     final_snapshot = reader(list(selection), max_metadata_bytes=4 * 1024 * 1024)
@@ -75,7 +94,7 @@ def prepare_stored_process_context(record_ids, reader, resolver, *, user_id, win
     return packet
 
 
-def prepare_observation_window(record_ids, reader, resolver, *, user_id, windows_resolver=None,
+def prepare_observation_window(record_ids, reader, resolver, *, user_id, windows_resolver=None, macos_resolver=None,
                                max_metadata_bytes=64 * 1024, max_image_bytes=4 * 1024 * 1024,
                                max_total_bytes=8 * 1024 * 1024, max_pixels=16_000_000):
     """Retain an explicit stored selection and compare its adjacent observations.
@@ -88,7 +107,7 @@ def prepare_observation_window(record_ids, reader, resolver, *, user_id, windows
 
     Adjacency means caller selection order, not consecutive capture or chronology.
     Byte equality compares only attached original bytes, not hashes or image meaning.
-    Windows pairs label the existing image comparison as raw and compare composed
+    Windows/Mac pairs label the existing image comparison as raw and compare composed
     attachments separately; an absent composition or frameless item stays unknown.
     Same-domain clock subtraction describes recorded readings, not capture intervals,
     causality, freshness or certainty about order. Raw callback clocks stay distinct
@@ -96,7 +115,8 @@ def prepare_observation_window(record_ids, reader, resolver, *, user_id, windows
     intact; no diagnosis, teaching permission, model call or provider receipt results.
     Later dispatch/presentation still needs its own current access/help checks.
     """
-    packet = prepare_stored_process_context(record_ids, reader, resolver, user_id=user_id, windows_resolver=windows_resolver,
+    packet = prepare_stored_process_context(record_ids, reader, resolver, user_id=user_id,
+        windows_resolver=windows_resolver, macos_resolver=macos_resolver,
         max_metadata_bytes=max_metadata_bytes, max_image_bytes=max_image_bytes,
         max_total_bytes=max_total_bytes, max_pixels=max_pixels)
     if packet["counts"]["omitted"]:
@@ -149,7 +169,7 @@ def _compare_observation_clocks(left, right):
     clocks = []
     for item in (left, right):
         frame = item["frame"]
-        if frame is not None and frame.get("contract_version") in ("0.2.7", "0.2.9"):
+        if frame is not None and frame.get("contract_version") in ("0.2.7", "0.2.9", "0.2.11"):
             # Native host/presentation readings have no released Process domain.
             # Even matching native-session strings do not authorize comparison.
             return {"status": "unknown", "reason": "no_process_capture_clock"}
@@ -167,7 +187,7 @@ def _compare_observation_clocks(left, right):
             "left_uncertainty_ms": a["uncertainty_ms"], "right_uncertainty_ms": b["uncertainty_ms"]}
 
 
-def compose_process_context(batch, sources, frames, resolver, *, user_id, windows_resolver=None,
+def compose_process_context(batch, sources, frames, resolver, *, user_id, windows_resolver=None, macos_resolver=None,
                             max_metadata_bytes=64 * 1024, max_image_bytes=4 * 1024 * 1024,
                             max_total_bytes=8 * 1024 * 1024, max_pixels=16_000_000):
     """Compose complete records from an actual supplied ProcessBatch (0.2.0).
@@ -177,7 +197,10 @@ def compose_process_context(batch, sources, frames, resolver, *, user_id, window
     and retain raw pixels, unapplied orientation and unknown capture time. Desktop
     native host facts do not become Process clocks. WindowsFrame 0.2.9 requires
     windows_resolver and retains raw/composed images separately, including absence
-    of composition. Both attachments count toward the total byte ceiling, even
+    of composition. MacRetainedFrame 0.2.11 requires macos_resolver, retaining its
+    composed/not_composed/unknown outcome. Exact versions select each validator;
+    their shared retained_capture_frame kind does not select a platform.
+    Both attachments count toward the total byte ceiling, even
     when identical. Only provisional_session is
     supported. All metadata is validated before byte resolution, including records
     later omitted by the budget.
@@ -200,6 +223,8 @@ def compose_process_context(batch, sources, frames, resolver, *, user_id, window
         raise ValueError("A bounded authorized image resolver is required")
     if windows_resolver is not None and not callable(windows_resolver):
         raise ValueError("Windows image resolver must be callable")
+    if macos_resolver is not None and not callable(macos_resolver):
+        raise ValueError("Mac image resolver must be callable")
     _validate_image_limits(max_image_bytes, max_total_bytes, max_pixels)
     if type(max_metadata_bytes) is not int or not 0 < max_metadata_bytes <= 4 * 1024 * 1024:
         raise ValueError("Metadata limit must be a positive integer at most 4 MiB")
@@ -222,7 +247,12 @@ def compose_process_context(batch, sources, frames, resolver, *, user_id, window
             raise ValueError("Foreign or duplicate source snapshot")
         source_map[key] = source
     for frame in frames:
-        if _is_windows_frame(frame):
+        if _is_macos_frame(frame):
+            validate_macos(frame)
+            if macos_resolver is None:
+                raise ValueError("Mac frames require an explicit macos_resolver")
+            owner = frame["source"]["user_id"]
+        elif _is_windows_frame(frame):
             validate_windows(frame)
             if windows_resolver is None:
                 raise ValueError("Windows frames require an explicit windows_resolver")
@@ -256,12 +286,15 @@ def compose_process_context(batch, sources, frames, resolver, *, user_id, window
                 raise ValueError("Artifact is bound to more than one source version")
         frame = frame_map.get(record["frame_id"])
         if frame is not None:
-            if _is_windows_frame(frame):
+            if _is_windows_frame(frame) or _is_macos_frame(frame):
                 if not display:
-                    raise ValueError("Windows frames require a shared-display source")
-                pictures = [frame["raw"]] + ([frame["composed"]["image"]] if frame["composed"] else [])
+                    raise ValueError("Retained desktop frames require a shared-display source")
+                composed = _composed_picture(frame)
+                pictures = [frame["raw"]] + ([composed] if composed is not None else [])
                 refs = {picture["artifact"]["artifact_id"]: picture["artifact"] for picture in pictures}
-                validate_windows_binding(batch, record["record_id"], frame, source, [
+                validate_binding = validate_macos_binding if _is_macos_frame(frame) else validate_windows_binding
+                # Proposed-reference binding, not a stored-original/commit receipt.
+                validate_binding(batch, record["record_id"], frame, source, [
                     {"contract_version": "0.2.2", "kind": "screen_image", "source": record["source"],
                      "artifact": artifact} for artifact in refs.values()
                 ])
@@ -279,7 +312,7 @@ def compose_process_context(batch, sources, frames, resolver, *, user_id, window
                 validate_display_record(source, batch, record["record_id"], frame)
             else:
                 validate_record_frame(batch, record["record_id"], frame)
-            if not (_is_raw_frame(frame) or _is_windows_frame(frame)) and frame["representation"] == "screen_capture":
+            if not (_is_raw_frame(frame) or _is_windows_frame(frame) or _is_macos_frame(frame)) and frame["representation"] == "screen_capture":
                 artifact = next(a for a in record["artifacts"] if a["artifact_id"] == frame["artifact_id"])
                 # Proposed binding validation, never a stored-binding/commit receipt.
                 validate_capture_frame(batch, record["record_id"], frame, {
@@ -312,8 +345,11 @@ def compose_process_context(batch, sources, frames, resolver, *, user_id, window
                           "byte_length": max_image_bytes}}
         if _is_raw_frame(item["frame"]):
             item.update(pixel_orientation="raw_unapplied", provider_image_alignment="not_attested")
-        elif _is_windows_frame(item["frame"]):
-            item["composed_image"] = {**item["image"], "image_role": "composed"}
+        elif _is_windows_frame(item["frame"]) or _is_macos_frame(item["frame"]):
+            composed = (_composition_gap(item["frame"])
+                        if _is_macos_frame(item["frame"]) and _composed_picture(item["frame"]) is None
+                        else item["image"])
+            item["composed_image"] = {**composed, "image_role": "composed"}
             item["image"]["image_role"] = "raw"
             item["provider_image_alignment"] = "not_attested"
         packet["items"].append(item)
@@ -331,16 +367,16 @@ def compose_process_context(batch, sources, frames, resolver, *, user_id, window
             if parent["record_id"] in included:
                 parent["status"] = "included"
         frame, source = item["frame"], item["source"]
-        if _is_windows_frame(frame):
-            for role, picture in (("raw", frame["raw"]),
-                                  ("composed", frame["composed"]["image"] if frame["composed"] else None)):
+        if _is_windows_frame(frame) or _is_macos_frame(frame):
+            image_resolver = macos_resolver if _is_macos_frame(frame) else windows_resolver
+            for role, picture in (("raw", frame["raw"]), ("composed", _composed_picture(frame))):
                 if picture is None:
-                    image = {"status": "not_present"}
+                    image = _composition_gap(frame)
                 elif source.get("access_status", "ready") != "ready":
                     image = {"status": "source_unavailable"}
                 else:
                     image = _process_image(frame, picture["artifact"], (picture["width"], picture["height"]),
-                        windows_resolver, min(max_image_bytes, max_total_bytes - total), max_pixels, image_role=role)
+                        image_resolver, min(max_image_bytes, max_total_bytes - total), max_pixels, image_role=role)
                 if image["status"] == "attached":
                     total += image["byte_length"]
                 item["image" if role == "raw" else "composed_image"] = {**image, "image_role": role}
