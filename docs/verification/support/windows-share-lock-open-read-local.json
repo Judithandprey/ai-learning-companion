@@ -1,0 +1,342 @@
+{
+  "scope": "Local synthetic file/owned PowerShell lifetime only; no uploader, hosted acceptance or GUI",
+  "date_utc": "2026-09-30T19:23:53.268Z",
+  "source": "d49d101cd8d378e57ea54da6cb38fb89b80bb72c",
+  "probe_sha256": "dd4c6766208e3702f7995a1ff42d1b5f61c8a1f847b31e84ff5994d09530498c",
+  "parent": {
+    "node": "v24.19.0",
+    "uv": "1.52.1",
+    "platform": "win32",
+    "executable": "C:\\Program Files\\nodejs\\node.exe",
+    "os_release": "10.0.26200",
+    "cwd": "C:\\Windows\\System32"
+  },
+  "results": [
+    {
+      "name": "exact-legacy",
+      "script_sha256": "48fc38f2dbb37119ad42a3d7a05c7dec92cdc390ce07ff96f49c92596ae0b56c",
+      "events": [
+        {
+          "event": "text",
+          "value": "held",
+          "at_ms": 220
+        },
+        {
+          "event": "parent_release",
+          "at_ms": 372
+        },
+        {
+          "event": "child_exit",
+          "at_ms": 393,
+          "code": 0,
+          "signal": null
+        },
+        {
+          "event": "child_close",
+          "at_ms": 393,
+          "code": 0,
+          "signal": null
+        }
+      ],
+      "pid": 44152,
+      "held_received": true,
+      "after_ready": {
+        "process": {
+          "exitCode": null,
+          "signalCode": null,
+          "stdin_ended": false,
+          "stdin_destroyed": false,
+          "at_ms": 220
+        },
+        "open": {
+          "denied": true,
+          "code": "EBUSY",
+          "errno": -4082,
+          "syscall": "open"
+        },
+        "read": {
+          "denied": true,
+          "code": "EBUSY",
+          "errno": -4082,
+          "syscall": "open"
+        }
+      },
+      "after_150ms": {
+        "process": {
+          "exitCode": null,
+          "signalCode": null,
+          "stdin_ended": false,
+          "stdin_destroyed": false,
+          "at_ms": 372
+        },
+        "open": {
+          "denied": true,
+          "code": "EBUSY",
+          "errno": -4082,
+          "syscall": "open"
+        },
+        "read": {
+          "denied": true,
+          "code": "EBUSY",
+          "errno": -4082,
+          "syscall": "open"
+        }
+      },
+      "exit": {
+        "code": 0,
+        "signal": null
+      },
+      "stderr": "",
+      "after_release": {
+        "denied": false,
+        "bytes": 35,
+        "sha256": "fd3c2810473c07410c9b73ad7efd550f66c3f4fef04d6ef1f5d61c18b14ccf4a"
+      },
+      "completed": true,
+      "lock_precondition_passed": true,
+      "duration_ms": 393
+    },
+    {
+      "name": "traced-readline",
+      "script_sha256": "06910916b8409c78cc090aef6238ac91079abffd013da5d9113ba50c6ed22d02",
+      "events": [
+        {
+          "path": "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-support-share-MZuFWC\\synthetic-original.txt",
+          "executable": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+          "filesystem": "NTFS",
+          "exists": true,
+          "input_type": "System.IO.TextReader+SyncTextReader",
+          "powershell": "5.1.26100.9444",
+          "event": "opening",
+          "clr": "4.0.30319.42000",
+          "pid": 66340,
+          "input_redirected": true,
+          "at_ms": 297
+        },
+        {
+          "hresult": -2147024864,
+          "denied": true,
+          "event": "dotnet_second_open",
+          "at_ms": 310
+        },
+        {
+          "path": "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-support-share-MZuFWC\\synthetic-original.txt",
+          "can_read": true,
+          "event": "held",
+          "closed": false,
+          "at_ms": 330
+        },
+        {
+          "event": "parent_release",
+          "at_ms": 491
+        },
+        {
+          "is_null": false,
+          "value": "release-probe",
+          "event": "input_returned",
+          "at_ms": 493
+        },
+        {
+          "closed": true,
+          "event": "disposed",
+          "at_ms": 494
+        },
+        {
+          "event": "child_exit",
+          "at_ms": 514,
+          "code": 0,
+          "signal": null
+        },
+        {
+          "event": "child_close",
+          "at_ms": 514,
+          "code": 0,
+          "signal": null
+        }
+      ],
+      "pid": 66340,
+      "held_received": true,
+      "after_ready": {
+        "process": {
+          "exitCode": null,
+          "signalCode": null,
+          "stdin_ended": false,
+          "stdin_destroyed": false,
+          "at_ms": 330
+        },
+        "open": {
+          "denied": true,
+          "code": "EBUSY",
+          "errno": -4082,
+          "syscall": "open"
+        },
+        "read": {
+          "denied": true,
+          "code": "EBUSY",
+          "errno": -4082,
+          "syscall": "open"
+        }
+      },
+      "after_150ms": {
+        "process": {
+          "exitCode": null,
+          "signalCode": null,
+          "stdin_ended": false,
+          "stdin_destroyed": false,
+          "at_ms": 490
+        },
+        "open": {
+          "denied": true,
+          "code": "EBUSY",
+          "errno": -4082,
+          "syscall": "open"
+        },
+        "read": {
+          "denied": true,
+          "code": "EBUSY",
+          "errno": -4082,
+          "syscall": "open"
+        }
+      },
+      "exit": {
+        "code": 0,
+        "signal": null
+      },
+      "stderr": "",
+      "after_release": {
+        "denied": false,
+        "bytes": 35,
+        "sha256": "fd3c2810473c07410c9b73ad7efd550f66c3f4fef04d6ef1f5d61c18b14ccf4a"
+      },
+      "completed": true,
+      "lock_precondition_passed": true,
+      "duration_ms": 514
+    },
+    {
+      "name": "traced-raw-stdin",
+      "script_sha256": "c946c336653a827f4a7596a4a95204c4a03e1d0ea7116f352e96807a026dcf26",
+      "events": [
+        {
+          "path": "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-support-share-MZuFWC\\synthetic-original.txt",
+          "executable": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+          "filesystem": "NTFS",
+          "exists": true,
+          "input_type": "System.IO.TextReader+SyncTextReader",
+          "powershell": "5.1.26100.9444",
+          "event": "opening",
+          "clr": "4.0.30319.42000",
+          "pid": 70668,
+          "input_redirected": true,
+          "at_ms": 292
+        },
+        {
+          "hresult": -2147024864,
+          "denied": true,
+          "event": "dotnet_second_open",
+          "at_ms": 302
+        },
+        {
+          "path": "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-support-share-MZuFWC\\synthetic-original.txt",
+          "can_read": true,
+          "event": "held",
+          "closed": false,
+          "at_ms": 316
+        },
+        {
+          "event": "parent_release",
+          "at_ms": 474
+        },
+        {
+          "is_null": false,
+          "value": 114,
+          "event": "input_returned",
+          "at_ms": 475
+        },
+        {
+          "closed": true,
+          "event": "disposed",
+          "at_ms": 477
+        },
+        {
+          "event": "child_exit",
+          "at_ms": 496,
+          "code": 0,
+          "signal": null
+        },
+        {
+          "event": "child_close",
+          "at_ms": 496,
+          "code": 0,
+          "signal": null
+        }
+      ],
+      "pid": 70668,
+      "held_received": true,
+      "after_ready": {
+        "process": {
+          "exitCode": null,
+          "signalCode": null,
+          "stdin_ended": false,
+          "stdin_destroyed": false,
+          "at_ms": 316
+        },
+        "open": {
+          "denied": true,
+          "code": "EBUSY",
+          "errno": -4082,
+          "syscall": "open"
+        },
+        "read": {
+          "denied": true,
+          "code": "EBUSY",
+          "errno": -4082,
+          "syscall": "open"
+        }
+      },
+      "after_150ms": {
+        "process": {
+          "exitCode": null,
+          "signalCode": null,
+          "stdin_ended": false,
+          "stdin_destroyed": false,
+          "at_ms": 473
+        },
+        "open": {
+          "denied": true,
+          "code": "EBUSY",
+          "errno": -4082,
+          "syscall": "open"
+        },
+        "read": {
+          "denied": true,
+          "code": "EBUSY",
+          "errno": -4082,
+          "syscall": "open"
+        }
+      },
+      "exit": {
+        "code": 0,
+        "signal": null
+      },
+      "stderr": "",
+      "after_release": {
+        "denied": false,
+        "bytes": 35,
+        "sha256": "fd3c2810473c07410c9b73ad7efd550f66c3f4fef04d6ef1f5d61c18b14ccf4a"
+      },
+      "completed": true,
+      "lock_precondition_passed": true,
+      "duration_ms": 496
+    }
+  ],
+  "target": {
+    "path": "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-support-share-MZuFWC\\synthetic-original.txt",
+    "realpath": "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-support-share-MZuFWC\\synthetic-original.txt",
+    "dev": "3532831117",
+    "ino": "25051272927448499",
+    "bytes": 35
+  },
+  "own_temp_removed": true,
+  "observation_complete": true,
+  "lock_preconditions_passed": true
+}

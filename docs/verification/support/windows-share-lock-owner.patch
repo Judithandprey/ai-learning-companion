@@ -1,0 +1,181 @@
+diff --git a/apps/windows/tests/uploader.test.ts b/apps/windows/tests/uploader.test.ts
+--- a/apps/windows/tests/uploader.test.ts
++++ b/apps/windows/tests/uploader.test.ts
+@@ -71,29 +71,155 @@
+  * Returns what releases it (the helper closes the file and ends; killed if it has not ended within 10 s).
+  */
+ async function holdUnshared(file: string): Promise<() => Promise<void>> {
+-  const script = "$f = [System.IO.File]::Open($env:LC_HOLD_FILE, 'Open', 'Read', 'None'); [Console]::Out.WriteLine('held'); [Console]::Out.Flush(); [void][Console]::In.ReadLine(); $f.Close()";
+-  const helper = spawn('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', script], { env: { ...process.env, LC_HOLD_FILE: file }, stdio: ['pipe', 'pipe', 'ignore'], windowsHide: true });
+-  const exited = new Promise<unknown>((resolve) => helper.once('exit', resolve));
+-  const wait = (ms: number) => new Promise<'late'>((resolve) => setTimeout(() => resolve('late'), ms));
+-  const release = async (): Promise<void> => {
+-    helper.stdin!.end('\n');
+-    if ((await Promise.race([exited, wait(10_000)])) === 'late') {
+-      helper.kill();
+-      await exited;
+-    }
++  // Proposed diagnostic: keep Console.In.ReadLine so the hosted failure remains observable.
++  const marker = 'lc-share-lock-held';
++  const sentinel = 'lc-share-lock-release';
++  const script = `
++$ErrorActionPreference = 'Stop'
++$f = $null
++$status = 0
++try {
++  [Console]::Error.WriteLine('phase=opening')
++  $f = [System.IO.File]::Open($env:LC_HOLD_FILE, 'Open', 'Read', 'None')
++  [Console]::Error.WriteLine('phase=acquired')
++  [Console]::Out.WriteLine('${marker}')
++  [Console]::Out.Flush()
++  [Console]::Error.WriteLine('phase=waiting')
++  $inputLine = [Console]::In.ReadLine()
++  if ($null -eq $inputLine) {
++    [Console]::Error.WriteLine('phase=input-null')
++    throw [System.IO.EndOfStreamException]::new('Release input was null')
++  }
++  [Console]::Error.WriteLine('phase=input-received')
++  if ($inputLine -cne '${sentinel}') {
++    [Console]::Error.WriteLine('phase=input-unexpected')
++    throw [System.IO.InvalidDataException]::new('Unexpected release input')
++  }
++  [Console]::Error.WriteLine('phase=input-sentinel')
++} catch {
++  $failure = $_.Exception.GetBaseException()
++  [Console]::Error.WriteLine(('error_type={0};hresult={1}' -f $failure.GetType().FullName, $failure.HResult))
++  $status = 2
++} finally {
++  if ($null -ne $f) { $f.Dispose(); [Console]::Error.WriteLine('phase=disposed') }
++  [Console]::Error.Flush()
++}
++exit $status
++`;
++  const started = Date.now();
++  const events: Array<{ at_ms: number; phase: string }> = [];
++  const problems: string[] = [];
++  const problem = (message: string): void => {
++    if (problems.length < 12 && !problems.includes(message)) problems.push(message);
+   };
+-  const held = await Promise.race([
+-    new Promise<boolean>((resolve) => {
+-      let out = '';
+-      helper.stdout!.on('data', (c: Buffer) => {
+-        out += c.toString();
+-        if (out.includes('held')) resolve(true);
+-      });
+-    }),
+-    exited.then(() => false),
+-    wait(30_000).then(() => false),
+-  ]);
+-  if (!held) {
++  const note = (phase: string): void => {
++    if (events.length < 32) events.push({ at_ms: Date.now() - started, phase });
++    else problem('phase output exceeded its bound');
++  };
++  const bounded = async (promise: Promise<boolean>, ms: number): Promise<boolean> => {
++    let timer: ReturnType<typeof setTimeout> | undefined;
++    try {
++      return await Promise.race([promise, new Promise<false>((resolve) => {
++        timer = setTimeout(() => resolve(false), ms);
++      })]);
++    } finally { clearTimeout(timer); }
++  };
++  const helper = spawn('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', script], {
++    env: { ...process.env, LC_HOLD_FILE: file }, stdio: ['pipe', 'pipe', 'pipe'], windowsHide: true,
++  });
++  let resolveHeld!: (value: boolean) => void;
++  const held = new Promise<boolean>((resolve) => { resolveHeld = resolve; });
++  let resolveClosed!: (value: boolean) => void;
++  const closed = new Promise<boolean>((resolve) => { resolveClosed = resolve; });
++  let closeResult: { code: number | null; signal: NodeJS.Signals | null } | undefined;
++  let releaseRequested = false;
++  let sawHeld = false;
++  let sawSentinel = false;
++  const errorCode = (error: Error): string => {
++    const code = (error as NodeJS.ErrnoException).code ?? 'unknown';
++    return /^[A-Z0-9_]{1,40}$/.test(code) ? code : 'unknown';
++  };
++  helper.on('error', (error) => { problem(`child error: ${errorCode(error)}`); resolveHeld(false); });
++  helper.on('exit', (code, signal) => {
++    note(`child exit: ${code ?? signal}`);
++    if (!releaseRequested) problem('helper exited before release');
++    resolveHeld(false);
++  });
++  helper.once('close', (code, signal) => {
++    closeResult = { code, signal };
++    note(`child close: ${code ?? signal}`);
++    resolveClosed(true);
++    resolveHeld(false);
++  });
++  for (const [stream, name] of [[helper.stdin, 'stdin'], [helper.stdout, 'stdout'], [helper.stderr, 'stderr']] as const) {
++    stream.on('error', (error) => { problem(`${name} error: ${errorCode(error)}`); resolveHeld(false); });
++  }
++  let stdout = '';
++  let stdoutBytes = 0;
++  helper.stdout.on('data', (chunk: Buffer) => {
++    stdoutBytes += chunk.length;
++    if (stdoutBytes > 1024) { problem('stdout exceeded its bound'); resolveHeld(false); return; }
++    stdout += chunk.toString('utf8');
++    while (stdout.includes('\n')) {
++      const end = stdout.indexOf('\n');
++      const line = stdout.slice(0, end).replace(/\r$/, '');
++      stdout = stdout.slice(end + 1);
++      if (line !== marker || sawHeld) { problem('unexpected stdout (redacted)'); resolveHeld(false); continue; }
++      sawHeld = true;
++      note('held marker received');
++      resolveHeld(true);
++    }
++  });
++  let stderr = '';
++  let stderrBytes = 0;
++  helper.stderr.on('data', (chunk: Buffer) => {
++    stderrBytes += chunk.length;
++    if (stderrBytes > 4096) { problem('stderr exceeded its bound'); resolveHeld(false); return; }
++    stderr += chunk.toString('utf8');
++    while (stderr.includes('\n')) {
++      const end = stderr.indexOf('\n');
++      const line = stderr.slice(0, end).replace(/\r$/, '');
++      stderr = stderr.slice(end + 1);
++      // Only fixed phases and exception type/HResult are retained; no raw input, environment or error text.
++      if (/^phase=(opening|acquired|waiting|input-null|input-received|input-unexpected|input-sentinel|disposed)$/.test(line)
++          || /^error_type=[A-Za-z0-9_.]{1,120};hresult=-?\d{1,12}$/.test(line)) {
++        note(`stderr: ${line}`);
++      } else { problem('unstructured stderr (redacted)'); }
++      if (line.startsWith('phase=input-') && !releaseRequested) problem('stdin returned before release');
++      if (line === 'phase=input-sentinel') sawSentinel = true;
++      if (line.startsWith('error_type=') || line === 'phase=input-null' || line === 'phase=input-unexpected') {
++        problem('helper reported an acquisition, input or disposal error');
++        resolveHeld(false);
++      }
++    }
++  });
++  let releasing: Promise<void> | undefined;
++  const release = (): Promise<void> => {
++    if (releasing) return releasing;
++    releasing = (async () => {
++      releaseRequested = true;
++      note('parent release requested');
++      if (!closeResult && !helper.stdin.destroyed) {
++        try { helper.stdin.end(`${sentinel}\n`); }
++        catch (error) { problem(`release write error: ${errorCode(error as Error)}`); }
++      }
++      if (!(await bounded(closed, 10_000))) {
++        problem('normal close timed out; owned helper kill required');
++        try { note(helper.kill() ? 'owned kill requested' : 'owned kill rejected'); }
++        catch (error) { problem(`owned kill error: ${errorCode(error as Error)}`); }
++        if (!(await bounded(closed, 3_000))) problem('owned helper close remains unconfirmed');
++      }
++      if (!closeResult || closeResult.code !== 0 || closeResult.signal !== null) problem('normal exit code 0 was not confirmed');
++      if (!sawSentinel) problem('release sentinel was not confirmed');
++      if (stdout || stderr) problem('unterminated helper output (redacted)');
++      // Emit on success too: the unchanged read-denial assertion can fail before uploader execution.
++      console.error('[holdUnshared]', JSON.stringify({ synthetic_file: path.basename(file), pid: helper.pid, events, problems, close: closeResult ?? null }));
++      if (problems.length) throw new Error('share-lock helper failed; see sanitized holdUnshared diagnostics');
++    })();
++    return releasing;
++  };
++  if (!(await bounded(held, 30_000)) || closeResult || helper.exitCode !== null || helper.signalCode !== null || problems.length) {
++    problem('live helper readiness was not established');
+     await release();
+     throw new Error('the share-lock helper did not hold the file');
+   }
