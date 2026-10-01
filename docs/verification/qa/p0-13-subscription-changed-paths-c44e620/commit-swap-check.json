@@ -1,0 +1,127 @@
+{
+ "what": "The three test files as committed, run once with ONE commit constant of sub_tree.mjs changed in a scratch copy. If a column really runs its own commit, the tests that assert a difference between the two commits must fail. Not a product result.",
+ "harness_commit": "ad33e778a6b27d4724af9dbbe88d8bcf6e416b0a",
+ "swaps": {
+  "first_release_column_given_the_released_commit": {
+   "changed": "FIRST_RELEASE = c44e6204b3e0c49f710fc7bb73d540ef6daa7b06 (instead of 8eac9fc02ebf10e2e2fca7c164b6c33c2f99698b)",
+   "sub_changed_app": {
+    "exit_code": 1,
+    "tests": 21,
+    "passed": 19,
+    "failed": 2,
+    "cancelled": 0,
+    "tests_that_did_not_pass": [
+     "FOLLOW-UP, THREE COMMITS: a question the connector ends as \"cancelled\" by itself (no Cancel, no Stop). before and first_release: the card says \"Cancelled: no answer is shown.\" and the record holds cancelled, uncertain:false, as if the interruption were confirmed; released: the card adds \"Whether ChatGPT stopped working on it is not confirmed; it may still have counted against your usage.\" and the record holds uncertain:true. On all three: no answer, one question sent, no cancel sent, the same connector, still signed in",
+     "the source under test: every file that is run is its commit's own blob; the mixed tree is RELEASED with only overlay.ts of BEFORE; between FIRST_RELEASE and RELEASED the app differs in subscription.ts and two of the owner's test files, nothing else"
+    ]
+   },
+   "sub_changed_bridge": {
+    "exit_code": 1,
+    "tests": 37,
+    "passed": 31,
+    "failed": 6,
+    "cancelled": 0,
+    "tests_that_did_not_pass": [
+     "QA-SUB-06 an address that is not official, its cancel NOT acknowledged (another error, another shape, no answer), on THREE commits: RELEASED ends the connector and says \"that connector is no longer used and is being ended\", after \"the connector was ended here before the sign-in completed\"; FIRST_RELEASE ended it too but said \"the connector was ended\" after \"the connector ended before the sign-in completed\"; BEFORE kept the connector and said only \"not opened\". The user's Check starts a new one on the two releases",
+     "QA-SUB-06 an address that is not official, its cancel not acknowledged, and the connector the app then ends does NOT end at the end of its input (end_ms 0.3 s here), on THREE commits: RELEASED says both, joined by \"; \": why that connector is no longer used, and that its end was not seen; after the user's Check only the second stays. FIRST_RELEASE said only the reason; BEFORE did not end the connector",
+     "QA-SUB-06 the app itself ends the connector while a sign-in waits (the app's quit), on THREE commits: RELEASED says \"the connector was ended here before the sign-in completed\"; FIRST_RELEASE and BEFORE said \"the connector ended before the sign-in completed\"",
+     "a connector the app ended (an over-long line; end_ms 0.3 s here) does NOT end at the end of its input, on THREE commits: RELEASED says so beside the state: \"its wsl.exe shim was ended, which does not show ...\" when ending its process ended it, \"its wsl.exe shim did not end either ...\" when not even that did (then the first, once that process is gone); it starts nothing in its place by itself (watched 3 s) and keeps the note after the user's Check, which starts launch 2. FIRST_RELEASE and BEFORE say nothing about it",
+     "a question answered \"cancelled\" that the app did NOT cancel (it sent no cancel and no Stop), on THREE commits: RELEASED says cancelled with uncertain TRUE; FIRST_RELEASE and BEFORE said uncertain false. The app's OWN Cancel (confirmed) and OWN Stop (acknowledged) are uncertain false on all three; an unconfirmed Cancel and the code interrupt_unconfirmed are uncertain true on all three",
+     "side by side",
+     "the app's OWN bound for a connector's end (no end_ms passed; the app quits), with a connector that needs 7 s to end after the end of its input, on THREE commits: RELEASED (10 s) lets it end by itself, exit code 0, and says nothing about it; FIRST_RELEASE and BEFORE (5 s) ended its process first (SIGTERM)"
+    ]
+   },
+   "sub_changed_backend": {
+    "exit_code": 1,
+    "tests": 28,
+    "passed": 22,
+    "failed": 6,
+    "cancelled": 0,
+    "tests_that_did_not_pass": [
+     "follow-up W-KNOWN-CANCEL (before / first_release / released): after 4096 requests the connector cancels the question that is out by itself; the client never asked for it. BEFORE and FIRST_RELEASE show { cancelled, uncertain: false }, as certain; RELEASED shows { cancelled, uncertain: true }. On all three the connector then stays alive and answers `unavailable` to everything",
+     "follow-up W-KNOWN-END-BUDGET, a connector whose own end was not seen (before / first_release / released; end_ms 200 here, the end held longer): all three end the shim. BEFORE and FIRST_RELEASE say nothing of it. RELEASED keeps a note in status().detail, starts nothing in its place by itself, and the note is still there after the user's Check (which starts a new connector, usable), and after that one's orderly end",
+     "follow-up W-KNOWN-END-BUDGET, a shim that does not end when killed (before / first_release / released; end_ms 200 here): every client waits 2 s more and then lets go. BEFORE and FIRST_RELEASE say nothing. RELEASED says that the shim did not end either; when the shim ends later, it says that much and still not the connector's end",
+     "follow-up W-KNOWN-END-BUDGET, the default bound by behaviour (before / first_release / released): a connector whose end comes 8.2 s after the end of its input. BEFORE and FIRST_RELEASE end the shim at their 5 s and say nothing; RELEASED waits, sees the connector's own end, does not signal the shim and has no note. And RELEASED with an end that never comes: the shim is ended at 10 s and the note is said",
+     "follow-up, the changed wording at a quit with a sign-in pending (before / first_release / released): BEFORE and FIRST_RELEASE say \"the connector ended before the sign-in completed\"; RELEASED says \"the connector was ended here before the sign-in completed\". The connector ended in time on all three, and nothing was opened",
+     "the three commits: FIRST_RELEASE and RELEASED have the same connector side (the tree ids of services, packages and pyproject.toml are equal) and differ in the Windows app only in src/main/subscription.ts; BEFORE has another connector"
+    ]
+   }
+  },
+  "before_column_given_the_first_release_commit": {
+   "changed": "BEFORE = 8eac9fc02ebf10e2e2fca7c164b6c33c2f99698b (instead of 3e4b40654460a2dc2407f1d9be60d8e1a5b39a3e)",
+   "sub_changed_app": {
+    "exit_code": 1,
+    "tests": 21,
+    "passed": 10,
+    "failed": 11,
+    "cancelled": 0,
+    "tests_that_did_not_pass": [
+     "QA-SUB-01 NEGATIVE CONTROL (overlay.ts of BEFORE in the RELEASED harness, and BEFORE whole): the same steps hand the main process a frame of size 0×0 and the card says \"the selection facts are malformed\"; no form, no record; without a replacement the old overlay keeps a selection",
+     "QA-SUB-01 the ink changes during the encoding. Alone (unchanged between the two commits): both keep the selection with the ink as it was at pen-up (revision 1, one stroke), not as it is now (revision 2, none). With the frame replaced too: RELEASED keeps it the same way, the overlay of BEFORE refuses it",
+     "QA-SUB-01 two replacements during one encoding: RELEASED keeps the selection as frame 41 (shade 20, neither of the two later screens), and the next selection names frame 43 with the newest screen (the proof that the second sample replaced the frame again); the overlay of BEFORE refuses it as malformed",
+     "QA-SUB-04 NEGATIVE CONTROL (BEFORE), the pure rule: every damaged text is returned as a question to send; questionProblem does not exist; valid text and the 4000-unit limit are the same as RELEASED",
+     "QA-SUB-04 NEGATIVE CONTROL (BEFORE), through the app: the lone-surrogate question is accepted, recorded and sent to the connector (as the JSON escape \\ud83d), and so are the seven other damaged texts; a valid question is sent byte-exact as on RELEASED",
+     "QA-SUB-04 the refusal comes before the connection is looked at: with the subscription not yet checked RELEASED says the damaged-character text, BEFORE said \"has not been checked yet\"; on both nothing is recorded and no connector is started",
+     "QA-SUB-08 NEGATIVE CONTROL (BEFORE), the same eight ends: no entry has a presentation key; a shown answer, first or later, is recorded as answered with shown:true only; everything else is the same as RELEASED",
+     "QA-SUB-08 NEGATIVE CONTROL (BEFORE), the same six: no presentation key at any moment. What BEFORE kept: after a lost renderer or a Stop the entry stayed answered with its text and shown:false, with nothing to tell it from an answer nobody could have seen; closed, replaced or reported \"not shown\" it became cancelled without its text, as on RELEASED",
+     "QA-SUB-08 NEGATIVE CONTROL (BEFORE), the unwritten-record notice: the same steps said \"(an answer included, if one was shown)\" although this answer was not shown, and the next Start wrote it with no presentation key",
+     "QA-SUB-08 a report \"not shown\" that comes AFTER the report \"shown\" changes nothing (this guard is the same on both commits): the entry stays answered with its text, shown:true, and on RELEASED presentation \"shown\" (BEFORE: no such key); the bytes of the record file are unchanged",
+     "the source under test: every file that is run is its commit's own blob; the mixed tree is RELEASED with only overlay.ts of BEFORE; between FIRST_RELEASE and RELEASED the app differs in subscription.ts and two of the owner's test files, nothing else"
+    ]
+   },
+   "sub_changed_bridge": {
+    "exit_code": 1,
+    "tests": 37,
+    "passed": 17,
+    "failed": 20,
+    "cancelled": 0,
+    "tests_that_did_not_pass": [
+     "QA-SUB-05 account read refused with a code: RELEASED says it in words about the READ (busy; not signed in; every other or unknown code); BEFORE said the words of a refused QUESTION",
+     "QA-SUB-05 sign-in start refused with a code: RELEASED says it in words about the SIGN-IN (busy; every other or unknown code); BEFORE said the words of a refused QUESTION; nothing is opened",
+     "QA-SUB-06 Cancel sign-in, by what the cancel is answered: RELEASED waits (\"being cancelled\"), then {} -> cancelled; invalid_request -> failed, \"no longer holds\"; another error, another shape or no answer -> still waiting, \"not confirmed\", and a second cancel IS sent. BEFORE said cancelled at once and never read the answer",
+     "QA-SUB-06 a question while a sign-in is being STARTED (signed in, the start not yet answered): RELEASED refuses it HERE, \"a sign-in is being started\", 0 asks received; BEFORE sent it",
+     "QA-SUB-06 a signed-in READ while a sign-in is being started (the start still unanswered): RELEASED still says \"starting\" after the read and refuses a question HERE, 0 asks received; BEFORE forgot the sign-in at the read and sent the question",
+     "QA-SUB-06 a signed-in read while a sign-in is pending: RELEASED keeps the pending sign-in and refuses a question HERE (0 asks reach the connector), also while its cancel is out and after it was not confirmed; BEFORE forgot the sign-in and sent every question",
+     "QA-SUB-06 an address that is not official, and the connector ENDS on the cancel the app sends for it: RELEASED says not available, the sign-in failed, \"the connector ended before the sign-in completed\", and never says that the address was refused; BEFORE said \"not an official ChatGPT address\". Nothing is opened; the user's Check starts a new connector",
+     "QA-SUB-06 an address that is not official, its cancel NOT acknowledged (another error, another shape, no answer), on THREE commits: RELEASED ends the connector and says \"that connector is no longer used and is being ended\", after \"the connector was ended here before the sign-in completed\"; FIRST_RELEASE ended it too but said \"the connector was ended\" after \"the connector ended before the sign-in completed\"; BEFORE kept the connector and said only \"not opened\". The user's Check starts a new one on the two releases",
+     "QA-SUB-06 an address that is not official, its cancel not acknowledged, and the connector the app then ends does NOT end at the end of its input (end_ms 0.3 s here), on THREE commits: RELEASED says both, joined by \"; \": why that connector is no longer used, and that its end was not seen; after the user's Check only the second stays. FIRST_RELEASE said only the reason; BEFORE did not end the connector",
+     "QA-SUB-06 the browser cannot be opened AND the cancel is then not confirmed: RELEASED says the cancel's note (\"not confirmed ... cancel it again\"), not the browser's, while a question is still refused with the browser's words; a second cancel, acknowledged, ends it. BEFORE said cancelled at once, then forgot the sign-in and sent the question",
+     "QA-SUB-06 the browser cannot be opened: RELEASED says the sign-in is still pending and to cancel it, keeps saying so after a signed-in read, and refuses a question HERE; BEFORE said \"still waiting\", then forgot the sign-in and sent the question",
+     "QA-SUB-06 the connector ends while the cancel is out: RELEASED says the sign-in failed, \"the connector ended before the sign-in completed\"; BEFORE kept saying cancelled. On RELEASED and on BEFORE nothing starts by itself (watched 2 s), and the user's Check starts a connector again",
+     "QA-SUB-06 the sign-in completes (success) while its cancel is out, and the cancel gets no answer: RELEASED takes the completion (no sign-in pending, the account is read again: signed in); BEFORE ignored it and stayed cancelled and signed out",
+     "QA-SUB-06 the sign-in completes (success) while its cancel is out, and the cancel is THEN acknowledged {} (0.5 s later): RELEASED stays signed in with no sign-in said (the late acknowledgement does not turn it into \"cancelled\"); BEFORE said cancelled and signed out, and did not read the account",
+     "QA-SUB-06 while the cancel is out: RELEASED still says waiting with \"the sign-in is being cancelled\", and a second press sends nothing and says nothing; BEFORE already said cancelled",
+     "QA-SUB-07 \"changed\" in the same write as EVERY read answer: one Check makes 4 reads on RELEASED and BEFORE and ends as not known; RELEASED says the new note, BEFORE said \"changed again while it was being read\"",
+     "QA-SUB-07 \"changed\" shortly after EVERY read answer: RELEASED reads 3 more times (4 in all) and then says not known with the note, a question is refused HERE, and a second Check again costs 4 reads; BEFORE reads without end (watched to 20 reads for one Check, never \"not known\")",
+     "QA-SUB-07 after the bound: 20 more \"changed\" cause 0 reads and 0 notifications on RELEASED, a question is refused HERE with 0 asks received, and the user's Check recovers (1 read, signed in, the same connector); BEFORE read again for them",
+     "QA-SUB-07 reads made INSIDE one Check (a \"changed\" in the same write as the first 2 answers) count toward the same 3 as the reads after it (\"changed\" shortly after every later answer): RELEASED makes 4 reads in all (2 inside, 1 after), then says not known; BEFORE reads without end (watched to 12 reads, never \"not known\")",
+     "QA-SUB-07 the bound in all, and the user's Check resets it: with a window of 1 ms and one \"changed\" 10 ms after each of the first 66 read answers, RELEASED reads for 64 of the first 65 changes (65 reads), says not known, and after the user's Check (read 66) reads again for the 66th change (read 67: signed in). BEFORE read for all 66 (68 reads with the user's two) and never said not known",
+     "side by side"
+    ]
+   },
+   "sub_changed_backend": {
+    "exit_code": 1,
+    "tests": 28,
+    "passed": 14,
+    "failed": 14,
+    "cancelled": 0,
+    "tests_that_did_not_pass": [
+     "QA-SUB-02 BEFORE (negative control): after the same error the connector stays and repeats the old code `quota`: to the question, to the next question, and to the user's Check, which shows unavailable with \"the subscription's usage limit was reached\"; no new connector is started",
+     "QA-SUB-02 BEFORE (negative control): after the same failure the connector stays and repeats the old code `failed`: the user's Check, an account read, shows unavailable with \"ChatGPT did not complete an answer\"",
+     "QA-SUB-02 BEFORE (negative control): after the same idle loss the client is told nothing and still says signed_in; the question goes to the dead connector and is refused `unavailable`; the user's Check shows unavailable from the same connector",
+     "QA-SUB-02 BEFORE (negative control): the connector stays alive after the same failure and keeps answering `unavailable`: the first and a second question are refused by it, the user's Check shows unavailable with its wording, and no new connector is ever started",
+     "QA-SUB-02 BEFORE (negative control): the same loss: the connector stays and answers `unavailable`, a known refusal; the receipt is the same (`failed`, written, not acknowledged); the user's Check shows unavailable from the same connector",
+     "QA-SUB-02 BEFORE (negative control): the same loss: the connector stays, gives the question up after its 3 s wait and answers `failed`, a known refusal; its receipt says `failed`; the user's Check shows unavailable from the same connector",
+     "QA-SUB-03 BEFORE (negative control): the same 9000-delta turn is killed at the 4096 count: the client shows a refusal `unavailable`, still says signed_in, and the connector stays and answers `unavailable` from then on",
+     "QA-SUB-03 BEFORE (negative control): the same lifecycle flood is answered `unavailable` by a connector that stays",
+     "QA-SUB-03 BEFORE (negative control): the same turn never reaches the time bound: it is killed by the 4096 count at once and answered `unavailable`",
+     "QA-SUB-03 BEFORE (negative control): there is no byte allowance (the bound reads null); the same turn is ended with the same code and answered `unavailable` by a connector that stays",
+     "follow-up W-KNOWN-CANCEL (before / first_release / released): after 4096 requests the connector cancels the question that is out by itself; the client never asked for it. BEFORE and FIRST_RELEASE show { cancelled, uncertain: false }, as certain; RELEASED shows { cancelled, uncertain: true }. On all three the connector then stays alive and answers `unavailable` to everything",
+     "follow-up, the changed wording at a quit with a sign-in pending (before / first_release / released): BEFORE and FIRST_RELEASE say \"the connector ended before the sign-in completed\"; RELEASED says \"the connector was ended here before the sign-in completed\". The connector ended in time on all three, and nothing was opened",
+     "the synthetic inner child: its BEFORE text is the RELEASED text without the delta and flood modes (and client() is the same), so the RELEASED text is run under every connector",
+     "the three commits: FIRST_RELEASE and RELEASED have the same connector side (the tree ids of services, packages and pyproject.toml are equal) and differ in the Windows app only in src/main/subscription.ts; BEFORE has another connector"
+    ]
+   }
+  }
+ }
+}

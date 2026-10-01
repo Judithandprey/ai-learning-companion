@@ -1,9 +1,13 @@
 # Managed-subscription ASK on Windows: QA acceptance plan
 
 - **Status (2026-10-01): driver ready after one correction (the connector copy); controls and the real Check connection
-  run; the real image turn NOT run and HELD.** It waits for the corrected source (QA-SUB-03 first) and for the user's
-  sign-in. 0 of the 1 allocated attempt is used. Results so far:
+  run; the real image turn NOT run and HELD.** 0 of the 1 allocated attempt is used. Results at the first candidate:
   [p0-13-subscription-ask-windows-3e4b406.md](p0-13-subscription-ask-windows-3e4b406.md).
+- **Changed paths (later the same day):** the corrected source `c44e620` was retested offline, 86 tests, with the first
+  candidate as the negative control:
+  [p0-13-subscription-changed-paths-c44e620.md](p0-13-subscription-changed-paths-c44e620.md). Their display checks and
+  every real request are NOT RUN. They wait for the exact integrated candidate of the live flow (section 7) and for a
+  display, audio route and account window coordinated by the lead.
 - **Assignment:** lead `handoff_de323dc5105b08860c398a13b7206dbd` (P0-13 / G4); driver task
   `handoff_16a192142160536115f6087460e33b77`; release `handoff_d548b28a9fa5613b7543be19858a5ca2`.
 - **Released candidate:** `3e4b40654460a2dc2407f1d9be60d8e1a5b39a3e` (Windows app tree of the owner's `84fc56a`).
@@ -24,6 +28,10 @@
     Windows played; and `signin_signal_check.mjs` for the two Windows commands);
   - `sub_copy.mjs` and `qa_sub_copy_check.py`: the private Backend copy is the commit's `services/` and `packages/`
     file for file, and the connector's own preparation of a question is run in it, offline, before any real run;
+  - `sub_changed_app.test.mjs`, `sub_changed_bridge.test.mjs` and `sub_changed_backend.test.mjs` with `sub_tree.mjs`
+    and `qa_connector_relay.py` (harness `ad33e77`): the offline retest of the changed paths on the released source
+    itself, taken from `git archive` of the exact commits. `qa_fake_bridge.py` can now also play failed reads,
+    sign-in start, cancel and completion, repeated "changed", its own exit and a connector that does not end;
   - `run.mjs` interlocks: the real connector needs `QA_SUB_ALLOW_REAL_CONNECTOR=1`; a real question needs
     `QA_SUB_ALLOW_REAL_TURN=<allocation id>`, which is single-use (a ledger outside the run folders).
 
@@ -252,3 +260,55 @@ None of this is acceptance evidence for the real turn.
 - Nothing is claimed for macOS, audio, video, Notability, or for any model or plan other than the one actually used.
 - The deterministic controls and the rehearsal are not real-model evidence. A signed-in account, a model list or a
   usage figure is not a pass.
+
+## 7. Changed flow: the live desktop companion (prepared cases, all NOT_RUN)
+
+Amended in place by the lead's `handoff_a6d4a4baf7e368565b8de52e935a3d91`, `handoff_795e97b1731ce5bc73182d8a90f07082`
+(baseline `9b33a7675fe98ab30e5c79952668906ff7ef232a`) and `handoff_b2436c62d2d68f07d104e3f0bbd917f2` (main
+`c3afc6dc8b45e2979c0a74a01b03b8972c903e04`, merged into `team/qa`). This is the same acceptance task, not a second
+campaign. The runtime pass waits for the exact integrated release; a Backend candidate still in review is not it.
+
+- **Read for these cases:** [ADR 0004](../../adr/0004-live-desktop-companion.md) (`lc-subscription-live/1`), main
+  specification §3.8, §7.1 and §7.3 with their English text, the
+  [current live-workflow directive](../../requirements/intent-and-decisions.md#current-decisions), the original-goal
+  cases changed in the same commit, and the lead's [checkpoint](../lead/live-windows/README.md).
+- **State of the product:** the interface and its schema checks exist (`packages/contracts/live_companion`); the
+  connector, Learning and Windows consumers are unfinished. There is no runnable candidate, so nothing below has been
+  run and nothing is prepared in code that would guess at an unfinished consumer.
+- **The user is using the old `3e4b406` package now.** QA does not use the display, the microphone, the speakers, the
+  account or its files, and does not close, restart or overwrite that app, its stage folder, its profile or its
+  connector copy. The new candidate gets its own stage folder and its own connector copy.
+- **Real requests:** the one unused selected-image attempt (`handoff_d548b28a9fa5613b7543be19858a5ca2`) is not renewed and
+  does not cover this flow. The product's own bound (12 submissions in 5 minutes by default) is not QA's allowance.
+  **Open for the lead:** how many real turns the one changed-flow pass may spend. The smallest set that shows the flow
+  is four: one automatic focus answer, one text follow-up, one voice follow-up with its spoken reply, and one request
+  that Stop must fence. Every press that may reach the provider counts, also when its outcome is not known.
+- **When it runs:** only on the exact released candidate, on a generated non-sensitive screen, with the display and
+  the audio route coordinated by the lead. Each real case is judged by a person reading the whole answer, as in
+  section 1.
+
+| Case | What is done | Passes only if | Not a pass |
+| --- | --- | --- | --- |
+| LIVE-00 exact running build | Start the new package from its own folder; read the version the app shows and the files it runs | the running version and files are the released candidate's; the old package, its profile and its sign-in still open as before | a build or a source commit named in a document; the old package replaced or stopped |
+| LIVE-01 Start says and does it | Press Start on the generated screen; make no selection and ask nothing | the app names the one display it observes, shows the remaining requests and time, and shows when it last observed and what the model last received; no answer card appears by itself; no other display and no microphone is turned on | local screenshots only; "online" shown without a receipt; a help card from an observation |
+| LIVE-02 the whole screen reaches the model | The screen holds random values far from any circle; they change between two questions | an answer names values that are only in the pixels outside the focus, and the later answer names the changed values; the kept turn names the whole display's picture (hash, size) | an answer that could come from a crop, from the prompt, from page text or from a fixture |
+| LIVE-03 circle gives a hint by itself | Draw one valid circle; press nothing else and type nothing | one contextual hint appears for that focus; the turn carries the whole picture plus the focus rectangle of the same frame; the help stays within the current help level (a hint is not a full solution). What is counted is the requests the connector really received, not presses of the old Ask button | a second Ask press or typed text needed; only a crop sent; a full solution because a region was chosen; an old Ask click counted as the new flow |
+| LIVE-04 ink is in the same context | Write with the pen, then circle | the ink is in the picture the model received and in the kept context, with its revision | ink only on screen, or only in a separate file |
+| LIVE-05 typed follow-up | Type one follow-up after LIVE-03, then one that changes the direction | each is answered in the same context (same session, focus kept only if its anchor is still valid); the later answer follows the new direction; what was left out of the bounded history is said, not hidden | a new context that has lost the screen or the earlier exchange |
+| LIVE-06 spoken follow-up | Press Talk and speak one question; a teacher's voice plays meanwhile | only the user's explicit Talk becomes a question; the other voice does not; if this machine cannot hear or recognise English speech, that is shown and the case is recorded as blocked | a saved recording uploaded; a transcript taken as proof of who spoke |
+| LIVE-07 spoken reply and its caption | With Talk on, get one spoken reply; then mute during a reply | every spoken reply has a floating caption with the same words, in step with the speech, and the caption is readable where it floats (not clipped, not hidden inside the card); the words shown and spoken come only from the response that is current in the app's own trusted state; nothing is spoken for a silent explanation; mute stops the speech and its queue at once, and unplayed words are not shown as spoken; shown and played are recorded apart from generated | speech without caption; caption ahead of the speech; words of an older response; speech synthesised in memory with nothing audible |
+| LIVE-08 Stop and interruption | Stop before a request is sent, while one is queued or being written, and while one is in flight; ask something new while an older answer is still on its way; then reconnect | nothing queued is sent afterwards; a late answer, and an older completion that arrives after a newer one, is not shown, spoken or captioned; old speech stops; an observation that has nothing to do with it does not cancel a focus answer in flight; nothing resumes after a reconnect or a quota reset; only a new Start with a new session continues | Stop that only hides the card; a retry by itself |
+| LIVE-09 the session's bounds | With the stand-in connector only: use up the shown requests and the time | the count and the time are shown and enforced as a hard limit (12 requests, 5 minutes unless the release says otherwise); an uncertain request still uses its slot; nothing is renewed by itself; observations keep their minimum distance and leave visible gaps; what the app shows as left is what the connector really allows | bounds checked by spending real requests |
+| LIVE-10 truthful usage refusals | With the stand-in connector only: each refusal category in turn | each of allowance exhausted, rate limited, ordinary usage not allowed, allowance unknown, workspace limit, not signed in, unsupported model, context limit and overloaded has its own fixed wording and its own "sent / not sent / not known"; a balance that is not known is not shown as zero or as available; a full local window alone does not block; no reset credit is consumed, nothing is bought and nothing is retried. A real refusal is recorded only if it happens; none is provoked | one "usage limit" text for all; a provider message shown raw |
+| LIVE-11 movable toolbar and captions | Drag each by its handle; reopen; change scaling; move to another monitor and remove it | dragging sends no request, draws no ink and changes no selection or source anchor; the position is kept after reopening; both stay inside a usable work area. Other scaling and a second monitor are run only if such a display is released for the test; else those parts are blocked | a control lost off screen; a drag taken as a circle |
+| LIVE-12 save and reopen the ink | Save a note with ink, close, reopen | the original strokes come back editable with their source, and AI additions stay separate | a flattened picture; ink lost after a restart |
+| LIVE-13 one interface per connector | With the stand-in connector only: mix the two interface versions in one launch | mixed versions are refused; the selected-image interface still behaves as in the retained controls | old fields reinterpreted |
+
+What the record of the pass will hold: the candidate and the version actually launched; the whole picture with the
+focus, ink and context that were sent; the model, the sign-in kind and the latency; the automatic focus answer; the
+typed and the spoken follow-up; the spoken reply with its caption; the drag, scaling and navigation checks; Stop; and
+any usage refusal as it really happened. Build, offline, real Windows, real subscription, real audio and Mac are
+reported apart. A schema or fixture pass closes none of the real gates.
+
+Not claimed by this section: both §7.1 gates, continuous understanding beyond the changes actually shown, any Mac
+result, real audio from offline synthesis, or anything about the user's own account balance.

@@ -1,0 +1,3156 @@
+{
+ "commits": {
+  "before": "3e4b40654460a2dc2407f1d9be60d8e1a5b39a3e",
+  "first_release": "8eac9fc02ebf10e2e2fca7c164b6c33c2f99698b",
+  "released": "c44e6204b3e0c49f710fc7bb73d540ef6daa7b06"
+ },
+ "harness": {
+  "qa_fake_bridge.py": "5e971c06a940b71609f5be5d548ccde8bffbda90ab6c18212d74722ee2c4b5f4",
+  "scenarios.mjs": "dec4fb7216c38b0a1ddd7aabed16966db6febfd5237e12ce8342887b56f69c1e",
+  "sub_changed_bridge.test.mjs": "bcf16fcbec6865442e28628518cbfa86069a4b8fce77ba48083a0c637215303d",
+  "sub_tree.mjs": "86749fbab763e670ac3956c1bad90bdf4bcfa81907643aea25bfcc5721b57f27"
+ },
+ "observed": {
+  "app_ends_the_connector_while_sign_in_waits": {
+   "before": {
+    "connector_starts": 1,
+    "now": {
+     "detail": "the connector ended before the sign-in completed",
+     "login": "failed",
+     "state": "unavailable"
+    },
+    "said": [
+     "unavailable, failed: the connector ended before the sign-in completed"
+    ]
+   },
+   "first_release": {
+    "connector_starts": 1,
+    "now": {
+     "detail": "the connector ended before the sign-in completed",
+     "login": "failed",
+     "state": "unavailable"
+    },
+    "said": [
+     "unavailable, failed: the connector ended before the sign-in completed"
+    ]
+   },
+   "released": {
+    "connector_starts": 1,
+    "now": {
+     "detail": "the connector was ended here before the sign-in completed",
+     "login": "failed",
+     "state": "unavailable"
+    },
+    "said": [
+     "unavailable, failed: the connector was ended here before the sign-in completed"
+    ]
+   }
+  },
+  "browser_not_opened": {
+   "before": {
+    "after_cancel": {
+     "detail": null,
+     "login": "none",
+     "state": "signed_in"
+    },
+    "after_signed_in_read": {
+     "detail": null,
+     "login": "none",
+     "state": "signed_in"
+    },
+    "ask": {
+     "code": "busy",
+     "reason": "another question is still being answered",
+     "status": "refused"
+    },
+    "asks_received": 1,
+    "cancels_received": 0,
+    "handed_to_the_opener": [
+     "https://chatgpt.com/qa-synthetic-not-a-sign-in"
+    ],
+    "not_opened": {
+     "detail": "the browser could not be opened; the sign-in is still waiting",
+     "login": "waiting",
+     "state": "signed_out"
+    }
+   },
+   "released": {
+    "after_cancel": {
+     "detail": null,
+     "login": "cancelled",
+     "state": "signed_in"
+    },
+    "after_signed_in_read": {
+     "detail": "the browser could not be opened for the sign-in page; the sign-in is still pending: cancel it, then sign in again",
+     "login": "waiting",
+     "state": "signed_in"
+    },
+    "ask": {
+     "code": "local",
+     "reason": "a sign-in is still pending, though its page could not be opened: cancel it in the control window",
+     "status": "refused"
+    },
+    "asks_received": 0,
+    "cancels_received": 1,
+    "handed_to_the_opener": [
+     "https://chatgpt.com/qa-synthetic-not-a-sign-in"
+    ],
+    "not_opened": {
+     "detail": "the browser could not be opened for the sign-in page; the sign-in is still pending: cancel it, then sign in again",
+     "login": "waiting",
+     "state": "signed_out"
+    }
+   }
+  },
+  "browser_not_opened_and_cancel_not_confirmed": {
+   "before": {
+    "after_signed_in_read": {
+     "detail": null,
+     "login": "none",
+     "state": "signed_in"
+    },
+    "ask": {
+     "code": "busy",
+     "reason": "another question is still being answered",
+     "status": "refused"
+    },
+    "asks_received": 1,
+    "cancel_not_confirmed": {
+     "detail": null,
+     "login": "cancelled",
+     "state": "signed_out"
+    },
+    "cancels_received": 1,
+    "not_opened": {
+     "detail": "the browser could not be opened; the sign-in is still waiting",
+     "login": "waiting",
+     "state": "signed_out"
+    },
+    "said_by_the_cancel": [
+     "cancelled: null"
+    ],
+    "second_press": {
+     "detail": null,
+     "login": "none",
+     "state": "signed_in"
+    }
+   },
+   "released": {
+    "after_signed_in_read": {
+     "detail": "the cancel of the sign-in was not confirmed: it may still be pending in the connector; cancel it again",
+     "login": "waiting",
+     "state": "signed_in"
+    },
+    "ask": {
+     "code": "local",
+     "reason": "a sign-in is still pending, though its page could not be opened: cancel it in the control window",
+     "status": "refused"
+    },
+    "asks_received": 0,
+    "cancel_not_confirmed": {
+     "detail": "the cancel of the sign-in was not confirmed: it may still be pending in the connector; cancel it again",
+     "login": "waiting",
+     "state": "signed_out"
+    },
+    "cancels_received": 2,
+    "not_opened": {
+     "detail": "the browser could not be opened for the sign-in page; the sign-in is still pending: cancel it, then sign in again",
+     "login": "waiting",
+     "state": "signed_out"
+    },
+    "said_by_the_cancel": [
+     "waiting: the sign-in is being cancelled",
+     "waiting: the cancel of the sign-in was not confirmed: it may still be pending in the connector; cancel it again"
+    ],
+    "second_press": {
+     "detail": null,
+     "login": "cancelled",
+     "state": "signed_in"
+    }
+   }
+  },
+  "cancel_answered": {
+   "acknowledged": {
+    "before": {
+     "after": {
+      "detail": null,
+      "login": "cancelled",
+      "state": "signed_out"
+     },
+     "cancels_received": 1,
+     "said": [
+      "cancelled: null"
+     ],
+     "second_press": {
+      "detail": null,
+      "login": "cancelled",
+      "state": "signed_out"
+     }
+    },
+    "released": {
+     "after": {
+      "detail": null,
+      "login": "cancelled",
+      "state": "signed_out"
+     },
+     "cancels_received": 1,
+     "said": [
+      "waiting: the sign-in is being cancelled",
+      "cancelled: null"
+     ],
+     "second_press": {
+      "detail": null,
+      "login": "cancelled",
+      "state": "signed_out"
+     }
+    }
+   },
+   "another_shape": {
+    "before": {
+     "after": {
+      "detail": null,
+      "login": "cancelled",
+      "state": "signed_out"
+     },
+     "cancels_received": 1,
+     "said": [
+      "cancelled: null"
+     ],
+     "second_press": {
+      "detail": null,
+      "login": "cancelled",
+      "state": "signed_out"
+     }
+    },
+    "released": {
+     "after": {
+      "detail": "the cancel of the sign-in was not confirmed: it may still be pending in the connector; cancel it again",
+      "login": "waiting",
+      "state": "signed_out"
+     },
+     "cancels_received": 2,
+     "said": [
+      "waiting: the sign-in is being cancelled",
+      "waiting: the cancel of the sign-in was not confirmed: it may still be pending in the connector; cancel it again"
+     ],
+     "second_press": {
+      "detail": null,
+      "login": "cancelled",
+      "state": "signed_out"
+     }
+    }
+   },
+   "error_busy": {
+    "before": {
+     "after": {
+      "detail": null,
+      "login": "cancelled",
+      "state": "signed_out"
+     },
+     "cancels_received": 1,
+     "said": [
+      "cancelled: null"
+     ],
+     "second_press": {
+      "detail": null,
+      "login": "cancelled",
+      "state": "signed_out"
+     }
+    },
+    "released": {
+     "after": {
+      "detail": "the cancel of the sign-in was not confirmed: it may still be pending in the connector; cancel it again",
+      "login": "waiting",
+      "state": "signed_out"
+     },
+     "cancels_received": 2,
+     "said": [
+      "waiting: the sign-in is being cancelled",
+      "waiting: the cancel of the sign-in was not confirmed: it may still be pending in the connector; cancel it again"
+     ],
+     "second_press": {
+      "detail": null,
+      "login": "cancelled",
+      "state": "signed_out"
+     }
+    }
+   },
+   "error_failed": {
+    "before": {
+     "after": {
+      "detail": null,
+      "login": "cancelled",
+      "state": "signed_out"
+     },
+     "cancels_received": 1,
+     "said": [
+      "cancelled: null"
+     ],
+     "second_press": {
+      "detail": null,
+      "login": "cancelled",
+      "state": "signed_out"
+     }
+    },
+    "released": {
+     "after": {
+      "detail": "the cancel of the sign-in was not confirmed: it may still be pending in the connector; cancel it again",
+      "login": "waiting",
+      "state": "signed_out"
+     },
+     "cancels_received": 2,
+     "said": [
+      "waiting: the sign-in is being cancelled",
+      "waiting: the cancel of the sign-in was not confirmed: it may still be pending in the connector; cancel it again"
+     ],
+     "second_press": {
+      "detail": null,
+      "login": "cancelled",
+      "state": "signed_out"
+     }
+    }
+   },
+   "invalid_request": {
+    "before": {
+     "after": {
+      "detail": null,
+      "login": "cancelled",
+      "state": "signed_out"
+     },
+     "cancels_received": 1,
+     "said": [
+      "cancelled: null"
+     ],
+     "second_press": {
+      "detail": null,
+      "login": "cancelled",
+      "state": "signed_out"
+     }
+    },
+    "released": {
+     "after": {
+      "detail": "the connector no longer holds that sign-in; whether it completed is not known (check the connection)",
+      "login": "failed",
+      "state": "signed_out"
+     },
+     "cancels_received": 1,
+     "said": [
+      "waiting: the sign-in is being cancelled",
+      "failed: the connector no longer holds that sign-in; whether it completed is not known (check the connection)"
+     ],
+     "second_press": {
+      "detail": "the connector no longer holds that sign-in; whether it completed is not known (check the connection)",
+      "login": "failed",
+      "state": "signed_out"
+     }
+    }
+   },
+   "no_answer": {
+    "before": {
+     "after": {
+      "detail": null,
+      "login": "cancelled",
+      "state": "signed_out"
+     },
+     "cancels_received": 1,
+     "said": [
+      "cancelled: null"
+     ],
+     "second_press": {
+      "detail": null,
+      "login": "cancelled",
+      "state": "signed_out"
+     }
+    },
+    "released": {
+     "after": {
+      "detail": "the cancel of the sign-in was not confirmed: it may still be pending in the connector; cancel it again",
+      "login": "waiting",
+      "state": "signed_out"
+     },
+     "cancels_received": 2,
+     "said": [
+      "waiting: the sign-in is being cancelled",
+      "waiting: the cancel of the sign-in was not confirmed: it may still be pending in the connector; cancel it again"
+     ],
+     "second_press": {
+      "detail": null,
+      "login": "cancelled",
+      "state": "signed_out"
+     }
+    }
+   }
+  },
+  "cancel_out": {
+   "before": {
+    "cancels_received": 1,
+    "given_up": {
+     "detail": null,
+     "login": "cancelled",
+     "state": "signed_out"
+    },
+    "second_press": {
+     "now": {
+      "detail": null,
+      "login": "cancelled",
+      "state": "signed_out"
+     },
+     "said": 0
+    },
+    "while_out": {
+     "detail": null,
+     "login": "cancelled",
+     "state": "signed_out"
+    }
+   },
+   "released": {
+    "cancels_received": 1,
+    "given_up": {
+     "detail": "the cancel of the sign-in was not confirmed: it may still be pending in the connector; cancel it again",
+     "login": "waiting",
+     "state": "signed_out"
+    },
+    "second_press": {
+     "now": {
+      "detail": "the sign-in is being cancelled",
+      "login": "waiting",
+      "state": "signed_out"
+     },
+     "said": 0
+    },
+    "while_out": {
+     "detail": "the sign-in is being cancelled",
+     "login": "waiting",
+     "state": "signed_out"
+    }
+   }
+  },
+  "cancel_out_connector_ends": {
+   "before": {
+    "after_check": {
+     "detail": null,
+     "login": "cancelled",
+     "state": "signed_out"
+    },
+    "connector_starts": 2,
+    "connector_starts_before_check": 1,
+    "in_the_next_2_s": {
+     "connector_starts": 0,
+     "notifications": 0
+    },
+    "lost": {
+     "detail": null,
+     "login": "cancelled",
+     "state": "unavailable"
+    },
+    "stand_in_exits": [
+     {
+      "code": 1,
+      "on": "login_cancel"
+     }
+    ]
+   },
+   "released": {
+    "after_check": {
+     "detail": null,
+     "login": "failed",
+     "state": "signed_out"
+    },
+    "connector_starts": 2,
+    "connector_starts_before_check": 1,
+    "in_the_next_2_s": {
+     "connector_starts": 0,
+     "notifications": 0
+    },
+    "lost": {
+     "detail": "the connector ended before the sign-in completed",
+     "login": "failed",
+     "state": "unavailable"
+    },
+    "stand_in_exits": [
+     {
+      "code": 1,
+      "on": "login_cancel"
+     }
+    ]
+   }
+  },
+  "cancel_out_sign_in_completes": {
+   "before": {
+    "after_completion": {
+     "detail": null,
+     "login": "cancelled",
+     "state": "signed_out"
+    },
+    "after_the_cancel_was_given_up": {
+     "detail": null,
+     "login": "cancelled",
+     "state": "signed_out"
+    },
+    "reads_before_the_tests_own": 1
+   },
+   "released": {
+    "after_completion": {
+     "detail": null,
+     "login": "none",
+     "state": "signed_in"
+    },
+    "after_the_cancel_was_given_up": {
+     "detail": null,
+     "login": "none",
+     "state": "signed_in"
+    },
+    "reads_before_the_tests_own": 2
+   }
+  },
+  "cancel_out_sign_in_completes_then_acknowledged": {
+   "before": {
+    "after_a_check": {
+     "detail": null,
+     "login": "none",
+     "state": "signed_in"
+    },
+    "after_completion": {
+     "detail": null,
+     "login": "cancelled",
+     "state": "signed_out"
+    },
+    "after_the_cancel_was_acknowledged": {
+     "detail": null,
+     "login": "cancelled",
+     "state": "signed_out"
+    },
+    "cancels_received": 1,
+    "stand_in_wrote": [
+     "login_completed",
+     "login_cancel_receipt"
+    ]
+   },
+   "released": {
+    "after_a_check": {
+     "detail": null,
+     "login": "none",
+     "state": "signed_in"
+    },
+    "after_completion": {
+     "detail": null,
+     "login": "none",
+     "state": "signed_in"
+    },
+    "after_the_cancel_was_acknowledged": {
+     "detail": null,
+     "login": "none",
+     "state": "signed_in"
+    },
+    "cancels_received": 1,
+    "stand_in_wrote": [
+     "login_completed",
+     "connection",
+     "login_cancel_receipt"
+    ]
+   }
+  },
+  "changed_64_in_all": {
+   "before": {
+    "after_65_changed": {
+     "detail": null,
+     "login": "none",
+     "state": "signed_in"
+    },
+    "after_the_users_check_and_the_66th_changed": {
+     "detail": null,
+     "login": "none",
+     "state": "signed_in"
+    },
+    "connector_starts": 1,
+    "reads_in_all": 68,
+    "said_not_known": 0,
+    "said_not_known_by_then": 0
+   },
+   "released": {
+    "after_65_changed": {
+     "detail": "the account may have changed since it was last read, and it is not read again by itself; check again",
+     "login": "none",
+     "state": "unknown"
+    },
+    "after_the_users_check_and_the_66th_changed": {
+     "detail": null,
+     "login": "none",
+     "state": "signed_in"
+    },
+    "connector_starts": 1,
+    "reads_before_the_users_second_check": 65,
+    "reads_in_all": 67,
+    "said_not_known": 1,
+    "said_not_known_by_then": 1
+   }
+  },
+  "changed_after_every_read": {
+   "before": {
+    "connector_starts": 1,
+    "reads_for_one_check_at_least": 20,
+    "said_not_known": false
+   },
+   "released": {
+    "after_a_second_check": {
+     "detail": "the account may have changed since it was last read, and it is not read again by itself; check again",
+     "login": "none",
+     "state": "unknown"
+    },
+    "after_one_check": {
+     "detail": "the account may have changed since it was last read, and it is not read again by itself; check again",
+     "login": "none",
+     "state": "unknown"
+    },
+    "ask": {
+     "code": "local",
+     "reason": "the sign-in state of the ChatGPT subscription is not known (check it in the control window)",
+     "status": "refused"
+    },
+    "asks_received": 0,
+    "changed_handed": 4,
+    "connector_starts": 1,
+    "reads_for_one_check": 4,
+    "reads_for_two_checks": 8,
+    "states_said": [
+     "checking",
+     "signed_in",
+     "checking",
+     "signed_in",
+     "checking",
+     "signed_in",
+     "checking",
+     "signed_in",
+     "unknown"
+    ]
+   }
+  },
+  "changed_after_the_bound": {
+   "before": {
+    "connector_starts": 1,
+    "for_20_more_changed": {
+     "notified_again": true,
+     "read_again": true
+    }
+   },
+   "released": {
+    "after_the_fourth": {
+     "detail": "the account may have changed since it was last read, and it is not read again by itself; check again",
+     "login": "none",
+     "state": "unknown"
+    },
+    "asks_received": 0,
+    "connector_starts": 1,
+    "for_20_more_changed": {
+     "ask": {
+      "code": "local",
+      "reason": "the sign-in state of the ChatGPT subscription is not known (check it in the control window)",
+      "status": "refused"
+     },
+     "notifications": 0,
+     "reads": 0
+    },
+    "reads_then": 4,
+    "the_users_check": {
+     "now": {
+      "detail": null,
+      "login": "none",
+      "state": "signed_in"
+     },
+     "reads": 1,
+     "said": [
+      "checking",
+      "signed_in"
+     ]
+    }
+   }
+  },
+  "changed_inside_and_after_one_check": {
+   "before": {
+    "after_the_check": {
+     "detail": null,
+     "login": "none",
+     "state": "signed_in"
+    },
+    "connector_starts": 1,
+    "reads_for_one_check_at_least": 12,
+    "reads_inside_the_check": 3,
+    "said_not_known": false
+   },
+   "released": {
+    "after_the_check": {
+     "detail": null,
+     "login": "none",
+     "state": "signed_in"
+    },
+    "changed_handed": 4,
+    "connector_starts": 1,
+    "reads_for_one_check": 4,
+    "reads_inside_the_check": 3,
+    "states_said": [
+     "checking",
+     "signed_in",
+     "checking",
+     "signed_in",
+     "unknown"
+    ],
+    "then": {
+     "detail": "the account may have changed since it was last read, and it is not read again by itself; check again",
+     "login": "none",
+     "state": "unknown"
+    }
+   }
+  },
+  "changed_three_times": {
+   "before": {
+    "after_3_changed": {
+     "detail": null,
+     "login": "none",
+     "state": "signed_in"
+    },
+    "ask": {
+     "status": "answered",
+     "text": "SYNTHETIC (QA fake bridge: no model, no ChatGPT). Answer below the bound."
+    },
+    "connector_starts": 1,
+    "reads_before_the_users_second_check": 4,
+    "states_said": [
+     "checking",
+     "signed_in",
+     "checking",
+     "signed_in",
+     "checking",
+     "signed_in",
+     "checking",
+     "signed_in"
+    ]
+   },
+   "released": {
+    "after_3_changed": {
+     "detail": null,
+     "login": "none",
+     "state": "signed_in"
+    },
+    "ask": {
+     "status": "answered",
+     "text": "SYNTHETIC (QA fake bridge: no model, no ChatGPT). Answer below the bound."
+    },
+    "connector_starts": 1,
+    "reads_before_the_users_second_check": 4,
+    "states_said": [
+     "checking",
+     "signed_in",
+     "checking",
+     "signed_in",
+     "checking",
+     "signed_in",
+     "checking",
+     "signed_in"
+    ]
+   }
+  },
+  "changed_with_every_read": {
+   "before": {
+    "after_one_check": {
+     "detail": "the account changed again while it was being read; check again",
+     "login": "none",
+     "state": "unknown"
+    },
+    "ask": {
+     "code": "local",
+     "reason": "the sign-in state of the ChatGPT subscription is not known (check it in the control window)",
+     "status": "refused"
+    },
+    "asks_received": 0,
+    "changed_handed": 4,
+    "connector_starts": 1,
+    "reads_for_one_check": 4,
+    "reads_for_two_checks": 8,
+    "states_said": [
+     "checking",
+     "unknown"
+    ]
+   },
+   "released": {
+    "after_one_check": {
+     "detail": "the account may have changed since it was last read, and it is not read again by itself; check again",
+     "login": "none",
+     "state": "unknown"
+    },
+    "ask": {
+     "code": "local",
+     "reason": "the sign-in state of the ChatGPT subscription is not known (check it in the control window)",
+     "status": "refused"
+    },
+    "asks_received": 0,
+    "changed_handed": 4,
+    "connector_starts": 1,
+    "reads_for_one_check": 4,
+    "reads_for_two_checks": 8,
+    "states_said": [
+     "checking",
+     "unknown"
+    ]
+   }
+  },
+  "connector_does_not_end": {
+   "does_not_end_then_either": {
+    "before": {
+     "a_question_to_launch_2": {
+      "status": "answered",
+      "text": "SYNTHETIC (QA fake bridge: no model, no ChatGPT). Answer from the connector the user's Check started."
+     },
+     "after_check": {
+      "detail": null,
+      "login": "none",
+      "state": "signed_in"
+     },
+     "at_the_end": {
+      "detail": null,
+      "login": "none",
+      "state": "signed_in"
+     },
+     "connector_starts": 2,
+     "connector_starts_3_s_later": 1,
+     "first_process_running_3_s_later": true,
+     "first_process_running_beside_launch_2": true,
+     "outcome": {
+      "reason": "no answer came; whether ChatGPT worked on the question is not known",
+      "status": "uncertain"
+     },
+     "said_in_3_s": [
+      "signed_in, none: null",
+      "unavailable, none: null",
+      "unavailable, none: null"
+     ],
+     "said_once_the_first_process_is_gone": [],
+     "stand_in_logged_the_end_of_its_input": 1,
+     "stand_in_starts_3_s_later": 1
+    },
+    "first_release": {
+     "a_question_to_launch_2": {
+      "status": "answered",
+      "text": "SYNTHETIC (QA fake bridge: no model, no ChatGPT). Answer from the connector the user's Check started."
+     },
+     "after_check": {
+      "detail": null,
+      "login": "none",
+      "state": "signed_in"
+     },
+     "at_the_end": {
+      "detail": null,
+      "login": "none",
+      "state": "signed_in"
+     },
+     "connector_starts": 2,
+     "connector_starts_3_s_later": 1,
+     "first_process_running_3_s_later": true,
+     "first_process_running_beside_launch_2": true,
+     "outcome": {
+      "reason": "no answer came; whether ChatGPT worked on the question is not known",
+      "status": "uncertain"
+     },
+     "said_in_3_s": [
+      "signed_in, none: null",
+      "unavailable, none: null",
+      "unavailable, none: null"
+     ],
+     "said_once_the_first_process_is_gone": [],
+     "stand_in_logged_the_end_of_its_input": 1,
+     "stand_in_starts_3_s_later": 1
+    },
+    "released": {
+     "a_question_to_launch_2": {
+      "status": "answered",
+      "text": "SYNTHETIC (QA fake bridge: no model, no ChatGPT). Answer from the connector the user's Check started."
+     },
+     "after_check": {
+      "detail": "a connector that was ended here did not end by itself in time; its wsl.exe shim did not end either, so it is not known that the connector, or the Codex app server it runs, ended in WSL",
+      "login": "none",
+      "state": "signed_in"
+     },
+     "at_the_end": {
+      "detail": "a connector that was ended here did not end by itself in time; its wsl.exe shim was ended, which does not show that the connector, or the Codex app server it runs, ended in WSL",
+      "login": "none",
+      "state": "signed_in"
+     },
+     "connector_starts": 2,
+     "connector_starts_3_s_later": 1,
+     "first_process_running_3_s_later": true,
+     "first_process_running_beside_launch_2": true,
+     "outcome": {
+      "reason": "no answer came; whether ChatGPT worked on the question is not known",
+      "status": "uncertain"
+     },
+     "said_in_3_s": [
+      "signed_in, none: null",
+      "unavailable, none: null",
+      "unavailable, none: null",
+      "unavailable, none: a connector that was ended here did not end by itself in time; its wsl.exe shim did not end either, so it is not known that the connector, or the Codex app server it runs, ended in WSL"
+     ],
+     "said_once_the_first_process_is_gone": [
+      "signed_in, none: a connector that was ended here did not end by itself in time; its wsl.exe shim was ended, which does not show that the connector, or the Codex app server it runs, ended in WSL"
+     ],
+     "stand_in_logged_the_end_of_its_input": 1,
+     "stand_in_starts_3_s_later": 1
+    }
+   },
+   "ends_when_its_process_is_ended": {
+    "before": {
+     "a_question_to_launch_2": {
+      "status": "answered",
+      "text": "SYNTHETIC (QA fake bridge: no model, no ChatGPT). Answer from the connector the user's Check started."
+     },
+     "after_check": {
+      "detail": null,
+      "login": "none",
+      "state": "signed_in"
+     },
+     "at_the_end": {
+      "detail": null,
+      "login": "none",
+      "state": "signed_in"
+     },
+     "connector_starts": 2,
+     "connector_starts_3_s_later": 1,
+     "first_process_running_3_s_later": false,
+     "first_process_running_beside_launch_2": false,
+     "outcome": {
+      "reason": "no answer came; whether ChatGPT worked on the question is not known",
+      "status": "uncertain"
+     },
+     "said_in_3_s": [
+      "signed_in, none: null",
+      "unavailable, none: null",
+      "unavailable, none: null"
+     ],
+     "said_once_the_first_process_is_gone": [],
+     "stand_in_logged_the_end_of_its_input": 1,
+     "stand_in_starts_3_s_later": 1
+    },
+    "first_release": {
+     "a_question_to_launch_2": {
+      "status": "answered",
+      "text": "SYNTHETIC (QA fake bridge: no model, no ChatGPT). Answer from the connector the user's Check started."
+     },
+     "after_check": {
+      "detail": null,
+      "login": "none",
+      "state": "signed_in"
+     },
+     "at_the_end": {
+      "detail": null,
+      "login": "none",
+      "state": "signed_in"
+     },
+     "connector_starts": 2,
+     "connector_starts_3_s_later": 1,
+     "first_process_running_3_s_later": false,
+     "first_process_running_beside_launch_2": false,
+     "outcome": {
+      "reason": "no answer came; whether ChatGPT worked on the question is not known",
+      "status": "uncertain"
+     },
+     "said_in_3_s": [
+      "signed_in, none: null",
+      "unavailable, none: null",
+      "unavailable, none: null"
+     ],
+     "said_once_the_first_process_is_gone": [],
+     "stand_in_logged_the_end_of_its_input": 1,
+     "stand_in_starts_3_s_later": 1
+    },
+    "released": {
+     "a_question_to_launch_2": {
+      "status": "answered",
+      "text": "SYNTHETIC (QA fake bridge: no model, no ChatGPT). Answer from the connector the user's Check started."
+     },
+     "after_check": {
+      "detail": "a connector that was ended here did not end by itself in time; its wsl.exe shim was ended, which does not show that the connector, or the Codex app server it runs, ended in WSL",
+      "login": "none",
+      "state": "signed_in"
+     },
+     "at_the_end": {
+      "detail": "a connector that was ended here did not end by itself in time; its wsl.exe shim was ended, which does not show that the connector, or the Codex app server it runs, ended in WSL",
+      "login": "none",
+      "state": "signed_in"
+     },
+     "connector_starts": 2,
+     "connector_starts_3_s_later": 1,
+     "first_process_running_3_s_later": false,
+     "first_process_running_beside_launch_2": false,
+     "outcome": {
+      "reason": "no answer came; whether ChatGPT worked on the question is not known",
+      "status": "uncertain"
+     },
+     "said_in_3_s": [
+      "signed_in, none: null",
+      "unavailable, none: null",
+      "unavailable, none: null",
+      "unavailable, none: a connector that was ended here did not end by itself in time; its wsl.exe shim was ended, which does not show that the connector, or the Codex app server it runs, ended in WSL"
+     ],
+     "said_once_the_first_process_is_gone": [],
+     "stand_in_logged_the_end_of_its_input": 1,
+     "stand_in_starts_3_s_later": 1
+    }
+   }
+  },
+  "connector_ends_during_question": {
+   "before": {
+    "a_new_question": {
+     "status": "answered",
+     "text": "SYNTHETIC (QA fake bridge: no model, no ChatGPT). Answer from the connector the user's Check started."
+    },
+    "after_check": {
+     "detail": null,
+     "login": "none",
+     "state": "signed_in"
+    },
+    "asks_received": [
+     "ask-qa.1",
+     "ask-qa.2"
+    ],
+    "asks_received_after_check": [
+     "ask-qa.1"
+    ],
+    "connector_starts": 2,
+    "connector_starts_before_check": 1,
+    "in_the_next_2_s": {
+     "connector_starts": 0,
+     "notifications": 0
+    },
+    "lost": {
+     "detail": null,
+     "login": "none",
+     "state": "unavailable"
+    },
+    "outcome": {
+     "reason": "no answer came; whether ChatGPT worked on the question is not known",
+     "status": "uncertain"
+    },
+    "question_cancels_received": 0,
+    "second_start_is_launch": 1,
+    "stand_in_exits": [
+     {
+      "code": 1,
+      "on": "ask"
+     }
+    ]
+   },
+   "released": {
+    "a_new_question": {
+     "status": "answered",
+     "text": "SYNTHETIC (QA fake bridge: no model, no ChatGPT). Answer from the connector the user's Check started."
+    },
+    "after_check": {
+     "detail": null,
+     "login": "none",
+     "state": "signed_in"
+    },
+    "asks_received": [
+     "ask-qa.1",
+     "ask-qa.2"
+    ],
+    "asks_received_after_check": [
+     "ask-qa.1"
+    ],
+    "connector_starts": 2,
+    "connector_starts_before_check": 1,
+    "in_the_next_2_s": {
+     "connector_starts": 0,
+     "notifications": 0
+    },
+    "lost": {
+     "detail": null,
+     "login": "none",
+     "state": "unavailable"
+    },
+    "outcome": {
+     "reason": "no answer came; whether ChatGPT worked on the question is not known",
+     "status": "uncertain"
+    },
+    "question_cancels_received": 0,
+    "second_start_is_launch": 1,
+    "stand_in_exits": [
+     {
+      "code": 1,
+      "on": "ask"
+     }
+    ]
+   }
+  },
+  "connector_ends_during_read": {
+   "before": {
+    "after_check": {
+     "detail": null,
+     "login": "none",
+     "state": "signed_in"
+    },
+    "connector_starts": 2,
+    "connector_starts_before_check": 1,
+    "first_read": {
+     "detail": null,
+     "login": "none",
+     "state": "signed_in"
+    },
+    "in_the_next_2_s": {
+     "connector_starts": 0,
+     "notifications": 0
+    },
+    "lost": {
+     "detail": "the connector did not answer",
+     "login": "none",
+     "state": "unavailable"
+    },
+    "reads_received": 3,
+    "stand_in_exits": [
+     {
+      "code": 0,
+      "on": "read"
+     }
+    ]
+   },
+   "released": {
+    "after_check": {
+     "detail": null,
+     "login": "none",
+     "state": "signed_in"
+    },
+    "connector_starts": 2,
+    "connector_starts_before_check": 1,
+    "first_read": {
+     "detail": null,
+     "login": "none",
+     "state": "signed_in"
+    },
+    "in_the_next_2_s": {
+     "connector_starts": 0,
+     "notifications": 0
+    },
+    "lost": {
+     "detail": "the connector did not answer",
+     "login": "none",
+     "state": "unavailable"
+    },
+    "reads_received": 3,
+    "stand_in_exits": [
+     {
+      "code": 0,
+      "on": "read"
+     }
+    ]
+   }
+  },
+  "connector_ends_idle": {
+   "before": {
+    "after_check": {
+     "detail": null,
+     "login": "none",
+     "state": "signed_in"
+    },
+    "ask": {
+     "code": "local",
+     "reason": "the connector, or the official Codex app server it runs, is not available",
+     "status": "refused"
+    },
+    "asks_received": 0,
+    "connector_starts": 2,
+    "connector_starts_before_check": 1,
+    "in_the_next_2_s": {
+     "connector_starts": 0,
+     "notifications": 0
+    },
+    "lost": {
+     "detail": null,
+     "login": "none",
+     "state": "unavailable"
+    },
+    "said": [
+     "unavailable"
+    ],
+    "stand_in_exits": [
+     {
+      "code": 0,
+      "on": "idle"
+     }
+    ],
+    "stand_in_starts": 2
+   },
+   "released": {
+    "after_check": {
+     "detail": null,
+     "login": "none",
+     "state": "signed_in"
+    },
+    "ask": {
+     "code": "local",
+     "reason": "the connector, or the official Codex app server it runs, is not available",
+     "status": "refused"
+    },
+    "asks_received": 0,
+    "connector_starts": 2,
+    "connector_starts_before_check": 1,
+    "in_the_next_2_s": {
+     "connector_starts": 0,
+     "notifications": 0
+    },
+    "lost": {
+     "detail": null,
+     "login": "none",
+     "state": "unavailable"
+    },
+    "said": [
+     "unavailable"
+    ],
+    "stand_in_exits": [
+     {
+      "code": 0,
+      "on": "idle"
+     }
+    ],
+    "stand_in_starts": 2
+   }
+  },
+  "connector_ends_while_sign_in_waits": {
+   "before": {
+    "after_check": {
+     "detail": null,
+     "login": "failed",
+     "state": "signed_out"
+    },
+    "connector_starts": 2,
+    "connector_starts_before_check": 1,
+    "handed_to_the_opener": [
+     "https://chatgpt.com/qa-synthetic-not-a-sign-in"
+    ],
+    "in_the_next_2_s": {
+     "connector_starts": 0,
+     "notifications": 0
+    },
+    "lost": {
+     "detail": "the connector ended before the sign-in completed",
+     "login": "failed",
+     "state": "unavailable"
+    },
+    "stand_in_exits": [
+     {
+      "code": 1,
+      "on": "idle"
+     }
+    ]
+   },
+   "released": {
+    "after_check": {
+     "detail": null,
+     "login": "failed",
+     "state": "signed_out"
+    },
+    "connector_starts": 2,
+    "connector_starts_before_check": 1,
+    "handed_to_the_opener": [
+     "https://chatgpt.com/qa-synthetic-not-a-sign-in"
+    ],
+    "in_the_next_2_s": {
+     "connector_starts": 0,
+     "notifications": 0
+    },
+    "lost": {
+     "detail": "the connector ended before the sign-in completed",
+     "login": "failed",
+     "state": "unavailable"
+    },
+    "stand_in_exits": [
+     {
+      "code": 1,
+      "on": "idle"
+     }
+    ]
+   }
+  },
+  "lone_surrogate_straight_to_the_class": {
+   "before": {
+    "connector_starts": 1,
+    "logged": [
+     {
+      "chars": 15,
+      "well_formed": false
+     },
+     {
+      "chars": 7,
+      "well_formed": true
+     }
+    ],
+    "lone": "answered",
+    "whole": "answered",
+    "whole_text_hash_is_its_utf8": true
+   },
+   "released": {
+    "connector_starts": 1,
+    "logged": [
+     {
+      "chars": 15,
+      "well_formed": false
+     },
+     {
+      "chars": 7,
+      "well_formed": true
+     }
+    ],
+    "lone": "answered",
+    "whole": "answered",
+    "whole_text_hash_is_its_utf8": true
+   },
+   "stand_ins": {
+    "committed": {
+     "exit_code": 1,
+     "lines_written": 0,
+     "logged": [
+      "start"
+     ]
+    },
+    "extended": {
+     "exit_code": 0,
+     "lines_written": 2,
+     "logged": [
+      "start",
+      "ask",
+      "sent",
+      "ask",
+      "sent",
+      "eof"
+     ]
+    }
+   }
+  },
+  "only_the_output_closes": {
+   "before": {
+    "after_a_second_check": {
+     "detail": "the connector did not answer",
+     "login": "none",
+     "state": "unavailable"
+    },
+    "after_check": {
+     "detail": "the connector did not answer",
+     "login": "none",
+     "state": "unavailable"
+    },
+    "after_the_output_closed": {
+     "detail": null,
+     "login": "none",
+     "state": "signed_in"
+    },
+    "after_the_question": {
+     "detail": null,
+     "login": "none",
+     "state": "signed_in"
+    },
+    "ask": {
+     "reason": "no answer came; whether ChatGPT worked on the question is not known",
+     "status": "uncertain"
+    },
+    "connector_starts": 1,
+    "connector_starts_after_check": 1,
+    "not_askable": null,
+    "notifications": 0,
+    "process_still_running": true,
+    "stand_in": {
+     "events": [
+      "start",
+      "connection/read",
+      "sent",
+      "output_closed",
+      "ask",
+      "ask/cancel",
+      "connection/read",
+      "connection/read",
+      "eof"
+     ],
+     "starts": 1
+    }
+   },
+   "released": {
+    "after_a_second_check": {
+     "detail": "the connector did not answer",
+     "login": "none",
+     "state": "unavailable"
+    },
+    "after_check": {
+     "detail": "the connector did not answer",
+     "login": "none",
+     "state": "unavailable"
+    },
+    "after_the_output_closed": {
+     "detail": null,
+     "login": "none",
+     "state": "signed_in"
+    },
+    "after_the_question": {
+     "detail": null,
+     "login": "none",
+     "state": "signed_in"
+    },
+    "ask": {
+     "reason": "no answer came; whether ChatGPT worked on the question is not known",
+     "status": "uncertain"
+    },
+    "connector_starts": 1,
+    "connector_starts_after_check": 1,
+    "not_askable": null,
+    "notifications": 0,
+    "process_still_running": true,
+    "stand_in": {
+     "events": [
+      "start",
+      "connection/read",
+      "sent",
+      "output_closed",
+      "ask",
+      "ask/cancel",
+      "connection/read",
+      "connection/read",
+      "eof"
+     ],
+     "starts": 1
+    }
+   }
+  },
+  "own_end_bound": {
+   "before": {
+    "exported_CONNECTOR_END_MS": null,
+    "process_ended_with": {
+     "exit_code": null,
+     "signal": "SIGTERM"
+    },
+    "quit_returned_after": "at least 5 s, less than 7 s",
+    "said_from_the_quit_on": [
+     "unavailable, none: null"
+    ],
+    "stand_in_logged_its_own_end": 0
+   },
+   "first_release": {
+    "exported_CONNECTOR_END_MS": null,
+    "process_ended_with": {
+     "exit_code": null,
+     "signal": "SIGTERM"
+    },
+    "quit_returned_after": "at least 5 s, less than 7 s",
+    "said_from_the_quit_on": [
+     "unavailable, none: null"
+    ],
+    "stand_in_logged_its_own_end": 0
+   },
+   "released": {
+    "exported_CONNECTOR_END_MS": 10000,
+    "process_ended_with": {
+     "exit_code": 0,
+     "signal": null
+    },
+    "quit_returned_after": "at least 7 s",
+    "said_from_the_quit_on": [
+     "unavailable, none: null"
+    ],
+    "stand_in_logged_its_own_end": 1
+   }
+  },
+  "question_cancelled": {
+   "not_asked_for": {
+    "before": {
+     "after": {
+      "detail": null,
+      "login": "none",
+      "state": "signed_in"
+     },
+     "outcome": {
+      "status": "cancelled",
+      "uncertain": false
+     },
+     "questions_received": 1,
+     "sent_by_the_app": {
+      "ask/cancel": 0,
+      "session/stop": 0
+     }
+    },
+    "first_release": {
+     "after": {
+      "detail": null,
+      "login": "none",
+      "state": "signed_in"
+     },
+     "outcome": {
+      "status": "cancelled",
+      "uncertain": false
+     },
+     "questions_received": 1,
+     "sent_by_the_app": {
+      "ask/cancel": 0,
+      "session/stop": 0
+     }
+    },
+    "released": {
+     "after": {
+      "detail": null,
+      "login": "none",
+      "state": "signed_in"
+     },
+     "outcome": {
+      "status": "cancelled",
+      "uncertain": true
+     },
+     "questions_received": 1,
+     "sent_by_the_app": {
+      "ask/cancel": 0,
+      "session/stop": 0
+     }
+    }
+   },
+   "not_asked_for_interrupt_unconfirmed": {
+    "before": {
+     "after": {
+      "detail": null,
+      "login": "none",
+      "state": "signed_in"
+     },
+     "outcome": {
+      "status": "cancelled",
+      "uncertain": true
+     },
+     "questions_received": 1,
+     "sent_by_the_app": {
+      "ask/cancel": 0,
+      "session/stop": 0
+     }
+    },
+    "first_release": {
+     "after": {
+      "detail": null,
+      "login": "none",
+      "state": "signed_in"
+     },
+     "outcome": {
+      "status": "cancelled",
+      "uncertain": true
+     },
+     "questions_received": 1,
+     "sent_by_the_app": {
+      "ask/cancel": 0,
+      "session/stop": 0
+     }
+    },
+    "released": {
+     "after": {
+      "detail": null,
+      "login": "none",
+      "state": "signed_in"
+     },
+     "outcome": {
+      "status": "cancelled",
+      "uncertain": true
+     },
+     "questions_received": 1,
+     "sent_by_the_app": {
+      "ask/cancel": 0,
+      "session/stop": 0
+     }
+    }
+   },
+   "own_cancel_confirmed": {
+    "before": {
+     "after": {
+      "detail": null,
+      "login": "none",
+      "state": "signed_in"
+     },
+     "outcome": {
+      "status": "cancelled",
+      "uncertain": false
+     },
+     "questions_received": 1,
+     "sent_by_the_app": {
+      "ask/cancel": 1,
+      "session/stop": 0
+     }
+    },
+    "first_release": {
+     "after": {
+      "detail": null,
+      "login": "none",
+      "state": "signed_in"
+     },
+     "outcome": {
+      "status": "cancelled",
+      "uncertain": false
+     },
+     "questions_received": 1,
+     "sent_by_the_app": {
+      "ask/cancel": 1,
+      "session/stop": 0
+     }
+    },
+    "released": {
+     "after": {
+      "detail": null,
+      "login": "none",
+      "state": "signed_in"
+     },
+     "outcome": {
+      "status": "cancelled",
+      "uncertain": false
+     },
+     "questions_received": 1,
+     "sent_by_the_app": {
+      "ask/cancel": 1,
+      "session/stop": 0
+     }
+    }
+   },
+   "own_cancel_not_confirmed": {
+    "before": {
+     "after": {
+      "detail": null,
+      "login": "none",
+      "state": "signed_in"
+     },
+     "outcome": {
+      "status": "cancelled",
+      "uncertain": true
+     },
+     "questions_received": 1,
+     "sent_by_the_app": {
+      "ask/cancel": 1,
+      "session/stop": 0
+     }
+    },
+    "first_release": {
+     "after": {
+      "detail": null,
+      "login": "none",
+      "state": "signed_in"
+     },
+     "outcome": {
+      "status": "cancelled",
+      "uncertain": true
+     },
+     "questions_received": 1,
+     "sent_by_the_app": {
+      "ask/cancel": 1,
+      "session/stop": 0
+     }
+    },
+    "released": {
+     "after": {
+      "detail": null,
+      "login": "none",
+      "state": "signed_in"
+     },
+     "outcome": {
+      "status": "cancelled",
+      "uncertain": true
+     },
+     "questions_received": 1,
+     "sent_by_the_app": {
+      "ask/cancel": 1,
+      "session/stop": 0
+     }
+    }
+   },
+   "own_stop_acknowledged": {
+    "before": {
+     "after": {
+      "detail": null,
+      "login": "none",
+      "state": "signed_in"
+     },
+     "outcome": {
+      "status": "cancelled",
+      "uncertain": false
+     },
+     "questions_received": 1,
+     "sent_by_the_app": {
+      "ask/cancel": 0,
+      "session/stop": 1
+     }
+    },
+    "first_release": {
+     "after": {
+      "detail": null,
+      "login": "none",
+      "state": "signed_in"
+     },
+     "outcome": {
+      "status": "cancelled",
+      "uncertain": false
+     },
+     "questions_received": 1,
+     "sent_by_the_app": {
+      "ask/cancel": 0,
+      "session/stop": 1
+     }
+    },
+    "released": {
+     "after": {
+      "detail": null,
+      "login": "none",
+      "state": "signed_in"
+     },
+     "outcome": {
+      "status": "cancelled",
+      "uncertain": false
+     },
+     "questions_received": 1,
+     "sent_by_the_app": {
+      "ask/cancel": 0,
+      "session/stop": 1
+     }
+    }
+   }
+  },
+  "question_while_sign_in_starts": {
+   "before": {
+    "ask": {
+     "code": "busy",
+     "reason": "another question is still being answered",
+     "status": "refused"
+    },
+    "asks_received": 1,
+    "not_askable": null,
+    "start_given_up": {
+     "detail": "the connector did not answer",
+     "login": "failed",
+     "state": "signed_in"
+    },
+    "starting": {
+     "detail": null,
+     "login": "starting",
+     "state": "signed_in"
+    },
+    "starts_received": 1
+   },
+   "released": {
+    "ask": {
+     "code": "local",
+     "reason": "a sign-in is being started: no question can be sent until that sign-in is over",
+     "status": "refused"
+    },
+    "asks_received": 0,
+    "not_askable": "a sign-in is being started: no question can be sent until that sign-in is over",
+    "start_given_up": {
+     "detail": "the connector did not answer",
+     "login": "failed",
+     "state": "signed_in"
+    },
+    "starting": {
+     "detail": null,
+     "login": "starting",
+     "state": "signed_in"
+    },
+    "starts_received": 1
+   }
+  },
+  "read_refused": {
+   "busy": {
+    "before": {
+     "connector_starts": 1,
+     "detail": "another question is still being answered",
+     "login": "none",
+     "reads_received": 1,
+     "state": "unavailable"
+    },
+    "released": {
+     "connector_starts": 1,
+     "detail": "the connector is busy, so the account was not read; check again",
+     "login": "none",
+     "reads_received": 1,
+     "state": "unavailable"
+    }
+   },
+   "failed": {
+    "before": {
+     "connector_starts": 1,
+     "detail": "ChatGPT did not complete an answer",
+     "login": "none",
+     "reads_received": 1,
+     "state": "unavailable"
+    },
+    "released": {
+     "connector_starts": 1,
+     "detail": "the account could not be read",
+     "login": "none",
+     "reads_received": 1,
+     "state": "unavailable"
+    }
+   },
+   "qa-not-a-code": {
+    "before": {
+     "connector_starts": 1,
+     "detail": "ChatGPT did not complete an answer",
+     "login": "none",
+     "reads_received": 1,
+     "state": "unavailable"
+    },
+    "released": {
+     "connector_starts": 1,
+     "detail": "the account could not be read",
+     "login": "none",
+     "reads_received": 1,
+     "state": "unavailable"
+    }
+   },
+   "quota": {
+    "before": {
+     "connector_starts": 1,
+     "detail": "the subscription's usage limit was reached",
+     "login": "none",
+     "reads_received": 1,
+     "state": "unavailable"
+    },
+    "released": {
+     "connector_starts": 1,
+     "detail": "the account could not be read",
+     "login": "none",
+     "reads_received": 1,
+     "state": "unavailable"
+    }
+   },
+   "unauthenticated": {
+    "before": {
+     "connector_starts": 1,
+     "detail": "ChatGPT is not signed in (sign in from the control window)",
+     "login": "none",
+     "reads_received": 1,
+     "state": "unavailable"
+    },
+    "released": {
+     "connector_starts": 1,
+     "detail": "the account could not be read: the connector says ChatGPT is not signed in",
+     "login": "none",
+     "reads_received": 1,
+     "state": "unavailable"
+    }
+   }
+  },
+  "read_unchanged": {
+   "another_shape": {
+    "before": {
+     "connector_starts": 1,
+     "detail": "the connector answered in a form this app does not read",
+     "login": "none",
+     "reads_received": 1,
+     "state": "unavailable"
+    },
+    "released": {
+     "connector_starts": 1,
+     "detail": "the connector answered in a form this app does not read",
+     "login": "none",
+     "reads_received": 1,
+     "state": "unavailable"
+    }
+   },
+   "no_answer": {
+    "before": {
+     "connector_starts": 1,
+     "detail": "the connector did not answer",
+     "login": "none",
+     "reads_received": 2,
+     "state": "unavailable"
+    },
+    "released": {
+     "connector_starts": 1,
+     "detail": "the connector did not answer",
+     "login": "none",
+     "reads_received": 2,
+     "state": "unavailable"
+    }
+   },
+   "unavailable": {
+    "before": {
+     "connector_starts": 1,
+     "detail": "the connector, or the official Codex app server it runs, is not available",
+     "login": "none",
+     "reads_received": 1,
+     "state": "unavailable"
+    },
+    "released": {
+     "connector_starts": 1,
+     "detail": "the connector, or the official Codex app server it runs, is not available",
+     "login": "none",
+     "reads_received": 1,
+     "state": "unavailable"
+    }
+   }
+  },
+  "refused_address_acknowledged": {
+   "acknowledged": {
+    "before": {
+     "after": {
+      "detail": "the sign-in address the connector gave is not an official ChatGPT address, so it was not opened",
+      "login": "refused_address",
+      "state": "signed_out"
+     },
+     "after_check": {
+      "detail": null,
+      "login": "refused_address",
+      "state": "signed_out"
+     },
+     "cancels_received": 1,
+     "connector_starts": 1,
+     "connector_starts_before_check": 1,
+     "opened": [],
+     "said": [
+      "signed_out, starting: null",
+      "signed_out, refused_address: the sign-in address the connector gave is not an official ChatGPT address, so it was not opened"
+     ]
+    },
+    "released": {
+     "after": {
+      "detail": "the sign-in address the connector gave is not an official ChatGPT address, so it was not opened",
+      "login": "refused_address",
+      "state": "signed_out"
+     },
+     "after_check": {
+      "detail": null,
+      "login": "refused_address",
+      "state": "signed_out"
+     },
+     "cancels_received": 1,
+     "connector_starts": 1,
+     "connector_starts_before_check": 1,
+     "opened": [],
+     "said": [
+      "signed_out, starting: null",
+      "signed_out, refused_address: the sign-in address the connector gave is not an official ChatGPT address, so it was not opened"
+     ]
+    }
+   },
+   "invalid_request": {
+    "before": {
+     "after": {
+      "detail": "the sign-in address the connector gave is not an official ChatGPT address, so it was not opened",
+      "login": "refused_address",
+      "state": "signed_out"
+     },
+     "after_check": {
+      "detail": null,
+      "login": "refused_address",
+      "state": "signed_out"
+     },
+     "cancels_received": 1,
+     "connector_starts": 1,
+     "connector_starts_before_check": 1,
+     "opened": [],
+     "said": [
+      "signed_out, starting: null",
+      "signed_out, refused_address: the sign-in address the connector gave is not an official ChatGPT address, so it was not opened"
+     ]
+    },
+    "released": {
+     "after": {
+      "detail": "the sign-in address the connector gave is not an official ChatGPT address, so it was not opened",
+      "login": "refused_address",
+      "state": "signed_out"
+     },
+     "after_check": {
+      "detail": null,
+      "login": "refused_address",
+      "state": "signed_out"
+     },
+     "cancels_received": 1,
+     "connector_starts": 1,
+     "connector_starts_before_check": 1,
+     "opened": [],
+     "said": [
+      "signed_out, starting: null",
+      "signed_out, refused_address: the sign-in address the connector gave is not an official ChatGPT address, so it was not opened"
+     ]
+    }
+   }
+  },
+  "refused_address_connector_ends_on_the_cancel": {
+   "before": {
+    "after": {
+     "detail": "the sign-in address the connector gave is not an official ChatGPT address, so it was not opened",
+     "login": "refused_address",
+     "state": "unavailable"
+    },
+    "after_check": {
+     "detail": null,
+     "login": "refused_address",
+     "state": "signed_out"
+    },
+    "connector_starts": 2,
+    "connector_starts_before_check": 1,
+    "opened": [],
+    "said": [
+     "signed_out, starting: null",
+     "signed_out, refused_address: the sign-in address the connector gave is not an official ChatGPT address, so it was not opened",
+     "unavailable, refused_address: the sign-in address the connector gave is not an official ChatGPT address, so it was not opened"
+    ],
+    "stand_in_exits": [
+     {
+      "code": 1,
+      "on": "login_cancel"
+     }
+    ]
+   },
+   "released": {
+    "after": {
+     "detail": "the connector ended before the sign-in completed",
+     "login": "failed",
+     "state": "unavailable"
+    },
+    "after_check": {
+     "detail": null,
+     "login": "failed",
+     "state": "signed_out"
+    },
+    "connector_starts": 2,
+    "connector_starts_before_check": 1,
+    "opened": [],
+    "said": [
+     "signed_out, starting: null",
+     "unavailable, failed: the connector ended before the sign-in completed"
+    ],
+    "stand_in_exits": [
+     {
+      "code": 1,
+      "on": "login_cancel"
+     }
+    ]
+   }
+  },
+  "refused_address_unacknowledged": {
+   "another_shape": {
+    "before": {
+     "after": {
+      "detail": "the sign-in address the connector gave is not an official ChatGPT address, so it was not opened",
+      "login": "refused_address",
+      "state": "signed_out"
+     },
+     "after_check": {
+      "detail": null,
+      "login": "refused_address",
+      "state": "signed_out"
+     },
+     "cancels_received": 1,
+     "connector_starts": 1,
+     "connector_starts_before_check": 1,
+     "opened": [],
+     "said": [
+      "signed_out, starting: null",
+      "signed_out, refused_address: the sign-in address the connector gave is not an official ChatGPT address, so it was not opened"
+     ]
+    },
+    "first_release": {
+     "after": {
+      "detail": "the sign-in address the connector gave is not an official ChatGPT address, so it was not opened; the connector did not confirm that it let that sign-in go, so the connector was ended (check the connection to start it again)",
+      "login": "refused_address",
+      "state": "unavailable"
+     },
+     "after_check": {
+      "detail": null,
+      "login": "refused_address",
+      "state": "signed_out"
+     },
+     "cancels_received": 1,
+     "connector_starts": 2,
+     "connector_starts_before_check": 1,
+     "opened": [],
+     "said": [
+      "signed_out, starting: null",
+      "unavailable, failed: the connector ended before the sign-in completed",
+      "unavailable, refused_address: the sign-in address the connector gave is not an official ChatGPT address, so it was not opened; the connector did not confirm that it let that sign-in go, so the connector was ended (check the connection to start it again)"
+     ]
+    },
+    "released": {
+     "after": {
+      "detail": "the sign-in address the connector gave is not an official ChatGPT address, so it was not opened; the connector did not confirm that it let that sign-in go, so that connector is no longer used and is being ended (check the connection to start one again)",
+      "login": "refused_address",
+      "state": "unavailable"
+     },
+     "after_check": {
+      "detail": null,
+      "login": "refused_address",
+      "state": "signed_out"
+     },
+     "cancels_received": 1,
+     "connector_starts": 2,
+     "connector_starts_before_check": 1,
+     "opened": [],
+     "said": [
+      "signed_out, starting: null",
+      "unavailable, failed: the connector was ended here before the sign-in completed",
+      "unavailable, refused_address: the sign-in address the connector gave is not an official ChatGPT address, so it was not opened; the connector did not confirm that it let that sign-in go, so that connector is no longer used and is being ended (check the connection to start one again)"
+     ]
+    }
+   },
+   "error_failed": {
+    "before": {
+     "after": {
+      "detail": "the sign-in address the connector gave is not an official ChatGPT address, so it was not opened",
+      "login": "refused_address",
+      "state": "signed_out"
+     },
+     "after_check": {
+      "detail": null,
+      "login": "refused_address",
+      "state": "signed_out"
+     },
+     "cancels_received": 1,
+     "connector_starts": 1,
+     "connector_starts_before_check": 1,
+     "opened": [],
+     "said": [
+      "signed_out, starting: null",
+      "signed_out, refused_address: the sign-in address the connector gave is not an official ChatGPT address, so it was not opened"
+     ]
+    },
+    "first_release": {
+     "after": {
+      "detail": "the sign-in address the connector gave is not an official ChatGPT address, so it was not opened; the connector did not confirm that it let that sign-in go, so the connector was ended (check the connection to start it again)",
+      "login": "refused_address",
+      "state": "unavailable"
+     },
+     "after_check": {
+      "detail": null,
+      "login": "refused_address",
+      "state": "signed_out"
+     },
+     "cancels_received": 1,
+     "connector_starts": 2,
+     "connector_starts_before_check": 1,
+     "opened": [],
+     "said": [
+      "signed_out, starting: null",
+      "unavailable, failed: the connector ended before the sign-in completed",
+      "unavailable, refused_address: the sign-in address the connector gave is not an official ChatGPT address, so it was not opened; the connector did not confirm that it let that sign-in go, so the connector was ended (check the connection to start it again)"
+     ]
+    },
+    "released": {
+     "after": {
+      "detail": "the sign-in address the connector gave is not an official ChatGPT address, so it was not opened; the connector did not confirm that it let that sign-in go, so that connector is no longer used and is being ended (check the connection to start one again)",
+      "login": "refused_address",
+      "state": "unavailable"
+     },
+     "after_check": {
+      "detail": null,
+      "login": "refused_address",
+      "state": "signed_out"
+     },
+     "cancels_received": 1,
+     "connector_starts": 2,
+     "connector_starts_before_check": 1,
+     "opened": [],
+     "said": [
+      "signed_out, starting: null",
+      "unavailable, failed: the connector was ended here before the sign-in completed",
+      "unavailable, refused_address: the sign-in address the connector gave is not an official ChatGPT address, so it was not opened; the connector did not confirm that it let that sign-in go, so that connector is no longer used and is being ended (check the connection to start one again)"
+     ]
+    }
+   },
+   "no_answer": {
+    "before": {
+     "after": {
+      "detail": "the sign-in address the connector gave is not an official ChatGPT address, so it was not opened",
+      "login": "refused_address",
+      "state": "signed_out"
+     },
+     "after_check": {
+      "detail": null,
+      "login": "refused_address",
+      "state": "signed_out"
+     },
+     "cancels_received": 1,
+     "connector_starts": 1,
+     "connector_starts_before_check": 1,
+     "opened": [],
+     "said": [
+      "signed_out, starting: null",
+      "signed_out, refused_address: the sign-in address the connector gave is not an official ChatGPT address, so it was not opened"
+     ]
+    },
+    "first_release": {
+     "after": {
+      "detail": "the sign-in address the connector gave is not an official ChatGPT address, so it was not opened; the connector did not confirm that it let that sign-in go, so the connector was ended (check the connection to start it again)",
+      "login": "refused_address",
+      "state": "unavailable"
+     },
+     "after_check": {
+      "detail": null,
+      "login": "refused_address",
+      "state": "signed_out"
+     },
+     "cancels_received": 1,
+     "connector_starts": 2,
+     "connector_starts_before_check": 1,
+     "opened": [],
+     "said": [
+      "signed_out, starting: null",
+      "unavailable, failed: the connector ended before the sign-in completed",
+      "unavailable, refused_address: the sign-in address the connector gave is not an official ChatGPT address, so it was not opened; the connector did not confirm that it let that sign-in go, so the connector was ended (check the connection to start it again)"
+     ]
+    },
+    "released": {
+     "after": {
+      "detail": "the sign-in address the connector gave is not an official ChatGPT address, so it was not opened; the connector did not confirm that it let that sign-in go, so that connector is no longer used and is being ended (check the connection to start one again)",
+      "login": "refused_address",
+      "state": "unavailable"
+     },
+     "after_check": {
+      "detail": null,
+      "login": "refused_address",
+      "state": "signed_out"
+     },
+     "cancels_received": 1,
+     "connector_starts": 2,
+     "connector_starts_before_check": 1,
+     "opened": [],
+     "said": [
+      "signed_out, starting: null",
+      "unavailable, failed: the connector was ended here before the sign-in completed",
+      "unavailable, refused_address: the sign-in address the connector gave is not an official ChatGPT address, so it was not opened; the connector did not confirm that it let that sign-in go, so that connector is no longer used and is being ended (check the connection to start one again)"
+     ]
+    }
+   }
+  },
+  "refused_address_unacknowledged_connector_does_not_end": {
+   "before": {
+    "after_check": {
+     "detail": null,
+     "login": "refused_address",
+     "state": "signed_out"
+    },
+    "connector_starts": 1,
+    "connector_starts_before_check": 1,
+    "first_process_running": true,
+    "said_in_1500_ms": [
+     "signed_out, starting: null",
+     "signed_out, refused_address: the sign-in address the connector gave is not an official ChatGPT address, so it was not opened"
+    ],
+    "then": {
+     "detail": "the sign-in address the connector gave is not an official ChatGPT address, so it was not opened",
+     "login": "refused_address",
+     "state": "signed_out"
+    }
+   },
+   "first_release": {
+    "after_check": {
+     "detail": null,
+     "login": "refused_address",
+     "state": "signed_out"
+    },
+    "connector_starts": 2,
+    "connector_starts_before_check": 1,
+    "first_process_running": false,
+    "said_in_1500_ms": [
+     "signed_out, starting: null",
+     "unavailable, failed: the connector ended before the sign-in completed",
+     "unavailable, refused_address: the sign-in address the connector gave is not an official ChatGPT address, so it was not opened; the connector did not confirm that it let that sign-in go, so the connector was ended (check the connection to start it again)"
+    ],
+    "then": {
+     "detail": "the sign-in address the connector gave is not an official ChatGPT address, so it was not opened; the connector did not confirm that it let that sign-in go, so the connector was ended (check the connection to start it again)",
+     "login": "refused_address",
+     "state": "unavailable"
+    }
+   },
+   "released": {
+    "after_check": {
+     "detail": "a connector that was ended here did not end by itself in time; its wsl.exe shim was ended, which does not show that the connector, or the Codex app server it runs, ended in WSL",
+     "login": "refused_address",
+     "state": "signed_out"
+    },
+    "connector_starts": 2,
+    "connector_starts_before_check": 1,
+    "first_process_running": false,
+    "said_in_1500_ms": [
+     "signed_out, starting: null",
+     "unavailable, failed: the connector was ended here before the sign-in completed",
+     "unavailable, refused_address: the sign-in address the connector gave is not an official ChatGPT address, so it was not opened; the connector did not confirm that it let that sign-in go, so that connector is no longer used and is being ended (check the connection to start one again)",
+     "unavailable, refused_address: the sign-in address the connector gave is not an official ChatGPT address, so it was not opened; the connector did not confirm that it let that sign-in go, so that connector is no longer used and is being ended (check the connection to start one again); a connector that was ended here did not end by itself in time; its wsl.exe shim was ended, which does not show that the connector, or the Codex app server it runs, ended in WSL"
+    ],
+    "then": {
+     "detail": "the sign-in address the connector gave is not an official ChatGPT address, so it was not opened; the connector did not confirm that it let that sign-in go, so that connector is no longer used and is being ended (check the connection to start one again); a connector that was ended here did not end by itself in time; its wsl.exe shim was ended, which does not show that the connector, or the Codex app server it runs, ended in WSL",
+     "login": "refused_address",
+     "state": "unavailable"
+    }
+   }
+  },
+  "retained_controls": {
+   "before": {
+    "at": {
+     "before_check": {
+      "connector_starts": 0,
+      "detail": null,
+      "login": "none",
+      "not_askable": "the ChatGPT subscription has not been checked yet (use the control window)",
+      "state": "not_checked"
+     },
+     "checked": {
+      "detail": null,
+      "login": "none",
+      "model": "qa-synthetic-vision",
+      "plan": "QA-SYNTHETIC",
+      "state": "signed_in"
+     },
+     "end": {
+      "detail": null,
+      "login": "none",
+      "not_askable": "ChatGPT is not signed in (sign in from the control window)",
+      "state": "signed_out"
+     },
+     "fault": {
+      "connector_starts": 1,
+      "detail": "the connector did not answer",
+      "login": "none",
+      "not_askable": "the connector, or the official Codex app server it runs, is not available",
+      "state": "unavailable"
+     },
+     "rechecked": {
+      "connector_starts": 2,
+      "detail": null,
+      "login": "none",
+      "state": "signed_in"
+     },
+     "stopped": {
+      "detail": null,
+      "login": "none",
+      "same_session_again": "this capture session was stopped",
+      "state": "signed_in"
+     }
+    },
+    "command": [
+     "wsl.exe",
+     "--distribution",
+     "qa-offline",
+     "--user",
+     "qa-offline",
+     "--cd",
+     "<temp>",
+     "--exec",
+     "<qa_fake_bridge.py>",
+     "-m",
+     "services.worker.connectors.chatgpt_local"
+    ],
+    "k": {
+     "k10_cancel_late_answer": {
+      "status": "cancelled",
+      "uncertain": false
+     },
+     "k11_cancel_unconfirmed": {
+      "status": "cancelled",
+      "uncertain": true
+     },
+     "k12_stop_in_flight": {
+      "status": "cancelled",
+      "uncertain": false
+     },
+     "k13_new_session": {
+      "status": "answered",
+      "text": "SYNTHETIC (QA fake bridge: no model, no ChatGPT). Answer in the second capture session."
+     },
+     "k14_fault": {
+      "reason": "no answer came; whether ChatGPT worked on the question is not known",
+      "status": "uncertain"
+     },
+     "k15_after_recheck": {
+      "status": "answered",
+      "text": "SYNTHETIC (QA fake bridge: no model, no ChatGPT). Answer from the second bridge start."
+     },
+     "k16_unauthenticated": {
+      "code": "unauthenticated",
+      "reason": "ChatGPT is not signed in (sign in from the control window)",
+      "status": "refused"
+     },
+     "k1_answered": {
+      "status": "answered",
+      "text": "SYNTHETIC (QA fake bridge: no model, no ChatGPT). First control answer."
+     },
+     "k2_tampered": {
+      "code": "unbound",
+      "reason": "the answer is not bound to the request that was sent; it is not shown",
+      "status": "refused"
+     },
+     "k3_quota": {
+      "code": "quota",
+      "reason": "the subscription's usage limit was reached",
+      "status": "refused"
+     },
+     "k4_busy": {
+      "code": "busy",
+      "reason": "another question is still being answered",
+      "status": "refused"
+     },
+     "k5_unsupported_model": {
+      "code": "unsupported_model",
+      "reason": "the chosen model does not take pictures",
+      "status": "refused"
+     },
+     "k6_invalid_request": {
+      "code": "invalid_request",
+      "reason": "the connector refused the request as malformed",
+      "status": "refused"
+     },
+     "k7_failed": {
+      "code": "failed",
+      "reason": "ChatGPT did not complete an answer",
+      "status": "refused"
+     },
+     "k8_unavailable": {
+      "code": "unavailable",
+      "reason": "the connector, or the official Codex app server it runs, is not available",
+      "status": "refused"
+     },
+     "k9_cancel_confirmed": {
+      "status": "cancelled",
+      "uncertain": false
+     }
+    },
+    "logins_said": [
+     "none"
+    ],
+    "opened": [],
+    "stand_in": {
+     "answers_written": 6,
+     "asks": [
+      "answer",
+      "answer",
+      "error",
+      "error",
+      "error",
+      "error",
+      "error",
+      "error",
+      "hold",
+      "hold",
+      "hold",
+      "hold",
+      "answer",
+      "fault",
+      "answer",
+      "error"
+     ],
+     "ends_of_input": 2,
+     "one_question_each": 16,
+     "over_long_line_bytes": [
+      307200
+     ],
+     "requests": {
+      "ask/cancel": 3,
+      "connection/login/cancel": 0,
+      "connection/login/start": 0,
+      "connection/read": 3,
+      "session/stop": 1
+     },
+     "starts": 2
+    }
+   },
+   "first_release": {
+    "at": {
+     "before_check": {
+      "connector_starts": 0,
+      "detail": null,
+      "login": "none",
+      "not_askable": "the ChatGPT subscription has not been checked yet (use the control window)",
+      "state": "not_checked"
+     },
+     "checked": {
+      "detail": null,
+      "login": "none",
+      "model": "qa-synthetic-vision",
+      "plan": "QA-SYNTHETIC",
+      "state": "signed_in"
+     },
+     "end": {
+      "detail": null,
+      "login": "none",
+      "not_askable": "ChatGPT is not signed in (sign in from the control window)",
+      "state": "signed_out"
+     },
+     "fault": {
+      "connector_starts": 1,
+      "detail": "the connector did not answer",
+      "login": "none",
+      "not_askable": "the connector, or the official Codex app server it runs, is not available",
+      "state": "unavailable"
+     },
+     "rechecked": {
+      "connector_starts": 2,
+      "detail": null,
+      "login": "none",
+      "state": "signed_in"
+     },
+     "stopped": {
+      "detail": null,
+      "login": "none",
+      "same_session_again": "this capture session was stopped",
+      "state": "signed_in"
+     }
+    },
+    "command": [
+     "wsl.exe",
+     "--distribution",
+     "qa-offline",
+     "--user",
+     "qa-offline",
+     "--cd",
+     "<temp>",
+     "--exec",
+     "<qa_fake_bridge.py>",
+     "-m",
+     "services.worker.connectors.chatgpt_local"
+    ],
+    "k": {
+     "k10_cancel_late_answer": {
+      "status": "cancelled",
+      "uncertain": false
+     },
+     "k11_cancel_unconfirmed": {
+      "status": "cancelled",
+      "uncertain": true
+     },
+     "k12_stop_in_flight": {
+      "status": "cancelled",
+      "uncertain": false
+     },
+     "k13_new_session": {
+      "status": "answered",
+      "text": "SYNTHETIC (QA fake bridge: no model, no ChatGPT). Answer in the second capture session."
+     },
+     "k14_fault": {
+      "reason": "no answer came; whether ChatGPT worked on the question is not known",
+      "status": "uncertain"
+     },
+     "k15_after_recheck": {
+      "status": "answered",
+      "text": "SYNTHETIC (QA fake bridge: no model, no ChatGPT). Answer from the second bridge start."
+     },
+     "k16_unauthenticated": {
+      "code": "unauthenticated",
+      "reason": "ChatGPT is not signed in (sign in from the control window)",
+      "status": "refused"
+     },
+     "k1_answered": {
+      "status": "answered",
+      "text": "SYNTHETIC (QA fake bridge: no model, no ChatGPT). First control answer."
+     },
+     "k2_tampered": {
+      "code": "unbound",
+      "reason": "the answer is not bound to the request that was sent; it is not shown",
+      "status": "refused"
+     },
+     "k3_quota": {
+      "code": "quota",
+      "reason": "the subscription's usage limit was reached",
+      "status": "refused"
+     },
+     "k4_busy": {
+      "code": "busy",
+      "reason": "another question is still being answered",
+      "status": "refused"
+     },
+     "k5_unsupported_model": {
+      "code": "unsupported_model",
+      "reason": "the chosen model does not take pictures",
+      "status": "refused"
+     },
+     "k6_invalid_request": {
+      "code": "invalid_request",
+      "reason": "the connector refused the request as malformed",
+      "status": "refused"
+     },
+     "k7_failed": {
+      "code": "failed",
+      "reason": "ChatGPT did not complete an answer",
+      "status": "refused"
+     },
+     "k8_unavailable": {
+      "code": "unavailable",
+      "reason": "the connector, or the official Codex app server it runs, is not available",
+      "status": "refused"
+     },
+     "k9_cancel_confirmed": {
+      "status": "cancelled",
+      "uncertain": false
+     }
+    },
+    "logins_said": [
+     "none"
+    ],
+    "opened": [],
+    "stand_in": {
+     "answers_written": 6,
+     "asks": [
+      "answer",
+      "answer",
+      "error",
+      "error",
+      "error",
+      "error",
+      "error",
+      "error",
+      "hold",
+      "hold",
+      "hold",
+      "hold",
+      "answer",
+      "fault",
+      "answer",
+      "error"
+     ],
+     "ends_of_input": 2,
+     "one_question_each": 16,
+     "over_long_line_bytes": [
+      307200
+     ],
+     "requests": {
+      "ask/cancel": 3,
+      "connection/login/cancel": 0,
+      "connection/login/start": 0,
+      "connection/read": 3,
+      "session/stop": 1
+     },
+     "starts": 2
+    }
+   },
+   "released": {
+    "at": {
+     "before_check": {
+      "connector_starts": 0,
+      "detail": null,
+      "login": "none",
+      "not_askable": "the ChatGPT subscription has not been checked yet (use the control window)",
+      "state": "not_checked"
+     },
+     "checked": {
+      "detail": null,
+      "login": "none",
+      "model": "qa-synthetic-vision",
+      "plan": "QA-SYNTHETIC",
+      "state": "signed_in"
+     },
+     "end": {
+      "detail": null,
+      "login": "none",
+      "not_askable": "ChatGPT is not signed in (sign in from the control window)",
+      "state": "signed_out"
+     },
+     "fault": {
+      "connector_starts": 1,
+      "detail": "the connector did not answer",
+      "login": "none",
+      "not_askable": "the connector, or the official Codex app server it runs, is not available",
+      "state": "unavailable"
+     },
+     "rechecked": {
+      "connector_starts": 2,
+      "detail": null,
+      "login": "none",
+      "state": "signed_in"
+     },
+     "stopped": {
+      "detail": null,
+      "login": "none",
+      "same_session_again": "this capture session was stopped",
+      "state": "signed_in"
+     }
+    },
+    "command": [
+     "wsl.exe",
+     "--distribution",
+     "qa-offline",
+     "--user",
+     "qa-offline",
+     "--cd",
+     "<temp>",
+     "--exec",
+     "<qa_fake_bridge.py>",
+     "-m",
+     "services.worker.connectors.chatgpt_local"
+    ],
+    "k": {
+     "k10_cancel_late_answer": {
+      "status": "cancelled",
+      "uncertain": false
+     },
+     "k11_cancel_unconfirmed": {
+      "status": "cancelled",
+      "uncertain": true
+     },
+     "k12_stop_in_flight": {
+      "status": "cancelled",
+      "uncertain": false
+     },
+     "k13_new_session": {
+      "status": "answered",
+      "text": "SYNTHETIC (QA fake bridge: no model, no ChatGPT). Answer in the second capture session."
+     },
+     "k14_fault": {
+      "reason": "no answer came; whether ChatGPT worked on the question is not known",
+      "status": "uncertain"
+     },
+     "k15_after_recheck": {
+      "status": "answered",
+      "text": "SYNTHETIC (QA fake bridge: no model, no ChatGPT). Answer from the second bridge start."
+     },
+     "k16_unauthenticated": {
+      "code": "unauthenticated",
+      "reason": "ChatGPT is not signed in (sign in from the control window)",
+      "status": "refused"
+     },
+     "k1_answered": {
+      "status": "answered",
+      "text": "SYNTHETIC (QA fake bridge: no model, no ChatGPT). First control answer."
+     },
+     "k2_tampered": {
+      "code": "unbound",
+      "reason": "the answer is not bound to the request that was sent; it is not shown",
+      "status": "refused"
+     },
+     "k3_quota": {
+      "code": "quota",
+      "reason": "the subscription's usage limit was reached",
+      "status": "refused"
+     },
+     "k4_busy": {
+      "code": "busy",
+      "reason": "another question is still being answered",
+      "status": "refused"
+     },
+     "k5_unsupported_model": {
+      "code": "unsupported_model",
+      "reason": "the chosen model does not take pictures",
+      "status": "refused"
+     },
+     "k6_invalid_request": {
+      "code": "invalid_request",
+      "reason": "the connector refused the request as malformed",
+      "status": "refused"
+     },
+     "k7_failed": {
+      "code": "failed",
+      "reason": "ChatGPT did not complete an answer",
+      "status": "refused"
+     },
+     "k8_unavailable": {
+      "code": "unavailable",
+      "reason": "the connector, or the official Codex app server it runs, is not available",
+      "status": "refused"
+     },
+     "k9_cancel_confirmed": {
+      "status": "cancelled",
+      "uncertain": false
+     }
+    },
+    "logins_said": [
+     "none"
+    ],
+    "opened": [],
+    "stand_in": {
+     "answers_written": 6,
+     "asks": [
+      "answer",
+      "answer",
+      "error",
+      "error",
+      "error",
+      "error",
+      "error",
+      "error",
+      "hold",
+      "hold",
+      "hold",
+      "hold",
+      "answer",
+      "fault",
+      "answer",
+      "error"
+     ],
+     "ends_of_input": 2,
+     "one_question_each": 16,
+     "over_long_line_bytes": [
+      307200
+     ],
+     "requests": {
+      "ask/cancel": 3,
+      "connection/login/cancel": 0,
+      "connection/login/start": 0,
+      "connection/read": 3,
+      "session/stop": 1
+     },
+     "starts": 2
+    }
+   }
+  },
+  "sign_in_start_refused": {
+   "busy": {
+    "before": {
+     "connector_starts": 1,
+     "detail": "another question is still being answered",
+     "login": "failed",
+     "opened": [],
+     "stand_in_exits": [],
+     "starts_received": 1,
+     "state": "signed_out"
+    },
+    "released": {
+     "connector_starts": 1,
+     "detail": "a sign-in or a question is already pending in the connector, so no sign-in was started",
+     "login": "failed",
+     "opened": [],
+     "stand_in_exits": [],
+     "starts_received": 1,
+     "state": "signed_out"
+    }
+   },
+   "failed": {
+    "before": {
+     "connector_starts": 1,
+     "detail": "ChatGPT did not complete an answer",
+     "login": "failed",
+     "opened": [],
+     "stand_in_exits": [],
+     "starts_received": 1,
+     "state": "signed_out"
+    },
+    "released": {
+     "connector_starts": 1,
+     "detail": "the sign-in could not be started",
+     "login": "failed",
+     "opened": [],
+     "stand_in_exits": [],
+     "starts_received": 1,
+     "state": "signed_out"
+    }
+   },
+   "qa-not-a-code": {
+    "before": {
+     "connector_starts": 1,
+     "detail": "ChatGPT did not complete an answer",
+     "login": "failed",
+     "opened": [],
+     "stand_in_exits": [],
+     "starts_received": 1,
+     "state": "signed_out"
+    },
+    "released": {
+     "connector_starts": 1,
+     "detail": "the sign-in could not be started",
+     "login": "failed",
+     "opened": [],
+     "stand_in_exits": [],
+     "starts_received": 1,
+     "state": "signed_out"
+    }
+   },
+   "quota": {
+    "before": {
+     "connector_starts": 1,
+     "detail": "the subscription's usage limit was reached",
+     "login": "failed",
+     "opened": [],
+     "stand_in_exits": [],
+     "starts_received": 1,
+     "state": "signed_out"
+    },
+    "released": {
+     "connector_starts": 1,
+     "detail": "the sign-in could not be started",
+     "login": "failed",
+     "opened": [],
+     "stand_in_exits": [],
+     "starts_received": 1,
+     "state": "signed_out"
+    }
+   },
+   "unauthenticated": {
+    "before": {
+     "connector_starts": 1,
+     "detail": "ChatGPT is not signed in (sign in from the control window)",
+     "login": "failed",
+     "opened": [],
+     "stand_in_exits": [],
+     "starts_received": 1,
+     "state": "signed_out"
+    },
+    "released": {
+     "connector_starts": 1,
+     "detail": "the sign-in could not be started",
+     "login": "failed",
+     "opened": [],
+     "stand_in_exits": [],
+     "starts_received": 1,
+     "state": "signed_out"
+    }
+   }
+  },
+  "sign_in_start_unchanged": {
+   "another_shape": {
+    "before": {
+     "connector_starts": 1,
+     "detail": "the connector answered in a form this app does not read",
+     "login": "failed",
+     "opened": [],
+     "stand_in_exits": [],
+     "starts_received": 1,
+     "state": "signed_out"
+    },
+    "released": {
+     "connector_starts": 1,
+     "detail": "the connector answered in a form this app does not read",
+     "login": "failed",
+     "opened": [],
+     "stand_in_exits": [],
+     "starts_received": 1,
+     "state": "signed_out"
+    }
+   },
+   "connector_exits": {
+    "before": {
+     "connector_starts": 1,
+     "detail": "the connector did not answer",
+     "login": "failed",
+     "opened": [],
+     "stand_in_exits": [
+      {
+       "code": 1,
+       "on": "login_start"
+      }
+     ],
+     "starts_received": 1,
+     "state": "unavailable"
+    },
+    "released": {
+     "connector_starts": 1,
+     "detail": "the connector did not answer",
+     "login": "failed",
+     "opened": [],
+     "stand_in_exits": [
+      {
+       "code": 1,
+       "on": "login_start"
+      }
+     ],
+     "starts_received": 1,
+     "state": "unavailable"
+    }
+   },
+   "no_answer": {
+    "before": {
+     "connector_starts": 1,
+     "detail": "the connector did not answer",
+     "login": "failed",
+     "opened": [],
+     "stand_in_exits": [],
+     "starts_received": 1,
+     "state": "signed_out"
+    },
+    "released": {
+     "connector_starts": 1,
+     "detail": "the connector did not answer",
+     "login": "failed",
+     "opened": [],
+     "stand_in_exits": [],
+     "starts_received": 1,
+     "state": "signed_out"
+    }
+   },
+   "unavailable": {
+    "before": {
+     "connector_starts": 1,
+     "detail": "the connector, or the official Codex app server it runs, is not available",
+     "login": "failed",
+     "opened": [],
+     "stand_in_exits": [],
+     "starts_received": 1,
+     "state": "signed_out"
+    },
+    "released": {
+     "connector_starts": 1,
+     "detail": "the connector, or the official Codex app server it runs, is not available",
+     "login": "failed",
+     "opened": [],
+     "stand_in_exits": [],
+     "starts_received": 1,
+     "state": "signed_out"
+    }
+   }
+  },
+  "signed_in_read_while_sign_in_starts": {
+   "before": {
+    "after_the_read": {
+     "detail": null,
+     "login": "none",
+     "state": "signed_in"
+    },
+    "ask": {
+     "code": "busy",
+     "reason": "another question is still being answered",
+     "status": "refused"
+    },
+    "asks_received": 1,
+    "not_askable": null,
+    "said_by_the_read": [
+     "checking, starting: null",
+     "signed_in, none: null"
+    ],
+    "start_answered_by_then": false,
+    "starting": {
+     "detail": null,
+     "login": "starting",
+     "state": "signed_in"
+    },
+    "starts_received": 1
+   },
+   "released": {
+    "after_the_read": {
+     "detail": null,
+     "login": "starting",
+     "state": "signed_in"
+    },
+    "ask": {
+     "code": "local",
+     "reason": "a sign-in is being started: no question can be sent until that sign-in is over",
+     "status": "refused"
+    },
+    "asks_received": 0,
+    "not_askable": "a sign-in is being started: no question can be sent until that sign-in is over",
+    "said_by_the_read": [
+     "checking, starting: null",
+     "signed_in, starting: null"
+    ],
+    "start_answered_by_then": false,
+    "starting": {
+     "detail": null,
+     "login": "starting",
+     "state": "signed_in"
+    },
+    "starts_received": 1
+   }
+  },
+  "signed_in_while_pending": {
+   "before": {
+    "after_signed_in_read": {
+     "detail": null,
+     "login": "none",
+     "state": "signed_in"
+    },
+    "ask": {
+     "code": "busy",
+     "reason": "another question is still being answered",
+     "status": "refused"
+    },
+    "ask_after": {
+     "code": "busy",
+     "reason": "another question is still being answered",
+     "status": "refused"
+    },
+    "ask_while_cancel_out": {
+     "code": "busy",
+     "reason": "another question is still being answered",
+     "status": "refused"
+    },
+    "asks_received": 3,
+    "cancel_given_up": {
+     "detail": null,
+     "login": "none",
+     "state": "signed_in"
+    },
+    "cancel_out": {
+     "detail": null,
+     "login": "none",
+     "state": "signed_in"
+    },
+    "cancels_received": 0,
+    "not_askable": null
+   },
+   "released": {
+    "after_signed_in_read": {
+     "detail": "a sign-in started here is still pending: finish it in your browser, or cancel it",
+     "login": "waiting",
+     "state": "signed_in"
+    },
+    "ask": {
+     "code": "local",
+     "reason": "a sign-in is still pending: finish it in your browser, or cancel it in the control window",
+     "status": "refused"
+    },
+    "ask_after": {
+     "code": "local",
+     "reason": "a sign-in is still pending: finish it in your browser, or cancel it in the control window",
+     "status": "refused"
+    },
+    "ask_while_cancel_out": {
+     "code": "local",
+     "reason": "a sign-in is still pending: finish it in your browser, or cancel it in the control window",
+     "status": "refused"
+    },
+    "asks_received": 0,
+    "cancel_given_up": {
+     "detail": "the cancel of the sign-in was not confirmed: it may still be pending in the connector; cancel it again",
+     "login": "waiting",
+     "state": "signed_in"
+    },
+    "cancel_out": {
+     "detail": "the sign-in is being cancelled",
+     "login": "waiting",
+     "state": "signed_in"
+    },
+    "cancels_received": 1,
+    "not_askable": "a sign-in is still pending: finish it in your browser, or cancel it in the control window"
+   }
+  },
+  "stand_in_as_committed": {
+   "controls": {
+    "asks_logged": 17,
+    "exit_codes": [
+     0,
+     0
+    ],
+    "lines_written": [
+     28,
+     4
+    ],
+    "log_entries": 64,
+    "starts": 2
+   },
+   "rehearsal": {
+    "asks_logged": 1,
+    "exit_codes": [
+     0
+    ],
+    "lines_written": [
+     2
+    ],
+    "log_entries": 6,
+    "starts": 1
+   }
+  },
+  "stand_in_self_test": {
+   "checks": 86,
+   "failed_among_the_checks_added_with_this_file": []
+  }
+ },
+ "result": {
+  "failed": [],
+  "passed": 37,
+  "tests": 37
+ },
+ "trees": {
+  "before": {
+   "apps/windows": "5bda4761eaef62814a7f376a6e1147246d48bf3f",
+   "packages": "b53b166330a8e15cfd4130110496694e0086436e",
+   "pyproject.toml": "7555c8084b4cf8e9b69db7fac9e4ce92d23b2f75",
+   "services": "93ddc49b82a900bbe251d04ae587ca45204732a5"
+  },
+  "first_release": {
+   "apps/windows": "06c3b93b4855a8a0a5d803a348818303b1c1182e",
+   "packages": "b53b166330a8e15cfd4130110496694e0086436e",
+   "pyproject.toml": "7555c8084b4cf8e9b69db7fac9e4ce92d23b2f75",
+   "services": "57b8d95a52c83ec27f5ec1c58d00eee6355d554a"
+  },
+  "released": {
+   "apps/windows": "8c3e2b4d1e5b87a508cae5bfc0c6277ffc4e8322",
+   "packages": "b53b166330a8e15cfd4130110496694e0086436e",
+   "pyproject.toml": "7555c8084b4cf8e9b69db7fac9e4ce92d23b2f75",
+   "services": "57b8d95a52c83ec27f5ec1c58d00eee6355d554a"
+  }
+ }
+}

@@ -1,0 +1,3042 @@
+{
+ "commits": {
+  "before": "3e4b40654460a2dc2407f1d9be60d8e1a5b39a3e",
+  "first_release": "8eac9fc02ebf10e2e2fca7c164b6c33c2f99698b",
+  "released": "c44e6204b3e0c49f710fc7bb73d540ef6daa7b06"
+ },
+ "harness": {
+  "qa_connector_relay.py": "edb9279453772757ca8c277f0701a3a67ff56a9ee75d83524960ae0622f5611c",
+  "sub_changed_backend.test.mjs": "6b70c34814f3a90ae49ae11994bf077d9de34dd2620b177203a59edad2ab473a",
+  "sub_tree.mjs": "86749fbab763e670ac3956c1bad90bdf4bcfa81907643aea25bfcc5721b57f27"
+ },
+ "observed": {
+  "byte_allowance": {
+   "before": {
+    "after_check": {
+     "connectors_started": 1,
+     "detail": "the connector, or the official Codex app server it runs, is not available",
+     "first_connector_exit": null,
+     "state": "unavailable"
+    },
+    "after_first": {
+     "connectors_started": 1,
+     "detail": null,
+     "first_connector_exit": null,
+     "state": "signed_in"
+    },
+    "checked": [
+     "signed_in",
+     "test-image-model",
+     "plus"
+    ],
+    "connectors": [
+     {
+      "bounds": {
+       "MAX_HISTORY": 4096,
+       "MAX_TURN_EVENTS": 4096,
+       "MAX_TURN_WIRE_BYTES": null,
+       "SHUTDOWN_SECONDS": 8,
+       "TERMINAL_REPLY_SECONDS": null
+      },
+      "client_wrote": {
+       "ask/start": 2,
+       "connection/read": 2
+      },
+      "ended_by_itself": false,
+      "exit": {
+       "code": 0,
+       "signal": null
+      },
+      "fatal": "protocol_error",
+      "inner_exit": -9,
+      "inner_was_asked": {
+       "account/rateLimits/read": 2,
+       "account/read": 2,
+       "initialize": 1,
+       "initialized": 1,
+       "model/list": 2,
+       "thread/start": 1,
+       "turn/start": 1
+      },
+      "receipts": [
+       {
+        "outcome": "failed",
+        "request_id": "qa-ask-1",
+        "submission": "acknowledged",
+        "terminal_status": null,
+        "thread_start_count": 1,
+        "turn_start_count": 1
+       },
+       {
+        "outcome": "failed",
+        "request_id": "qa-ask-2",
+        "submission": "not_submitted",
+        "terminal_status": null,
+        "thread_start_count": 1,
+        "turn_start_count": 1
+       }
+      ],
+      "stderr_bytes": 0,
+      "timeouts": {
+       "rpc_timeout": 15,
+       "shutdown_timeout": 3,
+       "turn_timeout": 120
+      },
+      "turns_for": [
+       "qa-ask-1"
+      ]
+     }
+    ],
+    "first": {
+     "code": "unavailable",
+     "reason": "the connector, or the official Codex app server it runs, is not available",
+     "status": "refused"
+    },
+    "inner_children": 1,
+    "second": {
+     "code": "unavailable",
+     "reason": "the connector, or the official Codex app server it runs, is not available",
+     "status": "refused"
+    },
+    "third": {
+     "code": "local",
+     "reason": "the connector, or the official Codex app server it runs, is not available",
+     "status": "refused"
+    },
+    "told_during_first": [
+     "signed_in (asking)",
+     "signed_in"
+    ]
+   },
+   "released": {
+    "after_check": {
+     "connectors_started": 2,
+     "detail": null,
+     "first_connector_exit": 0,
+     "state": "signed_in"
+    },
+    "after_first": {
+     "connectors_started": 1,
+     "detail": null,
+     "first_connector_exit": 0,
+     "state": "unavailable"
+    },
+    "checked": [
+     "signed_in",
+     "test-image-model",
+     "plus"
+    ],
+    "connectors": [
+     {
+      "bounds": {
+       "MAX_HISTORY": 4096,
+       "MAX_TURN_EVENTS": 4096,
+       "MAX_TURN_WIRE_BYTES": 33554432,
+       "SHUTDOWN_SECONDS": 8,
+       "TERMINAL_REPLY_SECONDS": 1
+      },
+      "client_wrote": {
+       "ask/start": 1,
+       "connection/read": 1
+      },
+      "ended_by_itself": true,
+      "exit": {
+       "code": 0,
+       "signal": null
+      },
+      "fatal": "protocol_error",
+      "inner_exit": -9,
+      "inner_was_asked": {
+       "account/rateLimits/read": 2,
+       "account/read": 2,
+       "initialize": 1,
+       "initialized": 1,
+       "model/list": 2,
+       "thread/start": 1,
+       "turn/start": 1
+      },
+      "receipts": [
+       {
+        "outcome": "failed",
+        "request_id": "qa-ask-1",
+        "submission": "acknowledged",
+        "terminal_status": null,
+        "thread_start_count": 1,
+        "turn_start_count": 1
+       }
+      ],
+      "stderr_bytes": 0,
+      "timeouts": {
+       "rpc_timeout": 15,
+       "shutdown_timeout": 3,
+       "turn_timeout": 120
+      },
+      "turns_for": [
+       "qa-ask-1"
+      ]
+     },
+     {
+      "bounds": {
+       "MAX_HISTORY": 4096,
+       "MAX_TURN_EVENTS": 4096,
+       "MAX_TURN_WIRE_BYTES": 33554432,
+       "SHUTDOWN_SECONDS": 8,
+       "TERMINAL_REPLY_SECONDS": 1
+      },
+      "client_wrote": {
+       "ask/start": 1,
+       "connection/read": 1
+      },
+      "ended_by_itself": false,
+      "exit": {
+       "code": 0,
+       "signal": null
+      },
+      "fatal": null,
+      "inner_exit": -15,
+      "inner_was_asked": {
+       "account/rateLimits/read": 2,
+       "account/read": 2,
+       "initialize": 1,
+       "initialized": 1,
+       "model/list": 2,
+       "thread/start": 1,
+       "turn/start": 1
+      },
+      "receipts": [
+       {
+        "outcome": "completed",
+        "request_id": "qa-ask-3",
+        "submission": "acknowledged",
+        "terminal_status": "completed",
+        "thread_start_count": 1,
+        "turn_start_count": 1
+       }
+      ],
+      "stderr_bytes": 0,
+      "timeouts": {
+       "rpc_timeout": 15,
+       "shutdown_timeout": 3,
+       "turn_timeout": 120
+      },
+      "turns_for": [
+       "qa-ask-3"
+      ]
+     }
+    ],
+    "first": {
+     "reason": "no answer came; whether ChatGPT worked on the question is not known",
+     "status": "uncertain"
+    },
+    "inner_children": 2,
+    "second": {
+     "code": "local",
+     "reason": "the connector, or the official Codex app server it runs, is not available",
+     "status": "refused"
+    },
+    "third": {
+     "model": "test-image-model",
+     "request_id": "qa-ask-3",
+     "status": "answered",
+     "text": "Completed answer."
+    },
+    "told_during_first": [
+     "signed_in (asking)",
+     "unavailable (asking)",
+     "unavailable"
+    ]
+   }
+  },
+  "deltas_9000_no_answer": {
+   "before": {
+    "after_first": {
+     "connectors_started": 1,
+     "detail": null,
+     "first_connector_exit": null,
+     "state": "signed_in"
+    },
+    "checked": [
+     "signed_in",
+     "test-image-model",
+     "plus"
+    ],
+    "connectors": [
+     {
+      "bounds": {
+       "MAX_HISTORY": 4096,
+       "MAX_TURN_EVENTS": 4096,
+       "MAX_TURN_WIRE_BYTES": null,
+       "SHUTDOWN_SECONDS": 8,
+       "TERMINAL_REPLY_SECONDS": null
+      },
+      "client_wrote": {
+       "ask/start": 1,
+       "connection/read": 1
+      },
+      "ended_by_itself": false,
+      "exit": {
+       "code": 0,
+       "signal": null
+      },
+      "fatal": "protocol_error",
+      "inner_exit": -9,
+      "inner_was_asked": {
+       "account/rateLimits/read": 2,
+       "account/read": 2,
+       "initialize": 1,
+       "initialized": 1,
+       "model/list": 2,
+       "thread/start": 1,
+       "turn/start": 1
+      },
+      "receipts": [
+       {
+        "outcome": "failed",
+        "request_id": "qa-ask-1",
+        "submission": "acknowledged",
+        "terminal_status": null,
+        "thread_start_count": 1,
+        "turn_start_count": 1
+       }
+      ],
+      "stderr_bytes": 0,
+      "timeouts": {
+       "rpc_timeout": 15,
+       "shutdown_timeout": 3,
+       "turn_timeout": 2
+      },
+      "turns_for": [
+       "qa-ask-1"
+      ]
+     }
+    ],
+    "first": {
+     "code": "unavailable",
+     "reason": "the connector, or the official Codex app server it runs, is not available",
+     "status": "refused"
+    },
+    "inner_children": 1,
+    "told_during_first": [
+     "signed_in (asking)",
+     "signed_in"
+    ]
+   },
+   "released": {
+    "after_first": {
+     "connectors_started": 1,
+     "detail": null,
+     "first_connector_exit": null,
+     "state": "signed_in"
+    },
+    "checked": [
+     "signed_in",
+     "test-image-model",
+     "plus"
+    ],
+    "connectors": [
+     {
+      "bounds": {
+       "MAX_HISTORY": 4096,
+       "MAX_TURN_EVENTS": 4096,
+       "MAX_TURN_WIRE_BYTES": 33554432,
+       "SHUTDOWN_SECONDS": 8,
+       "TERMINAL_REPLY_SECONDS": 1
+      },
+      "client_wrote": {
+       "ask/start": 1,
+       "connection/read": 1
+      },
+      "ended_by_itself": false,
+      "exit": {
+       "code": 0,
+       "signal": null
+      },
+      "fatal": null,
+      "inner_exit": -15,
+      "inner_was_asked": {
+       "account/rateLimits/read": 2,
+       "account/read": 2,
+       "initialize": 1,
+       "initialized": 1,
+       "model/list": 2,
+       "thread/start": 1,
+       "turn/interrupt": 1,
+       "turn/start": 1
+      },
+      "receipts": [
+       {
+        "outcome": "uncertain",
+        "request_id": "qa-ask-1",
+        "submission": "acknowledged",
+        "terminal_status": "interrupted",
+        "thread_start_count": 1,
+        "turn_start_count": 1
+       }
+      ],
+      "stderr_bytes": 0,
+      "timeouts": {
+       "rpc_timeout": 15,
+       "shutdown_timeout": 3,
+       "turn_timeout": 2
+      },
+      "turns_for": [
+       "qa-ask-1"
+      ]
+     }
+    ],
+    "first": {
+     "code": "failed",
+     "reason": "ChatGPT did not complete an answer",
+     "status": "refused"
+    },
+    "inner_children": 1,
+    "told_during_first": [
+     "signed_in (asking)",
+     "signed_in"
+    ]
+   }
+  },
+  "deltas_9000_then_answer": {
+   "before": {
+    "after_check": {
+     "connectors_started": 1,
+     "detail": "the connector, or the official Codex app server it runs, is not available",
+     "first_connector_exit": null,
+     "state": "unavailable"
+    },
+    "after_first": {
+     "connectors_started": 1,
+     "detail": null,
+     "first_connector_exit": null,
+     "state": "signed_in"
+    },
+    "checked": [
+     "signed_in",
+     "test-image-model",
+     "plus"
+    ],
+    "connectors": [
+     {
+      "bounds": {
+       "MAX_HISTORY": 4096,
+       "MAX_TURN_EVENTS": 4096,
+       "MAX_TURN_WIRE_BYTES": null,
+       "SHUTDOWN_SECONDS": 8,
+       "TERMINAL_REPLY_SECONDS": null
+      },
+      "client_wrote": {
+       "ask/start": 2,
+       "connection/read": 2
+      },
+      "ended_by_itself": false,
+      "exit": {
+       "code": 0,
+       "signal": null
+      },
+      "fatal": "protocol_error",
+      "inner_exit": -9,
+      "inner_was_asked": {
+       "account/rateLimits/read": 2,
+       "account/read": 2,
+       "initialize": 1,
+       "initialized": 1,
+       "model/list": 2,
+       "thread/start": 1,
+       "turn/start": 1
+      },
+      "receipts": [
+       {
+        "outcome": "failed",
+        "request_id": "qa-ask-1",
+        "submission": "acknowledged",
+        "terminal_status": null,
+        "thread_start_count": 1,
+        "turn_start_count": 1
+       },
+       {
+        "outcome": "failed",
+        "request_id": "qa-ask-2",
+        "submission": "not_submitted",
+        "terminal_status": null,
+        "thread_start_count": 1,
+        "turn_start_count": 1
+       }
+      ],
+      "stderr_bytes": 0,
+      "timeouts": {
+       "rpc_timeout": 15,
+       "shutdown_timeout": 3,
+       "turn_timeout": 120
+      },
+      "turns_for": [
+       "qa-ask-1"
+      ]
+     }
+    ],
+    "first": {
+     "code": "unavailable",
+     "reason": "the connector, or the official Codex app server it runs, is not available",
+     "status": "refused"
+    },
+    "inner_children": 1,
+    "second": {
+     "code": "unavailable",
+     "reason": "the connector, or the official Codex app server it runs, is not available",
+     "status": "refused"
+    },
+    "third": {
+     "code": "local",
+     "reason": "the connector, or the official Codex app server it runs, is not available",
+     "status": "refused"
+    },
+    "told_during_first": [
+     "signed_in (asking)",
+     "signed_in"
+    ]
+   },
+   "released": {
+    "after_check": {
+     "connectors_started": 1,
+     "detail": null,
+     "first_connector_exit": null,
+     "state": "signed_in"
+    },
+    "after_first": {
+     "connectors_started": 1,
+     "detail": null,
+     "first_connector_exit": null,
+     "state": "signed_in"
+    },
+    "checked": [
+     "signed_in",
+     "test-image-model",
+     "plus"
+    ],
+    "connectors": [
+     {
+      "bounds": {
+       "MAX_HISTORY": 4096,
+       "MAX_TURN_EVENTS": 4096,
+       "MAX_TURN_WIRE_BYTES": 33554432,
+       "SHUTDOWN_SECONDS": 8,
+       "TERMINAL_REPLY_SECONDS": 1
+      },
+      "client_wrote": {
+       "ask/start": 3,
+       "connection/read": 2
+      },
+      "ended_by_itself": false,
+      "exit": {
+       "code": 0,
+       "signal": null
+      },
+      "fatal": null,
+      "inner_exit": -15,
+      "inner_was_asked": {
+       "account/rateLimits/read": 5,
+       "account/read": 5,
+       "initialize": 1,
+       "initialized": 1,
+       "model/list": 5,
+       "thread/start": 3,
+       "turn/start": 3
+      },
+      "receipts": [
+       {
+        "outcome": "completed",
+        "request_id": "qa-ask-1",
+        "submission": "acknowledged",
+        "terminal_status": "completed",
+        "thread_start_count": 1,
+        "turn_start_count": 1
+       },
+       {
+        "outcome": "completed",
+        "request_id": "qa-ask-2",
+        "submission": "acknowledged",
+        "terminal_status": "completed",
+        "thread_start_count": 2,
+        "turn_start_count": 2
+       },
+       {
+        "outcome": "completed",
+        "request_id": "qa-ask-3",
+        "submission": "acknowledged",
+        "terminal_status": "completed",
+        "thread_start_count": 3,
+        "turn_start_count": 3
+       }
+      ],
+      "stderr_bytes": 0,
+      "timeouts": {
+       "rpc_timeout": 15,
+       "shutdown_timeout": 3,
+       "turn_timeout": 120
+      },
+      "turns_for": [
+       "qa-ask-1",
+       "qa-ask-2",
+       "qa-ask-3"
+      ]
+     }
+    ],
+    "first": {
+     "model": "test-image-model",
+     "request_id": "qa-ask-1",
+     "status": "answered",
+     "text": "27000 characters, sha256 8ff7a41b2ffa36a4034c2bdade3caf3674e39523ad3eaa170cf69887e1970f43"
+    },
+    "inner_children": 1,
+    "second": {
+     "model": "test-image-model",
+     "request_id": "qa-ask-2",
+     "status": "answered",
+     "text": "27000 characters, sha256 8ff7a41b2ffa36a4034c2bdade3caf3674e39523ad3eaa170cf69887e1970f43"
+    },
+    "third": {
+     "model": "test-image-model",
+     "request_id": "qa-ask-3",
+     "status": "answered",
+     "text": "27000 characters, sha256 8ff7a41b2ffa36a4034c2bdade3caf3674e39523ad3eaa170cf69887e1970f43"
+    },
+    "told_during_first": [
+     "signed_in (asking)",
+     "signed_in"
+    ]
+   }
+  },
+  "end_bound_default": {
+   "end_after_8_2_s": {
+    "before": {
+     "after_quit": {
+      "connectors_started": 1,
+      "detail": null,
+      "first_connector_exit": null,
+      "state": "unavailable"
+     },
+     "client_default_end_ms_as_written": 5000,
+     "client_signalled_the_shim": true,
+     "connector_allows_itself_s": 8,
+     "connector_then": {
+      "fatal": null,
+      "inner_exit": -15
+     },
+     "inner_close_waits_s": 3,
+     "quit_resolved_with": "nothing",
+     "quit_took": "from 4.9 s to under 8.2 s",
+     "shim_exit": {
+      "code": null,
+      "signal": "SIGTERM"
+     },
+     "shim_saw_the_connector_end": "no",
+     "told_from_the_quit": [
+      [
+       "unavailable",
+       null
+      ]
+     ]
+    },
+    "first_release": {
+     "after_quit": {
+      "connectors_started": 1,
+      "detail": null,
+      "first_connector_exit": null,
+      "state": "unavailable"
+     },
+     "client_default_end_ms_as_written": 5000,
+     "client_signalled_the_shim": true,
+     "connector_allows_itself_s": 8,
+     "connector_then": {
+      "fatal": null,
+      "inner_exit": -15
+     },
+     "inner_close_waits_s": 3,
+     "quit_resolved_with": "nothing",
+     "quit_took": "from 4.9 s to under 8.2 s",
+     "shim_exit": {
+      "code": null,
+      "signal": "SIGTERM"
+     },
+     "shim_saw_the_connector_end": "no",
+     "told_from_the_quit": [
+      [
+       "unavailable",
+       null
+      ]
+     ]
+    },
+    "released": {
+     "after_quit": {
+      "connectors_started": 1,
+      "detail": null,
+      "first_connector_exit": 0,
+      "state": "unavailable"
+     },
+     "client_default_end_ms_as_written": 10000,
+     "client_signalled_the_shim": false,
+     "connector_allows_itself_s": 8,
+     "connector_then": {
+      "fatal": null,
+      "inner_exit": -15
+     },
+     "inner_close_waits_s": 3,
+     "quit_resolved_with": "nothing",
+     "quit_took": "from 8.2 s to under 9.9 s",
+     "shim_exit": {
+      "code": 0,
+      "signal": null
+     },
+     "shim_saw_the_connector_end": {
+      "exit_code": 0,
+      "output_ended_while_input_open": false
+     },
+     "told_from_the_quit": [
+      [
+       "unavailable",
+       null
+      ]
+     ]
+    }
+   },
+   "released_end_never": {
+    "after_quit": {
+     "connectors_started": 1,
+     "detail": "a connector that was ended here did not end by itself in time; its wsl.exe shim was ended, which does not show that the connector, or the Codex app server it runs, ended in WSL",
+     "first_connector_exit": null,
+     "state": "unavailable"
+    },
+    "client_signalled_the_shim": true,
+    "connector_left_behind_then": {
+     "fatal": null,
+     "inner_exit": -15
+    },
+    "quit_resolved_with": "nothing",
+    "quit_took": "from 9.9 s to under 11 s",
+    "shim_exit": {
+     "code": null,
+     "signal": "SIGTERM"
+    },
+    "shim_saw_the_connector_end": "no",
+    "told_from_the_quit": [
+     [
+      "unavailable",
+      null
+     ],
+     [
+      "unavailable",
+      "a connector that was ended here did not end by itself in time; its wsl.exe shim was ended, which does not show that the connector, or the Codex app server it runs, ended in WSL"
+     ]
+    ]
+   }
+  },
+  "end_not_seen": {
+   "before": {
+    "a_while_later": {
+     "connectors_started": 1,
+     "detail": null,
+     "first_connector_exit": null,
+     "state": "unavailable"
+    },
+    "after_check": {
+     "connectors_started": 2,
+     "detail": null,
+     "first_connector_exit": null,
+     "state": "signed_in"
+    },
+    "after_quit": {
+     "connectors_started": 1,
+     "detail": null,
+     "first_connector_exit": null,
+     "state": "unavailable"
+    },
+    "after_second_quit": {
+     "connectors_started": 2,
+     "detail": null,
+     "first_connector_exit": null,
+     "state": "unavailable"
+    },
+    "client_signalled_the_shim": true,
+    "connector_left_behind_then": {
+     "fatal": null,
+     "inner_exit": -15
+    },
+    "question": {
+     "model": "test-image-model",
+     "request_id": "qa-ask-1",
+     "status": "answered",
+     "text": "Completed answer."
+    },
+    "quit_resolved_with": "nothing",
+    "quit_took": "under 4.9 s",
+    "second_connector": {
+     "exit": {
+      "code": 0,
+      "signal": null
+     },
+     "shim_saw_the_connector_end": {
+      "exit_code": 0,
+      "output_ended_while_input_open": false
+     }
+    },
+    "shim_exit": {
+     "code": null,
+     "signal": "SIGTERM"
+    },
+    "shim_saw_the_connector_end": "no",
+    "told_from_the_check": [
+     [
+      "checking",
+      null
+     ],
+     [
+      "signed_in",
+      null
+     ]
+    ],
+    "told_from_the_quit": [
+     [
+      "unavailable",
+      null
+     ]
+    ]
+   },
+   "first_release": {
+    "a_while_later": {
+     "connectors_started": 1,
+     "detail": null,
+     "first_connector_exit": null,
+     "state": "unavailable"
+    },
+    "after_check": {
+     "connectors_started": 2,
+     "detail": null,
+     "first_connector_exit": null,
+     "state": "signed_in"
+    },
+    "after_quit": {
+     "connectors_started": 1,
+     "detail": null,
+     "first_connector_exit": null,
+     "state": "unavailable"
+    },
+    "after_second_quit": {
+     "connectors_started": 2,
+     "detail": null,
+     "first_connector_exit": null,
+     "state": "unavailable"
+    },
+    "client_signalled_the_shim": true,
+    "connector_left_behind_then": {
+     "fatal": null,
+     "inner_exit": -15
+    },
+    "question": {
+     "model": "test-image-model",
+     "request_id": "qa-ask-1",
+     "status": "answered",
+     "text": "Completed answer."
+    },
+    "quit_resolved_with": "nothing",
+    "quit_took": "under 4.9 s",
+    "second_connector": {
+     "exit": {
+      "code": 0,
+      "signal": null
+     },
+     "shim_saw_the_connector_end": {
+      "exit_code": 0,
+      "output_ended_while_input_open": false
+     }
+    },
+    "shim_exit": {
+     "code": null,
+     "signal": "SIGTERM"
+    },
+    "shim_saw_the_connector_end": "no",
+    "told_from_the_check": [
+     [
+      "checking",
+      null
+     ],
+     [
+      "signed_in",
+      null
+     ]
+    ],
+    "told_from_the_quit": [
+     [
+      "unavailable",
+      null
+     ]
+    ]
+   },
+   "released": {
+    "a_while_later": {
+     "connectors_started": 1,
+     "detail": "a connector that was ended here did not end by itself in time; its wsl.exe shim was ended, which does not show that the connector, or the Codex app server it runs, ended in WSL",
+     "first_connector_exit": null,
+     "state": "unavailable"
+    },
+    "after_check": {
+     "connectors_started": 2,
+     "detail": "a connector that was ended here did not end by itself in time; its wsl.exe shim was ended, which does not show that the connector, or the Codex app server it runs, ended in WSL",
+     "first_connector_exit": null,
+     "state": "signed_in"
+    },
+    "after_quit": {
+     "connectors_started": 1,
+     "detail": "a connector that was ended here did not end by itself in time; its wsl.exe shim was ended, which does not show that the connector, or the Codex app server it runs, ended in WSL",
+     "first_connector_exit": null,
+     "state": "unavailable"
+    },
+    "after_second_quit": {
+     "connectors_started": 2,
+     "detail": "a connector that was ended here did not end by itself in time; its wsl.exe shim was ended, which does not show that the connector, or the Codex app server it runs, ended in WSL",
+     "first_connector_exit": null,
+     "state": "unavailable"
+    },
+    "client_signalled_the_shim": true,
+    "connector_left_behind_then": {
+     "fatal": null,
+     "inner_exit": -15
+    },
+    "question": {
+     "model": "test-image-model",
+     "request_id": "qa-ask-1",
+     "status": "answered",
+     "text": "Completed answer."
+    },
+    "quit_resolved_with": "nothing",
+    "quit_took": "under 4.9 s",
+    "second_connector": {
+     "exit": {
+      "code": 0,
+      "signal": null
+     },
+     "shim_saw_the_connector_end": {
+      "exit_code": 0,
+      "output_ended_while_input_open": false
+     }
+    },
+    "shim_exit": {
+     "code": null,
+     "signal": "SIGTERM"
+    },
+    "shim_saw_the_connector_end": "no",
+    "told_from_the_check": [
+     [
+      "checking",
+      "a connector that was ended here did not end by itself in time; its wsl.exe shim was ended, which does not show that the connector, or the Codex app server it runs, ended in WSL"
+     ],
+     [
+      "signed_in",
+      "a connector that was ended here did not end by itself in time; its wsl.exe shim was ended, which does not show that the connector, or the Codex app server it runs, ended in WSL"
+     ]
+    ],
+    "told_from_the_quit": [
+     [
+      "unavailable",
+      null
+     ],
+     [
+      "unavailable",
+      "a connector that was ended here did not end by itself in time; its wsl.exe shim was ended, which does not show that the connector, or the Codex app server it runs, ended in WSL"
+     ]
+    ]
+   }
+  },
+  "inner_asks_for_a_tool": {
+   "before": {
+    "after_check": {
+     "connectors_started": 1,
+     "detail": "ChatGPT did not complete an answer",
+     "first_connector_exit": null,
+     "state": "unavailable"
+    },
+    "after_first": {
+     "connectors_started": 1,
+     "detail": null,
+     "first_connector_exit": null,
+     "state": "signed_in"
+    },
+    "checked": [
+     "signed_in",
+     "test-image-model",
+     "plus"
+    ],
+    "connectors": [
+     {
+      "bounds": {
+       "MAX_HISTORY": 4096,
+       "MAX_TURN_EVENTS": 4096,
+       "MAX_TURN_WIRE_BYTES": null,
+       "SHUTDOWN_SECONDS": 8,
+       "TERMINAL_REPLY_SECONDS": null
+      },
+      "client_wrote": {
+       "ask/start": 2,
+       "connection/read": 2
+      },
+      "ended_by_itself": false,
+      "exit": {
+       "code": 0,
+       "signal": null
+      },
+      "fatal": "tool_activity",
+      "inner_exit": -9,
+      "inner_was_asked": {
+       "account/rateLimits/read": 2,
+       "account/read": 2,
+       "initialize": 1,
+       "initialized": 1,
+       "model/list": 2,
+       "thread/start": 1,
+       "turn/start": 1
+      },
+      "receipts": [
+       {
+        "outcome": "failed",
+        "request_id": "qa-ask-1",
+        "submission": "acknowledged",
+        "terminal_status": null,
+        "thread_start_count": 1,
+        "turn_start_count": 1
+       },
+       {
+        "outcome": "failed",
+        "request_id": "qa-ask-2",
+        "submission": "not_submitted",
+        "terminal_status": null,
+        "thread_start_count": 1,
+        "turn_start_count": 1
+       }
+      ],
+      "stderr_bytes": 0,
+      "timeouts": {
+       "rpc_timeout": 15,
+       "shutdown_timeout": 3,
+       "turn_timeout": 120
+      },
+      "turns_for": [
+       "qa-ask-1"
+      ]
+     }
+    ],
+    "first": {
+     "code": "failed",
+     "reason": "ChatGPT did not complete an answer",
+     "status": "refused"
+    },
+    "inner_children": 1,
+    "second": {
+     "code": "failed",
+     "reason": "ChatGPT did not complete an answer",
+     "status": "refused"
+    },
+    "third": {
+     "code": "local",
+     "reason": "the connector, or the official Codex app server it runs, is not available",
+     "status": "refused"
+    },
+    "told_during_first": [
+     "signed_in (asking)",
+     "signed_in"
+    ]
+   },
+   "released": {
+    "after_check": {
+     "connectors_started": 2,
+     "detail": null,
+     "first_connector_exit": 0,
+     "state": "signed_in"
+    },
+    "after_first": {
+     "connectors_started": 1,
+     "detail": null,
+     "first_connector_exit": 0,
+     "state": "unavailable"
+    },
+    "checked": [
+     "signed_in",
+     "test-image-model",
+     "plus"
+    ],
+    "connectors": [
+     {
+      "bounds": {
+       "MAX_HISTORY": 4096,
+       "MAX_TURN_EVENTS": 4096,
+       "MAX_TURN_WIRE_BYTES": 33554432,
+       "SHUTDOWN_SECONDS": 8,
+       "TERMINAL_REPLY_SECONDS": 1
+      },
+      "client_wrote": {
+       "ask/start": 1,
+       "connection/read": 1
+      },
+      "ended_by_itself": true,
+      "exit": {
+       "code": 0,
+       "signal": null
+      },
+      "fatal": "tool_activity",
+      "inner_exit": -9,
+      "inner_was_asked": {
+       "account/rateLimits/read": 2,
+       "account/read": 2,
+       "initialize": 1,
+       "initialized": 1,
+       "model/list": 2,
+       "thread/start": 1,
+       "turn/start": 1
+      },
+      "receipts": [
+       {
+        "outcome": "failed",
+        "request_id": "qa-ask-1",
+        "submission": "acknowledged",
+        "terminal_status": null,
+        "thread_start_count": 1,
+        "turn_start_count": 1
+       }
+      ],
+      "stderr_bytes": 0,
+      "timeouts": {
+       "rpc_timeout": 15,
+       "shutdown_timeout": 3,
+       "turn_timeout": 120
+      },
+      "turns_for": [
+       "qa-ask-1"
+      ]
+     },
+     {
+      "bounds": {
+       "MAX_HISTORY": 4096,
+       "MAX_TURN_EVENTS": 4096,
+       "MAX_TURN_WIRE_BYTES": 33554432,
+       "SHUTDOWN_SECONDS": 8,
+       "TERMINAL_REPLY_SECONDS": 1
+      },
+      "client_wrote": {
+       "ask/start": 1,
+       "connection/read": 1
+      },
+      "ended_by_itself": false,
+      "exit": {
+       "code": 0,
+       "signal": null
+      },
+      "fatal": null,
+      "inner_exit": -15,
+      "inner_was_asked": {
+       "account/rateLimits/read": 2,
+       "account/read": 2,
+       "initialize": 1,
+       "initialized": 1,
+       "model/list": 2,
+       "thread/start": 1,
+       "turn/start": 1
+      },
+      "receipts": [
+       {
+        "outcome": "completed",
+        "request_id": "qa-ask-3",
+        "submission": "acknowledged",
+        "terminal_status": "completed",
+        "thread_start_count": 1,
+        "turn_start_count": 1
+       }
+      ],
+      "stderr_bytes": 0,
+      "timeouts": {
+       "rpc_timeout": 15,
+       "shutdown_timeout": 3,
+       "turn_timeout": 120
+      },
+      "turns_for": [
+       "qa-ask-3"
+      ]
+     }
+    ],
+    "first": {
+     "reason": "no answer came; whether ChatGPT worked on the question is not known",
+     "status": "uncertain"
+    },
+    "inner_children": 2,
+    "second": {
+     "code": "local",
+     "reason": "the connector, or the official Codex app server it runs, is not available",
+     "status": "refused"
+    },
+    "third": {
+     "model": "test-image-model",
+     "request_id": "qa-ask-3",
+     "status": "answered",
+     "text": "Completed answer."
+    },
+    "told_during_first": [
+     "signed_in (asking)",
+     "unavailable (asking)",
+     "unavailable"
+    ]
+   }
+  },
+  "inner_ends_after_a_refused_turn_start": {
+   "before": {
+    "after_check": {
+     "connectors_started": 1,
+     "detail": "the connector, or the official Codex app server it runs, is not available",
+     "first_connector_exit": null,
+     "state": "unavailable"
+    },
+    "after_first": {
+     "connectors_started": 1,
+     "detail": null,
+     "first_connector_exit": null,
+     "state": "signed_in"
+    },
+    "connectors": [
+     {
+      "bounds": {
+       "MAX_HISTORY": 4096,
+       "MAX_TURN_EVENTS": 4096,
+       "MAX_TURN_WIRE_BYTES": null,
+       "SHUTDOWN_SECONDS": 8,
+       "TERMINAL_REPLY_SECONDS": null
+      },
+      "client_wrote": {
+       "ask/start": 1,
+       "connection/read": 2
+      },
+      "ended_by_itself": false,
+      "exit": {
+       "code": 0,
+       "signal": null
+      },
+      "fatal": "unavailable",
+      "inner_exit": -15,
+      "inner_was_asked": {
+       "account/rateLimits/read": 2,
+       "account/read": 2,
+       "initialize": 1,
+       "initialized": 1,
+       "model/list": 2,
+       "thread/start": 1,
+       "turn/start": 1
+      },
+      "receipts": [
+       {
+        "outcome": "failed",
+        "request_id": "qa-ask-1",
+        "submission": "written",
+        "terminal_status": null,
+        "thread_start_count": 1,
+        "turn_start_count": 1
+       }
+      ],
+      "stderr_bytes": 0,
+      "timeouts": {
+       "rpc_timeout": 15,
+       "shutdown_timeout": 3,
+       "turn_timeout": 120
+      },
+      "turns_for": [
+       "qa-ask-1"
+      ]
+     }
+    ],
+    "first": {
+     "code": "failed",
+     "reason": "ChatGPT did not complete an answer",
+     "status": "refused"
+    },
+    "second": {
+     "code": "local",
+     "reason": "the connector, or the official Codex app server it runs, is not available",
+     "status": "refused"
+    },
+    "told_during_first": [
+     "signed_in (asking)",
+     "signed_in"
+    ]
+   },
+   "released": {
+    "after_check": {
+     "connectors_started": 2,
+     "detail": null,
+     "first_connector_exit": 0,
+     "state": "signed_in"
+    },
+    "after_first": {
+     "connectors_started": 1,
+     "detail": null,
+     "first_connector_exit": 0,
+     "state": "unavailable"
+    },
+    "connectors": [
+     {
+      "bounds": {
+       "MAX_HISTORY": 4096,
+       "MAX_TURN_EVENTS": 4096,
+       "MAX_TURN_WIRE_BYTES": 33554432,
+       "SHUTDOWN_SECONDS": 8,
+       "TERMINAL_REPLY_SECONDS": 1
+      },
+      "client_wrote": {
+       "ask/start": 1,
+       "connection/read": 1
+      },
+      "ended_by_itself": true,
+      "exit": {
+       "code": 0,
+       "signal": null
+      },
+      "fatal": "unavailable",
+      "inner_exit": -15,
+      "inner_was_asked": {
+       "account/rateLimits/read": 2,
+       "account/read": 2,
+       "initialize": 1,
+       "initialized": 1,
+       "model/list": 2,
+       "thread/start": 1,
+       "turn/start": 1
+      },
+      "receipts": [
+       {
+        "outcome": "uncertain",
+        "request_id": "qa-ask-1",
+        "submission": "written",
+        "terminal_status": null,
+        "thread_start_count": 1,
+        "turn_start_count": 1
+       }
+      ],
+      "stderr_bytes": 0,
+      "timeouts": {
+       "rpc_timeout": 15,
+       "shutdown_timeout": 3,
+       "turn_timeout": 120
+      },
+      "turns_for": [
+       "qa-ask-1"
+      ]
+     },
+     {
+      "bounds": {
+       "MAX_HISTORY": 4096,
+       "MAX_TURN_EVENTS": 4096,
+       "MAX_TURN_WIRE_BYTES": 33554432,
+       "SHUTDOWN_SECONDS": 8,
+       "TERMINAL_REPLY_SECONDS": 1
+      },
+      "client_wrote": {
+       "ask/start": 1,
+       "connection/read": 1
+      },
+      "ended_by_itself": false,
+      "exit": {
+       "code": 0,
+       "signal": null
+      },
+      "fatal": null,
+      "inner_exit": -15,
+      "inner_was_asked": {
+       "account/rateLimits/read": 2,
+       "account/read": 2,
+       "initialize": 1,
+       "initialized": 1,
+       "model/list": 2,
+       "thread/start": 1,
+       "turn/start": 1
+      },
+      "receipts": [
+       {
+        "outcome": "completed",
+        "request_id": "qa-ask-2",
+        "submission": "acknowledged",
+        "terminal_status": "completed",
+        "thread_start_count": 1,
+        "turn_start_count": 1
+       }
+      ],
+      "stderr_bytes": 0,
+      "timeouts": {
+       "rpc_timeout": 15,
+       "shutdown_timeout": 3,
+       "turn_timeout": 120
+      },
+      "turns_for": [
+       "qa-ask-2"
+      ]
+     }
+    ],
+    "first": {
+     "reason": "no answer came; whether ChatGPT worked on the question is not known",
+     "status": "uncertain"
+    },
+    "second": {
+     "model": "test-image-model",
+     "request_id": "qa-ask-2",
+     "status": "answered",
+     "text": "Completed answer."
+    },
+    "told_during_first": [
+     "signed_in (asking)",
+     "unavailable (asking)",
+     "unavailable"
+    ]
+   }
+  },
+  "inner_ends_before_the_turn_start_is_answered": {
+   "before": {
+    "after_check": {
+     "connectors_started": 1,
+     "detail": "the connector, or the official Codex app server it runs, is not available",
+     "first_connector_exit": null,
+     "state": "unavailable"
+    },
+    "after_first": {
+     "connectors_started": 1,
+     "detail": null,
+     "first_connector_exit": null,
+     "state": "signed_in"
+    },
+    "connectors": [
+     {
+      "bounds": {
+       "MAX_HISTORY": 4096,
+       "MAX_TURN_EVENTS": 4096,
+       "MAX_TURN_WIRE_BYTES": null,
+       "SHUTDOWN_SECONDS": 8,
+       "TERMINAL_REPLY_SECONDS": null
+      },
+      "client_wrote": {
+       "ask/start": 1,
+       "connection/read": 2
+      },
+      "ended_by_itself": false,
+      "exit": {
+       "code": 0,
+       "signal": null
+      },
+      "fatal": "unavailable",
+      "inner_exit": -15,
+      "inner_was_asked": {
+       "account/rateLimits/read": 2,
+       "account/read": 2,
+       "initialize": 1,
+       "initialized": 1,
+       "model/list": 2,
+       "thread/start": 1,
+       "turn/start": 1
+      },
+      "receipts": [
+       {
+        "outcome": "failed",
+        "request_id": "qa-ask-1",
+        "submission": "written",
+        "terminal_status": null,
+        "thread_start_count": 1,
+        "turn_start_count": 1
+       }
+      ],
+      "stderr_bytes": 0,
+      "timeouts": {
+       "rpc_timeout": 15,
+       "shutdown_timeout": 3,
+       "turn_timeout": 120
+      },
+      "turns_for": [
+       "qa-ask-1"
+      ]
+     }
+    ],
+    "first": {
+     "code": "unavailable",
+     "reason": "the connector, or the official Codex app server it runs, is not available",
+     "status": "refused"
+    },
+    "second": {
+     "code": "local",
+     "reason": "the connector, or the official Codex app server it runs, is not available",
+     "status": "refused"
+    },
+    "told_during_first": [
+     "signed_in (asking)",
+     "signed_in"
+    ]
+   },
+   "released": {
+    "after_check": {
+     "connectors_started": 2,
+     "detail": null,
+     "first_connector_exit": 0,
+     "state": "signed_in"
+    },
+    "after_first": {
+     "connectors_started": 1,
+     "detail": null,
+     "first_connector_exit": 0,
+     "state": "unavailable"
+    },
+    "connectors": [
+     {
+      "bounds": {
+       "MAX_HISTORY": 4096,
+       "MAX_TURN_EVENTS": 4096,
+       "MAX_TURN_WIRE_BYTES": 33554432,
+       "SHUTDOWN_SECONDS": 8,
+       "TERMINAL_REPLY_SECONDS": 1
+      },
+      "client_wrote": {
+       "ask/start": 1,
+       "connection/read": 1
+      },
+      "ended_by_itself": true,
+      "exit": {
+       "code": 0,
+       "signal": null
+      },
+      "fatal": "unavailable",
+      "inner_exit": -15,
+      "inner_was_asked": {
+       "account/rateLimits/read": 2,
+       "account/read": 2,
+       "initialize": 1,
+       "initialized": 1,
+       "model/list": 2,
+       "thread/start": 1,
+       "turn/start": 1
+      },
+      "receipts": [
+       {
+        "outcome": "failed",
+        "request_id": "qa-ask-1",
+        "submission": "written",
+        "terminal_status": null,
+        "thread_start_count": 1,
+        "turn_start_count": 1
+       }
+      ],
+      "stderr_bytes": 0,
+      "timeouts": {
+       "rpc_timeout": 15,
+       "shutdown_timeout": 3,
+       "turn_timeout": 120
+      },
+      "turns_for": [
+       "qa-ask-1"
+      ]
+     },
+     {
+      "bounds": {
+       "MAX_HISTORY": 4096,
+       "MAX_TURN_EVENTS": 4096,
+       "MAX_TURN_WIRE_BYTES": 33554432,
+       "SHUTDOWN_SECONDS": 8,
+       "TERMINAL_REPLY_SECONDS": 1
+      },
+      "client_wrote": {
+       "ask/start": 1,
+       "connection/read": 1
+      },
+      "ended_by_itself": false,
+      "exit": {
+       "code": 0,
+       "signal": null
+      },
+      "fatal": null,
+      "inner_exit": -15,
+      "inner_was_asked": {
+       "account/rateLimits/read": 2,
+       "account/read": 2,
+       "initialize": 1,
+       "initialized": 1,
+       "model/list": 2,
+       "thread/start": 1,
+       "turn/start": 1
+      },
+      "receipts": [
+       {
+        "outcome": "completed",
+        "request_id": "qa-ask-2",
+        "submission": "acknowledged",
+        "terminal_status": "completed",
+        "thread_start_count": 1,
+        "turn_start_count": 1
+       }
+      ],
+      "stderr_bytes": 0,
+      "timeouts": {
+       "rpc_timeout": 15,
+       "shutdown_timeout": 3,
+       "turn_timeout": 120
+      },
+      "turns_for": [
+       "qa-ask-2"
+      ]
+     }
+    ],
+    "first": {
+     "reason": "no answer came; whether ChatGPT worked on the question is not known",
+     "status": "uncertain"
+    },
+    "second": {
+     "model": "test-image-model",
+     "request_id": "qa-ask-2",
+     "status": "answered",
+     "text": "Completed answer."
+    },
+    "told_during_first": [
+     "signed_in (asking)",
+     "unavailable (asking)",
+     "unavailable"
+    ]
+   }
+  },
+  "inner_ends_during_a_turn": {
+   "before": {
+    "after_check": {
+     "connectors_started": 1,
+     "detail": "the connector, or the official Codex app server it runs, is not available",
+     "first_connector_exit": null,
+     "state": "unavailable"
+    },
+    "after_first": {
+     "connectors_started": 1,
+     "detail": null,
+     "first_connector_exit": null,
+     "state": "signed_in"
+    },
+    "checked": [
+     "signed_in",
+     "test-image-model",
+     "plus"
+    ],
+    "connectors": [
+     {
+      "bounds": {
+       "MAX_HISTORY": 4096,
+       "MAX_TURN_EVENTS": 4096,
+       "MAX_TURN_WIRE_BYTES": null,
+       "SHUTDOWN_SECONDS": 8,
+       "TERMINAL_REPLY_SECONDS": null
+      },
+      "client_wrote": {
+       "ask/start": 2,
+       "connection/read": 2
+      },
+      "ended_by_itself": false,
+      "exit": {
+       "code": 0,
+       "signal": null
+      },
+      "fatal": "unavailable",
+      "inner_exit": 0,
+      "inner_was_asked": {
+       "account/rateLimits/read": 2,
+       "account/read": 2,
+       "initialize": 1,
+       "initialized": 1,
+       "model/list": 2,
+       "thread/start": 1,
+       "turn/start": 1
+      },
+      "receipts": [
+       {
+        "outcome": "failed",
+        "request_id": "qa-ask-1",
+        "submission": "acknowledged",
+        "terminal_status": null,
+        "thread_start_count": 1,
+        "turn_start_count": 1
+       },
+       {
+        "outcome": "failed",
+        "request_id": "qa-ask-2",
+        "submission": "not_submitted",
+        "terminal_status": null,
+        "thread_start_count": 1,
+        "turn_start_count": 1
+       }
+      ],
+      "stderr_bytes": 0,
+      "timeouts": {
+       "rpc_timeout": 15,
+       "shutdown_timeout": 3,
+       "turn_timeout": 120
+      },
+      "turns_for": [
+       "qa-ask-1"
+      ]
+     }
+    ],
+    "first": {
+     "code": "unavailable",
+     "reason": "the connector, or the official Codex app server it runs, is not available",
+     "status": "refused"
+    },
+    "inner_children": 1,
+    "second": {
+     "code": "unavailable",
+     "reason": "the connector, or the official Codex app server it runs, is not available",
+     "status": "refused"
+    },
+    "third": {
+     "code": "local",
+     "reason": "the connector, or the official Codex app server it runs, is not available",
+     "status": "refused"
+    },
+    "told_during_first": [
+     "signed_in (asking)",
+     "signed_in"
+    ]
+   },
+   "released": {
+    "after_check": {
+     "connectors_started": 2,
+     "detail": null,
+     "first_connector_exit": 0,
+     "state": "signed_in"
+    },
+    "after_first": {
+     "connectors_started": 1,
+     "detail": null,
+     "first_connector_exit": 0,
+     "state": "unavailable"
+    },
+    "checked": [
+     "signed_in",
+     "test-image-model",
+     "plus"
+    ],
+    "connectors": [
+     {
+      "bounds": {
+       "MAX_HISTORY": 4096,
+       "MAX_TURN_EVENTS": 4096,
+       "MAX_TURN_WIRE_BYTES": 33554432,
+       "SHUTDOWN_SECONDS": 8,
+       "TERMINAL_REPLY_SECONDS": 1
+      },
+      "client_wrote": {
+       "ask/start": 1,
+       "connection/read": 1
+      },
+      "ended_by_itself": true,
+      "exit": {
+       "code": 0,
+       "signal": null
+      },
+      "fatal": "unavailable",
+      "inner_exit": 0,
+      "inner_was_asked": {
+       "account/rateLimits/read": 2,
+       "account/read": 2,
+       "initialize": 1,
+       "initialized": 1,
+       "model/list": 2,
+       "thread/start": 1,
+       "turn/start": 1
+      },
+      "receipts": [
+       {
+        "outcome": "failed",
+        "request_id": "qa-ask-1",
+        "submission": "acknowledged",
+        "terminal_status": null,
+        "thread_start_count": 1,
+        "turn_start_count": 1
+       }
+      ],
+      "stderr_bytes": 0,
+      "timeouts": {
+       "rpc_timeout": 15,
+       "shutdown_timeout": 3,
+       "turn_timeout": 120
+      },
+      "turns_for": [
+       "qa-ask-1"
+      ]
+     },
+     {
+      "bounds": {
+       "MAX_HISTORY": 4096,
+       "MAX_TURN_EVENTS": 4096,
+       "MAX_TURN_WIRE_BYTES": 33554432,
+       "SHUTDOWN_SECONDS": 8,
+       "TERMINAL_REPLY_SECONDS": 1
+      },
+      "client_wrote": {
+       "ask/start": 1,
+       "connection/read": 1
+      },
+      "ended_by_itself": false,
+      "exit": {
+       "code": 0,
+       "signal": null
+      },
+      "fatal": null,
+      "inner_exit": -15,
+      "inner_was_asked": {
+       "account/rateLimits/read": 2,
+       "account/read": 2,
+       "initialize": 1,
+       "initialized": 1,
+       "model/list": 2,
+       "thread/start": 1,
+       "turn/start": 1
+      },
+      "receipts": [
+       {
+        "outcome": "completed",
+        "request_id": "qa-ask-3",
+        "submission": "acknowledged",
+        "terminal_status": "completed",
+        "thread_start_count": 1,
+        "turn_start_count": 1
+       }
+      ],
+      "stderr_bytes": 0,
+      "timeouts": {
+       "rpc_timeout": 15,
+       "shutdown_timeout": 3,
+       "turn_timeout": 120
+      },
+      "turns_for": [
+       "qa-ask-3"
+      ]
+     }
+    ],
+    "first": {
+     "reason": "no answer came; whether ChatGPT worked on the question is not known",
+     "status": "uncertain"
+    },
+    "inner_children": 2,
+    "second": {
+     "code": "local",
+     "reason": "the connector, or the official Codex app server it runs, is not available",
+     "status": "refused"
+    },
+    "third": {
+     "model": "test-image-model",
+     "request_id": "qa-ask-3",
+     "status": "answered",
+     "text": "Completed answer."
+    },
+    "told_during_first": [
+     "signed_in (asking)",
+     "unavailable (asking)",
+     "unavailable"
+    ]
+   }
+  },
+  "inner_ends_while_idle": {
+   "before": {
+    "after_check": {
+     "connectors_started": 1,
+     "detail": "the connector, or the official Codex app server it runs, is not available",
+     "first_connector_exit": null,
+     "state": "unavailable"
+    },
+    "after_loss": {
+     "connectors_started": 1,
+     "detail": null,
+     "first_connector_exit": null,
+     "state": "signed_in"
+    },
+    "connectors": [
+     {
+      "bounds": {
+       "MAX_HISTORY": 4096,
+       "MAX_TURN_EVENTS": 4096,
+       "MAX_TURN_WIRE_BYTES": null,
+       "SHUTDOWN_SECONDS": 8,
+       "TERMINAL_REPLY_SECONDS": null
+      },
+      "client_wrote": {
+       "ask/start": 1,
+       "connection/read": 2
+      },
+      "ended_by_itself": false,
+      "exit": {
+       "code": 0,
+       "signal": null
+      },
+      "fatal": "unavailable",
+      "inner_exit": -15,
+      "inner_was_asked": {
+       "account/rateLimits/read": 1,
+       "account/read": 1,
+       "initialize": 1,
+       "initialized": 1,
+       "model/list": 1
+      },
+      "receipts": [
+       {
+        "outcome": "failed",
+        "request_id": "qa-ask-1",
+        "submission": "not_submitted",
+        "terminal_status": null,
+        "thread_start_count": 0,
+        "turn_start_count": 0
+       }
+      ],
+      "stderr_bytes": 0,
+      "timeouts": {
+       "rpc_timeout": 15,
+       "shutdown_timeout": 3,
+       "turn_timeout": 120
+      },
+      "turns_for": []
+     }
+    ],
+    "first": {
+     "code": "unavailable",
+     "reason": "the connector, or the official Codex app server it runs, is not available",
+     "status": "refused"
+    },
+    "inner_children": 1,
+    "second": {
+     "code": "local",
+     "reason": "the connector, or the official Codex app server it runs, is not available",
+     "status": "refused"
+    },
+    "told_after_loss": []
+   },
+   "released": {
+    "after_check": {
+     "connectors_started": 2,
+     "detail": null,
+     "first_connector_exit": 0,
+     "state": "signed_in"
+    },
+    "after_loss": {
+     "connectors_started": 1,
+     "detail": null,
+     "first_connector_exit": 0,
+     "state": "unavailable"
+    },
+    "connectors": [
+     {
+      "bounds": {
+       "MAX_HISTORY": 4096,
+       "MAX_TURN_EVENTS": 4096,
+       "MAX_TURN_WIRE_BYTES": 33554432,
+       "SHUTDOWN_SECONDS": 8,
+       "TERMINAL_REPLY_SECONDS": 1
+      },
+      "client_wrote": {
+       "connection/read": 1
+      },
+      "ended_by_itself": true,
+      "exit": {
+       "code": 0,
+       "signal": null
+      },
+      "fatal": "unavailable",
+      "inner_exit": -15,
+      "inner_was_asked": {
+       "account/rateLimits/read": 1,
+       "account/read": 1,
+       "initialize": 1,
+       "initialized": 1,
+       "model/list": 1
+      },
+      "receipts": [],
+      "stderr_bytes": 0,
+      "timeouts": {
+       "rpc_timeout": 15,
+       "shutdown_timeout": 3,
+       "turn_timeout": 120
+      },
+      "turns_for": []
+     },
+     {
+      "bounds": {
+       "MAX_HISTORY": 4096,
+       "MAX_TURN_EVENTS": 4096,
+       "MAX_TURN_WIRE_BYTES": 33554432,
+       "SHUTDOWN_SECONDS": 8,
+       "TERMINAL_REPLY_SECONDS": 1
+      },
+      "client_wrote": {
+       "ask/start": 1,
+       "connection/read": 1
+      },
+      "ended_by_itself": false,
+      "exit": {
+       "code": 0,
+       "signal": null
+      },
+      "fatal": null,
+      "inner_exit": -15,
+      "inner_was_asked": {
+       "account/rateLimits/read": 2,
+       "account/read": 2,
+       "initialize": 1,
+       "initialized": 1,
+       "model/list": 2,
+       "thread/start": 1,
+       "turn/start": 1
+      },
+      "receipts": [
+       {
+        "outcome": "completed",
+        "request_id": "qa-ask-2",
+        "submission": "acknowledged",
+        "terminal_status": "completed",
+        "thread_start_count": 1,
+        "turn_start_count": 1
+       }
+      ],
+      "stderr_bytes": 0,
+      "timeouts": {
+       "rpc_timeout": 15,
+       "shutdown_timeout": 3,
+       "turn_timeout": 120
+      },
+      "turns_for": [
+       "qa-ask-2"
+      ]
+     }
+    ],
+    "first": {
+     "code": "local",
+     "reason": "the connector, or the official Codex app server it runs, is not available",
+     "status": "refused"
+    },
+    "inner_children": 2,
+    "second": {
+     "model": "test-image-model",
+     "request_id": "qa-ask-2",
+     "status": "answered",
+     "text": "Completed answer."
+    },
+    "told_after_loss": [
+     "unavailable"
+    ]
+   }
+  },
+  "inner_reports_an_error_on_the_turn": {
+   "before": {
+    "after_check": {
+     "connectors_started": 1,
+     "detail": "the subscription's usage limit was reached",
+     "first_connector_exit": null,
+     "state": "unavailable"
+    },
+    "after_first": {
+     "connectors_started": 1,
+     "detail": null,
+     "first_connector_exit": null,
+     "state": "signed_in"
+    },
+    "checked": [
+     "signed_in",
+     "test-image-model",
+     "plus"
+    ],
+    "connectors": [
+     {
+      "bounds": {
+       "MAX_HISTORY": 4096,
+       "MAX_TURN_EVENTS": 4096,
+       "MAX_TURN_WIRE_BYTES": null,
+       "SHUTDOWN_SECONDS": 8,
+       "TERMINAL_REPLY_SECONDS": null
+      },
+      "client_wrote": {
+       "ask/start": 2,
+       "connection/read": 2
+      },
+      "ended_by_itself": false,
+      "exit": {
+       "code": 0,
+       "signal": null
+      },
+      "fatal": "quota_exhausted",
+      "inner_exit": -9,
+      "inner_was_asked": {
+       "account/rateLimits/read": 2,
+       "account/read": 2,
+       "initialize": 1,
+       "initialized": 1,
+       "model/list": 2,
+       "thread/start": 1,
+       "turn/start": 1
+      },
+      "receipts": [
+       {
+        "outcome": "failed",
+        "request_id": "qa-ask-1",
+        "submission": "acknowledged",
+        "terminal_status": "completed or null",
+        "thread_start_count": 1,
+        "turn_start_count": 1
+       },
+       {
+        "outcome": "failed",
+        "request_id": "qa-ask-2",
+        "submission": "not_submitted",
+        "terminal_status": null,
+        "thread_start_count": 1,
+        "turn_start_count": 1
+       }
+      ],
+      "stderr_bytes": 0,
+      "timeouts": {
+       "rpc_timeout": 15,
+       "shutdown_timeout": 3,
+       "turn_timeout": 120
+      },
+      "turns_for": [
+       "qa-ask-1"
+      ]
+     }
+    ],
+    "first": {
+     "code": "quota",
+     "reason": "the subscription's usage limit was reached",
+     "status": "refused"
+    },
+    "inner_children": 1,
+    "second": {
+     "code": "quota",
+     "reason": "the subscription's usage limit was reached",
+     "status": "refused"
+    },
+    "third": {
+     "code": "local",
+     "reason": "the connector, or the official Codex app server it runs, is not available",
+     "status": "refused"
+    },
+    "told_during_first": [
+     "signed_in (asking)",
+     "signed_in"
+    ]
+   },
+   "released": {
+    "after_check": {
+     "connectors_started": 2,
+     "detail": null,
+     "first_connector_exit": 0,
+     "state": "signed_in"
+    },
+    "after_first": {
+     "connectors_started": 1,
+     "detail": null,
+     "first_connector_exit": 0,
+     "state": "unavailable"
+    },
+    "checked": [
+     "signed_in",
+     "test-image-model",
+     "plus"
+    ],
+    "connectors": [
+     {
+      "bounds": {
+       "MAX_HISTORY": 4096,
+       "MAX_TURN_EVENTS": 4096,
+       "MAX_TURN_WIRE_BYTES": 33554432,
+       "SHUTDOWN_SECONDS": 8,
+       "TERMINAL_REPLY_SECONDS": 1
+      },
+      "client_wrote": {
+       "ask/start": 1,
+       "connection/read": 1
+      },
+      "ended_by_itself": true,
+      "exit": {
+       "code": 0,
+       "signal": null
+      },
+      "fatal": "quota_exhausted",
+      "inner_exit": -9,
+      "inner_was_asked": {
+       "account/rateLimits/read": 2,
+       "account/read": 2,
+       "initialize": 1,
+       "initialized": 1,
+       "model/list": 2,
+       "thread/start": 1,
+       "turn/start": 1
+      },
+      "receipts": [
+       {
+        "outcome": "failed",
+        "request_id": "qa-ask-1",
+        "submission": "acknowledged",
+        "terminal_status": null,
+        "thread_start_count": 1,
+        "turn_start_count": 1
+       }
+      ],
+      "stderr_bytes": 0,
+      "timeouts": {
+       "rpc_timeout": 15,
+       "shutdown_timeout": 3,
+       "turn_timeout": 120
+      },
+      "turns_for": [
+       "qa-ask-1"
+      ]
+     },
+     {
+      "bounds": {
+       "MAX_HISTORY": 4096,
+       "MAX_TURN_EVENTS": 4096,
+       "MAX_TURN_WIRE_BYTES": 33554432,
+       "SHUTDOWN_SECONDS": 8,
+       "TERMINAL_REPLY_SECONDS": 1
+      },
+      "client_wrote": {
+       "ask/start": 1,
+       "connection/read": 1
+      },
+      "ended_by_itself": false,
+      "exit": {
+       "code": 0,
+       "signal": null
+      },
+      "fatal": null,
+      "inner_exit": -15,
+      "inner_was_asked": {
+       "account/rateLimits/read": 2,
+       "account/read": 2,
+       "initialize": 1,
+       "initialized": 1,
+       "model/list": 2,
+       "thread/start": 1,
+       "turn/start": 1
+      },
+      "receipts": [
+       {
+        "outcome": "completed",
+        "request_id": "qa-ask-3",
+        "submission": "acknowledged",
+        "terminal_status": "completed",
+        "thread_start_count": 1,
+        "turn_start_count": 1
+       }
+      ],
+      "stderr_bytes": 0,
+      "timeouts": {
+       "rpc_timeout": 15,
+       "shutdown_timeout": 3,
+       "turn_timeout": 120
+      },
+      "turns_for": [
+       "qa-ask-3"
+      ]
+     }
+    ],
+    "first": {
+     "reason": "no answer came; whether ChatGPT worked on the question is not known",
+     "status": "uncertain"
+    },
+    "inner_children": 2,
+    "second": {
+     "code": "local",
+     "reason": "the connector, or the official Codex app server it runs, is not available",
+     "status": "refused"
+    },
+    "third": {
+     "model": "test-image-model",
+     "request_id": "qa-ask-3",
+     "status": "answered",
+     "text": "Completed answer."
+    },
+    "told_during_first": [
+     "signed_in (asking)",
+     "unavailable (asking)",
+     "unavailable"
+    ]
+   }
+  },
+  "launches": {
+   "clients": 36,
+   "codex_stand_in_runs": 0,
+   "connectors": 47
+  },
+  "lifecycle_flood": {
+   "before": {
+    "after_check": {
+     "connectors_started": 1,
+     "detail": "the connector, or the official Codex app server it runs, is not available",
+     "first_connector_exit": null,
+     "state": "unavailable"
+    },
+    "after_first": {
+     "connectors_started": 1,
+     "detail": null,
+     "first_connector_exit": null,
+     "state": "signed_in"
+    },
+    "checked": [
+     "signed_in",
+     "test-image-model",
+     "plus"
+    ],
+    "connectors": [
+     {
+      "bounds": {
+       "MAX_HISTORY": 4096,
+       "MAX_TURN_EVENTS": 4096,
+       "MAX_TURN_WIRE_BYTES": null,
+       "SHUTDOWN_SECONDS": 8,
+       "TERMINAL_REPLY_SECONDS": null
+      },
+      "client_wrote": {
+       "ask/start": 2,
+       "connection/read": 2
+      },
+      "ended_by_itself": false,
+      "exit": {
+       "code": 0,
+       "signal": null
+      },
+      "fatal": "protocol_error",
+      "inner_exit": -9,
+      "inner_was_asked": {
+       "account/rateLimits/read": 2,
+       "account/read": 2,
+       "initialize": 1,
+       "initialized": 1,
+       "model/list": 2,
+       "thread/start": 1,
+       "turn/start": 1
+      },
+      "receipts": [
+       {
+        "outcome": "failed",
+        "request_id": "qa-ask-1",
+        "submission": "acknowledged",
+        "terminal_status": null,
+        "thread_start_count": 1,
+        "turn_start_count": 1
+       },
+       {
+        "outcome": "failed",
+        "request_id": "qa-ask-2",
+        "submission": "not_submitted",
+        "terminal_status": null,
+        "thread_start_count": 1,
+        "turn_start_count": 1
+       }
+      ],
+      "stderr_bytes": 0,
+      "timeouts": {
+       "rpc_timeout": 15,
+       "shutdown_timeout": 3,
+       "turn_timeout": 120
+      },
+      "turns_for": [
+       "qa-ask-1"
+      ]
+     }
+    ],
+    "first": {
+     "code": "unavailable",
+     "reason": "the connector, or the official Codex app server it runs, is not available",
+     "status": "refused"
+    },
+    "inner_children": 1,
+    "second": {
+     "code": "unavailable",
+     "reason": "the connector, or the official Codex app server it runs, is not available",
+     "status": "refused"
+    },
+    "third": {
+     "code": "local",
+     "reason": "the connector, or the official Codex app server it runs, is not available",
+     "status": "refused"
+    },
+    "told_during_first": [
+     "signed_in (asking)",
+     "signed_in"
+    ]
+   },
+   "released": {
+    "after_check": {
+     "connectors_started": 2,
+     "detail": null,
+     "first_connector_exit": 0,
+     "state": "signed_in"
+    },
+    "after_first": {
+     "connectors_started": 1,
+     "detail": null,
+     "first_connector_exit": 0,
+     "state": "unavailable"
+    },
+    "checked": [
+     "signed_in",
+     "test-image-model",
+     "plus"
+    ],
+    "connectors": [
+     {
+      "bounds": {
+       "MAX_HISTORY": 4096,
+       "MAX_TURN_EVENTS": 4096,
+       "MAX_TURN_WIRE_BYTES": 33554432,
+       "SHUTDOWN_SECONDS": 8,
+       "TERMINAL_REPLY_SECONDS": 1
+      },
+      "client_wrote": {
+       "ask/start": 1,
+       "connection/read": 1
+      },
+      "ended_by_itself": true,
+      "exit": {
+       "code": 0,
+       "signal": null
+      },
+      "fatal": "protocol_error",
+      "inner_exit": -9,
+      "inner_was_asked": {
+       "account/rateLimits/read": 2,
+       "account/read": 2,
+       "initialize": 1,
+       "initialized": 1,
+       "model/list": 2,
+       "thread/start": 1,
+       "turn/start": 1
+      },
+      "receipts": [
+       {
+        "outcome": "failed",
+        "request_id": "qa-ask-1",
+        "submission": "acknowledged",
+        "terminal_status": null,
+        "thread_start_count": 1,
+        "turn_start_count": 1
+       }
+      ],
+      "stderr_bytes": 0,
+      "timeouts": {
+       "rpc_timeout": 15,
+       "shutdown_timeout": 3,
+       "turn_timeout": 120
+      },
+      "turns_for": [
+       "qa-ask-1"
+      ]
+     },
+     {
+      "bounds": {
+       "MAX_HISTORY": 4096,
+       "MAX_TURN_EVENTS": 4096,
+       "MAX_TURN_WIRE_BYTES": 33554432,
+       "SHUTDOWN_SECONDS": 8,
+       "TERMINAL_REPLY_SECONDS": 1
+      },
+      "client_wrote": {
+       "ask/start": 1,
+       "connection/read": 1
+      },
+      "ended_by_itself": false,
+      "exit": {
+       "code": 0,
+       "signal": null
+      },
+      "fatal": null,
+      "inner_exit": -15,
+      "inner_was_asked": {
+       "account/rateLimits/read": 2,
+       "account/read": 2,
+       "initialize": 1,
+       "initialized": 1,
+       "model/list": 2,
+       "thread/start": 1,
+       "turn/start": 1
+      },
+      "receipts": [
+       {
+        "outcome": "completed",
+        "request_id": "qa-ask-3",
+        "submission": "acknowledged",
+        "terminal_status": "completed",
+        "thread_start_count": 1,
+        "turn_start_count": 1
+       }
+      ],
+      "stderr_bytes": 0,
+      "timeouts": {
+       "rpc_timeout": 15,
+       "shutdown_timeout": 3,
+       "turn_timeout": 120
+      },
+      "turns_for": [
+       "qa-ask-3"
+      ]
+     }
+    ],
+    "first": {
+     "reason": "no answer came; whether ChatGPT worked on the question is not known",
+     "status": "uncertain"
+    },
+    "inner_children": 2,
+    "second": {
+     "code": "local",
+     "reason": "the connector, or the official Codex app server it runs, is not available",
+     "status": "refused"
+    },
+    "third": {
+     "model": "test-image-model",
+     "request_id": "qa-ask-3",
+     "status": "answered",
+     "text": "Completed answer."
+    },
+    "told_during_first": [
+     "signed_in (asking)",
+     "unavailable (asking)",
+     "unavailable"
+    ]
+   }
+  },
+  "quit_with_a_sign_in_pending": {
+   "before": {
+    "address_given_to_the_recorder": [
+     "https://auth.openai.com/oauth/authorize?private=not-logged"
+    ],
+    "after_quit": {
+     "detail": "the connector ended before the sign-in completed",
+     "login": "failed",
+     "state": "unavailable"
+    },
+    "connectors": [
+     {
+      "bounds": {
+       "MAX_HISTORY": 4096,
+       "MAX_TURN_EVENTS": 4096,
+       "MAX_TURN_WIRE_BYTES": null,
+       "SHUTDOWN_SECONDS": 8,
+       "TERMINAL_REPLY_SECONDS": null
+      },
+      "client_wrote": {
+       "connection/login/start": 1,
+       "connection/read": 1
+      },
+      "ended_by_itself": false,
+      "exit": {
+       "code": 0,
+       "signal": null
+      },
+      "fatal": null,
+      "inner_exit": -15,
+      "inner_was_asked": {
+       "account/login/start": 1,
+       "account/rateLimits/read": 1,
+       "account/read": 1,
+       "initialize": 1,
+       "initialized": 1,
+       "model/list": 1
+      },
+      "receipts": [],
+      "stderr_bytes": 0,
+      "timeouts": {
+       "rpc_timeout": 15,
+       "shutdown_timeout": 3,
+       "turn_timeout": 120
+      },
+      "turns_for": []
+     }
+    ],
+    "sign_in_pending": {
+     "detail": null,
+     "login": "waiting",
+     "state": "signed_in"
+    }
+   },
+   "first_release": {
+    "address_given_to_the_recorder": [
+     "https://auth.openai.com/oauth/authorize?private=not-logged"
+    ],
+    "after_quit": {
+     "detail": "the connector ended before the sign-in completed",
+     "login": "failed",
+     "state": "unavailable"
+    },
+    "connectors": [
+     {
+      "bounds": {
+       "MAX_HISTORY": 4096,
+       "MAX_TURN_EVENTS": 4096,
+       "MAX_TURN_WIRE_BYTES": 33554432,
+       "SHUTDOWN_SECONDS": 8,
+       "TERMINAL_REPLY_SECONDS": 1
+      },
+      "client_wrote": {
+       "connection/login/start": 1,
+       "connection/read": 1
+      },
+      "ended_by_itself": false,
+      "exit": {
+       "code": 0,
+       "signal": null
+      },
+      "fatal": null,
+      "inner_exit": -15,
+      "inner_was_asked": {
+       "account/login/start": 1,
+       "account/rateLimits/read": 1,
+       "account/read": 1,
+       "initialize": 1,
+       "initialized": 1,
+       "model/list": 1
+      },
+      "receipts": [],
+      "stderr_bytes": 0,
+      "timeouts": {
+       "rpc_timeout": 15,
+       "shutdown_timeout": 3,
+       "turn_timeout": 120
+      },
+      "turns_for": []
+     }
+    ],
+    "sign_in_pending": {
+     "detail": "a sign-in started here is still pending: finish it in your browser, or cancel it",
+     "login": "waiting",
+     "state": "signed_in"
+    }
+   },
+   "released": {
+    "address_given_to_the_recorder": [
+     "https://auth.openai.com/oauth/authorize?private=not-logged"
+    ],
+    "after_quit": {
+     "detail": "the connector was ended here before the sign-in completed",
+     "login": "failed",
+     "state": "unavailable"
+    },
+    "connectors": [
+     {
+      "bounds": {
+       "MAX_HISTORY": 4096,
+       "MAX_TURN_EVENTS": 4096,
+       "MAX_TURN_WIRE_BYTES": 33554432,
+       "SHUTDOWN_SECONDS": 8,
+       "TERMINAL_REPLY_SECONDS": 1
+      },
+      "client_wrote": {
+       "connection/login/start": 1,
+       "connection/read": 1
+      },
+      "ended_by_itself": false,
+      "exit": {
+       "code": 0,
+       "signal": null
+      },
+      "fatal": null,
+      "inner_exit": -15,
+      "inner_was_asked": {
+       "account/login/start": 1,
+       "account/rateLimits/read": 1,
+       "account/read": 1,
+       "initialize": 1,
+       "initialized": 1,
+       "model/list": 1
+      },
+      "receipts": [],
+      "stderr_bytes": 0,
+      "timeouts": {
+       "rpc_timeout": 15,
+       "shutdown_timeout": 3,
+       "turn_timeout": 120
+      },
+      "turns_for": []
+     }
+    ],
+    "sign_in_pending": {
+     "detail": "a sign-in started here is still pending: finish it in your browser, or cancel it",
+     "login": "waiting",
+     "state": "signed_in"
+    }
+   }
+  },
+  "shim_not_ended": {
+   "before": {
+    "after_quit": {
+     "connectors_started": 1,
+     "detail": null,
+     "first_connector_exit": null,
+     "state": "unavailable"
+    },
+    "after_the_shim_ended": {
+     "connectors_started": 1,
+     "detail": null,
+     "first_connector_exit": null,
+     "state": "unavailable"
+    },
+    "client_signalled_the_shim": true,
+    "connector_left_behind_then": {
+     "fatal": null,
+     "inner_exit": -15
+    },
+    "quit_resolved_with": "nothing",
+    "shim_exit": {
+     "code": null,
+     "signal": "SIGKILL"
+    },
+    "shim_still_runs": true,
+    "told_from_the_quit": [
+     [
+      "unavailable",
+      null
+     ]
+    ]
+   },
+   "first_release": {
+    "after_quit": {
+     "connectors_started": 1,
+     "detail": null,
+     "first_connector_exit": null,
+     "state": "unavailable"
+    },
+    "after_the_shim_ended": {
+     "connectors_started": 1,
+     "detail": null,
+     "first_connector_exit": null,
+     "state": "unavailable"
+    },
+    "client_signalled_the_shim": true,
+    "connector_left_behind_then": {
+     "fatal": null,
+     "inner_exit": -15
+    },
+    "quit_resolved_with": "nothing",
+    "shim_exit": {
+     "code": null,
+     "signal": "SIGKILL"
+    },
+    "shim_still_runs": true,
+    "told_from_the_quit": [
+     [
+      "unavailable",
+      null
+     ]
+    ]
+   },
+   "released": {
+    "after_quit": {
+     "connectors_started": 1,
+     "detail": "a connector that was ended here did not end by itself in time; its wsl.exe shim did not end either, so it is not known that the connector, or the Codex app server it runs, ended in WSL",
+     "first_connector_exit": null,
+     "state": "unavailable"
+    },
+    "after_the_shim_ended": {
+     "connectors_started": 1,
+     "detail": "a connector that was ended here did not end by itself in time; its wsl.exe shim was ended, which does not show that the connector, or the Codex app server it runs, ended in WSL",
+     "first_connector_exit": null,
+     "state": "unavailable"
+    },
+    "client_signalled_the_shim": true,
+    "connector_left_behind_then": {
+     "fatal": null,
+     "inner_exit": -15
+    },
+    "quit_resolved_with": "nothing",
+    "shim_exit": {
+     "code": null,
+     "signal": "SIGKILL"
+    },
+    "shim_still_runs": true,
+    "told_from_the_quit": [
+     [
+      "unavailable",
+      null
+     ],
+     [
+      "unavailable",
+      "a connector that was ended here did not end by itself in time; its wsl.exe shim did not end either, so it is not known that the connector, or the Codex app server it runs, ended in WSL"
+     ],
+     [
+      "unavailable",
+      "a connector that was ended here did not end by itself in time; its wsl.exe shim was ended, which does not show that the connector, or the Codex app server it runs, ended in WSL"
+     ]
+    ]
+   }
+  },
+  "three_commits": {
+   "app_src_files_that_differ": [
+    "main/subscription.ts"
+   ],
+   "app_src_same_file_names": true,
+   "app_tree_equal": {
+    "first_release_and_released": false
+   },
+   "connector_side_equal": {
+    "packages": {
+     "before_and_released": true,
+     "first_release_and_released": true
+    },
+    "pyproject.toml": {
+     "before_and_released": true,
+     "first_release_and_released": true
+    },
+    "services": {
+     "before_and_released": false,
+     "first_release_and_released": true
+    }
+   }
+  },
+  "unsolicited_cancelled": {
+   "before": {
+    "after_another_check": {
+     "connectors_started": 1,
+     "detail": "the connector, or the official Codex app server it runs, is not available",
+     "first_connector_exit": null,
+     "state": "unavailable"
+    },
+    "after_the_bound": {
+     "connectors_started": 1,
+     "detail": "the connector, or the official Codex app server it runs, is not available",
+     "first_connector_exit": null,
+     "state": "unavailable"
+    },
+    "connectors": [
+     {
+      "bounds": {
+       "MAX_HISTORY": 4096,
+       "MAX_TURN_EVENTS": 4096,
+       "MAX_TURN_WIRE_BYTES": null,
+       "SHUTDOWN_SECONDS": 8,
+       "TERMINAL_REPLY_SECONDS": null
+      },
+      "client_wrote": {
+       "ask/start": 1,
+       "connection/read": 4097
+      },
+      "ended_by_itself": false,
+      "exit": {
+       "code": 0,
+       "signal": null
+      },
+      "fatal": null,
+      "inner_exit": -15,
+      "inner_was_asked": {
+       "account/rateLimits/read": 4096,
+       "account/read": 4096,
+       "initialize": 1,
+       "initialized": 1,
+       "model/list": 4096,
+       "thread/start": 1,
+       "turn/interrupt": 1,
+       "turn/start": 1
+      },
+      "receipts": [
+       {
+        "outcome": "cancelled",
+        "request_id": "qa-ask-1",
+        "submission": "acknowledged",
+        "terminal_status": "completed",
+        "thread_start_count": 1,
+        "turn_start_count": 1
+       }
+      ],
+      "stderr_bytes": 0,
+      "timeouts": {
+       "rpc_timeout": 15,
+       "shutdown_timeout": 3,
+       "turn_timeout": 120
+      },
+      "turns_for": [
+       "qa-ask-1"
+      ]
+     }
+    ],
+    "next_question": {
+     "code": "local",
+     "reason": "the connector, or the official Codex app server it runs, is not available",
+     "status": "refused"
+    },
+    "question": {
+     "status": "cancelled",
+     "uncertain": false
+    },
+    "reads_answered_signed_in": 4095
+   },
+   "first_release": {
+    "after_another_check": {
+     "connectors_started": 1,
+     "detail": "the connector, or the official Codex app server it runs, is not available",
+     "first_connector_exit": null,
+     "state": "unavailable"
+    },
+    "after_the_bound": {
+     "connectors_started": 1,
+     "detail": "the connector, or the official Codex app server it runs, is not available",
+     "first_connector_exit": null,
+     "state": "unavailable"
+    },
+    "connectors": [
+     {
+      "bounds": {
+       "MAX_HISTORY": 4096,
+       "MAX_TURN_EVENTS": 4096,
+       "MAX_TURN_WIRE_BYTES": 33554432,
+       "SHUTDOWN_SECONDS": 8,
+       "TERMINAL_REPLY_SECONDS": 1
+      },
+      "client_wrote": {
+       "ask/start": 1,
+       "connection/read": 4097
+      },
+      "ended_by_itself": false,
+      "exit": {
+       "code": 0,
+       "signal": null
+      },
+      "fatal": null,
+      "inner_exit": -15,
+      "inner_was_asked": {
+       "account/rateLimits/read": 4096,
+       "account/read": 4096,
+       "initialize": 1,
+       "initialized": 1,
+       "model/list": 4096,
+       "thread/start": 1,
+       "turn/interrupt": 1,
+       "turn/start": 1
+      },
+      "receipts": [
+       {
+        "outcome": "cancelled",
+        "request_id": "qa-ask-1",
+        "submission": "acknowledged",
+        "terminal_status": "completed",
+        "thread_start_count": 1,
+        "turn_start_count": 1
+       }
+      ],
+      "stderr_bytes": 0,
+      "timeouts": {
+       "rpc_timeout": 15,
+       "shutdown_timeout": 3,
+       "turn_timeout": 120
+      },
+      "turns_for": [
+       "qa-ask-1"
+      ]
+     }
+    ],
+    "next_question": {
+     "code": "local",
+     "reason": "the connector, or the official Codex app server it runs, is not available",
+     "status": "refused"
+    },
+    "question": {
+     "status": "cancelled",
+     "uncertain": false
+    },
+    "reads_answered_signed_in": 4095
+   },
+   "released": {
+    "after_another_check": {
+     "connectors_started": 1,
+     "detail": "the connector, or the official Codex app server it runs, is not available",
+     "first_connector_exit": null,
+     "state": "unavailable"
+    },
+    "after_the_bound": {
+     "connectors_started": 1,
+     "detail": "the connector, or the official Codex app server it runs, is not available",
+     "first_connector_exit": null,
+     "state": "unavailable"
+    },
+    "connectors": [
+     {
+      "bounds": {
+       "MAX_HISTORY": 4096,
+       "MAX_TURN_EVENTS": 4096,
+       "MAX_TURN_WIRE_BYTES": 33554432,
+       "SHUTDOWN_SECONDS": 8,
+       "TERMINAL_REPLY_SECONDS": 1
+      },
+      "client_wrote": {
+       "ask/start": 1,
+       "connection/read": 4097
+      },
+      "ended_by_itself": false,
+      "exit": {
+       "code": 0,
+       "signal": null
+      },
+      "fatal": null,
+      "inner_exit": -15,
+      "inner_was_asked": {
+       "account/rateLimits/read": 4096,
+       "account/read": 4096,
+       "initialize": 1,
+       "initialized": 1,
+       "model/list": 4096,
+       "thread/start": 1,
+       "turn/interrupt": 1,
+       "turn/start": 1
+      },
+      "receipts": [
+       {
+        "outcome": "cancelled",
+        "request_id": "qa-ask-1",
+        "submission": "acknowledged",
+        "terminal_status": "completed",
+        "thread_start_count": 1,
+        "turn_start_count": 1
+       }
+      ],
+      "stderr_bytes": 0,
+      "timeouts": {
+       "rpc_timeout": 15,
+       "shutdown_timeout": 3,
+       "turn_timeout": 120
+      },
+      "turns_for": [
+       "qa-ask-1"
+      ]
+     }
+    ],
+    "next_question": {
+     "code": "local",
+     "reason": "the connector, or the official Codex app server it runs, is not available",
+     "status": "refused"
+    },
+    "question": {
+     "status": "cancelled",
+     "uncertain": true
+    },
+    "reads_answered_signed_in": 4095
+   }
+  }
+ },
+ "result": {
+  "failed": [],
+  "passed": 28,
+  "tests": 28
+ },
+ "trees": {
+  "before": {
+   "apps/windows": "5bda4761eaef62814a7f376a6e1147246d48bf3f",
+   "packages": "b53b166330a8e15cfd4130110496694e0086436e",
+   "pyproject.toml": "7555c8084b4cf8e9b69db7fac9e4ce92d23b2f75",
+   "services": "93ddc49b82a900bbe251d04ae587ca45204732a5"
+  },
+  "first_release": {
+   "apps/windows": "06c3b93b4855a8a0a5d803a348818303b1c1182e",
+   "packages": "b53b166330a8e15cfd4130110496694e0086436e",
+   "pyproject.toml": "7555c8084b4cf8e9b69db7fac9e4ce92d23b2f75",
+   "services": "57b8d95a52c83ec27f5ec1c58d00eee6355d554a"
+  },
+  "released": {
+   "apps/windows": "8c3e2b4d1e5b87a508cae5bfc0c6277ffc4e8322",
+   "packages": "b53b166330a8e15cfd4130110496694e0086436e",
+   "pyproject.toml": "7555c8084b4cf8e9b69db7fac9e4ce92d23b2f75",
+   "services": "57b8d95a52c83ec27f5ec1c58d00eee6355d554a"
+  }
+ }
+}

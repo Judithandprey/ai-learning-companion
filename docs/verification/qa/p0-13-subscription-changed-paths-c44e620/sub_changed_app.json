@@ -1,0 +1,2375 @@
+{
+ "commits": {
+  "before": "3e4b40654460a2dc2407f1d9be60d8e1a5b39a3e",
+  "first_release": "8eac9fc02ebf10e2e2fca7c164b6c33c2f99698b",
+  "released": "c44e6204b3e0c49f710fc7bb73d540ef6daa7b06"
+ },
+ "harness": {
+  "sub_changed_app.test.mjs": "58c47eb2e4e5cebf32e4d8e08c722deb251d29a9304c03d33292e41585747af6",
+  "sub_tree.mjs": "86749fbab763e670ac3956c1bad90bdf4bcfa81907643aea25bfcc5721b57f27"
+ },
+ "observed": {
+  "CANDIDATE.encoding_fails.before": {
+   "after_the_failed_encoding": {
+    "badge": "",
+    "card": null,
+    "form": false,
+    "hint": "Circle a region. Esc or Cancel returns. Starting the capture of this display… No AI watches this screen: ChatGPT gets only a selection you send with Ask. Ink is saved on this device at every change.",
+    "selections_handed_to_main": 0,
+    "status": null,
+    "unhandled_rejections": [
+     "EncodingError: the picture could not be encoded (injected by QA)"
+    ]
+   },
+   "at_start": {
+    "badge": "",
+    "card": null,
+    "form": false,
+    "hint": "Pen writes; mouse writing off; new ink fixed on the screen. Starting the capture of this display… No AI watches this screen: ChatGPT gets only a selection you send with Ask. Ink is saved on this device at every change.",
+    "selections_handed_to_main": 0,
+    "status": null,
+    "unhandled_rejections": []
+   },
+   "the_same_circle_again_with_the_encoding_working": {
+    "badge": "Selection · not sent to any AI",
+    "card": "Region 182,87 226×46 DIP on Display 1 = 226×46 px of frame 1 (captured <time>), with your ink revision 0 drawn over it.",
+    "form": true,
+    "hint": "Pen writes; mouse writing off; new ink fixed on the screen. Starting the capture of this display… No AI watches this screen: ChatGPT gets only a selection you send with Ask. Ink is saved on this device at every change.",
+    "selections_handed_to_main": 1,
+    "status": null,
+    "unhandled_rejections": [
+     "EncodingError: the picture could not be encoded (injected by QA)"
+    ]
+   }
+  },
+  "CANDIDATE.encoding_fails.released": {
+   "after_the_failed_encoding": {
+    "badge": "",
+    "card": null,
+    "form": false,
+    "hint": "Circle a region. Esc or Cancel returns. Starting the capture of this display… No AI watches this screen: ChatGPT gets only a selection you send with Ask. Ink is saved on this device at every change.",
+    "selections_handed_to_main": 0,
+    "status": null,
+    "unhandled_rejections": [
+     "EncodingError: the picture could not be encoded (injected by QA)"
+    ]
+   },
+   "at_start": {
+    "badge": "",
+    "card": null,
+    "form": false,
+    "hint": "Pen writes; mouse writing off; new ink fixed on the screen. Starting the capture of this display… No AI watches this screen: ChatGPT gets only a selection you send with Ask. Ink is saved on this device at every change.",
+    "selections_handed_to_main": 0,
+    "status": null,
+    "unhandled_rejections": []
+   },
+   "the_same_circle_again_with_the_encoding_working": {
+    "badge": "Selection · not sent to any AI",
+    "card": "Region 182,87 226×46 DIP on Display 1 = 226×46 px of frame 1 (captured <time>), with your ink revision 0 drawn over it.",
+    "form": true,
+    "hint": "Pen writes; mouse writing off; new ink fixed on the screen. Starting the capture of this display… No AI watches this screen: ChatGPT gets only a selection you send with Ask. Ink is saved on this device at every change.",
+    "selections_handed_to_main": 1,
+    "status": null,
+    "unhandled_rejections": [
+     "EncodingError: the picture could not be encoded (injected by QA)"
+    ]
+   }
+  },
+  "FOLLOW-UP.cancelled_by_the_connector.before": {
+   "card": {
+    "answer": null,
+    "ask_enabled": true,
+    "badge": "Selection · asked: no answer shown",
+    "status": "Cancelled: no answer is shown."
+   },
+   "connector_calls": "connection/read ask/start",
+   "connectors_started": 1,
+   "entries": 1,
+   "recorded": {
+    "outcome": {
+     "status": "cancelled",
+     "uncertain": false
+    },
+    "presentation": "(no such key)",
+    "shown": false
+   },
+   "state": "signed_in"
+  },
+  "FOLLOW-UP.cancelled_by_the_connector.first_release": {
+   "card": {
+    "answer": null,
+    "ask_enabled": true,
+    "badge": "Selection · asked: no answer shown",
+    "status": "Cancelled: no answer is shown."
+   },
+   "connector_calls": "connection/read ask/start",
+   "connectors_started": 1,
+   "entries": 1,
+   "recorded": {
+    "outcome": {
+     "status": "cancelled",
+     "uncertain": false
+    },
+    "presentation": "(no such key)",
+    "shown": false
+   },
+   "state": "signed_in"
+  },
+  "FOLLOW-UP.cancelled_by_the_connector.released": {
+   "card": {
+    "answer": null,
+    "ask_enabled": true,
+    "badge": "Selection · asked: no answer shown",
+    "status": "Cancelled: no answer is shown. Whether ChatGPT stopped working on it is not confirmed; it may still have counted against your usage."
+   },
+   "connector_calls": "connection/read ask/start",
+   "connectors_started": 1,
+   "entries": 1,
+   "recorded": {
+    "outcome": {
+     "status": "cancelled",
+     "uncertain": true
+    },
+    "presentation": "(no such key)",
+    "shown": false
+   },
+   "state": "signed_in"
+  },
+  "QA-SUB-01.frame_at_pen_up.before_overlay": {
+   "card": {
+    "badge": "Selection · not sent to any AI",
+    "form": true,
+    "says": "Region 182,87 226×46 DIP on Display 1 = 226×46 px of frame 42 (captured <time>), with your ink revision 0 drawn over it.",
+    "status": null
+   },
+   "frame_at_pen_down": 41,
+   "handed": {
+    "frame": [
+     42,
+     "the time of a later sample",
+     1280,
+     800
+    ],
+    "ink": [
+     0,
+     0
+    ],
+    "region_dip": {
+     "height": 46,
+     "width": 226,
+     "x": 182,
+     "y": 87
+    }
+   },
+   "its_size_mid_gesture": [
+    0,
+    0
+   ],
+   "kept": {
+    "frame": [
+     42,
+     "the time of a later sample",
+     1280,
+     800
+    ],
+    "ink": {
+     "document": [
+      0,
+      0
+     ],
+     "revision": 0
+    },
+    "picture": {
+     "png_is_the_recorded_sha256": true,
+     "png_size": [
+      226,
+      46
+     ],
+     "recorded_size": [
+      226,
+      46
+     ],
+     "shade": 90
+    },
+    "region_px": {
+     "height": 46,
+     "width": 226,
+     "x": 182,
+     "y": 87
+    }
+   }
+  },
+  "QA-SUB-01.frame_at_pen_up.released": {
+   "card": {
+    "badge": "Selection · not sent to any AI",
+    "form": true,
+    "says": "Region 182,87 226×46 DIP on Display 1 = 226×46 px of frame 42 (captured <time>), with your ink revision 0 drawn over it.",
+    "status": null
+   },
+   "frame_at_pen_down": 41,
+   "handed": {
+    "frame": [
+     42,
+     "the time of a later sample",
+     1280,
+     800
+    ],
+    "ink": [
+     0,
+     0
+    ],
+    "region_dip": {
+     "height": 46,
+     "width": 226,
+     "x": 182,
+     "y": 87
+    }
+   },
+   "its_size_mid_gesture": [
+    0,
+    0
+   ],
+   "kept": {
+    "frame": [
+     42,
+     "the time of a later sample",
+     1280,
+     800
+    ],
+    "ink": {
+     "document": [
+      0,
+      0
+     ],
+     "revision": 0
+    },
+    "picture": {
+     "png_is_the_recorded_sha256": true,
+     "png_size": [
+      226,
+      46
+     ],
+     "recorded_size": [
+      226,
+      46
+     ],
+     "shade": 90
+    },
+    "region_px": {
+     "height": 46,
+     "width": 226,
+     "x": 182,
+     "y": 87
+    }
+   }
+  },
+  "QA-SUB-01.ink_changed.before_overlay": {
+   "card": {
+    "badge": "Selection · not sent to any AI",
+    "form": true,
+    "says": "Region 182,87 226×46 DIP on Display 1 = 226×46 px of frame 41 (captured <time>), with your ink revision 1 drawn over it.",
+    "status": null
+   },
+   "during": {
+    "held_frame_size": [
+     1280,
+     800
+    ],
+    "ink_now": [
+     2,
+     0
+    ],
+    "sample_numbers_reported": [],
+    "selections_handed_to_main": 1
+   },
+   "handed": {
+    "frame": [
+     41,
+     "2026-09-30T12:00:05.000Z",
+     1280,
+     800
+    ],
+    "ink": [
+     1,
+     1
+    ],
+    "region_dip": {
+     "height": 46,
+     "width": 226,
+     "x": 182,
+     "y": 87
+    }
+   },
+   "kept": {
+    "as_the_control": {
+     "context": true,
+     "ink": true,
+     "picture": true
+    },
+    "frame": [
+     41,
+     "2026-09-30T12:00:05.000Z",
+     1280,
+     800
+    ],
+    "ink": {
+     "document": [
+      1,
+      1
+     ],
+     "revision": 1
+    },
+    "picture": {
+     "png_is_the_recorded_sha256": true,
+     "png_size": [
+      226,
+      46
+     ],
+     "recorded_size": [
+      226,
+      46
+     ],
+     "shade": 20
+    },
+    "region_px": {
+     "height": 46,
+     "width": 226,
+     "x": 182,
+     "y": 87
+    }
+   },
+   "records": 2
+  },
+  "QA-SUB-01.ink_changed.released": {
+   "card": {
+    "badge": "Selection · not sent to any AI",
+    "form": true,
+    "says": "Region 182,87 226×46 DIP on Display 1 = 226×46 px of frame 41 (captured <time>), with your ink revision 1 drawn over it.",
+    "status": null
+   },
+   "during": {
+    "held_frame_size": [
+     1280,
+     800
+    ],
+    "ink_now": [
+     2,
+     0
+    ],
+    "sample_numbers_reported": [],
+    "selections_handed_to_main": 1
+   },
+   "handed": {
+    "frame": [
+     41,
+     "2026-09-30T12:00:05.000Z",
+     1280,
+     800
+    ],
+    "ink": [
+     1,
+     1
+    ],
+    "region_dip": {
+     "height": 46,
+     "width": 226,
+     "x": 182,
+     "y": 87
+    }
+   },
+   "kept": {
+    "as_the_control": {
+     "context": true,
+     "ink": true,
+     "picture": true
+    },
+    "frame": [
+     41,
+     "2026-09-30T12:00:05.000Z",
+     1280,
+     800
+    ],
+    "ink": {
+     "document": [
+      1,
+      1
+     ],
+     "revision": 1
+    },
+    "picture": {
+     "png_is_the_recorded_sha256": true,
+     "png_size": [
+      226,
+      46
+     ],
+     "recorded_size": [
+      226,
+      46
+     ],
+     "shade": 20
+    },
+    "region_px": {
+     "height": 46,
+     "width": 226,
+     "x": 182,
+     "y": 87
+    }
+   },
+   "records": 2
+  },
+  "QA-SUB-01.ink_changed_and_replaced.before_overlay": {
+   "card": {
+    "badge": "Selection · not sent to any AI",
+    "form": false,
+    "says": "Region 182,87 226×46 DIP on Display 1 = 226×46 px of frame 41 (captured <time>), with your ink revision 1 drawn over it.",
+    "status": "This selection cannot be asked about: the selection facts are malformed. It was not sent to any AI."
+   },
+   "during": {
+    "held_frame_size": [
+     0,
+     0
+    ],
+    "ink_now": [
+     2,
+     0
+    ],
+    "sample_numbers_reported": [
+     42
+    ],
+    "selections_handed_to_main": 1
+   },
+   "handed": {
+    "frame": [
+     41,
+     "2026-09-30T12:00:05.000Z",
+     0,
+     0
+    ],
+    "ink": [
+     1,
+     1
+    ],
+    "region_dip": {
+     "height": 46,
+     "width": 226,
+     "x": 182,
+     "y": 87
+    }
+   },
+   "kept": null,
+   "records": 1
+  },
+  "QA-SUB-01.ink_changed_and_replaced.released": {
+   "card": {
+    "badge": "Selection · not sent to any AI",
+    "form": true,
+    "says": "Region 182,87 226×46 DIP on Display 1 = 226×46 px of frame 41 (captured <time>), with your ink revision 1 drawn over it.",
+    "status": null
+   },
+   "during": {
+    "held_frame_size": [
+     0,
+     0
+    ],
+    "ink_now": [
+     2,
+     0
+    ],
+    "sample_numbers_reported": [
+     42
+    ],
+    "selections_handed_to_main": 1
+   },
+   "handed": {
+    "frame": [
+     41,
+     "2026-09-30T12:00:05.000Z",
+     1280,
+     800
+    ],
+    "ink": [
+     1,
+     1
+    ],
+    "region_dip": {
+     "height": 46,
+     "width": 226,
+     "x": 182,
+     "y": 87
+    }
+   },
+   "kept": {
+    "as_the_control": {
+     "context": true,
+     "ink": true,
+     "picture": true
+    },
+    "frame": [
+     41,
+     "2026-09-30T12:00:05.000Z",
+     1280,
+     800
+    ],
+    "ink": {
+     "document": [
+      1,
+      1
+     ],
+     "revision": 1
+    },
+    "picture": {
+     "png_is_the_recorded_sha256": true,
+     "png_size": [
+      226,
+      46
+     ],
+     "recorded_size": [
+      226,
+      46
+     ],
+     "shade": 20
+    },
+    "region_px": {
+     "height": 46,
+     "width": 226,
+     "x": 182,
+     "y": 87
+    }
+   },
+   "records": 2
+  },
+  "QA-SUB-01.replaced_once.before_overlay": {
+   "card": {
+    "badge": "Selection · not sent to any AI",
+    "form": false,
+    "says": "Region 182,87 226×46 DIP on Display 1 = 226×46 px of frame 41 (captured <time>), with your ink revision 1 drawn over it.",
+    "status": "This selection cannot be asked about: the selection facts are malformed. It was not sent to any AI."
+   },
+   "during": {
+    "held_frame_size": [
+     0,
+     0
+    ],
+    "ink_now": [
+     1,
+     1
+    ],
+    "sample_numbers_reported": [
+     42
+    ],
+    "selections_handed_to_main": 1
+   },
+   "handed": {
+    "frame": [
+     41,
+     "2026-09-30T12:00:05.000Z",
+     0,
+     0
+    ],
+    "ink": [
+     1,
+     1
+    ],
+    "region_dip": {
+     "height": 46,
+     "width": 226,
+     "x": 182,
+     "y": 87
+    }
+   },
+   "kept": null,
+   "records": 1
+  },
+  "QA-SUB-01.replaced_once.before_overlay.next_selection": {
+   "card": [
+    true,
+    null
+   ],
+   "frame": [
+    42,
+    "the time of a later sample",
+    1280,
+    800
+   ],
+   "records": 2
+  },
+  "QA-SUB-01.replaced_once.before_whole": {
+   "card": {
+    "badge": "Selection · not sent to any AI",
+    "form": false,
+    "says": "Region 182,87 226×46 DIP on Display 1 = 226×46 px of frame 41 (captured <time>), with your ink revision 1 drawn over it.",
+    "status": "This selection cannot be asked about: the selection facts are malformed. It was not sent to any AI."
+   },
+   "during": {
+    "held_frame_size": [
+     0,
+     0
+    ],
+    "ink_now": [
+     1,
+     1
+    ],
+    "sample_numbers_reported": [
+     42
+    ],
+    "selections_handed_to_main": 1
+   },
+   "handed": {
+    "frame": [
+     41,
+     "2026-09-30T12:00:05.000Z",
+     0,
+     0
+    ],
+    "ink": [
+     1,
+     1
+    ],
+    "region_dip": {
+     "height": 46,
+     "width": 226,
+     "x": 182,
+     "y": 87
+    }
+   },
+   "kept": null,
+   "records": 1
+  },
+  "QA-SUB-01.replaced_once.released": {
+   "card": {
+    "badge": "Selection · not sent to any AI",
+    "form": true,
+    "says": "Region 182,87 226×46 DIP on Display 1 = 226×46 px of frame 41 (captured <time>), with your ink revision 1 drawn over it.",
+    "status": null
+   },
+   "during": {
+    "held_frame_size": [
+     0,
+     0
+    ],
+    "ink_now": [
+     1,
+     1
+    ],
+    "sample_numbers_reported": [
+     42
+    ],
+    "selections_handed_to_main": 1
+   },
+   "handed": {
+    "frame": [
+     41,
+     "2026-09-30T12:00:05.000Z",
+     1280,
+     800
+    ],
+    "ink": [
+     1,
+     1
+    ],
+    "region_dip": {
+     "height": 46,
+     "width": 226,
+     "x": 182,
+     "y": 87
+    }
+   },
+   "kept": {
+    "as_the_control": {
+     "context": true,
+     "ink": true,
+     "picture": true
+    },
+    "frame": [
+     41,
+     "2026-09-30T12:00:05.000Z",
+     1280,
+     800
+    ],
+    "ink": {
+     "document": [
+      1,
+      1
+     ],
+     "revision": 1
+    },
+    "picture": {
+     "png_is_the_recorded_sha256": true,
+     "png_size": [
+      226,
+      46
+     ],
+     "recorded_size": [
+      226,
+      46
+     ],
+     "shade": 20
+    },
+    "region_px": {
+     "height": 46,
+     "width": 226,
+     "x": 182,
+     "y": 87
+    }
+   },
+   "records": 2
+  },
+  "QA-SUB-01.replaced_once.released.asked": {
+   "frame": [
+    41,
+    "2026-09-30T12:00:05.000Z",
+    1280,
+    800
+   ],
+   "picture_is_the_control_s": true,
+   "picture_size": [
+    226,
+    46
+   ],
+   "question": "Explain what is selected.",
+   "region_px": {
+    "height": 46,
+    "width": 226,
+    "x": 182,
+    "y": 87
+   }
+  },
+  "QA-SUB-01.replaced_once.released.next_selection": {
+   "frame": [
+    42,
+    "the time of a later sample",
+    1280,
+    800
+   ],
+   "ink": {
+    "document": [
+     1,
+     1
+    ],
+    "revision": 1
+   },
+   "picture": {
+    "png_is_the_recorded_sha256": true,
+    "png_size": [
+     136,
+     46
+    ],
+    "recorded_size": [
+     136,
+     46
+    ],
+    "shade": 90
+   },
+   "region_px": {
+    "height": 46,
+    "width": 136,
+    "x": 592,
+    "y": 87
+   }
+  },
+  "QA-SUB-01.replaced_twice.before_overlay": {
+   "card": {
+    "badge": "Selection · not sent to any AI",
+    "form": false,
+    "says": "Region 182,87 226×46 DIP on Display 1 = 226×46 px of frame 41 (captured <time>), with your ink revision 1 drawn over it.",
+    "status": "This selection cannot be asked about: the selection facts are malformed. It was not sent to any AI."
+   },
+   "during": {
+    "held_frame_size": [
+     0,
+     0
+    ],
+    "ink_now": [
+     1,
+     1
+    ],
+    "sample_numbers_reported": [
+     42,
+     43
+    ],
+    "selections_handed_to_main": 1
+   },
+   "handed": {
+    "frame": [
+     41,
+     "2026-09-30T12:00:05.000Z",
+     0,
+     0
+    ],
+    "ink": [
+     1,
+     1
+    ],
+    "region_dip": {
+     "height": 46,
+     "width": 226,
+     "x": 182,
+     "y": 87
+    }
+   },
+   "kept": null,
+   "records": 1
+  },
+  "QA-SUB-01.replaced_twice.released": {
+   "card": {
+    "badge": "Selection · not sent to any AI",
+    "form": true,
+    "says": "Region 182,87 226×46 DIP on Display 1 = 226×46 px of frame 41 (captured <time>), with your ink revision 1 drawn over it.",
+    "status": null
+   },
+   "during": {
+    "held_frame_size": [
+     0,
+     0
+    ],
+    "ink_now": [
+     1,
+     1
+    ],
+    "sample_numbers_reported": [
+     42,
+     43
+    ],
+    "selections_handed_to_main": 1
+   },
+   "handed": {
+    "frame": [
+     41,
+     "2026-09-30T12:00:05.000Z",
+     1280,
+     800
+    ],
+    "ink": [
+     1,
+     1
+    ],
+    "region_dip": {
+     "height": 46,
+     "width": 226,
+     "x": 182,
+     "y": 87
+    }
+   },
+   "kept": {
+    "as_the_control": {
+     "context": true,
+     "ink": true,
+     "picture": true
+    },
+    "frame": [
+     41,
+     "2026-09-30T12:00:05.000Z",
+     1280,
+     800
+    ],
+    "ink": {
+     "document": [
+      1,
+      1
+     ],
+     "revision": 1
+    },
+    "picture": {
+     "png_is_the_recorded_sha256": true,
+     "png_size": [
+      226,
+      46
+     ],
+     "recorded_size": [
+      226,
+      46
+     ],
+     "shade": 20
+    },
+    "region_px": {
+     "height": 46,
+     "width": 226,
+     "x": 182,
+     "y": 87
+    }
+   },
+   "records": 2
+  },
+  "QA-SUB-01.replaced_twice.released.next_selection": {
+   "frame": [
+    43,
+    "the time of a later sample",
+    1280,
+    800
+   ],
+   "ink": {
+    "document": [
+     1,
+     1
+    ],
+    "revision": 1
+   },
+   "picture": {
+    "png_is_the_recorded_sha256": true,
+    "png_size": [
+     136,
+     46
+    ],
+    "recorded_size": [
+     136,
+     46
+    ],
+    "shade": 120
+   },
+   "region_px": {
+    "height": 46,
+    "width": 136,
+    "x": 592,
+    "y": 87
+   }
+  },
+  "QA-SUB-04.app.before": {
+   "again": {
+    "connector_got": 1,
+    "status": "Answered by ChatGPT (vision-model) in 1.2 s, about the picture above and your question only."
+   },
+   "asks_before_the_valid_one": 8,
+   "connector_calls": "connection/read ask/start ask/start ask/start ask/start ask/start ask/start ask/start ask/start ask/start",
+   "connector_ended": false,
+   "connectors_started": 1,
+   "first": {
+    "ask_enabled": false,
+    "badge": "Selection · asked: being sent to ChatGPT",
+    "cancel_shown": true,
+    "connector_got": [
+     "What is \ud83d this?"
+    ],
+    "record_file_has_the_escape": true,
+    "recorded": [
+     "What is \ud83d this?"
+    ],
+    "sent_as_the_json_escape": true,
+    "status": "Asked at <time> (vision-model): this picture and your question are being sent to ChatGPT. Waiting for the answer…"
+   },
+   "others": {
+    "a high half at the end": "sent",
+    "a high half before a whole pair": "sent",
+    "a lone half inside spaces": "sent",
+    "a lone low half": "sent",
+    "a low half at the start": "sent",
+    "a whole pair, then a low half": "sent",
+    "the two halves swapped": "sent"
+   },
+   "state": "signed_in",
+   "valid": {
+    "connector_got_it_exactly": true,
+    "recorded_exactly": true,
+    "utf8_bytes": 39,
+    "utf8_sha256": "928d50b992b35e1350a91e6ceaf3e8612252fb2ace7527d4d91b6ff36478cc0f",
+    "wire_has_a_u_escape": false,
+    "wire_holds_its_utf8_bytes": true
+   }
+  },
+  "QA-SUB-04.app.released": {
+   "again": {
+    "connector_got": 0,
+    "status": "Not sent: the question holds a damaged character (half of a pair), so it cannot be sent as it is; type that part again."
+   },
+   "asks_before_the_valid_one": 0,
+   "connector_calls": "connection/read ask/start",
+   "connector_ended": false,
+   "connectors_started": 1,
+   "first": {
+    "ask_enabled": true,
+    "badge": "Selection · not sent to any AI",
+    "cancel_shown": false,
+    "connector_got": [],
+    "record_file_has_the_escape": false,
+    "recorded": [],
+    "sent_as_the_json_escape": false,
+    "status": "Not sent: the question holds a damaged character (half of a pair), so it cannot be sent as it is; type that part again."
+   },
+   "others": {
+    "a high half at the end": "the question holds a damaged character (half of a pair), so it cannot be sent as it is; type that part again",
+    "a high half before a whole pair": "the question holds a damaged character (half of a pair), so it cannot be sent as it is; type that part again",
+    "a lone half inside spaces": "the question holds a damaged character (half of a pair), so it cannot be sent as it is; type that part again",
+    "a lone low half": "the question holds a damaged character (half of a pair), so it cannot be sent as it is; type that part again",
+    "a low half at the start": "the question holds a damaged character (half of a pair), so it cannot be sent as it is; type that part again",
+    "a whole pair, then a low half": "the question holds a damaged character (half of a pair), so it cannot be sent as it is; type that part again",
+    "the two halves swapped": "the question holds a damaged character (half of a pair), so it cannot be sent as it is; type that part again"
+   },
+   "state": "signed_in",
+   "valid": {
+    "connector_got_it_exactly": true,
+    "recorded_exactly": true,
+    "utf8_bytes": 39,
+    "utf8_sha256": "928d50b992b35e1350a91e6ceaf3e8612252fb2ace7527d4d91b6ff36478cc0f",
+    "wire_has_a_u_escape": false,
+    "wire_holds_its_utf8_bytes": true
+   }
+  },
+  "QA-SUB-04.app_not_checked.before": {
+   "connectors_started": 0,
+   "recorded": [],
+   "state": "not_checked",
+   "status": "Not sent: the ChatGPT subscription has not been checked yet (use the control window)."
+  },
+  "QA-SUB-04.app_not_checked.released": {
+   "connectors_started": 0,
+   "recorded": [],
+   "state": "not_checked",
+   "status": "Not sent: the question holds a damaged character (half of a pair), so it cannot be sent as it is; type that part again."
+  },
+  "QA-SUB-04.rule.before": {
+   "damaged": {
+    "a high half at the end": {
+     "returned": "the text as typed, trimmed",
+     "said": null,
+     "units": 4
+    },
+    "a high half before a whole pair": {
+     "returned": "the text as typed, trimmed",
+     "said": null,
+     "units": 3
+    },
+    "a lone half inside spaces": {
+     "returned": "the text as typed, trimmed",
+     "said": null,
+     "units": 1
+    },
+    "a lone high half": {
+     "returned": "the text as typed, trimmed",
+     "said": null,
+     "units": 15
+    },
+    "a lone low half": {
+     "returned": "the text as typed, trimmed",
+     "said": null,
+     "units": 15
+    },
+    "a low half at the start": {
+     "returned": "the text as typed, trimmed",
+     "said": null,
+     "units": 4
+    },
+    "a whole pair, then a low half": {
+     "returned": "the text as typed, trimmed",
+     "said": null,
+     "units": 3
+    },
+    "the two halves swapped": {
+     "returned": "the text as typed, trimmed",
+     "said": null,
+     "units": 4
+    }
+   },
+   "limit": 4000,
+   "limits": {
+    "3998 x and an emoji: 4000 units": {
+     "returned": "the text as typed, trimmed",
+     "said": null,
+     "units": 4000
+    },
+    "3999 x and a lone half: 4000 units": {
+     "returned": "the text as typed, trimmed",
+     "said": null,
+     "units": 4000
+    },
+    "3999 x and an emoji: 4001 units": {
+     "returned": null,
+     "said": "(questionProblem is not exported)",
+     "units": null
+    },
+    "4000 x": {
+     "returned": "the text as typed, trimmed",
+     "said": null,
+     "units": 4000
+    },
+    "4001 x": {
+     "returned": null,
+     "said": "(questionProblem is not exported)",
+     "units": null
+    },
+    "4001 x and a lone half": {
+     "returned": null,
+     "said": "(questionProblem is not exported)",
+     "units": null
+    },
+    "a number, not text": {
+     "returned": null,
+     "said": "(questionProblem is not exported)",
+     "units": null
+    },
+    "nothing": {
+     "returned": null,
+     "said": "(questionProblem is not exported)",
+     "units": null
+    },
+    "spaces only": {
+     "returned": null,
+     "said": "(questionProblem is not exported)",
+     "units": null
+    }
+   },
+   "valid": {
+    "Chinese": {
+     "returned": "the text as typed, trimmed",
+     "said": null,
+     "units": 7
+    },
+    "Chinese, an emoji and accents, padded with spaces": {
+     "returned": "the text as typed, trimmed",
+     "said": null,
+     "units": 15
+    },
+    "U+10FFFF": {
+     "returned": "the text as typed, trimmed",
+     "said": null,
+     "units": 2
+    },
+    "an emoji (one pair)": {
+     "returned": "the text as typed, trimmed",
+     "said": null,
+     "units": 2
+    },
+    "combining marks": {
+     "returned": "the text as typed, trimmed",
+     "said": null,
+     "units": 11
+    }
+   }
+  },
+  "QA-SUB-04.rule.released": {
+   "damaged": {
+    "a high half at the end": {
+     "returned": null,
+     "said": "the question holds a damaged character (half of a pair), so it cannot be sent as it is; type that part again",
+     "units": null
+    },
+    "a high half before a whole pair": {
+     "returned": null,
+     "said": "the question holds a damaged character (half of a pair), so it cannot be sent as it is; type that part again",
+     "units": null
+    },
+    "a lone half inside spaces": {
+     "returned": null,
+     "said": "the question holds a damaged character (half of a pair), so it cannot be sent as it is; type that part again",
+     "units": null
+    },
+    "a lone high half": {
+     "returned": null,
+     "said": "the question holds a damaged character (half of a pair), so it cannot be sent as it is; type that part again",
+     "units": null
+    },
+    "a lone low half": {
+     "returned": null,
+     "said": "the question holds a damaged character (half of a pair), so it cannot be sent as it is; type that part again",
+     "units": null
+    },
+    "a low half at the start": {
+     "returned": null,
+     "said": "the question holds a damaged character (half of a pair), so it cannot be sent as it is; type that part again",
+     "units": null
+    },
+    "a whole pair, then a low half": {
+     "returned": null,
+     "said": "the question holds a damaged character (half of a pair), so it cannot be sent as it is; type that part again",
+     "units": null
+    },
+    "the two halves swapped": {
+     "returned": null,
+     "said": "the question holds a damaged character (half of a pair), so it cannot be sent as it is; type that part again",
+     "units": null
+    }
+   },
+   "limit": 4000,
+   "limits": {
+    "3998 x and an emoji: 4000 units": {
+     "returned": "the text as typed, trimmed",
+     "said": null,
+     "units": 4000
+    },
+    "3999 x and a lone half: 4000 units": {
+     "returned": null,
+     "said": "the question holds a damaged character (half of a pair), so it cannot be sent as it is; type that part again",
+     "units": null
+    },
+    "3999 x and an emoji: 4001 units": {
+     "returned": null,
+     "said": "the question is empty or too long",
+     "units": null
+    },
+    "4000 x": {
+     "returned": "the text as typed, trimmed",
+     "said": null,
+     "units": 4000
+    },
+    "4001 x": {
+     "returned": null,
+     "said": "the question is empty or too long",
+     "units": null
+    },
+    "4001 x and a lone half": {
+     "returned": null,
+     "said": "the question holds a damaged character (half of a pair), so it cannot be sent as it is; type that part again",
+     "units": null
+    },
+    "a number, not text": {
+     "returned": null,
+     "said": "the question is empty or too long",
+     "units": null
+    },
+    "nothing": {
+     "returned": null,
+     "said": "the question is empty or too long",
+     "units": null
+    },
+    "spaces only": {
+     "returned": null,
+     "said": "the question is empty or too long",
+     "units": null
+    }
+   },
+   "valid": {
+    "Chinese": {
+     "returned": "the text as typed, trimmed",
+     "said": null,
+     "units": 7
+    },
+    "Chinese, an emoji and accents, padded with spaces": {
+     "returned": "the text as typed, trimmed",
+     "said": null,
+     "units": 15
+    },
+    "U+10FFFF": {
+     "returned": "the text as typed, trimmed",
+     "said": null,
+     "units": 2
+    },
+    "an emoji (one pair)": {
+     "returned": "the text as typed, trimmed",
+     "said": null,
+     "units": 2
+    },
+    "combining marks": {
+     "returned": "the text as typed, trimmed",
+     "said": null,
+     "units": 11
+    }
+   }
+  },
+  "QA-SUB-08.not_shown_after_shown.before": {
+   "after_the_late_report": {
+    "outcome": {
+     "answer": {
+      "latency_ms": 1234,
+      "model": "vision-model",
+      "request_id": "<this request>",
+      "text": "SHOWN, THEN REPORTED NOT SHOWN",
+      "thread_id": "thread-synthetic-1",
+      "turn_id": "turn-synthetic-1"
+     },
+     "status": "answered"
+    },
+    "presentation": "(no such key)",
+    "shown": true
+   },
+   "after_the_report_shown": {
+    "outcome": {
+     "answer": {
+      "latency_ms": 1234,
+      "model": "vision-model",
+      "request_id": "<this request>",
+      "text": "SHOWN, THEN REPORTED NOT SHOWN",
+      "thread_id": "thread-synthetic-1",
+      "turn_id": "turn-synthetic-1"
+     },
+     "status": "answered"
+    },
+    "presentation": "(no such key)",
+    "shown": true
+   },
+   "card_answer": "SHOWN, THEN REPORTED NOT SHOWN",
+   "entries": 1,
+   "late_report_not_shown_answered": {
+    "reason": null,
+    "saved": true
+   },
+   "record_file_unchanged": true,
+   "text_on_device": true
+  },
+  "QA-SUB-08.not_shown_after_shown.released": {
+   "after_the_late_report": {
+    "outcome": {
+     "answer": {
+      "latency_ms": 1234,
+      "model": "vision-model",
+      "request_id": "<this request>",
+      "text": "SHOWN, THEN REPORTED NOT SHOWN",
+      "thread_id": "thread-synthetic-1",
+      "turn_id": "turn-synthetic-1"
+     },
+     "status": "answered"
+    },
+    "presentation": "shown",
+    "shown": true
+   },
+   "after_the_report_shown": {
+    "outcome": {
+     "answer": {
+      "latency_ms": 1234,
+      "model": "vision-model",
+      "request_id": "<this request>",
+      "text": "SHOWN, THEN REPORTED NOT SHOWN",
+      "thread_id": "thread-synthetic-1",
+      "turn_id": "turn-synthetic-1"
+     },
+     "status": "answered"
+    },
+    "presentation": "shown",
+    "shown": true
+   },
+   "card_answer": "SHOWN, THEN REPORTED NOT SHOWN",
+   "entries": 1,
+   "late_report_not_shown_answered": {
+    "reason": null,
+    "saved": true
+   },
+   "record_file_unchanged": true,
+   "text_on_device": true
+  },
+  "QA-SUB-08.outcomes.before": {
+   "entry_keys": "assistance ended_at model outcome question request_id shown submitted_at",
+   "format": "lc-windows-ask/v1",
+   "other_request_s_text_on_device": false,
+   "record_at_the_end": [
+    {
+     "outcome": {
+      "answer": {
+       "latency_ms": 1234,
+       "model": "vision-model",
+       "request_id": "<this request>",
+       "text": "Seen on the card.",
+       "thread_id": "thread-synthetic-1",
+       "turn_id": "turn-synthetic-1"
+      },
+      "status": "answered"
+     },
+     "presentation": "(no such key)",
+     "shown": true
+    },
+    {
+     "outcome": {
+      "code": "quota",
+      "reason": "the subscription's usage limit was reached",
+      "status": "refused"
+     },
+     "presentation": "(no such key)",
+     "shown": false
+    },
+    {
+     "outcome": {
+      "status": "cancelled",
+      "uncertain": false
+     },
+     "presentation": "(no such key)",
+     "shown": false
+    },
+    {
+     "outcome": {
+      "status": "cancelled",
+      "uncertain": true
+     },
+     "presentation": "(no such key)",
+     "shown": false
+    },
+    {
+     "outcome": {
+      "code": "unbound",
+      "reason": "the answer is for another request; it is not shown",
+      "status": "refused"
+     },
+     "presentation": "(no such key)",
+     "shown": false
+    },
+    {
+     "outcome": {
+      "answer": {
+       "latency_ms": 1234,
+       "model": "vision-model",
+       "request_id": "<this request>",
+       "text": "Seen on the card too.",
+       "thread_id": "thread-synthetic-1",
+       "turn_id": "turn-synthetic-1"
+      },
+      "status": "answered"
+     },
+     "presentation": "(no such key)",
+     "shown": true
+    },
+    {
+     "outcome": {
+      "reason": "no answer came; whether ChatGPT worked on the question is not known",
+      "status": "uncertain"
+     },
+     "presentation": "(no such key)",
+     "shown": false
+    }
+   ],
+   "rows": {
+    "a second answer on the same card, shown": {
+     "outcome": {
+      "answer": {
+       "latency_ms": 1234,
+       "model": "vision-model",
+       "request_id": "<this request>",
+       "text": "Seen on the card too.",
+       "thread_id": "thread-synthetic-1",
+       "turn_id": "turn-synthetic-1"
+      },
+      "status": "answered"
+     },
+     "presentation": "(no such key)",
+     "shown": true
+    },
+    "an answer bound to another request (refused)": {
+     "outcome": {
+      "code": "unbound",
+      "reason": "the answer is for another request; it is not shown",
+      "status": "refused"
+     },
+     "presentation": "(no such key)",
+     "shown": false
+    },
+    "answered and shown on the card": {
+     "outcome": {
+      "answer": {
+       "latency_ms": 1234,
+       "model": "vision-model",
+       "request_id": "<this request>",
+       "text": "Seen on the card.",
+       "thread_id": "thread-synthetic-1",
+       "turn_id": "turn-synthetic-1"
+      },
+      "status": "answered"
+     },
+     "presentation": "(no such key)",
+     "shown": true
+    },
+    "asked, no answer yet": {
+     "outcome": null,
+     "presentation": "(no such key)",
+     "shown": false
+    },
+    "cancelled, the interruption confirmed": {
+     "outcome": {
+      "status": "cancelled",
+      "uncertain": false
+     },
+     "presentation": "(no such key)",
+     "shown": false
+    },
+    "cancelled, the interruption not confirmed": {
+     "outcome": {
+      "status": "cancelled",
+      "uncertain": true
+     },
+     "presentation": "(no such key)",
+     "shown": false
+    },
+    "no answer came (uncertain)": {
+     "outcome": {
+      "reason": "no answer came; whether ChatGPT worked on the question is not known",
+      "status": "uncertain"
+     },
+     "presentation": "(no such key)",
+     "shown": false
+    },
+    "refused by the connector (quota)": {
+     "outcome": {
+      "code": "quota",
+      "reason": "the subscription's usage limit was reached",
+      "status": "refused"
+     },
+     "presentation": "(no such key)",
+     "shown": false
+    }
+   },
+   "second_shown_card": {
+    "answer": "Seen on the card too.",
+    "badge": "Selection · answered by ChatGPT below",
+    "status": "Answered by ChatGPT (vision-model) in 1.2 s, about the picture above and your question only."
+   },
+   "shown_card": {
+    "answer": "Seen on the card.",
+    "badge": "Selection · answered by ChatGPT below",
+    "status": "Answered by ChatGPT (vision-model) in 1.2 s, about the picture above and your question only."
+   }
+  },
+  "QA-SUB-08.outcomes.released": {
+   "entry_keys": "assistance ended_at model outcome presentation question request_id shown submitted_at",
+   "format": "lc-windows-ask/v1",
+   "other_request_s_text_on_device": false,
+   "record_at_the_end": [
+    {
+     "outcome": {
+      "answer": {
+       "latency_ms": 1234,
+       "model": "vision-model",
+       "request_id": "<this request>",
+       "text": "Seen on the card.",
+       "thread_id": "thread-synthetic-1",
+       "turn_id": "turn-synthetic-1"
+      },
+      "status": "answered"
+     },
+     "presentation": "shown",
+     "shown": true
+    },
+    {
+     "outcome": {
+      "code": "quota",
+      "reason": "the subscription's usage limit was reached",
+      "status": "refused"
+     },
+     "presentation": "(no such key)",
+     "shown": false
+    },
+    {
+     "outcome": {
+      "status": "cancelled",
+      "uncertain": false
+     },
+     "presentation": "(no such key)",
+     "shown": false
+    },
+    {
+     "outcome": {
+      "status": "cancelled",
+      "uncertain": true
+     },
+     "presentation": "(no such key)",
+     "shown": false
+    },
+    {
+     "outcome": {
+      "code": "unbound",
+      "reason": "the answer is for another request; it is not shown",
+      "status": "refused"
+     },
+     "presentation": "(no such key)",
+     "shown": false
+    },
+    {
+     "outcome": {
+      "answer": {
+       "latency_ms": 1234,
+       "model": "vision-model",
+       "request_id": "<this request>",
+       "text": "Seen on the card too.",
+       "thread_id": "thread-synthetic-1",
+       "turn_id": "turn-synthetic-1"
+      },
+      "status": "answered"
+     },
+     "presentation": "shown",
+     "shown": true
+    },
+    {
+     "outcome": {
+      "reason": "no answer came; whether ChatGPT worked on the question is not known",
+      "status": "uncertain"
+     },
+     "presentation": "(no such key)",
+     "shown": false
+    }
+   ],
+   "rows": {
+    "a second answer on the same card, shown": {
+     "outcome": {
+      "answer": {
+       "latency_ms": 1234,
+       "model": "vision-model",
+       "request_id": "<this request>",
+       "text": "Seen on the card too.",
+       "thread_id": "thread-synthetic-1",
+       "turn_id": "turn-synthetic-1"
+      },
+      "status": "answered"
+     },
+     "presentation": "shown",
+     "shown": true
+    },
+    "an answer bound to another request (refused)": {
+     "outcome": {
+      "code": "unbound",
+      "reason": "the answer is for another request; it is not shown",
+      "status": "refused"
+     },
+     "presentation": "(no such key)",
+     "shown": false
+    },
+    "answered and shown on the card": {
+     "outcome": {
+      "answer": {
+       "latency_ms": 1234,
+       "model": "vision-model",
+       "request_id": "<this request>",
+       "text": "Seen on the card.",
+       "thread_id": "thread-synthetic-1",
+       "turn_id": "turn-synthetic-1"
+      },
+      "status": "answered"
+     },
+     "presentation": "shown",
+     "shown": true
+    },
+    "asked, no answer yet": {
+     "outcome": null,
+     "presentation": "(no such key)",
+     "shown": false
+    },
+    "cancelled, the interruption confirmed": {
+     "outcome": {
+      "status": "cancelled",
+      "uncertain": false
+     },
+     "presentation": "(no such key)",
+     "shown": false
+    },
+    "cancelled, the interruption not confirmed": {
+     "outcome": {
+      "status": "cancelled",
+      "uncertain": true
+     },
+     "presentation": "(no such key)",
+     "shown": false
+    },
+    "no answer came (uncertain)": {
+     "outcome": {
+      "reason": "no answer came; whether ChatGPT worked on the question is not known",
+      "status": "uncertain"
+     },
+     "presentation": "(no such key)",
+     "shown": false
+    },
+    "refused by the connector (quota)": {
+     "outcome": {
+      "code": "quota",
+      "reason": "the subscription's usage limit was reached",
+      "status": "refused"
+     },
+     "presentation": "(no such key)",
+     "shown": false
+    }
+   },
+   "second_shown_card": {
+    "answer": "Seen on the card too.",
+    "badge": "Selection · answered by ChatGPT below",
+    "status": "Answered by ChatGPT (vision-model) in 1.2 s, about the picture above and your question only."
+   },
+   "shown_card": {
+    "answer": "Seen on the card.",
+    "badge": "Selection · answered by ChatGPT below",
+    "status": "Answered by ChatGPT (vision-model) in 1.2 s, about the picture above and your question only."
+   }
+  },
+  "QA-SUB-08.unreported.closed.before": {
+   "after": {
+    "outcome": {
+     "status": "cancelled",
+     "uncertain": true
+    },
+    "presentation": "(no such key)",
+    "shown": false
+   },
+   "after_the_late_report": {
+    "outcome": {
+     "status": "cancelled",
+     "uncertain": true
+    },
+    "presentation": "(no such key)",
+    "shown": false
+   },
+   "connector_calls": "connection/read ask/start",
+   "in_transit": {
+    "card_shows_an_answer": false,
+    "outcome": {
+     "answer": {
+      "latency_ms": 1234,
+      "model": "vision-model",
+      "request_id": "<this request>",
+      "text": "TEXT NOBODY REPORTED (closed)",
+      "thread_id": "thread-synthetic-1",
+      "turn_id": "turn-synthetic-1"
+     },
+     "status": "answered"
+    },
+    "presentation": "(no such key)",
+    "shown": false
+   },
+   "late_report_answered": {
+    "reason": null,
+    "saved": true
+   },
+   "session_ended": null,
+   "text_on_device": false
+  },
+  "QA-SUB-08.unreported.closed.released": {
+   "after": {
+    "outcome": {
+     "status": "cancelled",
+     "uncertain": true
+    },
+    "presentation": "(no such key)",
+    "shown": false
+   },
+   "after_the_late_report": {
+    "outcome": {
+     "status": "cancelled",
+     "uncertain": true
+    },
+    "presentation": "(no such key)",
+    "shown": false
+   },
+   "connector_calls": "connection/read ask/start",
+   "in_transit": {
+    "card_shows_an_answer": false,
+    "outcome": {
+     "answer": {
+      "latency_ms": 1234,
+      "model": "vision-model",
+      "request_id": "<this request>",
+      "text": "TEXT NOBODY REPORTED (closed)",
+      "thread_id": "thread-synthetic-1",
+      "turn_id": "turn-synthetic-1"
+     },
+     "status": "answered"
+    },
+    "presentation": "unconfirmed",
+    "shown": false
+   },
+   "late_report_answered": {
+    "reason": null,
+    "saved": true
+   },
+   "session_ended": null,
+   "text_on_device": false
+  },
+  "QA-SUB-08.unreported.lost.before": {
+   "after": {
+    "outcome": {
+     "answer": {
+      "latency_ms": 1234,
+      "model": "vision-model",
+      "request_id": "<this request>",
+      "text": "TEXT NOBODY REPORTED (lost)",
+      "thread_id": "thread-synthetic-1",
+      "turn_id": "turn-synthetic-1"
+     },
+     "status": "answered"
+    },
+    "presentation": "(no such key)",
+    "shown": false
+   },
+   "after_the_late_report": {
+    "outcome": {
+     "answer": {
+      "latency_ms": 1234,
+      "model": "vision-model",
+      "request_id": "<this request>",
+      "text": "TEXT NOBODY REPORTED (lost)",
+      "thread_id": "thread-synthetic-1",
+      "turn_id": "turn-synthetic-1"
+     },
+     "status": "answered"
+    },
+    "presentation": "(no such key)",
+    "shown": false
+   },
+   "connector_calls": "connection/read ask/start session/stop",
+   "in_transit": {
+    "card_shows_an_answer": false,
+    "outcome": {
+     "answer": {
+      "latency_ms": 1234,
+      "model": "vision-model",
+      "request_id": "<this request>",
+      "text": "TEXT NOBODY REPORTED (lost)",
+      "thread_id": "thread-synthetic-1",
+      "turn_id": "turn-synthetic-1"
+     },
+     "status": "answered"
+    },
+    "presentation": "(no such key)",
+    "shown": false
+   },
+   "late_report_answered": {
+    "reason": "refused",
+    "saved": false
+   },
+   "session_ended": "the overlay stopped working (crashed). The overlay stopped working (crashed) before confirming that its newest ink was saved",
+   "text_on_device": true
+  },
+  "QA-SUB-08.unreported.lost.released": {
+   "after": {
+    "outcome": {
+     "answer": {
+      "latency_ms": 1234,
+      "model": "vision-model",
+      "request_id": "<this request>",
+      "text": "TEXT NOBODY REPORTED (lost)",
+      "thread_id": "thread-synthetic-1",
+      "turn_id": "turn-synthetic-1"
+     },
+     "status": "answered"
+    },
+    "presentation": "unconfirmed",
+    "shown": false
+   },
+   "after_the_late_report": {
+    "outcome": {
+     "answer": {
+      "latency_ms": 1234,
+      "model": "vision-model",
+      "request_id": "<this request>",
+      "text": "TEXT NOBODY REPORTED (lost)",
+      "thread_id": "thread-synthetic-1",
+      "turn_id": "turn-synthetic-1"
+     },
+     "status": "answered"
+    },
+    "presentation": "unconfirmed",
+    "shown": false
+   },
+   "connector_calls": "connection/read ask/start session/stop",
+   "in_transit": {
+    "card_shows_an_answer": false,
+    "outcome": {
+     "answer": {
+      "latency_ms": 1234,
+      "model": "vision-model",
+      "request_id": "<this request>",
+      "text": "TEXT NOBODY REPORTED (lost)",
+      "thread_id": "thread-synthetic-1",
+      "turn_id": "turn-synthetic-1"
+     },
+     "status": "answered"
+    },
+    "presentation": "unconfirmed",
+    "shown": false
+   },
+   "late_report_answered": {
+    "reason": "refused",
+    "saved": false
+   },
+   "session_ended": "the overlay stopped working (crashed). The overlay stopped working (crashed) before confirming that its newest ink was saved",
+   "text_on_device": true
+  },
+  "QA-SUB-08.unreported.replaced.before": {
+   "after": {
+    "outcome": {
+     "status": "cancelled",
+     "uncertain": true
+    },
+    "presentation": "(no such key)",
+    "shown": false
+   },
+   "after_the_late_report": {
+    "outcome": {
+     "status": "cancelled",
+     "uncertain": true
+    },
+    "presentation": "(no such key)",
+    "shown": false
+   },
+   "connector_calls": "connection/read ask/start",
+   "in_transit": {
+    "card_shows_an_answer": false,
+    "outcome": {
+     "answer": {
+      "latency_ms": 1234,
+      "model": "vision-model",
+      "request_id": "<this request>",
+      "text": "TEXT NOBODY REPORTED (replaced)",
+      "thread_id": "thread-synthetic-1",
+      "turn_id": "turn-synthetic-1"
+     },
+     "status": "answered"
+    },
+    "presentation": "(no such key)",
+    "shown": false
+   },
+   "late_report_answered": {
+    "reason": null,
+    "saved": true
+   },
+   "session_ended": null,
+   "text_on_device": false
+  },
+  "QA-SUB-08.unreported.replaced.released": {
+   "after": {
+    "outcome": {
+     "status": "cancelled",
+     "uncertain": true
+    },
+    "presentation": "(no such key)",
+    "shown": false
+   },
+   "after_the_late_report": {
+    "outcome": {
+     "status": "cancelled",
+     "uncertain": true
+    },
+    "presentation": "(no such key)",
+    "shown": false
+   },
+   "connector_calls": "connection/read ask/start",
+   "in_transit": {
+    "card_shows_an_answer": false,
+    "outcome": {
+     "answer": {
+      "latency_ms": 1234,
+      "model": "vision-model",
+      "request_id": "<this request>",
+      "text": "TEXT NOBODY REPORTED (replaced)",
+      "thread_id": "thread-synthetic-1",
+      "turn_id": "turn-synthetic-1"
+     },
+     "status": "answered"
+    },
+    "presentation": "unconfirmed",
+    "shown": false
+   },
+   "late_report_answered": {
+    "reason": null,
+    "saved": true
+   },
+   "session_ended": null,
+   "text_on_device": false
+  },
+  "QA-SUB-08.unreported.said_not_shown.before": {
+   "after": {
+    "outcome": {
+     "status": "cancelled",
+     "uncertain": true
+    },
+    "presentation": "(no such key)",
+    "shown": false
+   },
+   "after_the_late_report": {
+    "outcome": {
+     "status": "cancelled",
+     "uncertain": true
+    },
+    "presentation": "(no such key)",
+    "shown": false
+   },
+   "connector_calls": "connection/read ask/start",
+   "in_transit": {
+    "card_shows_an_answer": false,
+    "outcome": {
+     "answer": {
+      "latency_ms": 1234,
+      "model": "vision-model",
+      "request_id": "<this request>",
+      "text": "TEXT NOBODY REPORTED (said_not_shown)",
+      "thread_id": "thread-synthetic-1",
+      "turn_id": "turn-synthetic-1"
+     },
+     "status": "answered"
+    },
+    "presentation": "(no such key)",
+    "shown": false
+   },
+   "late_report_answered": {
+    "reason": null,
+    "saved": true
+   },
+   "session_ended": null,
+   "text_on_device": false
+  },
+  "QA-SUB-08.unreported.said_not_shown.released": {
+   "after": {
+    "outcome": {
+     "status": "cancelled",
+     "uncertain": true
+    },
+    "presentation": "(no such key)",
+    "shown": false
+   },
+   "after_the_late_report": {
+    "outcome": {
+     "status": "cancelled",
+     "uncertain": true
+    },
+    "presentation": "(no such key)",
+    "shown": false
+   },
+   "connector_calls": "connection/read ask/start",
+   "in_transit": {
+    "card_shows_an_answer": false,
+    "outcome": {
+     "answer": {
+      "latency_ms": 1234,
+      "model": "vision-model",
+      "request_id": "<this request>",
+      "text": "TEXT NOBODY REPORTED (said_not_shown)",
+      "thread_id": "thread-synthetic-1",
+      "turn_id": "turn-synthetic-1"
+     },
+     "status": "answered"
+    },
+    "presentation": "unconfirmed",
+    "shown": false
+   },
+   "late_report_answered": {
+    "reason": null,
+    "saved": true
+   },
+   "session_ended": null,
+   "text_on_device": false
+  },
+  "QA-SUB-08.unreported.stop_bound.before": {
+   "after": {
+    "outcome": {
+     "answer": {
+      "latency_ms": 1234,
+      "model": "vision-model",
+      "request_id": "<this request>",
+      "text": "TEXT NOBODY REPORTED (stop_bound)",
+      "thread_id": "thread-synthetic-1",
+      "turn_id": "turn-synthetic-1"
+     },
+     "status": "answered"
+    },
+    "presentation": "(no such key)",
+    "shown": false
+   },
+   "after_the_late_report": {
+    "outcome": {
+     "answer": {
+      "latency_ms": 1234,
+      "model": "vision-model",
+      "request_id": "<this request>",
+      "text": "TEXT NOBODY REPORTED (stop_bound)",
+      "thread_id": "thread-synthetic-1",
+      "turn_id": "turn-synthetic-1"
+     },
+     "status": "answered"
+    },
+    "presentation": "(no such key)",
+    "shown": false
+   },
+   "connector_calls": "connection/read ask/start session/stop",
+   "in_transit": {
+    "card_shows_an_answer": false,
+    "outcome": {
+     "answer": {
+      "latency_ms": 1234,
+      "model": "vision-model",
+      "request_id": "<this request>",
+      "text": "TEXT NOBODY REPORTED (stop_bound)",
+      "thread_id": "thread-synthetic-1",
+      "turn_id": "turn-synthetic-1"
+     },
+     "status": "answered"
+    },
+    "presentation": "(no such key)",
+    "shown": false
+   },
+   "late_report_answered": {
+    "reason": "refused",
+    "saved": false
+   },
+   "session_ended": "stopped by the user. The overlay did not confirm that its newest ink was saved",
+   "text_on_device": true,
+   "while_stopping_running_ending": [
+    true,
+    true
+   ]
+  },
+  "QA-SUB-08.unreported.stop_bound.released": {
+   "after": {
+    "outcome": {
+     "answer": {
+      "latency_ms": 1234,
+      "model": "vision-model",
+      "request_id": "<this request>",
+      "text": "TEXT NOBODY REPORTED (stop_bound)",
+      "thread_id": "thread-synthetic-1",
+      "turn_id": "turn-synthetic-1"
+     },
+     "status": "answered"
+    },
+    "presentation": "unconfirmed",
+    "shown": false
+   },
+   "after_the_late_report": {
+    "outcome": {
+     "answer": {
+      "latency_ms": 1234,
+      "model": "vision-model",
+      "request_id": "<this request>",
+      "text": "TEXT NOBODY REPORTED (stop_bound)",
+      "thread_id": "thread-synthetic-1",
+      "turn_id": "turn-synthetic-1"
+     },
+     "status": "answered"
+    },
+    "presentation": "unconfirmed",
+    "shown": false
+   },
+   "connector_calls": "connection/read ask/start session/stop",
+   "in_transit": {
+    "card_shows_an_answer": false,
+    "outcome": {
+     "answer": {
+      "latency_ms": 1234,
+      "model": "vision-model",
+      "request_id": "<this request>",
+      "text": "TEXT NOBODY REPORTED (stop_bound)",
+      "thread_id": "thread-synthetic-1",
+      "turn_id": "turn-synthetic-1"
+     },
+     "status": "answered"
+    },
+    "presentation": "unconfirmed",
+    "shown": false
+   },
+   "late_report_answered": {
+    "reason": "refused",
+    "saved": false
+   },
+   "session_ended": "stopped by the user. The overlay did not confirm that its newest ink was saved",
+   "text_on_device": true,
+   "while_stopping_running_ending": [
+    true,
+    true
+   ]
+  },
+  "QA-SUB-08.unreported.stop_confirmed.before": {
+   "after": {
+    "outcome": {
+     "answer": {
+      "latency_ms": 1234,
+      "model": "vision-model",
+      "request_id": "<this request>",
+      "text": "TEXT NOBODY REPORTED (stop_confirmed)",
+      "thread_id": "thread-synthetic-1",
+      "turn_id": "turn-synthetic-1"
+     },
+     "status": "answered"
+    },
+    "presentation": "(no such key)",
+    "shown": false
+   },
+   "after_the_late_report": {
+    "outcome": {
+     "answer": {
+      "latency_ms": 1234,
+      "model": "vision-model",
+      "request_id": "<this request>",
+      "text": "TEXT NOBODY REPORTED (stop_confirmed)",
+      "thread_id": "thread-synthetic-1",
+      "turn_id": "turn-synthetic-1"
+     },
+     "status": "answered"
+    },
+    "presentation": "(no such key)",
+    "shown": false
+   },
+   "connector_calls": "connection/read ask/start session/stop",
+   "in_transit": {
+    "card_shows_an_answer": false,
+    "outcome": {
+     "answer": {
+      "latency_ms": 1234,
+      "model": "vision-model",
+      "request_id": "<this request>",
+      "text": "TEXT NOBODY REPORTED (stop_confirmed)",
+      "thread_id": "thread-synthetic-1",
+      "turn_id": "turn-synthetic-1"
+     },
+     "status": "answered"
+    },
+    "presentation": "(no such key)",
+    "shown": false
+   },
+   "late_report_answered": {
+    "reason": "refused",
+    "saved": false
+   },
+   "session_ended": "stopped by the user",
+   "text_on_device": true
+  },
+  "QA-SUB-08.unreported.stop_confirmed.released": {
+   "after": {
+    "outcome": {
+     "answer": {
+      "latency_ms": 1234,
+      "model": "vision-model",
+      "request_id": "<this request>",
+      "text": "TEXT NOBODY REPORTED (stop_confirmed)",
+      "thread_id": "thread-synthetic-1",
+      "turn_id": "turn-synthetic-1"
+     },
+     "status": "answered"
+    },
+    "presentation": "unconfirmed",
+    "shown": false
+   },
+   "after_the_late_report": {
+    "outcome": {
+     "answer": {
+      "latency_ms": 1234,
+      "model": "vision-model",
+      "request_id": "<this request>",
+      "text": "TEXT NOBODY REPORTED (stop_confirmed)",
+      "thread_id": "thread-synthetic-1",
+      "turn_id": "turn-synthetic-1"
+     },
+     "status": "answered"
+    },
+    "presentation": "unconfirmed",
+    "shown": false
+   },
+   "connector_calls": "connection/read ask/start session/stop",
+   "in_transit": {
+    "card_shows_an_answer": false,
+    "outcome": {
+     "answer": {
+      "latency_ms": 1234,
+      "model": "vision-model",
+      "request_id": "<this request>",
+      "text": "TEXT NOBODY REPORTED (stop_confirmed)",
+      "thread_id": "thread-synthetic-1",
+      "turn_id": "turn-synthetic-1"
+     },
+     "status": "answered"
+    },
+    "presentation": "unconfirmed",
+    "shown": false
+   },
+   "late_report_answered": {
+    "reason": "refused",
+    "saved": false
+   },
+   "session_ended": "stopped by the user",
+   "text_on_device": true
+  },
+  "QA-SUB-08.unwritten_notice.before": {
+   "file_after_the_next_start": {
+    "outcome": {
+     "answer": {
+      "latency_ms": 1234,
+      "model": "vision-model",
+      "request_id": "<this request>",
+      "text": "UNWRITTEN AND UNREPORTED",
+      "thread_id": "thread-synthetic-1",
+      "turn_id": "turn-synthetic-1"
+     },
+     "status": "answered"
+    },
+    "presentation": "(no such key)",
+    "shown": false
+   },
+   "file_while_unwritten": {
+    "outcome": null,
+    "presentation": "(no such key)",
+    "shown": false
+   },
+   "session_ended": "the overlay stopped working (crashed). The overlay stopped working (crashed) before confirming that its newest ink was saved. How 1 question(s) to ChatGPT ended (an answer included, if one was shown) could not be written to this device (Error: EIO: i/o error (injected)); the selections and their pictures are kept, without that outcome, and writing it is tried again at the next Start and when the app closes"
+  },
+  "QA-SUB-08.unwritten_notice.released": {
+   "file_after_the_next_start": {
+    "outcome": {
+     "answer": {
+      "latency_ms": 1234,
+      "model": "vision-model",
+      "request_id": "<this request>",
+      "text": "UNWRITTEN AND UNREPORTED",
+      "thread_id": "thread-synthetic-1",
+      "turn_id": "turn-synthetic-1"
+     },
+     "status": "answered"
+    },
+    "presentation": "unconfirmed",
+    "shown": false
+   },
+   "file_while_unwritten": {
+    "outcome": null,
+    "presentation": "(no such key)",
+    "shown": false
+   },
+   "session_ended": "the overlay stopped working (crashed). The overlay stopped working (crashed) before confirming that its newest ink was saved. How 1 question(s) to ChatGPT ended (an answer included, if one was shown or may have been) could not be written to this device (Error: EIO: i/o error (injected)); the selections and their pictures are kept, without that outcome, and writing it is tried again at the next Start and when the app closes"
+  },
+  "source": {
+   "before": {
+    "apps/safari-extension/src/ink.ts": "a42551fa8e2a9a33d6aa0b03049a05c75e10a46e",
+    "apps/safari-extension/src/mode.ts": "487b0345b4214cfbfc630d49bcd1eff8555081b2",
+    "apps/windows/src/main/main.ts": "540dc69763a5f50fd74c77e38b933d57f6a4711d",
+    "apps/windows/src/main/subscription.ts": "aada581d2bca4d4fac1e3be6da4abd39c7488c8f",
+    "apps/windows/src/renderer/overlay.ts": "885987d7dc6e9c7bc34e271e643fed023573c2fa",
+    "apps/windows/src/shared/subscription-ask.ts": "ec1294e267c5feaa5326ec83c6300b340f19b18b",
+    "apps/windows/tests/main-harness.ts": "6ec0d0153d8cf9a99f53d75cae2768f6aab346a7",
+    "apps/windows/tests/overlay-page.ts": "506a6837fd84225b62e75129751222f5a1e4df98",
+    "apps/windows/tests/subscription-fakes.ts": "a05b27f98ddb1ef377d9e8761cd934037467b93e"
+   },
+   "differing_between_first_release_and_released": [
+    "apps/windows/src/main/subscription.ts",
+    "apps/windows/tests/app-ask.test.ts",
+    "apps/windows/tests/subscription.test.ts"
+   ],
+   "files_compared_with_their_blob": {
+    "before": 77,
+    "first_release": 77,
+    "mixed": 77,
+    "released": 77
+   },
+   "files_differing_between_before_and_first_release": 10,
+   "first_release": {
+    "apps/safari-extension/src/ink.ts": "a42551fa8e2a9a33d6aa0b03049a05c75e10a46e",
+    "apps/safari-extension/src/mode.ts": "487b0345b4214cfbfc630d49bcd1eff8555081b2",
+    "apps/windows/src/main/main.ts": "12282c4a16cdfc0cc0a408ec344686e1de3051f4",
+    "apps/windows/src/main/subscription.ts": "deed8b2cd84d811fd4014298b5365d95e3858169",
+    "apps/windows/src/renderer/overlay.ts": "bde7e2aeb7e656877c9eb05866d6945f58b512a7",
+    "apps/windows/src/shared/subscription-ask.ts": "80c6a44f9d4f195eb88368ef974acf79d1e894da",
+    "apps/windows/tests/main-harness.ts": "cc7a33d93d4931f5566ede347683335050113ae4",
+    "apps/windows/tests/overlay-page.ts": "07ffeef6efefd85a34ed725d965fdcdcb00397de",
+    "apps/windows/tests/subscription-fakes.ts": "6b114dcf06b0052bfde886a168c6c69f99a0afc8"
+   },
+   "released": {
+    "apps/safari-extension/src/ink.ts": "a42551fa8e2a9a33d6aa0b03049a05c75e10a46e",
+    "apps/safari-extension/src/mode.ts": "487b0345b4214cfbfc630d49bcd1eff8555081b2",
+    "apps/windows/src/main/main.ts": "12282c4a16cdfc0cc0a408ec344686e1de3051f4",
+    "apps/windows/src/main/subscription.ts": "5cd830c25fe9ef415bec5420f10eed435d026c92",
+    "apps/windows/src/renderer/overlay.ts": "bde7e2aeb7e656877c9eb05866d6945f58b512a7",
+    "apps/windows/src/shared/subscription-ask.ts": "80c6a44f9d4f195eb88368ef974acf79d1e894da",
+    "apps/windows/tests/main-harness.ts": "cc7a33d93d4931f5566ede347683335050113ae4",
+    "apps/windows/tests/overlay-page.ts": "07ffeef6efefd85a34ed725d965fdcdcb00397de",
+    "apps/windows/tests/subscription-fakes.ts": "6b114dcf06b0052bfde886a168c6c69f99a0afc8"
+   }
+  }
+ },
+ "result": {
+  "failed": [],
+  "passed": 21,
+  "tests": 21
+ },
+ "trees": {
+  "before": {
+   "apps/windows": "5bda4761eaef62814a7f376a6e1147246d48bf3f",
+   "packages": "b53b166330a8e15cfd4130110496694e0086436e",
+   "pyproject.toml": "7555c8084b4cf8e9b69db7fac9e4ce92d23b2f75",
+   "services": "93ddc49b82a900bbe251d04ae587ca45204732a5"
+  },
+  "first_release": {
+   "apps/windows": "06c3b93b4855a8a0a5d803a348818303b1c1182e",
+   "packages": "b53b166330a8e15cfd4130110496694e0086436e",
+   "pyproject.toml": "7555c8084b4cf8e9b69db7fac9e4ce92d23b2f75",
+   "services": "57b8d95a52c83ec27f5ec1c58d00eee6355d554a"
+  },
+  "released": {
+   "apps/windows": "8c3e2b4d1e5b87a508cae5bfc0c6277ffc4e8322",
+   "packages": "b53b166330a8e15cfd4130110496694e0086436e",
+   "pyproject.toml": "7555c8084b4cf8e9b69db7fac9e4ce92d23b2f75",
+   "services": "57b8d95a52c83ec27f5ec1c58d00eee6355d554a"
+  }
+ }
+}
