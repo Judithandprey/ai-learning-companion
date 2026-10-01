@@ -309,7 +309,11 @@ const selectSurface = [click('[data-mode=ASK]'), pen(SURFACE_ASK.slice(0, -2), {
     while (Date.now() < end && (__lcOverlay.state().frame === null || __lcOverlay.state().frame === first)) await new Promise((r) => setTimeout(r, 25));
     return JSON.stringify({ a_new_frame_came: __lcOverlay.state().frame !== first }); })()`),
   pen(SURFACE_ASK.slice(-3), { continue: true }), cardShown];
-const QUESTION_FOCUS = "(() => { const q = document.getElementById('question'); return JSON.stringify({ value: q.value, active: document.activeElement === q, has_focus: document.hasFocus(), disabled: q.disabled, selection: [q.selectionStart, q.selectionEnd], inputs: window.__qaInputs || null }); })()";
+const QUESTION_FOCUS = "(() => { const q = document.getElementById('question'); return JSON.stringify({ value: q.value, active: document.activeElement === q, has_focus: document.hasFocus(), disabled: q.disabled, selection: [q.selectionStart, q.selectionEnd], inputs: window.__qaInputs || null, mouse: window.__qaMouse || null }); })()";
+// What the question box sees of the mouse (how many presses one OS click becomes, and the click count the page gives it).
+const QUESTION_MOUSE_LOG = overlay(`(() => { const q = document.getElementById('question'); window.__qaMouse = [];
+  for (const type of ['mousedown', 'mouseup', 'click', 'dblclick']) q.addEventListener(type, (e) => window.__qaMouse.push({ type, count: e.detail, button: e.button, at_ms: Math.round(performance.now()) }));
+  return true; })()`);
 // What the question box is told while keys arrive (the kind of each change and its text, and whether an input method composes).
 const QUESTION_INPUT_LOG = overlay(`(() => { const q = document.getElementById('question'); window.__qaInputs = [];
   for (const type of ['beforeinput', 'compositionstart', 'compositionend']) q.addEventListener(type, (e) => window.__qaInputs.push({ type, input: e.inputType ?? null, data: e.data ?? null, selection: [q.selectionStart, q.selectionEnd] }));
@@ -758,6 +762,27 @@ export const scenarios = {
     ...Array.from({ length: 16 }, (_, i) => [...(i % 2 ? [subCheck] : []), click('[data-mode=ASK]'), pen(SURFACE_ASK), cardShown, askHook,
       { ...formReady, timeoutMs: 6000, required: false, as: `ready_${i}` }, ...(i === 0 ? [pictureIsSurface('picture_0', [])] : []), askRead(`sel_${i}`), subNow(`f_sel_${i}`), click('#close'), { sleep: i % 4 === 3 ? 1200 : 150 }]).flat(),
     ...stopSession('s1_stopped'), subEvents('sub_events'), timeline('timeline'), hashesS('final'),
+    { closeApp: true, via: 'wm_close' },
+  ],
+
+  // PROBE with QA's stand-in bridge, asking nothing: six times ONE OS mouse click on the question box (each more than 2 s
+  // after the one before, so they are separate clicks), then two OS digit keys. For each: how many presses the box saw,
+  // where the caret or selection was, and what the box held after the keys.
+  subtype: (p) => [
+    { edgeStart: p.surfaceUrl, profile: p.edgeProfile, as: 'edge', fullscreen: true }, ...surfaceOpen,
+    waitDisplays, surfaceTruth('surface_truth'), { closeApp: true },
+    { launchApp: true, as: 'app-fake', sub: 'fake' }, waitDisplays, inkHook, subHook, { sleep: 2500 },
+    subCheck, subUntil("s.state !== 'not_checked' && s.state !== 'checking'", 'f_checked'), subNow('f_signed_in'),
+    ...startSession('s1'), { sleep: 2500 }, ...selectSurface, askHook, ...formReadyOr('typing'), pictureIsSurface('picture_typing', []),
+    QUESTION_INPUT_LOG, QUESTION_MOUSE_LOG,
+    ...Array.from({ length: 6 }, (_, i) => [
+      overlay("(() => { const q = document.getElementById('question'); q.value = 'Explain what is selected.'; q.blur(); window.__qaInputs.length = 0; window.__qaMouse.length = 0; return true; })()"),
+      { sleep: 700 }, { osClick: '#question', target: 'overlay', window: 'overlay', required: false }, { sleep: 400 },
+      overlay(QUESTION_FOCUS, `t_click_${i}`),
+      { keys: '42', window: 'overlay', required: false }, { sleep: 400 },
+      overlay(QUESTION_FOCUS, `t_typed_${i}`),
+      { cursorBack: true, required: false }, { sleep: 900 }]).flat(),
+    click('#close'), ...stopSession('s1_stopped'), subNow('f_final'), subEvents('sub_events'), hashesS('final'),
     { closeApp: true, via: 'wm_close' },
   ],
 

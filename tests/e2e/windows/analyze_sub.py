@@ -423,6 +423,33 @@ elif SCENARIO == "subselect":
           f"{len(refused)} of {len(rows)} selections of the same region, with a retained frame and valid ink, were refused by the app with the status shown; nothing was asked in this probe")
     release("app-fake", 1)
 
+# =================================================================== subtype: one OS click and two digit keys, six times
+elif SCENARIO == "subtype":
+    clicks = [s for s in steps if s.get("kind") == "osClick"]
+    keysteps = [s for s in steps if s.get("kind") == "keys"]
+    rows = []
+    for i in range(6):
+        a, b = D(f"t_click_{i}"), D(f"t_typed_{i}")
+        c, k = (clicks + [{}] * 6)[i], (keysteps + [{}] * 6)[i]
+        downs = [m for m in as_list(a.get("mouse")) if m.get("type") == "mousedown"]
+        rows.append({"n": i, "clicked": c.get("clicked"), "overlay_foreground_after": c.get("foreground_after"), "box_focused": a.get("active"), "presses_the_box_saw": len(downs),
+                     "click_count_the_page_gave": max([m.get("count", 0) for m in downs], default=None), "double_click_event": any(m.get("type") == "dblclick" for m in as_list(a.get("mouse"))),
+                     "selection_after_click": a.get("selection"), "keys_sent": k.get("sent"), "box_after_keys": b.get("value"),
+                     "typed_text_is_in_the_box": "42" in str(b.get("value")), "text_that_was_there_is_kept_whole": "Explain what is selected." in str(b.get("value"))})
+    typed = len(rows) == 6 and len(clicks) == 6 and all(r["clicked"] is True and r["box_focused"] is True and r["keys_sent"] is True and r["typed_text_is_in_the_box"] for r in rows)
+    whole = sum(1 for r in rows if r["text_that_was_there_is_kept_whole"])
+    check("probe.one_os_click_then_keys_reach_the_question_box", "pass" if typed else "fail",
+          {"clicks": len(clicks), "each": rows, "kept_the_text_whole": whole, "left_a_selection": sum(1 for r in rows if r["selection_after_click"] and r["selection_after_click"][0] != r["selection_after_click"][1]),
+           "saw_more_than_one_press": sum(1 for r in rows if r["presses_the_box_saw"] > 1 or (r["click_count_the_page_gave"] or 0) > 1)},
+          "each of six separate OS clicks focused the question box and the two digits typed after it are in the box (synthetic OS input)" if typed else
+          "at least one OS click did not focus the box, or its digits are not in the box: see each")
+    check("probe.a_click_leaves_the_text_that_was_there", "pass" if typed and whole == 6 else "limit",
+          {"kept_whole": whole, "of": len(rows)},
+          "after every click the caret was a plain caret and the typed digits were added to the text" if typed and whole == 6 else
+          f"in {len(rows) - whole} of {len(rows)} clicks the text that was there did not stay whole: the click left characters selected and the first key replaced them (see each: the presses "
+          "the box saw and the click count the page gave). Whether a physical mouse does the same is not shown; not judged")
+    release("app-fake", 1)
+
 # =================================================================== subcheck: the real connector, no question
 elif SCENARIO == "subcheck":
     check("run.real_connector", "pass" if REAL else "fail", {k: SUB.get(k) for k in ("kind", "python", "state_dir", "codex_bin", "source", "copy_is_the_commits_services_and_packages", "copy_files", "ask_path", "connector_files_sha256", "wsl")},

@@ -18,7 +18,7 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 // copyFile can fail with EPERM on the Windows drive mount; write the bytes instead.
 const copyFileSync = (from, to) => writeFileSync(to, readFileSync(from));
 const [scenario, outArg] = process.argv.slice(2);
-if (!scenarios[scenario] || !outArg) throw new Error('usage: run.mjs <smoke|full|ink|parent|parentquit|parentfix|parentwin05|surfacecheck|subcontrols|subselect|subrehearsal|subcheck|subask> <out dir>');
+if (!scenarios[scenario] || !outArg) throw new Error('usage: run.mjs <smoke|full|ink|parent|parentquit|parentfix|parentwin05|surfacecheck|subcontrols|subselect|subtype|subrehearsal|subcheck|subask> <out dir>');
 const out = resolve(outArg);
 const run = (cmd, argv) => execFileSync(cmd, argv, { encoding: 'utf8', cwd: '/mnt/c' }).trim();
 const toWin = (p) => run('wslpath', ['-w', p]);
@@ -86,7 +86,7 @@ if (parent) {
 //                An allocation is used ONCE: a ledger file outside the run folders records each run made under it and
 //                whether Ask was pressed. Another run under the same id starts only if every earlier one provably
 //                stopped before the press (the press step never ran and the app recorded no request).
-//   subselect    a probe with the stand-in bridge that asks nothing.
+//   subselect    a probe with the stand-in bridge that asks nothing; subtype: the same for OS clicks and keys on the question box.
 //   subrehearsal the steps of subask with the stand-in bridge: a rehearsal, no real connector, no allowance.
 // QA never signs in, opens no browser and reads no auth file; after a real turn only the authorized receipt of each
 // request this run made is copied (receipts/<launch>/<sha256(request_id)>.json).
@@ -105,7 +105,7 @@ if (sub) {
   const wsl = { distribution: 'Ubuntu', user: 'agentsdock', distributions_listed: distros, this_user: userInfo().username };
   if (!distros.includes(wsl.distribution) || wsl.this_user !== wsl.user) throw new Error(`the WSL distribution or user is not the documented one: ${JSON.stringify(wsl)}`);
   const config = (launch, state_dir, codex_bin) => JSON.stringify({ format: 'lc-windows-subscription-connector/v1', launch: { kind: 'wsl', distribution: wsl.distribution, user: wsl.user, ...launch }, state_dir, codex_bin });
-  if (['subcontrols', 'subselect', 'subrehearsal'].includes(scenario)) {
+  if (['subcontrols', 'subselect', 'subtype', 'subrehearsal'].includes(scenario)) {
     subRoot = mkdtempSync('/tmp/qa-sub-bridge-'); // new, private (0700), removed after its logs are copied
     copyFileSync(join(HERE, 'qa_fake_bridge.py'), join(subRoot, 'qa-fake-bridge'));
     chmodSync(join(subRoot, 'qa-fake-bridge'), 0o755);
