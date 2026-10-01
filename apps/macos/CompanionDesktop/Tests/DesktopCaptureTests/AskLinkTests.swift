@@ -99,6 +99,7 @@ final class FakeConnector: AskChildLauncher, @unchecked Sendable {
     private var heldAsks: [(id: String, params: [String: Any])] = []
     private var launchCount = 0
     private var endCount = 0
+    private var overlapCount = 0
     private var storedConnection: [String: Any] = FakeConnector.connection()
     private var storedAskMode: AskMode = .answer("Synthetic answer: the value is 42.")
     private var storedLoginURL = "https://auth.openai.com/synthetic-login?state=not-a-secret"
@@ -208,6 +209,8 @@ final class FakeConnector: AskChildLauncher, @unchecked Sendable {
         lock.withLock { seen.filter { $0.method == method }.map(\.id) }
     }
 
+    /// Launches made while the connector before them was still ending.
+    var overlappingLaunches: Int { lock.withLock { overlapCount } }
     var launches: Int { lock.withLock { launchCount } }
     var ends: Int { lock.withLock { endCount } }
     var methods: [String] { lock.withLock { seen.map(\.method) } }
@@ -221,6 +224,8 @@ final class FakeConnector: AskChildLauncher, @unchecked Sendable {
         let child = Child()
         child.owner = self
         lock.withLock {
+            // Started while the connector before it had not ended yet.
+            if let earlier = self.child, !earlier.hasExited { overlapCount += 1 }
             self.onLine = onLine
             self.onExit = onExit
             self.child = child
@@ -1695,6 +1700,85 @@ extension DesktopCaptureTests {
         await stuckAsk.value
     }
 
+    // MARK: - A connector that is still ending
+
+    /// A lost connector is ended in the background of the link (EOF, bounded, then signals). Quit
+    /// and a new Connect both wait for that end: the app may exit right after Quit returns, and
+    /// two connectors must not run side by side. The stand-in's child takes a second to end.
+    func testAskQuitAndConnectWaitForAConnectorThatIsStillEnding() async throws {
+        /// A link whose connector was just lost (it wrote something that is not its protocol) and
+        /// is still ending.
+        func lostAndStillEnding() async throws -> (connector: FakeConnector, link: AskLink) {
+            let connector = FakeConnector()
+            connector.endDelay = 1
+            let link = askLink(connector)
+            await link.connect()
+            connector.emitRaw("this is not a connector line")
+            let lost = await until(5) { await link.currentStatus().connection == .disconnected }
+            XCTAssertTrue(lost)
+            XCTAssertEqual(connector.ends, 0, "the lost connector is still ending")
+            return (connector, link)
+        }
+
+        // Quit right after the loss: it returns only once that connector has ended.
+        let quitting = try await lostAndStillEnding()
+        let quitBegan = Date()
+        await quitting.link.shutdown()
+        XCTAssertEqual(quitting.connector.ends, 1, "Quit returned before the lost connector had ended")
+        XCTAssertGreaterThan(Date().timeIntervalSince(quitBegan), 0.5)
+        XCTAssertLessThan(Date().timeIntervalSince(quitBegan), 5, "bounded")
+        XCTAssertEqual(quitting.connector.launches, 1)
+
+        // The same after a cancelled request that was written in part: the connector refuses the
+        // part and is ended; Quit right after "disconnected" still waits for that end.
+        let cutOff = FakeConnector()
+        cutOff.holdsWrites = ["ask/start"]
+        cutOff.heldWritesAreInPart = true
+        cutOff.endDelay = 1
+        let cutOffLink = askLink(cutOff)
+        await cutOffLink.connect()
+        let cutOffFixture = try askFixture("ask-ending-cut-off")
+        await cutOffLink.open(cutOffFixture.input)
+        let asking = Task { await cutOffLink.submit(question: "Why?", assistance: .hint) }
+        let sending = await until(5) { await cutOffLink.currentStatus().card?.phase == .sending }
+        XCTAssertTrue(sending)
+        await cutOffLink.cancelCard()
+        let disconnected = await until(5) { await cutOffLink.currentStatus().connection == .disconnected }
+        XCTAssertTrue(disconnected)
+        await cutOffLink.shutdown()
+        XCTAssertEqual(cutOff.ends, 1, "Quit returned while the connector ended for the cut-off request was still ending")
+        await asking.value
+        XCTAssertFalse(cutOff.methods.contains("ask/start"))
+
+        // Connect right after the loss: the new connector starts only once the lost one has ended.
+        let reconnecting = try await lostAndStillEnding()
+        await reconnecting.link.connect()
+        let reconnected = await reconnecting.link.currentStatus()
+        XCTAssertEqual(reconnected.connection, .signedIn)
+        XCTAssertEqual([reconnecting.connector.launches, reconnecting.connector.ends], [2, 1])
+        XCTAssertEqual(reconnecting.connector.overlappingLaunches, 0, "a connector was started while the lost one was still ending")
+        await reconnecting.link.shutdown()
+        XCTAssertEqual(reconnecting.connector.ends, 2)
+
+        // Two Connects at once after the loss start one connector, after the lost one has ended.
+        let twice = try await lostAndStillEnding()
+        async let first: Void = twice.link.connect()
+        async let second: Void = twice.link.connect()
+        _ = await (first, second)
+        XCTAssertEqual([twice.connector.launches, twice.connector.overlappingLaunches], [2, 0])
+
+        // Quit while that Connect is still waiting for the lost connector: Quit waits for it too,
+        // and no connector is started afterwards.
+        let both = try await lostAndStillEnding()
+        let connecting = Task { await both.link.connect() }
+        try await Task.sleep(nanoseconds: 100_000_000)
+        await both.link.shutdown()
+        XCTAssertEqual(both.connector.ends, 1)
+        await connecting.value
+        XCTAssertEqual(both.connector.launches, 1, "no connector is started while the app closes")
+        await twice.link.shutdown()
+    }
+
     // MARK: - A request that has not reached the connector yet
 
     func testAskTakesBackARequestThatHasNotReachedTheConnector() async throws {
@@ -2331,6 +2415,90 @@ extension DesktopCaptureTests {
             }
             await link.shutdown()
         }
+    }
+
+    /// With a real process: after a cancelled request was written in part, the connector refuses
+    /// the part and lingers (it ignores SIGTERM). Quit right after "disconnected" returns only
+    /// when that process is gone, so the app never exits with its own kill still to come.
+    func testAskQuitWaitsForARealConnectorThatIsStillEnding() async throws {
+        let directory = root.appending(path: "ask-ending-child", directoryHint: .isDirectory)
+        let connectors = directory.appending(path: "repo/services/worker/connectors", directoryHint: .isDirectory)
+        try FileManager.default.createDirectory(at: connectors, withIntermediateDirectories: true)
+        try Data().write(to: connectors.appending(path: "chatgpt_local.py"))
+        let pidFile = directory.appending(path: "pid")
+        let release = directory.appending(path: "release")
+        // Answers the first line as a signed-in connection, reads nothing until `release` exists,
+        // then takes what is left up to EOF, refuses it in a line of its own, ignores SIGTERM and
+        // stays for up to 8 s.
+        let script = """
+        #!/bin/sh
+        dir='\(directory.path(percentEncoded: false))'
+        echo $$ > "$dir/pid"
+        IFS= read -r line
+        id=${line#*\\"id\\":\\"}; id=${id%%\\"*}
+        printf '{"id":"%s","result":{"auth":{"state":"signed_in","mode":"chatgpt","plan":null},"rate_limits":null,"models":[{"id":"synthetic-vision","label":"Synthetic vision","image_input":true,"default":true}]}}\\n' "$id"
+        i=0; while [ ! -e "$dir/release" ]; do
+          sleep 0.1 < /dev/null > /dev/null 2>&1; i=$((i+1)); [ $i -lt 600 ] || exit 0
+        done
+        cat > "$dir/rest"
+        trap '' TERM
+        printf '{"id":null,"error":{"code":"invalid_request","message":"synthetic"}}\\n'
+        i=0; while [ $i -lt 8 ]; do sleep 1 < /dev/null > /dev/null 2>&1; i=$((i+1)); done
+
+        """
+        let python = directory.appending(path: "python-lingering")
+        try Data(script.utf8).write(to: python)
+        try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: python.path(percentEncoded: false))
+        let config = AskConnectorConfig(python: python, repository: directory.appending(path: "repo", directoryHint: .isDirectory))
+        let link = AskLink(config: .success(config), launcher: ProcessAskLauncher(sendTimeout: 20, endGrace: 0.5), callTimeout: 5, askTimeout: 5)
+        await link.connect()
+        let connected = await link.currentStatus()
+        XCTAssertEqual(connected.connection, .signedIn)
+        let pid = try XCTUnwrap(Int32(String(contentsOf: pidFile, encoding: .utf8).trimmingCharacters(in: .whitespacesAndNewlines)))
+        let fixture = try askFixture("ask-ending-child", large: true)
+        await link.open(fixture.input)
+        let asking = Task { await link.submit(question: "Why?", assistance: .hint) }
+        let sending = await until(5) { await link.currentStatus().card?.phase == .sending }
+        XCTAssertTrue(sending)
+        try await Task.sleep(nanoseconds: 800_000_000)
+        await link.cancelCard()
+        try Data().write(to: release)
+        let disconnected = await until(10) { await link.currentStatus().connection == .disconnected }
+        XCTAssertTrue(disconnected)
+        XCTAssertEqual(kill(pid, 0), 0, "the connector is still there: it ignores EOF and SIGTERM")
+        let quitBegan = Date()
+        await link.shutdown()
+        XCTAssertEqual(kill(pid, 0), -1, "Quit returned while its own connector process was still alive")
+        XCTAssertLessThan(Date().timeIntervalSince(quitBegan), 8, "bounded: EOF, grace, SIGTERM, then SIGKILL")
+        await asking.value
+        let got = (try? Data(contentsOf: directory.appending(path: "rest"))) ?? Data()
+        XCTAssertTrue(got.count > 0 && !got.contains(0x0A), "a part, with no line the connector could act on")
+        // And a new Connect, made while a lost connector is still ending, starts the next one only
+        // after that process is gone.
+        try FileManager.default.removeItem(at: release)
+        let reconnecting = AskLink(config: .success(config), launcher: ProcessAskLauncher(sendTimeout: 20, endGrace: 0.5), callTimeout: 5, askTimeout: 5)
+        await reconnecting.connect()
+        let firstPID = try XCTUnwrap(Int32(String(contentsOf: pidFile, encoding: .utf8).trimmingCharacters(in: .whitespacesAndNewlines)))
+        let other = try askFixture("ask-ending-child-again", large: true)
+        await reconnecting.open(other.input)
+        let askingAgain = Task { await reconnecting.submit(question: "Why?", assistance: .hint) }
+        let sendingAgain = await until(5) { await reconnecting.currentStatus().card?.phase == .sending }
+        XCTAssertTrue(sendingAgain)
+        try await Task.sleep(nanoseconds: 800_000_000)
+        await reconnecting.cancelCard()
+        try Data().write(to: release)
+        let lostAgain = await until(10) { await reconnecting.currentStatus().connection == .disconnected }
+        XCTAssertTrue(lostAgain)
+        XCTAssertEqual(kill(firstPID, 0), 0)
+        await reconnecting.connect()
+        XCTAssertEqual(kill(firstPID, 0), -1, "a new connector was started while the lost one was still alive")
+        let secondPID = try XCTUnwrap(Int32(String(contentsOf: pidFile, encoding: .utf8).trimmingCharacters(in: .whitespacesAndNewlines)))
+        XCTAssertNotEqual(secondPID, firstPID)
+        let again = await reconnecting.currentStatus()
+        XCTAssertEqual(again.connection, .signedIn)
+        await reconnecting.shutdown()
+        await askingAgain.value
+        XCTAssertEqual(kill(secondPID, 0), -1)
     }
 
     func testAskConnectorConfiguration() throws {

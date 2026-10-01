@@ -1,15 +1,15 @@
-src/AskLinkTests.swift:939:36: warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
- 937 |             ending.connection = FakeConnector.connection(state: "signed_out", mode: NSNull())
- 938 |             // In the first round the exit is reported only after the sign-in start has returned.
- 939 |             ending.afterLoginStart = round == 0 ? { $0.endChildUnreported() } : { $0.exitChild() }
+src/AskLinkTests.swift:944:36: warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 942 |             ending.connection = FakeConnector.connection(state: "signed_out", mode: NSNull())
+ 943 |             // In the first round the exit is reported only after the sign-in start has returned.
+ 944 |             ending.afterLoginStart = round == 0 ? { $0.endChildUnreported() } : { $0.exitChild() }
      |                                    `- warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
- 940 |             let endingLink = askLink(ending)
- 941 |             await endingLink.connect()
+ 945 |             let endingLink = askLink(ending)
+ 946 |             await endingLink.connect()
 
-Test Suite 'All tests' started at 2026-10-01 10:03:57.652
-Test Suite 'bin.xctest' started at 2026-10-01 10:03:57.654
-Test Suite 'DesktopCaptureTests' started at 2026-10-01 10:03:57.654
-Test Case 'DesktopCaptureTests.testProbeCutOffRequestAndTheRealConnectorStream' started at 2026-10-01 10:03:57.654
+Test Suite 'All tests' started at 2026-10-01 10:40:15.000
+Test Suite 'bin.xctest' started at 2026-10-01 10:40:15.002
+Test Suite 'DesktopCaptureTests' started at 2026-10-01 10:40:15.002
+Test Case 'DesktopCaptureTests.testProbeCutOffRequestAndTheRealConnectorStream' started at 2026-10-01 10:40:15.002
 PROBE [cancel] card after the local cancel: cancelled | cancelled; it had not reached the connector, so nothing was sent to the service
 PROBE [cancel] connection afterwards: disconnected | the connector was ended, because a cancelled question had been written to it in part; nothing of it was sent to the service. Connect starts the connector again
 PROBE [cancel] record: outcome=cancelled delivered_to_connector=0 interruption_uncertain=0 code=nil
@@ -22,11 +22,11 @@ PROBE [cancel after delivery] card after the local cancel after delivery: none |
 PROBE [cancel after delivery] connection afterwards: signedIn | nil
 PROBE [cancel after delivery] record: outcome=refused delivered_to_connector=nil interruption_uncertain=nil code=invalid_request
 PROBE [cancel after delivery] connector log: start ; line bytes=85 newline=True ; handled method=connection/read ; emit id='c1' keys=['id', 'result'] ; line bytes=1460100 newline=True ; handled method=ask/start ; client.begin_request touched ; emit id='c2' keys=['error', 'id'] code=invalid_request ; client.finish_request touched
-Test Case 'DesktopCaptureTests.testProbeCutOffRequestAndTheRealConnectorStream' passed (4.689 seconds)
-Test Suite 'DesktopCaptureTests' passed at 2026-10-01 10:04:02.344
-	 Executed 1 test, with 0 failures (0 unexpected) in 4.689 (4.689) seconds
-Test Suite 'bin.xctest' passed at 2026-10-01 10:04:02.344
-	 Executed 1 test, with 0 failures (0 unexpected) in 4.689 (4.689) seconds
-Test Suite 'All tests' passed at 2026-10-01 10:04:02.344
-	 Executed 1 test, with 0 failures (0 unexpected) in 4.689 (4.689) seconds
+Test Case 'DesktopCaptureTests.testProbeCutOffRequestAndTheRealConnectorStream' passed (4.676 seconds)
+Test Suite 'DesktopCaptureTests' passed at 2026-10-01 10:40:19.677
+	 Executed 1 test, with 0 failures (0 unexpected) in 4.676 (4.676) seconds
+Test Suite 'bin.xctest' passed at 2026-10-01 10:40:19.678
+	 Executed 1 test, with 0 failures (0 unexpected) in 4.676 (4.676) seconds
+Test Suite 'All tests' passed at 2026-10-01 10:40:19.678
+	 Executed 1 test, with 0 failures (0 unexpected) in 4.676 (4.676) seconds
 probe exit 0

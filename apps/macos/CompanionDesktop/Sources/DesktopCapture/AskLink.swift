@@ -219,8 +219,9 @@ public actor AskLink {
     /// Which launch `child` is. Lines and the exit of an earlier launch are told apart by this
     /// number, never by the child object: a new one may get the address of the one it replaces.
     private var launch = 0
-    /// A connector being ended by Check Again, until it has ended.
-    private var replacing: (any AskChild)?
+    /// Connectors that are no longer this link's connector and are being ended, each until it has
+    /// ended. Quit waits for them, and no new connector is started while one is still ending.
+    private var retiring: [any AskChild] = []
     /// The app is closing: no connector is started any more.
     private var closed = false
     private var reader: Task<Void, Never>?
@@ -282,9 +283,8 @@ public actor AskLink {
     public func connect() async {
         guard !closed else { return }
         if let running = child, !running.hasExited, [.refused, .unknown].contains(status.connection),
-           inFlight == nil, fencing == 0, !loginStarting, !reading, replacing == nil {
+           inFlight == nil, fencing == 0, !loginStarting, !reading {
             child = nil
-            replacing = running
             login = nil
             status.loginPending = false
             status.connection = .connecting
@@ -293,11 +293,29 @@ public actor AskLink {
             let pending = waiting
             waiting = [:]
             pending.values.forEach { $0.resolve(nil) }
-            await running.end()
-            replacing = nil
+            await retire(running)
         }
+        // A connector that is still ending (replaced here, or lost) has ended before the next one
+        // starts: the two never run side by side.
+        await retired()
         guard await ensureChild() else { return }
         await readConnection()
+    }
+
+    /// Ends a child that is no longer this link's connector, and keeps hold of it until it has
+    /// ended.
+    private func retire(_ ending: any AskChild) async {
+        retiring.append(ending)
+        await ending.end()
+        retiring.removeAll { $0 === ending }
+    }
+
+    /// Returns once every child that is being ended has ended. `end()` is bounded.
+    private func retired() async {
+        while let ending = retiring.first {
+            await ending.end()
+            retiring.removeAll { $0 === ending }
+        }
     }
 
     private func ensureChild() async -> Bool {
@@ -687,14 +705,15 @@ public actor AskLink {
             // known. One that was taken back never reached the connector.
             record(fenced, cancelled: nil, uncertain: fenced.delivered)
         }
-        // A connector that Check Again is replacing is ended here as well, before this returns.
-        await replacing?.end()
         let ending = child
         login = nil
         status.loginPending = false
         // The child stays set while it ends, so answers already on their way are still read.
         await ending?.end()
         if let ending, let current = child, current === ending { child = nil }
+        // Every connector that was replaced or lost has ended as well before this returns: the
+        // app may exit right after it, and their bounded end must not be cut short.
+        await retired()
         let pending = waiting
         waiting = [:]
         pending.values.forEach { $0.resolve(nil) }
@@ -894,7 +913,7 @@ public actor AskLink {
         let pending = waiting
         waiting = [:]
         pending.values.forEach { $0.resolve(nil) }
-        await ending?.end()
+        if let ending { await retire(ending) }
     }
 
     private func publish() {

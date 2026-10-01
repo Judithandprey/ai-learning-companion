@@ -9,7 +9,8 @@ T={'wire':'testAskEnvelopeAndStrictAnswers','sel':'testAskSelectionIsFrozenWithI
    'submit':'testAskSendsOnlyOnSubmitAndShowsTheAnswerOnItsCard','local':'testAskRefusesLocallyWithoutSendingAnything',
    'cancel':'testAskCancelNewSelectionAndStopSuppressLaterAnswers','late':'testAskLateAnswersCloseAndQuitWithAQuestionOnItsWay',
    'loss':'testAskConnectorLossAndTimeoutAreUnknownAndNeverRetried','child':'testAskConnectorChildGetsAPrivatePipeAndAMinimalEnvironment',
-   'held':'testAskTakesBackARequestThatHasNotReachedTheConnector','pipe':'testAskRealChildNeverGetsARequestTakenBackInThePipe'}
+   'held':'testAskTakesBackARequestThatHasNotReachedTheConnector','pipe':'testAskRealChildNeverGetsARequestTakenBackInThePipe',
+   'ending':'testAskQuitAndConnectWaitForAConnectorThatIsStillEnding','endingreal':'testAskQuitWaitsForARealConnectorThatIsStillEnding'}
 M=[
  ('M01 late answer shown on a later question (inFlight guard removed)','AskLink.swift','guard inFlight?.requestID == request.requestID, var waitingCard','guard var waitingCard','late'),
  ('M02 request record not kept before sending','AskLink.swift','guard AskFiles.writeNew(record, to: prepared.directory.appending(path: request.requestID + ".request.json")) else {','guard true else {','submit'),
@@ -63,10 +64,10 @@ M=[
  ('M50 connector replaced while a question is on its way','AskLink.swift','           inFlight == nil, fencing == 0, !loginStarting,','           fencing == 0, !loginStarting,','chg'),
  ('M51 region end rounded down instead of up','AskSelection.swift','let high = min(Double(frame), ((origin + size) * scale).rounded(.up))','let high = min(Double(frame), ((origin + size) * scale).rounded(.down))','sel'),
  ('M52 exit of an earlier launch taken as the new connector\'s','AskLink.swift','guard child != nil, serial == launch else { return }','guard child != nil, serial <= launch else { return }','child'),
- ('M53 a pending sign-in keeps a failed connector from being replaced','AskLink.swift','inFlight == nil, fencing == 0, !loginStarting, !reading, replacing == nil {','inFlight == nil, fencing == 0, login == nil, !loginStarting, !reading, replacing == nil {','chg'),
+ ('M53 a pending sign-in keeps a failed connector from being replaced','AskLink.swift','inFlight == nil, fencing == 0, !loginStarting, !reading {','inFlight == nil, fencing == 0, login == nil, !loginStarting, !reading {','chg'),
  ('M54 a connector is started while the app closes','AskLink.swift','guard case .success(let config) = config, !closed else { return false }','guard case .success(let config) = config else { return false }','chg'),
  ('M55 sign-in page handed out for a connector that has ended','AskLink.swift','guard let current = child, current === running, !current.hasExited else { return nil }','guard let current = child, current === running else { return nil }','conn'),
- ('M56 Quit does not wait for the connector being replaced','AskLink.swift','        await replacing?.end()\n','','chg'),
+ ('M56 Quit does not wait for a connector that is still ending','AskLink.swift','        // app may exit right after it, and their bounded end must not be cut short.\n        await retired()\n','        // app may exit right after it, and their bounded end must not be cut short.\n','chg'),
  ('M57 one read for every connection/changed event','AskLink.swift','let wait = changeInterval - Date().timeIntervalSince(lastChangeRead)','let wait = -1.0 - Date().timeIntervalSince(lastChangeRead)','chg'),
  ('M58 an unconfirmed sign-in cancel is not said','AskLink.swift','        await unconfirmed("the connector did not confirm that the sign-in was cancelled")\n','','chg'),
  ('M59 a refused sign-in start worded with a question\'s words','AskLink.swift','await unconfirmed("the sign-in could not be started"\n                    + (code == "busy" ? ": the connector is busy with a question or another sign-in" : ""))','status.detail = "the sign-in could not be started: " + AskWire.words(for: code)','chg'),
@@ -84,6 +85,10 @@ M=[
  ('M71 the last byte is written outside the take-back lock','AskChild.swift','        lock.withLock {\n            guard !revoked else {\n                inPart = inPart || started\n                return nil\n            }\n            let written = write()\n            if written == remaining { delivered = true }\n            return written\n        }','        let taken: Bool = lock.withLock {\n            if revoked { inPart = inPart || started }\n            return revoked\n        }\n        if taken { return nil }\n        let written = write()\n        lock.withLock { if written == remaining { delivered = true } }\n        return written','held'),
  ('M72 a Submit goes out while the app is closing','AskLink.swift','        guard !closed else { return }\n        // Submit starts no connector','        // Submit starts no connector','held'),
  ('M73 what was taken back is kept across connectors','AskLink.swift','        // What was taken back belonged to an earlier connector.\n        takenBack = nil\n','','held'),
+ ('M74 a lost connector is ended without being kept until it has ended','AskLink.swift','        if let ending { await retire(ending) }','        await ending?.end()','ending'),
+ ('M75 a new connector is started while the lost one is still ending','AskLink.swift','        await retired()\n        guard await ensureChild() else { return }','        guard await ensureChild() else { return }','ending'),
+ ('M76 Quit returns while a real lost connector is still alive','AskLink.swift','        // app may exit right after it, and their bounded end must not be cut short.\n        await retired()\n','        // app may exit right after it, and their bounded end must not be cut short.\n','endingreal'),
+ ('M77 a real connector is started while the lost one is still alive','AskLink.swift','        await retired()\n        guard await ensureChild() else { return }','        guard await ensureChild() else { return }','endingreal'),
 ]
 def run(only):
     env=dict(os.environ, LC_TESTS='ask', LC_ONLY=only)

@@ -1,0 +1,25 @@
+src/AskLinkTests.swift:944:36: warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 942 |             ending.connection = FakeConnector.connection(state: "signed_out", mode: NSNull())
+ 943 |             // In the first round the exit is reported only after the sign-in start has returned.
+ 944 |             ending.afterLoginStart = round == 0 ? { $0.endChildUnreported() } : { $0.exitChild() }
+     |                                    `- warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 945 |             let endingLink = askLink(ending)
+ 946 |             await endingLink.connect()
+
+Test Suite 'All tests' started at 2026-10-01 10:40:59.967
+Test Suite 'bin.xctest' started at 2026-10-01 10:40:59.969
+Test Suite 'DesktopCaptureTests' started at 2026-10-01 10:40:59.969
+Test Case 'DesktopCaptureTests.testReviewQuitWaitsForPartialCancelCleanup' started at 2026-10-01 10:40:59.969
+REVIEW partial-cancel Quit returned in 1.5004210472106934s; completed child ends=1
+Test Case 'DesktopCaptureTests.testReviewQuitWaitsForPartialCancelCleanup' passed (1.726 seconds)
+Test Case 'DesktopCaptureTests.testReviewRealChildQuitJoinsPartialCancelCleanup' started at 2026-10-01 10:41:01.695
+REVIEW real partial-cancel Quit returned in 2.160317540168762s; child alive=false; partial bytes=65536:False
+REVIEW host-kept-alive cleanup completed=true after 2.1603941917419434s
+Test Case 'DesktopCaptureTests.testReviewRealChildQuitJoinsPartialCancelCleanup' passed (2.955 seconds)
+Test Suite 'DesktopCaptureTests' passed at 2026-10-01 10:41:04.650
+	 Executed 2 tests, with 0 failures (0 unexpected) in 4.681 (4.681) seconds
+Test Suite 'bin.xctest' passed at 2026-10-01 10:41:04.650
+	 Executed 2 tests, with 0 failures (0 unexpected) in 4.681 (4.681) seconds
+Test Suite 'All tests' passed at 2026-10-01 10:41:04.650
+	 Executed 2 tests, with 0 failures (0 unexpected) in 4.681 (4.681) seconds
+probe exit 0

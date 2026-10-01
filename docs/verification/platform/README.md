@@ -557,9 +557,9 @@ the shared private connector interface:
   and take back a request that has not reached the connector whole; nothing is retried;
 - a connector that reports itself unavailable is shown as that, with no bypass.
 
-Source is uncompiled on macOS: 98 declared tests, 15 of them new. On the Linux harness 14/15 new
+Source is uncompiled on macOS: 100 declared tests, 17 of them new. On the Linux harness 16/17 new
 tests pass against an in-process stand-in and stub children (the pixel test needs a real
-rasterizer), and 73 of 73 mutations are caught. Linux probes used the released code of main
+rasterizer), and 77 of 77 mutations are caught. Linux probes used the released code of main
 `fca2a25` without Codex: the real connector's `unavailable` answer is shown as such, and the
 released request validator accepts the requests Swift makes (with a substituted PNG; the new
 checker `checks/validate_ask_request.py` is for the hosted macOS run). No sign-in or model call
@@ -570,3 +570,7 @@ and Quit now take back a request that has not reached the connector whole. A lin
 is dropped; a line written in part is never completed, nothing follows it, and that connector is
 ended, with a new one only on the user's Connect. A probe with the connector's real stream code
 shows it handling no request after the local Cancel or Stop.
+
+Lifetime correction (the lead's review of `704894f`): the link keeps hold of every connector
+that was lost or replaced until it has ended. Quit returns only then, and a new Connect starts
+the next connector only then.
