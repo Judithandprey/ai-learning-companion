@@ -49,7 +49,7 @@ statement bounds. The file is read at each host start and passed only in the hos
   It always ends with "AI: not connected".
   - The header says what is so now, never what is merely configured. Only while a Start's stream is live on the
     service, with no send unanswered since the last answered one, does it say frames are also being stored in a
-    local test capture service. At every other time (before Start, connecting, a send not stored, not connected,
+    local test capture service. At every other time (before Start, connecting, a send not confirmed, not connected,
     offline, stopping, stopped, ended by the service) it says the service is not storing them now, and points to
     the link line for its state and the latest capture's counts. It is rewritten at every change.
   - The overlay's ASK card stays on screen, so it never says whether frames are being stored now. With the link on
@@ -141,7 +141,8 @@ statement bounds. The file is read at each host start and passed only in the hos
 - **Sending**:
   - After each successful manifest append, one job at a time: the oldest unsettled job first, then the next lines.
   - A job is written before its first send.
-  - A send that is not stored (no answer, a 503, a lost answer, a missing dependency) leaves the stream live but
+  - A send whose storage is not confirmed (no answer, a 503, a lost answer, a missing dependency; it may have
+    arrived, and its records stay counted as not known) leaves the stream live but
     `stalled`: the status says it is not storing now, until a later send is answered. Only an answered (committed)
     send says storing again. Nothing left to send (the job set aside as it cannot be sent again), or a new
     connection after a lost host or an expired bearer, is not an answer; later lines are still sent.
@@ -500,7 +501,9 @@ qa-win-03-04/` at `bf2900c`), corrected in `67a1da5`.** The quit repair was appr
 - The check script's success now also needs its driver's own exit 0.
 - An independent two-lens review of this correction, each finding verified, found no defect in the state or the
   copy. It showed one line of the fix unpinned by a test (the reconnect; now tested), and that the stalled details
-  said "the service did not answer" for a typed "send again later" answer too (now "the last send was not stored").
+  said "the service did not answer" for a typed "send again later" answer too. They now say "storage of the last
+  send is not confirmed" (the lead's wording correction after `67a1da5`): the outcome is not known, and the send
+  may have committed.
 - Without a Backend the tests show only "stays not storing"; "storing again once a later send is answered" is
   shown by the tests on the released host.
 - The real app at `67a1da5`, the unavailable-service case only (`after-67a1da5-failure.json`, 4 of 4): the same

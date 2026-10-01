@@ -292,7 +292,7 @@ test('a job in doubt set aside leaves nothing to send, and that is not an answer
   assert.equal(s.mode, 'development');
   if (s.mode !== 'development') return;
   assert.deepEqual([s.state, s.storing, s.stored, s.unknown], ['stalled', false, 0, 2], 'no send was answered: not storing, and its outcome stays not known');
-  assert.match(s.detail ?? '', /the last send was not stored; storing is said again once a later send is answered/);
+  assert.match(s.detail ?? '', /storage of the last send is not confirmed; storing is said again once a later send is answered/);
   assert.doesNotMatch(header(), /are also being stored/);
   assert.match(header(), /not storing them now[\s\S]*Capture storage \(development\): not storing now \(the frames are kept on this device\)\. 0 record\(s\) stored; 2 not known whether stored/);
   // The host is lost and the link connects again: a connection is not an answered send either.

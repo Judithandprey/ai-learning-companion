@@ -216,7 +216,7 @@ type Active = {
   stopped: Promise<void> | null;
   /** Whether a startup record ever reached a host for this stream (a grant may exist from then on). */
   asked: boolean;
-  /** A send got no answer, and none has been answered since: storing is not said again until one is. */
+  /** A send's storage was not confirmed, and none has been answered since: storing is not said again until one is. */
   unanswered: boolean;
 };
 
@@ -657,11 +657,11 @@ export class CaptureLink {
     })();
   }
   /**
-   * Nothing to send now, or connected again. Neither is an answered send: after a send that was not stored (its job
-   * then set aside, say), the stream stays "not storing now" until a later send is answered.
+   * Nothing to send now, or connected again. Neither is an answered send: after a send whose storage is not
+   * confirmed (its job then set aside, say), the stream stays "not storing now" until a later send is answered.
    */
   private rest(a: Active): void {
-    if (a.unanswered) this.say(a, 'stalled', 'the last send was not stored; storing is said again once a later send is answered');
+    if (a.unanswered) this.say(a, 'stalled', 'storage of the last send is not confirmed; storing is said again once a later send is answered');
     else this.say(a, 'sending', null);
   }
   private facts(rec: StreamRecord): StreamFacts {
@@ -768,9 +768,10 @@ export class CaptureLink {
     else job.status = 'not_sent';
     if (result.status === 'unknown' && result.error === 'dependency_missing') job.reason = result.reason;
     this.save();
-    // Live, but this send was not answered: nothing is being stored until one is (the same record(s) are tried again).
+    // Live, but this send's storage is not confirmed (it may have arrived): storing is not said until a send is
+    // answered (the same record(s) are tried again).
     a.unanswered = true;
-    if (a.live && !a.stopping && !this.fault) this.say(a, 'stalled', 'the last send was not stored (no answer, or the service said to send it again later); the same record(s) are tried again');
+    if (a.live && !a.stopping && !this.fault) this.say(a, 'stalled', 'storage of the last send is not confirmed (no answer, or the service said to send it again later); the same record(s) are tried again');
     else this.o.notify(this.status());
     return false;
   }

@@ -386,7 +386,7 @@ test('the texts follow the link as it changes: storing only while the stream is 
   await until('a send not answered', () => said()?.state === 'stalled', 10_000);
   assert.deepEqual([said()?.storing, said()?.stored], [false, 0]);
   assert.doesNotMatch(shown(), CLAIMS_STORAGE);
-  assert.match(shown(), /Capture storage \(development\): not storing now \(the frames are kept on this device\)\. 0 record\(s\) stored;[\s\S]*the last send was not stored \(no answer, or the service said to send it again later\); the same record\(s\) are tried again\. AI: not connected\.$/);
+  assert.match(shown(), /Capture storage \(development\): not storing now \(the frames are kept on this device\)\. 0 record\(s\) stored;[\s\S]*storage of the last send is not confirmed \(no answer, or the service said to send it again later\); the same record\(s\) are tried again\. AI: not connected\.$/);
   // The card still open is the same card (its picture, region, frame, time and ink line), and still true.
   assert.deepEqual(plain(page.review.card()), { text: card, image: true });
   page.click('close');
