@@ -1,0 +1,81 @@
+{
+  "candidate": "68b4cd9",
+  "synthetic_only": true,
+  "results": [
+    {
+      "probe": "login_success_during_connection_read",
+      "reproduced": true,
+      "observed": {
+        "status": {
+          "mode": "managed",
+          "state": "signed_out",
+          "plan": null,
+          "rate_limits": null,
+          "models": [],
+          "model": null,
+          "login": "none",
+          "detail": null,
+          "asking": false
+        },
+        "reads": 1
+      },
+      "expected": "An account-change/login-completed event queues a fresh read; stale signed_out is not the final state."
+    },
+    {
+      "probe": "non_confirmation_cancel_receipt",
+      "receipt": {},
+      "observed": {
+        "status": "cancelled",
+        "uncertain": false
+      },
+      "reproduced": true,
+      "expected": "uncertain:true unless the method-specific receipt confirms interruption."
+    },
+    {
+      "probe": "non_confirmation_cancel_receipt",
+      "receipt": null,
+      "observed": {
+        "status": "cancelled",
+        "uncertain": false
+      },
+      "reproduced": true,
+      "expected": "uncertain:true unless the method-specific receipt confirms interruption."
+    },
+    {
+      "probe": "non_confirmation_cancel_receipt",
+      "receipt": {
+        "cancelled": true,
+        "uncertain": "unknown"
+      },
+      "observed": {
+        "status": "cancelled",
+        "uncertain": false
+      },
+      "reproduced": true,
+      "expected": "uncertain:true unless the method-specific receipt confirms interruption."
+    },
+    {
+      "probe": "non_confirmation_cancel_receipt",
+      "receipt": {
+        "cancelled": false,
+        "uncertain": false
+      },
+      "observed": {
+        "status": "cancelled",
+        "uncertain": false
+      },
+      "reproduced": true,
+      "expected": "uncertain:true unless the method-specific receipt confirms interruption."
+    },
+    {
+      "probe": "oversize_line_exit_settlement",
+      "reproduced": true,
+      "observed": {
+        "already_exited": true,
+        "kill_calls_after_exit": 1,
+        "state": "unavailable"
+      },
+      "expected": "Resolve exited even after protocol fence, with no timeout/kill of an already exited child."
+    }
+  ]
+}

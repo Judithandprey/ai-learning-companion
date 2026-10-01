@@ -1,0 +1,20 @@
+test('lead storage fault after submission: shown answer must not silently lose assistance history', async () => {
+  const w = await app();
+  await w.select();
+  w.page.click('askSubmit');
+  await until('sent', () => w.fakes.last().asks().length === 1);
+  w.h.failWrites.on = true;
+  w.fakes.last().answer('SYNTHETIC retained assistance');
+  await until('terminal UI', () => w.page.ask().answer !== null);
+  const entry = w.records()[0]!.requests[0]!;
+  console.log(JSON.stringify({probe:'completion_write_failure',ui:w.page.ask(),disk:entry}));
+  assert.equal(entry['outcome'] !== null || /not saved|could not.*sav|storage|written/i.test(w.page.ask().status ?? ''), true);
+});
+test('lead immediate local refusal reaches the request card', async () => {
+  const w = await app({ configure: (c) => { const old = c.stdin.write.bind(c.stdin); c.stdin.write = ((data: any, ...args: any[]) => { const r = old(data,...args); const last = c.asks().at(-1); if (last) c.fail(last.id, 'unauthenticated'); return r; }) as any; }});
+  await w.select();
+  w.page.click('askSubmit');
+  await settle(); await settle();
+  console.log(JSON.stringify({probe:'immediate_refusal',ui:w.page.ask(),disk:w.records()[0]!.requests}));
+  assert.match(w.page.ask().status ?? '', /No answer:/);
+});

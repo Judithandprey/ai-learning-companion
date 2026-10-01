@@ -1,0 +1,57 @@
+{
+  "candidate": "68b4cd9344dc0a2b36f151b911c7f9c4f2a797d8",
+  "scope": "exact main/renderer source in owner fake Electron/connector harness; no GUI or provider",
+  "expected_behavior_assertions": 2,
+  "failed": 2,
+  "observations": [
+    {
+      "probe": "completion_write_failure",
+      "ui": {
+        "badge": "Selection \u00b7 answered by ChatGPT below",
+        "form": true,
+        "submit": true,
+        "cancel": false,
+        "status": "Answered by ChatGPT (vision-model) in 1.2 s, about the picture above and your question only.",
+        "answer": "SYNTHETIC retained assistance"
+      },
+      "disk": {
+        "request_id": "ask-0eca75eccc341e81.1",
+        "question": "Explain what is selected.",
+        "assistance": "hint",
+        "model": "vision-model",
+        "submitted_at": "2026-10-01T06:35:37.605Z",
+        "ended_at": null,
+        "outcome": null,
+        "shown": false
+      }
+    },
+    {
+      "probe": "immediate_refusal",
+      "ui": {
+        "badge": "Selection \u00b7 asked: being sent to ChatGPT",
+        "form": true,
+        "submit": false,
+        "cancel": true,
+        "status": "Asked at 11:35:37 PM (vision-model): this picture and your question are being sent to ChatGPT. Waiting for the answer\u2026",
+        "answer": null
+      },
+      "disk": [
+        {
+          "request_id": "ask-8e6df9d3b035f7e1.1",
+          "question": "Explain what is selected.",
+          "assistance": "hint",
+          "model": "vision-model",
+          "submitted_at": "2026-10-01T06:35:37.625Z",
+          "ended_at": "2026-10-01T06:35:37.626Z",
+          "outcome": {
+            "status": "refused",
+            "code": "unauthenticated",
+            "reason": "ChatGPT is not signed in (sign in from the control window)"
+          },
+          "shown": false
+        }
+      ]
+    }
+  ],
+  "real_requests": 0
+}

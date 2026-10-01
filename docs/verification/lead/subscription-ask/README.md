@@ -92,3 +92,15 @@ these are dependency deliveries, not claims those owners already read that SHA.
 Support has one accepted bounded preparation task for a hosted macOS metadata-only
 compatibility probe, with explicit root-workflow delegation. It neither blocks
 Windows login nor changes production admission before actual reviewed evidence.
+
+
+Windows delivery `68b4cd9` / author report `4944cc3` is under source review and
+**not released for real acceptance**. [Lead UI review](windows-ui-review.md)
+reproduces two faults; [independent transport review](windows-transport-review.md)
+reproduces two blocking protocol faults and one cleanup defect. W-SUB-T01/T02/T03
+map to handoff W-SUB-03/04/05 respectively; W-SUB-05 is non-blocking cleanup.
+The existing Web owner has one accepted bounded correction, not a new task.
+All probes are synthetic; the real request budget remains unallocated/unspent.
+Support has delivered its metadata-only macOS workflow/probe as `d8a402b`; Lead
+is reviewing it before an exact-source hosted run. No new account/device result
+is inferred from either delivery.

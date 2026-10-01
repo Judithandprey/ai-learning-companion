@@ -7,7 +7,7 @@
       "owner": "support",
       "accepted_assignment": "handoff_fbe401de52ae85b625c76f3b0e9314fc",
       "actual_start_reply": null,
-      "state": "linux_evidence_integrated_mac_metadata_preparation_accepted",
+      "state": "mac_metadata_candidate_delivered_reviewing",
       "actual_delivery": "handoff_18949b99a24930d71b290113330387d9",
       "delivery_commit": "324fb11cdee5ce14dec64a0da78a1a0ab49e3086",
       "integrated_commit": "b459e9676c331c2df98ec7a05047313ceba44b0b",
@@ -15,7 +15,9 @@
       "isolation_commit": "a1aa5305c0e9099c89a472844e2eef13220314eb",
       "isolation_integrated_commit": "23074b7f602aa480a63b0e529029fd1e38aa30db",
       "mac_metadata_assignment": "handoff_4a375c7b93c178b1fbb2432e4e5f432f",
-      "mac_metadata_start_reply": null
+      "mac_metadata_start_reply": null,
+      "mac_metadata_delivery": "handoff_3ee74d082d969d2c9efa23340298b1ee",
+      "mac_metadata_commit": "d8a402b7d6972a5a0d271b526915cacd22b0f0be"
     },
     {
       "owner": "backend",
@@ -52,8 +54,13 @@
       "owner": "web",
       "accepted_assignment": "handoff_df27ff4f210a4ac419401e8a00aa568c",
       "actual_start_reply": "handoff_a34384aef035e6150ab3e41cea52d18c",
-      "state": "actual_start_reported",
-      "accepted_dependency_release": "handoff_9133b93c8d97ec7c8b41b49724ad7a7e"
+      "state": "delivered_review_hold_correction_accepted",
+      "accepted_dependency_release": "handoff_9133b93c8d97ec7c8b41b49724ad7a7e",
+      "actual_delivery": "handoff_bdc1d66d3338cf027a9df924f2f8845d",
+      "delivery_commit": "68b4cd9344dc0a2b36f151b911c7f9c4f2a797d8",
+      "evidence_commit": "4944cc38091f5f53a175deefa58c69fe26391b32",
+      "review_correction": "handoff_fdc6d726f4dbb300c050e4866781708b",
+      "transport_correction": "handoff_76d2d16d9567ccd13fd3b88a28020bb1"
     },
     {
       "owner": "native",

@@ -1,0 +1,11 @@
+# Windows subscription source review — hold for correction
+
+Candidate `68b4cd9344dc0a2b36f151b911c7f9c4f2a797d8`; author report `4944cc38091f5f53a175deefa58c69fe26391b32`.
+Lead inspected main-process crop/ink retention, request lifecycle, renderer ASK/control and owned tests. This is synthetic source execution, not independent Windows behavior acceptance or real inference.
+
+- **W-SUB-01:** an immediate local unauthenticated refusal arrives before renderer `askSubmit` acknowledgement. Main records terminal refusal; renderer rejects its result because `a.request` is not set and remains Waiting indefinitely.
+- **W-SUB-02:** fail completion-record writes after the question is sent, then complete the answer. UI shows ordinary Answered status, but retained request remains `ended_at:null`, `outcome:null`, `shown:false`. No durability warning or recoverable-outcome path is shown. Main also marks `shown` before the renderer confirms presentation, although local Cancel/Stop can suppress it.
+
+Two expected-behavior assertions fail on the delivered source; exact sanitized observations are in [JSON](windows-ui-review.json). Reproduce from an isolated archive of the candidate: copy `app-ask.test.ts`'s imports/helpers before its first test into a sibling `lead-review.test.ts`, append [these two probes](windows-ui-review-probes.txt), then run Node24 directly on that file. Owner fakes stand in for Electron, capture and the connector. Direct Node emits both failures; this environment's `node --test` child mode returned only a generic failed-child summary. The first preparation used unavailable `python`; retry with `python3` succeeded. No authentication or inference occurred.
+
+Return to the same Web owner, preserving the delivery: fence early/late results by exact request; preserve and report completion persistence failures without rerunning inference; record actual assistance presentation accurately. Separate transport review adds the reproduced login-refresh, uncertain cancellation and child-exit issues. QA release waits for one scoped correction and focused retest, not a repeated prior campaign. Actual Windows keyboard focus, WSL browser login return and real image answer remain unverified.

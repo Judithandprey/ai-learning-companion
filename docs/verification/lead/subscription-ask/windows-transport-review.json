@@ -1,0 +1,95 @@
+{
+  "decision": "request_changes",
+  "candidate": "68b4cd9344dc0a2b36f151b911c7f9c4f2a797d8",
+  "evidence_candidate": "4944cc38091f5f53a175deefa58c69fe26391b32",
+  "backend_baseline": "a46a00de960114b866fe70d3c7d7f2c552e8c95b",
+  "archive": "/tmp/windows-subscription-68b4cd9-cpnehy26",
+  "scope": "Windows subscription transport/shared response reader/helper only",
+  "source_sha256": {
+    "apps/windows/src/main/subscription.ts": "d998de4be0236a55c52028ee616772df80191730c2942ecee8cf13d44b6865f6",
+    "apps/windows/src/shared/subscription-ask.ts": "f0accd0b2c4a9d87b1b56a0c32bba746f56a8d3c4738eb87b2145b1c30ed159b",
+    "apps/windows/src/main/capture-host.ts": "6ffff62def7dbbdc7bb4c7155d71b2e7421abca9a792b88f3b04055ea7b546f2",
+    "apps/windows/tests/subscription.test.ts": "6fd5452243ea57162504768c61498d4499af49f8aa3d51e3b24ce3fcec763266",
+    "apps/windows/tests/subscription-fakes.ts": "13f25c5aadfd7b340c33ca70ac26dfe535d4c3514d2e8e7d40638ae4fad3bc38"
+  },
+  "real_provider_calls": 0,
+  "real_account_calls": 0,
+  "display_operations": 0,
+  "repository_edits": false,
+  "checks": [
+    {
+      "kind": "focused_author_tests",
+      "cases": 18,
+      "sandbox_pass": 17,
+      "sandbox_fail": 1,
+      "failure": "synthetic child emitted no output under sandbox",
+      "isolated_retry_outside_sandbox_pass": 1,
+      "effective_all_pass": true
+    },
+    {
+      "kind": "independent_synthetic_probes",
+      "cases": 6,
+      "reproductions": 6,
+      "evidence": "/tmp/windows-subscription-independent-probe.json"
+    }
+  ],
+  "findings": [
+    {
+      "id": "W-SUB-T01",
+      "priority": 2,
+      "blocking": true,
+      "path": "apps/windows/src/main/subscription.ts",
+      "lines": [
+        212,
+        269,
+        273,
+        280,
+        352,
+        356
+      ],
+      "issue": "pending connection/read drops login/account-change refresh; stale signed_out remains final",
+      "owner": "existing Windows/Web",
+      "minimal_fix": "coalesce pending refresh with stale-state and child/quit guards"
+    },
+    {
+      "id": "W-SUB-T02",
+      "priority": 2,
+      "blocking": true,
+      "path": "apps/windows/src/main/subscription.ts",
+      "lines": [
+        398
+      ],
+      "issue": "non-confirming cancel receipt treated as confirmed remote interruption",
+      "owner": "existing Windows/Web",
+      "minimal_fix": "method-specific exact cancellation/stop confirmation; unknown remains uncertain"
+    },
+    {
+      "id": "W-SUB-T03",
+      "priority": 3,
+      "blocking": false,
+      "path": "apps/windows/src/main/subscription.ts",
+      "lines": [
+        156,
+        157,
+        158,
+        159,
+        187,
+        188,
+        189,
+        190,
+        191
+      ],
+      "issue": "protocol fence suppresses actual process exit settlement",
+      "owner": "existing Windows/Web",
+      "minimal_fix": "separate protocol fence and exit settlement"
+    }
+  ],
+  "report": "/tmp/windows-subscription-transport-review.md",
+  "acceptance": {
+    "real_image_request": false,
+    "image_only_semantic_answer": false,
+    "app_learning_context": false,
+    "windows_device": false,
+    "macos_device": false
+  }
+}
