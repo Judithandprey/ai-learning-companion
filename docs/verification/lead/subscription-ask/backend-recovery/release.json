@@ -1,0 +1,28 @@
+{
+  "source_release": "cd9b0efe7f2ca3136733728b261e7dc90097da9f",
+  "origin_main_push": "confirmed",
+  "scope": "existing consumer dependency only; combined GUI/image release held",
+  "receipts": [
+    {
+      "owner": "web",
+      "message_id": "handoff_b386d333c9d3c602b11bf754aa560080",
+      "accepted": true,
+      "state_at_send": "unread",
+      "execution_started_at_send": false
+    },
+    {
+      "owner": "ios",
+      "message_id": "handoff_8dd23989ac838e053ca7a1b610251ab1",
+      "accepted": true,
+      "state_at_send": "unread",
+      "execution_started_at_send": false
+    },
+    {
+      "owner": "qa",
+      "message_id": "handoff_8f29067f0f51d968843e632c98d4fb5e",
+      "accepted": true,
+      "state_at_send": "unread",
+      "execution_started_at_send": false
+    }
+  ]
+}
