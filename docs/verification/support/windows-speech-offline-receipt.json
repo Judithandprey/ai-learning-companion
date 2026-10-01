@@ -1,0 +1,192 @@
+{
+  "checked_at": "2026-10-01T13:52:10.8569011Z",
+  "os_version": "10.0.26200.0",
+  "framework": "4.0.30319.42000",
+  "process64": true,
+  "assembly": "System.Speech, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35",
+  "scope": "synthetic in-memory audio only; no live-device or provider test",
+  "microphone_opened": false,
+  "speaker_output": false,
+  "system_playback_captured": false,
+  "voices": [
+    {
+      "name": "Microsoft Huihui Desktop",
+      "culture": "zh-CN",
+      "enabled": true
+    },
+    {
+      "name": "Microsoft Zira Desktop",
+      "culture": "en-US",
+      "enabled": true
+    }
+  ],
+  "recognizers": [
+    {
+      "id": "MS-2052-80-DESK",
+      "culture": "zh-CN"
+    }
+  ],
+  "trials": [
+    {
+      "culture": "zh-CN",
+      "voice": "Microsoft Huihui Desktop",
+      "original_synthetic_text": "答案不是三，是五。请先解释这个步骤。",
+      "normal_wave": {
+        "bytes": 245146,
+        "sha256": "ed1c1f383ae3a76698f6ee88cbc09c64e5c9279563c443d2bd57e0cbe3ea4dda",
+        "format": "PCM",
+        "channels": 1,
+        "sample_rate_hz": 22050,
+        "bits_per_sample": 16,
+        "duration_ms": 5557.8231292517
+      },
+      "requested_130_percent_wave": {
+        "bytes": 197406,
+        "sha256": "f60ccf6c27c79efdb461bd2cb0b2f76b3ba4fcc3fafae053d4023c8d97d25932",
+        "format": "PCM",
+        "channels": 1,
+        "sample_rate_hz": 22050,
+        "bits_per_sample": 16,
+        "duration_ms": 4475.283446712018
+      },
+      "asr": {
+        "recognizer": "MS-2052-80-DESK",
+        "grammar": "dictation",
+        "captions": [
+          {
+            "source_kind": "synthetic_wav",
+            "speaker": "unknown",
+            "text": "答案不恤衫75",
+            "confidence": 0.3381878,
+            "words": [
+              {
+                "text": "答案",
+                "confidence": 0.226126835
+              },
+              {
+                "text": "不",
+                "confidence": 0.293273628
+              },
+              {
+                "text": "恤",
+                "confidence": 0.00514919031
+              },
+              {
+                "text": "衫",
+                "confidence": 0.330955118
+              },
+              {
+                "text": "七",
+                "confidence": 0.0123352278
+              },
+              {
+                "text": "五",
+                "confidence": 0.8826751
+              }
+            ],
+            "audio_offset_ms": 0,
+            "duration_ms": 2270,
+            "received_utc": "2026-10-01T13:52:10.3713920Z",
+            "screen_anchor": null,
+            "is_user_request": false,
+            "revision": 0
+          },
+          {
+            "source_kind": "synthetic_wav",
+            "speaker": "unknown",
+            "text": "挺先解释这个步骤",
+            "confidence": 0.26992625,
+            "words": [
+              {
+                "text": "挺",
+                "confidence": 0.337930471
+              },
+              {
+                "text": "先",
+                "confidence": 0.0981230438
+              },
+              {
+                "text": "解释",
+                "confidence": 0.09982391
+              },
+              {
+                "text": "这个",
+                "confidence": 0.210143685
+              },
+              {
+                "text": "步骤",
+                "confidence": 0.518247962
+              }
+            ],
+            "audio_offset_ms": 3010,
+            "duration_ms": 1870,
+            "received_utc": "2026-10-01T13:52:10.5195802Z",
+            "screen_anchor": null,
+            "is_user_request": false,
+            "revision": 0
+          }
+        ],
+        "cancel_requested": false,
+        "cancelled": false,
+        "elapsed_ms": 484.1489,
+        "late_caption_publications_suppressed": 0,
+        "input": "generated_memory_wav"
+      },
+      "asr_cancel": {
+        "recognizer": "MS-2052-80-DESK",
+        "grammar": "dictation",
+        "captions": [],
+        "cancel_requested": true,
+        "cancelled": true,
+        "elapsed_ms": 0.6425000000000001,
+        "late_caption_publications_suppressed": 0,
+        "input": "generated_memory_wav"
+      },
+      "tts_cancel": {
+        "queued_prompts": 2,
+        "completed_events": 2,
+        "cancelled_events": 2,
+        "cancel_elapsed_ms": 35.177800000000005,
+        "speaker_output": false,
+        "scope": "active in-memory synthesis and queued prompt, not physical playback"
+      },
+      "probe_status": "completed"
+    },
+    {
+      "culture": "en-US",
+      "voice": "Microsoft Zira Desktop",
+      "original_synthetic_text": "The answer is not three, it is five. Please explain this step first.",
+      "normal_wave": {
+        "bytes": 259298,
+        "sha256": "3c9765dc84bcee9c3d8cfb50befc5b39363883f7dc63574cb6b9e7ac7da42a81",
+        "format": "PCM",
+        "channels": 1,
+        "sample_rate_hz": 22050,
+        "bits_per_sample": 16,
+        "duration_ms": 5878.730158730159
+      },
+      "requested_130_percent_wave": {
+        "bytes": 204178,
+        "sha256": "15ce65e28b136f3f62844b57c12221f9a27fbe115338fd506ad5b120ad32f839",
+        "format": "PCM",
+        "channels": 1,
+        "sample_rate_hz": 22050,
+        "bits_per_sample": 16,
+        "duration_ms": 4628.843537414966
+      },
+      "asr_status": "no_installed_matching_recognizer",
+      "tts_cancel": {
+        "queued_prompts": 2,
+        "completed_events": 2,
+        "cancelled_events": 2,
+        "cancel_elapsed_ms": 9.845600000000001,
+        "speaker_output": false,
+        "scope": "active in-memory synthesis and queued prompt, not physical playback"
+      },
+      "probe_status": "completed"
+    }
+  ],
+  "probe_sha256": "2a220bfec0791de8f654059fd27419cb6a7961a51bbcf04d8768f5c72bf63eeb",
+  "assigned_baseline": "d37f7a442a78122fb351a7aab83ffdff8aec1448",
+  "owned_process_exit_code": 0
+}
