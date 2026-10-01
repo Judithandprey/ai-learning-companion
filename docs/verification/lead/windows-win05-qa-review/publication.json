@@ -1,0 +1,37 @@
+{
+  "baseline": "cce0d411c72bed7610ff9e6b97a1475b47137834",
+  "push": {
+    "remote": "origin",
+    "branch": "main",
+    "successful": true,
+    "verified_head_equals_tracking_ref": true
+  },
+  "notices": {
+    "qa": {
+      "ok": true,
+      "route_id": "route_6fd5946d12ac46e98ef15d2140c7261f",
+      "action": "instruction",
+      "accepted": true,
+      "mode": "async_route_v1",
+      "delivery_mode": "mailbox",
+      "message_id": "handoff_17240b44a58cad0a0382538908786016",
+      "duplicate": false,
+      "state": "unread",
+      "execution_started": false
+    },
+    "web": {
+      "ok": true,
+      "route_id": "route_8608e3d1ee5a44f7bddfe1fa43c2a202",
+      "action": "instruction",
+      "accepted": true,
+      "mode": "async_route_v1",
+      "delivery_mode": "mailbox",
+      "message_id": "handoff_218d502fc72d73b9ba3bd57ef3c61390",
+      "duplicate": false,
+      "state": "unread",
+      "execution_started": false
+    }
+  },
+  "meaning": "Accepted mailbox delivery only; neither recipient reading nor execution inferred.",
+  "body": "QA-WIN-05 decision and integrated release: cce0d411c72bed7610ff9e6b97a1475b47137834 is pushed to origin/main. QA delivery 26ac6269ad728266aade944005431008ad1d1675 integrates as 6114aa9491f339f379266e69d6df8bd96b35a3a4; tested Windows production bytes remain 476fd1fb832e708b79ad5e5be1c7ef17925febee.\n\nLead closes the bounded pending-status finding on the actual second Windows run: 16/16 checks, 76 successful steps. Independent evidence/harness review, matching clean-build stage hash, four missing-evidence controls and one integrated saved-evidence replay passed. The first run remains 13 pass / 1 failed scenario step / 2 limits. Its results are not relabeled.\n\nThe static header plus explicit adjacent waiting line meets the already approved confirmation-state design. R52/A12 require truthful state; they do not require duplicating the word waiting in both elements. No extra wording fix or repeat campaign is assigned. Original bytes for the given-up send remain unknown despite absent record/receipt. Physical pen, provider, audio and full section 7.1 acceptance remain open.\n\nCanonical evidence: docs/verification/lead/windows-win05-qa-review/README.md; current continuation in docs/tasks.md. QA reported releasing the display at 04:20:01Z; any future display job must check actual current occupancy. Preserve user preview/database and Paperclip isolation.\n\nNext core dependency is Lead's pending user decision on the authorized product vision API and credential configuration; no provider activation or paid calls are authorized by this notice. Interactive Mac access is separately pending. Preserve your completed work; no repeated acceptance task or acknowledgement-only reply is needed."
+}

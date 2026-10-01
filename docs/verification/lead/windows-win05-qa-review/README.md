@@ -65,3 +65,9 @@ needs an explicitly selected authorized product API and available credentials;
 a focused question has been asked without activation or spending. Interactive
 Mac availability remains the prior pending device question. Neither dependency
 is marked complete by these component checks.
+
+Reviewed evidence baseline `cce0d411c72bed7610ff9e6b97a1475b47137834` was pushed
+to `origin/main`, with HEAD and remote-tracking SHA verified equal. The substantive
+closure decision was delivered once to QA and Web through their granted native
+routes; [publication receipts](publication.json) record accepted unread messages,
+not recipient reading or execution. No acknowledgement or repeated test was requested.
