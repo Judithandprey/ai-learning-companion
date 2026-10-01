@@ -10,10 +10,44 @@
   "next_release_owner": "lead",
   "allocation_condition": "One attempt only after exact released Windows build, generated safe surface, verified managed login/image model and review/display prerequisites. Stop on missing login, quota, capability or tool issue; no automatic retry.",
   "allocation_id": "handoff_d548b28a9fa5613b7543be19858a5ca2",
-  "allocation_status": "held_for_windows_corrections_and_user_login",
+  "allocation_status": "retired_unused_superseded_by_live_flow_reservation",
   "attempt_counting": "Every actual real Ask press consumes the one allocation, including proven not_submitted; unknown also counts. A new attempt requires explicit lead reallocation within the unchanged initial bound. This is an engineering request limit, not a claim about billed allowance.",
   "test_assistance": "full_solution only for the generated nonsensitive two-card recognition question, two-line answer; product hint default and learner disclosure scope unchanged.",
   "last_actual_qa_delivery": "9abf58797c7c779266651eca333424846c7a04dd",
   "confirmed_real_asks": 0,
-  "backend_correction": "1b27a918 integrated as39620fa;189 focused main checks passed, no provider requests"
+  "backend_correction": "1b27a918 integrated as39620fa;189 focused main checks passed, no provider requests",
+  "allocation_retired_reason": "QA actual handoff_ec31e85d736c7661fbb4022aa0d2cb52 confirms 0 of 1 used. This selected-image allocation is not additive to the next changed-flow allocation.",
+  "live_changed_flow_allocation": {
+    "allocation_id": "handoff_fd794043a20068a1b52853cbb6ff884e",
+    "status": "reserved_not_released",
+    "candidate_commit": null,
+    "maximum_potential_submissions": 5,
+    "purpose_slots": [
+      "unattended whole-screen observation",
+      "automatic focus response",
+      "typed follow-up",
+      "supported spoken-follow-up response",
+      "Stop/fence attempt"
+    ],
+    "authority": "Existing later Windows live-experience directive permits bounded real verification through the same subscription. Five is this phase engineering ceiling, not a user spending budget or account entitlement.",
+    "exclusive_lease_active": false,
+    "actual_attempts": [],
+    "attempt_rule": "Every real test action assigned a slot counts, including proven not_submitted and unknown. No automatic retry or reallocation of unavailable voice slots. Stop on auth/quota/capability/tool failure.",
+    "release_requirements": [
+      "exact reviewed integrated build and production entrypoint",
+      "generated nonsensitive surface only",
+      "lead-coordinated exclusive display/account lease",
+      "verified current managed image route and original Stop fences",
+      "voice route independently reviewed before the voice slot"
+    ],
+    "raw_audio_provider_attempts_included": false,
+    "prohibited": [
+      "using the retired one-call allocation",
+      "private screen or microphone test material",
+      "credential copying or lock bypass",
+      "account/model/billing change",
+      "automatic restart or retry"
+    ],
+    "next_owner": "Lead releases exact candidate and lease; QA executes one changed-flow pass; no execution now."
+  }
 }

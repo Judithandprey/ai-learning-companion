@@ -1,0 +1,51 @@
+{
+  "scope": "Exact frozen c44e620 QA reproduction, not current production or real Windows/provider acceptance",
+  "qa_commits": [
+    "ad33e778a6b27d4724af9dbbe88d8bcf6e416b0a",
+    "a5c7a23",
+    "eda32c2db1c211959772eb91934bc863fd34fa4f"
+  ],
+  "integrated_as": [
+    "886ffd9",
+    "2a1b405",
+    "a1faa15"
+  ],
+  "runs": [
+    {
+      "suite": "app",
+      "passed": 21,
+      "failed": 0,
+      "evidence_sha256": "85a4f4dad5ffc716098e197c5749fe2cf2529d23a5d5556e44a110f3091c281a",
+      "committed_evidence_byte_match": true
+    },
+    {
+      "suite": "bridge",
+      "passed": 37,
+      "failed": 0,
+      "evidence_sha256": "15cb12d1b76ee9463003b3809088c0085ebde8427d160b3093b1b5295f2d07df",
+      "committed_evidence_byte_match": true
+    },
+    {
+      "suite": "backend",
+      "passed": 28,
+      "failed": 0,
+      "evidence_sha256": "9990618a5e348708664642c118f748fe13969d157c80abe4dc37fbe1dd07f6dc",
+      "committed_evidence_byte_match": true
+    }
+  ],
+  "initial_run": "Sandbox spawnSync git EPERM during source export; behavioral checks not reached. One normal approved retry with unchanged tests.",
+  "account_device_provider_calls": 0,
+  "integrated_file_matches": [
+    "docs/verification/qa/p0-13-subscription-changed-paths-c44e620.md",
+    "docs/verification/qa/p0-13-subscription-changed-paths-c44e620/commit-swap-check.json",
+    "docs/verification/qa/p0-13-subscription-changed-paths-c44e620/sub_changed_app.json",
+    "docs/verification/qa/p0-13-subscription-changed-paths-c44e620/sub_changed_backend.json",
+    "docs/verification/qa/p0-13-subscription-changed-paths-c44e620/sub_changed_bridge.json",
+    "tests/e2e/windows/qa_connector_relay.py",
+    "tests/e2e/windows/qa_fake_bridge.py",
+    "tests/e2e/windows/sub_changed_app.test.mjs",
+    "tests/e2e/windows/sub_changed_backend.test.mjs",
+    "tests/e2e/windows/sub_changed_bridge.test.mjs",
+    "tests/e2e/windows/sub_tree.mjs"
+  ]
+}
