@@ -1,0 +1,218 @@
+{
+  "verdict": "APPROVE_SCOPED_HARNESS",
+  "candidate": "26ac6269ad728266aade944005431008ad1d1675",
+  "actual_product_source": "476fd1fb832e708b79ad5e5be1c7ef17925febee",
+  "blockers": [],
+  "checks": [
+    {
+      "case": "run1",
+      "counts": {
+        "pass": 13,
+        "fail": 1,
+        "limit": 2
+      },
+      "same_all_16_statuses": true
+    },
+    {
+      "case": "run2",
+      "counts": {
+        "pass": 16
+      },
+      "same_all_16_statuses": true
+    },
+    {
+      "case": "missing-awaiting-events",
+      "target": "pending.said_as_waiting_at_once_counts_kept",
+      "actual": "fail",
+      "counts": {
+        "pass": 11,
+        "fail": 1,
+        "limit": 4
+      }
+    },
+    {
+      "case": "missing-ack-server-receipt",
+      "target": "ack.real_answer_raises_the_confirmed_count",
+      "actual": "fail",
+      "counts": {
+        "pass": 12,
+        "fail": 2,
+        "limit": 2
+      }
+    },
+    {
+      "case": "missing-pending-stop-read",
+      "target": "stop.during_a_pending_send_ends_unconfirmed_not_live",
+      "actual": "limit",
+      "counts": {
+        "pass": 12,
+        "limit": 2,
+        "fail": 2
+      }
+    },
+    {
+      "case": "missing-stop-give-up-event",
+      "target": "stop.during_a_pending_send_ends_unconfirmed_not_live",
+      "actual": "fail",
+      "counts": {
+        "pass": 14,
+        "fail": 1,
+        "limit": 1
+      }
+    }
+  ],
+  "inputs_unchanged": true,
+  "input_sha256": {
+    "/tmp/qa-win05-ev1": {
+      "coordination-acked.json": "132c3dc105f82d628f46270164fd9f03c9dea21e55bd0c7c73875518ee0dbf62",
+      "coordination-awaiting.json": "29aca9a8cd86100e767baac2d0e1e276aa37f61fbe66e7f315a8512534799e10",
+      "coordination-confirmed.json": "0817e9a6caa4f8a99123cc3208eeac12700547fc4ef0878d35cb4db2a7420369",
+      "coordination-final.json": "f569f52bb8e5e98f841c10487686b07a7cb1254e160ae006cc98725e77be1557",
+      "coordination-stop-given-up.json": "7d4621fb773632c56fc105e503104809beda6582c48b9b875f5bf7499b4d117f",
+      "database-readback.json": "4d7ec41011679030266f578514e9cf5ca04d421ce459d8b8b49aa6ef5a6a10f7",
+      "hash-checkpoints.json": "c558ffb781867896e8b32b13ede8f68bde56233ec06d772f961fc027b554e9ad",
+      "host-watch.json": "2e538dfb27b25d7eb4851642e48bb159eccec207a248c230ee867828ba47da1e",
+      "manifest-lines.json": "fd1d514cdb6be6cdf5d31ccf62d55f553f0d0f50cf83b9fadf63ea9bdcb5dab0",
+      "preflight.json": "1e69e5a7128b2be9987cf46c8589219e787d61c7f9c1c1d3a5f1ec1778c6033d",
+      "run.json": "7de0a33837e30da7d9eab17a0fbe964121b9ae40cca412b0308584ae16cfc9ca",
+      "runner-results.json": "b9332a59b2fa65cf19f58688d123543863608305f39d7c49fc8b135549768440",
+      "steps.json": "84dff0aaba485d85c6dc2cb4f7e1e2e45a3229b3fe3fc7510db9a7d007beab2b",
+      "summary.json": "cc42ca725e6161db15a7f5a68ee2b0dc5f42d50950f4ca083c2bed70626ea3fa"
+    },
+    "/tmp/lc-windows-win05-26ac626/docs/verification/qa/p0-13-windows-win05-pending-476fd1f": {
+      "build.json": "df74c3399e605040be0587d3af04740c5ea66811681c6b00608ab4534c67be04",
+      "cleanup.json": "88bb815adf6ea6f169f7c720bf9a91fded3657c4c52e124184a550345eb66c4b",
+      "coordination-acked.json": "f28a31dfbd790fcd8d1a9c8deafd0bcd46a63a2ef710b72f018285afddbf3e85",
+      "coordination-awaiting.json": "0af37c3f3c938fbe50bf02b5681f64c4064400cfc4e2789b38c5a08ed100557d",
+      "coordination-confirmed.json": "66d66962db0fb24ec1c851db5d7dd4a34e8d63be9aea621a45109a6dfeb0edcc",
+      "coordination-final.json": "8a1315b04e45fcc25296d43362086c11cc574d42fc4fcec8e900dfdabeb39fe4",
+      "coordination-stop-given-up.json": "90da93a8f4139b9147e37d2e2fcf998cdba8b4ee2bc4d43fd1e01b2609693612",
+      "database-readback.json": "055c284213a5a0185d34ecced5add6b5f3968908de5d4e9bb0c5279c993493c6",
+      "hash-checkpoints.json": "375e27c405209cb77e3da218180bf721a91f2d4844e34a7f3d4f7d22eb3c2650",
+      "host-watch.json": "09a29609953279c656b2986d1fe814ee3ffeaed04e506341d91ce15d257f4067",
+      "manifest-lines.json": "04bde4f5e10bcbdf95b1bb06135512eed4b8d357e29fb021290288a23d3615f2",
+      "preflight.json": "c8475798e952371efe7c2ecee46ec3835974395ffa8b76ccc08ab60c151e48dc",
+      "run.json": "703c8c5b6a8b89e41eb7a45da3ef1bf23522af599c5938c08ad0f7b79028d7a0",
+      "runner-results.json": "0eaf90851421c09b05949cd74b9b4df445f919339d776ede68c95127907c9e4a",
+      "steps.json": "79fa26a57843e0bc77bbe293be089de4adfbbfe4640d89cf5737139c0a6bf80c",
+      "summary.json": "c8b70e4bb808d09773e54b083329e583a078f284eb3fda5baa3a453c9a4fffc6",
+      "supporting-run-1.json": "ccf1cbabc94c2fb9e589c6dbb219cbd267b866ea2a1bac6226d222a2af13fd9c"
+    }
+  },
+  "provenance": {
+    "candidate": "26ac6269ad728266aade944005431008ad1d1675",
+    "harness_hashes": {
+      "analyze.py": {
+        "executed": "3bd0e0eeebba00865c1c35fab0be6c5ebb41a7d1e3a8e56bfd2805572b25cbe7",
+        "delivered": "3bd0e0eeebba00865c1c35fab0be6c5ebb41a7d1e3a8e56bfd2805572b25cbe7",
+        "matches": true
+      },
+      "analyze_fix.py": {
+        "executed": "17d8598082b34db2c504cec310ac5ca2922bb4e78c4ecf91e4ed7cb69761c641",
+        "delivered": "17d8598082b34db2c504cec310ac5ca2922bb4e78c4ecf91e4ed7cb69761c641",
+        "matches": true
+      },
+      "analyze_ink.py": {
+        "executed": "f497dd24f101d61fca273128060d8cd39d4c8f0bbf94b08a5b81e8a4f450d4c1",
+        "delivered": "f497dd24f101d61fca273128060d8cd39d4c8f0bbf94b08a5b81e8a4f450d4c1",
+        "matches": true
+      },
+      "analyze_parent.py": {
+        "executed": "28a4ad8eafa1e18f2fecfddb4ab0f4acca1553e757dc4570a51f74c140ff87ac",
+        "delivered": "28a4ad8eafa1e18f2fecfddb4ab0f4acca1553e757dc4570a51f74c140ff87ac",
+        "matches": true
+      },
+      "analyze_win05.py": {
+        "executed": "de85964e22a585e5c38331d01d2b5afc3422709c5ffe7a5ac4adc575be415063",
+        "delivered": "f7e66ef176c169b28707696efb2bef894f98b65d263dd4ce3470fd664c6a7e59",
+        "matches": false
+      },
+      "course.html": {
+        "executed": "2cecf763803f33e64c283dfb7f0f133bc2b9b0412f08873bb5cb1caf831c03ab",
+        "delivered": "2cecf763803f33e64c283dfb7f0f133bc2b9b0412f08873bb5cb1caf831c03ab",
+        "matches": true
+      },
+      "notes.txt": {
+        "executed": "ca986c9c569bcdd36100d87df9ce28eeabd3025fc7d5a43f171c4a957f55b53c",
+        "delivered": "ca986c9c569bcdd36100d87df9ce28eeabd3025fc7d5a43f171c4a957f55b53c",
+        "matches": true
+      },
+      "qa-electron-runner.ps1": {
+        "executed": "0dfb3b4c2e40cc56ae48378b9a6e4c2998270e1b26f4a251fd5b958fe0d0d612",
+        "delivered": "0dfb3b4c2e40cc56ae48378b9a6e4c2998270e1b26f4a251fd5b958fe0d0d612",
+        "matches": true
+      },
+      "qa-png-to-bmp.ps1": {
+        "executed": "6f887944f49430065891d294ddba78d88e235ad88344890deaa304ac91f4a675",
+        "delivered": "6f887944f49430065891d294ddba78d88e235ad88344890deaa304ac91f4a675",
+        "matches": true
+      },
+      "qa_parent_db.py": {
+        "executed": "17bc8dea331c14c0559246a884e7787f3d880db7f2f62652fd45eaa350cd9cd7",
+        "delivered": "17bc8dea331c14c0559246a884e7787f3d880db7f2f62652fd45eaa350cd9cd7",
+        "matches": true
+      },
+      "replay_analyze_fix.py": {
+        "executed": "305f546996c5e9768bc4d252cd8ed3b57b48b3ae6797dcf925d3b480a0f82728",
+        "delivered": "305f546996c5e9768bc4d252cd8ed3b57b48b3ae6797dcf925d3b480a0f82728",
+        "matches": true
+      },
+      "run.mjs": {
+        "executed": "a2876b275ee26dce6ee9e912ca0f62f95e4cb8f59c80e28de546dc8c89487a13",
+        "delivered": "a2876b275ee26dce6ee9e912ca0f62f95e4cb8f59c80e28de546dc8c89487a13",
+        "matches": true
+      },
+      "scenarios.mjs": {
+        "executed": "db94333d7d7cd8a574ebd26a6714ed0a813d8053b5b64cd4d786dfc8c5a6007b",
+        "delivered": "db94333d7d7cd8a574ebd26a6714ed0a813d8053b5b64cd4d786dfc8c5a6007b",
+        "matches": true
+      }
+    },
+    "frozen_86d2405_evidence_tree_unchanged": "e0ab4d01ccae8cd9de354bfae5b8da56e5e930d2",
+    "run1_committed_supporting_receipt_matches_replay": true,
+    "run2_before_after_note_correction_summary_differences": {
+      "all_statuses_unchanged": true,
+      "only_check": "server.holds_exactly_what_the_app_called_stored",
+      "changed_fields": [
+        "note",
+        "observed.whether_the_given_up_upload_arrived"
+      ]
+    },
+    "executed_analyzer_source_observed": false,
+    "no_predicate_change_claim": "QA-attributed; exact old executed source not available in exported candidate",
+    "scenarios": {
+      "existing_scenarios_byte_equivalent_JSON": {
+        "full": 300,
+        "ink": 188,
+        "parent": 248,
+        "parentquit": 41,
+        "parentfix": 223,
+        "smoke": 20
+      },
+      "parentwin05": {
+        "steps": 76,
+        "pauses": 2,
+        "resumes": 2,
+        "strokes": 0,
+        "force_kills": 0
+      }
+    }
+  },
+  "neutral_header_semantics": "Root resolved: approved confirmation-rule header plus dynamic waiting line meets bounded R52/A12 truthfulness; no duplicate waiting wording required",
+  "limits": [
+    "No new native/GUI/DB/signal/network run",
+    "No old 121-case replay",
+    "Exact old executed analyzer source not observed; predicate-unchanged claim QA-attributed",
+    "Private original image/ink bytes not accessed"
+  ],
+  "artifacts_sha256": {
+    "/tmp/windows-win05-26ac-harness-review.md": "134e04fba0c6b95de77f835addb7900cec1624742658ee83d96815f20246f379",
+    "/tmp/lc-windows-win05-26ac626/focused_replay.py": "c767d99ab1f4a08ca19e819d12dccc0a79d44b14599c5f1bb0961088c51e73bd",
+    "/tmp/lc-windows-win05-26ac626/focused-results.json": "0e87c35b16533609ba8b311120546cee6df48d689462d8e6ccdc7b1f7d5a1180",
+    "/tmp/lc-windows-win05-26ac626/focused-replay.log": "67402e395cfb1d3427306c025f98dcd466c3acf790abb78d143fcda882a0b005",
+    "/tmp/lc-windows-win05-26ac626/scenario-check.mjs": "e7d3c66ec96060c21a2132cffcfa34c9afea804c2876af87b515ac976206c8b0",
+    "/tmp/lc-windows-win05-26ac626/scenario-results.json": "a202715e1ad19a5a12fa96040ab3a1002444336d0d491a0e0e9e89810cdd56c4",
+    "/tmp/lc-windows-win05-26ac626/provenance.json": "58eb3bca4896ce8c06e71516fc1b9f712db1e5f92c350aef88014079acf98719"
+  },
+  "root_single_replay_command": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python tests/e2e/windows/analyze_win05.py /tmp/lc-windows-win05-26ac626/focused/run2 /tmp/windows-win05-integrated-run2 > /tmp/windows-win05-integrated-run2.log"
+}

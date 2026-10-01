@@ -1,0 +1,26 @@
+{
+  "qa_delivery": "26ac6269ad728266aade944005431008ad1d1675",
+  "integrated_commit": "6114aa9491f339f379266e69d6df8bd96b35a3a4",
+  "tested_production": "476fd1fb832e708b79ad5e5be1c7ef17925febee",
+  "product_source_unchanged": true,
+  "integrated_saved_evidence_replay": {
+    "pass": 16,
+    "entire_summary_equals_delivered": true,
+    "summary_sha256": "c8b70e4bb808d09773e54b083329e583a078f284eb3fda5baa3a453c9a4fffc6",
+    "command": "python3 tests/e2e/windows/analyze_win05.py /tmp/lc-windows-win05-26ac626/focused/run2 /tmp/lead-win05-6114aa9-replay"
+  },
+  "independent_replay_groups": 6,
+  "independent_build": {
+    "files": 57,
+    "tree_sha256": "4e65f654cb5c28ed3690dc649b9bcc768b083c43025c9edb4e101c6e449fb93b"
+  },
+  "new_gui_db_campaign": false,
+  "qa_win_05": "closed within observed changed path",
+  "header_interpretation": "Pre-reviewed conditional-confirmation header plus adjacent explicit pending line satisfies bounded truthfulness requirement. No new product wording task.",
+  "historical_analyzer_source_delta": "QA-attributed; old executed source not observed. Current analyzer replay independently verified.",
+  "next_dependency": {
+    "real_ai": "Product API selection/authorized credentials requested; not selected or activated.",
+    "interactive_mac": "Prior user availability question pending.",
+    "roles": "Existing owners retained; no acknowledgment loop or repeated campaign."
+  }
+}

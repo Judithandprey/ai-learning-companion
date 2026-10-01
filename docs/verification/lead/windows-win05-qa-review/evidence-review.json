@@ -1,0 +1,356 @@
+{
+  "review": "APPROVE bounded historical QA evidence",
+  "qa_commit": "26ac6269ad728266aade944005431008ad1d1675",
+  "candidate": "476fd1fb832e708b79ad5e5be1c7ef17925febee",
+  "changed_files": {
+    "docs/verification/qa/p0-13-windows-win05-pending-476fd1f.md": {
+      "sha256": "d662a4e9caedb31bedd11accae82f8c1ab4c32a5cd1c2922db831b4ce31b85e9",
+      "export_exact": true
+    },
+    "docs/verification/qa/p0-13-windows-win05-pending-476fd1f/build.json": {
+      "sha256": "df74c3399e605040be0587d3af04740c5ea66811681c6b00608ab4534c67be04",
+      "export_exact": true
+    },
+    "docs/verification/qa/p0-13-windows-win05-pending-476fd1f/cleanup.json": {
+      "sha256": "88bb815adf6ea6f169f7c720bf9a91fded3657c4c52e124184a550345eb66c4b",
+      "export_exact": true
+    },
+    "docs/verification/qa/p0-13-windows-win05-pending-476fd1f/coordination-acked.json": {
+      "sha256": "f28a31dfbd790fcd8d1a9c8deafd0bcd46a63a2ef710b72f018285afddbf3e85",
+      "export_exact": true
+    },
+    "docs/verification/qa/p0-13-windows-win05-pending-476fd1f/coordination-awaiting.json": {
+      "sha256": "0af37c3f3c938fbe50bf02b5681f64c4064400cfc4e2789b38c5a08ed100557d",
+      "export_exact": true
+    },
+    "docs/verification/qa/p0-13-windows-win05-pending-476fd1f/coordination-confirmed.json": {
+      "sha256": "66d66962db0fb24ec1c851db5d7dd4a34e8d63be9aea621a45109a6dfeb0edcc",
+      "export_exact": true
+    },
+    "docs/verification/qa/p0-13-windows-win05-pending-476fd1f/coordination-final.json": {
+      "sha256": "8a1315b04e45fcc25296d43362086c11cc574d42fc4fcec8e900dfdabeb39fe4",
+      "export_exact": true
+    },
+    "docs/verification/qa/p0-13-windows-win05-pending-476fd1f/coordination-stop-given-up.json": {
+      "sha256": "90da93a8f4139b9147e37d2e2fcf998cdba8b4ee2bc4d43fd1e01b2609693612",
+      "export_exact": true
+    },
+    "docs/verification/qa/p0-13-windows-win05-pending-476fd1f/database-readback.json": {
+      "sha256": "055c284213a5a0185d34ecced5add6b5f3968908de5d4e9bb0c5279c993493c6",
+      "export_exact": true
+    },
+    "docs/verification/qa/p0-13-windows-win05-pending-476fd1f/hash-checkpoints.json": {
+      "sha256": "375e27c405209cb77e3da218180bf721a91f2d4844e34a7f3d4f7d22eb3c2650",
+      "export_exact": true
+    },
+    "docs/verification/qa/p0-13-windows-win05-pending-476fd1f/host-watch.json": {
+      "sha256": "09a29609953279c656b2986d1fe814ee3ffeaed04e506341d91ce15d257f4067",
+      "export_exact": true
+    },
+    "docs/verification/qa/p0-13-windows-win05-pending-476fd1f/manifest-lines.json": {
+      "sha256": "04bde4f5e10bcbdf95b1bb06135512eed4b8d357e29fb021290288a23d3615f2",
+      "export_exact": true
+    },
+    "docs/verification/qa/p0-13-windows-win05-pending-476fd1f/preflight.json": {
+      "sha256": "c8475798e952371efe7c2ecee46ec3835974395ffa8b76ccc08ab60c151e48dc",
+      "export_exact": true
+    },
+    "docs/verification/qa/p0-13-windows-win05-pending-476fd1f/run.json": {
+      "sha256": "703c8c5b6a8b89e41eb7a45da3ef1bf23522af599c5938c08ad0f7b79028d7a0",
+      "export_exact": true
+    },
+    "docs/verification/qa/p0-13-windows-win05-pending-476fd1f/runner-results.json": {
+      "sha256": "0eaf90851421c09b05949cd74b9b4df445f919339d776ede68c95127907c9e4a",
+      "export_exact": true
+    },
+    "docs/verification/qa/p0-13-windows-win05-pending-476fd1f/steps.json": {
+      "sha256": "79fa26a57843e0bc77bbe293be089de4adfbbfe4640d89cf5737139c0a6bf80c",
+      "export_exact": true
+    },
+    "docs/verification/qa/p0-13-windows-win05-pending-476fd1f/summary.json": {
+      "sha256": "c8b70e4bb808d09773e54b083329e583a078f284eb3fda5baa3a453c9a4fffc6",
+      "export_exact": true
+    },
+    "docs/verification/qa/p0-13-windows-win05-pending-476fd1f/supporting-run-1.json": {
+      "sha256": "ccf1cbabc94c2fb9e589c6dbb219cbd267b866ea2a1bac6226d222a2af13fd9c",
+      "export_exact": true
+    },
+    "tests/e2e/windows/analyze_win05.py": {
+      "sha256": "f7e66ef176c169b28707696efb2bef894f98b65d263dd4ce3470fd664c6a7e59",
+      "export_exact": true
+    },
+    "tests/e2e/windows/run.mjs": {
+      "sha256": "a2876b275ee26dce6ee9e912ca0f62f95e4cb8f59c80e28de546dc8c89487a13",
+      "export_exact": true
+    },
+    "tests/e2e/windows/scenarios.mjs": {
+      "sha256": "db94333d7d7cd8a574ebd26a6714ed0a813d8053b5b64cd4d786dfc8c5a6007b",
+      "export_exact": true
+    }
+  },
+  "tree_equalities": {
+    "candidate_windows_equals_d295a51": true,
+    "candidate_apps_services_packages_equals_qa_merge": true,
+    "candidate_apps_services_packages_equals_qa_delivery": true,
+    "backend_equals_86d2405": true
+  },
+  "stage": {
+    "recorded": {
+      "name": "lc-qa-windows-win05",
+      "files": 57,
+      "tree_sha256": "4e65f654cb5c28ed3690dc649b9bcc768b083c43025c9edb4e101c6e449fb93b",
+      "clean_rebuild_from_476fd1f_tree_sha256": "4e65f654cb5c28ed3690dc649b9bcc768b083c43025c9edb4e101c6e449fb93b",
+      "method": "sha256 of the sorted sha256sum lines over package.json + dist/**; rebuild = git archive 476fd1f (package.json tsconfig.json apps packages) + tsc + copy-static.mjs"
+    },
+    "independent_exact_candidate_portable_build_files": 57,
+    "independent_exact_candidate_portable_build_tree_sha256": "4e65f654cb5c28ed3690dc649b9bcc768b083c43025c9edb4e101c6e449fb93b",
+    "reproduced": true,
+    "actual_windows_stage_bytes_independently_read": false
+  },
+  "harness": {
+    "analyze.py": {
+      "executed_sha256": "3bd0e0eeebba00865c1c35fab0be6c5ebb41a7d1e3a8e56bfd2805572b25cbe7",
+      "committed_sha256": "3bd0e0eeebba00865c1c35fab0be6c5ebb41a7d1e3a8e56bfd2805572b25cbe7",
+      "equal": true
+    },
+    "analyze_fix.py": {
+      "executed_sha256": "17d8598082b34db2c504cec310ac5ca2922bb4e78c4ecf91e4ed7cb69761c641",
+      "committed_sha256": "17d8598082b34db2c504cec310ac5ca2922bb4e78c4ecf91e4ed7cb69761c641",
+      "equal": true
+    },
+    "analyze_ink.py": {
+      "executed_sha256": "f497dd24f101d61fca273128060d8cd39d4c8f0bbf94b08a5b81e8a4f450d4c1",
+      "committed_sha256": "f497dd24f101d61fca273128060d8cd39d4c8f0bbf94b08a5b81e8a4f450d4c1",
+      "equal": true
+    },
+    "analyze_parent.py": {
+      "executed_sha256": "28a4ad8eafa1e18f2fecfddb4ab0f4acca1553e757dc4570a51f74c140ff87ac",
+      "committed_sha256": "28a4ad8eafa1e18f2fecfddb4ab0f4acca1553e757dc4570a51f74c140ff87ac",
+      "equal": true
+    },
+    "analyze_win05.py": {
+      "executed_sha256": "de85964e22a585e5c38331d01d2b5afc3422709c5ffe7a5ac4adc575be415063",
+      "committed_sha256": "f7e66ef176c169b28707696efb2bef894f98b65d263dd4ce3470fd664c6a7e59",
+      "equal": false
+    },
+    "course.html": {
+      "executed_sha256": "2cecf763803f33e64c283dfb7f0f133bc2b9b0412f08873bb5cb1caf831c03ab",
+      "committed_sha256": "2cecf763803f33e64c283dfb7f0f133bc2b9b0412f08873bb5cb1caf831c03ab",
+      "equal": true
+    },
+    "notes.txt": {
+      "executed_sha256": "ca986c9c569bcdd36100d87df9ce28eeabd3025fc7d5a43f171c4a957f55b53c",
+      "committed_sha256": "ca986c9c569bcdd36100d87df9ce28eeabd3025fc7d5a43f171c4a957f55b53c",
+      "equal": true
+    },
+    "qa-electron-runner.ps1": {
+      "executed_sha256": "0dfb3b4c2e40cc56ae48378b9a6e4c2998270e1b26f4a251fd5b958fe0d0d612",
+      "committed_sha256": "0dfb3b4c2e40cc56ae48378b9a6e4c2998270e1b26f4a251fd5b958fe0d0d612",
+      "equal": true
+    },
+    "qa-png-to-bmp.ps1": {
+      "executed_sha256": "6f887944f49430065891d294ddba78d88e235ad88344890deaa304ac91f4a675",
+      "committed_sha256": "6f887944f49430065891d294ddba78d88e235ad88344890deaa304ac91f4a675",
+      "equal": true
+    },
+    "qa_parent_db.py": {
+      "executed_sha256": "17bc8dea331c14c0559246a884e7787f3d880db7f2f62652fd45eaa350cd9cd7",
+      "committed_sha256": "17bc8dea331c14c0559246a884e7787f3d880db7f2f62652fd45eaa350cd9cd7",
+      "equal": true
+    },
+    "replay_analyze_fix.py": {
+      "executed_sha256": "305f546996c5e9768bc4d252cd8ed3b57b48b3ae6797dcf925d3b480a0f82728",
+      "committed_sha256": "305f546996c5e9768bc4d252cd8ed3b57b48b3ae6797dcf925d3b480a0f82728",
+      "equal": true
+    },
+    "run.mjs": {
+      "executed_sha256": "a2876b275ee26dce6ee9e912ca0f62f95e4cb8f59c80e28de546dc8c89487a13",
+      "committed_sha256": "a2876b275ee26dce6ee9e912ca0f62f95e4cb8f59c80e28de546dc8c89487a13",
+      "equal": true
+    },
+    "scenarios.mjs": {
+      "executed_sha256": "db94333d7d7cd8a574ebd26a6714ed0a813d8053b5b64cd4d786dfc8c5a6007b",
+      "committed_sha256": "db94333d7d7cd8a574ebd26a6714ed0a813d8053b5b64cd4d786dfc8c5a6007b",
+      "equal": true
+    }
+  },
+  "analyzer_correction": {
+    "disclosed": true,
+    "previous_bytes_available_in_delivery": false,
+    "note_only_delta": "author-attributed; current corrected note inspected; no pre-correction byte comparison claimed"
+  },
+  "frozen_files_equal_parent": {
+    "analyze_fix.py": true,
+    "replay_analyze_fix.py": true,
+    "qa-electron-runner.ps1": true,
+    "qa_parent_db.py": true
+  },
+  "parentfix_body_equal": true,
+  "run2_counts": {
+    "pass": 16
+  },
+  "run1_counts": {
+    "pass": 13,
+    "fail": 1,
+    "limit": 2
+  },
+  "steps": {
+    "planned": 76,
+    "actual": 76,
+    "ok": 76,
+    "errors": []
+  },
+  "timings_seconds": {
+    "frame_sample_to_waiting_status": 0.0970001220703125,
+    "waiting_status_to_later_read": 10.766000032424927,
+    "resume_request_to_ack_status": 0.34692907333374023,
+    "stop_click_to_giveup_status": 5.015192985534668
+  },
+  "reads_and_events": {
+    "reads": 11,
+    "events": 17,
+    "pending_counts_fenced": true,
+    "post_stop_no_live_claim": true
+  },
+  "coordination_states": {
+    "confirmed": [
+      [
+        "src-46820cdf924486160b4041ea.b2-2",
+        "committed"
+      ],
+      [
+        "src-46820cdf924486160b4041ea.b3-3",
+        "committed"
+      ]
+    ],
+    "awaiting": [
+      [
+        "src-46820cdf924486160b4041ea.b2-2",
+        "committed"
+      ],
+      [
+        "src-46820cdf924486160b4041ea.b3-3",
+        "committed"
+      ],
+      [
+        "src-46820cdf924486160b4041ea.b4-4",
+        "sending"
+      ]
+    ],
+    "acked": [
+      [
+        "src-46820cdf924486160b4041ea.b2-2",
+        "committed"
+      ],
+      [
+        "src-46820cdf924486160b4041ea.b3-3",
+        "committed"
+      ],
+      [
+        "src-46820cdf924486160b4041ea.b4-4",
+        "committed"
+      ]
+    ],
+    "stop-given-up": [
+      [
+        "src-46820cdf924486160b4041ea.b2-2",
+        "committed"
+      ],
+      [
+        "src-46820cdf924486160b4041ea.b3-3",
+        "committed"
+      ],
+      [
+        "src-46820cdf924486160b4041ea.b4-4",
+        "committed"
+      ],
+      [
+        "src-46820cdf924486160b4041ea.b5-5",
+        "unknown"
+      ]
+    ],
+    "final": [
+      [
+        "src-46820cdf924486160b4041ea.b2-2",
+        "committed"
+      ],
+      [
+        "src-46820cdf924486160b4041ea.b3-3",
+        "committed"
+      ],
+      [
+        "src-46820cdf924486160b4041ea.b4-4",
+        "committed"
+      ],
+      [
+        "src-46820cdf924486160b4041ea.b5-5",
+        "unknown"
+      ]
+    ]
+  },
+  "retained_body_hash_checks": [
+    {
+      "snapshot": "awaiting",
+      "key": "src-46820cdf924486160b4041ea.b4-4",
+      "sha256_match": true
+    },
+    {
+      "snapshot": "stop-given-up",
+      "key": "src-46820cdf924486160b4041ea.b5-5",
+      "sha256_match": true
+    },
+    {
+      "snapshot": "final",
+      "key": "src-46820cdf924486160b4041ea.b5-5",
+      "sha256_match": true
+    }
+  ],
+  "originals_and_server": {
+    "documents": 32,
+    "server_records": 3,
+    "server_receipts": 3,
+    "unique_artifacts": 4,
+    "unique_png": 3,
+    "unique_ink_json": 1,
+    "saved_png_comparisons": 6,
+    "saved_ink_comparisons": 3,
+    "metadata_hash_size_linkage": true,
+    "stopped_vs_final_hash_checkpoints_equal": true,
+    "raw_private_bytes_rehashed": false,
+    "in_doubt_original_equals_prior_committed_original": true,
+    "given_up_original_arrival": "unknown",
+    "stream_final": "stopped"
+  },
+  "release": {
+    "app_self_exit_count": 2,
+    "app_exit_code": 0,
+    "one_owned_host_exited": true,
+    "wsl_seen": [
+      {
+        "pid": 36508,
+        "running_at_end": false
+      }
+    ],
+    "actor_cleanup": {
+      "after": {
+        "actor_row": false,
+        "documents": 0
+      },
+      "at": "2026-10-01T04:19:59.135111+00:00",
+      "before": {
+        "actor_row": true,
+        "documents": 32
+      },
+      "cleanup": "this run's proven actor only"
+    },
+    "external_display_release_listing": "QA-attested timestamp only; not a retained raw process listing"
+  },
+  "limits": [
+    "Source inspection and sanitized evidence audit; no independent GUI/DB/process/native tests",
+    "Clean Linux TypeScript/static build reproduces candidate aggregate, not direct measurement of actual executed Windows stage",
+    "Pre-correction analyzer bytes absent; note-only change attributed",
+    "Raw private PNG/ink/manifest bytes withheld; stored hashes and comparison receipts checked only",
+    "No pen input: raw/composed roles may alias same PNG; six role comparisons are not six unique images",
+    "No timeout/stalled/refusal/disk fault/relaunch/provider/Mac/audio/Notability or full product/device acceptance"
+  ]
+}

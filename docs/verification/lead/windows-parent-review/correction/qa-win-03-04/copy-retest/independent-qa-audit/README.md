@@ -14,7 +14,8 @@ QA-HARNESS-01/02 are closed by focused review and the delivered121-case replay.*
 build success and closure of the rollback-notification finding. Actual changed-path
 Windows QA is dispatched on exact published476fd1f via
 `handoff_4a7462d6ff20c6603a98c39f62a3b66b` (accepted, initially unread); actual
-execution is not yet evidenced. No full campaign is assigned.
+QA26ac626 now integrates as6114aa9 and closes QA-WIN-05 within observed16/16
+acceptance. [Final review](../../../../../windows-win05-qa-review/README.md). No full campaign is assigned.
 See [historical analyzer integration](analyzer-integration.md). The initial
 HOLD evidence below remains historical; do not repeat the desktop/DB run.
 The report is readable at `git show 6a3611e:docs/verification/qa/p0-13-windows-quit-copy-retest-86d2405.md`.
@@ -91,5 +92,6 @@ occupancy; elapsed time is not release. No user-preview database, ports 4173/817
 Paperclip or existing service was touched. Physical pen, actual AI, audio,
 Notability, interactive Mac and both complete §7.1 gates remain unverified.
 The outstanding Mac-availability question stays pending, without blocking these
-independent source fixes. QA next runs the dispatched corrected candidate; Lead reviews its actual result
-and Native’s pending delivery. See the current integration link above.
+independent source fixes. The scoped Windows and Mac status corrections now have their respective
+actual QA/native-build evidence. Lead next resolves the separately recorded
+real-provider and interactive-Mac dependencies. See the current integration link above.

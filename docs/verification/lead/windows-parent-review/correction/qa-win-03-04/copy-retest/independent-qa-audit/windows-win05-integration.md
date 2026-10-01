@@ -1,5 +1,10 @@
 # Windows pending-storage correction integrated
 
+**Current acceptance:** QA26ac626 is independently reviewed/integrated as6114aa9;
+QA-WIN-05 closes for the actual16/16 changed-path result.
+[Final QA review](../../../../../windows-win05-qa-review/README.md). The original
+source/publication checkpoint below remains historical.
+
 **Source approved and integrated through `22d4e26d170ac2f3b5a95d989d33a7c0958ff723`.**
 Owner code `44fbd503bcbc45f4f3b28ff52d78e379ddbaf8c9` and evidence
 `d295a514b531e7fae5ad35df10b4bc10b43bf742` arrived in

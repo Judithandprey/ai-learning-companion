@@ -1,0 +1,22 @@
+{
+  "qa_commit": "26ac6269ad728266aade944005431008ad1d1675",
+  "candidate": "476fd1fb832e708b79ad5e5be1c7ef17925febee",
+  "start_message": "handoff_26fea9d894f7da2623d9696cb0c5978f",
+  "start_message_at": "2026-10-01T04:15:01Z",
+  "result_message": "handoff_d554fc713c130db347a50720703880cf",
+  "result_message_at": "2026-10-01T04:29:30Z",
+  "result_read_at": "2026-10-01T04:29:40Z",
+  "result_body_sha256": "3c283d40b37c18e63b676337634efff47d171a2aeee367661a224de7897dc9cb",
+  "qa_reported_acceptance_run": {
+    "pass": 16,
+    "fail": 0,
+    "steps": 76
+  },
+  "qa_reported_supporting_run": {
+    "pass": 13,
+    "fail": 1,
+    "limit": 2
+  },
+  "reported_display_release": "2026-10-01T04:20:01Z",
+  "scope": "Existing QA-WIN-05 task; no new instructions or authority inferred."
+}

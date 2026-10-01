@@ -1,0 +1,101 @@
+{
+  "candidate": "26ac6269ad728266aade944005431008ad1d1675",
+  "analyzer_sha256": "f7e66ef176c169b28707696efb2bef894f98b65d263dd4ce3470fd664c6a7e59",
+  "checks": [
+    {
+      "case": "run1",
+      "counts": {
+        "pass": 13,
+        "fail": 1,
+        "limit": 2
+      },
+      "same_all_16_statuses": true
+    },
+    {
+      "case": "run2",
+      "counts": {
+        "pass": 16
+      },
+      "same_all_16_statuses": true
+    },
+    {
+      "case": "missing-awaiting-events",
+      "target": "pending.said_as_waiting_at_once_counts_kept",
+      "actual": "fail",
+      "counts": {
+        "pass": 11,
+        "fail": 1,
+        "limit": 4
+      }
+    },
+    {
+      "case": "missing-ack-server-receipt",
+      "target": "ack.real_answer_raises_the_confirmed_count",
+      "actual": "fail",
+      "counts": {
+        "pass": 12,
+        "fail": 2,
+        "limit": 2
+      }
+    },
+    {
+      "case": "missing-pending-stop-read",
+      "target": "stop.during_a_pending_send_ends_unconfirmed_not_live",
+      "actual": "limit",
+      "counts": {
+        "pass": 12,
+        "limit": 2,
+        "fail": 2
+      }
+    },
+    {
+      "case": "missing-stop-give-up-event",
+      "target": "stop.during_a_pending_send_ends_unconfirmed_not_live",
+      "actual": "fail",
+      "counts": {
+        "pass": 14,
+        "fail": 1,
+        "limit": 1
+      }
+    }
+  ],
+  "inputs_unchanged": true,
+  "input_sha256": {
+    "/tmp/qa-win05-ev1": {
+      "coordination-acked.json": "132c3dc105f82d628f46270164fd9f03c9dea21e55bd0c7c73875518ee0dbf62",
+      "coordination-awaiting.json": "29aca9a8cd86100e767baac2d0e1e276aa37f61fbe66e7f315a8512534799e10",
+      "coordination-confirmed.json": "0817e9a6caa4f8a99123cc3208eeac12700547fc4ef0878d35cb4db2a7420369",
+      "coordination-final.json": "f569f52bb8e5e98f841c10487686b07a7cb1254e160ae006cc98725e77be1557",
+      "coordination-stop-given-up.json": "7d4621fb773632c56fc105e503104809beda6582c48b9b875f5bf7499b4d117f",
+      "database-readback.json": "4d7ec41011679030266f578514e9cf5ca04d421ce459d8b8b49aa6ef5a6a10f7",
+      "hash-checkpoints.json": "c558ffb781867896e8b32b13ede8f68bde56233ec06d772f961fc027b554e9ad",
+      "host-watch.json": "2e538dfb27b25d7eb4851642e48bb159eccec207a248c230ee867828ba47da1e",
+      "manifest-lines.json": "fd1d514cdb6be6cdf5d31ccf62d55f553f0d0f50cf83b9fadf63ea9bdcb5dab0",
+      "preflight.json": "1e69e5a7128b2be9987cf46c8589219e787d61c7f9c1c1d3a5f1ec1778c6033d",
+      "run.json": "7de0a33837e30da7d9eab17a0fbe964121b9ae40cca412b0308584ae16cfc9ca",
+      "runner-results.json": "b9332a59b2fa65cf19f58688d123543863608305f39d7c49fc8b135549768440",
+      "steps.json": "84dff0aaba485d85c6dc2cb4f7e1e2e45a3229b3fe3fc7510db9a7d007beab2b",
+      "summary.json": "cc42ca725e6161db15a7f5a68ee2b0dc5f42d50950f4ca083c2bed70626ea3fa"
+    },
+    "/tmp/lc-windows-win05-26ac626/docs/verification/qa/p0-13-windows-win05-pending-476fd1f": {
+      "build.json": "df74c3399e605040be0587d3af04740c5ea66811681c6b00608ab4534c67be04",
+      "cleanup.json": "88bb815adf6ea6f169f7c720bf9a91fded3657c4c52e124184a550345eb66c4b",
+      "coordination-acked.json": "f28a31dfbd790fcd8d1a9c8deafd0bcd46a63a2ef710b72f018285afddbf3e85",
+      "coordination-awaiting.json": "0af37c3f3c938fbe50bf02b5681f64c4064400cfc4e2789b38c5a08ed100557d",
+      "coordination-confirmed.json": "66d66962db0fb24ec1c851db5d7dd4a34e8d63be9aea621a45109a6dfeb0edcc",
+      "coordination-final.json": "8a1315b04e45fcc25296d43362086c11cc574d42fc4fcec8e900dfdabeb39fe4",
+      "coordination-stop-given-up.json": "90da93a8f4139b9147e37d2e2fcf998cdba8b4ee2bc4d43fd1e01b2609693612",
+      "database-readback.json": "055c284213a5a0185d34ecced5add6b5f3968908de5d4e9bb0c5279c993493c6",
+      "hash-checkpoints.json": "375e27c405209cb77e3da218180bf721a91f2d4844e34a7f3d4f7d22eb3c2650",
+      "host-watch.json": "09a29609953279c656b2986d1fe814ee3ffeaed04e506341d91ce15d257f4067",
+      "manifest-lines.json": "04bde4f5e10bcbdf95b1bb06135512eed4b8d357e29fb021290288a23d3615f2",
+      "preflight.json": "c8475798e952371efe7c2ecee46ec3835974395ffa8b76ccc08ab60c151e48dc",
+      "run.json": "703c8c5b6a8b89e41eb7a45da3ef1bf23522af599c5938c08ad0f7b79028d7a0",
+      "runner-results.json": "0eaf90851421c09b05949cd74b9b4df445f919339d776ede68c95127907c9e4a",
+      "steps.json": "79fa26a57843e0bc77bbe293be089de4adfbbfe4640d89cf5737139c0a6bf80c",
+      "summary.json": "c8b70e4bb808d09773e54b083329e583a078f284eb3fda5baa3a453c9a4fffc6",
+      "supporting-run-1.json": "ccf1cbabc94c2fb9e589c6dbb219cbd267b866ea2a1bac6226d222a2af13fd9c"
+    }
+  },
+  "scope": "Only pure saved-evidence replays; no GUI/DB/signal/network execution"
+}

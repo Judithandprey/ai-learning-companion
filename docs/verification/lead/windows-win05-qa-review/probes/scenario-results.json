@@ -1,0 +1,17 @@
+{
+  "existing_scenarios_byte_equivalent_JSON": {
+    "full": 300,
+    "ink": 188,
+    "parent": 248,
+    "parentquit": 41,
+    "parentfix": 223,
+    "smoke": 20
+  },
+  "parentwin05": {
+    "steps": 76,
+    "pauses": 2,
+    "resumes": 2,
+    "strokes": 0,
+    "force_kills": 0
+  }
+}

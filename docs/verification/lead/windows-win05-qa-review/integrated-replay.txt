@@ -1,0 +1,17 @@
+pass    run.shared_desktop_quiet
+pass    run.completed
+pass    run.cursor_static
+pass    fault.only_this_runs_host_paused_twice_and_resumed
+pass    run.every_job_is_one_retained_frame
+pass    before.link_off_then_idle_no_host
+pass    confirmed.records_before_the_pause
+pass    pending.said_as_waiting_at_once_counts_kept
+pass    pending.still_waiting_10s_later_inside_the_apps_wait
+pass    ack.real_answer_raises_the_confirmed_count
+pass    stop.during_a_pending_send_ends_unconfirmed_not_live
+pass    server.holds_exactly_what_the_app_called_stored
+pass    copy.every_read_is_the_accepted_text_without_a_storage_claim
+pass    no_ai.said_everywhere
+pass    release.app_exited_by_itself_nothing_left
+pass    database.readback_read_only_of_this_actor
+{'pass': 16}
