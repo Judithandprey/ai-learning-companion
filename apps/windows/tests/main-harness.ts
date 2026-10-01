@@ -16,6 +16,7 @@ import { earlierNotes, readConnectorConfig, Subscription, type SubscriptionOptio
 import { toFramePixels } from '../src/shared/samples.ts';
 import { ASSISTANCE, contextProblem, PNG_MAX_BYTES, questionOf, questionProblem } from '../src/shared/subscription-ask.ts';
 import { clampRate, isPlace, isSurface, NO_PREFERENCES, placesOf, readPreferences, storedPreferences, withPlace } from '../src/shared/placement.ts';
+import { speechCulture, speechPieces } from '../src/shared/voice.ts';
 import { appSource } from './source.ts';
 
 export const HERE = path.dirname(url.fileURLToPath(import.meta.url));
@@ -99,6 +100,8 @@ export type Review = {
   exportRecovery(id: string, file: string): unknown;
   openInk(id: string): unknown;
   inkContexts(id: string): unknown;
+  /** Connects a voice to the app, as a build's main process would (the product connects none). */
+  connectVoice(voice: unknown): void;
 };
 /**
  * `env`: the app's environment (empty by default: the development capture link stays off). `link`: options added to
@@ -228,6 +231,8 @@ export function harness(options: { env?: Record<string, string>; /** The app dat
     readPreferences,
     storedPreferences,
     withPlace,
+    speechCulture,
+    speechPieces,
     shell: { openExternal: async (url: string) => void opened.push(url) },
     Buffer,
     Response,
@@ -238,7 +243,7 @@ export function harness(options: { env?: Record<string, string>; /** The app dat
     setImmediate,
   };
   vm.createContext(sandbox);
-  vm.runInContext(`${SOURCE}\nglobalThis.review = { start, end, current: () => current, control: () => control, recoveryInfo, retryRecovery, exportRecovery, inkContexts, openInk };`, sandbox);
+  vm.runInContext(`${SOURCE}\nglobalThis.review = { start, end, current: () => current, control: () => control, recoveryInfo, retryRecovery, exportRecovery, inkContexts, openInk, connectVoice };`, sandbox);
   const review = (sandbox as unknown as { review: Review }).review;
   /** Runs the timers set so far with this delay (as if that much time had passed for them). */
   const fire = (ms: number): void => {

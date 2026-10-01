@@ -38,6 +38,7 @@ import { DEFAULT_RETENTION_POLICY, pngSize, RETENTION_FORMAT, type RetentionPoli
 import { CaptureLink, readLinkConfig, type LinkStatus } from './capture-link.ts';
 import { earlierNotes, readConnectorConfig, Subscription, type AskOutcome, type ConnectorEnd, type SubscriptionStatus } from './subscription.ts';
 import { clampRate, isPlace, isSurface, NO_PREFERENCES, placesOf, readPreferences, storedPreferences, withPlace, type Preferences, type Rect } from '../shared/placement.ts';
+import { speechCulture, speechPieces, type Culture } from '../shared/voice.ts';
 
 const HERE = dirname(fileURLToPath(import.meta.url)); // dist/apps/windows/src/main
 const DIST = normalize(join(HERE, '..', '..', '..', '..')); // dist/
@@ -80,6 +81,10 @@ type Session = {
   progress: number;
   /** The newest ASK selection retained for a question (only with the subscription configured). */
   ask: Selection | null;
+  /** What the user set in the overlay: responses are read aloud (off at every Start), and whether that is muted. */
+  talk: { on: boolean; muted: boolean };
+  /** The response being read aloud, or null. */
+  reading: Reading | null;
 };
 type Retention = {
   readonly id: string;
@@ -182,7 +187,7 @@ export async function start(sourceId: string): Promise<{ ok: true } | { ok: fals
   overlay.setIgnoreMouseEvents(true, { forward: true });
   const s: Session = { sourceId, display, overlay, doc: newDesktopInk(id, sha256(id), new Date().toISOString(), display), ignoring: true, samples: [], ending: false, capture: 'unused', opening: null, offered: null, shown: false,
     retention: { id, startedAt: new Date().toISOString(), policy: retentionPolicy, frames: 0, bytes: 0, notRetained: 0, refused: 0, unwritten: 0, headerWritten: false, validBytes: 0, pending: new Map(), answered: new Set(), unfinished: null, endRecorded: false },
-    progress: 0, ask: null };
+    progress: 0, ask: null, talk: { on: false, muted: false }, reading: null };
   current = s;
   lastEnd = null;
   link?.begin(id, captureDir(id)); // the explicit user Start is the only one that asks for a stream
@@ -236,6 +241,7 @@ export function end(reason: string): void {
   s.ending = true;
   link?.stopSending(s.retention.id); // latched now: nothing new is sent after the Stop begins
   stopAsking(s); // and no question of this session is sent or answered from here
+  hush(s); // nor is anything more of a response read aloud
   lastEnd = reason;
   notifyControl();
   if (s.overlay.isDestroyed()) return finish(s, reason);
@@ -290,6 +296,7 @@ function finish(s: Session, reason: string): void {
   current = null;
   link?.stopSending(s.retention.id); // however the session ended
   stopAsking(s);
+  hush(s);
   lastEnd ??= reason;
   // Records of questions that could not be written are written now; what still cannot be is said, not dropped silently.
   if (s.ask) retireSelection(s, s.ask);
@@ -759,8 +766,10 @@ function continues(doc: DesktopInk): { ok: true } | { ok: false; reason: string 
  * `presentation` is written for an answer: 'unconfirmed' from the moment it is sent to the overlay, 'shown' once the
  * overlay reported it. An answer left 'unconfirmed' (the overlay was lost, or the session ended, before it reported)
  * may or may not have been seen: it keeps its text, and it is not displayed help as far as this record knows.
- * `spoken` is written only for an answer that was shown and that the overlay began to read aloud (Talk on): 'started'
- * while it is being read, then 'finished' or 'interrupted'. An answer never read aloud has no `spoken`.
+ * `spoken` is written by the main process only, for an answer that was shown and that a voice playing on an audio
+ * device began to say (Talk on): 'started' while it is being read, then 'finished' (the voice reported every piece
+ * said to its end) or 'interrupted'. An answer never read aloud has no `spoken`. It records what the voice reported,
+ * not that anything was heard.
  */
 type AskEntry = { request_id: string; question: string; assistance: Assistance; model: string | null; submitted_at: string; ended_at: string | null; outcome: unknown; shown: boolean; presentation?: 'shown' | 'unconfirmed'; spoken?: 'started' | 'finished' | 'interrupted' };
 type Selection = {
@@ -884,6 +893,7 @@ function submitAsk(s: Session, selectionId: unknown, questionValue: unknown, ass
   }
   const mine = { id: request.request_id, state: 'asking' as 'asking' | 'cancelled' | 'done' };
   sel.request = mine;
+  hush(s); // a new question: the response before is no longer read
   void subscription.ask(request).then((outcome) => askEnded(s, sel, mine, entry, outcome));
   return { ok: true, request_id: request.request_id, model };
 }
@@ -955,17 +965,92 @@ function askPresented(s: Session, selectionId: unknown, requestId: unknown, show
   const unwritten = saveAsk(s, sel);
   return { saved: unwritten === null, reason: unwritten };
 }
+// ---- a response read aloud -------------------------------------------------------------------------------------------
+// Silent unless the user turned Talk on in the overlay. The main process owns the voice and everything it is handed:
+// the overlay asks only for a piece of the current response by its place in it, never with text, a language, a rate
+// or an output of its own. Before every piece it is checked again, here, that the asker is the current session's
+// overlay, that the session is not ending, that this is the current selection's last question, answered, and
+// reported shown on its card, and that Talk is on and not muted. A piece that ends after its reading was stopped
+// starts nothing.
 /**
- * The overlay says an answer it showed is being read aloud, or stopped being read (to its end, or interrupted). Taken
- * only for the current selection's answer that was reported shown; played help is recorded as what happened.
+ * A voice: says one piece in a language's voice (true only when it was said to its end), stops at once, and is ended
+ * with the app. `audible`: it plays on an audio device; a voice that only synthesizes (a test's) is false, and nothing
+ * it says is recorded as read aloud.
  */
-function askSpoken(s: Session, selectionId: unknown, requestId: unknown, state: unknown): void {
+export type Voice = { readonly audible: boolean; say(text: string, rate: number, culture: Culture): Promise<boolean>; stop(): void; dispose(): Promise<void> };
+/** The voice of this build. None is connected: Talk says so, and every response stays text. */
+let voice: Voice | null = null;
+/** Connects the build's voice (before a Start). Only main-process code can: no window can name a voice, a program or an output. */
+export const connectVoice = (v: Voice | null): void => void (voice = v);
+type Reading = { readonly sel: Selection; readonly entry: AskEntry; readonly pieces: string[]; /** The piece that is next, or being said. */ at: number; saying: boolean };
+/**
+ * The current session's current selection's last question, if it was answered and its answer reported shown, and
+ * reading aloud is allowed now. (A question still out, cancelled or refused has no answer here: only the live answer
+ * of the request that was sent is ever kept as one.)
+ */
+function readable(s: Session, selectionId: unknown, requestId: unknown): { sel: Selection; entry: AskEntry; text: string } | null {
   const sel = s.ask;
-  const entry = sel && sel.id === selectionId ? sel.record.requests.find((r) => r.request_id === requestId) : undefined;
-  if (!sel || !entry || !entry.shown || (state !== 'started' && state !== 'finished' && state !== 'interrupted')) return;
-  if (state !== 'started' && entry.spoken !== 'started') return; // an end is taken only for a reading that began
-  entry.spoken = state;
-  saveAsk(s, sel);
+  if (s.ending || !s.talk.on || s.talk.muted || !sel || sel.id !== selectionId) return null;
+  const entry = sel.record.requests.at(-1);
+  const out = entry?.outcome as AskOutcome | null | undefined;
+  if (!entry || entry.request_id !== requestId || out?.status !== 'answered' || !entry.shown || entry.presentation !== 'shown') return null;
+  return { sel, entry, text: out.answer.text };
+}
+/** What a voice playing on a device did with an answer: recorded as what happened, apart from shown. */
+function recordSpoken(s: Session, r: Reading, state: NonNullable<AskEntry['spoken']>): void {
+  r.entry.spoken = state;
+  saveAsk(s, r.sel);
+}
+/** Nothing more of a response is read: the voice is told to stop at once, with everything not yet said. */
+function hush(s: Session): void {
+  const r = s.reading;
+  s.reading = null;
+  if (!r) return;
+  try {
+    voice?.stop();
+  } catch {
+    // a voice that fails to stop is handed nothing more; what follows (a Stop, a new card) goes on
+  }
+  if (r.entry.spoken === 'started') recordSpoken(s, r, 'interrupted');
+}
+/**
+ * The overlay asks for piece `at` of the current response: 0 begins a reading, each later one must be the next in
+ * order. The text is this process's own copy of the answer it sent to the card, cut here. False when it was not said
+ * to its end, or not said at all.
+ */
+async function sayPiece(s: Session, selectionId: unknown, requestId: unknown, at: unknown): Promise<{ spoken: boolean }> {
+  const NO = { spoken: false };
+  const now = voice;
+  const ok = readable(s, selectionId, requestId);
+  if (!now || !ok) return NO;
+  if (at === 0 && s.reading?.entry !== ok.entry) {
+    hush(s);
+    s.reading = { sel: ok.sel, entry: ok.entry, pieces: speechPieces(ok.text), at: 0, saying: false };
+  }
+  const r = s.reading;
+  if (!r || r.entry !== ok.entry || r.saying || at !== r.at || r.at >= r.pieces.length) return NO;
+  if (r.at === 0 && now.audible) recordSpoken(s, r, 'started');
+  r.saying = true;
+  const piece = r.pieces[r.at]!;
+  let said = false;
+  try {
+    said = (await now.say(piece, preferences.speech_rate, speechCulture(piece))) === true;
+  } catch {
+    // a voice that throws, or whose promise is rejected, did not say the piece to its end
+  }
+  if (s.reading !== r) return NO; // stopped meanwhile: this late end starts nothing, and it was recorded where it was stopped
+  r.saying = false;
+  if (!said) {
+    s.reading = null;
+    if (r.entry.spoken === 'started') recordSpoken(s, r, 'interrupted');
+    return NO;
+  }
+  r.at += 1;
+  if (r.at === r.pieces.length) {
+    s.reading = null;
+    if (r.entry.spoken === 'started') recordSpoken(s, r, 'finished');
+  }
+  return { spoken: true };
 }
 /** An answer the overlay itself says it did not show (or never took, its card being gone): its text is not kept. */
 function notShown(entry: AskEntry): void {
@@ -988,6 +1073,7 @@ function retireSelection(s: Session, sel: Selection): void {
 function dropSelection(s: Session): void {
   const sel = s.ask;
   if (!sel) return;
+  hush(s); // a response is read aloud only while its card shows it
   cancelAsk(s, sel.id);
   // An answer the overlay never said it showed (its messages come in order) was not shown on this card: not kept.
   const unshown = sel.record.requests.filter((r) => !r.shown && (r.outcome as AskOutcome | null)?.status === 'answered');
@@ -1262,6 +1348,8 @@ const preferencesFile = (): string => join(app.getPath('userData'), 'overlay-pre
 /** What this run keeps; `unreadable`: the file found is not of this format, and is left untouched (nothing is saved). */
 let preferences: Preferences = NO_PREFERENCES;
 let preferencesUnreadable = false;
+/** At most this many unreadable preferences files are set aside (each under its own name). */
+const UNREADABLE_KEPT = 8;
 function loadPreferences(): void {
   preferences = NO_PREFERENCES;
   preferencesUnreadable = false;
@@ -1277,9 +1365,12 @@ function loadPreferences(): void {
     value = JSON.parse(text);
   } catch {
     // Not JSON at all (empty or cut short, as a write that was interrupted leaves it): set aside under another
-    // name, never deleted, so that the next change can be kept again.
+    // name, never deleted, so that the next change can be kept again. A file set aside before is never written
+    // over: this one takes the next free name, and when none is free it is left where it is, untouched.
+    const aside = ['', ...Array.from({ length: UNREADABLE_KEPT - 1 }, (_, i) => `-${i + 2}`)].map((n) => `${preferencesFile()}.unreadable${n}`).find((f) => !existsSync(f));
     try {
-      renameSync(preferencesFile(), `${preferencesFile()}.unreadable`);
+      if (aside === undefined) throw new Error('no free name');
+      renameSync(preferencesFile(), aside);
     } catch {
       preferencesUnreadable = true;
     }
@@ -1324,14 +1415,21 @@ ipcMain.handle('lc:speech-rate', (e, rate: unknown) => {
 ipcMain.handle('lc:overlay-ready', (e) => {
   if (!fromOverlay(e) || !current) return null;
   return {
-    work_area: workAreaOf(current), places: placesOf(preferences, current.display.display_id), speech_rate: preferences.speech_rate, source_id: current.sourceId, display: current.display, doc: current.doc, address_sha256: sha256(current.doc.id), retention_policy: current.retention.policy, development: linkStatus.mode === 'development', subscription: subscriptionStatus.mode === 'managed' };
+    work_area: workAreaOf(current), places: placesOf(preferences, current.display.display_id), speech_rate: preferences.speech_rate, voice: voice ? { audible: voice.audible } : null, source_id: current.sourceId, display: current.display, doc: current.doc, address_sha256: sha256(current.doc.id), retention_policy: current.retention.policy, development: linkStatus.mode === 'development', subscription: subscriptionStatus.mode === 'managed' };
 });
 // ASK: a selection is retained; a question about it is sent only by lc:ask-submit, the user's own press.
 ipcMain.handle('lc:ask-selection', (e, facts: unknown, png: unknown, ink: unknown) => (fromOverlay(e) && current ? retainSelection(current, facts, png, ink ?? null) : { ok: false, reason: 'refused' }));
 ipcMain.handle('lc:ask-submit', (e, selectionId: unknown, question: unknown, assistance: unknown) => (fromOverlay(e) && current ? submitAsk(current, selectionId, question, assistance) : { ok: false, reason: 'refused' }));
 ipcMain.on('lc:ask-cancel', (e, selectionId: unknown) => void (fromOverlay(e) && current ? cancelAsk(current, selectionId) : undefined));
 ipcMain.handle('lc:ask-presented', (e, selectionId: unknown, requestId: unknown, shown: unknown) => (fromOverlay(e) && current ? askPresented(current, selectionId, requestId, shown) : { saved: false, reason: 'refused' }));
-ipcMain.on('lc:ask-spoken', (e, selectionId: unknown, requestId: unknown, state: unknown) => void (fromOverlay(e) && current ? askSpoken(current, selectionId, requestId, state) : undefined));
+// Talk: the user's own setting in the overlay, kept here so that it is checked before every piece.
+ipcMain.on('lc:talk', (e, on: unknown, muted: unknown) => {
+  if (!fromOverlay(e) || !current || typeof on !== 'boolean' || typeof muted !== 'boolean') return;
+  current.talk = { on, muted: on && muted };
+  if (!on || muted) hush(current);
+});
+ipcMain.handle('lc:say', (e, selectionId: unknown, requestId: unknown, at: unknown) => (fromOverlay(e) && current ? sayPiece(current, selectionId, requestId, at) : { spoken: false }));
+ipcMain.on('lc:hush', (e) => void (fromOverlay(e) && current ? hush(current) : undefined));
 ipcMain.handle('lc:ask-save', (e, selectionId: unknown) => (fromOverlay(e) && current ? saveAskAgain(current, selectionId) : { saved: false, reason: 'refused' }));
 ipcMain.on('lc:ask-closed', (e) => void (fromOverlay(e) && current ? dropSelection(current) : undefined)); // the card was closed or replaced
 // Retained frames keep arriving while a Stop waits for the overlay: they were observed before the end.
@@ -1407,9 +1505,10 @@ app.on('before-quit', () => writeUnrecordedEnds());
 let linkQuitting: Promise<void> | null = null;
 let linkQuitDone = false;
 app.on('will-quit', (e) => {
-  if ((!link && !subscription) || linkQuitDone) return;
+  if ((!link && !subscription && !voice) || linkQuitDone) return;
   e.preventDefault();
-  linkQuitting ??= Promise.all([link?.quit(20_000), subscription?.quit()])
+  // (the voice's own child is ended with the app: asked to, then ended, and its end waited for within its bound)
+  linkQuitting ??= Promise.all([link?.quit(20_000), subscription?.quit(), voice?.dispose()])
     .catch(() => undefined)
     .then(() => {
       linkQuitDone = true;

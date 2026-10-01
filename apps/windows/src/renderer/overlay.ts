@@ -34,11 +34,13 @@ import { speechPieces } from '../shared/voice.ts';
 import { alignmentOf, DETAIL_DELTA, detailChange, detailGrid, fingerprintFromBase64, fingerprintToBase64, lumaChange, luminance, sampleState, toFramePixels, type Alignment, type Detail, type DisplaySample, type InkMarks } from '../shared/samples.ts';
 
 type Api = {
-  ready(): Promise<{ source_id: string; display: DesktopDisplay; doc: DesktopInk; address_sha256: string; retention_policy?: RetentionPolicy; development?: boolean; subscription?: boolean; work_area?: Rect; places?: DisplayPlaces; speech_rate?: number } | null>;
+  ready(): Promise<{ source_id: string; display: DesktopDisplay; doc: DesktopInk; address_sha256: string; retention_policy?: RetentionPolicy; development?: boolean; subscription?: boolean; work_area?: Rect; places?: DisplayPlaces; speech_rate?: number; voice?: { audible: boolean } | null } | null>;
   place(surface: Surface, place: Place): Promise<Saved>;
   speechRate(rate: number): Promise<Saved>;
   onWorkArea(fn: (area: Rect) => void): void;
-  askSpoken(selectionId: string, requestId: string, state: 'started' | 'finished' | 'interrupted'): void;
+  talk(on: boolean, muted: boolean): void;
+  say(selectionId: string, requestId: string, at: number): Promise<{ spoken: boolean }>;
+  hush(): void;
   retainFrame(facts: unknown, raw: Uint8Array, composed: Uint8Array | null, ink: Uint8Array | null): Promise<{ ok: true } | { ok: false; reason: string; limit?: true; retry?: true }>;
   notRetained(run: { from_seq: number; to_seq: number; samples: number; reason: string }): void;
   observationGap(gap: { sample_seq: number; gap_ms: number; sampled_at: string; monotonic_ms: number }): void;
@@ -215,12 +217,13 @@ lc.onWorkArea((next) => {
 // is on and not muted. What is read is exactly the text the card shows, and only while the card shows it: closing
 // the card, a new selection, a new question, Cancel, Stop reading, Mute, turning Talk off and the capture's end
 // each stop the voice at once, with everything not yet spoken.
-// The voice itself is not part of this page: a build connects one through a route that was measured on the device
-// (`lcVoice`). None is connected in this build, so Talk says that and nothing is played. Speaking TO the AI is not
-// connected either: questions are typed.
-/** A connected voice: says one piece (resolves true when it was spoken to its end), and stops at once. */
-type Voice = { say(text: string, rate: number): Promise<boolean>; stop(): void };
-const voice = (globalThis as { lcVoice?: Voice }).lcVoice ?? null;
+// The voice is not part of this page: the main process owns it, and what it is handed. This page asks only for the
+// next piece of the current response by its place (lc.say), and says when to stop (lc.hush); the main process cuts
+// its own copy of the answer and checks again, before every piece, that it is still the one shown here with Talk on.
+// None is connected in this build, so Talk says that and nothing is played. Speaking TO the AI is not connected
+// either: questions are typed.
+/** The build's voice as the main process reports it (`audible`: it plays on an audio device), or none. */
+const voice = info.voice ?? null;
 const NO_VOICE = 'no voice is connected in this build, so responses are not read aloud; they are shown as text';
 let talk = false;
 let muted = false;
@@ -233,12 +236,7 @@ function interrupt(): void {
   const was = speaking;
   speaking = null;
   if (!was) return;
-  try {
-    voice?.stop();
-  } catch {
-    // a voice that fails to stop is handed nothing more; what follows (a Stop, a new card) goes on
-  }
-  lc.askSpoken(was.selection, was.request, 'interrupted');
+  lc.hush();
   renderTalk();
 }
 /** Reads this card's response aloud, piece by piece (only with Talk on, not muted, and a connected voice). */
@@ -250,24 +248,21 @@ function speak(selection: string, request: string, text: string): void {
   const mine = { selection, request, pieces, at: 0, rate };
   speaking = mine;
   talkNote = '';
-  lc.askSpoken(selection, request, 'started');
   // One piece at a time: what was not yet handed to the voice is simply never said after an interruption.
   const next = (): void => {
     if (speaking !== mine) return;
     if (mine.at >= pieces.length) {
       speaking = null;
-      lc.askSpoken(selection, request, 'finished');
       return renderTalk();
     }
     mine.rate = rate; // the rate this piece is said at (a change of the rate holds from the next piece)
     renderTalk();
-    // A voice that throws, or whose promise is rejected, is a piece that was not spoken to its end.
-    void new Promise<boolean>((said) => said(voice.say(pieces[mine.at]!, mine.rate))).then((spoken) => spoken === true, () => false).then((spoken) => {
+    // Asked for by its place only. Not said to its end (or refused, or the call failed): the reading stops.
+    void lc.say(selection, request, mine.at).then((r) => r?.spoken === true, () => false).then((spoken) => {
       if (speaking !== mine) return; // interrupted meanwhile: its late end is nobody's
       if (!spoken) {
         speaking = null;
         talkNote = 'The voice stopped before the end; the response is shown as text.';
-        lc.askSpoken(selection, request, 'interrupted');
         return renderTalk();
       }
       mine.at += 1;
@@ -290,7 +285,7 @@ function renderTalk(): void {
   $('rate').textContent = `${rate.toFixed(1)}×`;
   $('interrupt').hidden = speaking === null;
   const status = speaking
-    ? `Reading the response aloud at ${speaking.rate.toFixed(1)}× (part ${speaking.at + 1} of ${speaking.pieces.length}). The text below is what is read.`
+    ? `${voice?.audible === false ? 'TEST VOICE, nothing is played: ' : ''}Reading the response aloud at ${speaking.rate.toFixed(1)}× (part ${speaking.at + 1} of ${speaking.pieces.length}). The text below is what is read.`
     : !talk ? ''
     : !voice ? `Talk is on, but ${NO_VOICE}. Speaking to the AI is not connected either: type your question.`
     : muted ? 'Talk is on, muted: responses are shown as text and not read aloud.'
@@ -307,11 +302,13 @@ $('talk').addEventListener('click', () => {
     muted = false;
     interrupt();
   }
+  lc.talk(talk, muted);
   renderTalk();
 });
 $('mute').addEventListener('click', () => {
   muted = !muted;
   if (muted) interrupt();
+  lc.talk(talk, muted);
   renderTalk();
 });
 $('interrupt').addEventListener('click', () => interrupt());

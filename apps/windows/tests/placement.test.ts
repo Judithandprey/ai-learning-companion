@@ -3,7 +3,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { clampRate, cornerOf, DEFAULT_PLACE, DISPLAYS_MAX, isPlace, NO_PREFERENCES, placeAt, PLACEMENT_FORMAT, placesOf, readPreferences, storedPreferences, usableArea, withPlace, type Rect } from '../src/shared/placement.ts';
-import { PIECE_MAX, speechPieces } from '../src/shared/voice.ts';
+import { HAN_COST, PIECE_MAX, speechCulture, speechPieces } from '../src/shared/voice.ts';
 
 const AREA: Rect = { x: 10, y: 10, width: 1260, height: 740 };
 const SIZE = { width: 300, height: 50 };
@@ -71,6 +71,8 @@ test('the kept preferences are read only in their exact shape, per display, boun
 
 test('a response is read in pieces that are its own text, whole and in order: sentences, long ones cut at a space, nothing added or dropped', () => {
   const squeeze = (t: string): string => t.replace(/\s+/g, '');
+  /** What a piece takes: a letter 1, a Chinese character HAN_COST. */
+  const cost = (p: string): number => [...p].reduce((n, ch) => n + ch.length * (/\p{Script=Han}/u.test(ch) ? HAN_COST : 1), 0);
   const texts = [
     'The slope is 2. So the line rises! Does it cross zero? Yes: at x = -1.',
     'One line only',
@@ -79,6 +81,9 @@ test('a response is read in pieces that are its own text, whole and in order: se
     'x'.repeat(700), // no space to cut at
     `${'y'.repeat(219)}😀${'z'.repeat(300)}`, // a pair at the cut
     '中文句子。第二句！第三句？ Then English.',
+    '没有空格的长句子'.repeat(60), // Chinese with nowhere to cut at
+    `他说：“${'这是一个很长的句子，中间有逗号，'.repeat(12)}结束了。”然后走了。`,
+    `Mixed: ${'the term 斜率 (slope) appears here, '.repeat(12)}and ends.`,
     '   ',
     '',
   ];
@@ -87,6 +92,7 @@ test('a response is read in pieces that are its own text, whole and in order: se
     assert.equal(squeeze(pieces.join(' ')), squeeze(text), 'every character is spoken, once, in order');
     for (const p of pieces) {
       assert.equal(p.length > 0 && p.length <= PIECE_MAX && p === p.trim(), true, JSON.stringify(p).slice(0, 60));
+      assert.equal(cost(p) <= PIECE_MAX, true, `a piece is said within one piece's time: ${cost(p)}`);
       assert.equal(/[\ud800-\udbff]$/.test(p) || /^[\udc00-\udfff]/.test(p), false, 'no piece ends or starts inside a pair');
     }
   }
@@ -96,4 +102,18 @@ test('a response is read in pieces that are its own text, whole and in order: se
   assert.equal(speechPieces(long).join(' '), long, 'a long sentence is cut only at its spaces');
   assert.deepEqual(speechPieces('First line\nSecond line\n\nThird, after a gap.'), ['First line', 'Second line', 'Third, after a gap.']);
   assert.deepEqual(speechPieces('中文句子。 第二句！ 第三句？ Then English.'), ['中文句子。', '第二句！', '第三句？', 'Then English.']);
+  // Chinese sentences end without a space after them; what closes a sentence stays with it; 3.14 is not an end.
+  assert.deepEqual(speechPieces('斜率是二。所以直线上升！他问：“它过零点吗？”是的。Pi is 3.14 here.'), ['斜率是二。', '所以直线上升！', '他问：“它过零点吗？”', '是的。', 'Pi is 3.14 here.']);
+  assert.deepEqual(speechPieces('真的？！好。'), ['真的？！', '好。']);
+  // A Chinese character takes three letters' time: a long Chinese sentence is cut shorter, at its pause marks.
+  const chinese = '这是一个很长的句子，中间有逗号，'.repeat(12);
+  const cut = speechPieces(chinese);
+  assert.deepEqual([cut.join(''), cut.every((p) => p.endsWith('，')), cut.map((p) => p.length)], [chinese, true, [80, 80, 32]], '70 characters and 10 pause marks fill a piece');
+  const uneven = '这是一个很长的句子，中间有个逗号；'.repeat(12);
+  assert.deepEqual([speechPieces(uneven).join(''), speechPieces(uneven).every((p) => /[，；]$/.test(p)), speechPieces(uneven).length], [uneven, true, 3], 'cut at a pause mark, not in the middle of a clause');
+  assert.deepEqual(speechPieces('没有空格的长句子'.repeat(60)).map((p) => p.length), [73, 73, 73, 73, 73, 73, 42], 'nowhere to cut at: hard cuts, nothing dropped');
+  // One character is taken whatever it costs (no limit is too small to end).
+  assert.deepEqual(speechPieces('中文', 1), ['中', '文']);
+  // The voice a piece is said in: Chinese when it has a Chinese character, else English.
+  assert.deepEqual(['The slope is 2.', '斜率是二。', 'The term 斜率 means slope.', '¿Qué? 123', ''].map(speechCulture), ['en-US', 'zh-CN', 'zh-CN', 'en-US', 'en-US']);
 });

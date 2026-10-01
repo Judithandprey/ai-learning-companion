@@ -68,7 +68,7 @@ function averaged(src: Luma, [sx, sy, sw, sh]: number[], cw: number, ch: number,
 }
 
 /** The overlay page for session `s`, with pointer input into its ink canvas and a gate on PNG encoding. */
-export async function overlayPage(h: H, s: Session, policy?: retention.RetentionPolicy, options: { /** A stand-in voice is connected (the product connects none in this build). */ voice?: boolean } = {}) {
+export async function overlayPage(h: H, s: Session, policy?: retention.RetentionPolicy, options: { /** A stand-in voice is connected to the main process (the product connects none in this build); 'silent': one that only synthesizes. */ voice?: boolean | 'silent' } = {}) {
   /**
    * What the fake screen shows: every pixel's shade (grids, hashes and fingerprints read it), or, when a test sets
    * `luma`, that grayscale 1280×800 screen: each frame taken keeps its own pixels, and canvases read back the area
@@ -84,10 +84,25 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
   /** What the page asked of the main process about taking the pointer (NAV passes clicks through unless over a surface). */
   const interactive: boolean[] = [];
   /**
-   * A stand-in for a connected voice (`options.voice`; the product connects none in this build): what was handed
-   * over to be said, each with the way a test ends it, and how often it was told to stop. Nothing is played.
+   * A stand-in for a voice connected to the main process (`options.voice`; the product connects none in this
+   * build): what the main process handed over to be said, each with the way a test ends it, and how often it was
+   * told to stop or was ended. Nothing is played.
    */
-  const voice = { spoken: [] as Array<{ text: string; rate: number; end: (spoken?: boolean) => void }>, cancels: 0, broken: false };
+  const voice = { spoken: [] as Array<{ text: string; rate: number; culture: string; end: (spoken?: boolean) => void }>, cancels: 0, disposed: 0, broken: false };
+  if (options.voice) {
+    h.connectVoice({
+      audible: options.voice !== 'silent',
+      say: (text: string, rate: number, culture: string) => {
+        if (voice.broken) throw new Error('the voice failed (stand-in)');
+        return new Promise<boolean>((end) => void voice.spoken.push({ text, rate, culture, end: (spoken = true) => end(spoken) }));
+      },
+      stop: () => {
+        voice.cancels += 1;
+        if (voice.broken) throw new Error('the voice failed to stop (stand-in)');
+      },
+      dispose: async () => void (voice.disposed += 1),
+    });
+  }
   class FakeNode {
     id = '';
     width = 1280;
@@ -203,12 +218,14 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
   const buttons = ['NAV', 'ASK', 'WRITE'].map((m) => Object.assign(new FakeNode(), { dataset: { mode: m } }));
   const radios = ['hint', 'explain', 'full_solution'].map((v, i) => Object.assign(new FakeNode(), { value: v, checked: i === 0 }));
   const lc = {
-    ready: async () => ({ ...(plain(await h.handlers['lc:overlay-ready']!({ sender: s.overlay.webContents })) as { work_area: unknown; places: unknown; speech_rate: number }), display: s.doc.display, doc: plain(s.doc), source_id: 'screen:1:0', address_sha256: crypto.createHash('sha256').update(s.doc.id).digest('hex'), retention_policy: policy, ...(plain(await h.handlers['lc:overlay-ready']!({ sender: s.overlay.webContents })) as { development: boolean; subscription: boolean }) }),
+    ready: async () => ({ ...(plain(await h.handlers['lc:overlay-ready']!({ sender: s.overlay.webContents })) as { work_area: unknown; places: unknown; speech_rate: number; voice: unknown }), display: s.doc.display, doc: plain(s.doc), source_id: 'screen:1:0', address_sha256: crypto.createHash('sha256').update(s.doc.id).digest('hex'), retention_policy: policy, ...(plain(await h.handlers['lc:overlay-ready']!({ sender: s.overlay.webContents })) as { development: boolean; subscription: boolean }) }),
     interactive: (on: boolean) => void interactive.push(on),
     place: async (surface: string, place: unknown) => plain(await h.handlers['lc:place']!({ sender: s.overlay.webContents }, surface, plain(place))),
     speechRate: async (rate: number) => plain(await h.handlers['lc:speech-rate']!({ sender: s.overlay.webContents }, rate)),
     onWorkArea: (f: (...a: unknown[]) => void) => events.set('work-area', f),
-    askSpoken: (id: string, request: string, state: string) => void h.handlers['lc:ask-spoken']!({ sender: s.overlay.webContents }, id, request, state),
+    talk: (on: boolean, muted: boolean) => void h.handlers['lc:talk']!({ sender: s.overlay.webContents }, on, muted),
+    say: async (id: string, request: string, at: number) => plain(await h.handlers['lc:say']!({ sender: s.overlay.webContents }, id, request, at)),
+    hush: () => void h.handlers['lc:hush']!({ sender: s.overlay.webContents }),
     armCapture: async () => true,
     saveInk: async (d: desktopInk.DesktopInk, p: unknown[]) => {
       saves.push(plain(d) as desktopInk.DesktopInk);
@@ -265,20 +282,6 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
     OffscreenCanvas: FakeNode,
     createImageBitmap: async () => frame(),
     document: { getElementById: node, createElement: () => ({ videoWidth: 1280, requestVideoFrameCallback() {} }), querySelectorAll: (q: string) => (q.includes('assistance') ? radios : buttons), querySelector: (q: string) => (q.includes('assistance') ? radios.find((r) => r.checked) ?? null : null), addEventListener: (n: string, f: (e: unknown) => void) => void documentHandlers.set(n, f), elementFromPoint: surfaceAt, documentElement: root },
-    ...(options.voice
-      ? {
-          lcVoice: {
-            say: (text: string, rate: number) => {
-              if (voice.broken) throw new Error('the voice failed (stand-in)');
-              return new Promise<boolean>((end) => void voice.spoken.push({ text, rate, end: (spoken = true) => end(spoken) }));
-            },
-            stop: () => {
-              voice.cancels += 1;
-              if (voice.broken) throw new Error('the voice failed to stop (stand-in)');
-            },
-          },
-        }
-      : {}),
     window: { innerWidth: 1280, innerHeight: 800, devicePixelRatio: 1, addEventListener() {} },
     setTimeout() {},
     FileReader: class {
