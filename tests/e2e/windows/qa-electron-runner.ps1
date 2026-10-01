@@ -85,7 +85,10 @@ public static class QaWin {
   [DllImport("user32.dll")] public static extern bool SetCursorPos(int x, int y);
   [DllImport("user32.dll")] public static extern IntPtr WindowFromPoint(Pt p);
   [DllImport("user32.dll")] public static extern IntPtr GetAncestor(IntPtr h, uint flags);
-  [DllImport("user32.dll")] public static extern void mouse_event(uint flags, uint dx, uint dy, uint data, UIntPtr extra);
+  [DllImport("user32.dll")] public static extern void mouse_event(uint flags, int dx, int dy, uint data, UIntPtr extra);
+  // A small injected mouse movement (there and back). SetCursorPos alone only places the pointer: a window that lets the
+  // mouse through until the pointer moves over its controls (the app's overlay in NAV) is told of movement only by this.
+  public static void Nudge() { mouse_event(0x0001, 2, 0, 0, UIntPtr.Zero); System.Threading.Thread.Sleep(40); mouse_event(0x0001, -2, 0, 0, UIntPtr.Zero); }
   // The process that owns the top-level window under a screen point (physical px); 0 when there is none.
   public static uint PidAt(int x, int y) { Pt p; p.X = x; p.Y = y; IntPtr h = WindowFromPoint(p); if (h == IntPtr.Zero) return 0;
     IntPtr root = GetAncestor(h, 2); uint pid; GetWindowThreadProcessId(root == IntPtr.Zero ? h : root, out pid); return pid; }
@@ -486,7 +489,10 @@ try {
         if ($h -eq [IntPtr]::Zero) { throw "window $($step.window) not found" }
         $entry.foreground_before = ([QaWin]::GetForegroundWindow() -eq $h)
         [void][QaWin]::SetCursorPos($x, $y)
-        Start-Sleep -Milliseconds 500
+        [QaWin]::Nudge()               # the pointer arrives moving, as a mouse does
+        Start-Sleep -Milliseconds 150
+        [void][QaWin]::SetCursorPos($x, $y)
+        Start-Sleep -Milliseconds 400
         # Clicked only if the pointer still is at that point and the top-level window under it is that very window
         # (the click goes wherever the pointer is).
         $now = [QaWin]::Cursor()
