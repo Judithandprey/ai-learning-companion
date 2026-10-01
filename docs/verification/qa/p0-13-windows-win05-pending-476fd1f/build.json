@@ -1,0 +1,57 @@
+{
+ "candidate": "476fd1fb832e708b79ad5e5be1c7ef17925febee",
+ "qa_merge": "0678c9a085441b126cdc144fac45ee4493de3e31",
+ "tree_equalities": {
+  "apps_windows_476fd1f_vs_d295a51": true,
+  "qa_merge_apps_services_packages_vs_476fd1f": true,
+  "services_packages_476fd1f_vs_86d2405": true
+ },
+ "stage": {
+  "name": "lc-qa-windows-win05",
+  "files": 57,
+  "tree_sha256": "4e65f654cb5c28ed3690dc649b9bcc768b083c43025c9edb4e101c6e449fb93b",
+  "clean_rebuild_from_476fd1f_tree_sha256": "4e65f654cb5c28ed3690dc649b9bcc768b083c43025c9edb4e101c6e449fb93b",
+  "method": "sha256 of the sorted sha256sum lines over package.json + dist/**; rebuild = git archive 476fd1f (package.json tsconfig.json apps packages) + tsc + copy-static.mjs"
+ },
+ "backend_copy": {
+  "paths": [
+   "packages",
+   "services"
+  ],
+  "equal_to_476fd1f_before_the_runs": true
+ },
+ "runtime": {
+  "windows": "10.0.26200",
+  "electron": "44.5.1 (apps/windows/package.json pin)",
+  "node": "24.21.0",
+  "database": "lc_p0_test"
+ },
+ "owner_module_tests_on_this_tree": {
+  "tests": 241,
+  "pass": 236,
+  "skipped": 5,
+  "fail": 0,
+  "note": "the owner's tests with an in-memory store and the host fixture enabled; a control, not native QA"
+ },
+ "frozen_86d2405_material": {
+  "parentfix_steps_sha256_prefix_before_and_after_this_change": "a2002e63ef9d987d",
+  "analyze_fix.py_replay_runner_db_helper_changed": false
+ },
+ "harness": "run.json harness_sha256 holds the files run 2 executed; they are committed unchanged (checked after the run), except analyze_win05.py: one note of its server check was corrected after the run (de85964e... -> f7e66ef1...), with no condition or status changed. Run 1 executed earlier versions of scenarios.mjs and analyze_win05.py",
+ "display": {
+  "checked_free_before_utc": "2026-10-01T04:14:47Z",
+  "run1_utc": [
+   "2026-10-01T04:15:08Z",
+   "2026-10-01T04:16:33Z"
+  ],
+  "checked_free_between_utc": "2026-10-01T04:18:14Z",
+  "run2_utc": [
+   "2026-10-01T04:18:23Z",
+   "2026-10-01T04:19:33Z"
+  ],
+  "no_electron_and_no_run_profile_edge_after_utc": "2026-10-01T04:20:01Z",
+  "note": "the display checks are QA process listings made outside the runner; only these times are recorded",
+  "run2_runner_ended_utc": "2026-10-01T04:19:17Z",
+  "run2_watcher_ended_utc": "2026-10-01T04:19:32Z"
+ }
+}

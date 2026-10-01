@@ -1,0 +1,71 @@
+[
+ {
+  "event": "watch_start",
+  "monotonic": 165908.156563167,
+  "already_there": [],
+  "at": "2026-10-01T04:18:23.874912+00:00"
+ },
+ {
+  "event": "appear",
+  "pid": 1147606,
+  "ppid": 1147603,
+  "start_ticks": 16592358,
+  "at": "2026-10-01T04:18:39.385588+00:00"
+ },
+ {
+  "event": "paused",
+  "hosts": [
+   {
+    "pid": 1147606,
+    "state_before": "S",
+    "state_after": "T"
+   }
+  ],
+  "at": "2026-10-01T04:18:52.455142+00:00"
+ },
+ {
+  "event": "resumed",
+  "reason": "the request was removed",
+  "hosts": [
+   {
+    "pid": 1147606,
+    "continued": true,
+    "state_after": "R"
+   }
+  ],
+  "at": "2026-10-01T04:19:03.745604+00:00"
+ },
+ {
+  "event": "paused",
+  "hosts": [
+   {
+    "pid": 1147606,
+    "state_before": "S",
+    "state_after": "T"
+   }
+  ],
+  "at": "2026-10-01T04:19:07.725349+00:00"
+ },
+ {
+  "event": "resumed",
+  "reason": "the request was removed",
+  "hosts": [
+   {
+    "pid": 1147606,
+    "continued": true,
+    "state_after": "R"
+   }
+  ],
+  "at": "2026-10-01T04:19:14.092970+00:00"
+ },
+ {
+  "event": "exit",
+  "pid": 1147606,
+  "at": "2026-10-01T04:19:14.506790+00:00"
+ },
+ {
+  "event": "watch_end",
+  "at": "2026-10-01T04:19:32.265175+00:00",
+  "remaining": []
+ }
+]

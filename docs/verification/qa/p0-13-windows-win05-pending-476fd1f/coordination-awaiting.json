@@ -1,0 +1,154 @@
+{
+ "format": "lc-windows-capture-link/v1",
+ "actor": {
+  "user_id": "lc-windows-http-390b74d41b1240bb912532a63af24e27",
+  "device_id": "windows-qa8eb8997a6da24e",
+  "session_id": "learning-qa0dcc58eed6cd47",
+  "producer_id": "windows-app-qa2c5af5304acf45"
+ },
+ "last_registered_stream": "stream-c274595f4041ccdb77b85736",
+ "streams": [
+  {
+   "capture_session": "666ddd12ee8c22a4",
+   "capture_dir": "<home>\\AppData\\Local\\Temp\\lc-qa-windows-win05\\qa-parentwin05-1790828303307\\userdata\\captures\\666ddd12ee8c22a4",
+   "stream_id": "stream-c274595f4041ccdb77b85736",
+   "source_id": "src-46820cdf924486160b4041ea",
+   "registration": {
+    "contract_version": "0.2.1",
+    "device_id": "windows-qa8eb8997a6da24e",
+    "session_id": "learning-qa0dcc58eed6cd47",
+    "stream_id": "stream-c274595f4041ccdb77b85736",
+    "authorization_generation": 1,
+    "membership_revision": 1,
+    "continuity": {
+     "kind": "initial"
+    }
+   },
+   "registration_key": "stream-c274595f4041ccdb77b85736.register",
+   "grant": "consumed",
+   "registered": true,
+   "state": {
+    "revision": 1,
+    "state": "live",
+    "pre_stop_sequence": null,
+    "read_at": "2026-10-01T04:18:40.606Z"
+   },
+   "source": {
+    "user_id": "lc-windows-http-390b74d41b1240bb912532a63af24e27",
+    "source_id": "src-46820cdf924486160b4041ea",
+    "source_version": 1
+   },
+   "planned_through": 4,
+   "jobs": [
+    {
+     "key": "src-46820cdf924486160b4041ea.b2-2",
+     "from": 2,
+     "through": 2,
+     "records": 1,
+     "status": "committed",
+     "body_sha256": "8a2afc12f50ca4a0d455df8f5b4fe6a008ff7919be542d1cda35ef29c6348ab2",
+     "originals": [
+      "src-46820cdf924486160b4041ea.png.18192db917be7ec31509b6a9a587a6800be4b428b7d3f2631d93064b367f64d6",
+      "src-46820cdf924486160b4041ea.ink.95b7937dd0d43196bbeb5d750091deac9d664c9792cec4768964f0925317823e"
+     ],
+     "ack_sha256": "21c4420718972f080eefbd17f7101a916bd17f653df812169b19e10dadb7f396"
+    },
+    {
+     "key": "src-46820cdf924486160b4041ea.b3-3",
+     "from": 3,
+     "through": 3,
+     "records": 1,
+     "status": "committed",
+     "body_sha256": "b283390ef94763256f6f641b5c8fe89149e4e723dfe387dab7055178c4714e3b",
+     "originals": [
+      "src-46820cdf924486160b4041ea.png.9123800ab33126642a6845f2fa42ddc7a69a8a1093c2922e1f4541517c7508c4",
+      "src-46820cdf924486160b4041ea.ink.95b7937dd0d43196bbeb5d750091deac9d664c9792cec4768964f0925317823e"
+     ],
+     "ack_sha256": "1947d839beebc5b2dd7d27db549a18bf6e5e0a1cd1d3937fc3aeed5c77360475"
+    },
+    {
+     "key": "src-46820cdf924486160b4041ea.b4-4",
+     "from": 4,
+     "through": 4,
+     "records": 1,
+     "status": "sending",
+     "plan": {
+      "batch_id": "src-46820cdf924486160b4041ea.b4-4",
+      "idempotency_key": "src-46820cdf924486160b4041ea.b4-4",
+      "delivery_mode": "live",
+      "device_id": "windows-qa8eb8997a6da24e",
+      "session_id": "learning-qa0dcc58eed6cd47",
+      "stream_id": "stream-c274595f4041ccdb77b85736",
+      "source": {
+       "user_id": "lc-windows-http-390b74d41b1240bb912532a63af24e27",
+       "source_id": "src-46820cdf924486160b4041ea",
+       "source_version": 1
+      },
+      "capture_session": "666ddd12ee8c22a4",
+      "entries": [
+       {
+        "kind": "frame",
+        "sample_seq": 13,
+        "frame_id": "src-46820cdf924486160b4041ea.f13",
+        "raw": {
+         "contract_version": "0.2.2",
+         "source": {
+          "user_id": "lc-windows-http-390b74d41b1240bb912532a63af24e27",
+          "source_id": "src-46820cdf924486160b4041ea",
+          "source_version": 1
+         },
+         "artifact": {
+          "artifact_id": "src-46820cdf924486160b4041ea.png.99ba8d610be8ada68fbe332554e8c00ae379c8e5fe313c14ee9cabe367487019",
+          "sha256": "99ba8d610be8ada68fbe332554e8c00ae379c8e5fe313c14ee9cabe367487019",
+          "byte_length": 765266,
+          "media_type": "image/png"
+         },
+         "kind": "screen_image"
+        },
+        "composed": {
+         "contract_version": "0.2.2",
+         "source": {
+          "user_id": "lc-windows-http-390b74d41b1240bb912532a63af24e27",
+          "source_id": "src-46820cdf924486160b4041ea",
+          "source_version": 1
+         },
+         "artifact": {
+          "artifact_id": "src-46820cdf924486160b4041ea.png.99ba8d610be8ada68fbe332554e8c00ae379c8e5fe313c14ee9cabe367487019",
+          "sha256": "99ba8d610be8ada68fbe332554e8c00ae379c8e5fe313c14ee9cabe367487019",
+          "byte_length": 765266,
+          "media_type": "image/png"
+         },
+         "kind": "screen_image"
+        },
+        "ink": {
+         "contract_version": "0.2.2",
+         "source": {
+          "user_id": "lc-windows-http-390b74d41b1240bb912532a63af24e27",
+          "source_id": "src-46820cdf924486160b4041ea",
+          "source_version": 1
+         },
+         "artifact": {
+          "artifact_id": "src-46820cdf924486160b4041ea.ink.95b7937dd0d43196bbeb5d750091deac9d664c9792cec4768964f0925317823e",
+          "sha256": "95b7937dd0d43196bbeb5d750091deac9d664c9792cec4768964f0925317823e",
+          "byte_length": 451,
+          "media_type": "application/json"
+         },
+         "kind": "editable_ink"
+        },
+        "record_id": "src-46820cdf924486160b4041ea.r4",
+        "sequence": 4
+       }
+      ]
+     },
+     "body": "{\"contract_version\":\"0.2.10\",\"batch\":{\"contract_version\":\"0.2.0\",\"batch_id\":\"src-46820cdf924486160b4041ea.b4-4\",\"device_id\":\"windows-qa8eb8997a6da24e\",\"session_id\":\"learning-qa0dcc58eed6cd47\",\"stream_id\":\"stream-c274595f4041ccdb77b85736\",\"delivery_mode\":\"live\",\"records\":[{\"record_id\":\"src-46820cdf924486160b4041ea.r4\",\"sequence\":4,\"source\":{\"user_id\":\"lc-windows-http-390b74d41b1240bb912532a63af24e27\",\"source_id\":\"src-46820cdf924486160b4041ea\",\"source_version\":1},\"scope\":{\"kind\":\"provisional_session\"},\"observed_at\":null,\"clock\":null,\"media_position\":null,\"surface\":\"external_app\",\"method\":\"visual\",\"causal_parents\":[],\"artifacts\":[{\"artifact_id\":\"src-46820cdf924486160b4041ea.png.99ba8d610be8ada68fbe332554e8c00ae379c8e5fe313c14ee9cabe367487019\",\"sha256\":\"99ba8d610be8ada68fbe332554e8c00ae379c8e5fe313c14ee9cabe367487019\",\"byte_length\":765266,\"media_type\":\"image/png\"},{\"artifact_id\":\"src-46820cdf924486160b4041ea.ink.95b7937dd0d43196bbeb5d750091deac9d664c9792cec4768964f0925317823e\",\"sha256\":\"95b7937dd0d43196bbeb5d750091deac9d664c9792cec4768964f0925317823e\",\"byte_length\":451,\"media_type\":\"application/json\"}],\"evidence\":{\"kind\":\"coverage\",\"coverage\":\"observed_samples\",\"from_clock_ms\":null,\"through_clock_ms\":null,\"missing_sequences\":[],\"limitations\":[\"sample_only\",\"unsupported_history\"]},\"frame_id\":\"src-46820cdf924486160b4041ea.f13\"}]},\"frames\":[{\"contract_version\":\"0.2.9\",\"kind\":\"retained_capture_frame\",\"frame_id\":\"src-46820cdf924486160b4041ea.f13\",\"device_id\":\"windows-qa8eb8997a6da24e\",\"session_id\":\"learning-qa0dcc58eed6cd47\",\"stream_id\":\"stream-c274595f4041ccdb77b85736\",\"source\":{\"user_id\":\"lc-windows-http-390b74d41b1240bb912532a63af24e27\",\"source_id\":\"src-46820cdf924486160b4041ea\",\"source_version\":1},\"captured_at\":null,\"media_position\":null,\"capture_latency_ms\":null,\"raw\":{\"artifact\":{\"artifact_id\":\"src-46820cdf924486160b4041ea.png.99ba8d610be8ada68fbe332554e8c00ae379c8e5fe313c14ee9cabe367487019\",\"sha256\":\"99ba8d610be8ada68fbe332554e8c00ae379c8e5fe313c14ee9cabe367487019\",\"byte_length\":765266,\"media_type\":\"image/png\"},\"width\":2560,\"height\":1600,\"pixels_sha256\":\"d534bdd65512d6d9c4d6c555167eea60b579e01d926efee92c73240b933769f6\",\"native_file\":\"frames/99ba8d610be8ada68fbe332554e8c00ae379c8e5fe313c14ee9cabe367487019.png\"},\"composed\":{\"image\":{\"artifact\":{\"artifact_id\":\"src-46820cdf924486160b4041ea.png.99ba8d610be8ada68fbe332554e8c00ae379c8e5fe313c14ee9cabe367487019\",\"sha256\":\"99ba8d610be8ada68fbe332554e8c00ae379c8e5fe313c14ee9cabe367487019\",\"byte_length\":765266,\"media_type\":\"image/png\"},\"width\":2560,\"height\":1600,\"pixels_sha256\":\"d534bdd65512d6d9c4d6c555167eea60b579e01d926efee92c73240b933769f6\",\"native_file\":\"frames/99ba8d610be8ada68fbe332554e8c00ae379c8e5fe313c14ee9cabe367487019.png\"},\"ink_session\":\"666ddd12ee8c22a4\",\"ink_revision\":0,\"visible_strokes\":0,\"ink_marks\":{\"verified\":0,\"changed\":0,\"unknown\":0,\"following_content\":0},\"transformation\":\"raw frame 2560×1600 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 2.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once\"},\"profile\":{\"kind\":\"windows_electron\",\"retention_format\":\"lc-desktop-capture-retention/v1\",\"capture_session\":\"666ddd12ee8c22a4\",\"started_at\":\"2026-10-01T04:18:39.215Z\",\"source_at_start\":{\"kind\":\"display\",\"source_id\":\"screen:0:0\",\"display_id\":\"3071609112\",\"label\":\"整个屏幕\",\"bounds\":{\"x\":0,\"y\":0,\"width\":1280,\"height\":800},\"scale_factor\":2},\"sample\":{\"sample_seq\":13,\"frame_seq\":13,\"reason\":\"changed\",\"deferred_samples_not_retained\":[],\"sampled_at\":\"2026-10-01T04:18:52.698Z\",\"taken_at\":\"2026-10-01T04:18:52.647Z\",\"monotonic_ms\":13482,\"state\":\"fresh\",\"gap_ms\":null,\"presented_frames\":15,\"stream_presented_frames\":15,\"presentation_ms\":13337,\"frame_age_ms\":145,\"change_from_previous_sample\":0.015847120098039215}}}]}",
+     "body_sha256": "5951d193189d60286ae1132e1562fde65c1eeeb58f76e6221513de12b480499c",
+     "originals": []
+    }
+   ],
+   "stops": [],
+   "final": null,
+   "notes": [],
+   "registration_sent": true
+  }
+ ]
+}

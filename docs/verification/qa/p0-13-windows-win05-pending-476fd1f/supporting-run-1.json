@@ -1,0 +1,329 @@
+{
+ "note": "The first run of the same candidate and stage, 04:15:08-04:16:33 UTC. Its Stop was pressed with nothing pending: QA's second page change (one digit) was below the app's retention threshold, so the app kept no frame and sent nothing. After it the scenario (a larger page change) and the analyzer (the frame precondition, the confirmed-count rule) were changed; the statuses below are the committed analyzer's reading of run 1's retained output, not what ran then.",
+ "run": {
+  "scenario": "parentwin05",
+  "started": "2026-10-01T04:15:09.184Z",
+  "ended": "2026-10-01T04:16:17.472Z",
+  "steps": 76
+ },
+ "harness_files_changed_after_this_run": [
+  "analyze_win05.py",
+  "scenarios.mjs"
+ ],
+ "runner": {
+  "aborted": null,
+  "errors": [
+   "step 59: waitEval timed out: (async () => { const l = await window.lc.linkState(); return l && l.mode === 'development' && (l.awaiting === true) && JSON.stringify({ at: new Date().toISOString(), l }); })()"
+  ],
+  "failed_steps": [
+   [
+    59,
+    "p_awaiting"
+   ]
+  ]
+ },
+ "statuses_by_the_committed_analyzer": {
+  "run.shared_desktop_quiet": "pass",
+  "run.completed": "fail",
+  "run.cursor_static": "pass",
+  "fault.only_this_runs_host_paused_twice_and_resumed": "pass",
+  "run.every_job_is_one_retained_frame": "pass",
+  "before.link_off_then_idle_no_host": "pass",
+  "confirmed.records_before_the_pause": "pass",
+  "pending.said_as_waiting_at_once_counts_kept": "pass",
+  "pending.still_waiting_10s_later_inside_the_apps_wait": "pass",
+  "ack.real_answer_raises_the_confirmed_count": "pass",
+  "stop.during_a_pending_send_ends_unconfirmed_not_live": "limit",
+  "server.holds_exactly_what_the_app_called_stored": "limit",
+  "copy.every_read_is_the_accepted_text_without_a_storage_claim": "pass",
+  "no_ai.said_everywhere": "pass",
+  "release.app_exited_by_itself_nothing_left": "pass",
+  "database.readback_read_only_of_this_actor": "pass"
+ },
+ "counts": {
+  "pass": 13,
+  "fail": 1,
+  "limit": 2
+ },
+ "manifest_lines": [
+  {
+   "kind": "header",
+   "started_at": "2026-10-01T04:15:24.614Z"
+  },
+  {
+   "kind": "retained",
+   "frame_seq": 1,
+   "reason": "first",
+   "sampled_at": "2026-10-01T04:15:25.445Z",
+   "taken_at": "2026-10-01T04:15:25.292Z"
+  },
+  {
+   "kind": "retained",
+   "frame_seq": 8,
+   "reason": "changed",
+   "sampled_at": "2026-10-01T04:15:32.837Z",
+   "taken_at": "2026-10-01T04:15:32.789Z"
+  },
+  {
+   "kind": "retained",
+   "frame_seq": 14,
+   "reason": "changed",
+   "sampled_at": "2026-10-01T04:15:39.198Z",
+   "taken_at": "2026-10-01T04:15:39.150Z"
+  },
+  {
+   "kind": "not_retained",
+   "reason": "pixels changed less than the material threshold since the last retained frame"
+  },
+  {
+   "kind": "ended",
+   "reason": "stopped by the user",
+   "at": "2026-10-01T04:16:14.342Z"
+  }
+ ],
+ "pending": {
+  "pending_job_in_the_record": [
+   [
+    "src-05869f42574cb2853ecbae1d.b4-4",
+    "sending",
+    1
+   ]
+  ],
+  "frame_sampled_to_waiting_status_s": 0.1,
+  "pause_to_waiting_status_s": 1.32,
+  "first_waiting_status": {
+   "qa_at": "2026-10-01T04:15:39.301Z",
+   "state": "sending",
+   "awaiting": true,
+   "storing": false,
+   "stored": 2,
+   "unknown": 1
+  },
+  "read_at_once": {
+   "read": "w_awaiting_now",
+   "at": "2026-10-01T04:15:39.325Z",
+   "mode": "development",
+   "state": "sending",
+   "awaiting": true,
+   "storing": false,
+   "stored": 2,
+   "unknown": 1,
+   "refused": 0,
+   "not_sent": 0,
+   "earlier_unknown": 0,
+   "sends_stopped": false,
+   "detail": null,
+   "header": "Development mode: captured frames and ink are kept on this device and are also sent to a local test capture service on it. A record counts as stored only once that service confirms it; the counts are below. No AI is connected; nothing is sent to any AI.",
+   "line": "Capture storage (development): sending: waiting for the service to confirm. 2 record(s) stored; 1 not known whether stored. AI: not connected."
+  },
+  "confirmed_before": 2
+ },
+ "later": {
+  "read_10s_later": {
+   "read": "w_awaiting_10s",
+   "at": "2026-10-01T04:15:50.062Z",
+   "mode": "development",
+   "state": "sending",
+   "awaiting": true,
+   "storing": false,
+   "stored": 2,
+   "unknown": 1,
+   "refused": 0,
+   "not_sent": 0,
+   "earlier_unknown": 0,
+   "sends_stopped": false,
+   "detail": null,
+   "header": "Development mode: captured frames and ink are kept on this device and are also sent to a local test capture service on it. A record counts as stored only once that service confirms it; the counts are below. No AI is connected; nothing is sent to any AI.",
+   "line": "Capture storage (development): sending: waiting for the service to confirm. 2 record(s) stored; 1 not known whether stored. AI: not connected."
+  },
+  "seconds_after_the_first_waiting_status": 10.8,
+  "waiting_status_to_resume_request_s": 10.8,
+  "statuses_from_the_first_waiting_one_to_this_read": 1
+ },
+ "ack": {
+  "after_the_answer": {
+   "read": "w_acked_now",
+   "at": "2026-10-01T04:15:50.314Z",
+   "mode": "development",
+   "state": "sending",
+   "awaiting": false,
+   "storing": true,
+   "stored": 3,
+   "unknown": 0,
+   "refused": 0,
+   "not_sent": 0,
+   "earlier_unknown": 0,
+   "sends_stopped": false,
+   "detail": null,
+   "header": "Development mode: captured frames and ink are kept on this device and are also sent to a local test capture service on it. A record counts as stored only once that service confirms it; the counts are below. No AI is connected; nothing is sent to any AI.",
+   "line": "Capture storage (development): connected: frames are sent as they are kept. 3 record(s) stored. AI: not connected."
+  },
+  "resume_request_to_confirmed_status_s": 0.18,
+  "waiting_status_to_confirmed_status_s": 10.94,
+  "job_in_the_record": {
+   "key": "src-05869f42574cb2853ecbae1d.b4-4",
+   "status": "committed",
+   "records": 1
+  },
+  "server_receipt_after_the_resume_s": 0.09
+ },
+ "stop_not_exercised": {
+  "note": "not judged: no send was shown pending when Stop was pressed, or an earlier check did not pass; this behaviour was not exercised",
+  "reads": {
+   "pending": {
+    "read": "p_awaiting_now",
+    "at": "2026-10-01T04:16:14.231Z",
+    "mode": "development",
+    "state": "sending",
+    "awaiting": false,
+    "storing": true,
+    "stored": 3,
+    "unknown": 0,
+    "refused": 0,
+    "not_sent": 0,
+    "earlier_unknown": 0,
+    "sends_stopped": false,
+    "detail": null,
+    "header": "Development mode: captured frames and ink are kept on this device and are also sent to a local test capture service on it. A record counts as stored only once that service confirms it; the counts are below. No AI is connected; nothing is sent to any AI.",
+    "line": "Capture storage (development): connected: frames are sent as they are kept. 3 record(s) stored. AI: not connected."
+   },
+   "right_after_the_stop_click": {
+    "read": "p_stop_latched",
+    "at": "2026-10-01T04:16:14.354Z",
+    "mode": "development",
+    "state": "stopping",
+    "awaiting": false,
+    "storing": false,
+    "stored": 3,
+    "unknown": 0,
+    "refused": 0,
+    "not_sent": 0,
+    "earlier_unknown": 0,
+    "sends_stopped": false,
+    "detail": null,
+    "header": "Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI.",
+    "line": "Capture storage (development): stopping: nothing new is sent. 3 record(s) stored. AI: not connected."
+   },
+   "after_the_resume": {
+    "read": "p_stopped_now",
+    "at": "2026-10-01T04:16:14.966Z",
+    "mode": "development",
+    "state": "stopped",
+    "awaiting": false,
+    "storing": false,
+    "stored": 3,
+    "unknown": 0,
+    "refused": 0,
+    "not_sent": 0,
+    "earlier_unknown": 0,
+    "sends_stopped": false,
+    "detail": "stream stopped",
+    "header": "Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI.",
+    "line": "Capture storage (development): stopped. 3 record(s) stored. stream stopped. AI: not connected."
+   }
+  }
+ },
+ "processes": {
+  "app": {
+   "pid": 70712,
+   "link": "",
+   "close_via": "page",
+   "exited": true,
+   "exit_code": 0,
+   "exit_ms": 114,
+   "killed": null
+  },
+  "app-win05": {
+   "pid": 66856,
+   "link": "main",
+   "close_via": "wm_close",
+   "exited": true,
+   "exit_code": 0,
+   "exit_ms": 117,
+   "killed": null
+  }
+ },
+ "host_watch": [
+  {
+   "event": "watch_start",
+   "monotonic": 165713.473798061,
+   "already_there": [],
+   "at": "2026-10-01T04:15:09.192148+00:00"
+  },
+  {
+   "event": "appear",
+   "pid": 1146601,
+   "ppid": 1146595,
+   "start_ticks": 16572898,
+   "at": "2026-10-01T04:15:24.911711+00:00"
+  },
+  {
+   "event": "paused",
+   "hosts": [
+    {
+     "pid": 1146601,
+     "state_before": "S",
+     "state_after": "T"
+    }
+   ],
+   "at": "2026-10-01T04:15:37.982819+00:00"
+  },
+  {
+   "event": "resumed",
+   "reason": "the request was removed",
+   "hosts": [
+    {
+     "pid": 1146601,
+     "continued": true,
+     "state_after": "R"
+    }
+   ],
+   "at": "2026-10-01T04:15:50.094218+00:00"
+  },
+  {
+   "event": "paused",
+   "hosts": [
+    {
+     "pid": 1146601,
+     "state_before": "S",
+     "state_after": "T"
+    }
+   ],
+   "at": "2026-10-01T04:15:54.075047+00:00"
+  },
+  {
+   "event": "resumed",
+   "reason": "the request was removed",
+   "hosts": [
+    {
+     "pid": 1146601,
+     "continued": true,
+     "state_after": "R"
+    }
+   ],
+   "at": "2026-10-01T04:16:14.592269+00:00"
+  },
+  {
+   "event": "exit",
+   "pid": 1146601,
+   "at": "2026-10-01T04:16:15.007336+00:00"
+  },
+  {
+   "event": "watch_end",
+   "at": "2026-10-01T04:16:32.564744+00:00",
+   "remaining": []
+  }
+ ],
+ "cleanup": {
+  "after": {
+   "actor_row": false,
+   "documents": 0
+  },
+  "at": "2026-10-01T04:18:13.427899+00:00",
+  "before": {
+   "actor_row": true,
+   "documents": 32
+  },
+  "cleanup": "this run's proven actor only"
+ }
+}

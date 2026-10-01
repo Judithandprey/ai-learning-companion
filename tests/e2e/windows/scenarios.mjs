@@ -194,6 +194,11 @@ const coordCopy = (to) => ({ copyTree: 'userdata', path: 'capture-host', to, req
 const kidsOf = (as) => ({ children: true, as, required: false });
 const failSettled = (as) => linkUntil("l.state !== 'connecting' && l.state !== 'idle' && l.state !== 'stopped'", as, 40000);
 
+// QA-WIN-05 (476fd1f): connected and live, no send out, nothing unknown or unsent (the status this candidate notifies
+// before and after each send).
+const SETTLED5 = "l.state === 'sending' && l.awaiting === false && l.unknown === 0 && l.not_sent === 0";
+const panelHidden = (hidden) => edge(`(document.getElementById('qa-live').hidden = ${hidden}, true)`);
+
 export const scenarios = {
   full: (p) => [
     ...setup(p),
@@ -487,6 +492,44 @@ export const scenarios = {
     { launchApp: true, as: 'app-final', link: 'unavail' }, waitDisplays, inkHook, linkHook, { sleep: 10000 },
     linkNow('g_relaunched'), kidsOf('kids_g'), listInk('g_ink'), linkEvents('g_events'), coordCopy('coord-final'),
     { closeApp: true }, hashesP('final', true),
+  ],
+
+  // QA-WIN-05 changed path only (476fd1f): a send that is out and not yet answered is said as waiting at once, the
+  // confirmed counts stay as they were, a real answer raises them, and a Stop during a pending send ends without a live
+  // or stored claim. The same isolated fault as in parentfix (this run's own host paused, the connection kept open), but
+  // resumed before the app's own 60 s wait ends. No pen input: Start and Stop are DOM clicks, page changes are QA's own.
+  // The change made during each pause hides or shows QA's whole panel (720x300 DIP): one paint, far above the app's
+  // retention threshold (a first run changed one digit there, and the app rightly kept no frame for it, so nothing was sent).
+  parentwin05: (p) => [
+    ...setup(p), linkHook, linkNow('n_off'), { closeApp: true },
+    { seedLinkRecord: true, actor: p.actor, as: 'seed' },
+    { launchApp: true, as: 'app-win05', link: 'main' }, waitDisplays, inkHook, linkHook, { sleep: 3000 },
+    linkNow('w_idle'), kidsOf('kids_w_idle'),
+    { window: 'edge', show: 'front' }, showPanel, { sleep: 1200 }, mark('before-start'), { desktopShot: 'before-start' },
+    ...startSession('s1'), linkUntil("l.state === 'sending'", 'w_sending'), kidsOf('kids_w'),
+    { sleep: 3500 }, setText('qa-sign', '+'), { sleep: 3500 },
+    linkUntil(`${SETTLED5} && l.stored >= 2`, 'w_confirmed'), { sleep: 2500 }, linkUntil(SETTLED5, 'w_settled'),
+    linkNow('w_confirmed_now'), overlayState('w_overlay'), coordCopy('coord-confirmed'),
+    // 1. The next send gets no answer (the host is paused, its connection stays open): what the app says, read at once
+    //    and again 10 s later, both well inside its 60 s wait.
+    { hostPause: true, as: 'pause1' },
+    panelHidden(true), mark('pending-change'),
+    linkUntil('l.awaiting === true', 'w_awaiting', 20000), linkNow('w_awaiting_now'), coordCopy('coord-awaiting'), { desktopShot: 'awaiting' },
+    { sleep: 10000 }, linkNow('w_awaiting_10s'),
+    // 2. The host answers again: the real acknowledgement.
+    { hostResume: true, as: 'resume1' },
+    linkUntil(SETTLED5, 'w_acked', 30000), linkNow('w_acked_now'), linkEvents('w_events_1'), coordCopy('coord-acked'),
+    { sleep: 3500 }, linkUntil(SETTLED5, 'w_settled2'), linkNow('w_before_pause2'),
+    // 3. Stop while a send is pending: read right after the click, after the app's own 5 s wait for that send, and at the end.
+    { hostPause: true, as: 'pause2' },
+    panelHidden(false), mark('pending-change-2'),
+    linkUntil('l.awaiting === true', 'p_awaiting', 20000), linkNow('p_awaiting_now'),
+    control("document.getElementById('stop').click(), true"), linkNow('p_stop_latched'),
+    linkUntil("l.state === 'stopping' && l.awaiting === false", 'p_stop_given_up', 15000), linkNow('p_stop_given_up_now'), coordCopy('coord-stop-given-up'),
+    { hostResume: true, as: 'resume2' },
+    stopped('s1_stopped'), linkUntil("l.state === 'stopped'", 'p_link_stopped', 50000), linkNow('p_stopped_now'), kidsOf('kids_p_stopped'),
+    linkEvents('w_events'), timeline('w_timeline'), coordCopy('coord-stopped'), hashesP('stopped', true),
+    { closeApp: true, via: 'wm_close' }, hashesP('final', true),
   ],
 
   smoke: (p) => [

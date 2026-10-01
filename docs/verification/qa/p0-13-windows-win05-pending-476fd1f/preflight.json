@@ -1,0 +1,16 @@
+{
+ "actor": {
+  "device_id": "windows-qa8eb8997a6da24e",
+  "producer_id": "windows-app-qa2c5af5304acf45",
+  "session_id": "learning-qa0dcc58eed6cd47",
+  "user_id": "lc-windows-http-390b74d41b1240bb912532a63af24e27"
+ },
+ "at": "2026-10-01T04:18:23.689434+00:00",
+ "migrations": [
+  "0001_documents",
+  "0002_capture_immutability",
+  "0003_raw_capture_frame"
+ ],
+ "postgresql": "18.6 (Ubuntu 18.6-0ubuntu0.26.04.1)",
+ "pristine": true
+}

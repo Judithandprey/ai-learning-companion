@@ -1,0 +1,788 @@
+{
+ "steps": [
+  {
+   "i": 1,
+   "ok": true,
+   "at": "2026-10-01T04:18:25.1653337Z",
+   "kind": "consoleStart"
+  },
+  {
+   "i": 2,
+   "ok": true,
+   "at": "2026-10-01T04:18:25.8754165Z",
+   "kind": "window",
+   "window": "console",
+   "show": "maximize",
+   "is_foreground": false
+  },
+  {
+   "i": 3,
+   "ok": true,
+   "at": "2026-10-01T04:18:26.7167486Z",
+   "kind": "edgeStart"
+  },
+  {
+   "i": 4,
+   "ok": true,
+   "at": "2026-10-01T04:18:27.4399393Z",
+   "kind": "window",
+   "window": "edge",
+   "show": "front",
+   "foreground": true,
+   "is_foreground": true
+  },
+  {
+   "i": 5,
+   "ok": true,
+   "at": "2026-10-01T04:18:28.3485066Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 6,
+   "ok": true,
+   "at": "2026-10-01T04:18:29.8630315Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 7,
+   "ok": true,
+   "at": "2026-10-01T04:18:29.9085107Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "displays"
+  },
+  {
+   "i": 8,
+   "ok": true,
+   "at": "2026-10-01T04:18:30.1148226Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "link_hooked"
+  },
+  {
+   "i": 9,
+   "ok": true,
+   "at": "2026-10-01T04:18:30.1199353Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "n_off"
+  },
+  {
+   "i": 10,
+   "ok": true,
+   "at": "2026-10-01T04:18:30.1229387Z",
+   "kind": "closeApp",
+   "via": "page",
+   "close_requested_at": "2026-10-01T04:18:30.1359470Z",
+   "exited": true,
+   "exit_ms": 114,
+   "exit_code": 0
+  },
+  {
+   "i": 11,
+   "ok": true,
+   "at": "2026-10-01T04:18:30.2632559Z",
+   "kind": "seedLinkRecord"
+  },
+  {
+   "i": 12,
+   "ok": true,
+   "at": "2026-10-01T04:18:30.3295917Z",
+   "kind": "launchApp",
+   "previous": {
+    "key": "app",
+    "pid": 73408,
+    "exit_code": 0,
+    "killed": false
+   },
+   "pid": 77940
+  },
+  {
+   "i": 13,
+   "ok": true,
+   "at": "2026-10-01T04:18:31.9528336Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 14,
+   "ok": true,
+   "at": "2026-10-01T04:18:32.4694695Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "hooked"
+  },
+  {
+   "i": 15,
+   "ok": true,
+   "at": "2026-10-01T04:18:32.4714886Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "link_hooked"
+  },
+  {
+   "i": 16,
+   "ok": true,
+   "at": "2026-10-01T04:18:32.4873827Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 17,
+   "ok": true,
+   "at": "2026-10-01T04:18:35.5022578Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "w_idle"
+  },
+  {
+   "i": 18,
+   "ok": true,
+   "at": "2026-10-01T04:18:35.5063661Z",
+   "kind": "children"
+  },
+  {
+   "i": 19,
+   "ok": true,
+   "at": "2026-10-01T04:18:36.1915619Z",
+   "kind": "window",
+   "window": "edge",
+   "show": "front",
+   "foreground": true,
+   "is_foreground": true
+  },
+  {
+   "i": 20,
+   "ok": true,
+   "at": "2026-10-01T04:18:37.0447420Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": null
+  },
+  {
+   "i": 21,
+   "ok": true,
+   "at": "2026-10-01T04:18:37.0490760Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 22,
+   "ok": true,
+   "at": "2026-10-01T04:18:38.2637119Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 23,
+   "ok": true,
+   "at": "2026-10-01T04:18:38.2672579Z",
+   "kind": "desktopShot",
+   "label": "before-start",
+   "foreign": null,
+   "cursor": [
+    2454,
+    422
+   ],
+   "size": "2560 x 1600"
+  },
+  {
+   "i": 24,
+   "ok": true,
+   "at": "2026-10-01T04:18:39.0053733Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 25,
+   "ok": true,
+   "at": "2026-10-01T04:18:39.1383943Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "s1"
+  },
+  {
+   "i": 26,
+   "ok": true,
+   "at": "2026-10-01T04:18:39.5916764Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 27,
+   "ok": true,
+   "at": "2026-10-01T04:18:39.6158952Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 28,
+   "ok": true,
+   "at": "2026-10-01T04:18:42.1205070Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "w_sending"
+  },
+  {
+   "i": 29,
+   "ok": true,
+   "at": "2026-10-01T04:18:42.1245008Z",
+   "kind": "children"
+  },
+  {
+   "i": 30,
+   "ok": true,
+   "at": "2026-10-01T04:18:42.8193819Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 31,
+   "ok": true,
+   "at": "2026-10-01T04:18:46.3273376Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": null
+  },
+  {
+   "i": 32,
+   "ok": true,
+   "at": "2026-10-01T04:18:46.3314794Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 33,
+   "ok": true,
+   "at": "2026-10-01T04:18:49.8315138Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "w_confirmed"
+  },
+  {
+   "i": 34,
+   "ok": true,
+   "at": "2026-10-01T04:18:49.8350300Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 35,
+   "ok": true,
+   "at": "2026-10-01T04:18:52.3362277Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "w_settled"
+  },
+  {
+   "i": 36,
+   "ok": true,
+   "at": "2026-10-01T04:18:52.3406043Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "w_confirmed_now"
+  },
+  {
+   "i": 37,
+   "ok": true,
+   "at": "2026-10-01T04:18:52.3426134Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_w_overlay"
+  },
+  {
+   "i": 38,
+   "ok": true,
+   "at": "2026-10-01T04:18:52.3436161Z",
+   "kind": "copyTree",
+   "files": 1
+  },
+  {
+   "i": 39,
+   "ok": true,
+   "at": "2026-10-01T04:18:52.3807576Z",
+   "kind": "hostPause",
+   "answered_at": "2026-10-01T04:18:52.4923139Z",
+   "hosts": 1
+  },
+  {
+   "i": 40,
+   "ok": true,
+   "at": "2026-10-01T04:18:52.5032565Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": null
+  },
+  {
+   "i": 41,
+   "ok": true,
+   "at": "2026-10-01T04:18:52.5082581Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 42,
+   "ok": true,
+   "at": "2026-10-01T04:18:52.5332600Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "w_awaiting"
+  },
+  {
+   "i": 43,
+   "ok": true,
+   "at": "2026-10-01T04:18:52.8142081Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "w_awaiting_now"
+  },
+  {
+   "i": 44,
+   "ok": true,
+   "at": "2026-10-01T04:18:52.8164987Z",
+   "kind": "copyTree",
+   "files": 1
+  },
+  {
+   "i": 45,
+   "ok": true,
+   "at": "2026-10-01T04:18:52.8264113Z",
+   "kind": "desktopShot",
+   "label": "awaiting",
+   "foreign": null,
+   "cursor": [
+    2454,
+    422
+   ],
+   "size": "2560 x 1600"
+  },
+  {
+   "i": 46,
+   "ok": true,
+   "at": "2026-10-01T04:18:53.5462113Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 47,
+   "ok": true,
+   "at": "2026-10-01T04:19:03.5590659Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "w_awaiting_10s"
+  },
+  {
+   "i": 48,
+   "ok": true,
+   "at": "2026-10-01T04:19:03.5630718Z",
+   "kind": "hostResume",
+   "answered_at": "2026-10-01T04:19:03.7964690Z"
+  },
+  {
+   "i": 49,
+   "ok": true,
+   "at": "2026-10-01T04:19:03.7964690Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "w_acked"
+  },
+  {
+   "i": 50,
+   "ok": true,
+   "at": "2026-10-01T04:19:03.9113264Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "w_acked_now"
+  },
+  {
+   "i": 51,
+   "ok": true,
+   "at": "2026-10-01T04:19:03.9355406Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "w_events_1"
+  },
+  {
+   "i": 52,
+   "ok": true,
+   "at": "2026-10-01T04:19:03.9390824Z",
+   "kind": "copyTree",
+   "files": 1
+  },
+  {
+   "i": 53,
+   "ok": true,
+   "at": "2026-10-01T04:19:03.9558593Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 54,
+   "ok": true,
+   "at": "2026-10-01T04:19:07.4672324Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "w_settled2"
+  },
+  {
+   "i": 55,
+   "ok": true,
+   "at": "2026-10-01T04:19:07.4712575Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "w_before_pause2"
+  },
+  {
+   "i": 56,
+   "ok": true,
+   "at": "2026-10-01T04:19:07.4732674Z",
+   "kind": "hostPause",
+   "answered_at": "2026-10-01T04:19:07.8159068Z",
+   "hosts": 1
+  },
+  {
+   "i": 57,
+   "ok": true,
+   "at": "2026-10-01T04:19:07.8169064Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": null
+  },
+  {
+   "i": 58,
+   "ok": true,
+   "at": "2026-10-01T04:19:07.8199201Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 59,
+   "ok": true,
+   "at": "2026-10-01T04:19:07.8229044Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "p_awaiting"
+  },
+  {
+   "i": 60,
+   "ok": true,
+   "at": "2026-10-01T04:19:08.7828080Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "p_awaiting_now"
+  },
+  {
+   "i": 61,
+   "ok": true,
+   "at": "2026-10-01T04:19:08.7848078Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 62,
+   "ok": true,
+   "at": "2026-10-01T04:19:08.8007531Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "p_stop_latched"
+  },
+  {
+   "i": 63,
+   "ok": true,
+   "at": "2026-10-01T04:19:08.8979350Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "p_stop_given_up"
+  },
+  {
+   "i": 64,
+   "ok": true,
+   "at": "2026-10-01T04:19:13.8773488Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "p_stop_given_up_now"
+  },
+  {
+   "i": 65,
+   "ok": true,
+   "at": "2026-10-01T04:19:13.8803472Z",
+   "kind": "copyTree",
+   "files": 1
+  },
+  {
+   "i": 66,
+   "ok": true,
+   "at": "2026-10-01T04:19:13.8973600Z",
+   "kind": "hostResume",
+   "answered_at": "2026-10-01T04:19:14.1386348Z"
+  },
+  {
+   "i": 67,
+   "ok": true,
+   "at": "2026-10-01T04:19:14.1386348Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "s1_stopped"
+  },
+  {
+   "i": 68,
+   "ok": true,
+   "at": "2026-10-01T04:19:14.1464978Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "p_link_stopped"
+  },
+  {
+   "i": 69,
+   "ok": true,
+   "at": "2026-10-01T04:19:14.5326442Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "p_stopped_now"
+  },
+  {
+   "i": 70,
+   "ok": true,
+   "at": "2026-10-01T04:19:14.5346467Z",
+   "kind": "children"
+  },
+  {
+   "i": 71,
+   "ok": true,
+   "at": "2026-10-01T04:19:15.2114840Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "w_events"
+  },
+  {
+   "i": 72,
+   "ok": true,
+   "at": "2026-10-01T04:19:15.2144836Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "w_timeline"
+  },
+  {
+   "i": 73,
+   "ok": true,
+   "at": "2026-10-01T04:19:15.2208349Z",
+   "kind": "copyTree",
+   "files": 1
+  },
+  {
+   "i": 74,
+   "ok": true,
+   "at": "2026-10-01T04:19:15.2358337Z",
+   "kind": "hashTree",
+   "as": "h_stopped"
+  },
+  {
+   "i": 75,
+   "ok": true,
+   "at": "2026-10-01T04:19:15.2967231Z",
+   "kind": "closeApp",
+   "via": "wm_close",
+   "close_requested_at": "2026-10-01T04:19:15.3022336Z",
+   "posted": true,
+   "exited": true,
+   "exit_ms": 120,
+   "exit_code": 0
+  },
+  {
+   "i": 76,
+   "ok": true,
+   "at": "2026-10-01T04:19:15.4240751Z",
+   "kind": "hashTree",
+   "as": "h_final"
+  }
+ ],
+ "values": {
+  "displays": {
+   "label": "整个屏幕",
+   "primary": true,
+   "bounds": {
+    "x": 0,
+    "y": 0,
+    "width": 1280,
+    "height": 800
+   },
+   "scale_factor": 2,
+   "source_id": "screen:0:0"
+  },
+  "link_hooked": true,
+  "n_off": "{\"at\":\"2026-10-01T04:18:30.121Z\",\"l\":{\"mode\":\"off\"},\"ai\":\"No AI is connected: captured frames and ink stay on this device, and nothing is sent anywhere.\",\"line\":\"\",\"hidden\":true,\"session\":\"Not capturing.\"}",
+  "seed": {
+   "sha256": "830004ae74c840b726924e1bd28ed5453f3f067e5e24763ce36cd7e3e7c11eb2",
+   "user_id": "lc-windows-http-390b74d41b1240bb912532a63af24e27"
+  },
+  "hooked": true,
+  "w_idle": "{\"at\":\"2026-10-01T04:18:35.505Z\",\"l\":{\"mode\":\"development\",\"state\":\"idle\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":false,\"storing\":false},\"ai\":\"Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI.\",\"line\":\"Capture storage (development): not connected yet (a connection is tried when you press Start). 0 record(s) stored. AI: not connected.\",\"hidden\":false,\"session\":\"Not capturing.\"}",
+  "kids_w_idle": {
+   "app_pid": 77940,
+   "at": "2026-10-01T04:18:36.1905621Z",
+   "children": [
+    {
+     "name": "electron.exe",
+     "pid": 71248,
+     "created": "2026-10-01T04:18:32.0077130Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 72076,
+     "created": "2026-10-01T04:18:32.0097810Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 75496,
+     "created": "2026-10-01T04:18:32.0230280Z"
+    }
+   ]
+  },
+  "s1": "{\"running\":true,\"starting\":false,\"ending\":false,\"display\":{\"display_id\":\"3071609112\",\"label\":\"整个屏幕\",\"bounds\":{\"x\":0,\"y\":0,\"width\":1280,\"height\":800},\"scale_factor\":2},\"session_id\":\"2\"}",
+  "w_sending": "{\"at\":\"2026-10-01T04:18:42.124Z\",\"l\":{\"mode\":\"development\",\"state\":\"sending\",\"stored\":1,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":false,\"storing\":true}}",
+  "kids_w": {
+   "app_pid": 77940,
+   "at": "2026-10-01T04:18:42.8193819Z",
+   "children": [
+    {
+     "name": "electron.exe",
+     "pid": 71248,
+     "created": "2026-10-01T04:18:32.0077130Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 72076,
+     "created": "2026-10-01T04:18:32.0097810Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 75496,
+     "created": "2026-10-01T04:18:32.0230280Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 74144,
+     "created": "2026-10-01T04:18:39.2264850Z"
+    },
+    {
+     "name": "wsl.exe",
+     "pid": 36508,
+     "created": "2026-10-01T04:18:39.2381030Z"
+    }
+   ]
+  },
+  "w_confirmed": "{\"at\":\"2026-10-01T04:18:49.834Z\",\"l\":{\"mode\":\"development\",\"state\":\"sending\",\"stored\":2,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":false,\"storing\":true}}",
+  "w_settled": "{\"at\":\"2026-10-01T04:18:52.340Z\",\"l\":{\"mode\":\"development\",\"state\":\"sending\",\"stored\":2,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":false,\"storing\":true}}",
+  "w_confirmed_now": "{\"at\":\"2026-10-01T04:18:52.342Z\",\"l\":{\"mode\":\"development\",\"state\":\"sending\",\"stored\":2,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":false,\"storing\":true},\"ai\":\"Development mode: captured frames and ink are kept on this device and are also sent to a local test capture service on it. A record counts as stored only once that service confirms it; the counts are below. No AI is connected; nothing is sent to any AI.\",\"line\":\"Capture storage (development): connected: frames are sent as they are kept. 2 record(s) stored. AI: not connected.\",\"hidden\":false,\"session\":\"Capturing 整个屏幕 (1280×800 at 2×). The overlay is on that display: ✋ passes clicks to your apps, ✎ writes, ? selects.\"}",
+  "ov_w_overlay": "{\"mode\":\"NAV\",\"tool\":\"pen\",\"mouse\":\"false\",\"hint\":\"Clicks go to your apps. Capturing this display · frame 12. No AI is connected. Ink is saved on this device at every change.\",\"card\":false,\"cancel\":false,\"disabled\":2}",
+  "pause1": {
+   "at": "2026-10-01T04:18:52.4923139Z",
+   "hosts": 1
+  },
+  "w_awaiting": "{\"at\":\"2026-10-01T04:18:52.813Z\",\"l\":{\"mode\":\"development\",\"state\":\"sending\",\"stored\":2,\"unknown\":1,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":true,\"storing\":false}}",
+  "w_awaiting_now": "{\"at\":\"2026-10-01T04:18:52.815Z\",\"l\":{\"mode\":\"development\",\"state\":\"sending\",\"stored\":2,\"unknown\":1,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":true,\"storing\":false},\"ai\":\"Development mode: captured frames and ink are kept on this device and are also sent to a local test capture service on it. A record counts as stored only once that service confirms it; the counts are below. No AI is connected; nothing is sent to any AI.\",\"line\":\"Capture storage (development): sending: waiting for the service to confirm. 2 record(s) stored; 1 not known whether stored. AI: not connected.\",\"hidden\":false,\"session\":\"Capturing 整个屏幕 (1280×800 at 2×). The overlay is on that display: ✋ passes clicks to your apps, ✎ writes, ? selects.\"}",
+  "w_awaiting_10s": "{\"at\":\"2026-10-01T04:19:03.561Z\",\"l\":{\"mode\":\"development\",\"state\":\"sending\",\"stored\":2,\"unknown\":1,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":true,\"storing\":false},\"ai\":\"Development mode: captured frames and ink are kept on this device and are also sent to a local test capture service on it. A record counts as stored only once that service confirms it; the counts are below. No AI is connected; nothing is sent to any AI.\",\"line\":\"Capture storage (development): sending: waiting for the service to confirm. 2 record(s) stored; 1 not known whether stored. AI: not connected.\",\"hidden\":false,\"session\":\"Capturing 整个屏幕 (1280×800 at 2×). The overlay is on that display: ✋ passes clicks to your apps, ✎ writes, ? selects.\"}",
+  "resume1": {
+   "at": "2026-10-01T04:19:03.7964690Z",
+   "hosts": null
+  },
+  "w_acked": "{\"at\":\"2026-10-01T04:19:03.911Z\",\"l\":{\"mode\":\"development\",\"state\":\"sending\",\"stored\":3,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":false,\"storing\":true}}",
+  "w_acked_now": "{\"at\":\"2026-10-01T04:19:03.915Z\",\"l\":{\"mode\":\"development\",\"state\":\"sending\",\"stored\":3,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":false,\"storing\":true},\"ai\":\"Development mode: captured frames and ink are kept on this device and are also sent to a local test capture service on it. A record counts as stored only once that service confirms it; the counts are below. No AI is connected; nothing is sent to any AI.\",\"line\":\"Capture storage (development): connected: frames are sent as they are kept. 3 record(s) stored. AI: not connected.\",\"hidden\":false,\"session\":\"Capturing 整个屏幕 (1280×800 at 2×). The overlay is on that display: ✋ passes clicks to your apps, ✎ writes, ? selects.\"}",
+  "w_events_1": "[{\"mode\":\"development\",\"state\":\"connecting\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":false,\"storing\":false,\"qa_at\":\"2026-10-01T04:18:39.216Z\"},{\"mode\":\"development\",\"state\":\"connecting\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":false,\"storing\":false,\"qa_at\":\"2026-10-01T04:18:39.225Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":false,\"storing\":true,\"qa_at\":\"2026-10-01T04:18:40.639Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":0,\"unknown\":1,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":true,\"storing\":false,\"qa_at\":\"2026-10-01T04:18:40.650Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":1,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":false,\"storing\":true,\"qa_at\":\"2026-10-01T04:18:40.817Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":1,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":false,\"storing\":true,\"qa_at\":\"2026-10-01T04:18:40.817Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":1,\"unknown\":1,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":true,\"storing\":false,\"qa_at\":\"2026-10-01T04:18:47.493Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":2,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":false,\"storing\":true,\"qa_at\":\"2026-10-01T04:18:47.652Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":2,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":false,\"storing\":true,\"qa_at\":\"2026-10-01T04:18:47.652Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":2,\"unknown\":1,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":true,\"storing\":false,\"qa_at\":\"2026-10-01T04:18:52.795Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":3,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":false,\"storing\":true,\"qa_at\":\"2026-10-01T04:19:03.910Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":3,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":false,\"storing\":true,\"qa_at\":\"2026-10-01T04:19:03.910Z\"}]",
+  "w_settled2": "{\"at\":\"2026-10-01T04:19:07.470Z\",\"l\":{\"mode\":\"development\",\"state\":\"sending\",\"stored\":3,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":false,\"storing\":true}}",
+  "w_before_pause2": "{\"at\":\"2026-10-01T04:19:07.473Z\",\"l\":{\"mode\":\"development\",\"state\":\"sending\",\"stored\":3,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":false,\"storing\":true},\"ai\":\"Development mode: captured frames and ink are kept on this device and are also sent to a local test capture service on it. A record counts as stored only once that service confirms it; the counts are below. No AI is connected; nothing is sent to any AI.\",\"line\":\"Capture storage (development): connected: frames are sent as they are kept. 3 record(s) stored. AI: not connected.\",\"hidden\":false,\"session\":\"Capturing 整个屏幕 (1280×800 at 2×). The overlay is on that display: ✋ passes clicks to your apps, ✎ writes, ? selects.\"}",
+  "pause2": {
+   "at": "2026-10-01T04:19:07.8159068Z",
+   "hosts": 1
+  },
+  "p_awaiting": "{\"at\":\"2026-10-01T04:19:08.782Z\",\"l\":{\"mode\":\"development\",\"state\":\"sending\",\"stored\":3,\"unknown\":1,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":true,\"storing\":false}}",
+  "p_awaiting_now": "{\"at\":\"2026-10-01T04:19:08.784Z\",\"l\":{\"mode\":\"development\",\"state\":\"sending\",\"stored\":3,\"unknown\":1,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":true,\"storing\":false},\"ai\":\"Development mode: captured frames and ink are kept on this device and are also sent to a local test capture service on it. A record counts as stored only once that service confirms it; the counts are below. No AI is connected; nothing is sent to any AI.\",\"line\":\"Capture storage (development): sending: waiting for the service to confirm. 3 record(s) stored; 1 not known whether stored. AI: not connected.\",\"hidden\":false,\"session\":\"Capturing 整个屏幕 (1280×800 at 2×). The overlay is on that display: ✋ passes clicks to your apps, ✎ writes, ? selects.\"}",
+  "p_stop_latched": "{\"at\":\"2026-10-01T04:19:08.894Z\",\"l\":{\"mode\":\"development\",\"state\":\"stopping\",\"stored\":3,\"unknown\":1,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":true,\"storing\":false},\"ai\":\"Development mode: captured frames and ink are kept on this device. Whether a local test capture service on it is storing them now is not confirmed; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI.\",\"line\":\"Capture storage (development): stopping: nothing new is sent; the last send is waiting for the service to confirm. 3 record(s) stored; 1 not known whether stored. AI: not connected.\",\"hidden\":false,\"session\":\"Not capturing: stopped by the user.\"}",
+  "p_stop_given_up": "{\"at\":\"2026-10-01T04:19:13.877Z\",\"l\":{\"mode\":\"development\",\"state\":\"stopping\",\"stored\":3,\"unknown\":1,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":false,\"storing\":false}}",
+  "p_stop_given_up_now": "{\"at\":\"2026-10-01T04:19:13.880Z\",\"l\":{\"mode\":\"development\",\"state\":\"stopping\",\"stored\":3,\"unknown\":1,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":false,\"storing\":false},\"ai\":\"Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI.\",\"line\":\"Capture storage (development): stopping: nothing new is sent. 3 record(s) stored; 1 not known whether stored. AI: not connected.\",\"hidden\":false,\"session\":\"Not capturing: stopped by the user.\"}",
+  "resume2": {
+   "at": "2026-10-01T04:19:14.1386348Z",
+   "hosts": null
+  },
+  "s1_stopped": "{\"running\":false,\"starting\":false,\"ended\":\"stopped by the user\"}",
+  "p_link_stopped": "{\"at\":\"2026-10-01T04:19:14.531Z\",\"l\":{\"mode\":\"development\",\"state\":\"stopped\",\"stored\":3,\"unknown\":1,\"refused\":0,\"not_sent\":0,\"detail\":\"stream stopped\",\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":false,\"storing\":false}}",
+  "p_stopped_now": "{\"at\":\"2026-10-01T04:19:14.534Z\",\"l\":{\"mode\":\"development\",\"state\":\"stopped\",\"stored\":3,\"unknown\":1,\"refused\":0,\"not_sent\":0,\"detail\":\"stream stopped\",\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":false,\"storing\":false},\"ai\":\"Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI.\",\"line\":\"Capture storage (development): stopped. 3 record(s) stored; 1 not known whether stored. stream stopped. AI: not connected.\",\"hidden\":false,\"session\":\"Not capturing: stopped by the user.\"}",
+  "kids_p_stopped": {
+   "app_pid": 77940,
+   "at": "2026-10-01T04:19:15.2114840Z",
+   "children": [
+    {
+     "name": "electron.exe",
+     "pid": 71248,
+     "created": "2026-10-01T04:18:32.0077130Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 72076,
+     "created": "2026-10-01T04:18:32.0097810Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 75496,
+     "created": "2026-10-01T04:18:32.0230280Z"
+    }
+   ]
+  },
+  "w_events": "[{\"mode\":\"development\",\"state\":\"connecting\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":false,\"storing\":false,\"qa_at\":\"2026-10-01T04:18:39.216Z\"},{\"mode\":\"development\",\"state\":\"connecting\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":false,\"storing\":false,\"qa_at\":\"2026-10-01T04:18:39.225Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":false,\"storing\":true,\"qa_at\":\"2026-10-01T04:18:40.639Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":0,\"unknown\":1,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":true,\"storing\":false,\"qa_at\":\"2026-10-01T04:18:40.650Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":1,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":false,\"storing\":true,\"qa_at\":\"2026-10-01T04:18:40.817Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":1,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":false,\"storing\":true,\"qa_at\":\"2026-10-01T04:18:40.817Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":1,\"unknown\":1,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":true,\"storing\":false,\"qa_at\":\"2026-10-01T04:18:47.493Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":2,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":false,\"storing\":true,\"qa_at\":\"2026-10-01T04:18:47.652Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":2,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":false,\"storing\":true,\"qa_at\":\"2026-10-01T04:18:47.652Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":2,\"unknown\":1,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":true,\"storing\":false,\"qa_at\":\"2026-10-01T04:18:52.795Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":3,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":false,\"storing\":true,\"qa_at\":\"2026-10-01T04:19:03.910Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":3,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":false,\"storing\":true,\"qa_at\":\"2026-10-01T04:19:03.910Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":3,\"unknown\":1,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":true,\"storing\":false,\"qa_at\":\"2026-10-01T04:19:08.704Z\"},{\"mode\":\"development\",\"state\":\"stopping\",\"stored\":3,\"unknown\":1,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":true,\"storing\":false,\"qa_at\":\"2026-10-01T04:19:08.786Z\"},{\"mode\":\"development\",\"state\":\"stopping\",\"stored\":3,\"unknown\":1,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":false,\"storing\":false,\"qa_at\":\"2026-10-01T04:19:13.800Z\"},{\"mode\":\"development\",\"state\":\"stopped\",\"stored\":3,\"unknown\":1,\"refused\":0,\"not_sent\":0,\"detail\":\"stream stopped\",\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":false,\"storing\":false,\"qa_at\":\"2026-10-01T04:19:14.509Z\"},{\"mode\":\"development\",\"state\":\"stopped\",\"stored\":3,\"unknown\":1,\"refused\":0,\"not_sent\":0,\"detail\":\"stream stopped\",\"earlier_unknown\":0,\"sends_stopped\":false,\"awaiting\":false,\"storing\":false,\"qa_at\":\"2026-10-01T04:19:14.509Z\"}]"
+ },
+ "errors": [],
+ "processes": {
+  "app": {
+   "pid": 73408,
+   "devtools": "127.0.0.1:63330",
+   "started_at": "2026-10-01T04:18:25.1519830Z",
+   "link": "",
+   "exited": true,
+   "close_via": "page",
+   "close_requested_at": "2026-10-01T04:18:30.1359470Z",
+   "exit_ms": 114,
+   "exit_code": 0,
+   "exited_at": "2026-10-01T04:18:30.2331940Z"
+  },
+  "console": {
+   "pid": 74516
+  },
+  "edge": {
+   "pid": 66700
+  },
+  "app-win05": {
+   "pid": 77940,
+   "devtools": "127.0.0.1:49728",
+   "started_at": "2026-10-01T04:18:31.8822380Z",
+   "link": "main",
+   "link_config_sha256": "cd6fb8a19a221295c735843e62f330f686bcc147c19024acacaed1cf07ddb7ab",
+   "exited": true,
+   "close_via": "wm_close",
+   "close_requested_at": "2026-10-01T04:19:15.3022336Z",
+   "exit_ms": 120,
+   "exit_code": 0,
+   "exited_at": "2026-10-01T04:19:15.4032060Z"
+  }
+ },
+ "foreign": {
+  "start": null,
+  "end": null
+ },
+ "cursor": {
+  "start": [
+   2454,
+   422
+  ],
+  "end": [
+   2454,
+   422
+  ]
+ },
+ "wsl_seen": [
+  {
+   "pid": 36508,
+   "running_at_end": false
+  }
+ ]
+}

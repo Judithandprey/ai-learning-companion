@@ -1,0 +1,39 @@
+[
+ {
+  "kind": "header",
+  "started_at": "2026-10-01T04:18:39.215Z"
+ },
+ {
+  "kind": "retained",
+  "frame_seq": 1,
+  "reason": "first",
+  "sampled_at": "2026-10-01T04:18:40.002Z",
+  "taken_at": "2026-10-01T04:18:39.849Z"
+ },
+ {
+  "kind": "retained",
+  "frame_seq": 8,
+  "reason": "changed",
+  "sampled_at": "2026-10-01T04:18:47.406Z",
+  "taken_at": "2026-10-01T04:18:47.357Z"
+ },
+ {
+  "kind": "retained",
+  "frame_seq": 13,
+  "reason": "changed",
+  "sampled_at": "2026-10-01T04:18:52.698Z",
+  "taken_at": "2026-10-01T04:18:52.647Z"
+ },
+ {
+  "kind": "retained",
+  "frame_seq": 28,
+  "reason": "changed",
+  "sampled_at": "2026-10-01T04:19:08.611Z",
+  "taken_at": "2026-10-01T04:19:08.561Z"
+ },
+ {
+  "kind": "ended",
+  "reason": "stopped by the user",
+  "at": "2026-10-01T04:19:08.880Z"
+ }
+]
