@@ -85,3 +85,10 @@ and21 main checks are recorded separately in the [audio review](realtime-input-r
 They are not tests of this document change or audio-product acceptance. Windows
 live/TTS and Native's current correction continue; the next constrained input
 candidate is delegated to existing Backend, with no real-account lease yet.
+
+Reviewed continuation baseline `c7ae4e0c79164af112648e6349c442c678f3f6b8` was
+normally pushed. Backend’s one existing-responsibility next candidate was actually
+accepted as `handoff_43f653a148a064ba56055bf800a90d87`: installed stable audio/localAudio
+handling, dormant generated-input preparation and focused offline guards, then
+Lead review before any actual test. Receipt initially unread/execution_started=false;
+no adoption or usable audio claim. The realtime input-only gate remains intact.
