@@ -1,0 +1,61 @@
+{
+ "what": "the harness bytes each run executed (recorded by run.mjs before anything ran) against the files of the named team/qa commit",
+ "runs": {
+  "surfacecheck": {
+   "commit": "110c733786395d5262e1c8b06fa6c5d49d9a2297",
+   "files": 21,
+   "all_equal_the_commit": true,
+   "started": "2026-10-01T10:04:05.356Z",
+   "ended": "2026-10-01T10:04:32.946Z"
+  },
+  "smoke": {
+   "commit": "110c733786395d5262e1c8b06fa6c5d49d9a2297",
+   "files": 21,
+   "all_equal_the_commit": true,
+   "started": "2026-10-01T10:04:34.504Z",
+   "ended": "2026-10-01T10:04:52.672Z"
+  },
+  "subcontrols": {
+   "commit": "110c733786395d5262e1c8b06fa6c5d49d9a2297",
+   "files": 21,
+   "all_equal_the_commit": true,
+   "started": "2026-10-01T10:04:54.141Z",
+   "ended": "2026-10-01T10:06:14.046Z"
+  },
+  "subselect": {
+   "commit": "110c733786395d5262e1c8b06fa6c5d49d9a2297",
+   "files": 21,
+   "all_equal_the_commit": true,
+   "started": "2026-10-01T10:06:41.900Z",
+   "ended": "2026-10-01T10:07:35.964Z"
+  },
+  "subrehearsal": {
+   "commit": "110c733786395d5262e1c8b06fa6c5d49d9a2297",
+   "files": 21,
+   "all_equal_the_commit": true,
+   "started": "2026-10-01T10:07:52.596Z",
+   "ended": "2026-10-01T10:08:29.476Z"
+  },
+  "subcheck": {
+   "commit": "110c733786395d5262e1c8b06fa6c5d49d9a2297",
+   "files": 21,
+   "all_equal_the_commit": true,
+   "started": "2026-10-01T10:08:46.251Z",
+   "ended": "2026-10-01T10:09:22.120Z"
+  },
+  "subtype": {
+   "commit": "9cac50b7051d375f276c0a31ba1130c5b38a860d",
+   "files": 21,
+   "all_equal_the_commit": true,
+   "started": "2026-10-01T10:13:10.150Z",
+   "ended": "2026-10-01T10:13:56.396Z"
+  },
+  "subselect-at-3002218": {
+   "commit": "3002218cc36c13d2328bd2f49f90217f2f1e6eca",
+   "files": 19,
+   "all_equal_the_commit": true,
+   "started": "2026-10-01T09:06:16.481Z",
+   "ended": "2026-10-01T09:07:24.047Z"
+  }
+ }
+}

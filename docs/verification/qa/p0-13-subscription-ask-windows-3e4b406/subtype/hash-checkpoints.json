@@ -1,0 +1,24 @@
+{
+ "h_final": {
+  "captures/6b21d17e6f3089af/asks/ask-cc770c2cc4975efd.json": {
+   "sha256": "b9db3e97dfe78355ab3097a54e70f6f9e17048b6fb36e601bdc10503133f9820",
+   "bytes": 1040,
+   "mtime_utc": "2026-10-01T10:13:31.0983501Z"
+  },
+  "captures/6b21d17e6f3089af/asks/d52fb4d7df91adcd78315367bcdf9f44c3d105d60cdb8f3001ce262f3518f438.png": {
+   "sha256": "d52fb4d7df91adcd78315367bcdf9f44c3d105d60cdb8f3001ce262f3518f438",
+   "bytes": 173899,
+   "mtime_utc": "2026-10-01T10:13:31.0973356Z"
+  },
+  "captures/6b21d17e6f3089af/ink/85ba6d0762a1039a97ce699442a11179f4b593f70860e7d1e9d3009ebcfc0ea4.json": {
+   "sha256": "85ba6d0762a1039a97ce699442a11179f4b593f70860e7d1e9d3009ebcfc0ea4",
+   "bytes": 451,
+   "mtime_utc": "2026-10-01T10:13:24.7007072Z"
+  },
+  "captures/6b21d17e6f3089af/manifest.jsonl": {
+   "sha256": "bab445b0d9300b31bc7b296196101f3e42db118260a0da7266e5e8ae3e72d60f",
+   "bytes": 22237,
+   "mtime_utc": "2026-10-01T10:13:54.9648270Z"
+  }
+ }
+}

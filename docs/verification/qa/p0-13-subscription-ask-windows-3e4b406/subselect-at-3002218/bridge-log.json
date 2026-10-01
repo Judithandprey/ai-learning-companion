@@ -1,0 +1,239 @@
+[
+ {
+  "at": "2026-10-01T09:06:29.923109+00:00",
+  "event": "start",
+  "launch": "c5357729370e4abbae28fd1575be10ea",
+  "launch_n": 0,
+  "pid": 1353509,
+  "argv": [
+   "-m",
+   "services.worker.connectors.chatgpt_local"
+  ],
+  "stdin_fifo": true,
+  "label": "SYNTHETIC (QA fake bridge: no model, no ChatGPT)"
+ },
+ {
+  "at": "2026-10-01T09:06:29.923221+00:00",
+  "event": "request",
+  "id": "r1",
+  "method": "connection/read",
+  "params_keys": [],
+  "request_id": null,
+  "capture_session_id": null
+ },
+ {
+  "at": "2026-10-01T09:06:29.923317+00:00",
+  "event": "sent",
+  "kind": "connection",
+  "id": "r1",
+  "method": null,
+  "error": null,
+  "result_keys": [
+   "auth",
+   "models",
+   "rate_limits"
+  ]
+ },
+ {
+  "at": "2026-10-01T09:06:38.275844+00:00",
+  "event": "request",
+  "id": "r2",
+  "method": "connection/read",
+  "params_keys": [],
+  "request_id": null,
+  "capture_session_id": null
+ },
+ {
+  "at": "2026-10-01T09:06:38.276118+00:00",
+  "event": "sent",
+  "kind": "connection",
+  "id": "r2",
+  "method": null,
+  "error": null,
+  "result_keys": [
+   "auth",
+   "models",
+   "rate_limits"
+  ]
+ },
+ {
+  "at": "2026-10-01T09:06:42.904307+00:00",
+  "event": "request",
+  "id": "r3",
+  "method": "connection/read",
+  "params_keys": [],
+  "request_id": null,
+  "capture_session_id": null
+ },
+ {
+  "at": "2026-10-01T09:06:42.904582+00:00",
+  "event": "sent",
+  "kind": "connection",
+  "id": "r3",
+  "method": null,
+  "error": null,
+  "result_keys": [
+   "auth",
+   "models",
+   "rate_limits"
+  ]
+ },
+ {
+  "at": "2026-10-01T09:06:48.552772+00:00",
+  "event": "request",
+  "id": "r4",
+  "method": "connection/read",
+  "params_keys": [],
+  "request_id": null,
+  "capture_session_id": null
+ },
+ {
+  "at": "2026-10-01T09:06:48.553026+00:00",
+  "event": "sent",
+  "kind": "connection",
+  "id": "r4",
+  "method": null,
+  "error": null,
+  "result_keys": [
+   "auth",
+   "models",
+   "rate_limits"
+  ]
+ },
+ {
+  "at": "2026-10-01T09:06:53.118896+00:00",
+  "event": "request",
+  "id": "r5",
+  "method": "connection/read",
+  "params_keys": [],
+  "request_id": null,
+  "capture_session_id": null
+ },
+ {
+  "at": "2026-10-01T09:06:53.119131+00:00",
+  "event": "sent",
+  "kind": "connection",
+  "id": "r5",
+  "method": null,
+  "error": null,
+  "result_keys": [
+   "auth",
+   "models",
+   "rate_limits"
+  ]
+ },
+ {
+  "at": "2026-10-01T09:07:04.599467+00:00",
+  "event": "request",
+  "id": "r6",
+  "method": "connection/read",
+  "params_keys": [],
+  "request_id": null,
+  "capture_session_id": null
+ },
+ {
+  "at": "2026-10-01T09:07:04.599746+00:00",
+  "event": "sent",
+  "kind": "connection",
+  "id": "r6",
+  "method": null,
+  "error": null,
+  "result_keys": [
+   "auth",
+   "models",
+   "rate_limits"
+  ]
+ },
+ {
+  "at": "2026-10-01T09:07:09.111354+00:00",
+  "event": "request",
+  "id": "r7",
+  "method": "connection/read",
+  "params_keys": [],
+  "request_id": null,
+  "capture_session_id": null
+ },
+ {
+  "at": "2026-10-01T09:07:09.111647+00:00",
+  "event": "sent",
+  "kind": "connection",
+  "id": "r7",
+  "method": null,
+  "error": null,
+  "result_keys": [
+   "auth",
+   "models",
+   "rate_limits"
+  ]
+ },
+ {
+  "at": "2026-10-01T09:07:14.617478+00:00",
+  "event": "request",
+  "id": "r8",
+  "method": "connection/read",
+  "params_keys": [],
+  "request_id": null,
+  "capture_session_id": null
+ },
+ {
+  "at": "2026-10-01T09:07:14.617759+00:00",
+  "event": "sent",
+  "kind": "connection",
+  "id": "r8",
+  "method": null,
+  "error": null,
+  "result_keys": [
+   "auth",
+   "models",
+   "rate_limits"
+  ]
+ },
+ {
+  "at": "2026-10-01T09:07:19.157152+00:00",
+  "event": "request",
+  "id": "r9",
+  "method": "connection/read",
+  "params_keys": [],
+  "request_id": null,
+  "capture_session_id": null
+ },
+ {
+  "at": "2026-10-01T09:07:19.157444+00:00",
+  "event": "sent",
+  "kind": "connection",
+  "id": "r9",
+  "method": null,
+  "error": null,
+  "result_keys": [
+   "auth",
+   "models",
+   "rate_limits"
+  ]
+ },
+ {
+  "at": "2026-10-01T09:07:22.321527+00:00",
+  "event": "request",
+  "id": "r10",
+  "method": "session/stop",
+  "params_keys": [
+   "capture_session_id"
+  ],
+  "request_id": null,
+  "capture_session_id": "10572d39ae4ad91c"
+ },
+ {
+  "at": "2026-10-01T09:07:22.321782+00:00",
+  "event": "sent",
+  "kind": "stop_receipt",
+  "id": "r10",
+  "method": null,
+  "error": null,
+  "result_keys": []
+ },
+ {
+  "at": "2026-10-01T09:07:22.762052+00:00",
+  "event": "eof",
+  "launch": "c5357729370e4abbae28fd1575be10ea",
+  "held_at_eof": []
+ }
+]

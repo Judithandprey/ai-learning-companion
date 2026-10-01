@@ -1,0 +1,515 @@
+{
+ "scenario": "subrehearsal",
+ "counts": {
+  "pass": 6,
+  "limit": 10
+ },
+ "checks": [
+  {
+   "id": "run.shared_desktop_quiet",
+   "status": "pass",
+   "observed": {
+    "foreign_electron_seen": [],
+    "looked_at_start_and_end": true,
+    "screenshots": 1
+   },
+   "note": "no other Electron app at start, at each screenshot and at the end (point-in-time)"
+  },
+  {
+   "id": "run.completed",
+   "status": "pass",
+   "observed": {
+    "aborted": null,
+    "failed_steps": [],
+    "steps_run": 81,
+    "steps_planned": 81,
+    "steps_not_run_as_planned": [],
+    "unreadable_selection_records": []
+   },
+   "note": "every planned step ran, in order, as the kind of step it was planned as; an optional wait that timed out counts as a failed step here"
+  },
+  {
+   "id": "run.surface_really_on_screen_and_in_each_selected_picture",
+   "status": "pass",
+   "observed": {
+    "on_top_checks": [
+     {
+      "i": 7,
+      "ok": true,
+      "points": 16,
+      "covered": []
+     }
+    ],
+    "circled_cards": [
+     3,
+     1
+    ],
+    "selected_pictures": {
+     "picture_circled": {
+      "ok": true,
+      "size": [
+       1732,
+       1052
+      ],
+      "ringed": [
+       1,
+       3
+      ],
+      "rings_wanted": [
+       1,
+       3
+      ],
+      "gaps_white": 17
+     }
+    },
+    "problems": {}
+   },
+   "note": "under 16 points of the grid the top window was QA's Edge window before the capture started; and every selected picture, read from its own pixels in the page, shows the twelve cards (grey ground, a shape of the truth's colour, dark digits, white between) with the pen's ring around exactly the cards the harness circled"
+  },
+  {
+   "id": "qa.never_signs_in",
+   "status": "pass",
+   "observed": {
+    "steps_that_could_sign_in": [],
+    "login_states_seen": [
+     "none"
+    ],
+    "status_events": 4,
+    "status_reads": 5
+   },
+   "note": "no planned step presses Sign in or Cancel sign-in or clicks or types in the control window, and every subscription status the app notified or returned has login 'none': this run started no sign-in and opened no browser"
+  },
+  {
+   "id": "run.real_connector",
+   "status": "limit",
+   "observed": {
+    "kind": "fake",
+    "python": null,
+    "state_dir": null,
+    "codex_bin": null,
+    "source": null,
+    "copy_is_the_commits_services_and_packages": null,
+    "copy_files": null,
+    "ask_path": null,
+    "connector_files_sha256": null,
+    "wsl": {
+     "distribution": "Ubuntu",
+     "user": "agentsdock",
+     "distributions_listed": [
+      "Ubuntu"
+     ],
+     "this_user": "agentsdock"
+    },
+    "allocation": null,
+    "ask_pressed": null
+   },
+   "note": "REHEARSAL: the same steps as the real turn, with QA's stand-in bridge instead of the connector. No Codex, no ChatGPT, no allowance; nothing here is real-model evidence"
+  },
+  {
+   "id": "turn.signed_in_with_a_picture_model",
+   "status": "limit",
+   "observed": {
+    "state": "signed_in",
+    "plan": "QA-SYNTHETIC",
+    "model": "qa-synthetic-vision",
+    "quota_text": "Usage limits: not reported.",
+    "at_the_press": {
+     "at": "2026-10-01T10:08:22.123Z",
+     "state": "signed_in",
+     "asking": false,
+     "login": "none",
+     "model": "qa-synthetic-vision",
+     "rate_limits": null
+    },
+    "models": [
+     {
+      "id": "qa-synthetic-vision",
+      "image_input": true,
+      "default": true
+     },
+     {
+      "id": "qa-synthetic-text",
+      "image_input": false,
+      "default": false
+     }
+    ]
+   },
+   "note": "REHEARSAL: the account is the stand-in's (plan label QA-SYNTHETIC), not a sign-in"
+  },
+  {
+   "id": "turn.surface_is_random_pixels_on_the_whole_display",
+   "status": "limit",
+   "observed": {
+    "cards": [
+     {
+      "index": 0,
+      "number": 2354,
+      "shape": "square",
+      "color": "orange"
+     },
+     {
+      "index": 1,
+      "number": 6356,
+      "shape": "triangle",
+      "color": "orange"
+     },
+     {
+      "index": 2,
+      "number": 7383,
+      "shape": "heart",
+      "color": "blue"
+     },
+     {
+      "index": 3,
+      "number": 6715,
+      "shape": "diamond",
+      "color": "red"
+     },
+     {
+      "index": 4,
+      "number": 5248,
+      "shape": "triangle",
+      "color": "red"
+     },
+     {
+      "index": 5,
+      "number": 1380,
+      "shape": "diamond",
+      "color": "blue"
+     },
+     {
+      "index": 6,
+      "number": 5145,
+      "shape": "star",
+      "color": "orange"
+     },
+     {
+      "index": 7,
+      "number": 8830,
+      "shape": "triangle",
+      "color": "blue"
+     },
+     {
+      "index": 8,
+      "number": 4531,
+      "shape": "star",
+      "color": "green"
+     },
+     {
+      "index": 9,
+      "number": 9571,
+      "shape": "triangle",
+      "color": "orange"
+     },
+     {
+      "index": 10,
+      "number": 7206,
+      "shape": "triangle",
+      "color": "blue"
+     },
+     {
+      "index": 11,
+      "number": 3115,
+      "shape": "diamond",
+      "color": "blue"
+     }
+    ],
+    "circled_cards": [
+     3,
+     1
+    ],
+    "generated_at": "2026-10-01T10:07:54.635Z",
+    "dom_text": [
+     "",
+     "",
+     ""
+    ],
+    "title": "QA test surface",
+    "cursor_px": [
+     [
+      2357,
+      1267
+     ],
+     [
+      2357,
+      1267
+     ],
+     [
+      2357,
+      1267
+     ]
+    ]
+   },
+   "note": "REHEARSAL WITH QA'S STAND-IN, no model: twelve random cards drawn on a canvas that filled the display; the page's text, title and URL hold none of it; the same cards before Start, before the selection and at the press; the mouse pointer outside the selected region each time it was read before the press"
+  },
+  {
+   "id": "turn.surface_unchanged_after_the_answer",
+   "status": "limit",
+   "observed": {
+    "read": true,
+    "full_screen": true
+   },
+   "note": "REHEARSAL WITH QA'S STAND-IN, no model: the page still showed the same cards, full screen, after the question ended"
+  },
+  {
+   "id": "turn.one_question_with_the_exact_picture_and_ink",
+   "status": "limit",
+   "observed": {
+    "ask_presses_run": 1,
+    "selections_kept": 1,
+    "questions_recorded": 1,
+    "question": "I circled two cards with my pen. Name only those two cards. For each one, write one line: the number written in the card, then the color and the shape next to the number.",
+    "assistance": "full_solution",
+    "model": "qa-synthetic-vision",
+    "picture": {
+     "sha256": "3d57a39c30d9870b3509a951256fdfa4b84ea934353e61b4cdc6dcbfc5b9731c",
+     "bytes": 175018,
+     "width": 1732,
+     "height": 1052,
+     "file_is_those_bytes": true
+    },
+    "card_picture_before_and_after": [
+     {
+      "png_sha256": "3d57a39c30d9870b3509a951256fdfa4b84ea934353e61b4cdc6dcbfc5b9731c",
+      "png_bytes": 175018,
+      "width": 1732,
+      "height": 1052
+     },
+     {
+      "png_sha256": "3d57a39c30d9870b3509a951256fdfa4b84ea934353e61b4cdc6dcbfc5b9731c",
+      "png_bytes": 175018,
+      "width": 1732,
+      "height": 1052
+     }
+    ],
+    "context": {
+     "capture_session_id": "5dd81bac115dd328",
+     "frame_seq": 16,
+     "frame_captured_at": "2026-10-01T10:08:21.760Z",
+     "frame_width": 2560,
+     "frame_height": 1600,
+     "display": {
+      "id": "3071609112",
+      "bounds": {
+       "x": 0,
+       "y": 0,
+       "width": 1280,
+       "height": 800
+      },
+      "scale_factor": 2
+     },
+     "region_dip": {
+      "x": 17,
+      "y": 72,
+      "width": 866,
+      "height": 526
+     },
+     "region_px": {
+      "x": 34,
+      "y": 144,
+      "width": 1732,
+      "height": 1052
+     },
+     "ink_revision": 2,
+     "ink_sha256": "2d00f26322b90b8755b52e235fe59d7b3b8614e403cff15544e28bd70063e90d",
+     "source_url": null,
+     "source_version": null,
+     "media_position": null
+    },
+    "region_px_by_the_adrs_rule": {
+     "x": 34,
+     "y": 144,
+     "width": 1732,
+     "height": 1052
+    },
+    "ink_original": {
+     "sha256_is_its_bytes": true,
+     "visible_strokes": 2,
+     "revision": 2
+    }
+   },
+   "note": "REHEARSAL WITH QA'S STAND-IN, no model: Ask was pressed once. The app kept one selection and one question: QA's question, the chosen level, the chosen model; the picture file is the bytes of its hash and is the picture on the card before and after; its size is the selected region in frame pixels by the ADR's rule, and the region holds the whole grid; the ink document named by the request is kept with exactly the two circles; URL, version and media position are null"
+  },
+  {
+   "id": "run.prompt_recomputed_from_the_kept_request",
+   "status": "pass",
+   "observed": {
+    "backend_given": true,
+    "recomputed": true,
+    "error": null,
+    "prompt_bytes": 2332,
+    "prompt_sha256": "2ece1d397fba3f1c1a22d1ab4e289a41dc6cb00b867736ea5c4a45e53cf09519"
+   },
+   "note": "the released prepare_subscription_ask, loaded from the Backend copy, builds the prompt from the request the app kept"
+  },
+  {
+   "id": "turn.connector_receipt_official_image_input_one_turn_no_tool",
+   "status": "limit",
+   "observed": {
+    "receipt": null,
+    "receipts_for_this_request": 0,
+    "bound_to_the_kept_request": false,
+    "completed_one_turn_no_tool": false,
+    "prompt_recomputed": true,
+    "prompt_error": null,
+    "prompt_sha256": "2ece1d397fba3f1c1a22d1ab4e289a41dc6cb00b867736ea5c4a45e53cf09519",
+    "prompt_bytes": 2332,
+    "backend_given_is_the_runs_copy": false
+   },
+   "note": "NOT SHOWN: no receipt for this request, or the prompt could not be recomputed with the run's own Backend copy (give --backend). The app's own record alone does not show what entered the turn"
+  },
+  {
+   "id": "turn.no_leak_of_the_truth",
+   "status": "limit",
+   "observed": {
+    "searched": [
+     "card_status_before",
+     "card_text_before",
+     "context",
+     "page_dom_text",
+     "page_title",
+     "picture_file_name",
+     "prompt_text",
+     "question",
+     "receipt",
+     "selection_record_file"
+    ],
+    "hits_that_void": {},
+    "hits_in_numeric_fields": {},
+    "prompt_text_is_the_one_the_receipt_hashes": false
+   },
+   "note": "no leak in the texts searched, but the prompt text searched is not shown to be the one sent (no receipt, or its text hash differs): not complete"
+  },
+  {
+   "id": "turn.completed_answer_shown_on_the_same_card",
+   "status": "limit",
+   "observed": {
+    "record_outcome": {
+     "status": "answered",
+     "answer": {
+      "model": "qa-synthetic-vision",
+      "latency_ms": 7,
+      "thread_id": "thread-qa-synthetic",
+      "turn_id": "turn-qa-synthetic-1"
+     }
+    },
+    "shown": true,
+    "card": {
+     "badge": "Selection · answered by ChatGPT below",
+     "status": "Answered by ChatGPT (qa-synthetic-vision) in 0.0 s, about the picture above and your question only.",
+     "card_text": "This selection is sent to ChatGPT, with your question, only when you press Ask below; nothing else of the screen is sent to any AI, and no AI watches it.\nRegion 17,72 866×526 DIP on 整个屏幕 = 1732×1052 px of frame 16 (captured 03:08:21), with your ink revision 2 drawn over it.",
+     "answer_shown": true,
+     "save_shown": false
+    },
+    "submitted_at": "2026-10-01T10:08:22.153Z",
+    "ended_at": "2026-10-01T10:08:25.159Z"
+   },
+   "note": "REHEARSAL WITH QA'S STAND-IN, no model: the official turn completed; the answer is on the card of that selection, as plain text, under the selection's own unchanged text, with the model and the time it took; the record holds the same text, marked shown"
+  },
+  {
+   "id": "turn.answer_names_the_circled_cards",
+   "status": "limit",
+   "observed": {
+    "verdict": {
+     "outcome": "not_identified",
+     "pass": false,
+     "expected": [
+      {
+       "index": 3,
+       "number": 6715,
+       "shape": "diamond",
+       "color": "red"
+      },
+      {
+       "index": 1,
+       "number": 6356,
+       "shape": "triangle",
+       "color": "orange"
+      }
+     ],
+     "surface_numbers_named": [],
+     "other_4_digit_numbers": []
+    },
+    "answer_verbatim": "SYNTHETIC (QA fake bridge: no model, no ChatGPT). Rehearsal answer: it names no card."
+   },
+   "note": "REHEARSAL: the text is the stand-in's own SYNTHETIC sentence, which names no card by design; nothing is judged"
+  },
+  {
+   "id": "turn.provenance_on_the_card",
+   "status": "limit",
+   "observed": {
+    "card_text": "This selection is sent to ChatGPT, with your question, only when you press Ask below; nothing else of the screen is sent to any AI, and no AI watches it.\nRegion 17,72 866×526 DIP on 整个屏幕 = 1732×1052 px of frame 16 (captured 03:08:21), with your ink revision 2 drawn over it.",
+    "frame_seq": 16,
+    "frame_captured_at": "2026-10-01T10:08:21.760Z",
+    "ink_revision": 2,
+    "region_dip": {
+     "x": 17,
+     "y": 72,
+     "width": 866,
+     "height": 526
+    },
+    "region_px": {
+     "x": 34,
+     "y": 144,
+     "width": 1732,
+     "height": 1052
+    }
+   },
+   "note": "REHEARSAL WITH QA'S STAND-IN, no model: the card's own text names the region (DIP and frame pixels), the frame and the ink revision of the request that was sent"
+  },
+  {
+   "id": "release.app_and_connector_ended",
+   "status": "pass",
+   "observed": {
+    "apps": {
+     "app": {
+      "pid": 76772,
+      "sub": "",
+      "close_via": "page",
+      "exited": true,
+      "exit_code": 0,
+      "exit_ms": 101,
+      "killed": null,
+      "closed_in_finally": null
+     },
+     "app-fake": {
+      "pid": 76776,
+      "sub": "fake",
+      "close_via": "wm_close",
+      "exited": true,
+      "exit_code": 0,
+      "exit_ms": 193,
+      "killed": null,
+      "closed_in_finally": null
+     }
+    },
+    "watched": [
+     {
+      "event": "appear",
+      "pid": 1387423,
+      "name": "python3",
+      "role": "in_root",
+      "at": "2026-10-01T10:08:05.579040+00:00"
+     },
+     {
+      "event": "exit",
+      "pid": 1387423,
+      "name": "python3",
+      "role": "descendant",
+      "at": "2026-10-01T10:08:28.339065+00:00"
+     }
+    ],
+    "expected_starts_in_the_connector_folder": 1,
+    "there_before_the_run": [],
+    "left_at_watch_end": [],
+    "wsl_exe_seen_by_the_runner": [
+     {
+      "pid": 80436,
+      "running_at_end": false
+     }
+    ]
+   },
+   "note": "both app processes ended by themselves with code 0; exactly the expected number of processes started in the connector's folder, and each of them and of their children exited; nothing ran there before; no wsl.exe child the runner saw was still running at the end"
+  }
+ ]
+}

@@ -1,0 +1,534 @@
+{
+ "scenario": "subcontrols",
+ "counts": {
+  "pass": 18
+ },
+ "checks": [
+  {
+   "id": "run.shared_desktop_quiet",
+   "status": "pass",
+   "observed": {
+    "foreign_electron_seen": [],
+    "looked_at_start_and_end": true,
+    "screenshots": 0
+   },
+   "note": "no other Electron app at start, at each screenshot and at the end (point-in-time)"
+  },
+  {
+   "id": "run.completed",
+   "status": "pass",
+   "observed": {
+    "aborted": null,
+    "failed_steps": [],
+    "steps_run": 235,
+    "steps_planned": 235,
+    "steps_not_run_as_planned": [],
+    "unreadable_selection_records": []
+   },
+   "note": "every planned step ran, in order, as the kind of step it was planned as; an optional wait that timed out counts as a failed step here"
+  },
+  {
+   "id": "run.surface_really_on_screen_and_in_each_selected_picture",
+   "status": "pass",
+   "observed": {
+    "on_top_checks": [
+     {
+      "i": 7,
+      "ok": true,
+      "points": 16,
+      "covered": []
+     }
+    ],
+    "circled_cards": [
+     11,
+     8
+    ],
+    "selected_pictures": {
+     "picture_unchecked": {
+      "ok": true,
+      "size": [
+       1732,
+       1052
+      ],
+      "ringed": [
+       11
+      ],
+      "rings_wanted": [
+       11
+      ],
+      "gaps_white": 17
+     },
+     "picture_circled": {
+      "ok": true,
+      "size": [
+       1732,
+       1052
+      ],
+      "ringed": [
+       8,
+       11
+      ],
+      "rings_wanted": [
+       8,
+       11
+      ],
+      "gaps_white": 17
+     },
+     "picture_s2": {
+      "ok": true,
+      "size": [
+       1732,
+       1052
+      ],
+      "ringed": [],
+      "rings_wanted": [],
+      "gaps_white": 17
+     },
+     "picture_s2b": {
+      "ok": true,
+      "size": [
+       1732,
+       1052
+      ],
+      "ringed": [],
+      "rings_wanted": [],
+      "gaps_white": 17
+     }
+    },
+    "problems": {}
+   },
+   "note": "under 16 points of the grid the top window was QA's Edge window before the capture started; and every selected picture, read from its own pixels in the page, shows the twelve cards (grey ground, a shape of the truth's colour, dark digits, white between) with the pen's ring around exactly the cards the harness circled"
+  },
+  {
+   "id": "qa.never_signs_in",
+   "status": "pass",
+   "observed": {
+    "steps_that_could_sign_in": [],
+    "login_states_seen": [
+     "none"
+    ],
+    "status_events": 44,
+    "status_reads": 9
+   },
+   "note": "no planned step presses Sign in or Cancel sign-in or clicks or types in the control window, and every subscription status the app notified or returned has login 'none': this run started no sign-in and opened no browser"
+  },
+  {
+   "id": "control.bridge_is_the_stand_in",
+   "status": "pass",
+   "observed": {
+    "starts": [
+     {
+      "at": "2026-10-01T10:05:21.215876+00:00",
+      "launch_n": 0,
+      "argv": [
+       "-m",
+       "services.worker.connectors.chatgpt_local"
+      ],
+      "stdin_fifo": true,
+      "label": "SYNTHETIC (QA fake bridge: no model, no ChatGPT)"
+     },
+     {
+      "at": "2026-10-01T10:06:09.285213+00:00",
+      "launch_n": 1,
+      "argv": [
+       "-m",
+       "services.worker.connectors.chatgpt_local"
+      ],
+      "stdin_fifo": true,
+      "label": "SYNTHETIC (QA fake bridge: no model, no ChatGPT)"
+     }
+    ],
+    "run": {
+     "kind": "fake",
+     "note": "QA stand-in bridge: no Codex, no ChatGPT, no sign-in, no allowance",
+     "assistance": "full_solution",
+     "wsl": {
+      "distribution": "Ubuntu",
+      "user": "agentsdock",
+      "distributions_listed": [
+       "Ubuntu"
+      ],
+      "this_user": "agentsdock"
+     }
+    }
+   },
+   "note": "DETERMINISTIC CONTROL: the app's connector was QA's stand-in, started by the app with the connector's own arguments over private pipes. No real configuration existed in this run"
+  },
+  {
+   "id": "control.questions_align",
+   "status": "pass",
+   "observed": {
+    "bridge_asks": 16,
+    "scripted": 16,
+    "recorded_by_the_app": 16,
+    "of_them_received_by_the_bridge": 16,
+    "labels": 16,
+    "ask_presses": 18,
+    "wsl_minus_windows_clock_s": {
+     "median": 0.004,
+     "min": 0.004,
+     "max": 0.005
+    }
+   },
+   "note": "each press that reached the bridge is one ask in its log, one scripted behaviour and one request the app recorded, in the same order; none was sent twice. The two clocks agree within 1 s (measured from those pairs); the time comparisons below use that measured offset"
+  },
+  {
+   "id": "control.off_by_default_and_nothing_before_check",
+   "status": "pass",
+   "observed": {
+    "without_configuration": {
+     "status": {
+      "mode": "off"
+     },
+     "section_hidden": true
+    },
+    "configured_before_check": "not_checked",
+    "ask_before_check": "Not sent: the ChatGPT subscription has not been checked yet (use the control window).",
+    "first_bridge_start_after_check_s": 0.12,
+    "selections_kept_without_a_question": 1,
+    "app_children": {
+     "before_check": [
+      "electron.exe",
+      "electron.exe",
+      "electron.exe"
+     ],
+     "after_capture_ink_selection_and_ask_unchecked": [
+      "electron.exe",
+      "electron.exe",
+      "electron.exe",
+      "electron.exe"
+     ],
+     "after_check": [
+      "electron.exe",
+      "electron.exe",
+      "electron.exe",
+      "wsl.exe"
+     ]
+    }
+   },
+   "note": "without the configuration there is no subscription section; with it, a capture, ink, a selection and an Ask before the user's Check start no connector (the app has no wsl.exe child, read on Windows; the watch sees no process), Ask says 'Not sent' and records no question; after the Check the app has exactly one wsl.exe child"
+  },
+  {
+   "id": "control.check_reads_the_account_and_offers_picture_models_only",
+   "status": "pass",
+   "observed": {
+    "status": {
+     "state": "signed_in",
+     "plan": "QA-SYNTHETIC",
+     "model": "qa-synthetic-vision",
+     "login": "none"
+    },
+    "state_text": "Signed in with ChatGPT (QA-SYNTHETIC), as the official Codex app server reports. That does not show that a model will answer.",
+    "quota_text": "Usage limits: not reported.",
+    "models_offered": [
+     [
+      "qa-synthetic-vision",
+      "QA synthetic (no model)",
+      true
+     ]
+    ]
+   },
+   "note": "after the press: the stand-in's account (plan label QA-SYNTHETIC) is shown; only the model that takes pictures is offered, the text-only one is not"
+  },
+  {
+   "id": "control.selection_without_ask_sends_nothing",
+   "status": "pass",
+   "observed": {
+    "badge": "Selection · not sent to any AI",
+    "badge_4s_later": "Selection · not sent to any AI",
+    "card_text": "This selection is sent to ChatGPT, with your question, only when you press Ask below; nothing else of the screen is sent to any AI, and no AI watches it.\nRegion 17,72 866×526 DIP on 整个屏幕 = 1732×1052 px of frame 16 (captured 03:05:36), with your ink revision 2 drawn over it.",
+    "bridge_received_before_the_first_press_other_than_the_account_read": [],
+    "methods_the_bridge_ever_received": [
+     "ask/cancel",
+     "connection/read",
+     "session/stop",
+     "ask/start"
+    ]
+   },
+   "note": "signed in (stand-in), capturing, writing and selecting: the card says the selection is not sent to any AI, and before Ask was pressed the bridge received only the account read of the user's Check"
+  },
+  {
+   "id": "control.answer_shown_for_the_exact_picture_and_question",
+   "status": "pass",
+   "observed": {
+    "card": {
+     "badge": "Selection · answered by ChatGPT below",
+     "status": "Answered by ChatGPT (qa-synthetic-vision) in 0.0 s, about the picture above and your question only.",
+     "answer": "SYNTHETIC (QA fake bridge: no model, no ChatGPT). First control answer.",
+     "picture": {
+      "png_sha256": "95537f73c39dd6a78e93024a6610e0b8e806ddf14c39c6d5716b6cc8c54c5185",
+      "png_bytes": 170157,
+      "width": 1732,
+      "height": 1052
+     }
+    },
+    "record": {
+     "request_id": "ask-a2eb13287526932d.1",
+     "assistance": "explain",
+     "model": "qa-synthetic-vision",
+     "outcome": {
+      "status": "answered",
+      "answer": {
+       "request_id": "ask-a2eb13287526932d.1",
+       "text": "SYNTHETIC (QA fake bridge: no model, no ChatGPT). First control answer.",
+       "model": "qa-synthetic-vision",
+       "latency_ms": 7,
+       "thread_id": "thread-qa-synthetic",
+       "turn_id": "turn-qa-synthetic-1"
+      }
+     },
+     "shown": true
+    },
+    "bridge_received": {
+     "request_id": "ask-a2eb13287526932d.1",
+     "model": "qa-synthetic-vision",
+     "assistance": "explain",
+     "question_chars": 170,
+     "image": {
+      "sha256": "95537f73c39dd6a78e93024a6610e0b8e806ddf14c39c6d5716b6cc8c54c5185",
+      "width": 1732,
+      "height": 1052,
+      "png_bytes": 170157,
+      "bytes_hash_to_sha256": true,
+      "is_png": true
+     }
+    }
+   },
+   "note": "DETERMINISTIC CONTROL (the answer is QA's own SYNTHETIC text): the stand-in received the exact PNG the app kept and the card shows, with QA's question and the chosen level; its answer is shown as plain text on that card and recorded as shown"
+  },
+  {
+   "id": "control.unbound_answer_is_not_shown",
+   "status": "pass",
+   "observed": {
+    "card_status": "No answer: the answer is not bound to the request that was sent; it is not shown. It was not sent again.",
+    "record_outcome": {
+     "status": "refused",
+     "code": "unbound",
+     "reason": "the answer is not bound to the request that was sent; it is not shown"
+    },
+    "the_stand_ins_text_anywhere": false
+   },
+   "note": "the stand-in wrote an answer whose provenance names another picture: it is not shown, the record says refused (unbound) and holds no answer, and its text is nowhere on a card or in a record"
+  },
+  {
+   "id": "control.refusals_say_fixed_text_and_are_not_resent",
+   "status": "pass",
+   "observed": {
+    "each": {
+     "k3_quota": true,
+     "k4_busy": true,
+     "k5_unsupported_model": true,
+     "k6_invalid_request": true,
+     "k7_failed": true,
+     "k8_unavailable": true,
+     "k16_unauthenticated": true
+    },
+    "statuses": {
+     "k3_quota": "No answer: the subscription's usage limit was reached. It was not sent again.",
+     "k4_busy": "No answer: another question is still being answered. It was not sent again.",
+     "k5_unsupported_model": "No answer: the chosen model does not take pictures. It was not sent again.",
+     "k6_invalid_request": "No answer: the connector refused the request as malformed. It was not sent again.",
+     "k7_failed": "No answer: ChatGPT did not complete an answer. It was not sent again.",
+     "k8_unavailable": "No answer: the connector, or the official Codex app server it runs, is not available. It was not sent again.",
+     "k16_unauthenticated": "No answer: ChatGPT is not signed in (sign in from the control window). It was not sent again."
+    }
+   },
+   "note": "each closed error code is shown as the app's own fixed sentence, recorded as refused, with no answer; the bridge received each question exactly once"
+  },
+  {
+   "id": "control.cancel_and_late_answer",
+   "status": "pass",
+   "observed": {
+    "confirmed": {
+     "status": "Cancelled: no answer is shown.",
+     "record": {
+      "status": "cancelled",
+      "uncertain": false
+     }
+    },
+    "late_answer": {
+     "status": "Cancelled: no answer is shown.",
+     "record": {
+      "status": "cancelled",
+      "uncertain": false
+     },
+     "bridge_wrote_a_late_answer": true
+    },
+    "unconfirmed": {
+     "status": "Cancelled: no answer is shown. Whether ChatGPT stopped working on it is not confirmed; it may still have counted against your usage.",
+     "record": {
+      "status": "cancelled",
+      "uncertain": true
+     }
+    },
+    "late_text_anywhere": false
+   },
+   "note": "Cancel tells the bridge; a confirmed interruption is said plainly, an unconfirmed one is said as not confirmed, no answer box is shown, and an answer the bridge still wrote after the cancel appears nowhere: not on the card, not in the record"
+  },
+  {
+   "id": "control.stop_in_flight_then_a_new_session",
+   "status": "pass",
+   "observed": {
+    "stop_told_the_bridge": {
+     "at": "2026-10-01T10:05:46.181797+00:00",
+     "capture_session_id": "f0b6721fd729652e"
+    },
+    "record_of_the_question_out": {
+     "status": "cancelled",
+     "uncertain": false
+    },
+    "bridge_wrote_a_late_answer_after_the_stop": true,
+    "new_session": {
+     "capture_session_id_differs": true,
+     "answer_shown": true
+    }
+   },
+   "note": "Stop with a question out tells the bridge to stop that capture session; the question is recorded as cancelled; the answer the bridge still wrote after the Stop is not kept or shown; nothing more is asked for that session; a later explicit Start is another session and can ask"
+  },
+  {
+   "id": "control.overlong_line_ends_the_child_and_none_is_started_without_the_user",
+   "status": "pass",
+   "observed": {
+    "fault_written": "2026-10-01T10:05:56.369686+00:00",
+    "bridge_starts": [
+     "2026-10-01T10:05:21.215876+00:00",
+     "2026-10-01T10:06:09.285213+00:00"
+    ],
+    "bridge_ends": [
+     "2026-10-01T10:05:56.428233+00:00",
+     "2026-10-01T10:06:12.587005+00:00"
+    ],
+    "users_second_check_pressed_at": "2026-10-01T10:06:09.1934362Z",
+    "status_6s_after": {
+     "state": "unavailable",
+     "detail": "the connector did not answer",
+     "asking": false
+    },
+    "status_12s_after": {
+     "state": "unavailable",
+     "detail": "the connector did not answer",
+     "asking": false
+    },
+    "app_children": {
+     "6s_after_the_fault": [
+      "electron.exe",
+      "electron.exe",
+      "electron.exe",
+      "electron.exe"
+     ],
+     "after_the_users_check": [
+      "electron.exe",
+      "electron.exe",
+      "electron.exe",
+      "electron.exe",
+      "wsl.exe"
+     ]
+    },
+    "state_text_after": "Not available. The connector did not answer.",
+    "card": "No answer: no answer came; whether ChatGPT worked on the question is not known. It is not sent again automatically.",
+    "record": {
+     "status": "uncertain",
+     "reason": "no answer came; whether ChatGPT worked on the question is not known"
+    },
+    "after_the_users_check": "signed_in"
+   },
+   "note": "the bridge wrote `connection/changed`, left the app's re-read unanswered, wrote `connection/changed` again and then a 300 KiB line. The app ended that child (it has no wsl.exe child 6 s later), said the connection is not available, and started no other child for 12 s; the second bridge start came only after the user's own Check press"
+  },
+  {
+   "id": "control.unauthenticated_shows_signed_out_and_asks_no_more",
+   "status": "pass",
+   "observed": {
+    "card": "No answer: ChatGPT is not signed in (sign in from the control window). It was not sent again.",
+    "control_state": "signed_out",
+    "sign_in_button_shown": true,
+    "next_ask": "Not sent: ChatGPT is not signed in (sign in from the control window).",
+    "bridge_asks_total": 16
+   },
+   "note": "an `unauthenticated` answer shows the fixed text, the control window says not signed in and offers Sign in (not pressed), and the next Ask is not sent"
+  },
+  {
+   "id": "control.no_sign_in_request_reached_the_bridge",
+   "status": "pass",
+   "observed": {
+    "methods_seen": [
+     "ask/cancel",
+     "connection/read",
+     "session/stop"
+    ]
+   },
+   "note": "the bridge was never asked to start or cancel a sign-in"
+  },
+  {
+   "id": "release.app_and_connector_ended",
+   "status": "pass",
+   "observed": {
+    "apps": {
+     "app": {
+      "pid": 73452,
+      "sub": "",
+      "close_via": "page",
+      "exited": true,
+      "exit_code": 0,
+      "exit_ms": 118,
+      "killed": null,
+      "closed_in_finally": null
+     },
+     "app-fake": {
+      "pid": 57192,
+      "sub": "fake",
+      "close_via": "wm_close",
+      "exited": true,
+      "exit_code": 0,
+      "exit_ms": 199,
+      "killed": null,
+      "closed_in_finally": null
+     }
+    },
+    "watched": [
+     {
+      "event": "appear",
+      "pid": 1385929,
+      "name": "python3",
+      "role": "in_root",
+      "at": "2026-10-01T10:05:21.213987+00:00"
+     },
+     {
+      "event": "exit",
+      "pid": 1385929,
+      "name": "python3",
+      "role": "in_root",
+      "at": "2026-10-01T10:05:56.453107+00:00"
+     },
+     {
+      "event": "appear",
+      "pid": 1386245,
+      "name": "python3",
+      "role": "in_root",
+      "at": "2026-10-01T10:06:09.326780+00:00"
+     },
+     {
+      "event": "exit",
+      "pid": 1386245,
+      "name": "python3",
+      "role": "in_root",
+      "at": "2026-10-01T10:06:12.629046+00:00"
+     }
+    ],
+    "expected_starts_in_the_connector_folder": 2,
+    "there_before_the_run": [],
+    "left_at_watch_end": [],
+    "wsl_exe_seen_by_the_runner": [
+     {
+      "pid": 640,
+      "running_at_end": false
+     },
+     {
+      "pid": 76792,
+      "running_at_end": false
+     }
+    ]
+   },
+   "note": "both app processes ended by themselves with code 0; exactly the expected number of processes started in the connector's folder, and each of them and of their children exited; nothing ran there before; no wsl.exe child the runner saw was still running at the end"
+  }
+ ]
+}

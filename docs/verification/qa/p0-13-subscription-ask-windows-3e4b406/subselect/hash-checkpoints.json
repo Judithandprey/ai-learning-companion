@@ -1,0 +1,99 @@
+{
+ "h_final": {
+  "captures/7851a9c57874a767/asks/4c4ff70c97fa64a40b0999486964155ce6bf4810c1058f4c6f99473bd3c71d9a.png": {
+   "sha256": "4c4ff70c97fa64a40b0999486964155ce6bf4810c1058f4c6f99473bd3c71d9a",
+   "bytes": 160572,
+   "mtime_utc": "2026-10-01T10:07:01.9848130Z"
+  },
+  "captures/7851a9c57874a767/asks/ask-15d17ba2a344ed99.json": {
+   "sha256": "533c85feb2b58b5f81e6220a8440900dd8083d51bcde92ea52276c965c02aaa5",
+   "bytes": 1041,
+   "mtime_utc": "2026-10-01T10:07:20.8573154Z"
+  },
+  "captures/7851a9c57874a767/asks/ask-189c6eb5c74bbd97.json": {
+   "sha256": "f45f01b10e1e4c9ed1e259bfb95f4b02bfab02257ae73a3a6a9316d3d7283951",
+   "bytes": 1041,
+   "mtime_utc": "2026-10-01T10:07:12.4881329Z"
+  },
+  "captures/7851a9c57874a767/asks/ask-1b9bf293c1d8d59e.json": {
+   "sha256": "9da149308fbac7b5ddd9f10ad16a59ae0f39fcf7aaaf75432c963f1158ada7eb",
+   "bytes": 1041,
+   "mtime_utc": "2026-10-01T10:07:31.1931190Z"
+  },
+  "captures/7851a9c57874a767/asks/ask-1ed04ab2c6b385d7.json": {
+   "sha256": "b4f1c7fb7cf1563e3207b737a10271b39a2cdf7693aae97af5369c67d52e7aa6",
+   "bytes": 1041,
+   "mtime_utc": "2026-10-01T10:07:10.7392259Z"
+  },
+  "captures/7851a9c57874a767/asks/ask-31749d483c7de30f.json": {
+   "sha256": "7bb42e7285f6f3eeb27f6a4e7f2d11ca371a14f5bcebf2f5d47b21fc4f8a5ef3",
+   "bytes": 1041,
+   "mtime_utc": "2026-10-01T10:07:05.8050458Z"
+  },
+  "captures/7851a9c57874a767/asks/ask-563d9ec973e097af.json": {
+   "sha256": "d39891fc81fb1fe9169c0cd037142540f516766cc6dc2ef1b99bdf30c27ed5b1",
+   "bytes": 1041,
+   "mtime_utc": "2026-10-01T10:07:22.6469480Z"
+  },
+  "captures/7851a9c57874a767/asks/ask-6d1c3837d3dbecc1.json": {
+   "sha256": "df450018a0a933afaba95a50d5013e826c2b18f3c20706e7e3a473f770ef7606",
+   "bytes": 1040,
+   "mtime_utc": "2026-10-01T10:07:03.9946700Z"
+  },
+  "captures/7851a9c57874a767/asks/ask-81710f203b660030.json": {
+   "sha256": "c4187733a2a469cb34aaa7ec513d1486ada8af0ebd234c21ae68c3da2ea6a5cf",
+   "bytes": 1041,
+   "mtime_utc": "2026-10-01T10:07:32.9077317Z"
+  },
+  "captures/7851a9c57874a767/asks/ask-8868d352714de7fa.json": {
+   "sha256": "81bc8c71f9937d863ecf8aa3924cea5247eafe32fd7c80ad6fd94ed7e86ec585",
+   "bytes": 1041,
+   "mtime_utc": "2026-10-01T10:07:16.1856620Z"
+  },
+  "captures/7851a9c57874a767/asks/ask-a7bf060a10fcff39.json": {
+   "sha256": "edbbea2499eaf56860020486b12907ae57a8e1b811f4795810a99121403c1710",
+   "bytes": 1041,
+   "mtime_utc": "2026-10-01T10:07:27.4698892Z"
+  },
+  "captures/7851a9c57874a767/asks/ask-a816af5eebbf360f.json": {
+   "sha256": "be4f3a1bab2813db7b70e69143b5a4d883d0150477891f2d7089a2b64b7b412b",
+   "bytes": 1041,
+   "mtime_utc": "2026-10-01T10:07:07.7142398Z"
+  },
+  "captures/7851a9c57874a767/asks/ask-af1092d923069e5d.json": {
+   "sha256": "6bd21062caa254f985d513c7f10acbb3bb0c779a7d4ac22aecb54d93b9d0ee98",
+   "bytes": 1040,
+   "mtime_utc": "2026-10-01T10:07:01.9858141Z"
+  },
+  "captures/7851a9c57874a767/asks/ask-b85c37f6309fae40.json": {
+   "sha256": "c6a6875560e930821f4b32264a26e9989ce7dd16d6e2af258cbf033010739cb3",
+   "bytes": 1041,
+   "mtime_utc": "2026-10-01T10:07:24.4906445Z"
+  },
+  "captures/7851a9c57874a767/asks/ask-c8a88480c54a32a0.json": {
+   "sha256": "559385d5914c224662cf46fb00b6e614449969f38c3682d548d52ece315bbbce",
+   "bytes": 1041,
+   "mtime_utc": "2026-10-01T10:07:19.1073098Z"
+  },
+  "captures/7851a9c57874a767/asks/ask-dcaba86cb476df45.json": {
+   "sha256": "2454d25b73b31fb2db6a27ee4b991e5cad927d4590c7f353f174c7180abcddfe",
+   "bytes": 1041,
+   "mtime_utc": "2026-10-01T10:07:14.3708324Z"
+  },
+  "captures/7851a9c57874a767/asks/ask-ea4e17a2a0a4e3ab.json": {
+   "sha256": "c79da965a890668a70b8e7f8d9749abfdd1f1552c7f1cac610c4c3fce3ce04e5",
+   "bytes": 1041,
+   "mtime_utc": "2026-10-01T10:07:29.3784541Z"
+  },
+  "captures/7851a9c57874a767/ink/d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7.json": {
+   "sha256": "d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7",
+   "bytes": 451,
+   "mtime_utc": "2026-10-01T10:06:55.9194277Z"
+  },
+  "captures/7851a9c57874a767/manifest.jsonl": {
+   "sha256": "b6f74e229c4068327e979e629507c2242b8b4109ce4b291d2b4e0bf7908ffa64",
+   "bytes": 3806,
+   "mtime_utc": "2026-10-01T10:07:34.3632864Z"
+  }
+ }
+}

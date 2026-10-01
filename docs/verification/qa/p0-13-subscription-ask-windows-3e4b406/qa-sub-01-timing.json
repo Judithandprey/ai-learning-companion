@@ -1,0 +1,319 @@
+{
+ "what": "QA-SUB-01: for every plain ASK selection of the three probe runs, the time from the pen-up (the start of the runner's step right after the stroke; Windows clock, good to a few tens of ms) to the next frame the app sampled (the app's own sampled_at; same machine), and whether the app refused the selection",
+ "runs": {
+  "subselect-1 (before the first freeze)": [
+   {
+    "n": 0,
+    "pen_up_to_next_frame_ms": 228,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 1,
+    "pen_up_to_next_frame_ms": 394,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 2,
+    "pen_up_to_next_frame_ms": 662,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 3,
+    "pen_up_to_next_frame_ms": 894,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 4,
+    "pen_up_to_next_frame_ms": 983,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 5,
+    "pen_up_to_next_frame_ms": 94,
+    "refused": true,
+    "status": "This selection cannot be asked about: the selection facts are malformed. It was not sent to any AI."
+   },
+   {
+    "n": 6,
+    "pen_up_to_next_frame_ms": 565,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 7,
+    "pen_up_to_next_frame_ms": 810,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 8,
+    "pen_up_to_next_frame_ms": 93,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 9,
+    "pen_up_to_next_frame_ms": 375,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 10,
+    "pen_up_to_next_frame_ms": 453,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 11,
+    "pen_up_to_next_frame_ms": 636,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 12,
+    "pen_up_to_next_frame_ms": 912,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 13,
+    "pen_up_to_next_frame_ms": 67,
+    "refused": true,
+    "status": "This selection cannot be asked about: the selection facts are malformed. It was not sent to any AI."
+   },
+   {
+    "n": 14,
+    "pen_up_to_next_frame_ms": 375,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 15,
+    "pen_up_to_next_frame_ms": 745,
+    "refused": false,
+    "status": null
+   }
+  ],
+  "subselect-at-3002218": [
+   {
+    "n": 0,
+    "pen_up_to_next_frame_ms": 1014,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 1,
+    "pen_up_to_next_frame_ms": 826,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 2,
+    "pen_up_to_next_frame_ms": 642,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 3,
+    "pen_up_to_next_frame_ms": 442,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 4,
+    "pen_up_to_next_frame_ms": 363,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 5,
+    "pen_up_to_next_frame_ms": 287,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 6,
+    "pen_up_to_next_frame_ms": 169,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 7,
+    "pen_up_to_next_frame_ms": 109,
+    "refused": true,
+    "status": "This selection cannot be asked about: the selection facts are malformed. It was not sent to any AI."
+   },
+   {
+    "n": 8,
+    "pen_up_to_next_frame_ms": 476,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 9,
+    "pen_up_to_next_frame_ms": 282,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 10,
+    "pen_up_to_next_frame_ms": 270,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 11,
+    "pen_up_to_next_frame_ms": 211,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 12,
+    "pen_up_to_next_frame_ms": 144,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 13,
+    "pen_up_to_next_frame_ms": -13,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 14,
+    "pen_up_to_next_frame_ms": 1005,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 15,
+    "pen_up_to_next_frame_ms": 988,
+    "refused": false,
+    "status": null
+   }
+  ],
+  "subselect (110c733)": [
+   {
+    "n": 0,
+    "pen_up_to_next_frame_ms": 236,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 1,
+    "pen_up_to_next_frame_ms": 344,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 2,
+    "pen_up_to_next_frame_ms": 596,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 3,
+    "pen_up_to_next_frame_ms": 794,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 4,
+    "pen_up_to_next_frame_ms": 922,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 5,
+    "pen_up_to_next_frame_ms": 224,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 6,
+    "pen_up_to_next_frame_ms": 482,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 7,
+    "pen_up_to_next_frame_ms": 748,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 8,
+    "pen_up_to_next_frame_ms": 971,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 9,
+    "pen_up_to_next_frame_ms": 252,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 10,
+    "pen_up_to_next_frame_ms": 565,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 11,
+    "pen_up_to_next_frame_ms": 835,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 12,
+    "pen_up_to_next_frame_ms": -28,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 13,
+    "pen_up_to_next_frame_ms": 197,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 14,
+    "pen_up_to_next_frame_ms": 471,
+    "refused": false,
+    "status": null
+   },
+   {
+    "n": 15,
+    "pen_up_to_next_frame_ms": 829,
+    "refused": false,
+    "status": null
+   }
+  ]
+ },
+ "totals": {
+  "selections": 48,
+  "refused": 3,
+  "refused_ms": [
+   67,
+   94,
+   109
+  ],
+  "accepted_ms_smallest": [
+   -28,
+   -13,
+   93,
+   144,
+   169,
+   197,
+   211,
+   224
+  ]
+ },
+ "reading": "the three refused selections had a frame sampled 67, 94 and 109 ms after the pen-up. Of the 45 accepted ones, 44 had their next frame 144 ms or more after the pen-up and one had 93 ms. The two negative rows (-13, -28) are the frame the selection itself used, sampled just before the measured pen-up; their next frame came about 1 s later. The pen-up time is the start of the runner's next step, good to a few tens of ms, so 93 against 94 is inside that error"
+}

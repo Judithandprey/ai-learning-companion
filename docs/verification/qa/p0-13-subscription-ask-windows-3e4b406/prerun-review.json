@@ -1,0 +1,245 @@
+{
+ "what": "QA's own pre-run review of this harness (five reviewers, one skeptic each), made on the harness at a9ff602 and its working changes before the freeze; every confirmed finding was fixed in f972176 or 3002218 unless the report says otherwise",
+ "findings": [
+  {
+   "dimension": "security",
+   "finding": "Evidence writer aborts on every subscription run: the redaction check trips on the app's own hint text and on the harness's own step text",
+   "verdict": "confirmed",
+   "severity": "analyzer_wrong_result"
+  },
+  {
+   "dimension": "security",
+   "finding": "The real-turn gate is a reusable boolean: nothing mechanical stops a second invocation from pressing Ask again",
+   "verdict": "confirmed",
+   "severity": "blocker_before_real_turn"
+  },
+  {
+   "dimension": "security",
+   "finding": "OS click and keystrokes are not bound to the checked window at the moment they are sent",
+   "verdict": "confirmed",
+   "severity": "fix_before_display_run"
+  },
+  {
+   "dimension": "security",
+   "finding": "The subask branch never checks that the run used the real, un-overridden connector: a stand-in's account passes a turn.* check",
+   "verdict": "confirmed",
+   "severity": "analyzer_wrong_result"
+  },
+  {
+   "dimension": "security",
+   "finding": "Redaction safety net misses the shapes the runner actually produces (nested JSON strings), and has no test for an address, e-mail or raw base64",
+   "verdict": "confirmed",
+   "severity": "note"
+  },
+  {
+   "dimension": "security",
+   "finding": "Raise() on the overlay removes its always-on-top state",
+   "verdict": "confirmed",
+   "severity": "note"
+  },
+  {
+   "dimension": "security",
+   "finding": "Local hygiene of the stand-in folder and of copied private files",
+   "verdict": "confirmed",
+   "severity": "note"
+  },
+  {
+   "dimension": "analyzer-controls",
+   "finding": "Evidence writing always aborts: the redaction guard trips on the app's own section text (\"password\") and on the driver's own step text (\"data:image\")",
+   "verdict": "confirmed",
+   "severity": "fix_before_display_run"
+  },
+  {
+   "dimension": "analyzer-controls",
+   "finding": "The runner executes subcheck's osClick and keys steps as `window` steps (nothing is clicked or typed), and run.completed still says each step was its planned step",
+   "verdict": "confirmed",
+   "severity": "fix_before_display_run"
+  },
+  {
+   "dimension": "analyzer-controls",
+   "finding": "The process watch counts every process whose working folder is inside the root as the connector; release() and subcheck's 'started on the press' can fail or pass on unrelated processes",
+   "verdict": "confirmed",
+   "severity": "analyzer_wrong_result"
+  },
+  {
+   "dimension": "analyzer-controls",
+   "finding": "control.off_by_default_and_nothing_before_check passes with no watcher evidence at all, and the clock-free evidence (kids_*) is collected but never judged",
+   "verdict": "confirmed",
+   "severity": "analyzer_wrong_result"
+  },
+  {
+   "dimension": "analyzer-controls",
+   "finding": "Several control notes claim more than their conditions test (unbound answer 'not kept', cancel, Stop's late answer, 'sends nothing')",
+   "verdict": "confirmed",
+   "severity": "analyzer_wrong_result"
+  },
+  {
+   "dimension": "analyzer-controls",
+   "finding": "qa.never_signs_in: the planned-step pattern misses a double-quoted getElementById(\"subLogin\").click()",
+   "verdict": "confirmed",
+   "severity": "note"
+  },
+  {
+   "dimension": "analyzer-controls",
+   "finding": "Windows-stamp against WSL-stamp comparisons use a fixed 2 s tolerance and no measured offset",
+   "verdict": "confirmed",
+   "severity": "note"
+  },
+  {
+   "dimension": "one-shot",
+   "finding": "The harness waits 170 s for the answer and then closes the card, which cancels a real turn the app would still wait up to 300 s for",
+   "verdict": "confirmed",
+   "severity": "blocker_before_real_turn"
+  },
+  {
+   "dimension": "one-shot",
+   "finding": "Fifteen steps after the one press are still required; one failing read aborts the run and the analyzer then cannot judge an answered turn",
+   "verdict": "confirmed",
+   "severity": "blocker_before_real_turn"
+  },
+  {
+   "dimension": "one-shot",
+   "finding": "Only an environment variable guards the one attempt; an error-looking exit after the press allows a second real submission",
+   "verdict": "confirmed",
+   "severity": "blocker_before_real_turn"
+  },
+  {
+   "dimension": "one-shot",
+   "finding": "At HEAD nothing checks, between the selection and the press, that the picture to be sent is the surface with two solid rings",
+   "verdict": "confirmed",
+   "severity": "blocker_before_real_turn"
+  },
+  {
+   "dimension": "one-shot",
+   "finding": "analyze_sub.py stops while writing evidence: its picture-data guard matches the `data:image` literal in every planned askRead step",
+   "verdict": "confirmed",
+   "severity": "analyzer_wrong_result"
+  },
+  {
+   "dimension": "one-shot",
+   "finding": "The work folder is removed in `finally` even when evidence copying threw before the asks and receipts were copied",
+   "verdict": "confirmed",
+   "severity": "note"
+  },
+  {
+   "dimension": "one-shot",
+   "finding": "Sign-in, model and form are checked once, about 35 steps before the press, and not again at the press",
+   "verdict": "confirmed",
+   "severity": "note"
+  },
+  {
+   "dimension": "one-shot",
+   "finding": "The 'explain' prompt tells the model not to reveal 'the problem's final answer', which is what the question asks for",
+   "verdict": "plausible_unproven",
+   "severity": "note"
+  },
+  {
+   "dimension": "one-shot",
+   "finding": "The process watch counts every process whose working folder is inside QA_SUB_BACKEND, so a shared checkout fails the release check",
+   "verdict": "confirmed",
+   "severity": "note"
+  },
+  {
+   "dimension": "analyzer-real",
+   "finding": "subcheck: the OS click and both key steps never run (the runner takes them as plain `window` steps), and the analyzer reports that as a product observation",
+   "verdict": "confirmed",
+   "severity": "fix_before_display_run"
+  },
+  {
+   "dimension": "analyzer-real",
+   "finding": "Real scenarios watch the whole Backend checkout: any unrelated process whose working folder is inside it fails check.connection_read and release",
+   "verdict": "confirmed",
+   "severity": "fix_before_display_run"
+  },
+  {
+   "dimension": "analyzer-real",
+   "finding": "Evidence export aborts in every sub scenario: the harness's own step text contains 'data:image'",
+   "verdict": "confirmed",
+   "severity": "analyzer_wrong_result"
+  },
+  {
+   "dimension": "analyzer-real",
+   "finding": "`--backend <path>` without an evidence folder makes the Backend checkout the evidence folder",
+   "verdict": "confirmed",
+   "severity": "analyzer_wrong_result"
+  },
+  {
+   "dimension": "analyzer-real",
+   "finding": "A turn that did not complete is reported as 'the receipt does not match the kept request'; an abort before Ask is reported as a question that 'ended as None'",
+   "verdict": "confirmed",
+   "severity": "analyzer_wrong_result"
+  },
+  {
+   "dimension": "analyzer-real",
+   "finding": "turn.no_leak_of_the_truth passes on a recomputed prompt that is not shown to be the one sent, and can fail on the app's own card text",
+   "verdict": "confirmed",
+   "severity": "analyzer_wrong_result"
+  },
+  {
+   "dimension": "analyzer-real",
+   "finding": "turn.provenance_on_the_card is a substring test that small numbers always satisfy",
+   "verdict": "confirmed",
+   "severity": "analyzer_wrong_result"
+  },
+  {
+   "dimension": "analyzer-real",
+   "finding": "check.no_question_and_no_receipt cannot fail on its receipt half; the signed_out note claims an unchecked button",
+   "verdict": "confirmed",
+   "severity": "analyzer_wrong_result"
+  },
+  {
+   "dimension": "analyzer-real",
+   "finding": "Receipt check: item types by a deny-list that misses 10 of the connector's types, no assistant message required, and the model is not compared with the chosen one",
+   "verdict": "confirmed",
+   "severity": "note"
+  },
+  {
+   "dimension": "analyzer-real",
+   "finding": "The analyzer raises on an unreadable selection record or a missing picture file",
+   "verdict": "confirmed",
+   "severity": "note"
+  },
+  {
+   "dimension": "analyzer-real",
+   "finding": "Judge: a colour or shape outside the vocabulary counts as 'not stated'; some correct answers are 'contradicted' and the analyzer then says the cards were not named",
+   "verdict": "confirmed",
+   "severity": "note"
+  },
+  {
+   "dimension": "analyzer-real",
+   "finding": "'Started only on the press' rests on two clocks with a 2 s tolerance; clock-free evidence the run collects is never read",
+   "verdict": "confirmed",
+   "severity": "note"
+  },
+  {
+   "dimension": "analyzer-real",
+   "finding": "Additional, not in the list: the worktree was edited by someone else during this review, and one intermediate state made a perfect real turn fail",
+   "verdict": "confirmed",
+   "severity": "note"
+  },
+  {
+   "dimension": "driver-vs-source",
+   "finding": "The form that \"never became ready\" is a released-app race, not Check connection: the harness only aborts on it and its probe tests the wrong cause",
+   "verdict": "confirmed",
+   "severity": "fix_before_display_run"
+  },
+  {
+   "dimension": "driver-vs-source",
+   "finding": "The real connector is configured with codex_bin null, but under wsl.exe --exec codex is not on PATH: Check would say \"unavailable\"",
+   "verdict": "confirmed",
+   "severity": "fix_before_display_run"
+  },
+  {
+   "dimension": "driver-vs-source",
+   "finding": "The analyzer still requires assistance \"explain\" while the driver now asks the real question with \"full_solution\" by default",
+   "verdict": "confirmed",
+   "severity": "analyzer_wrong_result"
+  },
+  {
+   "dimension": "driver-vs-source",
+   "finding": "The typed-text check sends letters through SendKeys on a Chinese-language Windows: an active input method would turn them into a false \"a user cannot type\" fail",
+   "verdict": "plausible_unproven",
+   "severity": "note"
+  }
+ ]
+}

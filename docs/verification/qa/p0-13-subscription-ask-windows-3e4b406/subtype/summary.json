@@ -1,0 +1,249 @@
+{
+ "scenario": "subtype",
+ "counts": {
+  "pass": 7
+ },
+ "checks": [
+  {
+   "id": "run.shared_desktop_quiet",
+   "status": "pass",
+   "observed": {
+    "foreign_electron_seen": [],
+    "looked_at_start_and_end": true,
+    "screenshots": 0
+   },
+   "note": "no other Electron app at start, at each screenshot and at the end (point-in-time)"
+  },
+  {
+   "id": "run.completed",
+   "status": "pass",
+   "observed": {
+    "aborted": null,
+    "failed_steps": [],
+    "steps_run": 103,
+    "steps_planned": 103,
+    "steps_not_run_as_planned": [],
+    "unreadable_selection_records": []
+   },
+   "note": "every planned step ran, in order, as the kind of step it was planned as; an optional wait that timed out counts as a failed step here"
+  },
+  {
+   "id": "run.surface_really_on_screen_and_in_each_selected_picture",
+   "status": "pass",
+   "observed": {
+    "on_top_checks": [
+     {
+      "i": 7,
+      "ok": true,
+      "points": 16,
+      "covered": []
+     }
+    ],
+    "circled_cards": [
+     5,
+     7
+    ],
+    "selected_pictures": {
+     "picture_typing": {
+      "ok": true,
+      "size": [
+       1732,
+       1052
+      ],
+      "ringed": [],
+      "rings_wanted": [],
+      "gaps_white": 17
+     }
+    },
+    "problems": {}
+   },
+   "note": "under 16 points of the grid the top window was QA's Edge window before the capture started; and every selected picture, read from its own pixels in the page, shows the twelve cards (grey ground, a shape of the truth's colour, dark digits, white between) with the pen's ring around exactly the cards the harness circled"
+  },
+  {
+   "id": "qa.never_signs_in",
+   "status": "pass",
+   "observed": {
+    "steps_that_could_sign_in": [],
+    "login_states_seen": [
+     "none"
+    ],
+    "status_events": 2,
+    "status_reads": 3
+   },
+   "note": "no planned step presses Sign in or Cancel sign-in or clicks or types in the control window, and every subscription status the app notified or returned has login 'none': this run started no sign-in and opened no browser"
+  },
+  {
+   "id": "probe.one_os_click_then_keys_reach_the_question_box",
+   "status": "pass",
+   "observed": {
+    "clicks": 6,
+    "each": [
+     {
+      "n": 0,
+      "clicked": true,
+      "overlay_foreground_after": true,
+      "box_focused": true,
+      "presses_the_box_saw": 1,
+      "click_count_the_page_gave": 1,
+      "double_click_event": false,
+      "selection_after_click": [
+       25,
+       25
+      ],
+      "keys_sent": true,
+      "box_after_keys": "Explain what is selected.42",
+      "typed_text_is_in_the_box": true,
+      "text_that_was_there_is_kept_whole": true
+     },
+     {
+      "n": 1,
+      "clicked": true,
+      "overlay_foreground_after": true,
+      "box_focused": true,
+      "presses_the_box_saw": 1,
+      "click_count_the_page_gave": 1,
+      "double_click_event": false,
+      "selection_after_click": [
+       25,
+       25
+      ],
+      "keys_sent": true,
+      "box_after_keys": "Explain what is selected.42",
+      "typed_text_is_in_the_box": true,
+      "text_that_was_there_is_kept_whole": true
+     },
+     {
+      "n": 2,
+      "clicked": true,
+      "overlay_foreground_after": true,
+      "box_focused": true,
+      "presses_the_box_saw": 1,
+      "click_count_the_page_gave": 1,
+      "double_click_event": false,
+      "selection_after_click": [
+       25,
+       25
+      ],
+      "keys_sent": true,
+      "box_after_keys": "Explain what is selected.42",
+      "typed_text_is_in_the_box": true,
+      "text_that_was_there_is_kept_whole": true
+     },
+     {
+      "n": 3,
+      "clicked": true,
+      "overlay_foreground_after": true,
+      "box_focused": true,
+      "presses_the_box_saw": 1,
+      "click_count_the_page_gave": 1,
+      "double_click_event": false,
+      "selection_after_click": [
+       25,
+       25
+      ],
+      "keys_sent": true,
+      "box_after_keys": "Explain what is selected.42",
+      "typed_text_is_in_the_box": true,
+      "text_that_was_there_is_kept_whole": true
+     },
+     {
+      "n": 4,
+      "clicked": true,
+      "overlay_foreground_after": true,
+      "box_focused": true,
+      "presses_the_box_saw": 1,
+      "click_count_the_page_gave": 1,
+      "double_click_event": false,
+      "selection_after_click": [
+       25,
+       25
+      ],
+      "keys_sent": true,
+      "box_after_keys": "Explain what is selected.42",
+      "typed_text_is_in_the_box": true,
+      "text_that_was_there_is_kept_whole": true
+     },
+     {
+      "n": 5,
+      "clicked": true,
+      "overlay_foreground_after": true,
+      "box_focused": true,
+      "presses_the_box_saw": 1,
+      "click_count_the_page_gave": 1,
+      "double_click_event": false,
+      "selection_after_click": [
+       25,
+       25
+      ],
+      "keys_sent": true,
+      "box_after_keys": "Explain what is selected.42",
+      "typed_text_is_in_the_box": true,
+      "text_that_was_there_is_kept_whole": true
+     }
+    ],
+    "kept_the_text_whole": 6,
+    "left_a_selection": 0,
+    "saw_more_than_one_press": 0
+   },
+   "note": "each of six separate OS clicks focused the question box and the two digits typed after it are in the box (synthetic OS input)"
+  },
+  {
+   "id": "probe.a_click_leaves_the_text_that_was_there",
+   "status": "pass",
+   "observed": {
+    "kept_whole": 6,
+    "of": 6
+   },
+   "note": "after every click the caret was a plain caret and the typed digits were added to the text"
+  },
+  {
+   "id": "release.app_and_connector_ended",
+   "status": "pass",
+   "observed": {
+    "apps": {
+     "app": {
+      "pid": 78604,
+      "sub": "",
+      "close_via": "page",
+      "exited": true,
+      "exit_code": 0,
+      "exit_ms": 111,
+      "killed": null,
+      "closed_in_finally": null
+     },
+     "app-fake": {
+      "pid": 81688,
+      "sub": "fake",
+      "close_via": "wm_close",
+      "exited": true,
+      "exit_code": 0,
+      "exit_ms": 257,
+      "killed": null,
+      "closed_in_finally": null
+     }
+    },
+    "watched": [
+     {
+      "event": "appear",
+      "pid": 1390358,
+      "name": "python3",
+      "role": "in_root",
+      "at": "2026-10-01T10:13:23.749845+00:00"
+     },
+     {
+      "event": "exit",
+      "pid": 1390358,
+      "name": "python3",
+      "role": "in_root",
+      "at": "2026-10-01T10:13:55.349165+00:00"
+     }
+    ],
+    "expected_starts_in_the_connector_folder": 1,
+    "there_before_the_run": [],
+    "left_at_watch_end": [],
+    "wsl_exe_seen_by_the_runner": []
+   },
+   "note": "both app processes ended by themselves with code 0; exactly the expected number of processes started in the connector's folder, and each of them and of their children exited; nothing ran there before; no wsl.exe child the runner saw was still running at the end"
+  }
+ ]
+}

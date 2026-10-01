@@ -1,0 +1,783 @@
+{
+ "steps": [
+  {
+   "i": 1,
+   "ok": true,
+   "at": "2026-10-01T10:08:47.6879261Z",
+   "kind": "edgeStart"
+  },
+  {
+   "i": 2,
+   "ok": true,
+   "at": "2026-10-01T10:08:48.5319466Z",
+   "kind": "window",
+   "window": "edge",
+   "show": "raise",
+   "foreground": true,
+   "is_foreground": true
+  },
+  {
+   "i": 3,
+   "ok": true,
+   "at": "2026-10-01T10:08:49.7131087Z",
+   "kind": "edgeFullscreen",
+   "before": "fullscreen",
+   "after": "fullscreen"
+  },
+  {
+   "i": 4,
+   "ok": true,
+   "at": "2026-10-01T10:08:49.7756825Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 5,
+   "ok": true,
+   "at": "2026-10-01T10:08:51.7799081Z",
+   "kind": "window",
+   "window": "edge",
+   "show": "raise",
+   "foreground": true,
+   "is_foreground": true
+  },
+  {
+   "i": 6,
+   "ok": true,
+   "at": "2026-10-01T10:08:52.8953371Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 7,
+   "ok": true,
+   "at": "2026-10-01T10:08:53.4076632Z",
+   "kind": "onTop",
+   "window": "edge",
+   "points": 16,
+   "covered": []
+  },
+  {
+   "i": 8,
+   "ok": true,
+   "at": "2026-10-01T10:08:54.1344068Z",
+   "kind": "cursorOutside",
+   "cursor": [
+    2357,
+    1267
+   ]
+  },
+  {
+   "i": 9,
+   "ok": true,
+   "at": "2026-10-01T10:08:54.1422861Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 10,
+   "ok": true,
+   "at": "2026-10-01T10:08:54.1655172Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": "surface_truth"
+  },
+  {
+   "i": 11,
+   "ok": true,
+   "at": "2026-10-01T10:08:54.1740295Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "off"
+  },
+  {
+   "i": 12,
+   "ok": true,
+   "at": "2026-10-01T10:08:54.1780418Z",
+   "kind": "closeApp",
+   "via": "page",
+   "close_requested_at": "2026-10-01T10:08:54.1885513Z",
+   "exited": true,
+   "exit_ms": 124,
+   "exit_code": 0
+  },
+  {
+   "i": 13,
+   "ok": true,
+   "at": "2026-10-01T10:08:54.3274887Z",
+   "kind": "launchApp",
+   "previous": {
+    "key": "app",
+    "pid": 62176,
+    "exit_code": 0,
+    "killed": false
+   },
+   "pid": 81560
+  },
+  {
+   "i": 14,
+   "ok": true,
+   "at": "2026-10-01T10:08:55.9522945Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 15,
+   "ok": true,
+   "at": "2026-10-01T10:08:56.4707226Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "hooked"
+  },
+  {
+   "i": 16,
+   "ok": true,
+   "at": "2026-10-01T10:08:56.4846784Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "sub_hooked"
+  },
+  {
+   "i": 17,
+   "ok": true,
+   "at": "2026-10-01T10:08:56.4877173Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 18,
+   "ok": true,
+   "at": "2026-10-01T10:08:58.9907106Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "r_not_checked"
+  },
+  {
+   "i": 19,
+   "ok": true,
+   "at": "2026-10-01T10:08:58.9960121Z",
+   "kind": "children"
+  },
+  {
+   "i": 20,
+   "ok": true,
+   "at": "2026-10-01T10:08:59.7354545Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 21,
+   "ok": true,
+   "at": "2026-10-01T10:08:59.7504024Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "r_checked"
+  },
+  {
+   "i": 22,
+   "ok": true,
+   "at": "2026-10-01T10:09:00.2656270Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "r_state"
+  },
+  {
+   "i": 23,
+   "ok": true,
+   "at": "2026-10-01T10:09:00.2692094Z",
+   "kind": "children"
+  },
+  {
+   "i": 24,
+   "ok": true,
+   "at": "2026-10-01T10:09:00.9504713Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 25,
+   "ok": true,
+   "at": "2026-10-01T10:09:01.0523849Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "s1"
+  },
+  {
+   "i": 26,
+   "ok": true,
+   "at": "2026-10-01T10:09:01.4824900Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 27,
+   "ok": true,
+   "at": "2026-10-01T10:09:01.5056868Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 28,
+   "ok": true,
+   "at": "2026-10-01T10:09:04.0067749Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 29,
+   "ok": true,
+   "at": "2026-10-01T10:09:06.5107300Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 30,
+   "ok": true,
+   "at": "2026-10-01T10:09:06.5162306Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 31,
+   "ok": true,
+   "at": "2026-10-01T10:09:06.5384488Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 49
+  },
+  {
+   "i": 32,
+   "ok": true,
+   "at": "2026-10-01T10:09:07.7984445Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 33,
+   "ok": true,
+   "at": "2026-10-01T10:09:08.7054534Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 49
+  },
+  {
+   "i": 34,
+   "ok": true,
+   "at": "2026-10-01T10:09:10.0422845Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 35,
+   "ok": true,
+   "at": "2026-10-01T10:09:13.5564666Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": "saved_circled"
+  },
+  {
+   "i": 36,
+   "ok": true,
+   "at": "2026-10-01T10:09:13.5829634Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 37,
+   "ok": true,
+   "at": "2026-10-01T10:09:13.6039627Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_circled"
+  },
+  {
+   "i": 38,
+   "ok": true,
+   "at": "2026-10-01T10:09:13.6173506Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_circled"
+  },
+  {
+   "i": 39,
+   "ok": true,
+   "at": "2026-10-01T10:09:13.6193488Z",
+   "kind": "snapshot",
+   "label": "circled",
+   "contextPictures": 2
+  },
+  {
+   "i": 40,
+   "ok": true,
+   "at": "2026-10-01T10:09:13.6385267Z",
+   "kind": "hashTree",
+   "as": "h_circled"
+  },
+  {
+   "i": 41,
+   "ok": true,
+   "at": "2026-10-01T10:09:13.7386487Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 42,
+   "ok": true,
+   "at": "2026-10-01T10:09:13.7424217Z",
+   "kind": "cursorOutside",
+   "cursor": [
+    2357,
+    1267
+   ]
+  },
+  {
+   "i": 43,
+   "ok": true,
+   "at": "2026-10-01T10:09:13.7424217Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": "surface_truth_circled"
+  },
+  {
+   "i": 44,
+   "ok": true,
+   "at": "2026-10-01T10:09:13.7448957Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 45,
+   "ok": true,
+   "at": "2026-10-01T10:09:13.7479140Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 59
+  },
+  {
+   "i": 46,
+   "ok": true,
+   "at": "2026-10-01T10:09:15.1916224Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 47,
+   "ok": true,
+   "at": "2026-10-01T10:09:15.6894264Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 3
+  },
+  {
+   "i": 48,
+   "ok": true,
+   "at": "2026-10-01T10:09:15.7460841Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 49,
+   "ok": true,
+   "at": "2026-10-01T10:09:15.8609917Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 50,
+   "ok": true,
+   "at": "2026-10-01T10:09:15.8818514Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 51,
+   "ok": true,
+   "at": "2026-10-01T10:09:15.8853203Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "form_circled"
+  },
+  {
+   "i": 52,
+   "ok": true,
+   "at": "2026-10-01T10:09:15.8986442Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 53,
+   "ok": true,
+   "at": "2026-10-01T10:09:15.9024116Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "picture_circled"
+  },
+  {
+   "i": 54,
+   "ok": true,
+   "at": "2026-10-01T10:09:15.9516130Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "r_card"
+  },
+  {
+   "i": 55,
+   "ok": true,
+   "at": "2026-10-01T10:09:15.9648207Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 56,
+   "ok": true,
+   "at": "2026-10-01T10:09:15.9688211Z",
+   "kind": "osClick",
+   "selector": "#question",
+   "target": "overlay",
+   "point_px": [
+    2137,
+    1418
+   ],
+   "cursor_before": [
+    2357,
+    1267
+   ],
+   "foreground_before": false,
+   "pointer_still_there": true,
+   "window_at_point_is_ours": true,
+   "clicked": true,
+   "foreground_after": true
+  },
+  {
+   "i": 57,
+   "ok": true,
+   "at": "2026-10-01T10:09:17.0251858Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 58,
+   "ok": true,
+   "at": "2026-10-01T10:09:17.4288158Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "r_focus_after_click"
+  },
+  {
+   "i": 59,
+   "ok": true,
+   "at": "2026-10-01T10:09:17.4532745Z",
+   "kind": "keys",
+   "window": "overlay",
+   "window_found": true,
+   "is_foreground": true,
+   "sent": true,
+   "sent_chars": 9,
+   "still_foreground": true
+  },
+  {
+   "i": 60,
+   "ok": true,
+   "at": "2026-10-01T10:09:17.7409835Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 61,
+   "ok": true,
+   "at": "2026-10-01T10:09:18.3440308Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "r_typed"
+  },
+  {
+   "i": 62,
+   "ok": true,
+   "at": "2026-10-01T10:09:18.3475406Z",
+   "kind": "window",
+   "window": "overlay",
+   "show": "raise",
+   "foreground": true,
+   "is_foreground": true
+  },
+  {
+   "i": 63,
+   "ok": true,
+   "at": "2026-10-01T10:09:18.7653211Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "r_focus_raised"
+  },
+  {
+   "i": 64,
+   "ok": true,
+   "at": "2026-10-01T10:09:18.7683172Z",
+   "kind": "keys",
+   "window": "overlay",
+   "window_found": true,
+   "is_foreground": true,
+   "sent": true,
+   "sent_chars": 7,
+   "still_foreground": true
+  },
+  {
+   "i": 65,
+   "ok": true,
+   "at": "2026-10-01T10:09:18.9830813Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 66,
+   "ok": true,
+   "at": "2026-10-01T10:09:19.6048086Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "r_typed_raised"
+  },
+  {
+   "i": 67,
+   "ok": true,
+   "at": "2026-10-01T10:09:19.6083333Z",
+   "kind": "cursorBack",
+   "cursor": [
+    2357,
+    1267
+   ],
+   "home": [
+    2357,
+    1267
+   ]
+  },
+  {
+   "i": 68,
+   "ok": true,
+   "at": "2026-10-01T10:09:19.9321565Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "r_card_after_typing"
+  },
+  {
+   "i": 69,
+   "ok": true,
+   "at": "2026-10-01T10:09:19.9441607Z",
+   "kind": "hashTree",
+   "as": "h_r_selected"
+  },
+  {
+   "i": 70,
+   "ok": true,
+   "at": "2026-10-01T10:09:19.9693220Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 71,
+   "ok": true,
+   "at": "2026-10-01T10:09:19.9723244Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 72,
+   "ok": true,
+   "at": "2026-10-01T10:09:19.9763227Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "s1_stopped"
+  },
+  {
+   "i": 73,
+   "ok": true,
+   "at": "2026-10-01T10:09:20.1060223Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "r_final"
+  },
+  {
+   "i": 74,
+   "ok": true,
+   "at": "2026-10-01T10:09:20.1421714Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "sub_events"
+  },
+  {
+   "i": 75,
+   "ok": true,
+   "at": "2026-10-01T10:09:20.1441733Z",
+   "kind": "children"
+  },
+  {
+   "i": 76,
+   "ok": true,
+   "at": "2026-10-01T10:09:20.8379861Z",
+   "kind": "closeApp",
+   "via": "wm_close",
+   "close_requested_at": "2026-10-01T10:09:20.8409918Z",
+   "posted": true,
+   "exited": true,
+   "exit_ms": 228,
+   "exit_code": 0
+  }
+ ],
+ "values": {
+  "surface_truth": "{\"format\":\"qa-subscription-surface/2\",\"generated_at\":\"2026-10-01T10:08:48.292Z\",\"read_at\":\"2026-10-01T10:08:54.170Z\",\"grid\":{\"x\":40,\"y\":90,\"cols\":4,\"rows\":3,\"w\":190,\"h\":150,\"gap\":20},\"cards\":[{\"index\":0,\"number\":5408,\"shape\":\"heart\",\"color\":\"red\",\"rect_dip\":{\"x\":40,\"y\":90,\"width\":190,\"height\":150}},{\"index\":1,\"number\":3926,\"shape\":\"heart\",\"color\":\"blue\",\"rect_dip\":{\"x\":250,\"y\":90,\"width\":190,\"height\":150}},{\"index\":2,\"number\":1966,\"shape\":\"star\",\"color\":\"blue\",\"rect_dip\":{\"x\":460,\"y\":90,\"width\":190,\"height\":150}},{\"index\":3,\"number\":7387,\"shape\":\"star\",\"color\":\"green\",\"rect_dip\":{\"x\":670,\"y\":90,\"width\":190,\"height\":150}},{\"index\":4,\"number\":4628,\"shape\":\"square\",\"color\":\"blue\",\"rect_dip\":{\"x\":40,\"y\":260,\"width\":190,\"height\":150}},{\"index\":5,\"number\":3082,\"shape\":\"triangle\",\"color\":\"green\",\"rect_dip\":{\"x\":250,\"y\":260,\"width\":190,\"height\":150}},{\"index\":6,\"number\":3061,\"shape\":\"heart\",\"color\":\"green\",\"rect_dip\":{\"x\":460,\"y\":260,\"width\":190,\"height\":150}},{\"index\":7,\"number\":2088,\"shape\":\"triangle\",\"color\":\"blue\",\"rect_dip\":{\"x\":670,\"y\":260,\"width\":190,\"height\":150}},{\"index\":8,\"number\":6955,\"shape\":\"heart\",\"color\":\"blue\",\"rect_dip\":{\"x\":40,\"y\":430,\"width\":190,\"height\":150}},{\"index\":9,\"number\":6063,\"shape\":\"square\",\"color\":\"red\",\"rect_dip\":{\"x\":250,\"y\":430,\"width\":190,\"height\":150}},{\"index\":10,\"number\":2373,\"shape\":\"heart\",\"color\":\"red\",\"rect_dip\":{\"x\":460,\"y\":430,\"width\":190,\"height\":150}},{\"index\":11,\"number\":3050,\"shape\":\"triangle\",\"color\":\"green\",\"rect_dip\":{\"x\":670,\"y\":430,\"width\":190,\"height\":150}}],\"viewport_offset_dip\":{\"x\":0,\"y\":0},\"viewport\":{\"width\":1280,\"height\":800,\"dpr\":2,\"screen\":[1280,800]},\"fits\":true,\"full_screen\":true,\"dom_text\":\"\",\"title\":\"QA test surface\",\"url_has_query\":false}",
+  "off": "{\"at\":\"2026-10-01T10:08:54.177Z\",\"s\":{\"mode\":\"off\"},\"section\":{\"hidden\":true,\"disabled\":false},\"state\":{\"text\":\"\",\"hidden\":true,\"disabled\":false},\"quota\":{\"text\":\"\",\"hidden\":true,\"disabled\":false},\"check\":{\"text\":\"Check connection\",\"hidden\":true,\"disabled\":false},\"login\":{\"text\":\"Sign in with ChatGPT\",\"hidden\":true,\"disabled\":false},\"login_cancel\":{\"text\":\"Cancel sign-in\",\"hidden\":true,\"disabled\":false},\"model_row\":{\"text\":\"Model for questions \",\"hidden\":true,\"disabled\":false},\"options\":[],\"ai\":\"No AI is connected: captured frames and ink stay on this device, and nothing is sent anywhere.\",\"session\":\"Not capturing.\"}",
+  "hooked": true,
+  "sub_hooked": true,
+  "r_not_checked": "{\"at\":\"2026-10-01T10:08:58.994Z\",\"s\":{\"mode\":\"managed\",\"state\":\"not_checked\",\"plan\":null,\"rate_limits\":null,\"models\":[],\"model\":null,\"login\":\"none\",\"detail\":null,\"asking\":false},\"section\":{\"hidden\":false,\"disabled\":false},\"state\":{\"text\":\"Not checked yet. Check connection starts the connector, which asks the official Codex app server for your sign-in state, plan, usage limits and models; no picture and no question is sent by that.\",\"hidden\":false,\"disabled\":false},\"quota\":{\"text\":\"Usage limits: not reported.\",\"hidden\":true,\"disabled\":false},\"check\":{\"text\":\"Check connection\",\"hidden\":false,\"disabled\":false},\"login\":{\"text\":\"Sign in with ChatGPT\",\"hidden\":true,\"disabled\":false},\"login_cancel\":{\"text\":\"Cancel sign-in\",\"hidden\":true,\"disabled\":false},\"model_row\":{\"text\":\"Model for questions \",\"hidden\":true,\"disabled\":false},\"options\":[],\"ai\":\"Captured frames and ink stay on this device. No AI watches the screen: ChatGPT (your subscription) gets only a selection you send with Ask, with your question.\",\"session\":\"Not capturing.\"}",
+  "kids_not_checked": {
+   "app_pid": 81560,
+   "at": "2026-10-01T10:08:59.7340934Z",
+   "children": [
+    {
+     "name": "electron.exe",
+     "pid": 75640,
+     "created": "2026-10-01T10:08:55.9958400Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 72692,
+     "created": "2026-10-01T10:08:55.9981830Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 74564,
+     "created": "2026-10-01T10:08:56.0108570Z"
+    }
+   ]
+  },
+  "r_checked": "{\"at\":\"2026-10-01T10:09:00.248Z\",\"s\":{\"mode\":\"managed\",\"state\":\"signed_out\",\"plan\":null,\"rate_limits\":null,\"models\":[{\"id\":\"gpt-6-astra\",\"label\":\"GPT-6-Astra\",\"image_input\":true,\"default\":true},{\"id\":\"gpt-6-sol\",\"label\":\"GPT-6-Sol\",\"image_input\":true,\"default\":false},{\"id\":\"gpt-6-luna\",\"label\":\"GPT-6-Luna\",\"image_input\":true,\"default\":false},{\"id\":\"gpt-5.6-sol\",\"label\":\"GPT-5.6-Sol\",\"image_input\":true,\"default\":false},{\"id\":\"gpt-5.6-terra\",\"label\":\"GPT-5.6-Terra\",\"image_input\":true,\"default\":false},{\"id\":\"gpt-5.6-luna\",\"label\":\"GPT-5.6-Luna\",\"image_input\":true,\"default\":false},{\"id\":\"gpt-5.5\",\"label\":\"GPT-5.5\",\"image_input\":true,\"default\":false}],\"model\":\"gpt-6-astra\",\"login\":\"none\",\"detail\":null,\"asking\":false}}",
+  "r_state": "{\"at\":\"2026-10-01T10:09:00.267Z\",\"s\":{\"mode\":\"managed\",\"state\":\"signed_out\",\"plan\":null,\"rate_limits\":null,\"models\":[{\"id\":\"gpt-6-astra\",\"label\":\"GPT-6-Astra\",\"image_input\":true,\"default\":true},{\"id\":\"gpt-6-sol\",\"label\":\"GPT-6-Sol\",\"image_input\":true,\"default\":false},{\"id\":\"gpt-6-luna\",\"label\":\"GPT-6-Luna\",\"image_input\":true,\"default\":false},{\"id\":\"gpt-5.6-sol\",\"label\":\"GPT-5.6-Sol\",\"image_input\":true,\"default\":false},{\"id\":\"gpt-5.6-terra\",\"label\":\"GPT-5.6-Terra\",\"image_input\":true,\"default\":false},{\"id\":\"gpt-5.6-luna\",\"label\":\"GPT-5.6-Luna\",\"image_input\":true,\"default\":false},{\"id\":\"gpt-5.5\",\"label\":\"GPT-5.5\",\"image_input\":true,\"default\":false}],\"model\":\"gpt-6-astra\",\"login\":\"none\",\"detail\":null,\"asking\":false},\"section\":{\"hidden\":false,\"disabled\":false},\"state\":{\"text\":\"Not signed in. Sign in with ChatGPT opens the official sign-in page in your browser.\",\"hidden\":false,\"disabled\":false},\"quota\":{\"text\":\"Usage limits: not reported.\",\"hidden\":true,\"disabled\":false},\"check\":{\"text\":\"Check connection\",\"hidden\":false,\"disabled\":false},\"login\":{\"text\":\"Sign in with ChatGPT\",\"hidden\":false,\"disabled\":false},\"login_cancel\":{\"text\":\"Cancel sign-in\",\"hidden\":true,\"disabled\":false},\"model_row\":{\"text\":\"Model for questions GPT-6-AstraGPT-6-SolGPT-6-LunaGPT-5.6-SolGPT-5.6-TerraGPT-5.6-LunaGPT-5.5\",\"hidden\":true,\"disabled\":false},\"options\":[[\"gpt-6-astra\",\"GPT-6-Astra\",true],[\"gpt-6-sol\",\"GPT-6-Sol\",false],[\"gpt-6-luna\",\"GPT-6-Luna\",false],[\"gpt-5.6-sol\",\"GPT-5.6-Sol\",false],[\"gpt-5.6-terra\",\"GPT-5.6-Terra\",false],[\"gpt-5.6-luna\",\"GPT-5.6-Luna\",false],[\"gpt-5.5\",\"GPT-5.5\",false]],\"ai\":\"Captured frames and ink stay on this device. No AI watches the screen: ChatGPT (your subscription) gets only a selection you send with Ask, with your question.\",\"session\":\"Not capturing.\"}",
+  "kids_checked": {
+   "app_pid": 81560,
+   "at": "2026-10-01T10:09:00.9504713Z",
+   "children": [
+    {
+     "name": "electron.exe",
+     "pid": 75640,
+     "created": "2026-10-01T10:08:55.9958400Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 72692,
+     "created": "2026-10-01T10:08:55.9981830Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 74564,
+     "created": "2026-10-01T10:08:56.0108570Z"
+    },
+    {
+     "name": "wsl.exe",
+     "pid": 79916,
+     "created": "2026-10-01T10:08:59.7417080Z"
+    }
+   ]
+  },
+  "s1": "{\"running\":true,\"starting\":false,\"ending\":false,\"display\":{\"display_id\":\"3071609112\",\"label\":\"整个屏幕\",\"bounds\":{\"x\":0,\"y\":0,\"width\":1280,\"height\":800},\"scale_factor\":2},\"session_id\":\"2\"}",
+  "saved_circled": "{\"doc\":{\"id\":\"fe202d26aacc1f74\",\"revision\":2,\"visible\":[\"stk_e5e9f1f8a22f2a7e7d76ff0ac8bc8aae\",\"stk_2178538fdec6b52ae26be64cece7eadd\"],\"history\":[\"add\",\"add\"],\"strokes\":2},\"saveText\":\"Saved on this device at 03:09:10.\",\"retention\":{\"retained\":3,\"refused\":0,\"lastRefusal\":\"\",\"deferred\":0}}",
+  "app_circled": "{\"aligned\":{\"stk_e5e9f1f8a22f2a7e7d76ff0ac8bc8aae\":\"verified\",\"stk_2178538fdec6b52ae26be64cece7eadd\":\"verified\"},\"alignment\":[{\"id\":\"stk_e5e9f1f8a22f2a7e7d76ff0ac8bc8aae\",\"region\":{\"x\":249,\"y\":91,\"width\":192,\"height\":148},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":64,\"rows\":49,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_2178538fdec6b52ae26be64cece7eadd\",\"region\":{\"x\":669,\"y\":431,\"width\":192,\"height\":148},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":64,\"rows\":49,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}}],\"doc\":{\"id\":\"fe202d26aacc1f74\",\"revision\":2,\"visible\":[\"stk_e5e9f1f8a22f2a7e7d76ff0ac8bc8aae\",\"stk_2178538fdec6b52ae26be64cece7eadd\"],\"history\":[\"add\",\"add\"],\"strokes\":2},\"pinned\":0,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 14. No AI watches this screen: ChatGPT gets only a selection you send with Ask. Saved on this device at 03:09:10.\",\"gesture\":null,\"last\":{\"seq\":14,\"sampled_at\":\"2026-10-01T10:09:13.576Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"2673e18f26264f3752542c2a16fcb68c7533592b86211190e69d87d97ca3b149\"},\"composed\":{\"ink_session\":\"fe202d26aacc1f74\",\"ink_revision\":2,\"ink_marks\":{\"verified\":2,\"changed\":0,\"unknown\":0,\"following_content\":0},\"pixels_sha256\":\"a12917f24ae3a7da540dc3a73faea147979e8cc8dfea25efc8c54de490de76d9\"}}}",
+  "ov_circled": "{\"mode\":\"WRITE\",\"tool\":\"pen\",\"mouse\":\"false\",\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 14. No AI watches this screen: ChatGPT gets only a selection you send with Ask. Saved on this device at 03:09:10.\",\"card\":false,\"cancel\":false,\"disabled\":1}",
+  "surface_truth_circled": "{\"format\":\"qa-subscription-surface/2\",\"generated_at\":\"2026-10-01T10:08:48.292Z\",\"read_at\":\"2026-10-01T10:09:13.745Z\",\"grid\":{\"x\":40,\"y\":90,\"cols\":4,\"rows\":3,\"w\":190,\"h\":150,\"gap\":20},\"cards\":[{\"index\":0,\"number\":5408,\"shape\":\"heart\",\"color\":\"red\",\"rect_dip\":{\"x\":40,\"y\":90,\"width\":190,\"height\":150}},{\"index\":1,\"number\":3926,\"shape\":\"heart\",\"color\":\"blue\",\"rect_dip\":{\"x\":250,\"y\":90,\"width\":190,\"height\":150}},{\"index\":2,\"number\":1966,\"shape\":\"star\",\"color\":\"blue\",\"rect_dip\":{\"x\":460,\"y\":90,\"width\":190,\"height\":150}},{\"index\":3,\"number\":7387,\"shape\":\"star\",\"color\":\"green\",\"rect_dip\":{\"x\":670,\"y\":90,\"width\":190,\"height\":150}},{\"index\":4,\"number\":4628,\"shape\":\"square\",\"color\":\"blue\",\"rect_dip\":{\"x\":40,\"y\":260,\"width\":190,\"height\":150}},{\"index\":5,\"number\":3082,\"shape\":\"triangle\",\"color\":\"green\",\"rect_dip\":{\"x\":250,\"y\":260,\"width\":190,\"height\":150}},{\"index\":6,\"number\":3061,\"shape\":\"heart\",\"color\":\"green\",\"rect_dip\":{\"x\":460,\"y\":260,\"width\":190,\"height\":150}},{\"index\":7,\"number\":2088,\"shape\":\"triangle\",\"color\":\"blue\",\"rect_dip\":{\"x\":670,\"y\":260,\"width\":190,\"height\":150}},{\"index\":8,\"number\":6955,\"shape\":\"heart\",\"color\":\"blue\",\"rect_dip\":{\"x\":40,\"y\":430,\"width\":190,\"height\":150}},{\"index\":9,\"number\":6063,\"shape\":\"square\",\"color\":\"red\",\"rect_dip\":{\"x\":250,\"y\":430,\"width\":190,\"height\":150}},{\"index\":10,\"number\":2373,\"shape\":\"heart\",\"color\":\"red\",\"rect_dip\":{\"x\":460,\"y\":430,\"width\":190,\"height\":150}},{\"index\":11,\"number\":3050,\"shape\":\"triangle\",\"color\":\"green\",\"rect_dip\":{\"x\":670,\"y\":430,\"width\":190,\"height\":150}}],\"viewport_offset_dip\":{\"x\":0,\"y\":0},\"viewport\":{\"width\":1280,\"height\":800,\"dpr\":2,\"screen\":[1280,800]},\"fits\":true,\"full_screen\":true,\"dom_text\":\"\",\"title\":\"QA test surface\",\"url_has_query\":false}",
+  "form_circled": "{\"at\":\"2026-10-01T10:09:15.898Z\",\"card_shown\":true,\"badge\":\"Selection · not sent to any AI\",\"card_text\":\"This selection is sent to ChatGPT, with your question, only when you press Ask below; nothing else of the screen is sent to any AI, and no AI watches it.\\nRegion 17,72 866×526 DIP on 整个屏幕 = 1732×1052 px of frame 16 (captured 03:09:15), with your ink revision 2 drawn over it.\",\"status\":null,\"answer_shown\":false,\"answer\":null,\"answer_box_text\":null,\"answer_child_elements\":0,\"form_shown\":true,\"question\":\"Explain what is selected.\",\"assistance\":\"hint\",\"submit_disabled\":false,\"cancel_shown\":false,\"save_shown\":false,\"picture\":{\"png_sha256\":\"487658afc6a49fd681270402b9d70528689a735c4ff1fdaec5e8cbda0e160081\",\"png_bytes\":189136,\"width\":1732,\"height\":1052},\"mode\":\"WRITE\",\"revision\":2,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 16. No AI watches this screen: ChatGPT gets only a selection you send with Ask. Saved on this device at 03:09:10.\",\"log\":[{\"at\":\"2026-10-01T10:09:15.863Z\",\"badge\":\"Selection · not sent to any AI\",\"status\":null,\"answer_shown\":false,\"cancel_shown\":false,\"save_shown\":false,\"form_shown\":true,\"submit_disabled\":false}]}",
+  "picture_circled": "{\"at\":\"2026-10-01T10:09:15.950Z\",\"ok\":true,\"size\":[1732,1052],\"size_ok\":true,\"cards\":[{\"index\":0,\"ground\":4,\"shape_color\":\"red\",\"shape_px\":6360,\"digit_px\":3666,\"ring_px\":0},{\"index\":1,\"ground\":4,\"shape_color\":\"blue\",\"shape_px\":6360,\"digit_px\":3573,\"ring_px\":5332},{\"index\":2,\"ground\":4,\"shape_color\":\"blue\",\"shape_px\":3753,\"digit_px\":3456,\"ring_px\":0},{\"index\":3,\"ground\":4,\"shape_color\":\"green\",\"shape_px\":3694,\"digit_px\":3128,\"ring_px\":0},{\"index\":4,\"ground\":4,\"shape_color\":\"blue\",\"shape_px\":12544,\"digit_px\":3645,\"ring_px\":0},{\"index\":5,\"ground\":4,\"shape_color\":\"green\",\"shape_px\":6160,\"digit_px\":3678,\"ring_px\":0},{\"index\":6,\"ground\":4,\"shape_color\":\"green\",\"shape_px\":6316,\"digit_px\":3357,\"ring_px\":0},{\"index\":7,\"ground\":4,\"shape_color\":\"blue\",\"shape_px\":6160,\"digit_px\":3879,\"ring_px\":0},{\"index\":8,\"ground\":4,\"shape_color\":\"blue\",\"shape_px\":6360,\"digit_px\":3570,\"ring_px\":0},{\"index\":9,\"ground\":4,\"shape_color\":\"red\",\"shape_px\":12540,\"digit_px\":3749,\"ring_px\":0},{\"index\":10,\"ground\":4,\"shape_color\":\"red\",\"shape_px\":6360,\"digit_px\":3109,\"ring_px\":0},{\"index\":11,\"ground\":4,\"shape_color\":\"green\",\"shape_px\":6160,\"digit_px\":3658,\"ring_px\":5332}],\"gaps_white\":17,\"gaps\":17,\"ringed\":[1,11],\"rings_wanted\":[1,11]}",
+  "r_card": "{\"at\":\"2026-10-01T10:09:15.964Z\",\"card_shown\":true,\"badge\":\"Selection · not sent to any AI\",\"card_text\":\"This selection is sent to ChatGPT, with your question, only when you press Ask below; nothing else of the screen is sent to any AI, and no AI watches it.\\nRegion 17,72 866×526 DIP on 整个屏幕 = 1732×1052 px of frame 16 (captured 03:09:15), with your ink revision 2 drawn over it.\",\"status\":null,\"answer_shown\":false,\"answer\":null,\"answer_box_text\":null,\"answer_child_elements\":0,\"form_shown\":true,\"question\":\"Explain what is selected.\",\"assistance\":\"hint\",\"submit_disabled\":false,\"cancel_shown\":false,\"save_shown\":false,\"picture\":{\"png_sha256\":\"487658afc6a49fd681270402b9d70528689a735c4ff1fdaec5e8cbda0e160081\",\"png_bytes\":189136,\"width\":1732,\"height\":1052},\"mode\":\"WRITE\",\"revision\":2,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 16. No AI watches this screen: ChatGPT gets only a selection you send with Ask. Saved on this device at 03:09:10.\",\"log\":[{\"at\":\"2026-10-01T10:09:15.863Z\",\"badge\":\"Selection · not sent to any AI\",\"status\":null,\"answer_shown\":false,\"cancel_shown\":false,\"save_shown\":false,\"form_shown\":true,\"submit_disabled\":false}]}",
+  "r_focus_after_click": "{\"value\":\"Explain what is selected.\",\"active\":true,\"has_focus\":true,\"disabled\":false,\"selection\":[24,25],\"inputs\":[]}",
+  "r_typed": "{\"value\":\"Explain what is selected4207 1935\",\"active\":true,\"has_focus\":true,\"disabled\":false,\"selection\":[33,33],\"inputs\":[{\"type\":\"compositionstart\",\"input\":null,\"data\":\".\",\"selection\":[24,25]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"4\",\"selection\":[24,25]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"4\",\"selection\":[24,25]},{\"type\":\"compositionend\",\"input\":null,\"data\":\"4\",\"selection\":[25,25]},{\"type\":\"compositionstart\",\"input\":null,\"data\":\"\",\"selection\":[25,25]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"2\",\"selection\":[25,25]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"2\",\"selection\":[25,26]},{\"type\":\"compositionend\",\"input\":null,\"data\":\"2\",\"selection\":[26,26]},{\"type\":\"compositionstart\",\"input\":null,\"data\":\"\",\"selection\":[26,26]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"0\",\"selection\":[26,26]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"0\",\"selection\":[26,27]},{\"type\":\"compositionend\",\"input\":null,\"data\":\"0\",\"selection\":[27,27]},{\"type\":\"compositionstart\",\"input\":null,\"data\":\"\",\"selection\":[27,27]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"7\",\"selection\":[27,27]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"7\",\"selection\":[27,28]},{\"type\":\"compositionend\",\"input\":null,\"data\":\"7\",\"selection\":[28,28]},{\"type\":\"beforeinput\",\"input\":\"insertText\",\"data\":\" \",\"selection\":[28,28]},{\"type\":\"compositionstart\",\"input\":null,\"data\":\"\",\"selection\":[29,29]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"1\",\"selection\":[29,29]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"1\",\"selection\":[29,30]},{\"type\":\"compositionend\",\"input\":null,\"data\":\"1\",\"selection\":[30,30]},{\"type\":\"compositionstart\",\"input\":null,\"data\":\"\",\"selection\":[30,30]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"9\",\"selection\":[30,30]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"9\",\"selection\":[30,31]},{\"type\":\"compositionend\",\"input\":null,\"data\":\"9\",\"selection\":[31,31]},{\"type\":\"compositionstart\",\"input\":null,\"data\":\"\",\"selection\":[31,31]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"3\",\"selection\":[31,31]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"3\",\"selection\":[31,32]},{\"type\":\"compositionend\",\"input\":null,\"data\":\"3\",\"selection\":[32,32]},{\"type\":\"compositionstart\",\"input\":null,\"data\":\"\",\"selection\":[32,32]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"5\",\"selection\":[32,32]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"5\",\"selection\":[32,33]},{\"type\":\"compositionend\",\"input\":null,\"data\":\"5\",\"selection\":[33,33]}]}",
+  "r_focus_raised": "{\"active\":true,\"has_focus\":true}",
+  "r_typed_raised": "{\"value\":\"7781 20\",\"active\":true,\"has_focus\":true,\"disabled\":false,\"selection\":[7,7],\"inputs\":[{\"type\":\"compositionstart\",\"input\":null,\"data\":\".\",\"selection\":[24,25]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"4\",\"selection\":[24,25]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"4\",\"selection\":[24,25]},{\"type\":\"compositionend\",\"input\":null,\"data\":\"4\",\"selection\":[25,25]},{\"type\":\"compositionstart\",\"input\":null,\"data\":\"\",\"selection\":[25,25]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"2\",\"selection\":[25,25]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"2\",\"selection\":[25,26]},{\"type\":\"compositionend\",\"input\":null,\"data\":\"2\",\"selection\":[26,26]},{\"type\":\"compositionstart\",\"input\":null,\"data\":\"\",\"selection\":[26,26]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"0\",\"selection\":[26,26]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"0\",\"selection\":[26,27]},{\"type\":\"compositionend\",\"input\":null,\"data\":\"0\",\"selection\":[27,27]},{\"type\":\"compositionstart\",\"input\":null,\"data\":\"\",\"selection\":[27,27]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"7\",\"selection\":[27,27]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"7\",\"selection\":[27,28]},{\"type\":\"compositionend\",\"input\":null,\"data\":\"7\",\"selection\":[28,28]},{\"type\":\"beforeinput\",\"input\":\"insertText\",\"data\":\" \",\"selection\":[28,28]},{\"type\":\"compositionstart\",\"input\":null,\"data\":\"\",\"selection\":[29,29]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"1\",\"selection\":[29,29]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"1\",\"selection\":[29,30]},{\"type\":\"compositionend\",\"input\":null,\"data\":\"1\",\"selection\":[30,30]},{\"type\":\"compositionstart\",\"input\":null,\"data\":\"\",\"selection\":[30,30]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"9\",\"selection\":[30,30]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"9\",\"selection\":[30,31]},{\"type\":\"compositionend\",\"input\":null,\"data\":\"9\",\"selection\":[31,31]},{\"type\":\"compositionstart\",\"input\":null,\"data\":\"\",\"selection\":[31,31]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"3\",\"selection\":[31,31]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"3\",\"selection\":[31,32]},{\"type\":\"compositionend\",\"input\":null,\"data\":\"3\",\"selection\":[32,32]},{\"type\":\"compositionstart\",\"input\":null,\"data\":\"\",\"selection\":[32,32]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"5\",\"selection\":[32,32]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"5\",\"selection\":[32,33]},{\"type\":\"compositionend\",\"input\":null,\"data\":\"5\",\"selection\":[33,33]},{\"type\":\"compositionstart\",\"input\":null,\"data\":\"Explain what is selected4207 1935\",\"selection\":[0,33]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"7\",\"selection\":[0,33]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"7\",\"selection\":[0,1]},{\"type\":\"compositionend\",\"input\":null,\"data\":\"7\",\"selection\":[1,1]},{\"type\":\"compositionstart\",\"input\":null,\"data\":\"\",\"selection\":[1,1]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"7\",\"selection\":[1,1]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"7\",\"selection\":[1,2]},{\"type\":\"compositionend\",\"input\":null,\"data\":\"7\",\"selection\":[2,2]},{\"type\":\"compositionstart\",\"input\":null,\"data\":\"\",\"selection\":[2,2]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"8\",\"selection\":[2,2]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"8\",\"selection\":[2,3]},{\"type\":\"compositionend\",\"input\":null,\"data\":\"8\",\"selection\":[3,3]},{\"type\":\"compositionstart\",\"input\":null,\"data\":\"\",\"selection\":[3,3]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"1\",\"selection\":[3,3]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"1\",\"selection\":[3,4]},{\"type\":\"compositionend\",\"input\":null,\"data\":\"1\",\"selection\":[4,4]},{\"type\":\"beforeinput\",\"input\":\"insertText\",\"data\":\" \",\"selection\":[4,4]},{\"type\":\"compositionstart\",\"input\":null,\"data\":\"\",\"selection\":[5,5]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"2\",\"selection\":[5,5]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"2\",\"selection\":[5,6]},{\"type\":\"compositionend\",\"input\":null,\"data\":\"2\",\"selection\":[6,6]},{\"type\":\"compositionstart\",\"input\":null,\"data\":\"\",\"selection\":[6,6]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"0\",\"selection\":[6,6]},{\"type\":\"beforeinput\",\"input\":\"insertCompositionText\",\"data\":\"0\",\"selection\":[6,7]},{\"type\":\"compositionend\",\"input\":null,\"data\":\"0\",\"selection\":[7,7]}]}",
+  "r_card_after_typing": "{\"at\":\"2026-10-01T10:09:19.943Z\",\"card_shown\":true,\"badge\":\"Selection · not sent to any AI\",\"card_text\":\"This selection is sent to ChatGPT, with your question, only when you press Ask below; nothing else of the screen is sent to any AI, and no AI watches it.\\nRegion 17,72 866×526 DIP on 整个屏幕 = 1732×1052 px of frame 16 (captured 03:09:15), with your ink revision 2 drawn over it.\",\"status\":null,\"answer_shown\":false,\"answer\":null,\"answer_box_text\":null,\"answer_child_elements\":0,\"form_shown\":true,\"question\":\"7781 20\",\"assistance\":\"hint\",\"submit_disabled\":false,\"cancel_shown\":false,\"save_shown\":false,\"picture\":{\"png_sha256\":\"487658afc6a49fd681270402b9d70528689a735c4ff1fdaec5e8cbda0e160081\",\"png_bytes\":189136,\"width\":1732,\"height\":1052},\"mode\":\"WRITE\",\"revision\":2,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 20. No AI watches this screen: ChatGPT gets only a selection you send with Ask. Saved on this device at 03:09:10.\",\"log\":[{\"at\":\"2026-10-01T10:09:15.863Z\",\"badge\":\"Selection · not sent to any AI\",\"status\":null,\"answer_shown\":false,\"cancel_shown\":false,\"save_shown\":false,\"form_shown\":true,\"submit_disabled\":false}]}",
+  "s1_stopped": "{\"running\":false,\"starting\":false,\"ended\":\"stopped by the user\"}",
+  "r_final": "{\"at\":\"2026-10-01T10:09:20.127Z\",\"s\":{\"mode\":\"managed\",\"state\":\"signed_out\",\"plan\":null,\"rate_limits\":null,\"models\":[{\"id\":\"gpt-6-astra\",\"label\":\"GPT-6-Astra\",\"image_input\":true,\"default\":true},{\"id\":\"gpt-6-sol\",\"label\":\"GPT-6-Sol\",\"image_input\":true,\"default\":false},{\"id\":\"gpt-6-luna\",\"label\":\"GPT-6-Luna\",\"image_input\":true,\"default\":false},{\"id\":\"gpt-5.6-sol\",\"label\":\"GPT-5.6-Sol\",\"image_input\":true,\"default\":false},{\"id\":\"gpt-5.6-terra\",\"label\":\"GPT-5.6-Terra\",\"image_input\":true,\"default\":false},{\"id\":\"gpt-5.6-luna\",\"label\":\"GPT-5.6-Luna\",\"image_input\":true,\"default\":false},{\"id\":\"gpt-5.5\",\"label\":\"GPT-5.5\",\"image_input\":true,\"default\":false}],\"model\":\"gpt-6-astra\",\"login\":\"none\",\"detail\":null,\"asking\":false},\"section\":{\"hidden\":false,\"disabled\":false},\"state\":{\"text\":\"Not signed in. Sign in with ChatGPT opens the official sign-in page in your browser.\",\"hidden\":false,\"disabled\":false},\"quota\":{\"text\":\"Usage limits: not reported.\",\"hidden\":true,\"disabled\":false},\"check\":{\"text\":\"Check connection\",\"hidden\":false,\"disabled\":false},\"login\":{\"text\":\"Sign in with ChatGPT\",\"hidden\":false,\"disabled\":false},\"login_cancel\":{\"text\":\"Cancel sign-in\",\"hidden\":true,\"disabled\":false},\"model_row\":{\"text\":\"Model for questions GPT-6-AstraGPT-6-SolGPT-6-LunaGPT-5.6-SolGPT-5.6-TerraGPT-5.6-LunaGPT-5.5\",\"hidden\":true,\"disabled\":false},\"options\":[[\"gpt-6-astra\",\"GPT-6-Astra\",true],[\"gpt-6-sol\",\"GPT-6-Sol\",false],[\"gpt-6-luna\",\"GPT-6-Luna\",false],[\"gpt-5.6-sol\",\"GPT-5.6-Sol\",false],[\"gpt-5.6-terra\",\"GPT-5.6-Terra\",false],[\"gpt-5.6-luna\",\"GPT-5.6-Luna\",false],[\"gpt-5.5\",\"GPT-5.5\",false]],\"ai\":\"Captured frames and ink stay on this device. No AI watches the screen: ChatGPT (your subscription) gets only a selection you send with Ask, with your question.\",\"session\":\"Not capturing: stopped by the user.\"}",
+  "sub_events": "[{\"mode\":\"managed\",\"state\":\"checking\",\"plan\":null,\"rate_limits\":null,\"models\":[],\"model\":null,\"login\":\"none\",\"detail\":null,\"asking\":false,\"qa_at\":\"2026-10-01T10:08:59.738Z\"},{\"mode\":\"managed\",\"state\":\"signed_out\",\"plan\":null,\"rate_limits\":null,\"models\":[{\"id\":\"gpt-6-astra\",\"label\":\"GPT-6-Astra\",\"image_input\":true,\"default\":true},{\"id\":\"gpt-6-sol\",\"label\":\"GPT-6-Sol\",\"image_input\":true,\"default\":false},{\"id\":\"gpt-6-luna\",\"label\":\"GPT-6-Luna\",\"image_input\":true,\"default\":false},{\"id\":\"gpt-5.6-sol\",\"label\":\"GPT-5.6-Sol\",\"image_input\":true,\"default\":false},{\"id\":\"gpt-5.6-terra\",\"label\":\"GPT-5.6-Terra\",\"image_input\":true,\"default\":false},{\"id\":\"gpt-5.6-luna\",\"label\":\"GPT-5.6-Luna\",\"image_input\":true,\"default\":false},{\"id\":\"gpt-5.5\",\"label\":\"GPT-5.5\",\"image_input\":true,\"default\":false}],\"model\":\"gpt-6-astra\",\"login\":\"none\",\"detail\":null,\"asking\":false,\"qa_at\":\"2026-10-01T10:09:00.195Z\"}]",
+  "kids_final": {
+   "app_pid": 81560,
+   "at": "2026-10-01T10:09:20.8369828Z",
+   "children": [
+    {
+     "name": "electron.exe",
+     "pid": 75640,
+     "created": "2026-10-01T10:08:55.9958400Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 72692,
+     "created": "2026-10-01T10:08:55.9981830Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 74564,
+     "created": "2026-10-01T10:08:56.0108570Z"
+    },
+    {
+     "name": "wsl.exe",
+     "pid": 79916,
+     "created": "2026-10-01T10:08:59.7417080Z"
+    }
+   ]
+  }
+ },
+ "errors": [],
+ "processes": {
+  "app": {
+   "pid": 62176,
+   "devtools": "127.0.0.1:55046",
+   "started_at": "2026-10-01T10:08:47.6725780Z",
+   "link": "",
+   "sub": "",
+   "exited": true,
+   "close_via": "page",
+   "close_requested_at": "2026-10-01T10:08:54.1885513Z",
+   "exit_ms": 124,
+   "exit_code": 0,
+   "exited_at": "2026-10-01T10:08:54.2969937Z"
+  },
+  "edge": {
+   "pid": 57724
+  },
+  "app-real": {
+   "pid": 81560,
+   "devtools": "127.0.0.1:54591",
+   "started_at": "2026-10-01T10:08:55.8787525Z",
+   "link": "",
+   "sub": "real",
+   "sub_config_sha256": "6f2811408539f48f8f12d1af5c3bd81114350bcccb256e8e2a384f8c1c0e6d85",
+   "exited": true,
+   "close_via": "wm_close",
+   "close_requested_at": "2026-10-01T10:09:20.8409918Z",
+   "exit_ms": 228,
+   "exit_code": 0,
+   "exited_at": "2026-10-01T10:09:21.0479339Z"
+  }
+ },
+ "foreign": {
+  "start": null,
+  "end": null
+ },
+ "cursor": {
+  "start": [
+   2357,
+   1267
+  ],
+  "end": [
+   2357,
+   1267
+  ]
+ },
+ "wsl_seen": [
+  {
+   "pid": 79916,
+   "running_at_end": false
+  }
+ ]
+}

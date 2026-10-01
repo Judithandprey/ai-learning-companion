@@ -1,0 +1,64 @@
+[
+ {
+  "event": "watch_start",
+  "root_exists": true,
+  "already_there": [],
+  "at": "2026-10-01T10:08:46.254885+00:00"
+ },
+ {
+  "event": "appear",
+  "pid": 1387761,
+  "ppid": 1387759,
+  "start_ticks": 18694408,
+  "name": "python",
+  "role": "in_root",
+  "at": "2026-10-01T10:08:59.853429+00:00"
+ },
+ {
+  "event": "appear",
+  "pid": 1387770,
+  "ppid": 1387761,
+  "start_ticks": 18694430,
+  "name": "codex",
+  "role": "descendant",
+  "at": "2026-10-01T10:09:00.059208+00:00"
+ },
+ {
+  "event": "appear",
+  "pid": 1387837,
+  "ppid": 1387770,
+  "start_ticks": 18694443,
+  "name": "lsb_release",
+  "role": "descendant",
+  "at": "2026-10-01T10:09:00.162399+00:00"
+ },
+ {
+  "event": "exit",
+  "pid": 1387837,
+  "start_ticks": 18694443,
+  "name": "lsb_release",
+  "role": "descendant",
+  "at": "2026-10-01T10:09:00.265231+00:00"
+ },
+ {
+  "event": "exit",
+  "pid": 1387761,
+  "start_ticks": 18694408,
+  "name": "python",
+  "role": "in_root",
+  "at": "2026-10-01T10:09:20.974696+00:00"
+ },
+ {
+  "event": "exit",
+  "pid": 1387770,
+  "start_ticks": 18694430,
+  "name": "codex",
+  "role": "descendant",
+  "at": "2026-10-01T10:09:20.974746+00:00"
+ },
+ {
+  "event": "watch_end",
+  "remaining": [],
+  "at": "2026-10-01T10:09:37.138285+00:00"
+ }
+]

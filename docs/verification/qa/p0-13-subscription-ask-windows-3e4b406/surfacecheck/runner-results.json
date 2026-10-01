@@ -1,0 +1,494 @@
+{
+ "steps": [
+  {
+   "i": 1,
+   "ok": true,
+   "at": "2026-10-01T10:04:06.9179850Z",
+   "kind": "edgeStart"
+  },
+  {
+   "i": 2,
+   "ok": true,
+   "at": "2026-10-01T10:04:07.7895971Z",
+   "kind": "window",
+   "window": "edge",
+   "show": "raise",
+   "foreground": true,
+   "is_foreground": true
+  },
+  {
+   "i": 3,
+   "ok": true,
+   "at": "2026-10-01T10:04:08.9887801Z",
+   "kind": "edgeFullscreen",
+   "before": "fullscreen",
+   "after": "fullscreen"
+  },
+  {
+   "i": 4,
+   "ok": true,
+   "at": "2026-10-01T10:04:09.0535541Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 5,
+   "ok": true,
+   "at": "2026-10-01T10:04:11.0703166Z",
+   "kind": "window",
+   "window": "edge",
+   "show": "raise",
+   "foreground": true,
+   "is_foreground": true
+  },
+  {
+   "i": 6,
+   "ok": true,
+   "at": "2026-10-01T10:04:12.1449847Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 7,
+   "ok": true,
+   "at": "2026-10-01T10:04:12.6596249Z",
+   "kind": "onTop",
+   "window": "edge",
+   "points": 16,
+   "covered": []
+  },
+  {
+   "i": 8,
+   "ok": true,
+   "at": "2026-10-01T10:04:13.3476886Z",
+   "kind": "cursorOutside",
+   "cursor": [
+    2357,
+    1267
+   ]
+  },
+  {
+   "i": 9,
+   "ok": true,
+   "at": "2026-10-01T10:04:13.3559733Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 10,
+   "ok": true,
+   "at": "2026-10-01T10:04:13.3916191Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "displays"
+  },
+  {
+   "i": 11,
+   "ok": true,
+   "at": "2026-10-01T10:04:13.5435791Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": "surface_truth"
+  },
+  {
+   "i": 12,
+   "ok": true,
+   "at": "2026-10-01T10:04:13.5500917Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "hooked"
+  },
+  {
+   "i": 13,
+   "ok": true,
+   "at": "2026-10-01T10:04:13.5541427Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "link_hooked"
+  },
+  {
+   "i": 14,
+   "ok": true,
+   "at": "2026-10-01T10:04:13.5571420Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "link_off"
+  },
+  {
+   "i": 15,
+   "ok": true,
+   "at": "2026-10-01T10:04:13.5777363Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 16,
+   "ok": true,
+   "at": "2026-10-01T10:04:13.5812360Z",
+   "kind": "desktopShot",
+   "label": "surface",
+   "foreign": null,
+   "cursor": [
+    2357,
+    1267
+   ],
+   "size": "2560 x 1600"
+  },
+  {
+   "i": 17,
+   "ok": true,
+   "at": "2026-10-01T10:04:14.3718983Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 18,
+   "ok": true,
+   "at": "2026-10-01T10:04:14.4730061Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "s1"
+  },
+  {
+   "i": 19,
+   "ok": true,
+   "at": "2026-10-01T10:04:14.8813319Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 20,
+   "ok": true,
+   "at": "2026-10-01T10:04:14.9045199Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 21,
+   "ok": true,
+   "at": "2026-10-01T10:04:17.4130462Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 22,
+   "ok": true,
+   "at": "2026-10-01T10:04:20.9220660Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": "surface_truth_running"
+  },
+  {
+   "i": 23,
+   "ok": true,
+   "at": "2026-10-01T10:04:20.9262882Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 24,
+   "ok": true,
+   "at": "2026-10-01T10:04:20.9475906Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 25,
+   "ok": true,
+   "at": "2026-10-01T10:04:20.9511066Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 49
+  },
+  {
+   "i": 26,
+   "ok": true,
+   "at": "2026-10-01T10:04:22.3095021Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 27,
+   "ok": true,
+   "at": "2026-10-01T10:04:23.2173914Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 49
+  },
+  {
+   "i": 28,
+   "ok": true,
+   "at": "2026-10-01T10:04:24.5566607Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 29,
+   "ok": true,
+   "at": "2026-10-01T10:04:28.0705994Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": "saved_circled"
+  },
+  {
+   "i": 30,
+   "ok": true,
+   "at": "2026-10-01T10:04:28.0909879Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 31,
+   "ok": true,
+   "at": "2026-10-01T10:04:28.0949970Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_circled"
+  },
+  {
+   "i": 32,
+   "ok": true,
+   "at": "2026-10-01T10:04:28.1083438Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_circled"
+  },
+  {
+   "i": 33,
+   "ok": true,
+   "at": "2026-10-01T10:04:28.1118611Z",
+   "kind": "snapshot",
+   "label": "circled",
+   "contextPictures": 2
+  },
+  {
+   "i": 34,
+   "ok": true,
+   "at": "2026-10-01T10:04:28.1459580Z",
+   "kind": "hashTree",
+   "as": "h_circled"
+  },
+  {
+   "i": 35,
+   "ok": true,
+   "at": "2026-10-01T10:04:28.2519609Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 36,
+   "ok": true,
+   "at": "2026-10-01T10:04:28.2554707Z",
+   "kind": "cursorOutside",
+   "cursor": [
+    2357,
+    1267
+   ]
+  },
+  {
+   "i": 37,
+   "ok": true,
+   "at": "2026-10-01T10:04:28.2554707Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": "surface_truth_before_ask"
+  },
+  {
+   "i": 38,
+   "ok": true,
+   "at": "2026-10-01T10:04:28.2590957Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 39,
+   "ok": true,
+   "at": "2026-10-01T10:04:28.2613250Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 61
+  },
+  {
+   "i": 40,
+   "ok": true,
+   "at": "2026-10-01T10:04:29.9498059Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 41,
+   "ok": true,
+   "at": "2026-10-01T10:04:30.0645615Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "picture"
+  },
+  {
+   "i": 42,
+   "ok": true,
+   "at": "2026-10-01T10:04:30.1141150Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "askCard"
+  },
+  {
+   "i": 43,
+   "ok": true,
+   "at": "2026-10-01T10:04:30.1349013Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "card"
+  },
+  {
+   "i": 44,
+   "ok": true,
+   "at": "2026-10-01T10:04:30.1788585Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_card_open"
+  },
+  {
+   "i": 45,
+   "ok": true,
+   "at": "2026-10-01T10:04:30.1810925Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 46,
+   "ok": true,
+   "at": "2026-10-01T10:04:30.1830934Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_card_closed"
+  },
+  {
+   "i": 47,
+   "ok": true,
+   "at": "2026-10-01T10:04:30.1856084Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 48,
+   "ok": true,
+   "at": "2026-10-01T10:04:30.1886563Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "stopped"
+  },
+  {
+   "i": 49,
+   "ok": true,
+   "at": "2026-10-01T10:04:30.3252717Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "recoveries"
+  },
+  {
+   "i": 50,
+   "ok": true,
+   "at": "2026-10-01T10:04:30.3319294Z",
+   "kind": "hashTree",
+   "as": "h_final"
+  },
+  {
+   "i": 51,
+   "ok": true,
+   "at": "2026-10-01T10:04:30.3679436Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "timeline"
+  },
+  {
+   "i": 52,
+   "ok": true,
+   "at": "2026-10-01T10:04:30.3734497Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "ink"
+  },
+  {
+   "i": 53,
+   "ok": true,
+   "at": "2026-10-01T10:04:30.3758952Z",
+   "kind": "closeApp",
+   "via": "page",
+   "close_requested_at": "2026-10-01T10:04:30.3824231Z",
+   "exited": true,
+   "exit_ms": 159,
+   "exit_code": 0
+  }
+ ],
+ "values": {
+  "displays": {
+   "label": "整个屏幕",
+   "primary": true,
+   "bounds": {
+    "x": 0,
+    "y": 0,
+    "width": 1280,
+    "height": 800
+   },
+   "scale_factor": 2,
+   "source_id": "screen:0:0"
+  },
+  "surface_truth": "{\"format\":\"qa-subscription-surface/2\",\"generated_at\":\"2026-10-01T10:04:07.542Z\",\"read_at\":\"2026-10-01T10:04:13.547Z\",\"grid\":{\"x\":40,\"y\":90,\"cols\":4,\"rows\":3,\"w\":190,\"h\":150,\"gap\":20},\"cards\":[{\"index\":0,\"number\":3941,\"shape\":\"star\",\"color\":\"red\",\"rect_dip\":{\"x\":40,\"y\":90,\"width\":190,\"height\":150}},{\"index\":1,\"number\":2563,\"shape\":\"heart\",\"color\":\"green\",\"rect_dip\":{\"x\":250,\"y\":90,\"width\":190,\"height\":150}},{\"index\":2,\"number\":7009,\"shape\":\"triangle\",\"color\":\"green\",\"rect_dip\":{\"x\":460,\"y\":90,\"width\":190,\"height\":150}},{\"index\":3,\"number\":9721,\"shape\":\"square\",\"color\":\"orange\",\"rect_dip\":{\"x\":670,\"y\":90,\"width\":190,\"height\":150}},{\"index\":4,\"number\":1729,\"shape\":\"triangle\",\"color\":\"green\",\"rect_dip\":{\"x\":40,\"y\":260,\"width\":190,\"height\":150}},{\"index\":5,\"number\":4788,\"shape\":\"diamond\",\"color\":\"red\",\"rect_dip\":{\"x\":250,\"y\":260,\"width\":190,\"height\":150}},{\"index\":6,\"number\":3805,\"shape\":\"triangle\",\"color\":\"red\",\"rect_dip\":{\"x\":460,\"y\":260,\"width\":190,\"height\":150}},{\"index\":7,\"number\":5499,\"shape\":\"triangle\",\"color\":\"blue\",\"rect_dip\":{\"x\":670,\"y\":260,\"width\":190,\"height\":150}},{\"index\":8,\"number\":9182,\"shape\":\"heart\",\"color\":\"red\",\"rect_dip\":{\"x\":40,\"y\":430,\"width\":190,\"height\":150}},{\"index\":9,\"number\":9204,\"shape\":\"diamond\",\"color\":\"green\",\"rect_dip\":{\"x\":250,\"y\":430,\"width\":190,\"height\":150}},{\"index\":10,\"number\":3740,\"shape\":\"heart\",\"color\":\"green\",\"rect_dip\":{\"x\":460,\"y\":430,\"width\":190,\"height\":150}},{\"index\":11,\"number\":5210,\"shape\":\"triangle\",\"color\":\"orange\",\"rect_dip\":{\"x\":670,\"y\":430,\"width\":190,\"height\":150}}],\"viewport_offset_dip\":{\"x\":0,\"y\":0},\"viewport\":{\"width\":1280,\"height\":800,\"dpr\":2,\"screen\":[1280,800]},\"fits\":true,\"full_screen\":true,\"dom_text\":\"\",\"title\":\"QA test surface\",\"url_has_query\":false}",
+  "hooked": true,
+  "link_hooked": true,
+  "link_off": "{\"at\":\"2026-10-01T10:04:13.558Z\",\"l\":{\"mode\":\"off\"},\"ai\":\"No AI is connected: captured frames and ink stay on this device, and nothing is sent anywhere.\",\"line\":\"\",\"hidden\":true,\"session\":\"Not capturing.\"}",
+  "s1": "{\"running\":true,\"starting\":false,\"ending\":false,\"display\":{\"display_id\":\"3071609112\",\"label\":\"整个屏幕\",\"bounds\":{\"x\":0,\"y\":0,\"width\":1280,\"height\":800},\"scale_factor\":2},\"session_id\":\"2\"}",
+  "surface_truth_running": "{\"format\":\"qa-subscription-surface/2\",\"generated_at\":\"2026-10-01T10:04:07.542Z\",\"read_at\":\"2026-10-01T10:04:20.925Z\",\"grid\":{\"x\":40,\"y\":90,\"cols\":4,\"rows\":3,\"w\":190,\"h\":150,\"gap\":20},\"cards\":[{\"index\":0,\"number\":3941,\"shape\":\"star\",\"color\":\"red\",\"rect_dip\":{\"x\":40,\"y\":90,\"width\":190,\"height\":150}},{\"index\":1,\"number\":2563,\"shape\":\"heart\",\"color\":\"green\",\"rect_dip\":{\"x\":250,\"y\":90,\"width\":190,\"height\":150}},{\"index\":2,\"number\":7009,\"shape\":\"triangle\",\"color\":\"green\",\"rect_dip\":{\"x\":460,\"y\":90,\"width\":190,\"height\":150}},{\"index\":3,\"number\":9721,\"shape\":\"square\",\"color\":\"orange\",\"rect_dip\":{\"x\":670,\"y\":90,\"width\":190,\"height\":150}},{\"index\":4,\"number\":1729,\"shape\":\"triangle\",\"color\":\"green\",\"rect_dip\":{\"x\":40,\"y\":260,\"width\":190,\"height\":150}},{\"index\":5,\"number\":4788,\"shape\":\"diamond\",\"color\":\"red\",\"rect_dip\":{\"x\":250,\"y\":260,\"width\":190,\"height\":150}},{\"index\":6,\"number\":3805,\"shape\":\"triangle\",\"color\":\"red\",\"rect_dip\":{\"x\":460,\"y\":260,\"width\":190,\"height\":150}},{\"index\":7,\"number\":5499,\"shape\":\"triangle\",\"color\":\"blue\",\"rect_dip\":{\"x\":670,\"y\":260,\"width\":190,\"height\":150}},{\"index\":8,\"number\":9182,\"shape\":\"heart\",\"color\":\"red\",\"rect_dip\":{\"x\":40,\"y\":430,\"width\":190,\"height\":150}},{\"index\":9,\"number\":9204,\"shape\":\"diamond\",\"color\":\"green\",\"rect_dip\":{\"x\":250,\"y\":430,\"width\":190,\"height\":150}},{\"index\":10,\"number\":3740,\"shape\":\"heart\",\"color\":\"green\",\"rect_dip\":{\"x\":460,\"y\":430,\"width\":190,\"height\":150}},{\"index\":11,\"number\":5210,\"shape\":\"triangle\",\"color\":\"orange\",\"rect_dip\":{\"x\":670,\"y\":430,\"width\":190,\"height\":150}}],\"viewport_offset_dip\":{\"x\":0,\"y\":0},\"viewport\":{\"width\":1280,\"height\":800,\"dpr\":2,\"screen\":[1280,800]},\"fits\":true,\"full_screen\":true,\"dom_text\":\"\",\"title\":\"QA test surface\",\"url_has_query\":false}",
+  "saved_circled": "{\"doc\":{\"id\":\"9fb69a147e3c0b08\",\"revision\":2,\"visible\":[\"stk_12ab6b9a016ed4ef985fda3929e05dcc\",\"stk_940fc0af7e0cda4166ffc7d843747e7f\"],\"history\":[\"add\",\"add\"],\"strokes\":2},\"saveText\":\"Saved on this device at 03:04:24.\",\"retention\":{\"retained\":3,\"refused\":0,\"lastRefusal\":\"\",\"deferred\":0}}",
+  "app_circled": "{\"aligned\":{\"stk_12ab6b9a016ed4ef985fda3929e05dcc\":\"verified\",\"stk_940fc0af7e0cda4166ffc7d843747e7f\":\"verified\"},\"alignment\":[{\"id\":\"stk_12ab6b9a016ed4ef985fda3929e05dcc\",\"region\":{\"x\":669,\"y\":91,\"width\":192,\"height\":148},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":64,\"rows\":49,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_940fc0af7e0cda4166ffc7d843747e7f\",\"region\":{\"x\":669,\"y\":261,\"width\":192,\"height\":148},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":64,\"rows\":49,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}}],\"doc\":{\"id\":\"9fb69a147e3c0b08\",\"revision\":2,\"visible\":[\"stk_12ab6b9a016ed4ef985fda3929e05dcc\",\"stk_940fc0af7e0cda4166ffc7d843747e7f\"],\"history\":[\"add\",\"add\"],\"strokes\":2},\"pinned\":0,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 15. No AI is connected. Saved on this device at 03:04:24.\",\"gesture\":null,\"last\":{\"seq\":15,\"sampled_at\":\"2026-10-01T10:04:28.060Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"8df91bb68290150dedd4f116739da4f0825f9ce5bb924a065cf1052d2e5a5357\"},\"composed\":{\"ink_session\":\"9fb69a147e3c0b08\",\"ink_revision\":2,\"ink_marks\":{\"verified\":2,\"changed\":0,\"unknown\":0,\"following_content\":0},\"pixels_sha256\":\"40dd2d7017691a72dffa2e20e78c96af91612de30bdc8dd46ef4f75be30655d2\"}}}",
+  "ov_circled": "{\"mode\":\"WRITE\",\"tool\":\"pen\",\"mouse\":\"false\",\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 15. No AI is connected. Saved on this device at 03:04:24.\",\"card\":false,\"cancel\":false,\"disabled\":1}",
+  "surface_truth_before_ask": "{\"format\":\"qa-subscription-surface/2\",\"generated_at\":\"2026-10-01T10:04:07.542Z\",\"read_at\":\"2026-10-01T10:04:28.257Z\",\"grid\":{\"x\":40,\"y\":90,\"cols\":4,\"rows\":3,\"w\":190,\"h\":150,\"gap\":20},\"cards\":[{\"index\":0,\"number\":3941,\"shape\":\"star\",\"color\":\"red\",\"rect_dip\":{\"x\":40,\"y\":90,\"width\":190,\"height\":150}},{\"index\":1,\"number\":2563,\"shape\":\"heart\",\"color\":\"green\",\"rect_dip\":{\"x\":250,\"y\":90,\"width\":190,\"height\":150}},{\"index\":2,\"number\":7009,\"shape\":\"triangle\",\"color\":\"green\",\"rect_dip\":{\"x\":460,\"y\":90,\"width\":190,\"height\":150}},{\"index\":3,\"number\":9721,\"shape\":\"square\",\"color\":\"orange\",\"rect_dip\":{\"x\":670,\"y\":90,\"width\":190,\"height\":150}},{\"index\":4,\"number\":1729,\"shape\":\"triangle\",\"color\":\"green\",\"rect_dip\":{\"x\":40,\"y\":260,\"width\":190,\"height\":150}},{\"index\":5,\"number\":4788,\"shape\":\"diamond\",\"color\":\"red\",\"rect_dip\":{\"x\":250,\"y\":260,\"width\":190,\"height\":150}},{\"index\":6,\"number\":3805,\"shape\":\"triangle\",\"color\":\"red\",\"rect_dip\":{\"x\":460,\"y\":260,\"width\":190,\"height\":150}},{\"index\":7,\"number\":5499,\"shape\":\"triangle\",\"color\":\"blue\",\"rect_dip\":{\"x\":670,\"y\":260,\"width\":190,\"height\":150}},{\"index\":8,\"number\":9182,\"shape\":\"heart\",\"color\":\"red\",\"rect_dip\":{\"x\":40,\"y\":430,\"width\":190,\"height\":150}},{\"index\":9,\"number\":9204,\"shape\":\"diamond\",\"color\":\"green\",\"rect_dip\":{\"x\":250,\"y\":430,\"width\":190,\"height\":150}},{\"index\":10,\"number\":3740,\"shape\":\"heart\",\"color\":\"green\",\"rect_dip\":{\"x\":460,\"y\":430,\"width\":190,\"height\":150}},{\"index\":11,\"number\":5210,\"shape\":\"triangle\",\"color\":\"orange\",\"rect_dip\":{\"x\":670,\"y\":430,\"width\":190,\"height\":150}}],\"viewport_offset_dip\":{\"x\":0,\"y\":0},\"viewport\":{\"width\":1280,\"height\":800,\"dpr\":2,\"screen\":[1280,800]},\"fits\":true,\"full_screen\":true,\"dom_text\":\"\",\"title\":\"QA test surface\",\"url_has_query\":false}",
+  "picture": "{\"at\":\"2026-10-01T10:04:30.113Z\",\"ok\":true,\"size\":[1732,1052],\"size_ok\":true,\"cards\":[{\"index\":0,\"ground\":4,\"shape_color\":\"red\",\"shape_px\":3748,\"digit_px\":3172,\"ring_px\":0},{\"index\":1,\"ground\":4,\"shape_color\":\"green\",\"shape_px\":6316,\"digit_px\":3433,\"ring_px\":0},{\"index\":2,\"ground\":4,\"shape_color\":\"green\",\"shape_px\":6160,\"digit_px\":3649,\"ring_px\":0},{\"index\":3,\"ground\":4,\"shape_color\":\"orange\",\"shape_px\":12100,\"digit_px\":3038,\"ring_px\":5332},{\"index\":4,\"ground\":4,\"shape_color\":\"green\",\"shape_px\":6160,\"digit_px\":3041,\"ring_px\":0},{\"index\":5,\"ground\":4,\"shape_color\":\"red\",\"shape_px\":4804,\"digit_px\":3511,\"ring_px\":0},{\"index\":6,\"ground\":4,\"shape_color\":\"red\",\"shape_px\":6160,\"digit_px\":3649,\"ring_px\":0},{\"index\":7,\"ground\":4,\"shape_color\":\"blue\",\"shape_px\":6160,\"digit_px\":3568,\"ring_px\":5332},{\"index\":8,\"ground\":4,\"shape_color\":\"red\",\"shape_px\":6360,\"digit_px\":3386,\"ring_px\":0},{\"index\":9,\"ground\":4,\"shape_color\":\"green\",\"shape_px\":4776,\"digit_px\":3647,\"ring_px\":0},{\"index\":10,\"ground\":4,\"shape_color\":\"green\",\"shape_px\":6316,\"digit_px\":3314,\"ring_px\":0},{\"index\":11,\"ground\":4,\"shape_color\":\"orange\",\"shape_px\":5832,\"digit_px\":3242,\"ring_px\":0}],\"gaps_white\":17,\"gaps\":17,\"ringed\":[3,7],\"rings_wanted\":[3,7]}",
+  "card": "{\"at\":\"2026-10-01T10:04:30.177Z\",\"shown\":true,\"text\":\"No AI is connected: this selection was not sent anywhere.\\nRegion 17,72 866×526 DIP on 整个屏幕 = 1732×1052 px of frame 16 (captured 03:04:29), with your ink revision 2 drawn over it.\",\"card_all_text\":\"\\n  ×\\n  Selection · no AI connected\\n  \\n  No AI is connected: this selection was not sent anywhere.\\nRegion 17,72 866×526 DIP on 整个屏幕 = 1732×1052 px of frame 16 (captured 03:04:29), with your ink revision 2 drawn over it.\\n  \\n    Your question about this selection\\n    \\n    \\n       A hint\\n       Explain it\\n       Full solution\\n    \\n    \\n      Ask ChatGPT\\n      Cancel\\n    \\n  \\n  \\n  Save this outcome on this device\\n  \\n    Answer from ChatGPT · generated text, apart from your selection\\n    \\n  \\n\",\"crop_chars\":251390,\"crop_is_png\":true,\"crop_sha256\":\"dda33ecce95d0b529d639187ffaaadb220044b60dede913064d5a548ee280bf7\",\"mode\":\"WRITE\",\"revision\":2,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 17. No AI is connected. Saved on this device at 03:04:24.\"}",
+  "ov_card_open": "{\"mode\":\"WRITE\",\"tool\":\"pen\",\"mouse\":\"false\",\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 17. No AI is connected. Saved on this device at 03:04:24.\",\"card\":true,\"cancel\":false,\"disabled\":1}",
+  "ov_card_closed": "{\"mode\":\"WRITE\",\"tool\":\"pen\",\"mouse\":\"false\",\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 17. No AI is connected. Saved on this device at 03:04:24.\",\"card\":false,\"cancel\":false,\"disabled\":1}",
+  "stopped": "{\"running\":false,\"starting\":false,\"ended\":\"stopped by the user\"}",
+  "recoveries": "[]",
+  "ink": "{\"sessions\":[{\"id\":\"9fb69a147e3c0b08\",\"created_at\":\"2026-10-01T10:04:14.539Z\",\"forked_from\":null,\"display_label\":\"整个屏幕\",\"strokes\":2,\"revision\":2}],\"unreadable\":0}"
+ },
+ "errors": [],
+ "processes": {
+  "app": {
+   "pid": 45552,
+   "devtools": "127.0.0.1:61082",
+   "started_at": "2026-10-01T10:04:06.9017594Z",
+   "link": "",
+   "sub": "",
+   "exited": true,
+   "close_via": "page",
+   "close_requested_at": "2026-10-01T10:04:30.3824231Z",
+   "exit_ms": 159,
+   "exit_code": 0,
+   "exited_at": "2026-10-01T10:04:30.5243015Z"
+  },
+  "edge": {
+   "pid": 79100
+  }
+ },
+ "foreign": {
+  "start": null,
+  "end": null
+ },
+ "cursor": {
+  "start": [
+   2357,
+   1267
+  ],
+  "end": [
+   2357,
+   1267
+  ]
+ },
+ "wsl_seen": []
+}

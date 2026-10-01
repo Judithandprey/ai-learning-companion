@@ -1,0 +1,51 @@
+{
+ "run": "surfacecheck-1",
+ "candidate": "3e4b406",
+ "started": "2026-10-01T08:22:04.1869165Z",
+ "ended": "2026-10-01T08:22:25.0958736Z",
+ "edge_raise_step": {
+  "i": 2,
+  "ok": true,
+  "at": "2026-10-01T08:22:05.1417997Z",
+  "kind": "window",
+  "window": "edge",
+  "show": "raise",
+  "foreground": false,
+  "is_foreground": false
+ },
+ "edge_fullscreen_step": {
+  "i": 3,
+  "ok": true,
+  "at": "2026-10-01T08:22:06.1395798Z",
+  "kind": "edgeFullscreen",
+  "before": "fullscreen",
+  "after": "fullscreen"
+ },
+ "page_truth_said": {
+  "full_screen": true,
+  "fits": true
+ },
+ "what_was_on_screen": "QA's Edge window was full screen but NOT on top: the window that was in the foreground before the run stayed above it. The app's frames and the ASK selection therefore showed that foreign window, not QA's surface (seen by QA in the retained selection picture).",
+ "sent_anywhere": "no: no capture link, no connector, no provider was configured in this run",
+ "kept": "nothing: the run folder with its frames, pictures and results was deleted by QA right after this note was written; the Windows work folder had been removed by the harness",
+ "app_exit": {
+  "exited": true,
+  "exit_code": 0,
+  "exit_ms": 144,
+  "close_via": "page"
+ },
+ "foreign_electron": {
+  "start": null,
+  "end": null
+ },
+ "cursor": {
+  "start": [
+   2357,
+   1267
+  ],
+  "end": [
+   2357,
+   1267
+  ]
+ }
+}

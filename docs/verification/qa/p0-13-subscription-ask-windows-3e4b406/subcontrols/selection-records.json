@@ -1,0 +1,470 @@
+[
+ {
+  "capture": "8e49891cf1d71bb3",
+  "file": "ask-1b136e74ddeec9a6.json",
+  "png_is_its_hash": true,
+  "record": {
+   "format": "lc-windows-ask/v1",
+   "selection_id": "ask-1b136e74ddeec9a6",
+   "selected_at": "2026-10-01T10:06:12.015Z",
+   "image": {
+    "file": "asks/2db13e90336ce122646cd701137837e21688138d9510b9fb747fea36a459697a.png",
+    "sha256": "2db13e90336ce122646cd701137837e21688138d9510b9fb747fea36a459697a",
+    "bytes": 154720,
+    "width": 1732,
+    "height": 1052
+   },
+   "context": {
+    "capture_session_id": "8e49891cf1d71bb3",
+    "frame_seq": 22,
+    "frame_captured_at": "2026-10-01T10:06:11.825Z",
+    "frame_width": 2560,
+    "frame_height": 1600,
+    "display": {
+     "id": "3071609112",
+     "bounds": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800
+     },
+     "scale_factor": 2
+    },
+    "region_dip": {
+     "x": 17,
+     "y": 72,
+     "width": 866,
+     "height": 526
+    },
+    "region_px": {
+     "x": 34,
+     "y": 144,
+     "width": 1732,
+     "height": 1052
+    },
+    "ink_revision": 0,
+    "ink_sha256": "46ccdb6dbd3b4e3f2d84049d6aa92580d8637582ff2f35ae9997abdd95716cbd",
+    "source_url": null,
+    "source_version": null,
+    "media_position": null
+   },
+   "ink_original": {
+    "file": "ink/46ccdb6dbd3b4e3f2d84049d6aa92580d8637582ff2f35ae9997abdd95716cbd.json",
+    "sha256": "46ccdb6dbd3b4e3f2d84049d6aa92580d8637582ff2f35ae9997abdd95716cbd",
+    "bytes": 451
+   },
+   "requests": [
+    {
+     "request_id": "ask-1b136e74ddeec9a6.1",
+     "question": "I circled two cards with my pen. Name only those two cards. For each one, write one line: the number written in the card, then the color and the shape next to the number.",
+     "assistance": "explain",
+     "model": "qa-synthetic-vision",
+     "submitted_at": "2026-10-01T10:06:12.132Z",
+     "ended_at": "2026-10-01T10:06:12.137Z",
+     "outcome": {
+      "status": "answered",
+      "answer": {
+       "request_id": "ask-1b136e74ddeec9a6.1",
+       "text": "SYNTHETIC (QA fake bridge: no model, no ChatGPT). Answer from the second bridge start.",
+       "model": "qa-synthetic-vision",
+       "latency_ms": 7,
+       "thread_id": "thread-qa-synthetic",
+       "turn_id": "turn-qa-synthetic-1"
+      }
+     },
+     "shown": true
+    },
+    {
+     "request_id": "ask-1b136e74ddeec9a6.2",
+     "question": "I circled two cards with my pen. Name only those two cards. For each one, write one line: the number written in the card, then the color and the shape next to the number.",
+     "assistance": "explain",
+     "model": "qa-synthetic-vision",
+     "submitted_at": "2026-10-01T10:06:12.190Z",
+     "ended_at": "2026-10-01T10:06:12.195Z",
+     "outcome": {
+      "status": "refused",
+      "code": "unauthenticated",
+      "reason": "ChatGPT is not signed in (sign in from the control window)"
+     },
+     "shown": false
+    }
+   ]
+  }
+ },
+ {
+  "capture": "8e49891cf1d71bb3",
+  "file": "ask-dc97ceba4314ad86.json",
+  "png_is_its_hash": true,
+  "record": {
+   "format": "lc-windows-ask/v1",
+   "selection_id": "ask-dc97ceba4314ad86",
+   "selected_at": "2026-10-01T10:05:56.113Z",
+   "image": {
+    "file": "asks/2db13e90336ce122646cd701137837e21688138d9510b9fb747fea36a459697a.png",
+    "sha256": "2db13e90336ce122646cd701137837e21688138d9510b9fb747fea36a459697a",
+    "bytes": 154720,
+    "width": 1732,
+    "height": 1052
+   },
+   "context": {
+    "capture_session_id": "8e49891cf1d71bb3",
+    "frame_seq": 7,
+    "frame_captured_at": "2026-10-01T10:05:55.971Z",
+    "frame_width": 2560,
+    "frame_height": 1600,
+    "display": {
+     "id": "3071609112",
+     "bounds": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800
+     },
+     "scale_factor": 2
+    },
+    "region_dip": {
+     "x": 17,
+     "y": 72,
+     "width": 866,
+     "height": 526
+    },
+    "region_px": {
+     "x": 34,
+     "y": 144,
+     "width": 1732,
+     "height": 1052
+    },
+    "ink_revision": 0,
+    "ink_sha256": "46ccdb6dbd3b4e3f2d84049d6aa92580d8637582ff2f35ae9997abdd95716cbd",
+    "source_url": null,
+    "source_version": null,
+    "media_position": null
+   },
+   "ink_original": {
+    "file": "ink/46ccdb6dbd3b4e3f2d84049d6aa92580d8637582ff2f35ae9997abdd95716cbd.json",
+    "sha256": "46ccdb6dbd3b4e3f2d84049d6aa92580d8637582ff2f35ae9997abdd95716cbd",
+    "bytes": 451
+   },
+   "requests": [
+    {
+     "request_id": "ask-dc97ceba4314ad86.1",
+     "question": "I circled two cards with my pen. Name only those two cards. For each one, write one line: the number written in the card, then the color and the shape next to the number.",
+     "assistance": "explain",
+     "model": "qa-synthetic-vision",
+     "submitted_at": "2026-10-01T10:05:56.283Z",
+     "ended_at": "2026-10-01T10:05:56.288Z",
+     "outcome": {
+      "status": "answered",
+      "answer": {
+       "request_id": "ask-dc97ceba4314ad86.1",
+       "text": "SYNTHETIC (QA fake bridge: no model, no ChatGPT). Answer in the second capture session.",
+       "model": "qa-synthetic-vision",
+       "latency_ms": 7,
+       "thread_id": "thread-qa-synthetic",
+       "turn_id": "turn-qa-synthetic-13"
+      }
+     },
+     "shown": true
+    },
+    {
+     "request_id": "ask-dc97ceba4314ad86.2",
+     "question": "I circled two cards with my pen. Name only those two cards. For each one, write one line: the number written in the card, then the color and the shape next to the number.",
+     "assistance": "explain",
+     "model": "qa-synthetic-vision",
+     "submitted_at": "2026-10-01T10:05:56.363Z",
+     "ended_at": "2026-10-01T10:05:56.374Z",
+     "outcome": {
+      "status": "uncertain",
+      "reason": "no answer came; whether ChatGPT worked on the question is not known"
+     },
+     "shown": false
+    }
+   ]
+  }
+ },
+ {
+  "capture": "ee5f1d237b75a07c",
+  "file": "ask-2242b552643c0958.json",
+  "png_is_its_hash": true,
+  "record": {
+   "format": "lc-windows-ask/v1",
+   "selection_id": "ask-2242b552643c0958",
+   "selected_at": "2026-10-01T10:05:20.012Z",
+   "image": {
+    "file": "asks/f8cfc867775bf0911289c6f1fe96067a13e9e9c308e81fabe355b738660a5048.png",
+    "sha256": "f8cfc867775bf0911289c6f1fe96067a13e9e9c308e81fabe355b738660a5048",
+    "bytes": 166977,
+    "width": 1732,
+    "height": 1052
+   },
+   "context": {
+    "capture_session_id": "ee5f1d237b75a07c",
+    "frame_seq": 13,
+    "frame_captured_at": "2026-10-01T10:05:19.873Z",
+    "frame_width": 2560,
+    "frame_height": 1600,
+    "display": {
+     "id": "3071609112",
+     "bounds": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800
+     },
+     "scale_factor": 2
+    },
+    "region_dip": {
+     "x": 17,
+     "y": 72,
+     "width": 866,
+     "height": 526
+    },
+    "region_px": {
+     "x": 34,
+     "y": 144,
+     "width": 1732,
+     "height": 1052
+    },
+    "ink_revision": 1,
+    "ink_sha256": "4feefe69a2cbf0efb75b68561730adedd0b59cb3dbde179db1d9b5ab5e2a966e",
+    "source_url": null,
+    "source_version": null,
+    "media_position": null
+   },
+   "ink_original": {
+    "file": "ink/4feefe69a2cbf0efb75b68561730adedd0b59cb3dbde179db1d9b5ab5e2a966e.json",
+    "sha256": "4feefe69a2cbf0efb75b68561730adedd0b59cb3dbde179db1d9b5ab5e2a966e",
+    "bytes": 6952
+   },
+   "requests": []
+  }
+ },
+ {
+  "capture": "f0b6721fd729652e",
+  "file": "ask-a2eb13287526932d.json",
+  "png_is_its_hash": true,
+  "record": {
+   "format": "lc-windows-ask/v1",
+   "selection_id": "ask-a2eb13287526932d",
+   "selected_at": "2026-10-01T10:05:36.601Z",
+   "image": {
+    "file": "asks/95537f73c39dd6a78e93024a6610e0b8e806ddf14c39c6d5716b6cc8c54c5185.png",
+    "sha256": "95537f73c39dd6a78e93024a6610e0b8e806ddf14c39c6d5716b6cc8c54c5185",
+    "bytes": 170157,
+    "width": 1732,
+    "height": 1052
+   },
+   "context": {
+    "capture_session_id": "f0b6721fd729652e",
+    "frame_seq": 16,
+    "frame_captured_at": "2026-10-01T10:05:36.460Z",
+    "frame_width": 2560,
+    "frame_height": 1600,
+    "display": {
+     "id": "3071609112",
+     "bounds": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800
+     },
+     "scale_factor": 2
+    },
+    "region_dip": {
+     "x": 17,
+     "y": 72,
+     "width": 866,
+     "height": 526
+    },
+    "region_px": {
+     "x": 34,
+     "y": 144,
+     "width": 1732,
+     "height": 1052
+    },
+    "ink_revision": 2,
+    "ink_sha256": "37af18d041efa51418b2a73c551ae687d23a1926e4d2e2e83ae362eaa21001a7",
+    "source_url": null,
+    "source_version": null,
+    "media_position": null
+   },
+   "ink_original": {
+    "file": "ink/37af18d041efa51418b2a73c551ae687d23a1926e4d2e2e83ae362eaa21001a7.json",
+    "sha256": "37af18d041efa51418b2a73c551ae687d23a1926e4d2e2e83ae362eaa21001a7",
+    "bytes": 13431
+   },
+   "requests": [
+    {
+     "request_id": "ask-a2eb13287526932d.1",
+     "question": "I circled two cards with my pen. Name only those two cards. For each one, write one line: the number written in the card, then the color and the shape next to the number.",
+     "assistance": "explain",
+     "model": "qa-synthetic-vision",
+     "submitted_at": "2026-10-01T10:05:40.892Z",
+     "ended_at": "2026-10-01T10:05:40.897Z",
+     "outcome": {
+      "status": "answered",
+      "answer": {
+       "request_id": "ask-a2eb13287526932d.1",
+       "text": "SYNTHETIC (QA fake bridge: no model, no ChatGPT). First control answer.",
+       "model": "qa-synthetic-vision",
+       "latency_ms": 7,
+       "thread_id": "thread-qa-synthetic",
+       "turn_id": "turn-qa-synthetic-1"
+      }
+     },
+     "shown": true
+    },
+    {
+     "request_id": "ask-a2eb13287526932d.2",
+     "question": "I circled two cards with my pen. Name only those two cards. For each one, write one line: the number written in the card, then the color and the shape next to the number.",
+     "assistance": "explain",
+     "model": "qa-synthetic-vision",
+     "submitted_at": "2026-10-01T10:05:40.972Z",
+     "ended_at": "2026-10-01T10:05:40.976Z",
+     "outcome": {
+      "status": "refused",
+      "code": "unbound",
+      "reason": "the answer is not bound to the request that was sent; it is not shown"
+     },
+     "shown": false
+    },
+    {
+     "request_id": "ask-a2eb13287526932d.3",
+     "question": "I circled two cards with my pen. Name only those two cards. For each one, write one line: the number written in the card, then the color and the shape next to the number.",
+     "assistance": "explain",
+     "model": "qa-synthetic-vision",
+     "submitted_at": "2026-10-01T10:05:41.030Z",
+     "ended_at": "2026-10-01T10:05:41.034Z",
+     "outcome": {
+      "status": "refused",
+      "code": "quota",
+      "reason": "the subscription's usage limit was reached"
+     },
+     "shown": false
+    },
+    {
+     "request_id": "ask-a2eb13287526932d.4",
+     "question": "I circled two cards with my pen. Name only those two cards. For each one, write one line: the number written in the card, then the color and the shape next to the number.",
+     "assistance": "explain",
+     "model": "qa-synthetic-vision",
+     "submitted_at": "2026-10-01T10:05:41.091Z",
+     "ended_at": "2026-10-01T10:05:41.095Z",
+     "outcome": {
+      "status": "refused",
+      "code": "busy",
+      "reason": "another question is still being answered"
+     },
+     "shown": false
+    },
+    {
+     "request_id": "ask-a2eb13287526932d.5",
+     "question": "I circled two cards with my pen. Name only those two cards. For each one, write one line: the number written in the card, then the color and the shape next to the number.",
+     "assistance": "explain",
+     "model": "qa-synthetic-vision",
+     "submitted_at": "2026-10-01T10:05:41.144Z",
+     "ended_at": "2026-10-01T10:05:41.147Z",
+     "outcome": {
+      "status": "refused",
+      "code": "unsupported_model",
+      "reason": "the chosen model does not take pictures"
+     },
+     "shown": false
+    },
+    {
+     "request_id": "ask-a2eb13287526932d.6",
+     "question": "I circled two cards with my pen. Name only those two cards. For each one, write one line: the number written in the card, then the color and the shape next to the number.",
+     "assistance": "explain",
+     "model": "qa-synthetic-vision",
+     "submitted_at": "2026-10-01T10:05:41.208Z",
+     "ended_at": "2026-10-01T10:05:41.211Z",
+     "outcome": {
+      "status": "refused",
+      "code": "invalid_request",
+      "reason": "the connector refused the request as malformed"
+     },
+     "shown": false
+    },
+    {
+     "request_id": "ask-a2eb13287526932d.7",
+     "question": "I circled two cards with my pen. Name only those two cards. For each one, write one line: the number written in the card, then the color and the shape next to the number.",
+     "assistance": "explain",
+     "model": "qa-synthetic-vision",
+     "submitted_at": "2026-10-01T10:05:41.261Z",
+     "ended_at": "2026-10-01T10:05:41.265Z",
+     "outcome": {
+      "status": "refused",
+      "code": "failed",
+      "reason": "ChatGPT did not complete an answer"
+     },
+     "shown": false
+    },
+    {
+     "request_id": "ask-a2eb13287526932d.8",
+     "question": "I circled two cards with my pen. Name only those two cards. For each one, write one line: the number written in the card, then the color and the shape next to the number.",
+     "assistance": "explain",
+     "model": "qa-synthetic-vision",
+     "submitted_at": "2026-10-01T10:05:41.329Z",
+     "ended_at": "2026-10-01T10:05:41.332Z",
+     "outcome": {
+      "status": "refused",
+      "code": "unavailable",
+      "reason": "the connector, or the official Codex app server it runs, is not available"
+     },
+     "shown": false
+    },
+    {
+     "request_id": "ask-a2eb13287526932d.9",
+     "question": "I circled two cards with my pen. Name only those two cards. For each one, write one line: the number written in the card, then the color and the shape next to the number.",
+     "assistance": "explain",
+     "model": "qa-synthetic-vision",
+     "submitted_at": "2026-10-01T10:05:41.397Z",
+     "ended_at": "2026-10-01T10:05:41.419Z",
+     "outcome": {
+      "status": "cancelled",
+      "uncertain": false
+     },
+     "shown": false
+    },
+    {
+     "request_id": "ask-a2eb13287526932d.10",
+     "question": "I circled two cards with my pen. Name only those two cards. For each one, write one line: the number written in the card, then the color and the shape next to the number.",
+     "assistance": "explain",
+     "model": "qa-synthetic-vision",
+     "submitted_at": "2026-10-01T10:05:42.975Z",
+     "ended_at": "2026-10-01T10:05:43.018Z",
+     "outcome": {
+      "status": "cancelled",
+      "uncertain": false
+     },
+     "shown": false
+    },
+    {
+     "request_id": "ask-a2eb13287526932d.11",
+     "question": "I circled two cards with my pen. Name only those two cards. For each one, write one line: the number written in the card, then the color and the shape next to the number.",
+     "assistance": "explain",
+     "model": "qa-synthetic-vision",
+     "submitted_at": "2026-10-01T10:05:44.569Z",
+     "ended_at": "2026-10-01T10:05:44.611Z",
+     "outcome": {
+      "status": "cancelled",
+      "uncertain": true
+     },
+     "shown": false
+    },
+    {
+     "request_id": "ask-a2eb13287526932d.12",
+     "question": "I circled two cards with my pen. Name only those two cards. For each one, write one line: the number written in the card, then the color and the shape next to the number.",
+     "assistance": "explain",
+     "model": "qa-synthetic-vision",
+     "submitted_at": "2026-10-01T10:05:46.152Z",
+     "ended_at": "2026-10-01T10:05:46.182Z",
+     "outcome": {
+      "status": "cancelled",
+      "uncertain": false
+     },
+     "shown": false
+    }
+   ]
+  }
+ }
+]

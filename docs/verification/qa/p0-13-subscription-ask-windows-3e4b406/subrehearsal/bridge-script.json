@@ -1,0 +1,13 @@
+{
+ "launches": [
+  {
+   "asks": [
+    {
+     "do": "answer",
+     "delay_ms": 3000,
+     "text": "SYNTHETIC (QA fake bridge: no model, no ChatGPT). Rehearsal answer: it names no card."
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,959 @@
+[
+ {
+  "edgeStart": "file:///<home>/AppData/Local/Temp/lc-qa-windows-sub-3e4b406/qa-surfacecheck-1790849045263/content/surface.html",
+  "profile": "<home>\\AppData\\Local\\Temp\\lc-qa-windows-sub-3e4b406\\qa-surfacecheck-1790849045263\\edge-profile",
+  "as": "edge",
+  "fullscreen": true
+ },
+ {
+  "window": "edge",
+  "show": "raise"
+ },
+ {
+  "edgeFullscreen": true,
+  "required": false
+ },
+ {
+  "sleep": 2000
+ },
+ {
+  "window": "edge",
+  "show": "raise"
+ },
+ {
+  "sleep": 500
+ },
+ {
+  "onTop": "edge",
+  "points": [
+   [
+    270,
+    330
+   ],
+   [
+    690,
+    330
+   ],
+   [
+    1110,
+    330
+   ],
+   [
+    1530,
+    330
+   ],
+   [
+    270,
+    670
+   ],
+   [
+    690,
+    670
+   ],
+   [
+    1110,
+    670
+   ],
+   [
+    1530,
+    670
+   ],
+   [
+    270,
+    1010
+   ],
+   [
+    690,
+    1010
+   ],
+   [
+    1110,
+    1010
+   ],
+   [
+    1530,
+    1010
+   ],
+   [
+    42,
+    152
+   ],
+   [
+    1758,
+    152
+   ],
+   [
+    42,
+    1188
+   ],
+   [
+    1758,
+    1188
+   ]
+  ]
+ },
+ {
+  "cursorOutside": [
+   34,
+   144,
+   1766,
+   1196
+  ]
+ },
+ {
+  "waitEval": "document.querySelectorAll('#displays li[role=option]').length > 0",
+  "target": "control",
+  "timeoutMs": 20000
+ },
+ {
+  "eval": "(async () => (await window.lc.listDisplays()).map(d => ({ label: d.label, primary: d.primary, bounds: d.bounds, scale_factor: d.scale_factor, source_id: d.source_id })))()",
+  "target": "control",
+  "as": "displays"
+ },
+ {
+  "eval": "(() => { const t = JSON.parse(window.__qaSurfaceTruth());\n  if (!t.fits || !t.full_screen || t.viewport.dpr !== 2 || t.viewport.screen[0] !== 1280 || t.viewport.screen[1] !== 800) throw new Error('the surface is not the whole 1280x800 display at scale 2: ' + JSON.stringify([t.viewport, t.viewport_offset_dip]));\n  return JSON.stringify(t); })()",
+  "target": "edge",
+  "as": "surface_truth"
+ },
+ {
+  "eval": "(() => { if (!window.__qaHooked) { window.__qa = []; window.__qaSessions = []; window.__qaMarks = []; window.__qaInkSaved = [];\n  window.lc.onSample((s) => window.__qa.push({ ...s, qa_received_at: new Date().toISOString() }));\n  window.lc.onSession((s) => window.__qaSessions.push({ ...s, qa_at: new Date().toISOString() }));\n  window.lc.onInkSaved(() => window.__qaInkSaved.push(new Date().toISOString())); window.__qaHooked = true; } return true; })()",
+  "target": "control",
+  "as": "hooked"
+ },
+ {
+  "eval": "(() => { if (!window.__qaLinkHooked) { window.__qaLink = [];\n  window.lc.onLink((l) => window.__qaLink.push({ ...l, qa_at: new Date().toISOString() })); window.__qaLinkHooked = true; } return true; })()",
+  "target": "control",
+  "as": "link_hooked"
+ },
+ {
+  "eval": "(async () => JSON.stringify({ at: new Date().toISOString(), l: await window.lc.linkState(), ai: document.getElementById('ai').textContent,\n  line: document.getElementById('link').textContent, hidden: document.getElementById('link').hidden, session: document.getElementById('session').textContent }))()",
+  "target": "control",
+  "as": "link_off"
+ },
+ {
+  "eval": "(window.__qaMarks.push({ label: \"before-start\", samples: window.__qa.length, at: new Date().toISOString() }), true)",
+  "target": "control"
+ },
+ {
+  "desktopShot": "surface"
+ },
+ {
+  "eval": "document.querySelector('#displays li[aria-selected=true]').click(), document.getElementById('start').click(), true",
+  "target": "control"
+ },
+ {
+  "waitEval": "(async () => { const s = await window.lc.sessionState(); return s.running && !s.starting ? JSON.stringify(s) : false })()",
+  "target": "control",
+  "timeoutMs": 20000,
+  "as": "s1"
+ },
+ {
+  "waitEval": "document.readyState === 'complete'",
+  "target": "overlay",
+  "timeoutMs": 15000
+ },
+ {
+  "sleep": 2500
+ },
+ {
+  "sleep": 3500
+ },
+ {
+  "eval": "(() => { const t = JSON.parse(window.__qaSurfaceTruth());\n  if (!t.fits || !t.full_screen || t.viewport.dpr !== 2 || t.viewport.screen[0] !== 1280 || t.viewport.screen[1] !== 800) throw new Error('the surface is not the whole 1280x800 display at scale 2: ' + JSON.stringify([t.viewport, t.viewport_offset_dip]));\n  return JSON.stringify(t); })()",
+  "target": "edge",
+  "as": "surface_truth_running"
+ },
+ {
+  "eval": "document.querySelector(\"[data-mode=WRITE]\").click(), true",
+  "target": "overlay"
+ },
+ {
+  "eval": "document.querySelector(\"#pen\").click(), true",
+  "target": "overlay"
+ },
+ {
+  "stroke": [
+   [
+    853,
+    165
+   ],
+   [
+    852,
+    174
+   ],
+   [
+    850,
+    182
+   ],
+   [
+    846,
+    190
+   ],
+   [
+    841,
+    198
+   ],
+   [
+    835,
+    205
+   ],
+   [
+    827,
+    212
+   ],
+   [
+    819,
+    217
+   ],
+   [
+    809,
+    222
+   ],
+   [
+    799,
+    226
+   ],
+   [
+    788,
+    229
+   ],
+   [
+    776,
+    230
+   ],
+   [
+    765,
+    231
+   ],
+   [
+    754,
+    230
+   ],
+   [
+    742,
+    229
+   ],
+   [
+    731,
+    226
+   ],
+   [
+    721,
+    222
+   ],
+   [
+    711,
+    217
+   ],
+   [
+    703,
+    212
+   ],
+   [
+    695,
+    205
+   ],
+   [
+    689,
+    198
+   ],
+   [
+    684,
+    190
+   ],
+   [
+    680,
+    182
+   ],
+   [
+    678,
+    174
+   ],
+   [
+    677,
+    165
+   ],
+   [
+    678,
+    156
+   ],
+   [
+    680,
+    148
+   ],
+   [
+    684,
+    140
+   ],
+   [
+    689,
+    132
+   ],
+   [
+    695,
+    125
+   ],
+   [
+    703,
+    118
+   ],
+   [
+    711,
+    113
+   ],
+   [
+    721,
+    108
+   ],
+   [
+    731,
+    104
+   ],
+   [
+    742,
+    101
+   ],
+   [
+    754,
+    100
+   ],
+   [
+    765,
+    99
+   ],
+   [
+    776,
+    100
+   ],
+   [
+    788,
+    101
+   ],
+   [
+    799,
+    104
+   ],
+   [
+    809,
+    108
+   ],
+   [
+    819,
+    113
+   ],
+   [
+    827,
+    118
+   ],
+   [
+    835,
+    125
+   ],
+   [
+    841,
+    132
+   ],
+   [
+    846,
+    140
+   ],
+   [
+    850,
+    148
+   ],
+   [
+    852,
+    156
+   ],
+   [
+    853,
+    165
+   ]
+  ],
+  "pointerType": "pen"
+ },
+ {
+  "sleep": 900
+ },
+ {
+  "stroke": [
+   [
+    853,
+    335
+   ],
+   [
+    852,
+    344
+   ],
+   [
+    850,
+    352
+   ],
+   [
+    846,
+    360
+   ],
+   [
+    841,
+    368
+   ],
+   [
+    835,
+    375
+   ],
+   [
+    827,
+    382
+   ],
+   [
+    819,
+    387
+   ],
+   [
+    809,
+    392
+   ],
+   [
+    799,
+    396
+   ],
+   [
+    788,
+    399
+   ],
+   [
+    776,
+    400
+   ],
+   [
+    765,
+    401
+   ],
+   [
+    754,
+    400
+   ],
+   [
+    742,
+    399
+   ],
+   [
+    731,
+    396
+   ],
+   [
+    721,
+    392
+   ],
+   [
+    711,
+    387
+   ],
+   [
+    703,
+    382
+   ],
+   [
+    695,
+    375
+   ],
+   [
+    689,
+    368
+   ],
+   [
+    684,
+    360
+   ],
+   [
+    680,
+    352
+   ],
+   [
+    678,
+    344
+   ],
+   [
+    677,
+    335
+   ],
+   [
+    678,
+    326
+   ],
+   [
+    680,
+    318
+   ],
+   [
+    684,
+    310
+   ],
+   [
+    689,
+    302
+   ],
+   [
+    695,
+    295
+   ],
+   [
+    703,
+    288
+   ],
+   [
+    711,
+    283
+   ],
+   [
+    721,
+    278
+   ],
+   [
+    731,
+    274
+   ],
+   [
+    742,
+    271
+   ],
+   [
+    754,
+    270
+   ],
+   [
+    765,
+    269
+   ],
+   [
+    776,
+    270
+   ],
+   [
+    788,
+    271
+   ],
+   [
+    799,
+    274
+   ],
+   [
+    809,
+    278
+   ],
+   [
+    819,
+    283
+   ],
+   [
+    827,
+    288
+   ],
+   [
+    835,
+    295
+   ],
+   [
+    841,
+    302
+   ],
+   [
+    846,
+    310
+   ],
+   [
+    850,
+    318
+   ],
+   [
+    852,
+    326
+   ],
+   [
+    853,
+    335
+   ]
+  ],
+  "pointerType": "pen"
+ },
+ {
+  "sleep": 3500
+ },
+ {
+  "waitEval": "(() => { const s = __lcOverlay.state(); return s.unsaved === null && s.pendingImages === 0 && !s.gesture && s.saveText !== 'Saving…'\n  && s.retention.deferred === 0 && s.samples.at(-1)?.composed?.ink_revision === s.doc.revision\n  && JSON.stringify({ doc: s.doc, saveText: s.saveText, retention: s.retention }); })()",
+  "target": "overlay",
+  "timeoutMs": 20000,
+  "as": "saved_circled"
+ },
+ {
+  "eval": "(window.__qaMarks.push({ label: \"circled\", samples: window.__qa.length, at: new Date().toISOString() }), true)",
+  "target": "control"
+ },
+ {
+  "eval": "JSON.stringify((() => { const st = __lcOverlay.state(); const s = st.samples.at(-1);\n  return { aligned: st.aligned, alignment: __lcOverlay.alignment(), doc: st.doc, pinned: st.pinned, hint: st.hint, gesture: st.gesture,\n    last: s ? { seq: s.seq, sampled_at: s.sampled_at, state: s.state, raw: s.raw && { pixels_sha256: s.raw.pixels_sha256 },\n      composed: s.composed && { ink_session: s.composed.ink_session, ink_revision: s.composed.ink_revision, ink_marks: s.composed.ink_marks, pixels_sha256: s.composed.pixels_sha256 } } : null }; })())",
+  "target": "overlay",
+  "as": "app_circled"
+ },
+ {
+  "eval": "JSON.stringify({\n  mode: [...document.querySelectorAll('[data-mode]')].find((b) => b.getAttribute('aria-pressed') === 'true')?.dataset.mode ?? null,\n  tool: document.getElementById('pen').getAttribute('aria-pressed') === 'true' ? 'pen' : document.getElementById('eraser').getAttribute('aria-pressed') === 'true' ? 'eraser' : null,\n  mouse: document.getElementById('mouse').getAttribute('aria-pressed'),\n  hint: document.getElementById('hint').textContent,\n  card: !document.getElementById('card').hidden,\n  cancel: !document.getElementById('cancel').hidden,\n  disabled: [...document.querySelectorAll('#toolbar button')].filter((b) => b.disabled).length })",
+  "target": "overlay",
+  "as": "ov_circled",
+  "required": true
+ },
+ {
+  "snapshot": "circled"
+ },
+ {
+  "hashTree": [
+   "ink",
+   "captures",
+   "qa-aside"
+  ],
+  "frames": false,
+  "as": "h_circled"
+ },
+ {
+  "waitEval": "(() => { const a = Object.values(__lcOverlay.state().aligned || {}); return a.length > 0 && a.every((x) => x === 'verified'); })()",
+  "target": "overlay",
+  "timeoutMs": 15000
+ },
+ {
+  "cursorOutside": [
+   34,
+   144,
+   1766,
+   1196
+  ]
+ },
+ {
+  "eval": "(() => { const t = JSON.parse(window.__qaSurfaceTruth());\n  if (!t.fits || !t.full_screen || t.viewport.dpr !== 2 || t.viewport.screen[0] !== 1280 || t.viewport.screen[1] !== 800) throw new Error('the surface is not the whole 1280x800 display at scale 2: ' + JSON.stringify([t.viewport, t.viewport_offset_dip]));\n  return JSON.stringify(t); })()",
+  "target": "edge",
+  "as": "surface_truth_before_ask"
+ },
+ {
+  "eval": "document.querySelector(\"[data-mode=ASK]\").click(), true",
+  "target": "overlay"
+ },
+ {
+  "stroke": [
+   [
+    875,
+    335
+   ],
+   [
+    873,
+    362
+   ],
+   [
+    866,
+    388
+   ],
+   [
+    854,
+    414
+   ],
+   [
+    838,
+    439
+   ],
+   [
+    818,
+    463
+   ],
+   [
+    794,
+    485
+   ],
+   [
+    766,
+    506
+   ],
+   [
+    734,
+    525
+   ],
+   [
+    700,
+    541
+   ],
+   [
+    663,
+    556
+   ],
+   [
+    623,
+    568
+   ],
+   [
+    581,
+    578
+   ],
+   [
+    538,
+    584
+   ],
+   [
+    494,
+    589
+   ],
+   [
+    450,
+    590
+   ],
+   [
+    406,
+    589
+   ],
+   [
+    362,
+    584
+   ],
+   [
+    319,
+    578
+   ],
+   [
+    277,
+    568
+   ],
+   [
+    238,
+    556
+   ],
+   [
+    200,
+    541
+   ],
+   [
+    166,
+    525
+   ],
+   [
+    134,
+    506
+   ],
+   [
+    106,
+    485
+   ],
+   [
+    82,
+    463
+   ],
+   [
+    62,
+    439
+   ],
+   [
+    46,
+    414
+   ],
+   [
+    34,
+    388
+   ],
+   [
+    27,
+    362
+   ],
+   [
+    25,
+    335
+   ],
+   [
+    27,
+    308
+   ],
+   [
+    34,
+    282
+   ],
+   [
+    46,
+    256
+   ],
+   [
+    62,
+    231
+   ],
+   [
+    82,
+    208
+   ],
+   [
+    106,
+    185
+   ],
+   [
+    134,
+    164
+   ],
+   [
+    166,
+    145
+   ],
+   [
+    200,
+    129
+   ],
+   [
+    237,
+    114
+   ],
+   [
+    277,
+    102
+   ],
+   [
+    319,
+    92
+   ],
+   [
+    362,
+    86
+   ],
+   [
+    406,
+    81
+   ],
+   [
+    450,
+    80
+   ],
+   [
+    494,
+    81
+   ],
+   [
+    538,
+    86
+   ],
+   [
+    581,
+    92
+   ],
+   [
+    623,
+    102
+   ],
+   [
+    663,
+    114
+   ],
+   [
+    700,
+    129
+   ],
+   [
+    734,
+    145
+   ],
+   [
+    766,
+    164
+   ],
+   [
+    794,
+    185
+   ],
+   [
+    818,
+    208
+   ],
+   [
+    838,
+    231
+   ],
+   [
+    854,
+    256
+   ],
+   [
+    866,
+    282
+   ],
+   [
+    873,
+    308
+   ],
+   [
+    875,
+    335
+   ]
+  ],
+  "pointerType": "pen"
+ },
+ {
+  "waitEval": "!document.getElementById('card').hidden",
+  "target": "overlay",
+  "timeoutMs": 8000
+ },
+ {
+  "eval": "(async () => { const img = document.getElementById('crop'); await img.decode();\n  const W = img.naturalWidth, H = img.naturalHeight, S = 2, OX = 17, OY = 72;\n  const cv = document.createElement('canvas'); cv.width = W; cv.height = H; const c = cv.getContext('2d', { willReadFrequently: true }); c.drawImage(img, 0, 0);\n  const d = c.getImageData(0, 0, W, H).data;\n  const at = (x, y) => { const i = (Math.round((y - OY) * S) * W + Math.round((x - OX) * S)) * 4; return [d[i], d[i + 1], d[i + 2]]; };\n  const near = (p, q, t) => Math.abs(p[0] - q[0]) <= t && Math.abs(p[1] - q[1]) <= t && Math.abs(p[2] - q[2]) <= t;\n  const count = (x0, y0, x1, y1, test) => { let n = 0; for (let y = Math.round((y0 - OY) * S); y < Math.round((y1 - OY) * S); y++) for (let x = Math.round((x0 - OX) * S); x < Math.round((x1 - OX) * S); x++) { const i = (y * W + x) * 4; if (test([d[i], d[i + 1], d[i + 2]])) n++; } return n; };\n  const PALETTE = { red: [214, 39, 40], blue: [31, 95, 191], green: [30, 142, 62], orange: [242, 140, 0] }, GROUND = [244, 246, 248], INK = [110, 63, 209], G = {\"x\":40,\"y\":90,\"cols\":4,\"rows\":3,\"w\":190,\"h\":150,\"gap\":20};\n  const size_ok = W === 1732 && H === 1052;\n  const cards = [], gaps = [];\n  if (size_ok) for (let i = 0; i < G.cols * G.rows; i++) { const x = G.x + (i % G.cols) * (G.w + G.gap), y = G.y + Math.floor(i / G.cols) * (G.h + G.gap);\n    const ground = [[x + 12, y + 12], [x + G.w - 12, y + 12], [x + 12, y + G.h - 12], [x + G.w - 12, y + G.h - 12]].filter((p) => near(at(p[0], p[1]), GROUND, 10)).length;\n    const shape = Object.fromEntries(Object.entries(PALETTE).map(([name, rgb]) => [name, count(x + 22, y + G.h / 2 - 28, x + 78, y + G.h / 2 + 28, (p) => near(p, rgb, 60))]));\n    const color = Object.entries(shape).sort((a, b) => b[1] - a[1])[0];\n    cards.push({ index: i, ground, shape_color: color[0], shape_px: color[1], digit_px: count(x + 88, y + G.h / 2 - 23, x + 176, y + G.h / 2 + 27, (p) => p[0] < 90 && p[1] < 90 && p[2] < 90),\n      ring_px: count(x, y, x + G.w, y + G.h, (p) => near(p, INK, 40)) });\n    if (i % G.cols < G.cols - 1) gaps.push(near(at(x + G.w + G.gap / 2, y + G.h / 2), [255, 255, 255], 6));\n    if (i < G.cols * (G.rows - 1)) gaps.push(near(at(x + G.w / 2, y + G.h + G.gap / 2), [255, 255, 255], 6)); }\n  const ringed = cards.filter((k) => k.ring_px >= 800).map((k) => k.index);\n  const ok = size_ok && cards.length === 12 && cards.every((k) => k.ground === 4 && k.shape_px >= 1500 && k.digit_px >= 600 && (k.ring_px >= 800 || k.ring_px <= 40)) && gaps.length === 17 && gaps.every(Boolean) && JSON.stringify(ringed) === \"[3,7]\";\n  const out = JSON.stringify({ at: new Date().toISOString(), ok, size: [W, H], size_ok, cards, gaps_white: gaps.filter(Boolean).length, gaps: gaps.length, ringed, rings_wanted: [3,7] });\n  if (!ok) throw new Error(\"the selected picture is not QA's surface with its ink: \" + out);\n  return out; })()",
+  "target": "overlay",
+  "as": "picture"
+ },
+ {
+  "eval": "JSON.stringify({ text: document.getElementById('cardText').textContent, src: document.getElementById('crop').src, revision: __lcOverlay.state().doc.revision })",
+  "target": "overlay",
+  "as": "askCard"
+ },
+ {
+  "eval": "(async () => { const src = document.getElementById('crop').src;\n  const h = [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(src)))].map((x) => x.toString(16).padStart(2, '0')).join('');\n  const st = __lcOverlay.state();\n  return JSON.stringify({ at: new Date().toISOString(), shown: !document.getElementById('card').hidden, text: document.getElementById('cardText').textContent,\n    card_all_text: document.getElementById('card').textContent, crop_chars: src.length, crop_is_png: src.startsWith('data:image/png;base64,'), crop_sha256: h,\n    mode: st.mode, revision: st.doc.revision, hint: document.getElementById('hint').textContent }); })()",
+  "target": "overlay",
+  "as": "card"
+ },
+ {
+  "eval": "JSON.stringify({\n  mode: [...document.querySelectorAll('[data-mode]')].find((b) => b.getAttribute('aria-pressed') === 'true')?.dataset.mode ?? null,\n  tool: document.getElementById('pen').getAttribute('aria-pressed') === 'true' ? 'pen' : document.getElementById('eraser').getAttribute('aria-pressed') === 'true' ? 'eraser' : null,\n  mouse: document.getElementById('mouse').getAttribute('aria-pressed'),\n  hint: document.getElementById('hint').textContent,\n  card: !document.getElementById('card').hidden,\n  cancel: !document.getElementById('cancel').hidden,\n  disabled: [...document.querySelectorAll('#toolbar button')].filter((b) => b.disabled).length })",
+  "target": "overlay",
+  "as": "ov_card_open",
+  "required": true
+ },
+ {
+  "eval": "document.querySelector(\"#close\").click(), true",
+  "target": "overlay"
+ },
+ {
+  "eval": "JSON.stringify({\n  mode: [...document.querySelectorAll('[data-mode]')].find((b) => b.getAttribute('aria-pressed') === 'true')?.dataset.mode ?? null,\n  tool: document.getElementById('pen').getAttribute('aria-pressed') === 'true' ? 'pen' : document.getElementById('eraser').getAttribute('aria-pressed') === 'true' ? 'eraser' : null,\n  mouse: document.getElementById('mouse').getAttribute('aria-pressed'),\n  hint: document.getElementById('hint').textContent,\n  card: !document.getElementById('card').hidden,\n  cancel: !document.getElementById('cancel').hidden,\n  disabled: [...document.querySelectorAll('#toolbar button')].filter((b) => b.disabled).length })",
+  "target": "overlay",
+  "as": "ov_card_closed",
+  "required": true
+ },
+ {
+  "eval": "document.getElementById('stop').click(), true",
+  "target": "control"
+ },
+ {
+  "waitEval": "(async () => { const s = await window.lc.sessionState(); return !s.running && !s.starting ? JSON.stringify(s) : false })()",
+  "target": "control",
+  "timeoutMs": 70000,
+  "as": "stopped"
+ },
+ {
+  "eval": "(async () => JSON.stringify(await window.lc.recoveries()))()",
+  "target": "control",
+  "as": "recoveries"
+ },
+ {
+  "hashTree": [
+   "ink",
+   "captures",
+   "qa-aside"
+  ],
+  "frames": true,
+  "as": "h_final"
+ },
+ {
+  "eval": "JSON.stringify({ samples: window.__qa, sessions: window.__qaSessions, marks: window.__qaMarks, inkSaved: window.__qaInkSaved })",
+  "target": "control",
+  "as": "timeline"
+ },
+ {
+  "eval": "(async () => JSON.stringify(await window.lc.listInk()))()",
+  "target": "control",
+  "as": "ink"
+ },
+ {
+  "closeApp": true
+ }
+]

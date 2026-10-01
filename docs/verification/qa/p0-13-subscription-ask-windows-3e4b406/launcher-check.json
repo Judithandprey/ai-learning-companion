@@ -1,0 +1,61 @@
+{
+ "commit": "3e4b40654460a2dc2407f1d9be60d8e1a5b39a3e",
+ "copy": {
+  "files_equal_to_the_commit": 268,
+  "ask_path": {
+   "ok": true,
+   "prompt_bytes": 2094,
+   "project_modules_loaded": 9,
+   "modules_loaded_from_elsewhere": [],
+   "packages_contracts_loaded": true
+  }
+ },
+ "started_at": "2026-10-01T10:09:39.052Z",
+ "start_file": "%TEMP%\\lc-subscription-signin-3e4b40654460\\Start-Learning-Companion-Subscription.cmd",
+ "window": {
+  "title": "Learning Companion",
+  "url": "app://bundle/apps/windows/src/renderer/control.html"
+ },
+ "check": {
+  "before": {
+   "mode": "managed",
+   "state": "not_checked",
+   "login": "none"
+  },
+  "after": {
+   "mode": "managed",
+   "state": "signed_out",
+   "plan": null,
+   "login": "none",
+   "detail": null,
+   "model": "gpt-6-astra",
+   "picture_models": 7
+  },
+  "section": {
+   "hidden": false,
+   "disabled": false
+  },
+  "state_text": {
+   "text": "Not signed in. Sign in with ChatGPT opens the official sign-in page in your browser.",
+   "hidden": false,
+   "disabled": false
+  },
+  "check_button": {
+   "text": "Check connection",
+   "hidden": false,
+   "disabled": false
+  },
+  "sign_in_button": {
+   "text": "Sign in with ChatGPT",
+   "hidden": false,
+   "disabled": false
+  },
+  "cancel_sign_in_button": {
+   "hidden": true,
+   "disabled": false
+  }
+ },
+ "sign_in_pressed": false,
+ "app_closed_itself": true,
+ "ended_at": "2026-10-01T10:09:42.360Z"
+}

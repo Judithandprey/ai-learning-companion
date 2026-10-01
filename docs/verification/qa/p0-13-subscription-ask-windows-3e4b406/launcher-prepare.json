@@ -1,0 +1,18 @@
+{
+ "start_file": "%TEMP%\\lc-subscription-signin-3e4b40654460\\Start-Learning-Companion-Subscription.cmd",
+ "configuration_sha256": "78e9049de78ca8289c830f209af230cf24168ab9674abf2cf2530ed286de58d5",
+ "start_file_sha256": "54f34c5843f5d45dbef1b14d67f00ad83cb746d059601802b9fd044b80be74ce",
+ "connector_copy": "~/.local/share/lc-qa/subscription-source-3e4b40654460",
+ "copy": {
+  "files_equal_to_the_commit": 268,
+  "ask_path": {
+   "ok": true,
+   "prompt_bytes": 2094,
+   "project_modules_loaded": 9,
+   "modules_loaded_from_elsewhere": [],
+   "packages_contracts_loaded": true
+  }
+ },
+ "staged_app": "%TEMP%\\lc-qa-windows-sub-3e4b406",
+ "electron": "%TEMP%\\lc-electron-44.5.1-win32-x64\\electron.exe"
+}

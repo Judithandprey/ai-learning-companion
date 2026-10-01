@@ -1,0 +1,63 @@
+[
+ {
+  "at": "2026-10-01T10:13:23.711860+00:00",
+  "event": "start",
+  "launch": "92fab9bbd1ba4c2289f3a700baed06dc",
+  "launch_n": 0,
+  "pid": 1390358,
+  "argv": [
+   "-m",
+   "services.worker.connectors.chatgpt_local"
+  ],
+  "stdin_fifo": true,
+  "label": "SYNTHETIC (QA fake bridge: no model, no ChatGPT)"
+ },
+ {
+  "at": "2026-10-01T10:13:23.711927+00:00",
+  "event": "request",
+  "id": "r1",
+  "method": "connection/read",
+  "params_keys": [],
+  "request_id": null,
+  "capture_session_id": null
+ },
+ {
+  "at": "2026-10-01T10:13:23.711984+00:00",
+  "event": "sent",
+  "kind": "connection",
+  "id": "r1",
+  "method": null,
+  "error": null,
+  "result_keys": [
+   "auth",
+   "models",
+   "rate_limits"
+  ]
+ },
+ {
+  "at": "2026-10-01T10:13:54.864612+00:00",
+  "event": "request",
+  "id": "r2",
+  "method": "session/stop",
+  "params_keys": [
+   "capture_session_id"
+  ],
+  "request_id": null,
+  "capture_session_id": "6b21d17e6f3089af"
+ },
+ {
+  "at": "2026-10-01T10:13:54.864817+00:00",
+  "event": "sent",
+  "kind": "stop_receipt",
+  "id": "r2",
+  "method": null,
+  "error": null,
+  "result_keys": []
+ },
+ {
+  "at": "2026-10-01T10:13:55.243219+00:00",
+  "event": "eof",
+  "launch": "92fab9bbd1ba4c2289f3a700baed06dc",
+  "held_at_eof": []
+ }
+]

@@ -1,0 +1,301 @@
+{
+ "scenario": "subselect",
+ "counts": {
+  "pass": 4,
+  "fail": 2
+ },
+ "checks": [
+  {
+   "id": "run.shared_desktop_quiet",
+   "status": "pass",
+   "observed": {
+    "foreign_electron_seen": [],
+    "looked_at_start_and_end": true,
+    "screenshots": 0
+   },
+   "note": "no other Electron app at start, at each screenshot and at the end (point-in-time)"
+  },
+  {
+   "id": "run.completed",
+   "status": "fail",
+   "observed": {
+    "aborted": null,
+    "failed_steps": [
+     {
+      "i": 97,
+      "kind": "waitEval",
+      "as": "ready_7",
+      "error": "waitEval timed out: (() => { const g = (id) => document.getElementById(id); return !g('card').hidden && !g('askForm').hidden && g('question').value.length > 0 && !g('askSubmit').disabled; })()"
+     }
+    ],
+    "steps_run": 183,
+    "steps_planned": 183,
+    "steps_not_run_as_planned": [],
+    "unreadable_selection_records": []
+   },
+   "note": "every planned step ran, in order, as the kind of step it was planned as; an optional wait that timed out counts as a failed step here"
+  },
+  {
+   "id": "run.surface_really_on_screen_and_in_each_selected_picture",
+   "status": "pass",
+   "observed": {
+    "on_top_checks": [
+     {
+      "i": 7,
+      "ok": true,
+      "points": 16,
+      "covered": []
+     }
+    ],
+    "circled_cards": [
+     7,
+     8
+    ],
+    "selected_pictures": {
+     "picture_0": {
+      "ok": true,
+      "size": [
+       1732,
+       1052
+      ],
+      "ringed": [],
+      "rings_wanted": [],
+      "gaps_white": 17
+     }
+    },
+    "problems": {}
+   },
+   "note": "under 16 points of the grid the top window was QA's Edge window before the capture started; and every selected picture, read from its own pixels in the page, shows the twelve cards (grey ground, a shape of the truth's colour, dark digits, white between) with the pen's ring around exactly the cards the harness circled"
+  },
+  {
+   "id": "qa.never_signs_in",
+   "status": "pass",
+   "observed": {
+    "steps_that_could_sign_in": [],
+    "login_states_seen": [
+     "none"
+    ],
+    "status_events": 18,
+    "status_reads": 18
+   },
+   "note": "no planned step presses Sign in or Cancel sign-in or clicks or types in the control window, and every subscription status the app notified or returned has login 'none': this run started no sign-in and opened no browser"
+  },
+  {
+   "id": "probe.every_selection_can_be_asked_about",
+   "status": "fail",
+   "observed": {
+    "selections": 16,
+    "form_ready": 15,
+    "refused": [
+     {
+      "n": 7,
+      "form_ready": false,
+      "status": "This selection cannot be asked about: the selection facts are malformed. It was not sent to any AI.",
+      "frame": 22,
+      "card_read_at": "2026-10-01T09:07:01.243Z",
+      "next_sample_at": "2026-10-01T09:06:55.067Z",
+      "next_sample_after_card_read_s": -6.176
+     }
+    ],
+    "all": [
+     {
+      "n": 0,
+      "form_ready": true,
+      "status": null,
+      "frame": 7,
+      "card_read_at": "2026-10-01T09:06:38.087Z",
+      "next_sample_at": "2026-10-01T09:06:38.892Z",
+      "next_sample_after_card_read_s": 0.805
+     },
+     {
+      "n": 1,
+      "form_ready": true,
+      "status": null,
+      "frame": 9,
+      "card_read_at": "2026-10-01T09:06:40.363Z",
+      "next_sample_at": "2026-10-01T09:06:41.037Z",
+      "next_sample_after_card_read_s": 0.674
+     },
+     {
+      "n": 2,
+      "form_ready": true,
+      "status": null,
+      "frame": 11,
+      "card_read_at": "2026-10-01T09:06:42.706Z",
+      "next_sample_at": "2026-10-01T09:06:43.201Z",
+      "next_sample_after_card_read_s": 0.495
+     },
+     {
+      "n": 3,
+      "form_ready": true,
+      "status": null,
+      "frame": 13,
+      "card_read_at": "2026-10-01T09:06:45.051Z",
+      "next_sample_at": "2026-10-01T09:06:45.345Z",
+      "next_sample_after_card_read_s": 0.294
+     },
+     {
+      "n": 4,
+      "form_ready": true,
+      "status": null,
+      "frame": 16,
+      "card_read_at": "2026-10-01T09:06:48.354Z",
+      "next_sample_at": "2026-10-01T09:06:48.585Z",
+      "next_sample_after_card_read_s": 0.231
+     },
+     {
+      "n": 5,
+      "form_ready": true,
+      "status": null,
+      "frame": 18,
+      "card_read_at": "2026-10-01T09:06:50.589Z",
+      "next_sample_at": "2026-10-01T09:06:50.749Z",
+      "next_sample_after_card_read_s": 0.16
+     },
+     {
+      "n": 6,
+      "form_ready": true,
+      "status": null,
+      "frame": 20,
+      "card_read_at": "2026-10-01T09:06:52.937Z",
+      "next_sample_at": "2026-10-01T09:06:52.905Z",
+      "next_sample_after_card_read_s": -0.032
+     },
+     {
+      "n": 7,
+      "form_ready": false,
+      "status": "This selection cannot be asked about: the selection facts are malformed. It was not sent to any AI.",
+      "frame": 22,
+      "card_read_at": "2026-10-01T09:07:01.243Z",
+      "next_sample_at": "2026-10-01T09:06:55.067Z",
+      "next_sample_after_card_read_s": -6.176
+     },
+     {
+      "n": 8,
+      "form_ready": true,
+      "status": null,
+      "frame": 31,
+      "card_read_at": "2026-10-01T09:07:04.421Z",
+      "next_sample_at": "2026-10-01T09:07:04.745Z",
+      "next_sample_after_card_read_s": 0.324
+     },
+     {
+      "n": 9,
+      "form_ready": true,
+      "status": null,
+      "frame": 33,
+      "card_read_at": "2026-10-01T09:07:06.770Z",
+      "next_sample_at": "2026-10-01T09:07:06.900Z",
+      "next_sample_after_card_read_s": 0.13
+     },
+     {
+      "n": 10,
+      "form_ready": true,
+      "status": null,
+      "frame": 35,
+      "card_read_at": "2026-10-01T09:07:08.936Z",
+      "next_sample_at": "2026-10-01T09:07:09.051Z",
+      "next_sample_after_card_read_s": 0.115
+     },
+     {
+      "n": 11,
+      "form_ready": true,
+      "status": null,
+      "frame": 37,
+      "card_read_at": "2026-10-01T09:07:11.125Z",
+      "next_sample_at": "2026-10-01T09:07:11.198Z",
+      "next_sample_after_card_read_s": 0.073
+     },
+     {
+      "n": 12,
+      "form_ready": true,
+      "status": null,
+      "frame": 40,
+      "card_read_at": "2026-10-01T09:07:14.448Z",
+      "next_sample_at": "2026-10-01T09:07:14.423Z",
+      "next_sample_after_card_read_s": -0.025
+     },
+     {
+      "n": 13,
+      "form_ready": true,
+      "status": null,
+      "frame": 43,
+      "card_read_at": "2026-10-01T09:07:16.754Z",
+      "next_sample_at": "2026-10-01T09:07:17.683Z",
+      "next_sample_after_card_read_s": 0.929
+     },
+     {
+      "n": 14,
+      "form_ready": true,
+      "status": null,
+      "frame": 45,
+      "card_read_at": "2026-10-01T09:07:18.953Z",
+      "next_sample_at": "2026-10-01T09:07:19.822Z",
+      "next_sample_after_card_read_s": 0.869
+     },
+     {
+      "n": 15,
+      "form_ready": true,
+      "status": null,
+      "frame": 47,
+      "card_read_at": "2026-10-01T09:07:21.098Z",
+      "next_sample_at": "2026-10-01T09:07:21.935Z",
+      "next_sample_after_card_read_s": 0.837
+     }
+    ],
+    "records_kept": 15,
+    "questions_asked": 0
+   },
+   "note": "1 of 16 selections of the same region, with a retained frame and valid ink, were refused by the app with the status shown; nothing was asked in this probe"
+  },
+  {
+   "id": "release.app_and_connector_ended",
+   "status": "pass",
+   "observed": {
+    "apps": {
+     "app": {
+      "pid": 78400,
+      "sub": "",
+      "close_via": "page",
+      "exited": true,
+      "exit_code": 0,
+      "exit_ms": 156,
+      "killed": null,
+      "closed_in_finally": null
+     },
+     "app-fake": {
+      "pid": 72576,
+      "sub": "fake",
+      "close_via": "wm_close",
+      "exited": true,
+      "exit_code": 0,
+      "exit_ms": 262,
+      "killed": null,
+      "closed_in_finally": null
+     }
+    },
+    "watched": [
+     {
+      "event": "appear",
+      "pid": 1353509,
+      "name": "python3",
+      "role": "in_root",
+      "at": "2026-10-01T09:06:29.895171+00:00"
+     },
+     {
+      "event": "exit",
+      "pid": 1353509,
+      "name": "python3",
+      "role": "in_root",
+      "at": "2026-10-01T09:07:22.863580+00:00"
+     }
+    ],
+    "expected_starts_in_the_connector_folder": 1,
+    "there_before_the_run": [],
+    "left_at_watch_end": [],
+    "wsl_exe_seen_by_the_runner": []
+   },
+   "note": "both app processes ended by themselves with code 0; exactly the expected number of processes started in the connector's folder, and each of them and of their children exited; nothing ran there before; no wsl.exe child the runner saw was still running at the end"
+  }
+ ]
+}

@@ -1,0 +1,47 @@
+{
+ "scenario": "subcontrols",
+ "started": "2026-10-01T10:04:54.141Z",
+ "ended": "2026-10-01T10:06:14.046Z",
+ "work": "<home>\\AppData\\Local\\Temp\\lc-qa-windows-sub-3e4b406\\qa-subcontrols-1790849093940",
+ "steps": 235,
+ "surface_circled_cards": [
+  11,
+  8
+ ],
+ "subscription": {
+  "kind": "fake",
+  "note": "QA stand-in bridge: no Codex, no ChatGPT, no sign-in, no allowance",
+  "assistance": "full_solution",
+  "wsl": {
+   "distribution": "Ubuntu",
+   "user": "agentsdock",
+   "distributions_listed": [
+    "Ubuntu"
+   ],
+   "this_user": "agentsdock"
+  }
+ },
+ "harness_sha256": {
+  "analyze.py": "3bd0e0eeebba00865c1c35fab0be6c5ebb41a7d1e3a8e56bfd2805572b25cbe7",
+  "analyze_fix.py": "17d8598082b34db2c504cec310ac5ca2922bb4e78c4ecf91e4ed7cb69761c641",
+  "analyze_ink.py": "f497dd24f101d61fca273128060d8cd39d4c8f0bbf94b08a5b81e8a4f450d4c1",
+  "analyze_parent.py": "28a4ad8eafa1e18f2fecfddb4ab0f4acca1553e757dc4570a51f74c140ff87ac",
+  "analyze_sub.py": "570e089cb9ecb5c650bc60cac0fdc1587ca2aad6127cdedaed9802f44e2f3b07",
+  "analyze_win05.py": "f7e66ef176c169b28707696efb2bef894f98b65d263dd4ce3470fd664c6a7e59",
+  "course.html": "2cecf763803f33e64c283dfb7f0f133bc2b9b0412f08873bb5cb1caf831c03ab",
+  "judge_surface_answer.py": "b02442b0abec289df3816a43ad461df50a0c039e61d58b2f7478e02a0df4b083",
+  "notes.txt": "ca986c9c569bcdd36100d87df9ce28eeabd3025fc7d5a43f171c4a957f55b53c",
+  "qa-electron-runner.ps1": "9c529dca3c89e8f9dcee6a5fdf301c22b641eb811f6743e95cbdea8603eaf355",
+  "qa-png-to-bmp.ps1": "6f887944f49430065891d294ddba78d88e235ad88344890deaa304ac91f4a675",
+  "qa_fake_bridge.py": "e5da9adf9160e30fb4770ab0bccf627d72117aaba16e88b6afbabad46c915e10",
+  "qa_parent_db.py": "17bc8dea331c14c0559246a884e7787f3d880db7f2f62652fd45eaa350cd9cd7",
+  "qa_sub_copy_check.py": "73b765943887cab143f530deb3deb7ac415cabce13bc2bd9f7498c1c56320d10",
+  "qa_sub_watch.py": "42be06a3b2d07d2feb16b306bfefe9d2c44bfdd8d88554853eb9a7ea6112d1b8",
+  "replay_analyze_fix.py": "305f546996c5e9768bc4d252cd8ed3b57b48b3ae6797dcf925d3b480a0f82728",
+  "run.mjs": "4f45169e3726820578e08cf0eb85cc16942464e0aae9029158a2a87981f0ad60",
+  "scenarios.mjs": "da2b34d3f109f79380942deaf47c7fb7f5fc483ccabce4100f1caf7f0bbe6f9e",
+  "signin_launcher.mjs": "74a5092c43e89ea4dc047860a295f33d5360bda0c9b689cd802a3b79d383a9f2",
+  "sub_copy.mjs": "d9df3fe96a1c3c99b161552cd6c547c9a7c64dad4e23f05f57eed922013a85f5",
+  "surface.html": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2"
+ }
+}

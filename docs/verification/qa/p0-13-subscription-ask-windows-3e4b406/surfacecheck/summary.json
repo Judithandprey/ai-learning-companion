@@ -1,0 +1,102 @@
+{
+ "scenario": "surfacecheck",
+ "counts": {
+  "pass": 4
+ },
+ "checks": [
+  {
+   "id": "run.shared_desktop_quiet",
+   "status": "pass",
+   "observed": {
+    "foreign_electron_seen": [],
+    "looked_at_start_and_end": true,
+    "screenshots": 1
+   },
+   "note": "no other Electron app at start, at each screenshot and at the end (point-in-time)"
+  },
+  {
+   "id": "run.completed",
+   "status": "pass",
+   "observed": {
+    "aborted": null,
+    "failed_steps": [],
+    "steps_run": 53,
+    "steps_planned": 53,
+    "steps_not_run_as_planned": [],
+    "unreadable_selection_records": []
+   },
+   "note": "every planned step ran, in order, as the kind of step it was planned as; an optional wait that timed out counts as a failed step here"
+  },
+  {
+   "id": "run.surface_really_on_screen_and_in_each_selected_picture",
+   "status": "pass",
+   "observed": {
+    "on_top_checks": [
+     {
+      "i": 7,
+      "ok": true,
+      "points": 16,
+      "covered": []
+     }
+    ],
+    "circled_cards": [
+     3,
+     7
+    ],
+    "selected_pictures": {
+     "picture": {
+      "ok": true,
+      "size": [
+       1732,
+       1052
+      ],
+      "ringed": [
+       3,
+       7
+      ],
+      "rings_wanted": [
+       3,
+       7
+      ],
+      "gaps_white": 17
+     }
+    },
+    "problems": {}
+   },
+   "note": "under 16 points of the grid the top window was QA's Edge window before the capture started; and every selected picture, read from its own pixels in the page, shows the twelve cards (grey ground, a shape of the truth's colour, dark digits, white between) with the pen's ring around exactly the cards the harness circled"
+  },
+  {
+   "id": "surface.dry_check_without_any_connection",
+   "status": "pass",
+   "observed": {
+    "truth_reads_equal": true,
+    "viewport": {
+     "width": 1280,
+     "height": 800,
+     "dpr": 2,
+     "screen": [
+      1280,
+      800
+     ]
+    },
+    "dom_text": [
+     "",
+     "",
+     ""
+    ],
+    "card_text": "No AI is connected: this selection was not sent anywhere.\nRegion 17,72 866×526 DIP on 整个屏幕 = 1732×1052 px of frame 16 (captured 03:04:29), with your ink revision 2 drawn over it.",
+    "capture_link": {
+     "mode": "off"
+    },
+    "app": {
+     "exited": true,
+     "exit_code": 0,
+     "exit_ms": 159,
+     "killed": null,
+     "closed_in_finally": null
+    }
+   },
+   "note": "QA's surface filled the 1280×800 display at scale 2 with the same twelve cards at every read and no text outside the pixels; the pen circled two cards and the ASK selection showed a local card that says no AI is connected; no capture link and no subscription connection existed in this run; the app ended by itself"
+  }
+ ]
+}

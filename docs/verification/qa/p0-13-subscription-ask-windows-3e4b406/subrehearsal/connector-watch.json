@@ -1,0 +1,30 @@
+[
+ {
+  "event": "watch_start",
+  "root_exists": true,
+  "already_there": [],
+  "at": "2026-10-01T10:07:52.599718+00:00"
+ },
+ {
+  "event": "appear",
+  "pid": 1387423,
+  "ppid": 1387422,
+  "start_ticks": 18688980,
+  "name": "python3",
+  "role": "in_root",
+  "at": "2026-10-01T10:08:05.579040+00:00"
+ },
+ {
+  "event": "exit",
+  "pid": 1387423,
+  "start_ticks": 18688980,
+  "name": "python3",
+  "role": "descendant",
+  "at": "2026-10-01T10:08:28.339065+00:00"
+ },
+ {
+  "event": "watch_end",
+  "remaining": [],
+  "at": "2026-10-01T10:08:44.498719+00:00"
+ }
+]

@@ -1,0 +1,180 @@
+{
+ "h_circled": {
+  "ink/5dd81bac115dd328.json": {
+   "sha256": "2d00f26322b90b8755b52e235fe59d7b3b8614e403cff15544e28bd70063e90d",
+   "bytes": 13445,
+   "mtime_utc": "2026-10-01T10:08:16.1595369Z"
+  },
+  "ink/context/403c26ef3d154f7a737f8dcaa4b0c75555735766f0ee65dca4b6b7c2d5532d2f.png": {
+   "sha256": "403c26ef3d154f7a737f8dcaa4b0c75555735766f0ee65dca4b6b7c2d5532d2f",
+   "bytes": 18238,
+   "mtime_utc": "2026-10-01T10:08:14.0414712Z"
+  },
+  "ink/context/4c34a573b1d17df91984d29570d526ae1c4c5fc35b314929378debe4efcd0183.png": {
+   "sha256": "4c34a573b1d17df91984d29570d526ae1c4c5fc35b314929378debe4efcd0183",
+   "bytes": 26675,
+   "mtime_utc": "2026-10-01T10:08:16.1585316Z"
+  },
+  "captures/5dd81bac115dd328/ink/1b9bdf9f8da8eeb75af435b5ce2d464807fce21c4b81e8d9e2000a3f840c2739.json": {
+   "sha256": "1b9bdf9f8da8eeb75af435b5ce2d464807fce21c4b81e8d9e2000a3f840c2739",
+   "bytes": 6948,
+   "mtime_utc": "2026-10-01T10:08:14.4239317Z"
+  },
+  "captures/5dd81bac115dd328/ink/2d00f26322b90b8755b52e235fe59d7b3b8614e403cff15544e28bd70063e90d.json": {
+   "sha256": "2d00f26322b90b8755b52e235fe59d7b3b8614e403cff15544e28bd70063e90d",
+   "bytes": 13445,
+   "mtime_utc": "2026-10-01T10:08:16.5562592Z"
+  },
+  "captures/5dd81bac115dd328/ink/887dda1b9033811a8ad9c0ed66968dcd86954414f572f05c26635eaf7e32db4f.json": {
+   "sha256": "887dda1b9033811a8ad9c0ed66968dcd86954414f572f05c26635eaf7e32db4f",
+   "bytes": 451,
+   "mtime_utc": "2026-10-01T10:08:08.0743690Z"
+  },
+  "captures/5dd81bac115dd328/manifest.jsonl": {
+   "sha256": "f9754515e81a9f520d30f6c469c4847e0d9f82f7260fd3d0f59343f8074cf5a7",
+   "bytes": 7005,
+   "mtime_utc": "2026-10-01T10:08:16.5572630Z"
+  }
+ },
+ "h_a_selected": {
+  "ink/5dd81bac115dd328.json": {
+   "sha256": "2d00f26322b90b8755b52e235fe59d7b3b8614e403cff15544e28bd70063e90d",
+   "bytes": 13445,
+   "mtime_utc": "2026-10-01T10:08:16.1595369Z"
+  },
+  "ink/context/403c26ef3d154f7a737f8dcaa4b0c75555735766f0ee65dca4b6b7c2d5532d2f.png": {
+   "sha256": "403c26ef3d154f7a737f8dcaa4b0c75555735766f0ee65dca4b6b7c2d5532d2f",
+   "bytes": 18238,
+   "mtime_utc": "2026-10-01T10:08:14.0414712Z"
+  },
+  "ink/context/4c34a573b1d17df91984d29570d526ae1c4c5fc35b314929378debe4efcd0183.png": {
+   "sha256": "4c34a573b1d17df91984d29570d526ae1c4c5fc35b314929378debe4efcd0183",
+   "bytes": 26675,
+   "mtime_utc": "2026-10-01T10:08:16.1585316Z"
+  },
+  "captures/5dd81bac115dd328/asks/3d57a39c30d9870b3509a951256fdfa4b84ea934353e61b4cdc6dcbfc5b9731c.png": {
+   "sha256": "3d57a39c30d9870b3509a951256fdfa4b84ea934353e61b4cdc6dcbfc5b9731c",
+   "bytes": 175018,
+   "mtime_utc": "2026-10-01T10:08:21.9147482Z"
+  },
+  "captures/5dd81bac115dd328/asks/ask-2195fa4d0f793130.json": {
+   "sha256": "0e1137591e19db65651aaafccdd5409093b6e5947e1e749b487ece7cc0bc3e56",
+   "bytes": 1043,
+   "mtime_utc": "2026-10-01T10:08:21.9153494Z"
+  },
+  "captures/5dd81bac115dd328/ink/1b9bdf9f8da8eeb75af435b5ce2d464807fce21c4b81e8d9e2000a3f840c2739.json": {
+   "sha256": "1b9bdf9f8da8eeb75af435b5ce2d464807fce21c4b81e8d9e2000a3f840c2739",
+   "bytes": 6948,
+   "mtime_utc": "2026-10-01T10:08:14.4239317Z"
+  },
+  "captures/5dd81bac115dd328/ink/2d00f26322b90b8755b52e235fe59d7b3b8614e403cff15544e28bd70063e90d.json": {
+   "sha256": "2d00f26322b90b8755b52e235fe59d7b3b8614e403cff15544e28bd70063e90d",
+   "bytes": 13445,
+   "mtime_utc": "2026-10-01T10:08:16.5562592Z"
+  },
+  "captures/5dd81bac115dd328/ink/887dda1b9033811a8ad9c0ed66968dcd86954414f572f05c26635eaf7e32db4f.json": {
+   "sha256": "887dda1b9033811a8ad9c0ed66968dcd86954414f572f05c26635eaf7e32db4f",
+   "bytes": 451,
+   "mtime_utc": "2026-10-01T10:08:08.0743690Z"
+  },
+  "captures/5dd81bac115dd328/manifest.jsonl": {
+   "sha256": "f9754515e81a9f520d30f6c469c4847e0d9f82f7260fd3d0f59343f8074cf5a7",
+   "bytes": 7005,
+   "mtime_utc": "2026-10-01T10:08:16.5572630Z"
+  }
+ },
+ "h_a_after": {
+  "ink/5dd81bac115dd328.json": {
+   "sha256": "2d00f26322b90b8755b52e235fe59d7b3b8614e403cff15544e28bd70063e90d",
+   "bytes": 13445,
+   "mtime_utc": "2026-10-01T10:08:16.1595369Z"
+  },
+  "ink/context/403c26ef3d154f7a737f8dcaa4b0c75555735766f0ee65dca4b6b7c2d5532d2f.png": {
+   "sha256": "403c26ef3d154f7a737f8dcaa4b0c75555735766f0ee65dca4b6b7c2d5532d2f",
+   "bytes": 18238,
+   "mtime_utc": "2026-10-01T10:08:14.0414712Z"
+  },
+  "ink/context/4c34a573b1d17df91984d29570d526ae1c4c5fc35b314929378debe4efcd0183.png": {
+   "sha256": "4c34a573b1d17df91984d29570d526ae1c4c5fc35b314929378debe4efcd0183",
+   "bytes": 26675,
+   "mtime_utc": "2026-10-01T10:08:16.1585316Z"
+  },
+  "captures/5dd81bac115dd328/asks/3d57a39c30d9870b3509a951256fdfa4b84ea934353e61b4cdc6dcbfc5b9731c.png": {
+   "sha256": "3d57a39c30d9870b3509a951256fdfa4b84ea934353e61b4cdc6dcbfc5b9731c",
+   "bytes": 175018,
+   "mtime_utc": "2026-10-01T10:08:21.9147482Z"
+  },
+  "captures/5dd81bac115dd328/asks/ask-2195fa4d0f793130.json": {
+   "sha256": "4cc2ff4349cb4eab31fa33d417b8501fccbf9400595e23c999c6065189b7930b",
+   "bytes": 1705,
+   "mtime_utc": "2026-10-01T10:08:25.1619921Z"
+  },
+  "captures/5dd81bac115dd328/ink/1b9bdf9f8da8eeb75af435b5ce2d464807fce21c4b81e8d9e2000a3f840c2739.json": {
+   "sha256": "1b9bdf9f8da8eeb75af435b5ce2d464807fce21c4b81e8d9e2000a3f840c2739",
+   "bytes": 6948,
+   "mtime_utc": "2026-10-01T10:08:14.4239317Z"
+  },
+  "captures/5dd81bac115dd328/ink/2d00f26322b90b8755b52e235fe59d7b3b8614e403cff15544e28bd70063e90d.json": {
+   "sha256": "2d00f26322b90b8755b52e235fe59d7b3b8614e403cff15544e28bd70063e90d",
+   "bytes": 13445,
+   "mtime_utc": "2026-10-01T10:08:16.5562592Z"
+  },
+  "captures/5dd81bac115dd328/ink/887dda1b9033811a8ad9c0ed66968dcd86954414f572f05c26635eaf7e32db4f.json": {
+   "sha256": "887dda1b9033811a8ad9c0ed66968dcd86954414f572f05c26635eaf7e32db4f",
+   "bytes": 451,
+   "mtime_utc": "2026-10-01T10:08:08.0743690Z"
+  },
+  "captures/5dd81bac115dd328/manifest.jsonl": {
+   "sha256": "f9754515e81a9f520d30f6c469c4847e0d9f82f7260fd3d0f59343f8074cf5a7",
+   "bytes": 7005,
+   "mtime_utc": "2026-10-01T10:08:16.5572630Z"
+  }
+ },
+ "h_final": {
+  "ink/5dd81bac115dd328.json": {
+   "sha256": "2d00f26322b90b8755b52e235fe59d7b3b8614e403cff15544e28bd70063e90d",
+   "bytes": 13445,
+   "mtime_utc": "2026-10-01T10:08:16.1595369Z"
+  },
+  "ink/context/403c26ef3d154f7a737f8dcaa4b0c75555735766f0ee65dca4b6b7c2d5532d2f.png": {
+   "sha256": "403c26ef3d154f7a737f8dcaa4b0c75555735766f0ee65dca4b6b7c2d5532d2f",
+   "bytes": 18238,
+   "mtime_utc": "2026-10-01T10:08:14.0414712Z"
+  },
+  "ink/context/4c34a573b1d17df91984d29570d526ae1c4c5fc35b314929378debe4efcd0183.png": {
+   "sha256": "4c34a573b1d17df91984d29570d526ae1c4c5fc35b314929378debe4efcd0183",
+   "bytes": 26675,
+   "mtime_utc": "2026-10-01T10:08:16.1585316Z"
+  },
+  "captures/5dd81bac115dd328/asks/3d57a39c30d9870b3509a951256fdfa4b84ea934353e61b4cdc6dcbfc5b9731c.png": {
+   "sha256": "3d57a39c30d9870b3509a951256fdfa4b84ea934353e61b4cdc6dcbfc5b9731c",
+   "bytes": 175018,
+   "mtime_utc": "2026-10-01T10:08:21.9147482Z"
+  },
+  "captures/5dd81bac115dd328/asks/ask-2195fa4d0f793130.json": {
+   "sha256": "4cc2ff4349cb4eab31fa33d417b8501fccbf9400595e23c999c6065189b7930b",
+   "bytes": 1705,
+   "mtime_utc": "2026-10-01T10:08:25.1619921Z"
+  },
+  "captures/5dd81bac115dd328/ink/1b9bdf9f8da8eeb75af435b5ce2d464807fce21c4b81e8d9e2000a3f840c2739.json": {
+   "sha256": "1b9bdf9f8da8eeb75af435b5ce2d464807fce21c4b81e8d9e2000a3f840c2739",
+   "bytes": 6948,
+   "mtime_utc": "2026-10-01T10:08:14.4239317Z"
+  },
+  "captures/5dd81bac115dd328/ink/2d00f26322b90b8755b52e235fe59d7b3b8614e403cff15544e28bd70063e90d.json": {
+   "sha256": "2d00f26322b90b8755b52e235fe59d7b3b8614e403cff15544e28bd70063e90d",
+   "bytes": 13445,
+   "mtime_utc": "2026-10-01T10:08:16.5562592Z"
+  },
+  "captures/5dd81bac115dd328/ink/887dda1b9033811a8ad9c0ed66968dcd86954414f572f05c26635eaf7e32db4f.json": {
+   "sha256": "887dda1b9033811a8ad9c0ed66968dcd86954414f572f05c26635eaf7e32db4f",
+   "bytes": 451,
+   "mtime_utc": "2026-10-01T10:08:08.0743690Z"
+  },
+  "captures/5dd81bac115dd328/manifest.jsonl": {
+   "sha256": "4c736f6563aefc7cc449a83f081e3482c5ab2dc81ae09902ae9cc2995943539c",
+   "bytes": 7085,
+   "mtime_utc": "2026-10-01T10:08:27.4040567Z"
+  }
+ }
+}

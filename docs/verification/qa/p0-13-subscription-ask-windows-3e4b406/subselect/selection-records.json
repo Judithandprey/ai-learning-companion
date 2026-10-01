@@ -1,0 +1,914 @@
+[
+ {
+  "capture": "7851a9c57874a767",
+  "file": "ask-15d17ba2a344ed99.json",
+  "png_is_its_hash": true,
+  "record": {
+   "format": "lc-windows-ask/v1",
+   "selection_id": "ask-15d17ba2a344ed99",
+   "selected_at": "2026-10-01T10:07:20.856Z",
+   "image": {
+    "file": "asks/4c4ff70c97fa64a40b0999486964155ce6bf4810c1058f4c6f99473bd3c71d9a.png",
+    "sha256": "4c4ff70c97fa64a40b0999486964155ce6bf4810c1058f4c6f99473bd3c71d9a",
+    "bytes": 160572,
+    "width": 1732,
+    "height": 1052
+   },
+   "context": {
+    "capture_session_id": "7851a9c57874a767",
+    "frame_seq": 24,
+    "frame_captured_at": "2026-10-01T10:07:19.994Z",
+    "frame_width": 2560,
+    "frame_height": 1600,
+    "display": {
+     "id": "3071609112",
+     "bounds": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800
+     },
+     "scale_factor": 2
+    },
+    "region_dip": {
+     "x": 17,
+     "y": 72,
+     "width": 866,
+     "height": 526
+    },
+    "region_px": {
+     "x": 34,
+     "y": 144,
+     "width": 1732,
+     "height": 1052
+    },
+    "ink_revision": 0,
+    "ink_sha256": "d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7",
+    "source_url": null,
+    "source_version": null,
+    "media_position": null
+   },
+   "ink_original": {
+    "file": "ink/d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7.json",
+    "sha256": "d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7",
+    "bytes": 451
+   },
+   "requests": []
+  }
+ },
+ {
+  "capture": "7851a9c57874a767",
+  "file": "ask-189c6eb5c74bbd97.json",
+  "png_is_its_hash": true,
+  "record": {
+   "format": "lc-windows-ask/v1",
+   "selection_id": "ask-189c6eb5c74bbd97",
+   "selected_at": "2026-10-01T10:07:12.486Z",
+   "image": {
+    "file": "asks/4c4ff70c97fa64a40b0999486964155ce6bf4810c1058f4c6f99473bd3c71d9a.png",
+    "sha256": "4c4ff70c97fa64a40b0999486964155ce6bf4810c1058f4c6f99473bd3c71d9a",
+    "bytes": 160572,
+    "width": 1732,
+    "height": 1052
+   },
+   "context": {
+    "capture_session_id": "7851a9c57874a767",
+    "frame_seq": 16,
+    "frame_captured_at": "2026-10-01T10:07:11.599Z",
+    "frame_width": 2560,
+    "frame_height": 1600,
+    "display": {
+     "id": "3071609112",
+     "bounds": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800
+     },
+     "scale_factor": 2
+    },
+    "region_dip": {
+     "x": 17,
+     "y": 72,
+     "width": 866,
+     "height": 526
+    },
+    "region_px": {
+     "x": 34,
+     "y": 144,
+     "width": 1732,
+     "height": 1052
+    },
+    "ink_revision": 0,
+    "ink_sha256": "d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7",
+    "source_url": null,
+    "source_version": null,
+    "media_position": null
+   },
+   "ink_original": {
+    "file": "ink/d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7.json",
+    "sha256": "d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7",
+    "bytes": 451
+   },
+   "requests": []
+  }
+ },
+ {
+  "capture": "7851a9c57874a767",
+  "file": "ask-1b9bf293c1d8d59e.json",
+  "png_is_its_hash": true,
+  "record": {
+   "format": "lc-windows-ask/v1",
+   "selection_id": "ask-1b9bf293c1d8d59e",
+   "selected_at": "2026-10-01T10:07:31.191Z",
+   "image": {
+    "file": "asks/4c4ff70c97fa64a40b0999486964155ce6bf4810c1058f4c6f99473bd3c71d9a.png",
+    "sha256": "4c4ff70c97fa64a40b0999486964155ce6bf4810c1058f4c6f99473bd3c71d9a",
+    "bytes": 160572,
+    "width": 1732,
+    "height": 1052
+   },
+   "context": {
+    "capture_session_id": "7851a9c57874a767",
+    "frame_seq": 34,
+    "frame_captured_at": "2026-10-01T10:07:30.514Z",
+    "frame_width": 2560,
+    "frame_height": 1600,
+    "display": {
+     "id": "3071609112",
+     "bounds": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800
+     },
+     "scale_factor": 2
+    },
+    "region_dip": {
+     "x": 17,
+     "y": 72,
+     "width": 866,
+     "height": 526
+    },
+    "region_px": {
+     "x": 34,
+     "y": 144,
+     "width": 1732,
+     "height": 1052
+    },
+    "ink_revision": 0,
+    "ink_sha256": "d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7",
+    "source_url": null,
+    "source_version": null,
+    "media_position": null
+   },
+   "ink_original": {
+    "file": "ink/d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7.json",
+    "sha256": "d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7",
+    "bytes": 451
+   },
+   "requests": []
+  }
+ },
+ {
+  "capture": "7851a9c57874a767",
+  "file": "ask-1ed04ab2c6b385d7.json",
+  "png_is_its_hash": true,
+  "record": {
+   "format": "lc-windows-ask/v1",
+   "selection_id": "ask-1ed04ab2c6b385d7",
+   "selected_at": "2026-10-01T10:07:10.737Z",
+   "image": {
+    "file": "asks/4c4ff70c97fa64a40b0999486964155ce6bf4810c1058f4c6f99473bd3c71d9a.png",
+    "sha256": "4c4ff70c97fa64a40b0999486964155ce6bf4810c1058f4c6f99473bd3c71d9a",
+    "bytes": 160572,
+    "width": 1732,
+    "height": 1052
+   },
+   "context": {
+    "capture_session_id": "7851a9c57874a767",
+    "frame_seq": 15,
+    "frame_captured_at": "2026-10-01T10:07:10.545Z",
+    "frame_width": 2560,
+    "frame_height": 1600,
+    "display": {
+     "id": "3071609112",
+     "bounds": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800
+     },
+     "scale_factor": 2
+    },
+    "region_dip": {
+     "x": 17,
+     "y": 72,
+     "width": 866,
+     "height": 526
+    },
+    "region_px": {
+     "x": 34,
+     "y": 144,
+     "width": 1732,
+     "height": 1052
+    },
+    "ink_revision": 0,
+    "ink_sha256": "d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7",
+    "source_url": null,
+    "source_version": null,
+    "media_position": null
+   },
+   "ink_original": {
+    "file": "ink/d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7.json",
+    "sha256": "d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7",
+    "bytes": 451
+   },
+   "requests": []
+  }
+ },
+ {
+  "capture": "7851a9c57874a767",
+  "file": "ask-31749d483c7de30f.json",
+  "png_is_its_hash": true,
+  "record": {
+   "format": "lc-windows-ask/v1",
+   "selection_id": "ask-31749d483c7de30f",
+   "selected_at": "2026-10-01T10:07:05.803Z",
+   "image": {
+    "file": "asks/4c4ff70c97fa64a40b0999486964155ce6bf4810c1058f4c6f99473bd3c71d9a.png",
+    "sha256": "4c4ff70c97fa64a40b0999486964155ce6bf4810c1058f4c6f99473bd3c71d9a",
+    "bytes": 160572,
+    "width": 1732,
+    "height": 1052
+   },
+   "context": {
+    "capture_session_id": "7851a9c57874a767",
+    "frame_seq": 10,
+    "frame_captured_at": "2026-10-01T10:07:05.286Z",
+    "frame_width": 2560,
+    "frame_height": 1600,
+    "display": {
+     "id": "3071609112",
+     "bounds": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800
+     },
+     "scale_factor": 2
+    },
+    "region_dip": {
+     "x": 17,
+     "y": 72,
+     "width": 866,
+     "height": 526
+    },
+    "region_px": {
+     "x": 34,
+     "y": 144,
+     "width": 1732,
+     "height": 1052
+    },
+    "ink_revision": 0,
+    "ink_sha256": "d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7",
+    "source_url": null,
+    "source_version": null,
+    "media_position": null
+   },
+   "ink_original": {
+    "file": "ink/d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7.json",
+    "sha256": "d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7",
+    "bytes": 451
+   },
+   "requests": []
+  }
+ },
+ {
+  "capture": "7851a9c57874a767",
+  "file": "ask-563d9ec973e097af.json",
+  "png_is_its_hash": true,
+  "record": {
+   "format": "lc-windows-ask/v1",
+   "selection_id": "ask-563d9ec973e097af",
+   "selected_at": "2026-10-01T10:07:22.645Z",
+   "image": {
+    "file": "asks/4c4ff70c97fa64a40b0999486964155ce6bf4810c1058f4c6f99473bd3c71d9a.png",
+    "sha256": "4c4ff70c97fa64a40b0999486964155ce6bf4810c1058f4c6f99473bd3c71d9a",
+    "bytes": 160572,
+    "width": 1732,
+    "height": 1052
+   },
+   "context": {
+    "capture_session_id": "7851a9c57874a767",
+    "frame_seq": 26,
+    "frame_captured_at": "2026-10-01T10:07:22.110Z",
+    "frame_width": 2560,
+    "frame_height": 1600,
+    "display": {
+     "id": "3071609112",
+     "bounds": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800
+     },
+     "scale_factor": 2
+    },
+    "region_dip": {
+     "x": 17,
+     "y": 72,
+     "width": 866,
+     "height": 526
+    },
+    "region_px": {
+     "x": 34,
+     "y": 144,
+     "width": 1732,
+     "height": 1052
+    },
+    "ink_revision": 0,
+    "ink_sha256": "d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7",
+    "source_url": null,
+    "source_version": null,
+    "media_position": null
+   },
+   "ink_original": {
+    "file": "ink/d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7.json",
+    "sha256": "d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7",
+    "bytes": 451
+   },
+   "requests": []
+  }
+ },
+ {
+  "capture": "7851a9c57874a767",
+  "file": "ask-6d1c3837d3dbecc1.json",
+  "png_is_its_hash": true,
+  "record": {
+   "format": "lc-windows-ask/v1",
+   "selection_id": "ask-6d1c3837d3dbecc1",
+   "selected_at": "2026-10-01T10:07:03.986Z",
+   "image": {
+    "file": "asks/4c4ff70c97fa64a40b0999486964155ce6bf4810c1058f4c6f99473bd3c71d9a.png",
+    "sha256": "4c4ff70c97fa64a40b0999486964155ce6bf4810c1058f4c6f99473bd3c71d9a",
+    "bytes": 160572,
+    "width": 1732,
+    "height": 1052
+   },
+   "context": {
+    "capture_session_id": "7851a9c57874a767",
+    "frame_seq": 8,
+    "frame_captured_at": "2026-10-01T10:07:03.184Z",
+    "frame_width": 2560,
+    "frame_height": 1600,
+    "display": {
+     "id": "3071609112",
+     "bounds": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800
+     },
+     "scale_factor": 2
+    },
+    "region_dip": {
+     "x": 17,
+     "y": 72,
+     "width": 866,
+     "height": 526
+    },
+    "region_px": {
+     "x": 34,
+     "y": 144,
+     "width": 1732,
+     "height": 1052
+    },
+    "ink_revision": 0,
+    "ink_sha256": "d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7",
+    "source_url": null,
+    "source_version": null,
+    "media_position": null
+   },
+   "ink_original": {
+    "file": "ink/d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7.json",
+    "sha256": "d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7",
+    "bytes": 451
+   },
+   "requests": []
+  }
+ },
+ {
+  "capture": "7851a9c57874a767",
+  "file": "ask-81710f203b660030.json",
+  "png_is_its_hash": true,
+  "record": {
+   "format": "lc-windows-ask/v1",
+   "selection_id": "ask-81710f203b660030",
+   "selected_at": "2026-10-01T10:07:32.906Z",
+   "image": {
+    "file": "asks/4c4ff70c97fa64a40b0999486964155ce6bf4810c1058f4c6f99473bd3c71d9a.png",
+    "sha256": "4c4ff70c97fa64a40b0999486964155ce6bf4810c1058f4c6f99473bd3c71d9a",
+    "bytes": 160572,
+    "width": 1732,
+    "height": 1052
+   },
+   "context": {
+    "capture_session_id": "7851a9c57874a767",
+    "frame_seq": 36,
+    "frame_captured_at": "2026-10-01T10:07:32.618Z",
+    "frame_width": 2560,
+    "frame_height": 1600,
+    "display": {
+     "id": "3071609112",
+     "bounds": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800
+     },
+     "scale_factor": 2
+    },
+    "region_dip": {
+     "x": 17,
+     "y": 72,
+     "width": 866,
+     "height": 526
+    },
+    "region_px": {
+     "x": 34,
+     "y": 144,
+     "width": 1732,
+     "height": 1052
+    },
+    "ink_revision": 0,
+    "ink_sha256": "d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7",
+    "source_url": null,
+    "source_version": null,
+    "media_position": null
+   },
+   "ink_original": {
+    "file": "ink/d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7.json",
+    "sha256": "d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7",
+    "bytes": 451
+   },
+   "requests": []
+  }
+ },
+ {
+  "capture": "7851a9c57874a767",
+  "file": "ask-8868d352714de7fa.json",
+  "png_is_its_hash": true,
+  "record": {
+   "format": "lc-windows-ask/v1",
+   "selection_id": "ask-8868d352714de7fa",
+   "selected_at": "2026-10-01T10:07:16.183Z",
+   "image": {
+    "file": "asks/4c4ff70c97fa64a40b0999486964155ce6bf4810c1058f4c6f99473bd3c71d9a.png",
+    "sha256": "4c4ff70c97fa64a40b0999486964155ce6bf4810c1058f4c6f99473bd3c71d9a",
+    "bytes": 160572,
+    "width": 1732,
+    "height": 1052
+   },
+   "context": {
+    "capture_session_id": "7851a9c57874a767",
+    "frame_seq": 20,
+    "frame_captured_at": "2026-10-01T10:07:15.791Z",
+    "frame_width": 2560,
+    "frame_height": 1600,
+    "display": {
+     "id": "3071609112",
+     "bounds": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800
+     },
+     "scale_factor": 2
+    },
+    "region_dip": {
+     "x": 17,
+     "y": 72,
+     "width": 866,
+     "height": 526
+    },
+    "region_px": {
+     "x": 34,
+     "y": 144,
+     "width": 1732,
+     "height": 1052
+    },
+    "ink_revision": 0,
+    "ink_sha256": "d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7",
+    "source_url": null,
+    "source_version": null,
+    "media_position": null
+   },
+   "ink_original": {
+    "file": "ink/d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7.json",
+    "sha256": "d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7",
+    "bytes": 451
+   },
+   "requests": []
+  }
+ },
+ {
+  "capture": "7851a9c57874a767",
+  "file": "ask-a7bf060a10fcff39.json",
+  "png_is_its_hash": true,
+  "record": {
+   "format": "lc-windows-ask/v1",
+   "selection_id": "ask-a7bf060a10fcff39",
+   "selected_at": "2026-10-01T10:07:27.468Z",
+   "image": {
+    "file": "asks/4c4ff70c97fa64a40b0999486964155ce6bf4810c1058f4c6f99473bd3c71d9a.png",
+    "sha256": "4c4ff70c97fa64a40b0999486964155ce6bf4810c1058f4c6f99473bd3c71d9a",
+    "bytes": 160572,
+    "width": 1732,
+    "height": 1052
+   },
+   "context": {
+    "capture_session_id": "7851a9c57874a767",
+    "frame_seq": 31,
+    "frame_captured_at": "2026-10-01T10:07:27.372Z",
+    "frame_width": 2560,
+    "frame_height": 1600,
+    "display": {
+     "id": "3071609112",
+     "bounds": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800
+     },
+     "scale_factor": 2
+    },
+    "region_dip": {
+     "x": 17,
+     "y": 72,
+     "width": 866,
+     "height": 526
+    },
+    "region_px": {
+     "x": 34,
+     "y": 144,
+     "width": 1732,
+     "height": 1052
+    },
+    "ink_revision": 0,
+    "ink_sha256": "d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7",
+    "source_url": null,
+    "source_version": null,
+    "media_position": null
+   },
+   "ink_original": {
+    "file": "ink/d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7.json",
+    "sha256": "d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7",
+    "bytes": 451
+   },
+   "requests": []
+  }
+ },
+ {
+  "capture": "7851a9c57874a767",
+  "file": "ask-a816af5eebbf360f.json",
+  "png_is_its_hash": true,
+  "record": {
+   "format": "lc-windows-ask/v1",
+   "selection_id": "ask-a816af5eebbf360f",
+   "selected_at": "2026-10-01T10:07:07.713Z",
+   "image": {
+    "file": "asks/4c4ff70c97fa64a40b0999486964155ce6bf4810c1058f4c6f99473bd3c71d9a.png",
+    "sha256": "4c4ff70c97fa64a40b0999486964155ce6bf4810c1058f4c6f99473bd3c71d9a",
+    "bytes": 160572,
+    "width": 1732,
+    "height": 1052
+   },
+   "context": {
+    "capture_session_id": "7851a9c57874a767",
+    "frame_seq": 12,
+    "frame_captured_at": "2026-10-01T10:07:07.382Z",
+    "frame_width": 2560,
+    "frame_height": 1600,
+    "display": {
+     "id": "3071609112",
+     "bounds": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800
+     },
+     "scale_factor": 2
+    },
+    "region_dip": {
+     "x": 17,
+     "y": 72,
+     "width": 866,
+     "height": 526
+    },
+    "region_px": {
+     "x": 34,
+     "y": 144,
+     "width": 1732,
+     "height": 1052
+    },
+    "ink_revision": 0,
+    "ink_sha256": "d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7",
+    "source_url": null,
+    "source_version": null,
+    "media_position": null
+   },
+   "ink_original": {
+    "file": "ink/d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7.json",
+    "sha256": "d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7",
+    "bytes": 451
+   },
+   "requests": []
+  }
+ },
+ {
+  "capture": "7851a9c57874a767",
+  "file": "ask-af1092d923069e5d.json",
+  "png_is_its_hash": true,
+  "record": {
+   "format": "lc-windows-ask/v1",
+   "selection_id": "ask-af1092d923069e5d",
+   "selected_at": "2026-10-01T10:07:01.977Z",
+   "image": {
+    "file": "asks/4c4ff70c97fa64a40b0999486964155ce6bf4810c1058f4c6f99473bd3c71d9a.png",
+    "sha256": "4c4ff70c97fa64a40b0999486964155ce6bf4810c1058f4c6f99473bd3c71d9a",
+    "bytes": 160572,
+    "width": 1732,
+    "height": 1052
+   },
+   "context": {
+    "capture_session_id": "7851a9c57874a767",
+    "frame_seq": 6,
+    "frame_captured_at": "2026-10-01T10:07:01.084Z",
+    "frame_width": 2560,
+    "frame_height": 1600,
+    "display": {
+     "id": "3071609112",
+     "bounds": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800
+     },
+     "scale_factor": 2
+    },
+    "region_dip": {
+     "x": 17,
+     "y": 72,
+     "width": 866,
+     "height": 526
+    },
+    "region_px": {
+     "x": 34,
+     "y": 144,
+     "width": 1732,
+     "height": 1052
+    },
+    "ink_revision": 0,
+    "ink_sha256": "d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7",
+    "source_url": null,
+    "source_version": null,
+    "media_position": null
+   },
+   "ink_original": {
+    "file": "ink/d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7.json",
+    "sha256": "d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7",
+    "bytes": 451
+   },
+   "requests": []
+  }
+ },
+ {
+  "capture": "7851a9c57874a767",
+  "file": "ask-b85c37f6309fae40.json",
+  "png_is_its_hash": true,
+  "record": {
+   "format": "lc-windows-ask/v1",
+   "selection_id": "ask-b85c37f6309fae40",
+   "selected_at": "2026-10-01T10:07:24.489Z",
+   "image": {
+    "file": "asks/4c4ff70c97fa64a40b0999486964155ce6bf4810c1058f4c6f99473bd3c71d9a.png",
+    "sha256": "4c4ff70c97fa64a40b0999486964155ce6bf4810c1058f4c6f99473bd3c71d9a",
+    "bytes": 160572,
+    "width": 1732,
+    "height": 1052
+   },
+   "context": {
+    "capture_session_id": "7851a9c57874a767",
+    "frame_seq": 28,
+    "frame_captured_at": "2026-10-01T10:07:24.206Z",
+    "frame_width": 2560,
+    "frame_height": 1600,
+    "display": {
+     "id": "3071609112",
+     "bounds": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800
+     },
+     "scale_factor": 2
+    },
+    "region_dip": {
+     "x": 17,
+     "y": 72,
+     "width": 866,
+     "height": 526
+    },
+    "region_px": {
+     "x": 34,
+     "y": 144,
+     "width": 1732,
+     "height": 1052
+    },
+    "ink_revision": 0,
+    "ink_sha256": "d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7",
+    "source_url": null,
+    "source_version": null,
+    "media_position": null
+   },
+   "ink_original": {
+    "file": "ink/d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7.json",
+    "sha256": "d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7",
+    "bytes": 451
+   },
+   "requests": []
+  }
+ },
+ {
+  "capture": "7851a9c57874a767",
+  "file": "ask-c8a88480c54a32a0.json",
+  "png_is_its_hash": true,
+  "record": {
+   "format": "lc-windows-ask/v1",
+   "selection_id": "ask-c8a88480c54a32a0",
+   "selected_at": "2026-10-01T10:07:19.105Z",
+   "image": {
+    "file": "asks/4c4ff70c97fa64a40b0999486964155ce6bf4810c1058f4c6f99473bd3c71d9a.png",
+    "sha256": "4c4ff70c97fa64a40b0999486964155ce6bf4810c1058f4c6f99473bd3c71d9a",
+    "bytes": 160572,
+    "width": 1732,
+    "height": 1052
+   },
+   "context": {
+    "capture_session_id": "7851a9c57874a767",
+    "frame_seq": 23,
+    "frame_captured_at": "2026-10-01T10:07:18.944Z",
+    "frame_width": 2560,
+    "frame_height": 1600,
+    "display": {
+     "id": "3071609112",
+     "bounds": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800
+     },
+     "scale_factor": 2
+    },
+    "region_dip": {
+     "x": 17,
+     "y": 72,
+     "width": 866,
+     "height": 526
+    },
+    "region_px": {
+     "x": 34,
+     "y": 144,
+     "width": 1732,
+     "height": 1052
+    },
+    "ink_revision": 0,
+    "ink_sha256": "d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7",
+    "source_url": null,
+    "source_version": null,
+    "media_position": null
+   },
+   "ink_original": {
+    "file": "ink/d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7.json",
+    "sha256": "d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7",
+    "bytes": 451
+   },
+   "requests": []
+  }
+ },
+ {
+  "capture": "7851a9c57874a767",
+  "file": "ask-dcaba86cb476df45.json",
+  "png_is_its_hash": true,
+  "record": {
+   "format": "lc-windows-ask/v1",
+   "selection_id": "ask-dcaba86cb476df45",
+   "selected_at": "2026-10-01T10:07:14.369Z",
+   "image": {
+    "file": "asks/4c4ff70c97fa64a40b0999486964155ce6bf4810c1058f4c6f99473bd3c71d9a.png",
+    "sha256": "4c4ff70c97fa64a40b0999486964155ce6bf4810c1058f4c6f99473bd3c71d9a",
+    "bytes": 160572,
+    "width": 1732,
+    "height": 1052
+   },
+   "context": {
+    "capture_session_id": "7851a9c57874a767",
+    "frame_seq": 18,
+    "frame_captured_at": "2026-10-01T10:07:13.699Z",
+    "frame_width": 2560,
+    "frame_height": 1600,
+    "display": {
+     "id": "3071609112",
+     "bounds": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800
+     },
+     "scale_factor": 2
+    },
+    "region_dip": {
+     "x": 17,
+     "y": 72,
+     "width": 866,
+     "height": 526
+    },
+    "region_px": {
+     "x": 34,
+     "y": 144,
+     "width": 1732,
+     "height": 1052
+    },
+    "ink_revision": 0,
+    "ink_sha256": "d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7",
+    "source_url": null,
+    "source_version": null,
+    "media_position": null
+   },
+   "ink_original": {
+    "file": "ink/d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7.json",
+    "sha256": "d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7",
+    "bytes": 451
+   },
+   "requests": []
+  }
+ },
+ {
+  "capture": "7851a9c57874a767",
+  "file": "ask-ea4e17a2a0a4e3ab.json",
+  "png_is_its_hash": true,
+  "record": {
+   "format": "lc-windows-ask/v1",
+   "selection_id": "ask-ea4e17a2a0a4e3ab",
+   "selected_at": "2026-10-01T10:07:29.377Z",
+   "image": {
+    "file": "asks/4c4ff70c97fa64a40b0999486964155ce6bf4810c1058f4c6f99473bd3c71d9a.png",
+    "sha256": "4c4ff70c97fa64a40b0999486964155ce6bf4810c1058f4c6f99473bd3c71d9a",
+    "bytes": 160572,
+    "width": 1732,
+    "height": 1052
+   },
+   "context": {
+    "capture_session_id": "7851a9c57874a767",
+    "frame_seq": 32,
+    "frame_captured_at": "2026-10-01T10:07:28.418Z",
+    "frame_width": 2560,
+    "frame_height": 1600,
+    "display": {
+     "id": "3071609112",
+     "bounds": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800
+     },
+     "scale_factor": 2
+    },
+    "region_dip": {
+     "x": 17,
+     "y": 72,
+     "width": 866,
+     "height": 526
+    },
+    "region_px": {
+     "x": 34,
+     "y": 144,
+     "width": 1732,
+     "height": 1052
+    },
+    "ink_revision": 0,
+    "ink_sha256": "d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7",
+    "source_url": null,
+    "source_version": null,
+    "media_position": null
+   },
+   "ink_original": {
+    "file": "ink/d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7.json",
+    "sha256": "d34796049fe94fa42c4500920c83db9a112fe0ec0f49e77939099f0c1efef9b7",
+    "bytes": 451
+   },
+   "requests": []
+  }
+ }
+]

@@ -1,0 +1,80 @@
+[
+ {
+  "capture": "5dd81bac115dd328",
+  "file": "ask-2195fa4d0f793130.json",
+  "png_is_its_hash": true,
+  "record": {
+   "format": "lc-windows-ask/v1",
+   "selection_id": "ask-2195fa4d0f793130",
+   "selected_at": "2026-10-01T10:08:21.913Z",
+   "image": {
+    "file": "asks/3d57a39c30d9870b3509a951256fdfa4b84ea934353e61b4cdc6dcbfc5b9731c.png",
+    "sha256": "3d57a39c30d9870b3509a951256fdfa4b84ea934353e61b4cdc6dcbfc5b9731c",
+    "bytes": 175018,
+    "width": 1732,
+    "height": 1052
+   },
+   "context": {
+    "capture_session_id": "5dd81bac115dd328",
+    "frame_seq": 16,
+    "frame_captured_at": "2026-10-01T10:08:21.760Z",
+    "frame_width": 2560,
+    "frame_height": 1600,
+    "display": {
+     "id": "3071609112",
+     "bounds": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800
+     },
+     "scale_factor": 2
+    },
+    "region_dip": {
+     "x": 17,
+     "y": 72,
+     "width": 866,
+     "height": 526
+    },
+    "region_px": {
+     "x": 34,
+     "y": 144,
+     "width": 1732,
+     "height": 1052
+    },
+    "ink_revision": 2,
+    "ink_sha256": "2d00f26322b90b8755b52e235fe59d7b3b8614e403cff15544e28bd70063e90d",
+    "source_url": null,
+    "source_version": null,
+    "media_position": null
+   },
+   "ink_original": {
+    "file": "ink/2d00f26322b90b8755b52e235fe59d7b3b8614e403cff15544e28bd70063e90d.json",
+    "sha256": "2d00f26322b90b8755b52e235fe59d7b3b8614e403cff15544e28bd70063e90d",
+    "bytes": 13445
+   },
+   "requests": [
+    {
+     "request_id": "ask-2195fa4d0f793130.1",
+     "question": "I circled two cards with my pen. Name only those two cards. For each one, write one line: the number written in the card, then the color and the shape next to the number.",
+     "assistance": "full_solution",
+     "model": "qa-synthetic-vision",
+     "submitted_at": "2026-10-01T10:08:22.153Z",
+     "ended_at": "2026-10-01T10:08:25.159Z",
+     "outcome": {
+      "status": "answered",
+      "answer": {
+       "request_id": "ask-2195fa4d0f793130.1",
+       "text": "SYNTHETIC (QA fake bridge: no model, no ChatGPT). Rehearsal answer: it names no card.",
+       "model": "qa-synthetic-vision",
+       "latency_ms": 7,
+       "thread_id": "thread-qa-synthetic",
+       "turn_id": "turn-qa-synthetic-1"
+      }
+     },
+     "shown": true
+    }
+   ]
+  }
+ }
+]

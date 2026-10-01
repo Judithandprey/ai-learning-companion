@@ -1,0 +1,59 @@
+[
+ {
+  "capture": "fe202d26aacc1f74",
+  "file": "ask-bab5ed436f4508a1.json",
+  "png_is_its_hash": true,
+  "record": {
+   "format": "lc-windows-ask/v1",
+   "selection_id": "ask-bab5ed436f4508a1",
+   "selected_at": "2026-10-01T10:09:15.791Z",
+   "image": {
+    "file": "asks/487658afc6a49fd681270402b9d70528689a735c4ff1fdaec5e8cbda0e160081.png",
+    "sha256": "487658afc6a49fd681270402b9d70528689a735c4ff1fdaec5e8cbda0e160081",
+    "bytes": 189136,
+    "width": 1732,
+    "height": 1052
+   },
+   "context": {
+    "capture_session_id": "fe202d26aacc1f74",
+    "frame_seq": 16,
+    "frame_captured_at": "2026-10-01T10:09:15.634Z",
+    "frame_width": 2560,
+    "frame_height": 1600,
+    "display": {
+     "id": "3071609112",
+     "bounds": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800
+     },
+     "scale_factor": 2
+    },
+    "region_dip": {
+     "x": 17,
+     "y": 72,
+     "width": 866,
+     "height": 526
+    },
+    "region_px": {
+     "x": 34,
+     "y": 144,
+     "width": 1732,
+     "height": 1052
+    },
+    "ink_revision": 2,
+    "ink_sha256": "89a9d167d9554e190812e8b524a49f7f89e46e47c5d7278095b8395812b34387",
+    "source_url": null,
+    "source_version": null,
+    "media_position": null
+   },
+   "ink_original": {
+    "file": "ink/89a9d167d9554e190812e8b524a49f7f89e46e47c5d7278095b8395812b34387.json",
+    "sha256": "89a9d167d9554e190812e8b524a49f7f89e46e47c5d7278095b8395812b34387",
+    "bytes": 13450
+   },
+   "requests": []
+  }
+ }
+]

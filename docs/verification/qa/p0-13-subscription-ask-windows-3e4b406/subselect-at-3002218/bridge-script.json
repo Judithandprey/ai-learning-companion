@@ -1,0 +1,76 @@
+{
+ "launches": [
+  {
+   "asks": [
+    {
+     "do": "answer",
+     "text": "SYNTHETIC (QA fake bridge: no model, no ChatGPT). First control answer."
+    },
+    {
+     "do": "answer",
+     "tamper": "image_sha256"
+    },
+    {
+     "do": "error",
+     "code": "quota"
+    },
+    {
+     "do": "error",
+     "code": "busy"
+    },
+    {
+     "do": "error",
+     "code": "unsupported_model"
+    },
+    {
+     "do": "error",
+     "code": "invalid_request"
+    },
+    {
+     "do": "error",
+     "code": "failed"
+    },
+    {
+     "do": "error",
+     "code": "unavailable"
+    },
+    {
+     "do": "hold",
+     "on_cancel": "cancelled"
+    },
+    {
+     "do": "hold",
+     "on_cancel": "late_answer"
+    },
+    {
+     "do": "hold",
+     "on_cancel": "unconfirmed"
+    },
+    {
+     "do": "hold",
+     "on_stop": "late_answer"
+    },
+    {
+     "do": "answer",
+     "text": "SYNTHETIC (QA fake bridge: no model, no ChatGPT). Answer in the second capture session."
+    },
+    {
+     "do": "fault",
+     "during_read": true
+    }
+   ]
+  },
+  {
+   "asks": [
+    {
+     "do": "answer",
+     "text": "SYNTHETIC (QA fake bridge: no model, no ChatGPT). Answer from the second bridge start."
+    },
+    {
+     "do": "error",
+     "code": "unauthenticated"
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,714 @@
+{
+ "scenario": "subcheck",
+ "counts": {
+  "pass": 10
+ },
+ "checks": [
+  {
+   "id": "run.shared_desktop_quiet",
+   "status": "pass",
+   "observed": {
+    "foreign_electron_seen": [],
+    "looked_at_start_and_end": true,
+    "screenshots": 0
+   },
+   "note": "no other Electron app at start, at each screenshot and at the end (point-in-time)"
+  },
+  {
+   "id": "run.completed",
+   "status": "pass",
+   "observed": {
+    "aborted": null,
+    "failed_steps": [],
+    "steps_run": 76,
+    "steps_planned": 76,
+    "steps_not_run_as_planned": [],
+    "unreadable_selection_records": []
+   },
+   "note": "every planned step ran, in order, as the kind of step it was planned as; an optional wait that timed out counts as a failed step here"
+  },
+  {
+   "id": "run.surface_really_on_screen_and_in_each_selected_picture",
+   "status": "pass",
+   "observed": {
+    "on_top_checks": [
+     {
+      "i": 7,
+      "ok": true,
+      "points": 16,
+      "covered": []
+     }
+    ],
+    "circled_cards": [
+     1,
+     11
+    ],
+    "selected_pictures": {
+     "picture_circled": {
+      "ok": true,
+      "size": [
+       1732,
+       1052
+      ],
+      "ringed": [
+       1,
+       11
+      ],
+      "rings_wanted": [
+       1,
+       11
+      ],
+      "gaps_white": 17
+     }
+    },
+    "problems": {}
+   },
+   "note": "under 16 points of the grid the top window was QA's Edge window before the capture started; and every selected picture, read from its own pixels in the page, shows the twelve cards (grey ground, a shape of the truth's colour, dark digits, white between) with the pen's ring around exactly the cards the harness circled"
+  },
+  {
+   "id": "qa.never_signs_in",
+   "status": "pass",
+   "observed": {
+    "steps_that_could_sign_in": [],
+    "login_states_seen": [
+     "none"
+    ],
+    "status_events": 2,
+    "status_reads": 4
+   },
+   "note": "no planned step presses Sign in or Cancel sign-in or clicks or types in the control window, and every subscription status the app notified or returned has login 'none': this run started no sign-in and opened no browser"
+  },
+  {
+   "id": "run.real_connector",
+   "status": "pass",
+   "observed": {
+    "kind": "real",
+    "python": "<home>/Projects/learning-companion/repo/.venv/bin/python",
+    "state_dir": "the connector's default product state (state_dir null)",
+    "codex_bin": "<home>/.local/bin/codex",
+    "source": "3e4b40654460a2dc2407f1d9be60d8e1a5b39a3e",
+    "copy_is_the_commits_services_and_packages": true,
+    "copy_files": 268,
+    "ask_path": {
+     "ok": true,
+     "prompt_bytes": 2094,
+     "project_modules_loaded": 9,
+     "modules_loaded_from_elsewhere": [],
+     "packages_contracts_loaded": true
+    },
+    "connector_files_sha256": {
+     "services/worker/connectors/chatgpt_local.py": "515be8599afce7dce8cd78409786eb3def53ceec1cd422f1fb9066565c65669e",
+     "services/worker/connectors/chatgpt_rpc.py": "7f0801be526e44be3773446c8a186dbaad2a8df978331308a088423aeb2c049f",
+     "services/worker/connectors/chatgpt_launch.py": "b4c89171f025056062a091dab47ac6c3b3f372843da428a72b35f7d8eab49090",
+     "services/worker/connectors/chatgpt_receipts.py": "cf3ec73ce51f83056d147b6a0997a5c3c245c9a7b2deae295f29ee9165a17cae",
+     "services/learning/subscription_ask.py": "3e1d52eb166ffcd83d5c9b2405bee27628faedc13f0798450d473cd5933955ae"
+    },
+    "wsl": {
+     "distribution": "Ubuntu",
+     "user": "agentsdock",
+     "distributions_listed": [
+      "Ubuntu"
+     ],
+     "this_user": "agentsdock"
+    }
+   },
+   "note": "the app's connector was the released one: the project's Python running a private copy that is the named commit's services/ and packages/ file for file, in which the connector's own preparation of a question was run offline before the app started; the connector's own product state"
+  },
+  {
+   "id": "check.connection_read_on_the_users_press",
+   "status": "pass",
+   "observed": {
+    "before": "not_checked",
+    "after": {
+     "state": "signed_out",
+     "plan": null,
+     "model": "gpt-6-astra",
+     "login": "none",
+     "detail": null
+    },
+    "state_text": "Not signed in. Sign in with ChatGPT opens the official sign-in page in your browser.",
+    "quota_text": "Usage limits: not reported.",
+    "models": [
+     {
+      "id": "gpt-6-astra",
+      "label": "GPT-6-Astra",
+      "image_input": true,
+      "default": true
+     },
+     {
+      "id": "gpt-6-sol",
+      "label": "GPT-6-Sol",
+      "image_input": true,
+      "default": false
+     },
+     {
+      "id": "gpt-6-luna",
+      "label": "GPT-6-Luna",
+      "image_input": true,
+      "default": false
+     },
+     {
+      "id": "gpt-5.6-sol",
+      "label": "GPT-5.6-Sol",
+      "image_input": true,
+      "default": false
+     },
+     {
+      "id": "gpt-5.6-terra",
+      "label": "GPT-5.6-Terra",
+      "image_input": true,
+      "default": false
+     },
+     {
+      "id": "gpt-5.6-luna",
+      "label": "GPT-5.6-Luna",
+      "image_input": true,
+      "default": false
+     },
+     {
+      "id": "gpt-5.5",
+      "label": "GPT-5.5",
+      "image_input": true,
+      "default": false
+     }
+    ],
+    "models_offered": [
+     [
+      "gpt-6-astra",
+      "GPT-6-Astra",
+      true
+     ],
+     [
+      "gpt-6-sol",
+      "GPT-6-Sol",
+      false
+     ],
+     [
+      "gpt-6-luna",
+      "GPT-6-Luna",
+      false
+     ],
+     [
+      "gpt-5.6-sol",
+      "GPT-5.6-Sol",
+      false
+     ],
+     [
+      "gpt-5.6-terra",
+      "GPT-5.6-Terra",
+      false
+     ],
+     [
+      "gpt-5.6-luna",
+      "GPT-5.6-Luna",
+      false
+     ],
+     [
+      "gpt-5.5",
+      "GPT-5.5",
+      false
+     ]
+    ],
+    "sign_in_button_shown": true,
+    "app_children": {
+     "before_the_press": [
+      "electron.exe",
+      "electron.exe",
+      "electron.exe"
+     ],
+     "after_the_press": [
+      "electron.exe",
+      "electron.exe",
+      "electron.exe",
+      "wsl.exe"
+     ]
+    },
+    "connector_processes": [
+     {
+      "name": "python",
+      "role": "in_root",
+      "at": "2026-10-01T10:08:59.853429+00:00"
+     },
+     {
+      "name": "codex",
+      "role": "descendant",
+      "at": "2026-10-01T10:09:00.059208+00:00"
+     },
+     {
+      "name": "lsb_release",
+      "role": "descendant",
+      "at": "2026-10-01T10:09:00.162399+00:00"
+     }
+    ]
+   },
+   "note": "the connector started only on the press (the app had no wsl.exe child before it, one after) and reports NOT signed in: the official 'Sign in with ChatGPT' button is shown. Signing in is the user's own browser step; QA did not press it"
+  },
+  {
+   "id": "check.card_form_on_a_real_selection_nothing_asked",
+   "status": "pass",
+   "observed": {
+    "card": {
+     "badge": "Selection · not sent to any AI",
+     "card_text": "This selection is sent to ChatGPT, with your question, only when you press Ask below; nothing else of the screen is sent to any AI, and no AI watches it.\nRegion 17,72 866×526 DIP on 整个屏幕 = 1732×1052 px of frame 16 (captured 03:09:15), with your ink revision 2 drawn over it.",
+     "question": "Explain what is selected.",
+     "assistance": "hint",
+     "form_shown": true,
+     "picture": {
+      "png_sha256": "487658afc6a49fd681270402b9d70528689a735c4ff1fdaec5e8cbda0e160081",
+      "png_bytes": 189136,
+      "width": 1732,
+      "height": 1052
+     }
+    },
+    "record_requests": [],
+    "ask_presses_planned": 0,
+    "request_ids_recorded_by_the_app": []
+   },
+   "note": "the selection of the surface with the two circles shows the question form; the picture is the PNG the app kept; the run has no Ask press and the app recorded no request (receipts are looked up only by recorded request ids, so none was looked up)"
+  },
+  {
+   "id": "check.question_box_takes_typed_text_after_a_click",
+   "status": "pass",
+   "observed": {
+    "os_click": {
+     "point_px": [
+      2137,
+      1418
+     ],
+     "pointer_still_there": true,
+     "window_at_point_is_ours": true,
+     "clicked": true,
+     "foreground_before": false,
+     "foreground_after": true,
+     "error": null
+    },
+    "focus_after_click": {
+     "value": "Explain what is selected.",
+     "active": true,
+     "has_focus": true,
+     "disabled": false,
+     "selection": [
+      24,
+      25
+     ],
+     "inputs": []
+    },
+    "keys": {
+     "window_found": true,
+     "is_foreground": true,
+     "sent": true,
+     "sent_chars": 9,
+     "still_foreground": true
+    },
+    "question_before": "Explain what is selected.",
+    "question_after": "Explain what is selected4207 1935",
+    "caret_after_click": [
+     24,
+     25
+    ],
+    "what_the_box_was_told": [
+     {
+      "type": "compositionstart",
+      "input": null,
+      "data": ".",
+      "selection": [
+       24,
+       25
+      ]
+     },
+     {
+      "type": "beforeinput",
+      "input": "insertCompositionText",
+      "data": "4",
+      "selection": [
+       24,
+       25
+      ]
+     },
+     {
+      "type": "beforeinput",
+      "input": "insertCompositionText",
+      "data": "4",
+      "selection": [
+       24,
+       25
+      ]
+     },
+     {
+      "type": "compositionend",
+      "input": null,
+      "data": "4",
+      "selection": [
+       25,
+       25
+      ]
+     },
+     {
+      "type": "compositionstart",
+      "input": null,
+      "data": "",
+      "selection": [
+       25,
+       25
+      ]
+     },
+     {
+      "type": "beforeinput",
+      "input": "insertCompositionText",
+      "data": "2",
+      "selection": [
+       25,
+       25
+      ]
+     },
+     {
+      "type": "beforeinput",
+      "input": "insertCompositionText",
+      "data": "2",
+      "selection": [
+       25,
+       26
+      ]
+     },
+     {
+      "type": "compositionend",
+      "input": null,
+      "data": "2",
+      "selection": [
+       26,
+       26
+      ]
+     },
+     {
+      "type": "compositionstart",
+      "input": null,
+      "data": "",
+      "selection": [
+       26,
+       26
+      ]
+     },
+     {
+      "type": "beforeinput",
+      "input": "insertCompositionText",
+      "data": "0",
+      "selection": [
+       26,
+       26
+      ]
+     },
+     {
+      "type": "beforeinput",
+      "input": "insertCompositionText",
+      "data": "0",
+      "selection": [
+       26,
+       27
+      ]
+     },
+     {
+      "type": "compositionend",
+      "input": null,
+      "data": "0",
+      "selection": [
+       27,
+       27
+      ]
+     },
+     {
+      "type": "compositionstart",
+      "input": null,
+      "data": "",
+      "selection": [
+       27,
+       27
+      ]
+     },
+     {
+      "type": "beforeinput",
+      "input": "insertCompositionText",
+      "data": "7",
+      "selection": [
+       27,
+       27
+      ]
+     },
+     {
+      "type": "beforeinput",
+      "input": "insertCompositionText",
+      "data": "7",
+      "selection": [
+       27,
+       28
+      ]
+     },
+     {
+      "type": "compositionend",
+      "input": null,
+      "data": "7",
+      "selection": [
+       28,
+       28
+      ]
+     },
+     {
+      "type": "beforeinput",
+      "input": "insertText",
+      "data": " ",
+      "selection": [
+       28,
+       28
+      ]
+     },
+     {
+      "type": "compositionstart",
+      "input": null,
+      "data": "",
+      "selection": [
+       29,
+       29
+      ]
+     },
+     {
+      "type": "beforeinput",
+      "input": "insertCompositionText",
+      "data": "1",
+      "selection": [
+       29,
+       29
+      ]
+     },
+     {
+      "type": "beforeinput",
+      "input": "insertCompositionText",
+      "data": "1",
+      "selection": [
+       29,
+       30
+      ]
+     },
+     {
+      "type": "compositionend",
+      "input": null,
+      "data": "1",
+      "selection": [
+       30,
+       30
+      ]
+     },
+     {
+      "type": "compositionstart",
+      "input": null,
+      "data": "",
+      "selection": [
+       30,
+       30
+      ]
+     },
+     {
+      "type": "beforeinput",
+      "input": "insertCompositionText",
+      "data": "9",
+      "selection": [
+       30,
+       30
+      ]
+     },
+     {
+      "type": "beforeinput",
+      "input": "insertCompositionText",
+      "data": "9",
+      "selection": [
+       30,
+       31
+      ]
+     },
+     {
+      "type": "compositionend",
+      "input": null,
+      "data": "9",
+      "selection": [
+       31,
+       31
+      ]
+     },
+     {
+      "type": "compositionstart",
+      "input": null,
+      "data": "",
+      "selection": [
+       31,
+       31
+      ]
+     },
+     {
+      "type": "beforeinput",
+      "input": "insertCompositionText",
+      "data": "3",
+      "selection": [
+       31,
+       31
+      ]
+     },
+     {
+      "type": "beforeinput",
+      "input": "insertCompositionText",
+      "data": "3",
+      "selection": [
+       31,
+       32
+      ]
+     },
+     {
+      "type": "compositionend",
+      "input": null,
+      "data": "3",
+      "selection": [
+       32,
+       32
+      ]
+     },
+     {
+      "type": "compositionstart",
+      "input": null,
+      "data": "",
+      "selection": [
+       32,
+       32
+      ]
+     },
+     {
+      "type": "beforeinput",
+      "input": "insertCompositionText",
+      "data": "5",
+      "selection": [
+       32,
+       32
+      ]
+     },
+     {
+      "type": "beforeinput",
+      "input": "insertCompositionText",
+      "data": "5",
+      "selection": [
+       32,
+       33
+      ]
+     },
+     {
+      "type": "compositionend",
+      "input": null,
+      "data": "5",
+      "selection": [
+       33,
+       33
+      ]
+     }
+    ],
+    "text_that_was_there_is_kept_whole": false
+   },
+   "note": "one OS mouse click on the question box gave the overlay the keyboard, and OS keystrokes then typed into it (synthetic OS input, not a physical mouse or keyboard). The text that was in the box did not stay whole (see question_after); why is not determined: the system's only input method is Microsoft Pinyin and the app has no handler on the box (what the box was told is listed). Not judged"
+  },
+  {
+   "id": "check.question_box_takes_typed_text_when_qa_raises_the_overlay",
+   "status": "pass",
+   "observed": {
+    "focus": {
+     "active": true,
+     "has_focus": true
+    },
+    "keys": {
+     "window_found": true,
+     "is_foreground": true,
+     "sent": true,
+     "sent_chars": 7,
+     "still_foreground": true
+    },
+    "question_after": "7781 20"
+   },
+   "note": "DIAGNOSTIC, not a user path: after QA itself brings the overlay to the foreground and focuses the box, the keys replace the selected text"
+  },
+  {
+   "id": "release.app_and_connector_ended",
+   "status": "pass",
+   "observed": {
+    "apps": {
+     "app": {
+      "pid": 62176,
+      "sub": "",
+      "close_via": "page",
+      "exited": true,
+      "exit_code": 0,
+      "exit_ms": 124,
+      "killed": null,
+      "closed_in_finally": null
+     },
+     "app-real": {
+      "pid": 81560,
+      "sub": "real",
+      "close_via": "wm_close",
+      "exited": true,
+      "exit_code": 0,
+      "exit_ms": 228,
+      "killed": null,
+      "closed_in_finally": null
+     }
+    },
+    "watched": [
+     {
+      "event": "appear",
+      "pid": 1387761,
+      "name": "python",
+      "role": "in_root",
+      "at": "2026-10-01T10:08:59.853429+00:00"
+     },
+     {
+      "event": "appear",
+      "pid": 1387770,
+      "name": "codex",
+      "role": "descendant",
+      "at": "2026-10-01T10:09:00.059208+00:00"
+     },
+     {
+      "event": "appear",
+      "pid": 1387837,
+      "name": "lsb_release",
+      "role": "descendant",
+      "at": "2026-10-01T10:09:00.162399+00:00"
+     },
+     {
+      "event": "exit",
+      "pid": 1387837,
+      "name": "lsb_release",
+      "role": "descendant",
+      "at": "2026-10-01T10:09:00.265231+00:00"
+     },
+     {
+      "event": "exit",
+      "pid": 1387761,
+      "name": "python",
+      "role": "in_root",
+      "at": "2026-10-01T10:09:20.974696+00:00"
+     },
+     {
+      "event": "exit",
+      "pid": 1387770,
+      "name": "codex",
+      "role": "descendant",
+      "at": "2026-10-01T10:09:20.974746+00:00"
+     }
+    ],
+    "expected_starts_in_the_connector_folder": 1,
+    "there_before_the_run": [],
+    "left_at_watch_end": [],
+    "wsl_exe_seen_by_the_runner": [
+     {
+      "pid": 79916,
+      "running_at_end": false
+     }
+    ]
+   },
+   "note": "both app processes ended by themselves with code 0; exactly the expected number of processes started in the connector's folder, and each of them and of their children exited; nothing ran there before; no wsl.exe child the runner saw was still running at the end"
+  }
+ ]
+}

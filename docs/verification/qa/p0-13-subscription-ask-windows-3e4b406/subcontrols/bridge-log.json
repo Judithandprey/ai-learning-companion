@@ -1,0 +1,1127 @@
+[
+ {
+  "at": "2026-10-01T10:05:21.215876+00:00",
+  "event": "start",
+  "launch": "0d202a01468e4f00acb58ee475cd1ab3",
+  "launch_n": 0,
+  "pid": 1385929,
+  "argv": [
+   "-m",
+   "services.worker.connectors.chatgpt_local"
+  ],
+  "stdin_fifo": true,
+  "label": "SYNTHETIC (QA fake bridge: no model, no ChatGPT)"
+ },
+ {
+  "at": "2026-10-01T10:05:21.215943+00:00",
+  "event": "request",
+  "id": "r1",
+  "method": "connection/read",
+  "params_keys": [],
+  "request_id": null,
+  "capture_session_id": null
+ },
+ {
+  "at": "2026-10-01T10:05:21.216002+00:00",
+  "event": "sent",
+  "kind": "connection",
+  "id": "r1",
+  "method": null,
+  "error": null,
+  "result_keys": [
+   "auth",
+   "models",
+   "rate_limits"
+  ]
+ },
+ {
+  "at": "2026-10-01T10:05:40.896964+00:00",
+  "event": "ask",
+  "n": 0,
+  "id": "r2",
+  "request_id": "ask-a2eb13287526932d.1",
+  "model": "qa-synthetic-vision",
+  "assistance": "explain",
+  "question_chars": 170,
+  "question_sha256": "909707ed6ed2e94251f963ab5c17c53dba1834260cfd9ff2ae391e3d377bac4f",
+  "image": {
+   "sha256": "95537f73c39dd6a78e93024a6610e0b8e806ddf14c39c6d5716b6cc8c54c5185",
+   "width": 1732,
+   "height": 1052,
+   "png_bytes": 170157,
+   "bytes_hash_to_sha256": true,
+   "is_png": true
+  },
+  "capture_session_id": "f0b6721fd729652e",
+  "context_keys": [
+   "capture_session_id",
+   "display",
+   "frame_captured_at",
+   "frame_height",
+   "frame_seq",
+   "frame_width",
+   "ink_revision",
+   "ink_sha256",
+   "media_position",
+   "region_dip",
+   "region_px",
+   "source_url",
+   "source_version"
+  ],
+  "request_keys": [
+   "assistance",
+   "context",
+   "image",
+   "question",
+   "request_id"
+  ],
+  "behaviour": "answer"
+ },
+ {
+  "at": "2026-10-01T10:05:40.897232+00:00",
+  "event": "sent",
+  "kind": "answer",
+  "id": "r2",
+  "method": null,
+  "error": null,
+  "result_keys": [
+   "auth_mode",
+   "kind",
+   "latency_ms",
+   "model",
+   "provenance",
+   "request_id",
+   "text",
+   "thread_id",
+   "turn_id"
+  ]
+ },
+ {
+  "at": "2026-10-01T10:05:40.976455+00:00",
+  "event": "ask",
+  "n": 1,
+  "id": "r3",
+  "request_id": "ask-a2eb13287526932d.2",
+  "model": "qa-synthetic-vision",
+  "assistance": "explain",
+  "question_chars": 170,
+  "question_sha256": "909707ed6ed2e94251f963ab5c17c53dba1834260cfd9ff2ae391e3d377bac4f",
+  "image": {
+   "sha256": "95537f73c39dd6a78e93024a6610e0b8e806ddf14c39c6d5716b6cc8c54c5185",
+   "width": 1732,
+   "height": 1052,
+   "png_bytes": 170157,
+   "bytes_hash_to_sha256": true,
+   "is_png": true
+  },
+  "capture_session_id": "f0b6721fd729652e",
+  "context_keys": [
+   "capture_session_id",
+   "display",
+   "frame_captured_at",
+   "frame_height",
+   "frame_seq",
+   "frame_width",
+   "ink_revision",
+   "ink_sha256",
+   "media_position",
+   "region_dip",
+   "region_px",
+   "source_url",
+   "source_version"
+  ],
+  "request_keys": [
+   "assistance",
+   "context",
+   "image",
+   "question",
+   "request_id"
+  ],
+  "behaviour": "answer"
+ },
+ {
+  "at": "2026-10-01T10:05:40.976745+00:00",
+  "event": "sent",
+  "kind": "answer",
+  "id": "r3",
+  "method": null,
+  "error": null,
+  "result_keys": [
+   "auth_mode",
+   "kind",
+   "latency_ms",
+   "model",
+   "provenance",
+   "request_id",
+   "text",
+   "thread_id",
+   "turn_id"
+  ]
+ },
+ {
+  "at": "2026-10-01T10:05:41.033953+00:00",
+  "event": "ask",
+  "n": 2,
+  "id": "r4",
+  "request_id": "ask-a2eb13287526932d.3",
+  "model": "qa-synthetic-vision",
+  "assistance": "explain",
+  "question_chars": 170,
+  "question_sha256": "909707ed6ed2e94251f963ab5c17c53dba1834260cfd9ff2ae391e3d377bac4f",
+  "image": {
+   "sha256": "95537f73c39dd6a78e93024a6610e0b8e806ddf14c39c6d5716b6cc8c54c5185",
+   "width": 1732,
+   "height": 1052,
+   "png_bytes": 170157,
+   "bytes_hash_to_sha256": true,
+   "is_png": true
+  },
+  "capture_session_id": "f0b6721fd729652e",
+  "context_keys": [
+   "capture_session_id",
+   "display",
+   "frame_captured_at",
+   "frame_height",
+   "frame_seq",
+   "frame_width",
+   "ink_revision",
+   "ink_sha256",
+   "media_position",
+   "region_dip",
+   "region_px",
+   "source_url",
+   "source_version"
+  ],
+  "request_keys": [
+   "assistance",
+   "context",
+   "image",
+   "question",
+   "request_id"
+  ],
+  "behaviour": "error"
+ },
+ {
+  "at": "2026-10-01T10:05:41.034200+00:00",
+  "event": "sent",
+  "kind": "error",
+  "id": "r4",
+  "method": null,
+  "error": "quota",
+  "result_keys": null
+ },
+ {
+  "at": "2026-10-01T10:05:41.094753+00:00",
+  "event": "ask",
+  "n": 3,
+  "id": "r5",
+  "request_id": "ask-a2eb13287526932d.4",
+  "model": "qa-synthetic-vision",
+  "assistance": "explain",
+  "question_chars": 170,
+  "question_sha256": "909707ed6ed2e94251f963ab5c17c53dba1834260cfd9ff2ae391e3d377bac4f",
+  "image": {
+   "sha256": "95537f73c39dd6a78e93024a6610e0b8e806ddf14c39c6d5716b6cc8c54c5185",
+   "width": 1732,
+   "height": 1052,
+   "png_bytes": 170157,
+   "bytes_hash_to_sha256": true,
+   "is_png": true
+  },
+  "capture_session_id": "f0b6721fd729652e",
+  "context_keys": [
+   "capture_session_id",
+   "display",
+   "frame_captured_at",
+   "frame_height",
+   "frame_seq",
+   "frame_width",
+   "ink_revision",
+   "ink_sha256",
+   "media_position",
+   "region_dip",
+   "region_px",
+   "source_url",
+   "source_version"
+  ],
+  "request_keys": [
+   "assistance",
+   "context",
+   "image",
+   "question",
+   "request_id"
+  ],
+  "behaviour": "error"
+ },
+ {
+  "at": "2026-10-01T10:05:41.094972+00:00",
+  "event": "sent",
+  "kind": "error",
+  "id": "r5",
+  "method": null,
+  "error": "busy",
+  "result_keys": null
+ },
+ {
+  "at": "2026-10-01T10:05:41.147540+00:00",
+  "event": "ask",
+  "n": 4,
+  "id": "r6",
+  "request_id": "ask-a2eb13287526932d.5",
+  "model": "qa-synthetic-vision",
+  "assistance": "explain",
+  "question_chars": 170,
+  "question_sha256": "909707ed6ed2e94251f963ab5c17c53dba1834260cfd9ff2ae391e3d377bac4f",
+  "image": {
+   "sha256": "95537f73c39dd6a78e93024a6610e0b8e806ddf14c39c6d5716b6cc8c54c5185",
+   "width": 1732,
+   "height": 1052,
+   "png_bytes": 170157,
+   "bytes_hash_to_sha256": true,
+   "is_png": true
+  },
+  "capture_session_id": "f0b6721fd729652e",
+  "context_keys": [
+   "capture_session_id",
+   "display",
+   "frame_captured_at",
+   "frame_height",
+   "frame_seq",
+   "frame_width",
+   "ink_revision",
+   "ink_sha256",
+   "media_position",
+   "region_dip",
+   "region_px",
+   "source_url",
+   "source_version"
+  ],
+  "request_keys": [
+   "assistance",
+   "context",
+   "image",
+   "question",
+   "request_id"
+  ],
+  "behaviour": "error"
+ },
+ {
+  "at": "2026-10-01T10:05:41.147775+00:00",
+  "event": "sent",
+  "kind": "error",
+  "id": "r6",
+  "method": null,
+  "error": "unsupported_model",
+  "result_keys": null
+ },
+ {
+  "at": "2026-10-01T10:05:41.211660+00:00",
+  "event": "ask",
+  "n": 5,
+  "id": "r7",
+  "request_id": "ask-a2eb13287526932d.6",
+  "model": "qa-synthetic-vision",
+  "assistance": "explain",
+  "question_chars": 170,
+  "question_sha256": "909707ed6ed2e94251f963ab5c17c53dba1834260cfd9ff2ae391e3d377bac4f",
+  "image": {
+   "sha256": "95537f73c39dd6a78e93024a6610e0b8e806ddf14c39c6d5716b6cc8c54c5185",
+   "width": 1732,
+   "height": 1052,
+   "png_bytes": 170157,
+   "bytes_hash_to_sha256": true,
+   "is_png": true
+  },
+  "capture_session_id": "f0b6721fd729652e",
+  "context_keys": [
+   "capture_session_id",
+   "display",
+   "frame_captured_at",
+   "frame_height",
+   "frame_seq",
+   "frame_width",
+   "ink_revision",
+   "ink_sha256",
+   "media_position",
+   "region_dip",
+   "region_px",
+   "source_url",
+   "source_version"
+  ],
+  "request_keys": [
+   "assistance",
+   "context",
+   "image",
+   "question",
+   "request_id"
+  ],
+  "behaviour": "error"
+ },
+ {
+  "at": "2026-10-01T10:05:41.211877+00:00",
+  "event": "sent",
+  "kind": "error",
+  "id": "r7",
+  "method": null,
+  "error": "invalid_request",
+  "result_keys": null
+ },
+ {
+  "at": "2026-10-01T10:05:41.265316+00:00",
+  "event": "ask",
+  "n": 6,
+  "id": "r8",
+  "request_id": "ask-a2eb13287526932d.7",
+  "model": "qa-synthetic-vision",
+  "assistance": "explain",
+  "question_chars": 170,
+  "question_sha256": "909707ed6ed2e94251f963ab5c17c53dba1834260cfd9ff2ae391e3d377bac4f",
+  "image": {
+   "sha256": "95537f73c39dd6a78e93024a6610e0b8e806ddf14c39c6d5716b6cc8c54c5185",
+   "width": 1732,
+   "height": 1052,
+   "png_bytes": 170157,
+   "bytes_hash_to_sha256": true,
+   "is_png": true
+  },
+  "capture_session_id": "f0b6721fd729652e",
+  "context_keys": [
+   "capture_session_id",
+   "display",
+   "frame_captured_at",
+   "frame_height",
+   "frame_seq",
+   "frame_width",
+   "ink_revision",
+   "ink_sha256",
+   "media_position",
+   "region_dip",
+   "region_px",
+   "source_url",
+   "source_version"
+  ],
+  "request_keys": [
+   "assistance",
+   "context",
+   "image",
+   "question",
+   "request_id"
+  ],
+  "behaviour": "error"
+ },
+ {
+  "at": "2026-10-01T10:05:41.265503+00:00",
+  "event": "sent",
+  "kind": "error",
+  "id": "r8",
+  "method": null,
+  "error": "failed",
+  "result_keys": null
+ },
+ {
+  "at": "2026-10-01T10:05:41.332648+00:00",
+  "event": "ask",
+  "n": 7,
+  "id": "r9",
+  "request_id": "ask-a2eb13287526932d.8",
+  "model": "qa-synthetic-vision",
+  "assistance": "explain",
+  "question_chars": 170,
+  "question_sha256": "909707ed6ed2e94251f963ab5c17c53dba1834260cfd9ff2ae391e3d377bac4f",
+  "image": {
+   "sha256": "95537f73c39dd6a78e93024a6610e0b8e806ddf14c39c6d5716b6cc8c54c5185",
+   "width": 1732,
+   "height": 1052,
+   "png_bytes": 170157,
+   "bytes_hash_to_sha256": true,
+   "is_png": true
+  },
+  "capture_session_id": "f0b6721fd729652e",
+  "context_keys": [
+   "capture_session_id",
+   "display",
+   "frame_captured_at",
+   "frame_height",
+   "frame_seq",
+   "frame_width",
+   "ink_revision",
+   "ink_sha256",
+   "media_position",
+   "region_dip",
+   "region_px",
+   "source_url",
+   "source_version"
+  ],
+  "request_keys": [
+   "assistance",
+   "context",
+   "image",
+   "question",
+   "request_id"
+  ],
+  "behaviour": "error"
+ },
+ {
+  "at": "2026-10-01T10:05:41.332851+00:00",
+  "event": "sent",
+  "kind": "error",
+  "id": "r9",
+  "method": null,
+  "error": "unavailable",
+  "result_keys": null
+ },
+ {
+  "at": "2026-10-01T10:05:41.400752+00:00",
+  "event": "ask",
+  "n": 8,
+  "id": "r10",
+  "request_id": "ask-a2eb13287526932d.9",
+  "model": "qa-synthetic-vision",
+  "assistance": "explain",
+  "question_chars": 170,
+  "question_sha256": "909707ed6ed2e94251f963ab5c17c53dba1834260cfd9ff2ae391e3d377bac4f",
+  "image": {
+   "sha256": "95537f73c39dd6a78e93024a6610e0b8e806ddf14c39c6d5716b6cc8c54c5185",
+   "width": 1732,
+   "height": 1052,
+   "png_bytes": 170157,
+   "bytes_hash_to_sha256": true,
+   "is_png": true
+  },
+  "capture_session_id": "f0b6721fd729652e",
+  "context_keys": [
+   "capture_session_id",
+   "display",
+   "frame_captured_at",
+   "frame_height",
+   "frame_seq",
+   "frame_width",
+   "ink_revision",
+   "ink_sha256",
+   "media_position",
+   "region_dip",
+   "region_px",
+   "source_url",
+   "source_version"
+  ],
+  "request_keys": [
+   "assistance",
+   "context",
+   "image",
+   "question",
+   "request_id"
+  ],
+  "behaviour": "hold"
+ },
+ {
+  "at": "2026-10-01T10:05:41.418447+00:00",
+  "event": "request",
+  "id": "r11",
+  "method": "ask/cancel",
+  "params_keys": [
+   "request_id"
+  ],
+  "request_id": "ask-a2eb13287526932d.9",
+  "capture_session_id": null
+ },
+ {
+  "at": "2026-10-01T10:05:41.418804+00:00",
+  "event": "sent",
+  "kind": "error",
+  "id": "r10",
+  "method": null,
+  "error": "cancelled",
+  "result_keys": null
+ },
+ {
+  "at": "2026-10-01T10:05:41.418901+00:00",
+  "event": "sent",
+  "kind": "cancel_receipt",
+  "id": "r11",
+  "method": null,
+  "error": null,
+  "result_keys": [
+   "cancelled",
+   "uncertain"
+  ]
+ },
+ {
+  "at": "2026-10-01T10:05:42.979259+00:00",
+  "event": "ask",
+  "n": 9,
+  "id": "r12",
+  "request_id": "ask-a2eb13287526932d.10",
+  "model": "qa-synthetic-vision",
+  "assistance": "explain",
+  "question_chars": 170,
+  "question_sha256": "909707ed6ed2e94251f963ab5c17c53dba1834260cfd9ff2ae391e3d377bac4f",
+  "image": {
+   "sha256": "95537f73c39dd6a78e93024a6610e0b8e806ddf14c39c6d5716b6cc8c54c5185",
+   "width": 1732,
+   "height": 1052,
+   "png_bytes": 170157,
+   "bytes_hash_to_sha256": true,
+   "is_png": true
+  },
+  "capture_session_id": "f0b6721fd729652e",
+  "context_keys": [
+   "capture_session_id",
+   "display",
+   "frame_captured_at",
+   "frame_height",
+   "frame_seq",
+   "frame_width",
+   "ink_revision",
+   "ink_sha256",
+   "media_position",
+   "region_dip",
+   "region_px",
+   "source_url",
+   "source_version"
+  ],
+  "request_keys": [
+   "assistance",
+   "context",
+   "image",
+   "question",
+   "request_id"
+  ],
+  "behaviour": "hold"
+ },
+ {
+  "at": "2026-10-01T10:05:43.018421+00:00",
+  "event": "request",
+  "id": "r13",
+  "method": "ask/cancel",
+  "params_keys": [
+   "request_id"
+  ],
+  "request_id": "ask-a2eb13287526932d.10",
+  "capture_session_id": null
+ },
+ {
+  "at": "2026-10-01T10:05:43.018666+00:00",
+  "event": "sent",
+  "kind": "error",
+  "id": "r12",
+  "method": null,
+  "error": "cancelled",
+  "result_keys": null
+ },
+ {
+  "at": "2026-10-01T10:05:43.018754+00:00",
+  "event": "sent",
+  "kind": "cancel_receipt",
+  "id": "r13",
+  "method": null,
+  "error": null,
+  "result_keys": [
+   "cancelled",
+   "uncertain"
+  ]
+ },
+ {
+  "at": "2026-10-01T10:05:43.319586+00:00",
+  "event": "sent",
+  "kind": "answer",
+  "id": "r12",
+  "method": null,
+  "error": null,
+  "result_keys": [
+   "auth_mode",
+   "kind",
+   "latency_ms",
+   "model",
+   "provenance",
+   "request_id",
+   "text",
+   "thread_id",
+   "turn_id"
+  ]
+ },
+ {
+  "at": "2026-10-01T10:05:44.573074+00:00",
+  "event": "ask",
+  "n": 10,
+  "id": "r14",
+  "request_id": "ask-a2eb13287526932d.11",
+  "model": "qa-synthetic-vision",
+  "assistance": "explain",
+  "question_chars": 170,
+  "question_sha256": "909707ed6ed2e94251f963ab5c17c53dba1834260cfd9ff2ae391e3d377bac4f",
+  "image": {
+   "sha256": "95537f73c39dd6a78e93024a6610e0b8e806ddf14c39c6d5716b6cc8c54c5185",
+   "width": 1732,
+   "height": 1052,
+   "png_bytes": 170157,
+   "bytes_hash_to_sha256": true,
+   "is_png": true
+  },
+  "capture_session_id": "f0b6721fd729652e",
+  "context_keys": [
+   "capture_session_id",
+   "display",
+   "frame_captured_at",
+   "frame_height",
+   "frame_seq",
+   "frame_width",
+   "ink_revision",
+   "ink_sha256",
+   "media_position",
+   "region_dip",
+   "region_px",
+   "source_url",
+   "source_version"
+  ],
+  "request_keys": [
+   "assistance",
+   "context",
+   "image",
+   "question",
+   "request_id"
+  ],
+  "behaviour": "hold"
+ },
+ {
+  "at": "2026-10-01T10:05:44.611529+00:00",
+  "event": "request",
+  "id": "r15",
+  "method": "ask/cancel",
+  "params_keys": [
+   "request_id"
+  ],
+  "request_id": "ask-a2eb13287526932d.11",
+  "capture_session_id": null
+ },
+ {
+  "at": "2026-10-01T10:05:44.611770+00:00",
+  "event": "sent",
+  "kind": "error",
+  "id": "r14",
+  "method": null,
+  "error": "cancelled",
+  "result_keys": null
+ },
+ {
+  "at": "2026-10-01T10:05:44.611836+00:00",
+  "event": "sent",
+  "kind": "cancel_receipt",
+  "id": "r15",
+  "method": null,
+  "error": null,
+  "result_keys": [
+   "cancelled",
+   "uncertain"
+  ]
+ },
+ {
+  "at": "2026-10-01T10:05:46.155807+00:00",
+  "event": "ask",
+  "n": 11,
+  "id": "r16",
+  "request_id": "ask-a2eb13287526932d.12",
+  "model": "qa-synthetic-vision",
+  "assistance": "explain",
+  "question_chars": 170,
+  "question_sha256": "909707ed6ed2e94251f963ab5c17c53dba1834260cfd9ff2ae391e3d377bac4f",
+  "image": {
+   "sha256": "95537f73c39dd6a78e93024a6610e0b8e806ddf14c39c6d5716b6cc8c54c5185",
+   "width": 1732,
+   "height": 1052,
+   "png_bytes": 170157,
+   "bytes_hash_to_sha256": true,
+   "is_png": true
+  },
+  "capture_session_id": "f0b6721fd729652e",
+  "context_keys": [
+   "capture_session_id",
+   "display",
+   "frame_captured_at",
+   "frame_height",
+   "frame_seq",
+   "frame_width",
+   "ink_revision",
+   "ink_sha256",
+   "media_position",
+   "region_dip",
+   "region_px",
+   "source_url",
+   "source_version"
+  ],
+  "request_keys": [
+   "assistance",
+   "context",
+   "image",
+   "question",
+   "request_id"
+  ],
+  "behaviour": "hold"
+ },
+ {
+  "at": "2026-10-01T10:05:46.181797+00:00",
+  "event": "request",
+  "id": "r17",
+  "method": "session/stop",
+  "params_keys": [
+   "capture_session_id"
+  ],
+  "request_id": null,
+  "capture_session_id": "f0b6721fd729652e"
+ },
+ {
+  "at": "2026-10-01T10:05:46.181991+00:00",
+  "event": "sent",
+  "kind": "error",
+  "id": "r16",
+  "method": null,
+  "error": "cancelled",
+  "result_keys": null
+ },
+ {
+  "at": "2026-10-01T10:05:46.182065+00:00",
+  "event": "sent",
+  "kind": "stop_receipt",
+  "id": "r17",
+  "method": null,
+  "error": null,
+  "result_keys": []
+ },
+ {
+  "at": "2026-10-01T10:05:46.482727+00:00",
+  "event": "sent",
+  "kind": "answer",
+  "id": "r16",
+  "method": null,
+  "error": null,
+  "result_keys": [
+   "auth_mode",
+   "kind",
+   "latency_ms",
+   "model",
+   "provenance",
+   "request_id",
+   "text",
+   "thread_id",
+   "turn_id"
+  ]
+ },
+ {
+  "at": "2026-10-01T10:05:56.287816+00:00",
+  "event": "ask",
+  "n": 12,
+  "id": "r18",
+  "request_id": "ask-dc97ceba4314ad86.1",
+  "model": "qa-synthetic-vision",
+  "assistance": "explain",
+  "question_chars": 170,
+  "question_sha256": "909707ed6ed2e94251f963ab5c17c53dba1834260cfd9ff2ae391e3d377bac4f",
+  "image": {
+   "sha256": "2db13e90336ce122646cd701137837e21688138d9510b9fb747fea36a459697a",
+   "width": 1732,
+   "height": 1052,
+   "png_bytes": 154720,
+   "bytes_hash_to_sha256": true,
+   "is_png": true
+  },
+  "capture_session_id": "8e49891cf1d71bb3",
+  "context_keys": [
+   "capture_session_id",
+   "display",
+   "frame_captured_at",
+   "frame_height",
+   "frame_seq",
+   "frame_width",
+   "ink_revision",
+   "ink_sha256",
+   "media_position",
+   "region_dip",
+   "region_px",
+   "source_url",
+   "source_version"
+  ],
+  "request_keys": [
+   "assistance",
+   "context",
+   "image",
+   "question",
+   "request_id"
+  ],
+  "behaviour": "answer"
+ },
+ {
+  "at": "2026-10-01T10:05:56.288127+00:00",
+  "event": "sent",
+  "kind": "answer",
+  "id": "r18",
+  "method": null,
+  "error": null,
+  "result_keys": [
+   "auth_mode",
+   "kind",
+   "latency_ms",
+   "model",
+   "provenance",
+   "request_id",
+   "text",
+   "thread_id",
+   "turn_id"
+  ]
+ },
+ {
+  "at": "2026-10-01T10:05:56.367292+00:00",
+  "event": "ask",
+  "n": 13,
+  "id": "r19",
+  "request_id": "ask-dc97ceba4314ad86.2",
+  "model": "qa-synthetic-vision",
+  "assistance": "explain",
+  "question_chars": 170,
+  "question_sha256": "909707ed6ed2e94251f963ab5c17c53dba1834260cfd9ff2ae391e3d377bac4f",
+  "image": {
+   "sha256": "2db13e90336ce122646cd701137837e21688138d9510b9fb747fea36a459697a",
+   "width": 1732,
+   "height": 1052,
+   "png_bytes": 154720,
+   "bytes_hash_to_sha256": true,
+   "is_png": true
+  },
+  "capture_session_id": "8e49891cf1d71bb3",
+  "context_keys": [
+   "capture_session_id",
+   "display",
+   "frame_captured_at",
+   "frame_height",
+   "frame_seq",
+   "frame_width",
+   "ink_revision",
+   "ink_sha256",
+   "media_position",
+   "region_dip",
+   "region_px",
+   "source_url",
+   "source_version"
+  ],
+  "request_keys": [
+   "assistance",
+   "context",
+   "image",
+   "question",
+   "request_id"
+  ],
+  "behaviour": "fault"
+ },
+ {
+  "at": "2026-10-01T10:05:56.367556+00:00",
+  "event": "sent",
+  "kind": "event",
+  "id": null,
+  "method": "connection/changed",
+  "error": null,
+  "result_keys": null
+ },
+ {
+  "at": "2026-10-01T10:05:56.368574+00:00",
+  "event": "request",
+  "id": "r20",
+  "method": "connection/read",
+  "params_keys": [],
+  "request_id": null,
+  "capture_session_id": null
+ },
+ {
+  "at": "2026-10-01T10:05:56.368688+00:00",
+  "event": "sent",
+  "kind": "event",
+  "id": null,
+  "method": "connection/changed",
+  "error": null,
+  "result_keys": null
+ },
+ {
+  "at": "2026-10-01T10:05:56.369686+00:00",
+  "event": "sent",
+  "kind": "fault",
+  "bytes": 307200
+ },
+ {
+  "at": "2026-10-01T10:05:56.428233+00:00",
+  "event": "eof",
+  "launch": "0d202a01468e4f00acb58ee475cd1ab3",
+  "held_at_eof": []
+ },
+ {
+  "at": "2026-10-01T10:06:09.285213+00:00",
+  "event": "start",
+  "launch": "e3edb01cef194339bcb61ba93f9cbcc3",
+  "launch_n": 1,
+  "pid": 1386245,
+  "argv": [
+   "-m",
+   "services.worker.connectors.chatgpt_local"
+  ],
+  "stdin_fifo": true,
+  "label": "SYNTHETIC (QA fake bridge: no model, no ChatGPT)"
+ },
+ {
+  "at": "2026-10-01T10:06:09.285313+00:00",
+  "event": "request",
+  "id": "r21",
+  "method": "connection/read",
+  "params_keys": [],
+  "request_id": null,
+  "capture_session_id": null
+ },
+ {
+  "at": "2026-10-01T10:06:09.285380+00:00",
+  "event": "sent",
+  "kind": "connection",
+  "id": "r21",
+  "method": null,
+  "error": null,
+  "result_keys": [
+   "auth",
+   "models",
+   "rate_limits"
+  ]
+ },
+ {
+  "at": "2026-10-01T10:06:12.136725+00:00",
+  "event": "ask",
+  "n": 0,
+  "id": "r22",
+  "request_id": "ask-1b136e74ddeec9a6.1",
+  "model": "qa-synthetic-vision",
+  "assistance": "explain",
+  "question_chars": 170,
+  "question_sha256": "909707ed6ed2e94251f963ab5c17c53dba1834260cfd9ff2ae391e3d377bac4f",
+  "image": {
+   "sha256": "2db13e90336ce122646cd701137837e21688138d9510b9fb747fea36a459697a",
+   "width": 1732,
+   "height": 1052,
+   "png_bytes": 154720,
+   "bytes_hash_to_sha256": true,
+   "is_png": true
+  },
+  "capture_session_id": "8e49891cf1d71bb3",
+  "context_keys": [
+   "capture_session_id",
+   "display",
+   "frame_captured_at",
+   "frame_height",
+   "frame_seq",
+   "frame_width",
+   "ink_revision",
+   "ink_sha256",
+   "media_position",
+   "region_dip",
+   "region_px",
+   "source_url",
+   "source_version"
+  ],
+  "request_keys": [
+   "assistance",
+   "context",
+   "image",
+   "question",
+   "request_id"
+  ],
+  "behaviour": "answer"
+ },
+ {
+  "at": "2026-10-01T10:06:12.136960+00:00",
+  "event": "sent",
+  "kind": "answer",
+  "id": "r22",
+  "method": null,
+  "error": null,
+  "result_keys": [
+   "auth_mode",
+   "kind",
+   "latency_ms",
+   "model",
+   "provenance",
+   "request_id",
+   "text",
+   "thread_id",
+   "turn_id"
+  ]
+ },
+ {
+  "at": "2026-10-01T10:06:12.195171+00:00",
+  "event": "ask",
+  "n": 1,
+  "id": "r23",
+  "request_id": "ask-1b136e74ddeec9a6.2",
+  "model": "qa-synthetic-vision",
+  "assistance": "explain",
+  "question_chars": 170,
+  "question_sha256": "909707ed6ed2e94251f963ab5c17c53dba1834260cfd9ff2ae391e3d377bac4f",
+  "image": {
+   "sha256": "2db13e90336ce122646cd701137837e21688138d9510b9fb747fea36a459697a",
+   "width": 1732,
+   "height": 1052,
+   "png_bytes": 154720,
+   "bytes_hash_to_sha256": true,
+   "is_png": true
+  },
+  "capture_session_id": "8e49891cf1d71bb3",
+  "context_keys": [
+   "capture_session_id",
+   "display",
+   "frame_captured_at",
+   "frame_height",
+   "frame_seq",
+   "frame_width",
+   "ink_revision",
+   "ink_sha256",
+   "media_position",
+   "region_dip",
+   "region_px",
+   "source_url",
+   "source_version"
+  ],
+  "request_keys": [
+   "assistance",
+   "context",
+   "image",
+   "question",
+   "request_id"
+  ],
+  "behaviour": "error"
+ },
+ {
+  "at": "2026-10-01T10:06:12.195404+00:00",
+  "event": "sent",
+  "kind": "error",
+  "id": "r23",
+  "method": null,
+  "error": "unauthenticated",
+  "result_keys": null
+ },
+ {
+  "at": "2026-10-01T10:06:12.320182+00:00",
+  "event": "request",
+  "id": "r24",
+  "method": "session/stop",
+  "params_keys": [
+   "capture_session_id"
+  ],
+  "request_id": null,
+  "capture_session_id": "8e49891cf1d71bb3"
+ },
+ {
+  "at": "2026-10-01T10:06:12.320382+00:00",
+  "event": "sent",
+  "kind": "stop_receipt",
+  "id": "r24",
+  "method": null,
+  "error": null,
+  "result_keys": []
+ },
+ {
+  "at": "2026-10-01T10:06:12.587005+00:00",
+  "event": "eof",
+  "launch": "e3edb01cef194339bcb61ba93f9cbcc3",
+  "held_at_eof": []
+ }
+]

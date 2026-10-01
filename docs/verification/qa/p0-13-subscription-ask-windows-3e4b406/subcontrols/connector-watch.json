@@ -1,0 +1,47 @@
+[
+ {
+  "event": "watch_start",
+  "root_exists": true,
+  "already_there": [],
+  "at": "2026-10-01T10:04:54.140455+00:00"
+ },
+ {
+  "event": "appear",
+  "pid": 1385929,
+  "ppid": 1385925,
+  "start_ticks": 18672546,
+  "name": "python3",
+  "role": "in_root",
+  "at": "2026-10-01T10:05:21.213987+00:00"
+ },
+ {
+  "event": "exit",
+  "pid": 1385929,
+  "start_ticks": 18672546,
+  "name": "python3",
+  "role": "in_root",
+  "at": "2026-10-01T10:05:56.453107+00:00"
+ },
+ {
+  "event": "appear",
+  "pid": 1386245,
+  "ppid": 1386243,
+  "start_ticks": 18677353,
+  "name": "python3",
+  "role": "in_root",
+  "at": "2026-10-01T10:06:09.326780+00:00"
+ },
+ {
+  "event": "exit",
+  "pid": 1386245,
+  "start_ticks": 18677353,
+  "name": "python3",
+  "role": "in_root",
+  "at": "2026-10-01T10:06:12.629046+00:00"
+ },
+ {
+  "event": "watch_end",
+  "remaining": [],
+  "at": "2026-10-01T10:06:29.087488+00:00"
+ }
+]

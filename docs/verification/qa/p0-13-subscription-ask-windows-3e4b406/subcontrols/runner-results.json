@@ -1,0 +1,3773 @@
+{
+ "steps": [
+  {
+   "i": 1,
+   "ok": true,
+   "at": "2026-10-01T10:04:55.4799033Z",
+   "kind": "edgeStart"
+  },
+  {
+   "i": 2,
+   "ok": true,
+   "at": "2026-10-01T10:04:56.2101846Z",
+   "kind": "window",
+   "window": "edge",
+   "show": "raise",
+   "foreground": true,
+   "is_foreground": true
+  },
+  {
+   "i": 3,
+   "ok": true,
+   "at": "2026-10-01T10:04:57.4059711Z",
+   "kind": "edgeFullscreen",
+   "before": "fullscreen",
+   "after": "fullscreen"
+  },
+  {
+   "i": 4,
+   "ok": true,
+   "at": "2026-10-01T10:04:57.4375557Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 5,
+   "ok": true,
+   "at": "2026-10-01T10:04:59.4578296Z",
+   "kind": "window",
+   "window": "edge",
+   "show": "raise",
+   "foreground": true,
+   "is_foreground": true
+  },
+  {
+   "i": 6,
+   "ok": true,
+   "at": "2026-10-01T10:05:00.5652930Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 7,
+   "ok": true,
+   "at": "2026-10-01T10:05:01.0794023Z",
+   "kind": "onTop",
+   "window": "edge",
+   "points": 16,
+   "covered": []
+  },
+  {
+   "i": 8,
+   "ok": true,
+   "at": "2026-10-01T10:05:01.7764628Z",
+   "kind": "cursorOutside",
+   "cursor": [
+    2357,
+    1267
+   ]
+  },
+  {
+   "i": 9,
+   "ok": true,
+   "at": "2026-10-01T10:05:01.7858033Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 10,
+   "ok": true,
+   "at": "2026-10-01T10:05:01.8090720Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": "surface_truth"
+  },
+  {
+   "i": 11,
+   "ok": true,
+   "at": "2026-10-01T10:05:01.8174693Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "off"
+  },
+  {
+   "i": 12,
+   "ok": true,
+   "at": "2026-10-01T10:05:01.8216999Z",
+   "kind": "closeApp",
+   "via": "page",
+   "close_requested_at": "2026-10-01T10:05:01.8556163Z",
+   "exited": true,
+   "exit_ms": 118,
+   "exit_code": 0
+  },
+  {
+   "i": 13,
+   "ok": true,
+   "at": "2026-10-01T10:05:01.9861510Z",
+   "kind": "launchApp",
+   "previous": {
+    "key": "app",
+    "pid": 73452,
+    "exit_code": 0,
+    "killed": false
+   },
+   "pid": 57192
+  },
+  {
+   "i": 14,
+   "ok": true,
+   "at": "2026-10-01T10:05:03.6165188Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 15,
+   "ok": true,
+   "at": "2026-10-01T10:05:04.1329408Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "hooked"
+  },
+  {
+   "i": 16,
+   "ok": true,
+   "at": "2026-10-01T10:05:04.1354624Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "sub_hooked"
+  },
+  {
+   "i": 17,
+   "ok": true,
+   "at": "2026-10-01T10:05:04.1538685Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 18,
+   "ok": true,
+   "at": "2026-10-01T10:05:06.6644143Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "f_not_checked"
+  },
+  {
+   "i": 19,
+   "ok": true,
+   "at": "2026-10-01T10:05:06.6689504Z",
+   "kind": "children"
+  },
+  {
+   "i": 20,
+   "ok": true,
+   "at": "2026-10-01T10:05:07.3814656Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 21,
+   "ok": true,
+   "at": "2026-10-01T10:05:07.4789725Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "s0"
+  },
+  {
+   "i": 22,
+   "ok": true,
+   "at": "2026-10-01T10:05:07.8601018Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 23,
+   "ok": true,
+   "at": "2026-10-01T10:05:07.8670595Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 24,
+   "ok": true,
+   "at": "2026-10-01T10:05:10.3697307Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 25,
+   "ok": true,
+   "at": "2026-10-01T10:05:12.8837952Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 26,
+   "ok": true,
+   "at": "2026-10-01T10:05:12.8907300Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 27,
+   "ok": true,
+   "at": "2026-10-01T10:05:12.8932688Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 49
+  },
+  {
+   "i": 28,
+   "ok": true,
+   "at": "2026-10-01T10:05:14.2429074Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 29,
+   "ok": true,
+   "at": "2026-10-01T10:05:17.7493366Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": "saved_unchecked"
+  },
+  {
+   "i": 30,
+   "ok": true,
+   "at": "2026-10-01T10:05:17.7535458Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 31,
+   "ok": true,
+   "at": "2026-10-01T10:05:17.7555599Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_unchecked"
+  },
+  {
+   "i": 32,
+   "ok": true,
+   "at": "2026-10-01T10:05:17.7646297Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_unchecked"
+  },
+  {
+   "i": 33,
+   "ok": true,
+   "at": "2026-10-01T10:05:17.8146531Z",
+   "kind": "snapshot",
+   "label": "unchecked",
+   "contextPictures": 1
+  },
+  {
+   "i": 34,
+   "ok": true,
+   "at": "2026-10-01T10:05:17.8313639Z",
+   "kind": "hashTree",
+   "as": "h_unchecked"
+  },
+  {
+   "i": 35,
+   "ok": true,
+   "at": "2026-10-01T10:05:17.9225830Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 36,
+   "ok": true,
+   "at": "2026-10-01T10:05:17.9275803Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 59
+  },
+  {
+   "i": 37,
+   "ok": true,
+   "at": "2026-10-01T10:05:19.4027980Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 38,
+   "ok": true,
+   "at": "2026-10-01T10:05:19.9238883Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 3
+  },
+  {
+   "i": 39,
+   "ok": true,
+   "at": "2026-10-01T10:05:19.9978604Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 40,
+   "ok": true,
+   "at": "2026-10-01T10:05:20.1157164Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 41,
+   "ok": true,
+   "at": "2026-10-01T10:05:20.1182652Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 42,
+   "ok": true,
+   "at": "2026-10-01T10:05:20.1204889Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "form_unchecked"
+  },
+  {
+   "i": 43,
+   "ok": true,
+   "at": "2026-10-01T10:05:20.1347917Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 44,
+   "ok": true,
+   "at": "2026-10-01T10:05:20.1397915Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "picture_unchecked"
+  },
+  {
+   "i": 45,
+   "ok": true,
+   "at": "2026-10-01T10:05:20.2039516Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "k0_unchecked_card"
+  },
+  {
+   "i": 46,
+   "ok": true,
+   "at": "2026-10-01T10:05:20.2193616Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 47,
+   "ok": true,
+   "at": "2026-10-01T10:05:20.2225878Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 48,
+   "ok": true,
+   "at": "2026-10-01T10:05:20.2255855Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": "k0_unchecked_ask_ended"
+  },
+  {
+   "i": 49,
+   "ok": true,
+   "at": "2026-10-01T10:05:20.2285026Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "k0_unchecked_ask"
+  },
+  {
+   "i": 50,
+   "ok": true,
+   "at": "2026-10-01T10:05:20.2406613Z",
+   "kind": "hashTree",
+   "as": "h_k0_unchecked_ask"
+  },
+  {
+   "i": 51,
+   "ok": true,
+   "at": "2026-10-01T10:05:20.2738081Z",
+   "kind": "children"
+  },
+  {
+   "i": 52,
+   "ok": true,
+   "at": "2026-10-01T10:05:20.9610949Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 53,
+   "ok": true,
+   "at": "2026-10-01T10:05:20.9766009Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 54,
+   "ok": true,
+   "at": "2026-10-01T10:05:20.9800682Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "s0_stopped"
+  },
+  {
+   "i": 55,
+   "ok": true,
+   "at": "2026-10-01T10:05:21.0945426Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 56,
+   "ok": true,
+   "at": "2026-10-01T10:05:21.1150491Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "f_checked"
+  },
+  {
+   "i": 57,
+   "ok": true,
+   "at": "2026-10-01T10:05:21.2511766Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "f_signed_in"
+  },
+  {
+   "i": 58,
+   "ok": true,
+   "at": "2026-10-01T10:05:21.2546953Z",
+   "kind": "children"
+  },
+  {
+   "i": 59,
+   "ok": true,
+   "at": "2026-10-01T10:05:21.9107422Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 60,
+   "ok": true,
+   "at": "2026-10-01T10:05:22.0143205Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "s1"
+  },
+  {
+   "i": 61,
+   "ok": true,
+   "at": "2026-10-01T10:05:22.3790172Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 62,
+   "ok": true,
+   "at": "2026-10-01T10:05:22.3845329Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 63,
+   "ok": true,
+   "at": "2026-10-01T10:05:24.8956238Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 64,
+   "ok": true,
+   "at": "2026-10-01T10:05:27.4110217Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 65,
+   "ok": true,
+   "at": "2026-10-01T10:05:27.4360768Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 66,
+   "ok": true,
+   "at": "2026-10-01T10:05:27.4390759Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 49
+  },
+  {
+   "i": 67,
+   "ok": true,
+   "at": "2026-10-01T10:05:28.8101698Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 68,
+   "ok": true,
+   "at": "2026-10-01T10:05:29.7231225Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 49
+  },
+  {
+   "i": 69,
+   "ok": true,
+   "at": "2026-10-01T10:05:30.9971664Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 70,
+   "ok": true,
+   "at": "2026-10-01T10:05:34.5096964Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": "saved_circled"
+  },
+  {
+   "i": 71,
+   "ok": true,
+   "at": "2026-10-01T10:05:34.5126956Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 72,
+   "ok": true,
+   "at": "2026-10-01T10:05:34.5147025Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_circled"
+  },
+  {
+   "i": 73,
+   "ok": true,
+   "at": "2026-10-01T10:05:34.5268244Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_circled"
+  },
+  {
+   "i": 74,
+   "ok": true,
+   "at": "2026-10-01T10:05:34.5299573Z",
+   "kind": "snapshot",
+   "label": "circled",
+   "contextPictures": 2
+  },
+  {
+   "i": 75,
+   "ok": true,
+   "at": "2026-10-01T10:05:34.5350015Z",
+   "kind": "hashTree",
+   "as": "h_circled"
+  },
+  {
+   "i": 76,
+   "ok": true,
+   "at": "2026-10-01T10:05:34.6096818Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 77,
+   "ok": true,
+   "at": "2026-10-01T10:05:34.6126806Z",
+   "kind": "cursorOutside",
+   "cursor": [
+    2357,
+    1267
+   ]
+  },
+  {
+   "i": 78,
+   "ok": true,
+   "at": "2026-10-01T10:05:34.6126806Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": "surface_truth_circled"
+  },
+  {
+   "i": 79,
+   "ok": true,
+   "at": "2026-10-01T10:05:34.6161862Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 80,
+   "ok": true,
+   "at": "2026-10-01T10:05:34.6181971Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 59
+  },
+  {
+   "i": 81,
+   "ok": true,
+   "at": "2026-10-01T10:05:36.0959348Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 82,
+   "ok": true,
+   "at": "2026-10-01T10:05:36.5165145Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 3
+  },
+  {
+   "i": 83,
+   "ok": true,
+   "at": "2026-10-01T10:05:36.5878831Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 84,
+   "ok": true,
+   "at": "2026-10-01T10:05:36.7180156Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 85,
+   "ok": true,
+   "at": "2026-10-01T10:05:36.7202853Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 86,
+   "ok": true,
+   "at": "2026-10-01T10:05:36.7227970Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "form_circled"
+  },
+  {
+   "i": 87,
+   "ok": true,
+   "at": "2026-10-01T10:05:36.7353753Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 88,
+   "ok": true,
+   "at": "2026-10-01T10:05:36.7597344Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "picture_circled"
+  },
+  {
+   "i": 89,
+   "ok": true,
+   "at": "2026-10-01T10:05:36.8080284Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "k_selected"
+  },
+  {
+   "i": 90,
+   "ok": true,
+   "at": "2026-10-01T10:05:36.8202378Z",
+   "kind": "hashTree",
+   "as": "h_selected"
+  },
+  {
+   "i": 91,
+   "ok": true,
+   "at": "2026-10-01T10:05:36.8598837Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 92,
+   "ok": true,
+   "at": "2026-10-01T10:05:40.8733562Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "k_selected_later"
+  },
+  {
+   "i": 93,
+   "ok": true,
+   "at": "2026-10-01T10:05:40.8868542Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 94,
+   "ok": true,
+   "at": "2026-10-01T10:05:40.8898594Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 95,
+   "ok": true,
+   "at": "2026-10-01T10:05:40.8951849Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": "k1_answered_ended"
+  },
+  {
+   "i": 96,
+   "ok": true,
+   "at": "2026-10-01T10:05:40.9010906Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "k1_answered"
+  },
+  {
+   "i": 97,
+   "ok": true,
+   "at": "2026-10-01T10:05:40.9144939Z",
+   "kind": "hashTree",
+   "as": "h_k1_answered"
+  },
+  {
+   "i": 98,
+   "ok": true,
+   "at": "2026-10-01T10:05:40.9667763Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 99,
+   "ok": true,
+   "at": "2026-10-01T10:05:40.9701673Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 100,
+   "ok": true,
+   "at": "2026-10-01T10:05:40.9756841Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": "k2_tampered_ended"
+  },
+  {
+   "i": 101,
+   "ok": true,
+   "at": "2026-10-01T10:05:40.9793381Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "k2_tampered"
+  },
+  {
+   "i": 102,
+   "ok": true,
+   "at": "2026-10-01T10:05:40.9915843Z",
+   "kind": "hashTree",
+   "as": "h_k2_tampered"
+  },
+  {
+   "i": 103,
+   "ok": true,
+   "at": "2026-10-01T10:05:41.0209011Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 104,
+   "ok": true,
+   "at": "2026-10-01T10:05:41.0284301Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 105,
+   "ok": true,
+   "at": "2026-10-01T10:05:41.0330829Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": "k3_quota_ended"
+  },
+  {
+   "i": 106,
+   "ok": true,
+   "at": "2026-10-01T10:05:41.0364069Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "k3_quota"
+  },
+  {
+   "i": 107,
+   "ok": true,
+   "at": "2026-10-01T10:05:41.0599293Z",
+   "kind": "hashTree",
+   "as": "h_k3_quota"
+  },
+  {
+   "i": 108,
+   "ok": true,
+   "at": "2026-10-01T10:05:41.0868213Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 109,
+   "ok": true,
+   "at": "2026-10-01T10:05:41.0888888Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 110,
+   "ok": true,
+   "at": "2026-10-01T10:05:41.0939532Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": "k4_busy_ended"
+  },
+  {
+   "i": 111,
+   "ok": true,
+   "at": "2026-10-01T10:05:41.0968823Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "k4_busy"
+  },
+  {
+   "i": 112,
+   "ok": true,
+   "at": "2026-10-01T10:05:41.1087105Z",
+   "kind": "hashTree",
+   "as": "h_k4_busy"
+  },
+  {
+   "i": 113,
+   "ok": true,
+   "at": "2026-10-01T10:05:41.1356438Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 114,
+   "ok": true,
+   "at": "2026-10-01T10:05:41.1415607Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 115,
+   "ok": true,
+   "at": "2026-10-01T10:05:41.1465592Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": "k5_unsupported_model_ended"
+  },
+  {
+   "i": 116,
+   "ok": true,
+   "at": "2026-10-01T10:05:41.1680446Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "k5_unsupported_model"
+  },
+  {
+   "i": 117,
+   "ok": true,
+   "at": "2026-10-01T10:05:41.1795012Z",
+   "kind": "hashTree",
+   "as": "h_k5_unsupported_model"
+  },
+  {
+   "i": 118,
+   "ok": true,
+   "at": "2026-10-01T10:05:41.2040657Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 119,
+   "ok": true,
+   "at": "2026-10-01T10:05:41.2060772Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 120,
+   "ok": true,
+   "at": "2026-10-01T10:05:41.2101513Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": "k6_invalid_request_ended"
+  },
+  {
+   "i": 121,
+   "ok": true,
+   "at": "2026-10-01T10:05:41.2143570Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "k6_invalid_request"
+  },
+  {
+   "i": 122,
+   "ok": true,
+   "at": "2026-10-01T10:05:41.2261790Z",
+   "kind": "hashTree",
+   "as": "h_k6_invalid_request"
+  },
+  {
+   "i": 123,
+   "ok": true,
+   "at": "2026-10-01T10:05:41.2570658Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 124,
+   "ok": true,
+   "at": "2026-10-01T10:05:41.2597538Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 125,
+   "ok": true,
+   "at": "2026-10-01T10:05:41.2836141Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": "k7_failed_ended"
+  },
+  {
+   "i": 126,
+   "ok": true,
+   "at": "2026-10-01T10:05:41.2866159Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "k7_failed"
+  },
+  {
+   "i": 127,
+   "ok": true,
+   "at": "2026-10-01T10:05:41.2981296Z",
+   "kind": "hashTree",
+   "as": "h_k7_failed"
+  },
+  {
+   "i": 128,
+   "ok": true,
+   "at": "2026-10-01T10:05:41.3247743Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 129,
+   "ok": true,
+   "at": "2026-10-01T10:05:41.3274178Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 130,
+   "ok": true,
+   "at": "2026-10-01T10:05:41.3317067Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": "k8_unavailable_ended"
+  },
+  {
+   "i": 131,
+   "ok": true,
+   "at": "2026-10-01T10:05:41.3357088Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "k8_unavailable"
+  },
+  {
+   "i": 132,
+   "ok": true,
+   "at": "2026-10-01T10:05:41.3471180Z",
+   "kind": "hashTree",
+   "as": "h_k8_unavailable"
+  },
+  {
+   "i": 133,
+   "ok": true,
+   "at": "2026-10-01T10:05:41.3926222Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 134,
+   "ok": true,
+   "at": "2026-10-01T10:05:41.3956211Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 135,
+   "ok": true,
+   "at": "2026-10-01T10:05:41.3997917Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": "k9_cancel_confirmed_waiting"
+  },
+  {
+   "i": 136,
+   "ok": true,
+   "at": "2026-10-01T10:05:41.4023197Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "k9_cancel_confirmed_out"
+  },
+  {
+   "i": 137,
+   "ok": true,
+   "at": "2026-10-01T10:05:41.4150556Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 138,
+   "ok": true,
+   "at": "2026-10-01T10:05:41.4184797Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": "k9_cancel_confirmed_ended"
+  },
+  {
+   "i": 139,
+   "ok": true,
+   "at": "2026-10-01T10:05:41.4217061Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 140,
+   "ok": true,
+   "at": "2026-10-01T10:05:42.9275902Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "k9_cancel_confirmed"
+  },
+  {
+   "i": 141,
+   "ok": true,
+   "at": "2026-10-01T10:05:42.9403992Z",
+   "kind": "hashTree",
+   "as": "h_k9_cancel_confirmed"
+  },
+  {
+   "i": 142,
+   "ok": true,
+   "at": "2026-10-01T10:05:42.9692958Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 143,
+   "ok": true,
+   "at": "2026-10-01T10:05:42.9732976Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 144,
+   "ok": true,
+   "at": "2026-10-01T10:05:43.0006769Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": "k10_cancel_late_answer_waiting"
+  },
+  {
+   "i": 145,
+   "ok": true,
+   "at": "2026-10-01T10:05:43.0035861Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "k10_cancel_late_answer_out"
+  },
+  {
+   "i": 146,
+   "ok": true,
+   "at": "2026-10-01T10:05:43.0155409Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 147,
+   "ok": true,
+   "at": "2026-10-01T10:05:43.0187672Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": "k10_cancel_late_answer_ended"
+  },
+  {
+   "i": 148,
+   "ok": true,
+   "at": "2026-10-01T10:05:43.0209652Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 149,
+   "ok": true,
+   "at": "2026-10-01T10:05:44.5253593Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "k10_cancel_late_answer"
+  },
+  {
+   "i": 150,
+   "ok": true,
+   "at": "2026-10-01T10:05:44.5377100Z",
+   "kind": "hashTree",
+   "as": "h_k10_cancel_late_answer"
+  },
+  {
+   "i": 151,
+   "ok": true,
+   "at": "2026-10-01T10:05:44.5644948Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 152,
+   "ok": true,
+   "at": "2026-10-01T10:05:44.5674954Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 153,
+   "ok": true,
+   "at": "2026-10-01T10:05:44.5728237Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": "k11_cancel_unconfirmed_waiting"
+  },
+  {
+   "i": 154,
+   "ok": true,
+   "at": "2026-10-01T10:05:44.5970310Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "k11_cancel_unconfirmed_out"
+  },
+  {
+   "i": 155,
+   "ok": true,
+   "at": "2026-10-01T10:05:44.6090361Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 156,
+   "ok": true,
+   "at": "2026-10-01T10:05:44.6110401Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": "k11_cancel_unconfirmed_ended"
+  },
+  {
+   "i": 157,
+   "ok": true,
+   "at": "2026-10-01T10:05:44.6151573Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 158,
+   "ok": true,
+   "at": "2026-10-01T10:05:46.1161340Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "k11_cancel_unconfirmed"
+  },
+  {
+   "i": 159,
+   "ok": true,
+   "at": "2026-10-01T10:05:46.1300698Z",
+   "kind": "hashTree",
+   "as": "h_k11_cancel_unconfirmed"
+  },
+  {
+   "i": 160,
+   "ok": true,
+   "at": "2026-10-01T10:05:46.1484221Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 161,
+   "ok": true,
+   "at": "2026-10-01T10:05:46.1503015Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 162,
+   "ok": true,
+   "at": "2026-10-01T10:05:46.1543623Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": "k12_waiting"
+  },
+  {
+   "i": 163,
+   "ok": true,
+   "at": "2026-10-01T10:05:46.1569911Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "k12_out"
+  },
+  {
+   "i": 164,
+   "ok": true,
+   "at": "2026-10-01T10:05:46.1784570Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 165,
+   "ok": true,
+   "at": "2026-10-01T10:05:46.1818697Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "s1_stopped"
+  },
+  {
+   "i": 166,
+   "ok": true,
+   "at": "2026-10-01T10:05:46.2953054Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 167,
+   "ok": true,
+   "at": "2026-10-01T10:05:48.7991840Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "f_after_stop"
+  },
+  {
+   "i": 168,
+   "ok": true,
+   "at": "2026-10-01T10:05:48.8033066Z",
+   "kind": "hashTree",
+   "as": "h_k12_stop_in_flight"
+  },
+  {
+   "i": 169,
+   "ok": true,
+   "at": "2026-10-01T10:05:48.8457111Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 170,
+   "ok": true,
+   "at": "2026-10-01T10:05:48.9550926Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "s2"
+  },
+  {
+   "i": 171,
+   "ok": true,
+   "at": "2026-10-01T10:05:49.3681279Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 172,
+   "ok": true,
+   "at": "2026-10-01T10:05:49.4160542Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 173,
+   "ok": true,
+   "at": "2026-10-01T10:05:51.9189988Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 174,
+   "ok": true,
+   "at": "2026-10-01T10:05:54.4242116Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 175,
+   "ok": true,
+   "at": "2026-10-01T10:05:54.4292161Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 59
+  },
+  {
+   "i": 176,
+   "ok": true,
+   "at": "2026-10-01T10:05:55.8914105Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 177,
+   "ok": true,
+   "at": "2026-10-01T10:05:56.0219754Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 3
+  },
+  {
+   "i": 178,
+   "ok": true,
+   "at": "2026-10-01T10:05:56.0714238Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 179,
+   "ok": true,
+   "at": "2026-10-01T10:05:56.1839682Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 180,
+   "ok": true,
+   "at": "2026-10-01T10:05:56.1869701Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 181,
+   "ok": true,
+   "at": "2026-10-01T10:05:56.1894799Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "form_s2"
+  },
+  {
+   "i": 182,
+   "ok": true,
+   "at": "2026-10-01T10:05:56.2100667Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 183,
+   "ok": true,
+   "at": "2026-10-01T10:05:56.2136332Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "picture_s2"
+  },
+  {
+   "i": 184,
+   "ok": true,
+   "at": "2026-10-01T10:05:56.2766749Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 185,
+   "ok": true,
+   "at": "2026-10-01T10:05:56.2806117Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 186,
+   "ok": true,
+   "at": "2026-10-01T10:05:56.2864345Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": "k13_new_session_ended"
+  },
+  {
+   "i": 187,
+   "ok": true,
+   "at": "2026-10-01T10:05:56.2938129Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "k13_new_session"
+  },
+  {
+   "i": 188,
+   "ok": true,
+   "at": "2026-10-01T10:05:56.3075501Z",
+   "kind": "hashTree",
+   "as": "h_k13_new_session"
+  },
+  {
+   "i": 189,
+   "ok": true,
+   "at": "2026-10-01T10:05:56.3579910Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 190,
+   "ok": true,
+   "at": "2026-10-01T10:05:56.3614285Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 191,
+   "ok": true,
+   "at": "2026-10-01T10:05:56.3862111Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 192,
+   "ok": true,
+   "at": "2026-10-01T10:06:02.4013648Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "f_after_fault"
+  },
+  {
+   "i": 193,
+   "ok": true,
+   "at": "2026-10-01T10:06:02.4048432Z",
+   "kind": "children"
+  },
+  {
+   "i": 194,
+   "ok": true,
+   "at": "2026-10-01T10:06:03.1236604Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 195,
+   "ok": true,
+   "at": "2026-10-01T10:06:09.1385676Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "f_after_fault_later"
+  },
+  {
+   "i": 196,
+   "ok": true,
+   "at": "2026-10-01T10:06:09.1425697Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "k14_fault"
+  },
+  {
+   "i": 197,
+   "ok": true,
+   "at": "2026-10-01T10:06:09.1559612Z",
+   "kind": "hashTree",
+   "as": "h_k14_fault"
+  },
+  {
+   "i": 198,
+   "ok": true,
+   "at": "2026-10-01T10:06:09.1934362Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 199,
+   "ok": true,
+   "at": "2026-10-01T10:06:09.2015241Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "f_rechecked"
+  },
+  {
+   "i": 200,
+   "ok": true,
+   "at": "2026-10-01T10:06:09.3272116Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "f_rechecked_now"
+  },
+  {
+   "i": 201,
+   "ok": true,
+   "at": "2026-10-01T10:06:09.3292083Z",
+   "kind": "children"
+  },
+  {
+   "i": 202,
+   "ok": true,
+   "at": "2026-10-01T10:06:10.0446641Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 203,
+   "ok": true,
+   "at": "2026-10-01T10:06:10.0687548Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 204,
+   "ok": true,
+   "at": "2026-10-01T10:06:10.0737484Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 59
+  },
+  {
+   "i": 205,
+   "ok": true,
+   "at": "2026-10-01T10:06:11.5629504Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 206,
+   "ok": true,
+   "at": "2026-10-01T10:06:11.8726109Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 3
+  },
+  {
+   "i": 207,
+   "ok": true,
+   "at": "2026-10-01T10:06:11.9429986Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 208,
+   "ok": true,
+   "at": "2026-10-01T10:06:12.0621860Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 209,
+   "ok": true,
+   "at": "2026-10-01T10:06:12.0632410Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 210,
+   "ok": true,
+   "at": "2026-10-01T10:06:12.0642404Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "form_s2b"
+  },
+  {
+   "i": 211,
+   "ok": true,
+   "at": "2026-10-01T10:06:12.0807955Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 212,
+   "ok": true,
+   "at": "2026-10-01T10:06:12.0827925Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "picture_s2b"
+  },
+  {
+   "i": 213,
+   "ok": true,
+   "at": "2026-10-01T10:06:12.1274214Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 214,
+   "ok": true,
+   "at": "2026-10-01T10:06:12.1309627Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 215,
+   "ok": true,
+   "at": "2026-10-01T10:06:12.1359367Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": "k15_after_recheck_ended"
+  },
+  {
+   "i": 216,
+   "ok": true,
+   "at": "2026-10-01T10:06:12.1419429Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "k15_after_recheck"
+  },
+  {
+   "i": 217,
+   "ok": true,
+   "at": "2026-10-01T10:06:12.1525642Z",
+   "kind": "hashTree",
+   "as": "h_k15_after_recheck"
+  },
+  {
+   "i": 218,
+   "ok": true,
+   "at": "2026-10-01T10:06:12.1855473Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 219,
+   "ok": true,
+   "at": "2026-10-01T10:06:12.1888317Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 220,
+   "ok": true,
+   "at": "2026-10-01T10:06:12.2160488Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": "k16_unauthenticated_ended"
+  },
+  {
+   "i": 221,
+   "ok": true,
+   "at": "2026-10-01T10:06:12.2180688Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "k16_unauthenticated"
+  },
+  {
+   "i": 222,
+   "ok": true,
+   "at": "2026-10-01T10:06:12.2290986Z",
+   "kind": "hashTree",
+   "as": "h_k16_unauthenticated"
+  },
+  {
+   "i": 223,
+   "ok": true,
+   "at": "2026-10-01T10:06:12.2653367Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "f_signed_out"
+  },
+  {
+   "i": 224,
+   "ok": true,
+   "at": "2026-10-01T10:06:12.2683452Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 225,
+   "ok": true,
+   "at": "2026-10-01T10:06:12.2713456Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 226,
+   "ok": true,
+   "at": "2026-10-01T10:06:12.2743474Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": "k17_not_signed_in_ended"
+  },
+  {
+   "i": 227,
+   "ok": true,
+   "at": "2026-10-01T10:06:12.2758464Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "k17_not_signed_in"
+  },
+  {
+   "i": 228,
+   "ok": true,
+   "at": "2026-10-01T10:06:12.2864263Z",
+   "kind": "hashTree",
+   "as": "h_k17_not_signed_in"
+  },
+  {
+   "i": 229,
+   "ok": true,
+   "at": "2026-10-01T10:06:12.3142793Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 230,
+   "ok": true,
+   "at": "2026-10-01T10:06:12.3165162Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 231,
+   "ok": true,
+   "at": "2026-10-01T10:06:12.3193505Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "s2_stopped"
+  },
+  {
+   "i": 232,
+   "ok": true,
+   "at": "2026-10-01T10:06:12.4388831Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "sub_events"
+  },
+  {
+   "i": 233,
+   "ok": true,
+   "at": "2026-10-01T10:06:12.4626559Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "timeline"
+  },
+  {
+   "i": 234,
+   "ok": true,
+   "at": "2026-10-01T10:06:12.4736330Z",
+   "kind": "hashTree",
+   "as": "h_final"
+  },
+  {
+   "i": 235,
+   "ok": true,
+   "at": "2026-10-01T10:06:12.5072493Z",
+   "kind": "closeApp",
+   "via": "wm_close",
+   "close_requested_at": "2026-10-01T10:06:12.5126884Z",
+   "posted": true,
+   "exited": true,
+   "exit_ms": 199,
+   "exit_code": 0
+  }
+ ],
+ "values": {
+  "surface_truth": "{\"format\":\"qa-subscription-surface/2\",\"generated_at\":\"2026-10-01T10:04:56.045Z\",\"read_at\":\"2026-10-01T10:05:01.813Z\",\"grid\":{\"x\":40,\"y\":90,\"cols\":4,\"rows\":3,\"w\":190,\"h\":150,\"gap\":20},\"cards\":[{\"index\":0,\"number\":2533,\"shape\":\"triangle\",\"color\":\"green\",\"rect_dip\":{\"x\":40,\"y\":90,\"width\":190,\"height\":150}},{\"index\":1,\"number\":1990,\"shape\":\"star\",\"color\":\"orange\",\"rect_dip\":{\"x\":250,\"y\":90,\"width\":190,\"height\":150}},{\"index\":2,\"number\":9542,\"shape\":\"star\",\"color\":\"orange\",\"rect_dip\":{\"x\":460,\"y\":90,\"width\":190,\"height\":150}},{\"index\":3,\"number\":6561,\"shape\":\"triangle\",\"color\":\"red\",\"rect_dip\":{\"x\":670,\"y\":90,\"width\":190,\"height\":150}},{\"index\":4,\"number\":3829,\"shape\":\"heart\",\"color\":\"red\",\"rect_dip\":{\"x\":40,\"y\":260,\"width\":190,\"height\":150}},{\"index\":5,\"number\":4015,\"shape\":\"heart\",\"color\":\"orange\",\"rect_dip\":{\"x\":250,\"y\":260,\"width\":190,\"height\":150}},{\"index\":6,\"number\":1742,\"shape\":\"heart\",\"color\":\"orange\",\"rect_dip\":{\"x\":460,\"y\":260,\"width\":190,\"height\":150}},{\"index\":7,\"number\":7014,\"shape\":\"heart\",\"color\":\"orange\",\"rect_dip\":{\"x\":670,\"y\":260,\"width\":190,\"height\":150}},{\"index\":8,\"number\":3229,\"shape\":\"triangle\",\"color\":\"green\",\"rect_dip\":{\"x\":40,\"y\":430,\"width\":190,\"height\":150}},{\"index\":9,\"number\":5743,\"shape\":\"heart\",\"color\":\"blue\",\"rect_dip\":{\"x\":250,\"y\":430,\"width\":190,\"height\":150}},{\"index\":10,\"number\":9511,\"shape\":\"star\",\"color\":\"red\",\"rect_dip\":{\"x\":460,\"y\":430,\"width\":190,\"height\":150}},{\"index\":11,\"number\":5299,\"shape\":\"star\",\"color\":\"red\",\"rect_dip\":{\"x\":670,\"y\":430,\"width\":190,\"height\":150}}],\"viewport_offset_dip\":{\"x\":0,\"y\":0},\"viewport\":{\"width\":1280,\"height\":800,\"dpr\":2,\"screen\":[1280,800]},\"fits\":true,\"full_screen\":true,\"dom_text\":\"\",\"title\":\"QA test surface\",\"url_has_query\":false}",
+  "off": "{\"at\":\"2026-10-01T10:05:01.820Z\",\"s\":{\"mode\":\"off\"},\"section\":{\"hidden\":true,\"disabled\":false},\"state\":{\"text\":\"\",\"hidden\":true,\"disabled\":false},\"quota\":{\"text\":\"\",\"hidden\":true,\"disabled\":false},\"check\":{\"text\":\"Check connection\",\"hidden\":true,\"disabled\":false},\"login\":{\"text\":\"Sign in with ChatGPT\",\"hidden\":true,\"disabled\":false},\"login_cancel\":{\"text\":\"Cancel sign-in\",\"hidden\":true,\"disabled\":false},\"model_row\":{\"text\":\"Model for questions \",\"hidden\":true,\"disabled\":false},\"options\":[],\"ai\":\"No AI is connected: captured frames and ink stay on this device, and nothing is sent anywhere.\",\"session\":\"Not capturing.\"}",
+  "hooked": true,
+  "sub_hooked": true,
+  "f_not_checked": "{\"at\":\"2026-10-01T10:05:06.667Z\",\"s\":{\"mode\":\"managed\",\"state\":\"not_checked\",\"plan\":null,\"rate_limits\":null,\"models\":[],\"model\":null,\"login\":\"none\",\"detail\":null,\"asking\":false},\"section\":{\"hidden\":false,\"disabled\":false},\"state\":{\"text\":\"Not checked yet. Check connection starts the connector, which asks the official Codex app server for your sign-in state, plan, usage limits and models; no picture and no question is sent by that.\",\"hidden\":false,\"disabled\":false},\"quota\":{\"text\":\"Usage limits: not reported.\",\"hidden\":true,\"disabled\":false},\"check\":{\"text\":\"Check connection\",\"hidden\":false,\"disabled\":false},\"login\":{\"text\":\"Sign in with ChatGPT\",\"hidden\":true,\"disabled\":false},\"login_cancel\":{\"text\":\"Cancel sign-in\",\"hidden\":true,\"disabled\":false},\"model_row\":{\"text\":\"Model for questions \",\"hidden\":true,\"disabled\":false},\"options\":[],\"ai\":\"Captured frames and ink stay on this device. No AI watches the screen: ChatGPT (your subscription) gets only a selection you send with Ask, with your question.\",\"session\":\"Not capturing.\"}",
+  "kids_not_checked": {
+   "app_pid": 57192,
+   "at": "2026-10-01T10:05:07.3804649Z",
+   "children": [
+    {
+     "name": "electron.exe",
+     "pid": 78160,
+     "created": "2026-10-01T10:05:03.6576610Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 76772,
+     "created": "2026-10-01T10:05:03.6615390Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 76420,
+     "created": "2026-10-01T10:05:03.6757510Z"
+    }
+   ]
+  },
+  "s0": "{\"running\":true,\"starting\":false,\"ending\":false,\"display\":{\"display_id\":\"3071609112\",\"label\":\"整个屏幕\",\"bounds\":{\"x\":0,\"y\":0,\"width\":1280,\"height\":800},\"scale_factor\":2},\"session_id\":\"2\"}",
+  "saved_unchecked": "{\"doc\":{\"id\":\"ee5f1d237b75a07c\",\"revision\":1,\"visible\":[\"stk_8eff8adddb5690fbdd48ea2bbff1a29d\"],\"history\":[\"add\"],\"strokes\":1},\"saveText\":\"Saved on this device at 03:05:14.\",\"retention\":{\"retained\":2,\"refused\":0,\"lastRefusal\":\"\",\"deferred\":0}}",
+  "app_unchecked": "{\"aligned\":{\"stk_8eff8adddb5690fbdd48ea2bbff1a29d\":\"verified\"},\"alignment\":[{\"id\":\"stk_8eff8adddb5690fbdd48ea2bbff1a29d\",\"region\":{\"x\":669,\"y\":431,\"width\":192,\"height\":148},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":64,\"rows\":49,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}}],\"doc\":{\"id\":\"ee5f1d237b75a07c\",\"revision\":1,\"visible\":[\"stk_8eff8adddb5690fbdd48ea2bbff1a29d\"],\"history\":[\"add\"],\"strokes\":1},\"pinned\":0,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 10. No AI watches this screen: ChatGPT gets only a selection you send with Ask. Saved on this device at 03:05:14.\",\"gesture\":null,\"last\":{\"seq\":10,\"sampled_at\":\"2026-10-01T10:05:16.753Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"c3d38602d84569177d2d1bfb0d0ed6685671a0f78c9fdce462228798f1714b86\"},\"composed\":{\"ink_session\":\"ee5f1d237b75a07c\",\"ink_revision\":1,\"ink_marks\":{\"verified\":1,\"changed\":0,\"unknown\":0,\"following_content\":0},\"pixels_sha256\":\"224672181c9722fbe69ff9bbff33267270aa32b3b9e0a3432481408487f6a5d9\"}}}",
+  "ov_unchecked": "{\"mode\":\"WRITE\",\"tool\":\"pen\",\"mouse\":\"false\",\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 11. No AI watches this screen: ChatGPT gets only a selection you send with Ask. Saved on this device at 03:05:14.\",\"card\":false,\"cancel\":false,\"disabled\":1}",
+  "form_unchecked": "{\"at\":\"2026-10-01T10:05:20.133Z\",\"card_shown\":true,\"badge\":\"Selection · not sent to any AI\",\"card_text\":\"This selection is sent to ChatGPT, with your question, only when you press Ask below; nothing else of the screen is sent to any AI, and no AI watches it.\\nRegion 17,72 866×526 DIP on 整个屏幕 = 1732×1052 px of frame 13 (captured 03:05:19), with your ink revision 1 drawn over it.\",\"status\":null,\"answer_shown\":false,\"answer\":null,\"answer_box_text\":null,\"answer_child_elements\":0,\"form_shown\":true,\"question\":\"Explain what is selected.\",\"assistance\":\"hint\",\"submit_disabled\":false,\"cancel_shown\":false,\"save_shown\":false,\"picture\":{\"png_sha256\":\"f8cfc867775bf0911289c6f1fe96067a13e9e9c308e81fabe355b738660a5048\",\"png_bytes\":166977,\"width\":1732,\"height\":1052},\"mode\":\"WRITE\",\"revision\":1,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 13. No AI watches this screen: ChatGPT gets only a selection you send with Ask. Saved on this device at 03:05:14.\",\"log\":[{\"at\":\"2026-10-01T10:05:20.118Z\",\"badge\":\"Selection · not sent to any AI\",\"status\":null,\"answer_shown\":false,\"cancel_shown\":false,\"save_shown\":false,\"form_shown\":true,\"submit_disabled\":false}]}",
+  "picture_unchecked": "{\"at\":\"2026-10-01T10:05:20.203Z\",\"ok\":true,\"size\":[1732,1052],\"size_ok\":true,\"cards\":[{\"index\":0,\"ground\":4,\"shape_color\":\"green\",\"shape_px\":6160,\"digit_px\":3280,\"ring_px\":0},{\"index\":1,\"ground\":4,\"shape_color\":\"orange\",\"shape_px\":3334,\"digit_px\":3501,\"ring_px\":0},{\"index\":2,\"ground\":4,\"shape_color\":\"orange\",\"shape_px\":3334,\"digit_px\":3457,\"ring_px\":0},{\"index\":3,\"ground\":4,\"shape_color\":\"red\",\"shape_px\":6160,\"digit_px\":3312,\"ring_px\":0},{\"index\":4,\"ground\":4,\"shape_color\":\"red\",\"shape_px\":6360,\"digit_px\":3620,\"ring_px\":0},{\"index\":5,\"ground\":4,\"shape_color\":\"orange\",\"shape_px\":6036,\"digit_px\":3243,\"ring_px\":0},{\"index\":6,\"ground\":4,\"shape_color\":\"orange\",\"shape_px\":6036,\"digit_px\":2916,\"ring_px\":0},{\"index\":7,\"ground\":4,\"shape_color\":\"orange\",\"shape_px\":6036,\"digit_px\":3086,\"ring_px\":0},{\"index\":8,\"ground\":4,\"shape_color\":\"green\",\"shape_px\":6160,\"digit_px\":3456,\"ring_px\":0},{\"index\":9,\"ground\":4,\"shape_color\":\"blue\",\"shape_px\":6360,\"digit_px\":3125,\"ring_px\":0},{\"index\":10,\"ground\":4,\"shape_color\":\"red\",\"shape_px\":3748,\"digit_px\":2919,\"ring_px\":0},{\"index\":11,\"ground\":4,\"shape_color\":\"red\",\"shape_px\":3748,\"digit_px\":3582,\"ring_px\":5332}],\"gaps_white\":17,\"gaps\":17,\"ringed\":[11],\"rings_wanted\":[11]}",
+  "k0_unchecked_card": "{\"at\":\"2026-10-01T10:05:20.218Z\",\"card_shown\":true,\"badge\":\"Selection · not sent to any AI\",\"card_text\":\"This selection is sent to ChatGPT, with your question, only when you press Ask below; nothing else of the screen is sent to any AI, and no AI watches it.\\nRegion 17,72 866×526 DIP on 整个屏幕 = 1732×1052 px of frame 13 (captured 03:05:19), with your ink revision 1 drawn over it.\",\"status\":null,\"answer_shown\":false,\"answer\":null,\"answer_box_text\":null,\"answer_child_elements\":0,\"form_shown\":true,\"question\":\"Explain what is selected.\",\"assistance\":\"hint\",\"submit_disabled\":false,\"cancel_shown\":false,\"save_shown\":false,\"picture\":{\"png_sha256\":\"f8cfc867775bf0911289c6f1fe96067a13e9e9c308e81fabe355b738660a5048\",\"png_bytes\":166977,\"width\":1732,\"height\":1052},\"mode\":\"WRITE\",\"revision\":1,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 13. No AI watches this screen: ChatGPT gets only a selection you send with Ask. Saved on this device at 03:05:14.\",\"log\":[{\"at\":\"2026-10-01T10:05:20.118Z\",\"badge\":\"Selection · not sent to any AI\",\"status\":null,\"answer_shown\":false,\"cancel_shown\":false,\"save_shown\":false,\"form_shown\":true,\"submit_disabled\":false}]}",
+  "k0_unchecked_ask_ended": "{\"at\":\"2026-10-01T10:05:20.227Z\",\"badge\":\"Selection · not sent to any AI\",\"status\":\"Not sent: the ChatGPT subscription has not been checked yet (use the control window).\"}",
+  "k0_unchecked_ask": "{\"at\":\"2026-10-01T10:05:20.239Z\",\"card_shown\":true,\"badge\":\"Selection · not sent to any AI\",\"card_text\":\"This selection is sent to ChatGPT, with your question, only when you press Ask below; nothing else of the screen is sent to any AI, and no AI watches it.\\nRegion 17,72 866×526 DIP on 整个屏幕 = 1732×1052 px of frame 13 (captured 03:05:19), with your ink revision 1 drawn over it.\",\"status\":\"Not sent: the ChatGPT subscription has not been checked yet (use the control window).\",\"answer_shown\":false,\"answer\":null,\"answer_box_text\":null,\"answer_child_elements\":0,\"form_shown\":true,\"question\":\"I circled two cards with my pen. Name only those two cards. For each one, write one line: the number written in the card, then the color and the shape next to the number.\",\"assistance\":\"explain\",\"submit_disabled\":false,\"cancel_shown\":false,\"save_shown\":false,\"picture\":{\"png_sha256\":\"f8cfc867775bf0911289c6f1fe96067a13e9e9c308e81fabe355b738660a5048\",\"png_bytes\":166977,\"width\":1732,\"height\":1052},\"mode\":\"WRITE\",\"revision\":1,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 13. No AI watches this screen: ChatGPT gets only a selection you send with Ask. Saved on this device at 03:05:14.\",\"log\":[{\"at\":\"2026-10-01T10:05:20.118Z\",\"badge\":\"Selection · not sent to any AI\",\"status\":null,\"answer_shown\":false,\"cancel_shown\":false,\"save_shown\":false,\"form_shown\":true,\"submit_disabled\":false},{\"at\":\"2026-10-01T10:05:20.225Z\",\"badge\":\"Selection · not sent to any AI\",\"status\":\"Sending this picture and your question to ChatGPT…\",\"answer_shown\":false,\"cancel_shown\":true,\"save_shown\":false,\"form_shown\":true,\"submit_disabled\":true},{\"at\":\"2026-10-01T10:05:20.225Z\",\"badge\":\"Selection · not sent to any AI\",\"status\":\"Not sent: the ChatGPT subscription has not been checked yet (use the control window).\",\"answer_shown\":false,\"cancel_shown\":false,\"save_shown\":false,\"form_shown\":true,\"submit_disabled\":false}]}",
+  "kids_unchecked": {
+   "app_pid": 57192,
+   "at": "2026-10-01T10:05:20.9610949Z",
+   "children": [
+    {
+     "name": "electron.exe",
+     "pid": 78160,
+     "created": "2026-10-01T10:05:03.6576610Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 76772,
+     "created": "2026-10-01T10:05:03.6615390Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 76420,
+     "created": "2026-10-01T10:05:03.6757510Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 77492,
+     "created": "2026-10-01T10:05:07.5527630Z"
+    }
+   ]
+  },
+  "s0_stopped": "{\"running\":false,\"starting\":false,\"ended\":\"stopped by the user\"}",
+  "f_checked": "{\"at\":\"2026-10-01T10:05:21.250Z\",\"s\":{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":false}}",
+  "f_signed_in": "{\"at\":\"2026-10-01T10:05:21.253Z\",\"s\":{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":false},\"section\":{\"hidden\":false,\"disabled\":false},\"state\":{\"text\":\"Signed in with ChatGPT (QA-SYNTHETIC), as the official Codex app server reports. That does not show that a model will answer.\",\"hidden\":false,\"disabled\":false},\"quota\":{\"text\":\"Usage limits: not reported.\",\"hidden\":false,\"disabled\":false},\"check\":{\"text\":\"Check connection\",\"hidden\":false,\"disabled\":false},\"login\":{\"text\":\"Sign in with ChatGPT\",\"hidden\":true,\"disabled\":false},\"login_cancel\":{\"text\":\"Cancel sign-in\",\"hidden\":true,\"disabled\":false},\"model_row\":{\"text\":\"Model for questions QA synthetic (no model)\",\"hidden\":false,\"disabled\":false},\"options\":[[\"qa-synthetic-vision\",\"QA synthetic (no model)\",true]],\"ai\":\"Captured frames and ink stay on this device. No AI watches the screen: ChatGPT (your subscription) gets only a selection you send with Ask, with your question.\",\"session\":\"Not capturing: stopped by the user.\"}",
+  "kids_checked": {
+   "app_pid": 57192,
+   "at": "2026-10-01T10:05:21.9107422Z",
+   "children": [
+    {
+     "name": "electron.exe",
+     "pid": 78160,
+     "created": "2026-10-01T10:05:03.6576610Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 76772,
+     "created": "2026-10-01T10:05:03.6615390Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 76420,
+     "created": "2026-10-01T10:05:03.6757510Z"
+    },
+    {
+     "name": "wsl.exe",
+     "pid": 76792,
+     "created": "2026-10-01T10:05:21.1006960Z"
+    }
+   ]
+  },
+  "s1": "{\"running\":true,\"starting\":false,\"ending\":false,\"display\":{\"display_id\":\"3071609112\",\"label\":\"整个屏幕\",\"bounds\":{\"x\":0,\"y\":0,\"width\":1280,\"height\":800},\"scale_factor\":2},\"session_id\":\"3\"}",
+  "saved_circled": "{\"doc\":{\"id\":\"f0b6721fd729652e\",\"revision\":2,\"visible\":[\"stk_fa33eaa70595732a9a2f56af53c5bfe4\",\"stk_db2fff2c8e8b6821e45ab3bb27744ef4\"],\"history\":[\"add\",\"add\"],\"strokes\":2},\"saveText\":\"Saved on this device at 03:05:31.\",\"retention\":{\"retained\":3,\"refused\":0,\"lastRefusal\":\"\",\"deferred\":0}}",
+  "app_circled": "{\"aligned\":{\"stk_fa33eaa70595732a9a2f56af53c5bfe4\":\"verified\",\"stk_db2fff2c8e8b6821e45ab3bb27744ef4\":\"verified\"},\"alignment\":[{\"id\":\"stk_fa33eaa70595732a9a2f56af53c5bfe4\",\"region\":{\"x\":669,\"y\":431,\"width\":192,\"height\":148},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":64,\"rows\":49,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_db2fff2c8e8b6821e45ab3bb27744ef4\",\"region\":{\"x\":39,\"y\":431,\"width\":192,\"height\":148},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":64,\"rows\":49,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}}],\"doc\":{\"id\":\"f0b6721fd729652e\",\"revision\":2,\"visible\":[\"stk_fa33eaa70595732a9a2f56af53c5bfe4\",\"stk_db2fff2c8e8b6821e45ab3bb27744ef4\"],\"history\":[\"add\",\"add\"],\"strokes\":2},\"pinned\":0,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 14. No AI watches this screen: ChatGPT gets only a selection you send with Ask. Saved on this device at 03:05:31.\",\"gesture\":null,\"last\":{\"seq\":14,\"sampled_at\":\"2026-10-01T10:05:34.392Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"c3d38602d84569177d2d1bfb0d0ed6685671a0f78c9fdce462228798f1714b86\"},\"composed\":{\"ink_session\":\"f0b6721fd729652e\",\"ink_revision\":2,\"ink_marks\":{\"verified\":2,\"changed\":0,\"unknown\":0,\"following_content\":0},\"pixels_sha256\":\"6f8b4c751783773504a4099dff0d38550cd48e82bbc04272f3eb09d7e9a26faa\"}}}",
+  "ov_circled": "{\"mode\":\"WRITE\",\"tool\":\"pen\",\"mouse\":\"false\",\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 14. No AI watches this screen: ChatGPT gets only a selection you send with Ask. Saved on this device at 03:05:31.\",\"card\":false,\"cancel\":false,\"disabled\":1}",
+  "surface_truth_circled": "{\"format\":\"qa-subscription-surface/2\",\"generated_at\":\"2026-10-01T10:04:56.045Z\",\"read_at\":\"2026-10-01T10:05:34.615Z\",\"grid\":{\"x\":40,\"y\":90,\"cols\":4,\"rows\":3,\"w\":190,\"h\":150,\"gap\":20},\"cards\":[{\"index\":0,\"number\":2533,\"shape\":\"triangle\",\"color\":\"green\",\"rect_dip\":{\"x\":40,\"y\":90,\"width\":190,\"height\":150}},{\"index\":1,\"number\":1990,\"shape\":\"star\",\"color\":\"orange\",\"rect_dip\":{\"x\":250,\"y\":90,\"width\":190,\"height\":150}},{\"index\":2,\"number\":9542,\"shape\":\"star\",\"color\":\"orange\",\"rect_dip\":{\"x\":460,\"y\":90,\"width\":190,\"height\":150}},{\"index\":3,\"number\":6561,\"shape\":\"triangle\",\"color\":\"red\",\"rect_dip\":{\"x\":670,\"y\":90,\"width\":190,\"height\":150}},{\"index\":4,\"number\":3829,\"shape\":\"heart\",\"color\":\"red\",\"rect_dip\":{\"x\":40,\"y\":260,\"width\":190,\"height\":150}},{\"index\":5,\"number\":4015,\"shape\":\"heart\",\"color\":\"orange\",\"rect_dip\":{\"x\":250,\"y\":260,\"width\":190,\"height\":150}},{\"index\":6,\"number\":1742,\"shape\":\"heart\",\"color\":\"orange\",\"rect_dip\":{\"x\":460,\"y\":260,\"width\":190,\"height\":150}},{\"index\":7,\"number\":7014,\"shape\":\"heart\",\"color\":\"orange\",\"rect_dip\":{\"x\":670,\"y\":260,\"width\":190,\"height\":150}},{\"index\":8,\"number\":3229,\"shape\":\"triangle\",\"color\":\"green\",\"rect_dip\":{\"x\":40,\"y\":430,\"width\":190,\"height\":150}},{\"index\":9,\"number\":5743,\"shape\":\"heart\",\"color\":\"blue\",\"rect_dip\":{\"x\":250,\"y\":430,\"width\":190,\"height\":150}},{\"index\":10,\"number\":9511,\"shape\":\"star\",\"color\":\"red\",\"rect_dip\":{\"x\":460,\"y\":430,\"width\":190,\"height\":150}},{\"index\":11,\"number\":5299,\"shape\":\"star\",\"color\":\"red\",\"rect_dip\":{\"x\":670,\"y\":430,\"width\":190,\"height\":150}}],\"viewport_offset_dip\":{\"x\":0,\"y\":0},\"viewport\":{\"width\":1280,\"height\":800,\"dpr\":2,\"screen\":[1280,800]},\"fits\":true,\"full_screen\":true,\"dom_text\":\"\",\"title\":\"QA test surface\",\"url_has_query\":false}",
+  "form_circled": "{\"at\":\"2026-10-01T10:05:36.733Z\",\"card_shown\":true,\"badge\":\"Selection · not sent to any AI\",\"card_text\":\"This selection is sent to ChatGPT, with your question, only when you press Ask below; nothing else of the screen is sent to any AI, and no AI watches it.\\nRegion 17,72 866×526 DIP on 整个屏幕 = 1732×1052 px of frame 16 (captured 03:05:36), with your ink revision 2 drawn over it.\",\"status\":null,\"answer_shown\":false,\"answer\":null,\"answer_box_text\":null,\"answer_child_elements\":0,\"form_shown\":true,\"question\":\"Explain what is selected.\",\"assistance\":\"hint\",\"submit_disabled\":false,\"cancel_shown\":false,\"save_shown\":false,\"picture\":{\"png_sha256\":\"95537f73c39dd6a78e93024a6610e0b8e806ddf14c39c6d5716b6cc8c54c5185\",\"png_bytes\":170157,\"width\":1732,\"height\":1052},\"mode\":\"WRITE\",\"revision\":2,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 16. No AI watches this screen: ChatGPT gets only a selection you send with Ask. Saved on this device at 03:05:31.\",\"log\":[{\"at\":\"2026-10-01T10:05:36.720Z\",\"badge\":\"Selection · not sent to any AI\",\"status\":null,\"answer_shown\":false,\"cancel_shown\":false,\"save_shown\":false,\"form_shown\":true,\"submit_disabled\":false}]}",
+  "picture_circled": "{\"at\":\"2026-10-01T10:05:36.806Z\",\"ok\":true,\"size\":[1732,1052],\"size_ok\":true,\"cards\":[{\"index\":0,\"ground\":4,\"shape_color\":\"green\",\"shape_px\":6160,\"digit_px\":3280,\"ring_px\":0},{\"index\":1,\"ground\":4,\"shape_color\":\"orange\",\"shape_px\":3334,\"digit_px\":3501,\"ring_px\":0},{\"index\":2,\"ground\":4,\"shape_color\":\"orange\",\"shape_px\":3334,\"digit_px\":3457,\"ring_px\":0},{\"index\":3,\"ground\":4,\"shape_color\":\"red\",\"shape_px\":6160,\"digit_px\":3312,\"ring_px\":0},{\"index\":4,\"ground\":4,\"shape_color\":\"red\",\"shape_px\":6360,\"digit_px\":3620,\"ring_px\":0},{\"index\":5,\"ground\":4,\"shape_color\":\"orange\",\"shape_px\":6036,\"digit_px\":3243,\"ring_px\":0},{\"index\":6,\"ground\":4,\"shape_color\":\"orange\",\"shape_px\":6036,\"digit_px\":2916,\"ring_px\":0},{\"index\":7,\"ground\":4,\"shape_color\":\"orange\",\"shape_px\":6036,\"digit_px\":3086,\"ring_px\":0},{\"index\":8,\"ground\":4,\"shape_color\":\"green\",\"shape_px\":6160,\"digit_px\":3456,\"ring_px\":5332},{\"index\":9,\"ground\":4,\"shape_color\":\"blue\",\"shape_px\":6360,\"digit_px\":3125,\"ring_px\":0},{\"index\":10,\"ground\":4,\"shape_color\":\"red\",\"shape_px\":3748,\"digit_px\":2919,\"ring_px\":0},{\"index\":11,\"ground\":4,\"shape_color\":\"red\",\"shape_px\":3748,\"digit_px\":3582,\"ring_px\":5332}],\"gaps_white\":17,\"gaps\":17,\"ringed\":[8,11],\"rings_wanted\":[8,11]}",
+  "k_selected": "{\"at\":\"2026-10-01T10:05:36.819Z\",\"card_shown\":true,\"badge\":\"Selection · not sent to any AI\",\"card_text\":\"This selection is sent to ChatGPT, with your question, only when you press Ask below; nothing else of the screen is sent to any AI, and no AI watches it.\\nRegion 17,72 866×526 DIP on 整个屏幕 = 1732×1052 px of frame 16 (captured 03:05:36), with your ink revision 2 drawn over it.\",\"status\":null,\"answer_shown\":false,\"answer\":null,\"answer_box_text\":null,\"answer_child_elements\":0,\"form_shown\":true,\"question\":\"Explain what is selected.\",\"assistance\":\"hint\",\"submit_disabled\":false,\"cancel_shown\":false,\"save_shown\":false,\"picture\":{\"png_sha256\":\"95537f73c39dd6a78e93024a6610e0b8e806ddf14c39c6d5716b6cc8c54c5185\",\"png_bytes\":170157,\"width\":1732,\"height\":1052},\"mode\":\"WRITE\",\"revision\":2,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 16. No AI watches this screen: ChatGPT gets only a selection you send with Ask. Saved on this device at 03:05:31.\",\"log\":[{\"at\":\"2026-10-01T10:05:36.720Z\",\"badge\":\"Selection · not sent to any AI\",\"status\":null,\"answer_shown\":false,\"cancel_shown\":false,\"save_shown\":false,\"form_shown\":true,\"submit_disabled\":false}]}",
+  "k_selected_later": "{\"at\":\"2026-10-01T10:05:40.885Z\",\"card_shown\":true,\"badge\":\"Selection · not sent to any AI\",\"card_text\":\"This selection is sent to ChatGPT, with your question, only when you press Ask below; nothing else of the screen is sent to any AI, and no AI watches it.\\nRegion 17,72 866×526 DIP on 整个屏幕 = 1732×1052 px of frame 16 (captured 03:05:36), with your ink revision 2 drawn over it.\",\"status\":null,\"answer_shown\":false,\"answer\":null,\"answer_box_text\":null,\"answer_child_elements\":0,\"form_shown\":true,\"question\":\"Explain what is selected.\",\"assistance\":\"hint\",\"submit_disabled\":false,\"cancel_shown\":false,\"save_shown\":false,\"picture\":{\"png_sha256\":\"95537f73c39dd6a78e93024a6610e0b8e806ddf14c39c6d5716b6cc8c54c5185\",\"png_bytes\":170157,\"width\":1732,\"height\":1052},\"mode\":\"WRITE\",\"revision\":2,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 20. No AI watches this screen: ChatGPT gets only a selection you send with Ask. Saved on this device at 03:05:31.\",\"log\":[{\"at\":\"2026-10-01T10:05:36.720Z\",\"badge\":\"Selection · not sent to any AI\",\"status\":null,\"answer_shown\":false,\"cancel_shown\":false,\"save_shown\":false,\"form_shown\":true,\"submit_disabled\":false}]}",
+  "k1_answered_ended": "{\"at\":\"2026-10-01T10:05:40.899Z\",\"badge\":\"Selection · answered by ChatGPT below\",\"status\":\"Answered by ChatGPT (qa-synthetic-vision) in 0.0 s, about the picture above and your question only.\"}",
+  "k1_answered": "{\"at\":\"2026-10-01T10:05:40.913Z\",\"card_shown\":true,\"badge\":\"Selection · answered by ChatGPT below\",\"card_text\":\"This selection is sent to ChatGPT, with your question, only when you press Ask below; nothing else of the screen is sent to any AI, and no AI watches it.\\nRegion 17,72 866×526 DIP on 整个屏幕 = 1732×1052 px of frame 16 (captured 03:05:36), with your ink revision 2 drawn over it.\",\"status\":\"Answered by ChatGPT (qa-synthetic-vision) in 0.0 s, about the picture above and your question only.\",\"answer_shown\":true,\"answer\":\"SYNTHETIC (QA fake bridge: no model, no ChatGPT). First control answer.\",\"answer_box_text\":\"\\n    Answer from ChatGPT · generated text, apart from your selection\\n    SYNTHETIC (QA fake bridge: no model, no ChatGPT). First control answer.\\n  \",\"answer_child_elements\":0,\"form_shown\":true,\"question\":\"I circled two cards with my pen. Name only those two cards. For each one, write one line: the number written in the card, then the color and the shape next to the number.\",\"assistance\":\"explain\",\"submit_disabled\":false,\"cancel_shown\":false,\"save_shown\":false,\"picture\":{\"png_sha256\":\"95537f73c39dd6a78e93024a6610e0b8e806ddf14c39c6d5716b6cc8c54c5185\",\"png_bytes\":170157,\"width\":1732,\"height\":1052},\"mode\":\"WRITE\",\"revision\":2,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 20. No AI watches this screen: ChatGPT gets only a selection you send with Ask. Saved on this device at 03:05:31.\",\"log\":[{\"at\":\"2026-10-01T10:05:36.720Z\",\"badge\":\"Selection · not sent to any AI\",\"status\":null,\"answer_shown\":false,\"cancel_shown\":false,\"save_shown\":false,\"form_shown\":true,\"submit_disabled\":false},{\"at\":\"2026-10-01T10:05:40.892Z\",\"badge\":\"Selection · not sent to any AI\",\"status\":\"Sending this picture and your question to ChatGPT…\",\"answer_shown\":false,\"cancel_shown\":true,\"save_shown\":false,\"form_shown\":true,\"submit_disabled\":true},{\"at\":\"2026-10-01T10:05:40.896Z\",\"badge\":\"Selection · asked: being sent to ChatGPT\",\"status\":\"Asked at 03:05:40 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…\",\"answer_shown\":false,\"cancel_shown\":true,\"save_shown\":false,\"form_shown\":true,\"submit_disabled\":true},{\"at\":\"2026-10-01T10:05:40.899Z\",\"badge\":\"Selection · answered by ChatGPT below\",\"status\":\"Answered by ChatGPT (qa-synthetic-vision) in 0.0 s, about the picture above and your question only.\",\"answer_shown\":true,\"cancel_shown\":false,\"save_shown\":false,\"form_shown\":true,\"submit_disabled\":false},{\"at\":\"2026-10-01T10:05:40.903Z\",\"badge\":\"Selection · answered by ChatGPT below\",\"status\":\"Answered by ChatGPT (qa-synthetic-vision) in 0.0 s, about the picture above and your question only.\",\"answer_shown\":true,\"cancel_shown\":false,\"save_shown\":false,\"form_shown\":true,\"submit_disabled\":false}]}",
+  "k2_tampered_ended": "{\"at\":\"2026-10-01T10:05:40.978Z\",\"badge\":\"Selection · asked: no answer shown\",\"status\":\"No answer: the answer is not bound to the request that was sent; it is not shown. It was not sent again.\"}",
+  "k2_tampered": {
+   "at": "2026-10-01T10:05:40.990Z",
+   "card_shown": true,
+   "badge": "Selection · asked: no answer shown",
+   "card_text": "This selection is sent to ChatGPT, with your question, only when you press Ask below; nothing else of the screen is sent to any AI, and no AI watches it.\nRegion 17,72 866×526 DIP on 整个屏幕 = 1732×1052 px of frame 16 (captured 03:05:36), with your ink revision 2 drawn over it.",
+   "status": "No answer: the answer is not bound to the request that was sent; it is not shown. It was not sent again.",
+   "answer_shown": false,
+   "answer": null,
+   "answer_box_text": null,
+   "answer_child_elements": 0,
+   "form_shown": true,
+   "question": "I circled two cards with my pen. Name only those two cards. For each one, write one line: the number written in the card, then the color and the shape next to the number.",
+   "assistance": "explain",
+   "submit_disabled": false,
+   "cancel_shown": false,
+   "save_shown": false,
+   "picture": {
+    "png_sha256": "95537f73c39dd6a78e93024a6610e0b8e806ddf14c39c6d5716b6cc8c54c5185",
+    "png_bytes": 170157,
+    "width": 1732,
+    "height": 1052
+   },
+   "mode": "WRITE",
+   "revision": 2,
+   "hint": "Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 20. No AI watches this screen: ChatGPT gets only a selection you send with Ask. Saved on this device at 03:05:31.",
+   "log": [
+    {
+     "at": "2026-10-01T10:05:40.896Z",
+     "badge": "Selection · asked: being sent to ChatGPT",
+     "status": "Asked at 03:05:40 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:40.899Z",
+     "badge": "Selection · answered by ChatGPT below",
+     "status": "Answered by ChatGPT (qa-synthetic-vision) in 0.0 s, about the picture above and your question only.",
+     "answer_shown": true,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": false
+    },
+    {
+     "at": "2026-10-01T10:05:40.903Z",
+     "badge": "Selection · answered by ChatGPT below",
+     "status": "Answered by ChatGPT (qa-synthetic-vision) in 0.0 s, about the picture above and your question only.",
+     "answer_shown": true,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": false
+    },
+    {
+     "at": "2026-10-01T10:05:40.972Z",
+     "badge": "Selection · answered by ChatGPT below",
+     "status": "Sending this picture and your question to ChatGPT…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:40.975Z",
+     "badge": "Selection · asked: being sent to ChatGPT",
+     "status": "Asked at 03:05:40 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:40.978Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "No answer: the answer is not bound to the request that was sent; it is not shown. It was not sent again.",
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": false
+    }
+   ],
+   "log_changes": 8
+  },
+  "k3_quota_ended": "{\"at\":\"2026-10-01T10:05:41.036Z\",\"badge\":\"Selection · asked: no answer shown\",\"status\":\"No answer: the subscription's usage limit was reached. It was not sent again.\"}",
+  "k3_quota": {
+   "at": "2026-10-01T10:05:41.047Z",
+   "card_shown": true,
+   "badge": "Selection · asked: no answer shown",
+   "card_text": "This selection is sent to ChatGPT, with your question, only when you press Ask below; nothing else of the screen is sent to any AI, and no AI watches it.\nRegion 17,72 866×526 DIP on 整个屏幕 = 1732×1052 px of frame 16 (captured 03:05:36), with your ink revision 2 drawn over it.",
+   "status": "No answer: the subscription's usage limit was reached. It was not sent again.",
+   "answer_shown": false,
+   "answer": null,
+   "answer_box_text": null,
+   "answer_child_elements": 0,
+   "form_shown": true,
+   "question": "I circled two cards with my pen. Name only those two cards. For each one, write one line: the number written in the card, then the color and the shape next to the number.",
+   "assistance": "explain",
+   "submit_disabled": false,
+   "cancel_shown": false,
+   "save_shown": false,
+   "picture": {
+    "png_sha256": "95537f73c39dd6a78e93024a6610e0b8e806ddf14c39c6d5716b6cc8c54c5185",
+    "png_bytes": 170157,
+    "width": 1732,
+    "height": 1052
+   },
+   "mode": "WRITE",
+   "revision": 2,
+   "hint": "Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 20. No AI watches this screen: ChatGPT gets only a selection you send with Ask. Saved on this device at 03:05:31.",
+   "log": [
+    {
+     "at": "2026-10-01T10:05:40.972Z",
+     "badge": "Selection · answered by ChatGPT below",
+     "status": "Sending this picture and your question to ChatGPT…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:40.975Z",
+     "badge": "Selection · asked: being sent to ChatGPT",
+     "status": "Asked at 03:05:40 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:40.978Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "No answer: the answer is not bound to the request that was sent; it is not shown. It was not sent again.",
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": false
+    },
+    {
+     "at": "2026-10-01T10:05:41.030Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "Sending this picture and your question to ChatGPT…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:41.033Z",
+     "badge": "Selection · asked: being sent to ChatGPT",
+     "status": "Asked at 03:05:41 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:41.036Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "No answer: the subscription's usage limit was reached. It was not sent again.",
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": false
+    }
+   ],
+   "log_changes": 11
+  },
+  "k4_busy_ended": "{\"at\":\"2026-10-01T10:05:41.096Z\",\"badge\":\"Selection · asked: no answer shown\",\"status\":\"No answer: another question is still being answered. It was not sent again.\"}",
+  "k4_busy": {
+   "at": "2026-10-01T10:05:41.107Z",
+   "card_shown": true,
+   "badge": "Selection · asked: no answer shown",
+   "card_text": "This selection is sent to ChatGPT, with your question, only when you press Ask below; nothing else of the screen is sent to any AI, and no AI watches it.\nRegion 17,72 866×526 DIP on 整个屏幕 = 1732×1052 px of frame 16 (captured 03:05:36), with your ink revision 2 drawn over it.",
+   "status": "No answer: another question is still being answered. It was not sent again.",
+   "answer_shown": false,
+   "answer": null,
+   "answer_box_text": null,
+   "answer_child_elements": 0,
+   "form_shown": true,
+   "question": "I circled two cards with my pen. Name only those two cards. For each one, write one line: the number written in the card, then the color and the shape next to the number.",
+   "assistance": "explain",
+   "submit_disabled": false,
+   "cancel_shown": false,
+   "save_shown": false,
+   "picture": {
+    "png_sha256": "95537f73c39dd6a78e93024a6610e0b8e806ddf14c39c6d5716b6cc8c54c5185",
+    "png_bytes": 170157,
+    "width": 1732,
+    "height": 1052
+   },
+   "mode": "WRITE",
+   "revision": 2,
+   "hint": "Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 20. No AI watches this screen: ChatGPT gets only a selection you send with Ask. Saved on this device at 03:05:31.",
+   "log": [
+    {
+     "at": "2026-10-01T10:05:41.030Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "Sending this picture and your question to ChatGPT…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:41.033Z",
+     "badge": "Selection · asked: being sent to ChatGPT",
+     "status": "Asked at 03:05:41 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:41.036Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "No answer: the subscription's usage limit was reached. It was not sent again.",
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": false
+    },
+    {
+     "at": "2026-10-01T10:05:41.091Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "Sending this picture and your question to ChatGPT…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:41.093Z",
+     "badge": "Selection · asked: being sent to ChatGPT",
+     "status": "Asked at 03:05:41 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:41.096Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "No answer: another question is still being answered. It was not sent again.",
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": false
+    }
+   ],
+   "log_changes": 14
+  },
+  "k5_unsupported_model_ended": "{\"at\":\"2026-10-01T10:05:41.149Z\",\"badge\":\"Selection · asked: no answer shown\",\"status\":\"No answer: the chosen model does not take pictures. It was not sent again.\"}",
+  "k5_unsupported_model": {
+   "at": "2026-10-01T10:05:41.178Z",
+   "card_shown": true,
+   "badge": "Selection · asked: no answer shown",
+   "card_text": "This selection is sent to ChatGPT, with your question, only when you press Ask below; nothing else of the screen is sent to any AI, and no AI watches it.\nRegion 17,72 866×526 DIP on 整个屏幕 = 1732×1052 px of frame 16 (captured 03:05:36), with your ink revision 2 drawn over it.",
+   "status": "No answer: the chosen model does not take pictures. It was not sent again.",
+   "answer_shown": false,
+   "answer": null,
+   "answer_box_text": null,
+   "answer_child_elements": 0,
+   "form_shown": true,
+   "question": "I circled two cards with my pen. Name only those two cards. For each one, write one line: the number written in the card, then the color and the shape next to the number.",
+   "assistance": "explain",
+   "submit_disabled": false,
+   "cancel_shown": false,
+   "save_shown": false,
+   "picture": {
+    "png_sha256": "95537f73c39dd6a78e93024a6610e0b8e806ddf14c39c6d5716b6cc8c54c5185",
+    "png_bytes": 170157,
+    "width": 1732,
+    "height": 1052
+   },
+   "mode": "WRITE",
+   "revision": 2,
+   "hint": "Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 20. No AI watches this screen: ChatGPT gets only a selection you send with Ask. Saved on this device at 03:05:31.",
+   "log": [
+    {
+     "at": "2026-10-01T10:05:41.091Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "Sending this picture and your question to ChatGPT…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:41.093Z",
+     "badge": "Selection · asked: being sent to ChatGPT",
+     "status": "Asked at 03:05:41 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:41.096Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "No answer: another question is still being answered. It was not sent again.",
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": false
+    },
+    {
+     "at": "2026-10-01T10:05:41.144Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "Sending this picture and your question to ChatGPT…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:41.146Z",
+     "badge": "Selection · asked: being sent to ChatGPT",
+     "status": "Asked at 03:05:41 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:41.149Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "No answer: the chosen model does not take pictures. It was not sent again.",
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": false
+    }
+   ],
+   "log_changes": 17
+  },
+  "k6_invalid_request_ended": "{\"at\":\"2026-10-01T10:05:41.213Z\",\"badge\":\"Selection · asked: no answer shown\",\"status\":\"No answer: the connector refused the request as malformed. It was not sent again.\"}",
+  "k6_invalid_request": {
+   "at": "2026-10-01T10:05:41.224Z",
+   "card_shown": true,
+   "badge": "Selection · asked: no answer shown",
+   "card_text": "This selection is sent to ChatGPT, with your question, only when you press Ask below; nothing else of the screen is sent to any AI, and no AI watches it.\nRegion 17,72 866×526 DIP on 整个屏幕 = 1732×1052 px of frame 16 (captured 03:05:36), with your ink revision 2 drawn over it.",
+   "status": "No answer: the connector refused the request as malformed. It was not sent again.",
+   "answer_shown": false,
+   "answer": null,
+   "answer_box_text": null,
+   "answer_child_elements": 0,
+   "form_shown": true,
+   "question": "I circled two cards with my pen. Name only those two cards. For each one, write one line: the number written in the card, then the color and the shape next to the number.",
+   "assistance": "explain",
+   "submit_disabled": false,
+   "cancel_shown": false,
+   "save_shown": false,
+   "picture": {
+    "png_sha256": "95537f73c39dd6a78e93024a6610e0b8e806ddf14c39c6d5716b6cc8c54c5185",
+    "png_bytes": 170157,
+    "width": 1732,
+    "height": 1052
+   },
+   "mode": "WRITE",
+   "revision": 2,
+   "hint": "Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 20. No AI watches this screen: ChatGPT gets only a selection you send with Ask. Saved on this device at 03:05:31.",
+   "log": [
+    {
+     "at": "2026-10-01T10:05:41.144Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "Sending this picture and your question to ChatGPT…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:41.146Z",
+     "badge": "Selection · asked: being sent to ChatGPT",
+     "status": "Asked at 03:05:41 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:41.149Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "No answer: the chosen model does not take pictures. It was not sent again.",
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": false
+    },
+    {
+     "at": "2026-10-01T10:05:41.208Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "Sending this picture and your question to ChatGPT…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:41.210Z",
+     "badge": "Selection · asked: being sent to ChatGPT",
+     "status": "Asked at 03:05:41 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:41.213Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "No answer: the connector refused the request as malformed. It was not sent again.",
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": false
+    }
+   ],
+   "log_changes": 20
+  },
+  "k7_failed_ended": "{\"at\":\"2026-10-01T10:05:41.286Z\",\"badge\":\"Selection · asked: no answer shown\",\"status\":\"No answer: ChatGPT did not complete an answer. It was not sent again.\"}",
+  "k7_failed": {
+   "at": "2026-10-01T10:05:41.296Z",
+   "card_shown": true,
+   "badge": "Selection · asked: no answer shown",
+   "card_text": "This selection is sent to ChatGPT, with your question, only when you press Ask below; nothing else of the screen is sent to any AI, and no AI watches it.\nRegion 17,72 866×526 DIP on 整个屏幕 = 1732×1052 px of frame 16 (captured 03:05:36), with your ink revision 2 drawn over it.",
+   "status": "No answer: ChatGPT did not complete an answer. It was not sent again.",
+   "answer_shown": false,
+   "answer": null,
+   "answer_box_text": null,
+   "answer_child_elements": 0,
+   "form_shown": true,
+   "question": "I circled two cards with my pen. Name only those two cards. For each one, write one line: the number written in the card, then the color and the shape next to the number.",
+   "assistance": "explain",
+   "submit_disabled": false,
+   "cancel_shown": false,
+   "save_shown": false,
+   "picture": {
+    "png_sha256": "95537f73c39dd6a78e93024a6610e0b8e806ddf14c39c6d5716b6cc8c54c5185",
+    "png_bytes": 170157,
+    "width": 1732,
+    "height": 1052
+   },
+   "mode": "WRITE",
+   "revision": 2,
+   "hint": "Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 20. No AI watches this screen: ChatGPT gets only a selection you send with Ask. Saved on this device at 03:05:31.",
+   "log": [
+    {
+     "at": "2026-10-01T10:05:41.208Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "Sending this picture and your question to ChatGPT…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:41.210Z",
+     "badge": "Selection · asked: being sent to ChatGPT",
+     "status": "Asked at 03:05:41 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:41.213Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "No answer: the connector refused the request as malformed. It was not sent again.",
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": false
+    },
+    {
+     "at": "2026-10-01T10:05:41.261Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "Sending this picture and your question to ChatGPT…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:41.264Z",
+     "badge": "Selection · asked: being sent to ChatGPT",
+     "status": "Asked at 03:05:41 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:41.267Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "No answer: ChatGPT did not complete an answer. It was not sent again.",
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": false
+    }
+   ],
+   "log_changes": 23
+  },
+  "k8_unavailable_ended": "{\"at\":\"2026-10-01T10:05:41.335Z\",\"badge\":\"Selection · asked: no answer shown\",\"status\":\"No answer: the connector, or the official Codex app server it runs, is not available. It was not sent again.\"}",
+  "k8_unavailable": {
+   "at": "2026-10-01T10:05:41.346Z",
+   "card_shown": true,
+   "badge": "Selection · asked: no answer shown",
+   "card_text": "This selection is sent to ChatGPT, with your question, only when you press Ask below; nothing else of the screen is sent to any AI, and no AI watches it.\nRegion 17,72 866×526 DIP on 整个屏幕 = 1732×1052 px of frame 16 (captured 03:05:36), with your ink revision 2 drawn over it.",
+   "status": "No answer: the connector, or the official Codex app server it runs, is not available. It was not sent again.",
+   "answer_shown": false,
+   "answer": null,
+   "answer_box_text": null,
+   "answer_child_elements": 0,
+   "form_shown": true,
+   "question": "I circled two cards with my pen. Name only those two cards. For each one, write one line: the number written in the card, then the color and the shape next to the number.",
+   "assistance": "explain",
+   "submit_disabled": false,
+   "cancel_shown": false,
+   "save_shown": false,
+   "picture": {
+    "png_sha256": "95537f73c39dd6a78e93024a6610e0b8e806ddf14c39c6d5716b6cc8c54c5185",
+    "png_bytes": 170157,
+    "width": 1732,
+    "height": 1052
+   },
+   "mode": "WRITE",
+   "revision": 2,
+   "hint": "Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 20. No AI watches this screen: ChatGPT gets only a selection you send with Ask. Saved on this device at 03:05:31.",
+   "log": [
+    {
+     "at": "2026-10-01T10:05:41.261Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "Sending this picture and your question to ChatGPT…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:41.264Z",
+     "badge": "Selection · asked: being sent to ChatGPT",
+     "status": "Asked at 03:05:41 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:41.267Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "No answer: ChatGPT did not complete an answer. It was not sent again.",
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": false
+    },
+    {
+     "at": "2026-10-01T10:05:41.330Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "Sending this picture and your question to ChatGPT…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:41.331Z",
+     "badge": "Selection · asked: being sent to ChatGPT",
+     "status": "Asked at 03:05:41 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:41.334Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "No answer: the connector, or the official Codex app server it runs, is not available. It was not sent again.",
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": false
+    }
+   ],
+   "log_changes": 26
+  },
+  "k9_cancel_confirmed_waiting": "{\"at\":\"2026-10-01T10:05:41.402Z\",\"badge\":\"Selection · asked: being sent to ChatGPT\",\"status\":\"Asked at 03:05:41 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…\"}",
+  "k9_cancel_confirmed_out": {
+   "at": "2026-10-01T10:05:41.413Z",
+   "card_shown": true,
+   "badge": "Selection · asked: being sent to ChatGPT",
+   "card_text": "This selection is sent to ChatGPT, with your question, only when you press Ask below; nothing else of the screen is sent to any AI, and no AI watches it.\nRegion 17,72 866×526 DIP on 整个屏幕 = 1732×1052 px of frame 16 (captured 03:05:36), with your ink revision 2 drawn over it.",
+   "status": "Asked at 03:05:41 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…",
+   "answer_shown": false,
+   "answer": null,
+   "answer_box_text": null,
+   "answer_child_elements": 0,
+   "form_shown": true,
+   "question": "I circled two cards with my pen. Name only those two cards. For each one, write one line: the number written in the card, then the color and the shape next to the number.",
+   "assistance": "explain",
+   "submit_disabled": true,
+   "cancel_shown": true,
+   "save_shown": false,
+   "picture": {
+    "png_sha256": "95537f73c39dd6a78e93024a6610e0b8e806ddf14c39c6d5716b6cc8c54c5185",
+    "png_bytes": 170157,
+    "width": 1732,
+    "height": 1052
+   },
+   "mode": "WRITE",
+   "revision": 2,
+   "hint": "Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 20. No AI watches this screen: ChatGPT gets only a selection you send with Ask. Saved on this device at 03:05:31.",
+   "log": [
+    {
+     "at": "2026-10-01T10:05:41.267Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "No answer: ChatGPT did not complete an answer. It was not sent again.",
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": false
+    },
+    {
+     "at": "2026-10-01T10:05:41.330Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "Sending this picture and your question to ChatGPT…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:41.331Z",
+     "badge": "Selection · asked: being sent to ChatGPT",
+     "status": "Asked at 03:05:41 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:41.334Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "No answer: the connector, or the official Codex app server it runs, is not available. It was not sent again.",
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": false
+    },
+    {
+     "at": "2026-10-01T10:05:41.397Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "Sending this picture and your question to ChatGPT…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:41.399Z",
+     "badge": "Selection · asked: being sent to ChatGPT",
+     "status": "Asked at 03:05:41 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    }
+   ],
+   "log_changes": 28
+  },
+  "k9_cancel_confirmed_ended": "{\"at\":\"2026-10-01T10:05:41.421Z\",\"badge\":\"Selection · asked: no answer shown\",\"status\":\"Cancelled: no answer is shown.\"}",
+  "k9_cancel_confirmed": {
+   "at": "2026-10-01T10:05:42.939Z",
+   "card_shown": true,
+   "badge": "Selection · asked: no answer shown",
+   "card_text": "This selection is sent to ChatGPT, with your question, only when you press Ask below; nothing else of the screen is sent to any AI, and no AI watches it.\nRegion 17,72 866×526 DIP on 整个屏幕 = 1732×1052 px of frame 16 (captured 03:05:36), with your ink revision 2 drawn over it.",
+   "status": "Cancelled: no answer is shown.",
+   "answer_shown": false,
+   "answer": null,
+   "answer_box_text": null,
+   "answer_child_elements": 0,
+   "form_shown": true,
+   "question": "I circled two cards with my pen. Name only those two cards. For each one, write one line: the number written in the card, then the color and the shape next to the number.",
+   "assistance": "explain",
+   "submit_disabled": false,
+   "cancel_shown": false,
+   "save_shown": false,
+   "picture": {
+    "png_sha256": "95537f73c39dd6a78e93024a6610e0b8e806ddf14c39c6d5716b6cc8c54c5185",
+    "png_bytes": 170157,
+    "width": 1732,
+    "height": 1052
+   },
+   "mode": "WRITE",
+   "revision": 2,
+   "hint": "Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 22. No AI watches this screen: ChatGPT gets only a selection you send with Ask. Saved on this device at 03:05:31.",
+   "log": [
+    {
+     "at": "2026-10-01T10:05:41.331Z",
+     "badge": "Selection · asked: being sent to ChatGPT",
+     "status": "Asked at 03:05:41 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:41.334Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "No answer: the connector, or the official Codex app server it runs, is not available. It was not sent again.",
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": false
+    },
+    {
+     "at": "2026-10-01T10:05:41.397Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "Sending this picture and your question to ChatGPT…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:41.399Z",
+     "badge": "Selection · asked: being sent to ChatGPT",
+     "status": "Asked at 03:05:41 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:41.417Z",
+     "badge": "Selection · asked: being sent to ChatGPT",
+     "status": "Cancelling: an answer that still arrives is not shown.",
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:41.420Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "Cancelled: no answer is shown.",
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": false
+    }
+   ],
+   "log_changes": 30
+  },
+  "k10_cancel_late_answer_waiting": "{\"at\":\"2026-10-01T10:05:43.003Z\",\"badge\":\"Selection · asked: being sent to ChatGPT\",\"status\":\"Asked at 03:05:42 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…\"}",
+  "k10_cancel_late_answer_out": {
+   "at": "2026-10-01T10:05:43.014Z",
+   "card_shown": true,
+   "badge": "Selection · asked: being sent to ChatGPT",
+   "card_text": "This selection is sent to ChatGPT, with your question, only when you press Ask below; nothing else of the screen is sent to any AI, and no AI watches it.\nRegion 17,72 866×526 DIP on 整个屏幕 = 1732×1052 px of frame 16 (captured 03:05:36), with your ink revision 2 drawn over it.",
+   "status": "Asked at 03:05:42 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…",
+   "answer_shown": false,
+   "answer": null,
+   "answer_box_text": null,
+   "answer_child_elements": 0,
+   "form_shown": true,
+   "question": "I circled two cards with my pen. Name only those two cards. For each one, write one line: the number written in the card, then the color and the shape next to the number.",
+   "assistance": "explain",
+   "submit_disabled": true,
+   "cancel_shown": true,
+   "save_shown": false,
+   "picture": {
+    "png_sha256": "95537f73c39dd6a78e93024a6610e0b8e806ddf14c39c6d5716b6cc8c54c5185",
+    "png_bytes": 170157,
+    "width": 1732,
+    "height": 1052
+   },
+   "mode": "WRITE",
+   "revision": 2,
+   "hint": "Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 22. No AI watches this screen: ChatGPT gets only a selection you send with Ask. Saved on this device at 03:05:31.",
+   "log": [
+    {
+     "at": "2026-10-01T10:05:41.397Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "Sending this picture and your question to ChatGPT…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:41.399Z",
+     "badge": "Selection · asked: being sent to ChatGPT",
+     "status": "Asked at 03:05:41 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:41.417Z",
+     "badge": "Selection · asked: being sent to ChatGPT",
+     "status": "Cancelling: an answer that still arrives is not shown.",
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:41.420Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "Cancelled: no answer is shown.",
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": false
+    },
+    {
+     "at": "2026-10-01T10:05:42.975Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "Sending this picture and your question to ChatGPT…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:42.978Z",
+     "badge": "Selection · asked: being sent to ChatGPT",
+     "status": "Asked at 03:05:42 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    }
+   ],
+   "log_changes": 32
+  },
+  "k10_cancel_late_answer_ended": "{\"at\":\"2026-10-01T10:05:43.021Z\",\"badge\":\"Selection · asked: no answer shown\",\"status\":\"Cancelled: no answer is shown.\"}",
+  "k10_cancel_late_answer": {
+   "at": "2026-10-01T10:05:44.535Z",
+   "card_shown": true,
+   "badge": "Selection · asked: no answer shown",
+   "card_text": "This selection is sent to ChatGPT, with your question, only when you press Ask below; nothing else of the screen is sent to any AI, and no AI watches it.\nRegion 17,72 866×526 DIP on 整个屏幕 = 1732×1052 px of frame 16 (captured 03:05:36), with your ink revision 2 drawn over it.",
+   "status": "Cancelled: no answer is shown.",
+   "answer_shown": false,
+   "answer": null,
+   "answer_box_text": null,
+   "answer_child_elements": 0,
+   "form_shown": true,
+   "question": "I circled two cards with my pen. Name only those two cards. For each one, write one line: the number written in the card, then the color and the shape next to the number.",
+   "assistance": "explain",
+   "submit_disabled": false,
+   "cancel_shown": false,
+   "save_shown": false,
+   "picture": {
+    "png_sha256": "95537f73c39dd6a78e93024a6610e0b8e806ddf14c39c6d5716b6cc8c54c5185",
+    "png_bytes": 170157,
+    "width": 1732,
+    "height": 1052
+   },
+   "mode": "WRITE",
+   "revision": 2,
+   "hint": "Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 23. No AI watches this screen: ChatGPT gets only a selection you send with Ask. Saved on this device at 03:05:31.",
+   "log": [
+    {
+     "at": "2026-10-01T10:05:41.417Z",
+     "badge": "Selection · asked: being sent to ChatGPT",
+     "status": "Cancelling: an answer that still arrives is not shown.",
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:41.420Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "Cancelled: no answer is shown.",
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": false
+    },
+    {
+     "at": "2026-10-01T10:05:42.975Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "Sending this picture and your question to ChatGPT…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:42.978Z",
+     "badge": "Selection · asked: being sent to ChatGPT",
+     "status": "Asked at 03:05:42 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:43.017Z",
+     "badge": "Selection · asked: being sent to ChatGPT",
+     "status": "Cancelling: an answer that still arrives is not shown.",
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:43.020Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "Cancelled: no answer is shown.",
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": false
+    }
+   ],
+   "log_changes": 34
+  },
+  "k11_cancel_unconfirmed_waiting": "{\"at\":\"2026-10-01T10:05:44.574Z\",\"badge\":\"Selection · asked: being sent to ChatGPT\",\"status\":\"Asked at 03:05:44 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…\"}",
+  "k11_cancel_unconfirmed_out": {
+   "at": "2026-10-01T10:05:44.607Z",
+   "card_shown": true,
+   "badge": "Selection · asked: being sent to ChatGPT",
+   "card_text": "This selection is sent to ChatGPT, with your question, only when you press Ask below; nothing else of the screen is sent to any AI, and no AI watches it.\nRegion 17,72 866×526 DIP on 整个屏幕 = 1732×1052 px of frame 16 (captured 03:05:36), with your ink revision 2 drawn over it.",
+   "status": "Asked at 03:05:44 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…",
+   "answer_shown": false,
+   "answer": null,
+   "answer_box_text": null,
+   "answer_child_elements": 0,
+   "form_shown": true,
+   "question": "I circled two cards with my pen. Name only those two cards. For each one, write one line: the number written in the card, then the color and the shape next to the number.",
+   "assistance": "explain",
+   "submit_disabled": true,
+   "cancel_shown": true,
+   "save_shown": false,
+   "picture": {
+    "png_sha256": "95537f73c39dd6a78e93024a6610e0b8e806ddf14c39c6d5716b6cc8c54c5185",
+    "png_bytes": 170157,
+    "width": 1732,
+    "height": 1052
+   },
+   "mode": "WRITE",
+   "revision": 2,
+   "hint": "Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 23. No AI watches this screen: ChatGPT gets only a selection you send with Ask. Saved on this device at 03:05:31.",
+   "log": [
+    {
+     "at": "2026-10-01T10:05:42.975Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "Sending this picture and your question to ChatGPT…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:42.978Z",
+     "badge": "Selection · asked: being sent to ChatGPT",
+     "status": "Asked at 03:05:42 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:43.017Z",
+     "badge": "Selection · asked: being sent to ChatGPT",
+     "status": "Cancelling: an answer that still arrives is not shown.",
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:43.020Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "Cancelled: no answer is shown.",
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": false
+    },
+    {
+     "at": "2026-10-01T10:05:44.569Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "Sending this picture and your question to ChatGPT…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:44.571Z",
+     "badge": "Selection · asked: being sent to ChatGPT",
+     "status": "Asked at 03:05:44 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    }
+   ],
+   "log_changes": 36
+  },
+  "k11_cancel_unconfirmed_ended": "{\"at\":\"2026-10-01T10:05:44.614Z\",\"badge\":\"Selection · asked: no answer shown\",\"status\":\"Cancelled: no answer is shown. Whether ChatGPT stopped working on it is not confirmed; it may still have counted against your usage.\"}",
+  "k11_cancel_unconfirmed": {
+   "at": "2026-10-01T10:05:46.128Z",
+   "card_shown": true,
+   "badge": "Selection · asked: no answer shown",
+   "card_text": "This selection is sent to ChatGPT, with your question, only when you press Ask below; nothing else of the screen is sent to any AI, and no AI watches it.\nRegion 17,72 866×526 DIP on 整个屏幕 = 1732×1052 px of frame 16 (captured 03:05:36), with your ink revision 2 drawn over it.",
+   "status": "Cancelled: no answer is shown. Whether ChatGPT stopped working on it is not confirmed; it may still have counted against your usage.",
+   "answer_shown": false,
+   "answer": null,
+   "answer_box_text": null,
+   "answer_child_elements": 0,
+   "form_shown": true,
+   "question": "I circled two cards with my pen. Name only those two cards. For each one, write one line: the number written in the card, then the color and the shape next to the number.",
+   "assistance": "explain",
+   "submit_disabled": false,
+   "cancel_shown": false,
+   "save_shown": false,
+   "picture": {
+    "png_sha256": "95537f73c39dd6a78e93024a6610e0b8e806ddf14c39c6d5716b6cc8c54c5185",
+    "png_bytes": 170157,
+    "width": 1732,
+    "height": 1052
+   },
+   "mode": "WRITE",
+   "revision": 2,
+   "hint": "Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 25. No AI watches this screen: ChatGPT gets only a selection you send with Ask. Saved on this device at 03:05:31.",
+   "log": [
+    {
+     "at": "2026-10-01T10:05:43.017Z",
+     "badge": "Selection · asked: being sent to ChatGPT",
+     "status": "Cancelling: an answer that still arrives is not shown.",
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:43.020Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "Cancelled: no answer is shown.",
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": false
+    },
+    {
+     "at": "2026-10-01T10:05:44.569Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "Sending this picture and your question to ChatGPT…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:44.571Z",
+     "badge": "Selection · asked: being sent to ChatGPT",
+     "status": "Asked at 03:05:44 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:44.610Z",
+     "badge": "Selection · asked: being sent to ChatGPT",
+     "status": "Cancelling: an answer that still arrives is not shown.",
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:44.613Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "Cancelled: no answer is shown. Whether ChatGPT stopped working on it is not confirmed; it may still have counted against your usage.",
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": false
+    }
+   ],
+   "log_changes": 38
+  },
+  "k12_waiting": "{\"at\":\"2026-10-01T10:05:46.157Z\",\"badge\":\"Selection · asked: being sent to ChatGPT\",\"status\":\"Asked at 03:05:46 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…\"}",
+  "k12_out": {
+   "at": "2026-10-01T10:05:46.168Z",
+   "card_shown": true,
+   "badge": "Selection · asked: being sent to ChatGPT",
+   "card_text": "This selection is sent to ChatGPT, with your question, only when you press Ask below; nothing else of the screen is sent to any AI, and no AI watches it.\nRegion 17,72 866×526 DIP on 整个屏幕 = 1732×1052 px of frame 16 (captured 03:05:36), with your ink revision 2 drawn over it.",
+   "status": "Asked at 03:05:46 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…",
+   "answer_shown": false,
+   "answer": null,
+   "answer_box_text": null,
+   "answer_child_elements": 0,
+   "form_shown": true,
+   "question": "I circled two cards with my pen. Name only those two cards. For each one, write one line: the number written in the card, then the color and the shape next to the number.",
+   "assistance": "explain",
+   "submit_disabled": true,
+   "cancel_shown": true,
+   "save_shown": false,
+   "picture": {
+    "png_sha256": "95537f73c39dd6a78e93024a6610e0b8e806ddf14c39c6d5716b6cc8c54c5185",
+    "png_bytes": 170157,
+    "width": 1732,
+    "height": 1052
+   },
+   "mode": "WRITE",
+   "revision": 2,
+   "hint": "Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 25. No AI watches this screen: ChatGPT gets only a selection you send with Ask. Saved on this device at 03:05:31.",
+   "log": [
+    {
+     "at": "2026-10-01T10:05:44.569Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "Sending this picture and your question to ChatGPT…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:44.571Z",
+     "badge": "Selection · asked: being sent to ChatGPT",
+     "status": "Asked at 03:05:44 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:44.610Z",
+     "badge": "Selection · asked: being sent to ChatGPT",
+     "status": "Cancelling: an answer that still arrives is not shown.",
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:44.613Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "Cancelled: no answer is shown. Whether ChatGPT stopped working on it is not confirmed; it may still have counted against your usage.",
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": false
+    },
+    {
+     "at": "2026-10-01T10:05:46.152Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "Sending this picture and your question to ChatGPT…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:46.154Z",
+     "badge": "Selection · asked: being sent to ChatGPT",
+     "status": "Asked at 03:05:46 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    }
+   ],
+   "log_changes": 40
+  },
+  "s1_stopped": "{\"running\":false,\"starting\":false,\"ended\":\"stopped by the user\"}",
+  "f_after_stop": "{\"at\":\"2026-10-01T10:05:48.802Z\",\"s\":{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":false},\"section\":{\"hidden\":false,\"disabled\":false},\"state\":{\"text\":\"Signed in with ChatGPT (QA-SYNTHETIC), as the official Codex app server reports. That does not show that a model will answer.\",\"hidden\":false,\"disabled\":false},\"quota\":{\"text\":\"Usage limits: not reported.\",\"hidden\":false,\"disabled\":false},\"check\":{\"text\":\"Check connection\",\"hidden\":false,\"disabled\":false},\"login\":{\"text\":\"Sign in with ChatGPT\",\"hidden\":true,\"disabled\":false},\"login_cancel\":{\"text\":\"Cancel sign-in\",\"hidden\":true,\"disabled\":false},\"model_row\":{\"text\":\"Model for questions QA synthetic (no model)\",\"hidden\":false,\"disabled\":false},\"options\":[[\"qa-synthetic-vision\",\"QA synthetic (no model)\",true]],\"ai\":\"Captured frames and ink stay on this device. No AI watches the screen: ChatGPT (your subscription) gets only a selection you send with Ask, with your question.\",\"session\":\"Not capturing: stopped by the user.\"}",
+  "s2": "{\"running\":true,\"starting\":false,\"ending\":false,\"display\":{\"display_id\":\"3071609112\",\"label\":\"整个屏幕\",\"bounds\":{\"x\":0,\"y\":0,\"width\":1280,\"height\":800},\"scale_factor\":2},\"session_id\":\"4\"}",
+  "form_s2": "{\"at\":\"2026-10-01T10:05:56.203Z\",\"card_shown\":true,\"badge\":\"Selection · not sent to any AI\",\"card_text\":\"This selection is sent to ChatGPT, with your question, only when you press Ask below; nothing else of the screen is sent to any AI, and no AI watches it.\\nRegion 17,72 866×526 DIP on 整个屏幕 = 1732×1052 px of frame 7 (captured 03:05:55), with your ink revision 0 drawn over it.\",\"status\":null,\"answer_shown\":false,\"answer\":null,\"answer_box_text\":null,\"answer_child_elements\":0,\"form_shown\":true,\"question\":\"Explain what is selected.\",\"assistance\":\"hint\",\"submit_disabled\":false,\"cancel_shown\":false,\"save_shown\":false,\"picture\":{\"png_sha256\":\"2db13e90336ce122646cd701137837e21688138d9510b9fb747fea36a459697a\",\"png_bytes\":154720,\"width\":1732,\"height\":1052},\"mode\":\"NAV\",\"revision\":0,\"hint\":\"Clicks go to your apps. Capturing this display · frame 7. No AI watches this screen: ChatGPT gets only a selection you send with Ask. Ink is saved on this device at every change.\",\"log\":[{\"at\":\"2026-10-01T10:05:56.186Z\",\"badge\":\"Selection · not sent to any AI\",\"status\":null,\"answer_shown\":false,\"cancel_shown\":false,\"save_shown\":false,\"form_shown\":true,\"submit_disabled\":false}]}",
+  "picture_s2": "{\"at\":\"2026-10-01T10:05:56.275Z\",\"ok\":true,\"size\":[1732,1052],\"size_ok\":true,\"cards\":[{\"index\":0,\"ground\":4,\"shape_color\":\"green\",\"shape_px\":6160,\"digit_px\":3280,\"ring_px\":0},{\"index\":1,\"ground\":4,\"shape_color\":\"orange\",\"shape_px\":3334,\"digit_px\":3501,\"ring_px\":0},{\"index\":2,\"ground\":4,\"shape_color\":\"orange\",\"shape_px\":3334,\"digit_px\":3457,\"ring_px\":0},{\"index\":3,\"ground\":4,\"shape_color\":\"red\",\"shape_px\":6160,\"digit_px\":3312,\"ring_px\":0},{\"index\":4,\"ground\":4,\"shape_color\":\"red\",\"shape_px\":6360,\"digit_px\":3620,\"ring_px\":0},{\"index\":5,\"ground\":4,\"shape_color\":\"orange\",\"shape_px\":6036,\"digit_px\":3243,\"ring_px\":0},{\"index\":6,\"ground\":4,\"shape_color\":\"orange\",\"shape_px\":6036,\"digit_px\":2916,\"ring_px\":0},{\"index\":7,\"ground\":4,\"shape_color\":\"orange\",\"shape_px\":6036,\"digit_px\":3086,\"ring_px\":0},{\"index\":8,\"ground\":4,\"shape_color\":\"green\",\"shape_px\":6160,\"digit_px\":3456,\"ring_px\":0},{\"index\":9,\"ground\":4,\"shape_color\":\"blue\",\"shape_px\":6360,\"digit_px\":3125,\"ring_px\":0},{\"index\":10,\"ground\":4,\"shape_color\":\"red\",\"shape_px\":3748,\"digit_px\":2919,\"ring_px\":0},{\"index\":11,\"ground\":4,\"shape_color\":\"red\",\"shape_px\":3748,\"digit_px\":3582,\"ring_px\":0}],\"gaps_white\":17,\"gaps\":17,\"ringed\":[],\"rings_wanted\":[]}",
+  "k13_new_session_ended": "{\"at\":\"2026-10-01T10:05:56.293Z\",\"badge\":\"Selection · answered by ChatGPT below\",\"status\":\"Answered by ChatGPT (qa-synthetic-vision) in 0.0 s, about the picture above and your question only.\"}",
+  "k13_new_session": "{\"at\":\"2026-10-01T10:05:56.306Z\",\"card_shown\":true,\"badge\":\"Selection · answered by ChatGPT below\",\"card_text\":\"This selection is sent to ChatGPT, with your question, only when you press Ask below; nothing else of the screen is sent to any AI, and no AI watches it.\\nRegion 17,72 866×526 DIP on 整个屏幕 = 1732×1052 px of frame 7 (captured 03:05:55), with your ink revision 0 drawn over it.\",\"status\":\"Answered by ChatGPT (qa-synthetic-vision) in 0.0 s, about the picture above and your question only.\",\"answer_shown\":true,\"answer\":\"SYNTHETIC (QA fake bridge: no model, no ChatGPT). Answer in the second capture session.\",\"answer_box_text\":\"\\n    Answer from ChatGPT · generated text, apart from your selection\\n    SYNTHETIC (QA fake bridge: no model, no ChatGPT). Answer in the second capture session.\\n  \",\"answer_child_elements\":0,\"form_shown\":true,\"question\":\"I circled two cards with my pen. Name only those two cards. For each one, write one line: the number written in the card, then the color and the shape next to the number.\",\"assistance\":\"explain\",\"submit_disabled\":false,\"cancel_shown\":false,\"save_shown\":false,\"picture\":{\"png_sha256\":\"2db13e90336ce122646cd701137837e21688138d9510b9fb747fea36a459697a\",\"png_bytes\":154720,\"width\":1732,\"height\":1052},\"mode\":\"NAV\",\"revision\":0,\"hint\":\"Clicks go to your apps. Capturing this display · frame 7. No AI watches this screen: ChatGPT gets only a selection you send with Ask. Ink is saved on this device at every change.\",\"log\":[{\"at\":\"2026-10-01T10:05:56.186Z\",\"badge\":\"Selection · not sent to any AI\",\"status\":null,\"answer_shown\":false,\"cancel_shown\":false,\"save_shown\":false,\"form_shown\":true,\"submit_disabled\":false},{\"at\":\"2026-10-01T10:05:56.283Z\",\"badge\":\"Selection · not sent to any AI\",\"status\":\"Sending this picture and your question to ChatGPT…\",\"answer_shown\":false,\"cancel_shown\":true,\"save_shown\":false,\"form_shown\":true,\"submit_disabled\":true},{\"at\":\"2026-10-01T10:05:56.286Z\",\"badge\":\"Selection · asked: being sent to ChatGPT\",\"status\":\"Asked at 03:05:56 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…\",\"answer_shown\":false,\"cancel_shown\":true,\"save_shown\":false,\"form_shown\":true,\"submit_disabled\":true},{\"at\":\"2026-10-01T10:05:56.290Z\",\"badge\":\"Selection · answered by ChatGPT below\",\"status\":\"Answered by ChatGPT (qa-synthetic-vision) in 0.0 s, about the picture above and your question only.\",\"answer_shown\":true,\"cancel_shown\":false,\"save_shown\":false,\"form_shown\":true,\"submit_disabled\":false},{\"at\":\"2026-10-01T10:05:56.293Z\",\"badge\":\"Selection · answered by ChatGPT below\",\"status\":\"Answered by ChatGPT (qa-synthetic-vision) in 0.0 s, about the picture above and your question only.\",\"answer_shown\":true,\"cancel_shown\":false,\"save_shown\":false,\"form_shown\":true,\"submit_disabled\":false}]}",
+  "f_after_fault": "{\"at\":\"2026-10-01T10:06:02.404Z\",\"s\":{\"mode\":\"managed\",\"state\":\"unavailable\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":\"the connector did not answer\",\"asking\":false},\"section\":{\"hidden\":false,\"disabled\":false},\"state\":{\"text\":\"Not available. The connector did not answer.\",\"hidden\":false,\"disabled\":false},\"quota\":{\"text\":\"Usage limits: not reported.\",\"hidden\":true,\"disabled\":false},\"check\":{\"text\":\"Check connection\",\"hidden\":false,\"disabled\":false},\"login\":{\"text\":\"Sign in with ChatGPT\",\"hidden\":true,\"disabled\":false},\"login_cancel\":{\"text\":\"Cancel sign-in\",\"hidden\":true,\"disabled\":false},\"model_row\":{\"text\":\"Model for questions QA synthetic (no model)\",\"hidden\":true,\"disabled\":false},\"options\":[[\"qa-synthetic-vision\",\"QA synthetic (no model)\",true]],\"ai\":\"Captured frames and ink stay on this device. No AI watches the screen: ChatGPT (your subscription) gets only a selection you send with Ask, with your question.\",\"session\":\"Capturing 整个屏幕 (1280×800 at 2×). The overlay is on that display: ✋ passes clicks to your apps, ✎ writes, ? selects.\"}",
+  "kids_after_fault": {
+   "app_pid": 57192,
+   "at": "2026-10-01T10:06:03.1236604Z",
+   "children": [
+    {
+     "name": "electron.exe",
+     "pid": 78160,
+     "created": "2026-10-01T10:05:03.6576610Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 76772,
+     "created": "2026-10-01T10:05:03.6615390Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 76420,
+     "created": "2026-10-01T10:05:03.6757510Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 81476,
+     "created": "2026-10-01T10:05:49.0324610Z"
+    }
+   ]
+  },
+  "f_after_fault_later": "{\"at\":\"2026-10-01T10:06:09.142Z\",\"s\":{\"mode\":\"managed\",\"state\":\"unavailable\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":\"the connector did not answer\",\"asking\":false},\"section\":{\"hidden\":false,\"disabled\":false},\"state\":{\"text\":\"Not available. The connector did not answer.\",\"hidden\":false,\"disabled\":false},\"quota\":{\"text\":\"Usage limits: not reported.\",\"hidden\":true,\"disabled\":false},\"check\":{\"text\":\"Check connection\",\"hidden\":false,\"disabled\":false},\"login\":{\"text\":\"Sign in with ChatGPT\",\"hidden\":true,\"disabled\":false},\"login_cancel\":{\"text\":\"Cancel sign-in\",\"hidden\":true,\"disabled\":false},\"model_row\":{\"text\":\"Model for questions QA synthetic (no model)\",\"hidden\":true,\"disabled\":false},\"options\":[[\"qa-synthetic-vision\",\"QA synthetic (no model)\",true]],\"ai\":\"Captured frames and ink stay on this device. No AI watches the screen: ChatGPT (your subscription) gets only a selection you send with Ask, with your question.\",\"session\":\"Capturing 整个屏幕 (1280×800 at 2×). The overlay is on that display: ✋ passes clicks to your apps, ✎ writes, ? selects.\"}",
+  "k14_fault": {
+   "at": "2026-10-01T10:06:09.155Z",
+   "card_shown": true,
+   "badge": "Selection · asked: no answer shown",
+   "card_text": "This selection is sent to ChatGPT, with your question, only when you press Ask below; nothing else of the screen is sent to any AI, and no AI watches it.\nRegion 17,72 866×526 DIP on 整个屏幕 = 1732×1052 px of frame 7 (captured 03:05:55), with your ink revision 0 drawn over it.",
+   "status": "No answer: no answer came; whether ChatGPT worked on the question is not known. It is not sent again automatically.",
+   "answer_shown": false,
+   "answer": null,
+   "answer_box_text": null,
+   "answer_child_elements": 0,
+   "form_shown": true,
+   "question": "I circled two cards with my pen. Name only those two cards. For each one, write one line: the number written in the card, then the color and the shape next to the number.",
+   "assistance": "explain",
+   "submit_disabled": false,
+   "cancel_shown": false,
+   "save_shown": false,
+   "picture": {
+    "png_sha256": "2db13e90336ce122646cd701137837e21688138d9510b9fb747fea36a459697a",
+    "png_bytes": 154720,
+    "width": 1732,
+    "height": 1052
+   },
+   "mode": "NAV",
+   "revision": 0,
+   "hint": "Clicks go to your apps. Capturing this display · frame 19. No AI watches this screen: ChatGPT gets only a selection you send with Ask. Ink is saved on this device at every change.",
+   "log": [
+    {
+     "at": "2026-10-01T10:05:56.286Z",
+     "badge": "Selection · asked: being sent to ChatGPT",
+     "status": "Asked at 03:05:56 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:56.290Z",
+     "badge": "Selection · answered by ChatGPT below",
+     "status": "Answered by ChatGPT (qa-synthetic-vision) in 0.0 s, about the picture above and your question only.",
+     "answer_shown": true,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": false
+    },
+    {
+     "at": "2026-10-01T10:05:56.293Z",
+     "badge": "Selection · answered by ChatGPT below",
+     "status": "Answered by ChatGPT (qa-synthetic-vision) in 0.0 s, about the picture above and your question only.",
+     "answer_shown": true,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": false
+    },
+    {
+     "at": "2026-10-01T10:05:56.363Z",
+     "badge": "Selection · answered by ChatGPT below",
+     "status": "Sending this picture and your question to ChatGPT…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:56.366Z",
+     "badge": "Selection · asked: being sent to ChatGPT",
+     "status": "Asked at 03:05:56 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:56.377Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "No answer: no answer came; whether ChatGPT worked on the question is not known. It is not sent again automatically.",
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": false
+    }
+   ],
+   "log_changes": 8
+  },
+  "f_rechecked": "{\"at\":\"2026-10-01T10:06:09.326Z\",\"s\":{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":false}}",
+  "f_rechecked_now": "{\"at\":\"2026-10-01T10:06:09.328Z\",\"s\":{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":false},\"section\":{\"hidden\":false,\"disabled\":false},\"state\":{\"text\":\"Signed in with ChatGPT (QA-SYNTHETIC), as the official Codex app server reports. That does not show that a model will answer.\",\"hidden\":false,\"disabled\":false},\"quota\":{\"text\":\"Usage limits: not reported.\",\"hidden\":false,\"disabled\":false},\"check\":{\"text\":\"Check connection\",\"hidden\":false,\"disabled\":false},\"login\":{\"text\":\"Sign in with ChatGPT\",\"hidden\":true,\"disabled\":false},\"login_cancel\":{\"text\":\"Cancel sign-in\",\"hidden\":true,\"disabled\":false},\"model_row\":{\"text\":\"Model for questions QA synthetic (no model)\",\"hidden\":false,\"disabled\":false},\"options\":[[\"qa-synthetic-vision\",\"QA synthetic (no model)\",true]],\"ai\":\"Captured frames and ink stay on this device. No AI watches the screen: ChatGPT (your subscription) gets only a selection you send with Ask, with your question.\",\"session\":\"Capturing 整个屏幕 (1280×800 at 2×). The overlay is on that display: ✋ passes clicks to your apps, ✎ writes, ? selects.\"}",
+  "kids_rechecked": {
+   "app_pid": 57192,
+   "at": "2026-10-01T10:06:10.0436606Z",
+   "children": [
+    {
+     "name": "electron.exe",
+     "pid": 78160,
+     "created": "2026-10-01T10:05:03.6576610Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 76772,
+     "created": "2026-10-01T10:05:03.6615390Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 76420,
+     "created": "2026-10-01T10:05:03.6757510Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 81476,
+     "created": "2026-10-01T10:05:49.0324610Z"
+    },
+    {
+     "name": "wsl.exe",
+     "pid": 640,
+     "created": "2026-10-01T10:06:09.1979060Z"
+    }
+   ]
+  },
+  "form_s2b": {
+   "at": "2026-10-01T10:06:12.074Z",
+   "card_shown": true,
+   "badge": "Selection · not sent to any AI",
+   "card_text": "This selection is sent to ChatGPT, with your question, only when you press Ask below; nothing else of the screen is sent to any AI, and no AI watches it.\nRegion 17,72 866×526 DIP on 整个屏幕 = 1732×1052 px of frame 22 (captured 03:06:11), with your ink revision 0 drawn over it.",
+   "status": null,
+   "answer_shown": false,
+   "answer": null,
+   "answer_box_text": null,
+   "answer_child_elements": 0,
+   "form_shown": true,
+   "question": "Explain what is selected.",
+   "assistance": "hint",
+   "submit_disabled": false,
+   "cancel_shown": false,
+   "save_shown": false,
+   "picture": {
+    "png_sha256": "2db13e90336ce122646cd701137837e21688138d9510b9fb747fea36a459697a",
+    "png_bytes": 154720,
+    "width": 1732,
+    "height": 1052
+   },
+   "mode": "NAV",
+   "revision": 0,
+   "hint": "Clicks go to your apps. Capturing this display · frame 22. No AI watches this screen: ChatGPT gets only a selection you send with Ask. Ink is saved on this device at every change.",
+   "log": [
+    {
+     "at": "2026-10-01T10:05:56.363Z",
+     "badge": "Selection · answered by ChatGPT below",
+     "status": "Sending this picture and your question to ChatGPT…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:56.366Z",
+     "badge": "Selection · asked: being sent to ChatGPT",
+     "status": "Asked at 03:05:56 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:05:56.377Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "No answer: no answer came; whether ChatGPT worked on the question is not known. It is not sent again automatically.",
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": false
+    },
+    {
+     "at": "2026-10-01T10:06:10.047Z",
+     "badge": "Selection · not sent to any AI",
+     "status": null,
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": false,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:06:12.011Z",
+     "badge": "Selection · not sent to any AI",
+     "status": "Keeping this selection on this device…",
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": false,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:06:12.018Z",
+     "badge": "Selection · not sent to any AI",
+     "status": null,
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": false
+    }
+   ],
+   "log_changes": 11
+  },
+  "picture_s2b": "{\"at\":\"2026-10-01T10:06:12.126Z\",\"ok\":true,\"size\":[1732,1052],\"size_ok\":true,\"cards\":[{\"index\":0,\"ground\":4,\"shape_color\":\"green\",\"shape_px\":6160,\"digit_px\":3280,\"ring_px\":0},{\"index\":1,\"ground\":4,\"shape_color\":\"orange\",\"shape_px\":3334,\"digit_px\":3501,\"ring_px\":0},{\"index\":2,\"ground\":4,\"shape_color\":\"orange\",\"shape_px\":3334,\"digit_px\":3457,\"ring_px\":0},{\"index\":3,\"ground\":4,\"shape_color\":\"red\",\"shape_px\":6160,\"digit_px\":3312,\"ring_px\":0},{\"index\":4,\"ground\":4,\"shape_color\":\"red\",\"shape_px\":6360,\"digit_px\":3620,\"ring_px\":0},{\"index\":5,\"ground\":4,\"shape_color\":\"orange\",\"shape_px\":6036,\"digit_px\":3243,\"ring_px\":0},{\"index\":6,\"ground\":4,\"shape_color\":\"orange\",\"shape_px\":6036,\"digit_px\":2916,\"ring_px\":0},{\"index\":7,\"ground\":4,\"shape_color\":\"orange\",\"shape_px\":6036,\"digit_px\":3086,\"ring_px\":0},{\"index\":8,\"ground\":4,\"shape_color\":\"green\",\"shape_px\":6160,\"digit_px\":3456,\"ring_px\":0},{\"index\":9,\"ground\":4,\"shape_color\":\"blue\",\"shape_px\":6360,\"digit_px\":3125,\"ring_px\":0},{\"index\":10,\"ground\":4,\"shape_color\":\"red\",\"shape_px\":3748,\"digit_px\":2919,\"ring_px\":0},{\"index\":11,\"ground\":4,\"shape_color\":\"red\",\"shape_px\":3748,\"digit_px\":3582,\"ring_px\":0}],\"gaps_white\":17,\"gaps\":17,\"ringed\":[],\"rings_wanted\":[]}",
+  "k15_after_recheck_ended": "{\"at\":\"2026-10-01T10:06:12.139Z\",\"badge\":\"Selection · answered by ChatGPT below\",\"status\":\"Answered by ChatGPT (qa-synthetic-vision) in 0.0 s, about the picture above and your question only.\"}",
+  "k15_after_recheck": {
+   "at": "2026-10-01T10:06:12.152Z",
+   "card_shown": true,
+   "badge": "Selection · answered by ChatGPT below",
+   "card_text": "This selection is sent to ChatGPT, with your question, only when you press Ask below; nothing else of the screen is sent to any AI, and no AI watches it.\nRegion 17,72 866×526 DIP on 整个屏幕 = 1732×1052 px of frame 22 (captured 03:06:11), with your ink revision 0 drawn over it.",
+   "status": "Answered by ChatGPT (qa-synthetic-vision) in 0.0 s, about the picture above and your question only.",
+   "answer_shown": true,
+   "answer": "SYNTHETIC (QA fake bridge: no model, no ChatGPT). Answer from the second bridge start.",
+   "answer_box_text": "\n    Answer from ChatGPT · generated text, apart from your selection\n    SYNTHETIC (QA fake bridge: no model, no ChatGPT). Answer from the second bridge start.\n  ",
+   "answer_child_elements": 0,
+   "form_shown": true,
+   "question": "I circled two cards with my pen. Name only those two cards. For each one, write one line: the number written in the card, then the color and the shape next to the number.",
+   "assistance": "explain",
+   "submit_disabled": false,
+   "cancel_shown": false,
+   "save_shown": false,
+   "picture": {
+    "png_sha256": "2db13e90336ce122646cd701137837e21688138d9510b9fb747fea36a459697a",
+    "png_bytes": 154720,
+    "width": 1732,
+    "height": 1052
+   },
+   "mode": "NAV",
+   "revision": 0,
+   "hint": "Clicks go to your apps. Capturing this display · frame 22. No AI watches this screen: ChatGPT gets only a selection you send with Ask. Ink is saved on this device at every change.",
+   "log": [
+    {
+     "at": "2026-10-01T10:06:12.011Z",
+     "badge": "Selection · not sent to any AI",
+     "status": "Keeping this selection on this device…",
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": false,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:06:12.018Z",
+     "badge": "Selection · not sent to any AI",
+     "status": null,
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": false
+    },
+    {
+     "at": "2026-10-01T10:06:12.132Z",
+     "badge": "Selection · not sent to any AI",
+     "status": "Sending this picture and your question to ChatGPT…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:06:12.135Z",
+     "badge": "Selection · asked: being sent to ChatGPT",
+     "status": "Asked at 03:06:12 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:06:12.139Z",
+     "badge": "Selection · answered by ChatGPT below",
+     "status": "Answered by ChatGPT (qa-synthetic-vision) in 0.0 s, about the picture above and your question only.",
+     "answer_shown": true,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": false
+    },
+    {
+     "at": "2026-10-01T10:06:12.142Z",
+     "badge": "Selection · answered by ChatGPT below",
+     "status": "Answered by ChatGPT (qa-synthetic-vision) in 0.0 s, about the picture above and your question only.",
+     "answer_shown": true,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": false
+    }
+   ],
+   "log_changes": 15
+  },
+  "k16_unauthenticated_ended": "{\"at\":\"2026-10-01T10:06:12.218Z\",\"badge\":\"Selection · asked: no answer shown\",\"status\":\"No answer: ChatGPT is not signed in (sign in from the control window). It was not sent again.\"}",
+  "k16_unauthenticated": {
+   "at": "2026-10-01T10:06:12.228Z",
+   "card_shown": true,
+   "badge": "Selection · asked: no answer shown",
+   "card_text": "This selection is sent to ChatGPT, with your question, only when you press Ask below; nothing else of the screen is sent to any AI, and no AI watches it.\nRegion 17,72 866×526 DIP on 整个屏幕 = 1732×1052 px of frame 22 (captured 03:06:11), with your ink revision 0 drawn over it.",
+   "status": "No answer: ChatGPT is not signed in (sign in from the control window). It was not sent again.",
+   "answer_shown": false,
+   "answer": null,
+   "answer_box_text": null,
+   "answer_child_elements": 0,
+   "form_shown": true,
+   "question": "I circled two cards with my pen. Name only those two cards. For each one, write one line: the number written in the card, then the color and the shape next to the number.",
+   "assistance": "explain",
+   "submit_disabled": false,
+   "cancel_shown": false,
+   "save_shown": false,
+   "picture": {
+    "png_sha256": "2db13e90336ce122646cd701137837e21688138d9510b9fb747fea36a459697a",
+    "png_bytes": 154720,
+    "width": 1732,
+    "height": 1052
+   },
+   "mode": "NAV",
+   "revision": 0,
+   "hint": "Clicks go to your apps. Capturing this display · frame 22. No AI watches this screen: ChatGPT gets only a selection you send with Ask. Ink is saved on this device at every change.",
+   "log": [
+    {
+     "at": "2026-10-01T10:06:12.135Z",
+     "badge": "Selection · asked: being sent to ChatGPT",
+     "status": "Asked at 03:06:12 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:06:12.139Z",
+     "badge": "Selection · answered by ChatGPT below",
+     "status": "Answered by ChatGPT (qa-synthetic-vision) in 0.0 s, about the picture above and your question only.",
+     "answer_shown": true,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": false
+    },
+    {
+     "at": "2026-10-01T10:06:12.142Z",
+     "badge": "Selection · answered by ChatGPT below",
+     "status": "Answered by ChatGPT (qa-synthetic-vision) in 0.0 s, about the picture above and your question only.",
+     "answer_shown": true,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": false
+    },
+    {
+     "at": "2026-10-01T10:06:12.190Z",
+     "badge": "Selection · answered by ChatGPT below",
+     "status": "Sending this picture and your question to ChatGPT…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:06:12.193Z",
+     "badge": "Selection · asked: being sent to ChatGPT",
+     "status": "Asked at 03:06:12 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:06:12.197Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "No answer: ChatGPT is not signed in (sign in from the control window). It was not sent again.",
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": false
+    }
+   ],
+   "log_changes": 18
+  },
+  "f_signed_out": "{\"at\":\"2026-10-01T10:06:12.267Z\",\"s\":{\"mode\":\"managed\",\"state\":\"signed_out\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":false},\"section\":{\"hidden\":false,\"disabled\":false},\"state\":{\"text\":\"Not signed in. Sign in with ChatGPT opens the official sign-in page in your browser.\",\"hidden\":false,\"disabled\":false},\"quota\":{\"text\":\"Usage limits: not reported.\",\"hidden\":true,\"disabled\":false},\"check\":{\"text\":\"Check connection\",\"hidden\":false,\"disabled\":false},\"login\":{\"text\":\"Sign in with ChatGPT\",\"hidden\":false,\"disabled\":false},\"login_cancel\":{\"text\":\"Cancel sign-in\",\"hidden\":true,\"disabled\":false},\"model_row\":{\"text\":\"Model for questions QA synthetic (no model)\",\"hidden\":true,\"disabled\":false},\"options\":[[\"qa-synthetic-vision\",\"QA synthetic (no model)\",true]],\"ai\":\"Captured frames and ink stay on this device. No AI watches the screen: ChatGPT (your subscription) gets only a selection you send with Ask, with your question.\",\"session\":\"Capturing 整个屏幕 (1280×800 at 2×). The overlay is on that display: ✋ passes clicks to your apps, ✎ writes, ? selects.\"}",
+  "k17_not_signed_in_ended": "{\"at\":\"2026-10-01T10:06:12.275Z\",\"badge\":\"Selection · asked: no answer shown\",\"status\":\"Not sent: ChatGPT is not signed in (sign in from the control window).\"}",
+  "k17_not_signed_in": {
+   "at": "2026-10-01T10:06:12.286Z",
+   "card_shown": true,
+   "badge": "Selection · asked: no answer shown",
+   "card_text": "This selection is sent to ChatGPT, with your question, only when you press Ask below; nothing else of the screen is sent to any AI, and no AI watches it.\nRegion 17,72 866×526 DIP on 整个屏幕 = 1732×1052 px of frame 22 (captured 03:06:11), with your ink revision 0 drawn over it.",
+   "status": "Not sent: ChatGPT is not signed in (sign in from the control window).",
+   "answer_shown": false,
+   "answer": null,
+   "answer_box_text": null,
+   "answer_child_elements": 0,
+   "form_shown": true,
+   "question": "I circled two cards with my pen. Name only those two cards. For each one, write one line: the number written in the card, then the color and the shape next to the number.",
+   "assistance": "explain",
+   "submit_disabled": false,
+   "cancel_shown": false,
+   "save_shown": false,
+   "picture": {
+    "png_sha256": "2db13e90336ce122646cd701137837e21688138d9510b9fb747fea36a459697a",
+    "png_bytes": 154720,
+    "width": 1732,
+    "height": 1052
+   },
+   "mode": "NAV",
+   "revision": 0,
+   "hint": "Clicks go to your apps. Capturing this display · frame 22. No AI watches this screen: ChatGPT gets only a selection you send with Ask. Ink is saved on this device at every change.",
+   "log": [
+    {
+     "at": "2026-10-01T10:06:12.142Z",
+     "badge": "Selection · answered by ChatGPT below",
+     "status": "Answered by ChatGPT (qa-synthetic-vision) in 0.0 s, about the picture above and your question only.",
+     "answer_shown": true,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": false
+    },
+    {
+     "at": "2026-10-01T10:06:12.190Z",
+     "badge": "Selection · answered by ChatGPT below",
+     "status": "Sending this picture and your question to ChatGPT…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:06:12.193Z",
+     "badge": "Selection · asked: being sent to ChatGPT",
+     "status": "Asked at 03:06:12 (qa-synthetic-vision): this picture and your question are being sent to ChatGPT. Waiting for the answer…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:06:12.197Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "No answer: ChatGPT is not signed in (sign in from the control window). It was not sent again.",
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": false
+    },
+    {
+     "at": "2026-10-01T10:06:12.273Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "Sending this picture and your question to ChatGPT…",
+     "answer_shown": false,
+     "cancel_shown": true,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": true
+    },
+    {
+     "at": "2026-10-01T10:06:12.274Z",
+     "badge": "Selection · asked: no answer shown",
+     "status": "Not sent: ChatGPT is not signed in (sign in from the control window).",
+     "answer_shown": false,
+     "cancel_shown": false,
+     "save_shown": false,
+     "form_shown": true,
+     "submit_disabled": false
+    }
+   ],
+   "log_changes": 20
+  },
+  "s2_stopped": "{\"running\":false,\"starting\":false,\"ended\":\"stopped by the user\"}",
+  "sub_events": "[{\"mode\":\"managed\",\"state\":\"checking\",\"plan\":null,\"rate_limits\":null,\"models\":[],\"model\":null,\"login\":\"none\",\"detail\":null,\"asking\":false,\"qa_at\":\"2026-10-01T10:05:21.098Z\"},{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":false,\"qa_at\":\"2026-10-01T10:05:21.217Z\"},{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":true,\"qa_at\":\"2026-10-01T10:05:40.894Z\"},{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":false,\"qa_at\":\"2026-10-01T10:05:40.897Z\"},{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":true,\"qa_at\":\"2026-10-01T10:05:40.974Z\"},{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":false,\"qa_at\":\"2026-10-01T10:05:40.977Z\"},{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":true,\"qa_at\":\"2026-10-01T10:05:41.032Z\"},{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":false,\"qa_at\":\"2026-10-01T10:05:41.035Z\"},{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":true,\"qa_at\":\"2026-10-01T10:05:41.093Z\"},{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":false,\"qa_at\":\"2026-10-01T10:05:41.095Z\"},{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":true,\"qa_at\":\"2026-10-01T10:05:41.146Z\"},{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":false,\"qa_at\":\"2026-10-01T10:05:41.148Z\"},{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":true,\"qa_at\":\"2026-10-01T10:05:41.210Z\"},{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":false,\"qa_at\":\"2026-10-01T10:05:41.212Z\"},{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":true,\"qa_at\":\"2026-10-01T10:05:41.263Z\"},{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":false,\"qa_at\":\"2026-10-01T10:05:41.266Z\"},{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":true,\"qa_at\":\"2026-10-01T10:05:41.331Z\"},{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":false,\"qa_at\":\"2026-10-01T10:05:41.333Z\"},{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":true,\"qa_at\":\"2026-10-01T10:05:41.399Z\"},{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":true,\"qa_at\":\"2026-10-01T10:05:41.418Z\"},{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":false,\"qa_at\":\"2026-10-01T10:05:41.419Z\"},{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":true,\"qa_at\":\"2026-10-01T10:05:42.977Z\"},{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":true,\"qa_at\":\"2026-10-01T10:05:43.018Z\"},{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":false,\"qa_at\":\"2026-10-01T10:05:43.019Z\"},{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":true,\"qa_at\":\"2026-10-01T10:05:44.571Z\"},{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":true,\"qa_at\":\"2026-10-01T10:05:44.611Z\"},{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":false,\"qa_at\":\"2026-10-01T10:05:44.612Z\"},{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":true,\"qa_at\":\"2026-10-01T10:05:46.154Z\"},{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":true,\"qa_at\":\"2026-10-01T10:05:46.181Z\"},{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":false,\"qa_at\":\"2026-10-01T10:05:46.182Z\"},{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":true,\"qa_at\":\"2026-10-01T10:05:56.285Z\"},{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":false,\"qa_at\":\"2026-10-01T10:05:56.288Z\"},{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":true,\"qa_at\":\"2026-10-01T10:05:56.365Z\"},{\"mode\":\"managed\",\"state\":\"checking\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":true,\"qa_at\":\"2026-10-01T10:05:56.368Z\"},{\"mode\":\"managed\",\"state\":\"unavailable\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":true,\"qa_at\":\"2026-10-01T10:05:56.374Z\"},{\"mode\":\"managed\",\"state\":\"unavailable\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":false,\"qa_at\":\"2026-10-01T10:05:56.375Z\"},{\"mode\":\"managed\",\"state\":\"unavailable\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":\"the connector did not answer\",\"asking\":false,\"qa_at\":\"2026-10-01T10:05:56.375Z\"},{\"mode\":\"managed\",\"state\":\"checking\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":false,\"qa_at\":\"2026-10-01T10:06:09.196Z\"},{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":false,\"qa_at\":\"2026-10-01T10:06:09.286Z\"},{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":true,\"qa_at\":\"2026-10-01T10:06:12.135Z\"},{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":false,\"qa_at\":\"2026-10-01T10:06:12.137Z\"},{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":true,\"qa_at\":\"2026-10-01T10:06:12.193Z\"},{\"mode\":\"managed\",\"state\":\"signed_in\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":false,\"qa_at\":\"2026-10-01T10:06:12.195Z\"},{\"mode\":\"managed\",\"state\":\"signed_out\",\"plan\":\"QA-SYNTHETIC\",\"rate_limits\":null,\"models\":[{\"id\":\"qa-synthetic-vision\",\"label\":\"QA synthetic (no model)\",\"image_input\":true,\"default\":true},{\"id\":\"qa-synthetic-text\",\"label\":\"QA synthetic text only\",\"image_input\":false,\"default\":false}],\"model\":\"qa-synthetic-vision\",\"login\":\"none\",\"detail\":null,\"asking\":false,\"qa_at\":\"2026-10-01T10:06:12.196Z\"}]"
+ },
+ "errors": [],
+ "processes": {
+  "app": {
+   "pid": 73452,
+   "devtools": "127.0.0.1:49761",
+   "started_at": "2026-10-01T10:04:55.4664372Z",
+   "link": "",
+   "sub": "",
+   "exited": true,
+   "close_via": "page",
+   "close_requested_at": "2026-10-01T10:05:01.8556163Z",
+   "exit_ms": 118,
+   "exit_code": 0,
+   "exited_at": "2026-10-01T10:05:01.9553303Z"
+  },
+  "edge": {
+   "pid": 23348
+  },
+  "app-fake": {
+   "pid": 57192,
+   "devtools": "127.0.0.1:59320",
+   "started_at": "2026-10-01T10:05:03.5427594Z",
+   "link": "",
+   "sub": "fake",
+   "sub_config_sha256": "554745e1ffb7f1863485085618baa4cd8ac341f579ac65c4cbd7cc7bdded1fdd",
+   "exited": true,
+   "close_via": "wm_close",
+   "close_requested_at": "2026-10-01T10:06:12.5126884Z",
+   "exit_ms": 199,
+   "exit_code": 0,
+   "exited_at": "2026-10-01T10:06:12.6936385Z"
+  }
+ },
+ "foreign": {
+  "start": null,
+  "end": null
+ },
+ "cursor": {
+  "start": [
+   2357,
+   1267
+  ],
+  "end": [
+   2357,
+   1267
+  ]
+ },
+ "wsl_seen": [
+  {
+   "pid": 640,
+   "running_at_end": false
+  },
+  {
+   "pid": 76792,
+   "running_at_end": false
+  }
+ ]
+}

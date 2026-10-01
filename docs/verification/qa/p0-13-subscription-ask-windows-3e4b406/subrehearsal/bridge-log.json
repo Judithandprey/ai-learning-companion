@@ -1,0 +1,125 @@
+[
+ {
+  "at": "2026-10-01T10:08:05.549286+00:00",
+  "event": "start",
+  "launch": "e81e62c131094ebd9aab4f19666095f5",
+  "launch_n": 0,
+  "pid": 1387423,
+  "argv": [
+   "-m",
+   "services.worker.connectors.chatgpt_local"
+  ],
+  "stdin_fifo": true,
+  "label": "SYNTHETIC (QA fake bridge: no model, no ChatGPT)"
+ },
+ {
+  "at": "2026-10-01T10:08:05.549399+00:00",
+  "event": "request",
+  "id": "r1",
+  "method": "connection/read",
+  "params_keys": [],
+  "request_id": null,
+  "capture_session_id": null
+ },
+ {
+  "at": "2026-10-01T10:08:05.549464+00:00",
+  "event": "sent",
+  "kind": "connection",
+  "id": "r1",
+  "method": null,
+  "error": null,
+  "result_keys": [
+   "auth",
+   "models",
+   "rate_limits"
+  ]
+ },
+ {
+  "at": "2026-10-01T10:08:22.157612+00:00",
+  "event": "ask",
+  "n": 0,
+  "id": "r2",
+  "request_id": "ask-2195fa4d0f793130.1",
+  "model": "qa-synthetic-vision",
+  "assistance": "full_solution",
+  "question_chars": 170,
+  "question_sha256": "909707ed6ed2e94251f963ab5c17c53dba1834260cfd9ff2ae391e3d377bac4f",
+  "image": {
+   "sha256": "3d57a39c30d9870b3509a951256fdfa4b84ea934353e61b4cdc6dcbfc5b9731c",
+   "width": 1732,
+   "height": 1052,
+   "png_bytes": 175018,
+   "bytes_hash_to_sha256": true,
+   "is_png": true
+  },
+  "capture_session_id": "5dd81bac115dd328",
+  "context_keys": [
+   "capture_session_id",
+   "display",
+   "frame_captured_at",
+   "frame_height",
+   "frame_seq",
+   "frame_width",
+   "ink_revision",
+   "ink_sha256",
+   "media_position",
+   "region_dip",
+   "region_px",
+   "source_url",
+   "source_version"
+  ],
+  "request_keys": [
+   "assistance",
+   "context",
+   "image",
+   "question",
+   "request_id"
+  ],
+  "behaviour": "answer"
+ },
+ {
+  "at": "2026-10-01T10:08:25.158621+00:00",
+  "event": "sent",
+  "kind": "answer",
+  "id": "r2",
+  "method": null,
+  "error": null,
+  "result_keys": [
+   "auth_mode",
+   "kind",
+   "latency_ms",
+   "model",
+   "provenance",
+   "request_id",
+   "text",
+   "thread_id",
+   "turn_id"
+  ]
+ },
+ {
+  "at": "2026-10-01T10:08:27.302263+00:00",
+  "event": "request",
+  "id": "r3",
+  "method": "session/stop",
+  "params_keys": [
+   "capture_session_id"
+  ],
+  "request_id": null,
+  "capture_session_id": "5dd81bac115dd328"
+ },
+ {
+  "at": "2026-10-01T10:08:27.302501+00:00",
+  "event": "sent",
+  "kind": "stop_receipt",
+  "id": "r3",
+  "method": null,
+  "error": null,
+  "result_keys": []
+ },
+ {
+  "at": "2026-10-01T10:08:28.230859+00:00",
+  "event": "eof",
+  "launch": "e81e62c131094ebd9aab4f19666095f5",
+  "held_at_eof": []
+ }
+]

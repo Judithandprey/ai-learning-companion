@@ -1,0 +1,283 @@
+{
+ "scenario": "subselect",
+ "counts": {
+  "pass": 6
+ },
+ "checks": [
+  {
+   "id": "run.shared_desktop_quiet",
+   "status": "pass",
+   "observed": {
+    "foreign_electron_seen": [],
+    "looked_at_start_and_end": true,
+    "screenshots": 0
+   },
+   "note": "no other Electron app at start, at each screenshot and at the end (point-in-time)"
+  },
+  {
+   "id": "run.completed",
+   "status": "pass",
+   "observed": {
+    "aborted": null,
+    "failed_steps": [],
+    "steps_run": 183,
+    "steps_planned": 183,
+    "steps_not_run_as_planned": [],
+    "unreadable_selection_records": []
+   },
+   "note": "every planned step ran, in order, as the kind of step it was planned as; an optional wait that timed out counts as a failed step here"
+  },
+  {
+   "id": "run.surface_really_on_screen_and_in_each_selected_picture",
+   "status": "pass",
+   "observed": {
+    "on_top_checks": [
+     {
+      "i": 7,
+      "ok": true,
+      "points": 16,
+      "covered": []
+     }
+    ],
+    "circled_cards": [
+     10,
+     11
+    ],
+    "selected_pictures": {
+     "picture_0": {
+      "ok": true,
+      "size": [
+       1732,
+       1052
+      ],
+      "ringed": [],
+      "rings_wanted": [],
+      "gaps_white": 17
+     }
+    },
+    "problems": {}
+   },
+   "note": "under 16 points of the grid the top window was QA's Edge window before the capture started; and every selected picture, read from its own pixels in the page, shows the twelve cards (grey ground, a shape of the truth's colour, dark digits, white between) with the pen's ring around exactly the cards the harness circled"
+  },
+  {
+   "id": "qa.never_signs_in",
+   "status": "pass",
+   "observed": {
+    "steps_that_could_sign_in": [],
+    "login_states_seen": [
+     "none"
+    ],
+    "status_events": 18,
+    "status_reads": 18
+   },
+   "note": "no planned step presses Sign in or Cancel sign-in or clicks or types in the control window, and every subscription status the app notified or returned has login 'none': this run started no sign-in and opened no browser"
+  },
+  {
+   "id": "probe.every_selection_can_be_asked_about",
+   "status": "pass",
+   "observed": {
+    "selections": 16,
+    "form_ready": 16,
+    "refused": [],
+    "all": [
+     {
+      "n": 0,
+      "form_ready": true,
+      "status": null,
+      "frame": 6,
+      "card_read_at": "2026-10-01T10:07:02.132Z",
+      "next_sample_at": "2026-10-01T10:07:02.182Z",
+      "next_sample_after_card_read_s": 0.05
+     },
+     {
+      "n": 1,
+      "form_ready": true,
+      "status": null,
+      "frame": 8,
+      "card_read_at": "2026-10-01T10:07:04.073Z",
+      "next_sample_at": "2026-10-01T10:07:04.284Z",
+      "next_sample_after_card_read_s": 0.211
+     },
+     {
+      "n": 2,
+      "form_ready": true,
+      "status": null,
+      "frame": 10,
+      "card_read_at": "2026-10-01T10:07:05.915Z",
+      "next_sample_at": "2026-10-01T10:07:06.379Z",
+      "next_sample_after_card_read_s": 0.464
+     },
+     {
+      "n": 3,
+      "form_ready": true,
+      "status": null,
+      "frame": 12,
+      "card_read_at": "2026-10-01T10:07:07.822Z",
+      "next_sample_at": "2026-10-01T10:07:08.489Z",
+      "next_sample_after_card_read_s": 0.667
+     },
+     {
+      "n": 4,
+      "form_ready": true,
+      "status": null,
+      "frame": 15,
+      "card_read_at": "2026-10-01T10:07:10.857Z",
+      "next_sample_at": "2026-10-01T10:07:11.645Z",
+      "next_sample_after_card_read_s": 0.788
+     },
+     {
+      "n": 5,
+      "form_ready": true,
+      "status": null,
+      "frame": 16,
+      "card_read_at": "2026-10-01T10:07:12.604Z",
+      "next_sample_at": "2026-10-01T10:07:12.694Z",
+      "next_sample_after_card_read_s": 0.09
+     },
+     {
+      "n": 6,
+      "form_ready": true,
+      "status": null,
+      "frame": 18,
+      "card_read_at": "2026-10-01T10:07:14.450Z",
+      "next_sample_at": "2026-10-01T10:07:14.790Z",
+      "next_sample_after_card_read_s": 0.34
+     },
+     {
+      "n": 7,
+      "form_ready": true,
+      "status": null,
+      "frame": 20,
+      "card_read_at": "2026-10-01T10:07:16.284Z",
+      "next_sample_at": "2026-10-01T10:07:16.889Z",
+      "next_sample_after_card_read_s": 0.605
+     },
+     {
+      "n": 8,
+      "form_ready": true,
+      "status": null,
+      "frame": 23,
+      "card_read_at": "2026-10-01T10:07:19.225Z",
+      "next_sample_at": "2026-10-01T10:07:20.040Z",
+      "next_sample_after_card_read_s": 0.815
+     },
+     {
+      "n": 9,
+      "form_ready": true,
+      "status": null,
+      "frame": 24,
+      "card_read_at": "2026-10-01T10:07:21.001Z",
+      "next_sample_at": "2026-10-01T10:07:21.098Z",
+      "next_sample_after_card_read_s": 0.097
+     },
+     {
+      "n": 10,
+      "form_ready": true,
+      "status": null,
+      "frame": 26,
+      "card_read_at": "2026-10-01T10:07:22.786Z",
+      "next_sample_at": "2026-10-01T10:07:23.200Z",
+      "next_sample_after_card_read_s": 0.414
+     },
+     {
+      "n": 11,
+      "form_ready": true,
+      "status": null,
+      "frame": 28,
+      "card_read_at": "2026-10-01T10:07:24.608Z",
+      "next_sample_at": "2026-10-01T10:07:25.307Z",
+      "next_sample_after_card_read_s": 0.699
+     },
+     {
+      "n": 12,
+      "form_ready": true,
+      "status": null,
+      "frame": 31,
+      "card_read_at": "2026-10-01T10:07:27.576Z",
+      "next_sample_at": "2026-10-01T10:07:28.462Z",
+      "next_sample_after_card_read_s": 0.886
+     },
+     {
+      "n": 13,
+      "form_ready": true,
+      "status": null,
+      "frame": 32,
+      "card_read_at": "2026-10-01T10:07:29.443Z",
+      "next_sample_at": "2026-10-01T10:07:29.511Z",
+      "next_sample_after_card_read_s": 0.068
+     },
+     {
+      "n": 14,
+      "form_ready": true,
+      "status": null,
+      "frame": 34,
+      "card_read_at": "2026-10-01T10:07:31.277Z",
+      "next_sample_at": "2026-10-01T10:07:31.617Z",
+      "next_sample_after_card_read_s": 0.34
+     },
+     {
+      "n": 15,
+      "form_ready": true,
+      "status": null,
+      "frame": 36,
+      "card_read_at": "2026-10-01T10:07:33.037Z",
+      "next_sample_at": "2026-10-01T10:07:33.715Z",
+      "next_sample_after_card_read_s": 0.678
+     }
+    ],
+    "records_kept": 16,
+    "questions_asked": 0
+   },
+   "note": "every selection got its question form"
+  },
+  {
+   "id": "release.app_and_connector_ended",
+   "status": "pass",
+   "observed": {
+    "apps": {
+     "app": {
+      "pid": 79796,
+      "sub": "",
+      "close_via": "page",
+      "exited": true,
+      "exit_code": 0,
+      "exit_ms": 129,
+      "killed": null,
+      "closed_in_finally": null
+     },
+     "app-fake": {
+      "pid": 68832,
+      "sub": "fake",
+      "close_via": "wm_close",
+      "exited": true,
+      "exit_code": 0,
+      "exit_ms": 196,
+      "killed": null,
+      "closed_in_finally": null
+     }
+    },
+    "watched": [
+     {
+      "event": "appear",
+      "pid": 1386562,
+      "name": "python3",
+      "role": "in_root",
+      "at": "2026-10-01T10:06:54.799324+00:00"
+     },
+     {
+      "event": "exit",
+      "pid": 1386562,
+      "name": "python3",
+      "role": "in_root",
+      "at": "2026-10-01T10:07:34.761484+00:00"
+     }
+    ],
+    "expected_starts_in_the_connector_folder": 1,
+    "there_before_the_run": [],
+    "left_at_watch_end": [],
+    "wsl_exe_seen_by_the_runner": []
+   },
+   "note": "both app processes ended by themselves with code 0; exactly the expected number of processes started in the connector's folder, and each of them and of their children exited; nothing ran there before; no wsl.exe child the runner saw was still running at the end"
+  }
+ ]
+}

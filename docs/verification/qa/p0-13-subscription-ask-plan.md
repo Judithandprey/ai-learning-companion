@@ -1,28 +1,27 @@
-# Managed-subscription ASK on Windows: QA acceptance plan (preparation)
+# Managed-subscription ASK on Windows: QA acceptance plan
 
-- **Status: preparation only. Nothing here has been run.** No display was claimed, no provider, login or account call
-  was made, and there is no executable candidate yet.
-- **Assignment:** lead `handoff_de323dc5105b08860c398a13b7206dbd` (P0-13 / G4), conditional on the lead's exact
-  integrated release, the shared display and an activation budget.
-- **Baseline read:** pushed `1b7c90558165c87c83564b1d6c777905923b8528`, merged normally into `team/qa` as `0c161b3`:
-  - [ADR 0003](../../adr/0003-managed-subscription-ask.md): interface version 1 with its exact connection, result and
-    provenance shapes, ownership and limits;
-  - the user's decision [D-SUBSCRIPTION-FIRST](../../requirements/intent-and-decisions.md#subscription-first)
-    ("先接入官方订阅"), with R38, §3.8 and G4 as updated by it;
-  - R04/R42/R52/R57 and the other current decisions.
-- **Budget now: zero real calls.** The lead releases the executable and the exact remaining budget after the source
-  and isolation review.
-- **What exists now** (in [tests/e2e/windows/](../../../tests/e2e/windows/)):
-  - `surface.html`: the generated test surface.
-  - `judge_surface_answer.py`: the judging rule, fixed before any call, with its self-test. After the lead's review it
-    also holds negated, refused or hedged answers.
-  - scenario `surfacecheck`: a dry check of the surface, the ink and the ASK selection with no link and no provider.
-  - Runner steps for it: a full-screen Edge start, a full-screen request through DevTools, a pointer check and a
-    raise without maximizing. They are untested until the display is given.
-  - Two reviewers checked this preparation (false-pass paths and the judge; the surface and scenario code). Their
-    findings are in this version.
-  - The real-turn scenario and analyzer are written once the released code shows the ASK card's controls and where
-    the app keeps its request and response evidence.
+- **Status (2026-10-01): driver ready after one correction (the connector copy); controls and the real Check connection
+  run; the real image turn NOT run.** The product is not signed in. 0 of the 1 allocated attempt is used. Results so far:
+  [p0-13-subscription-ask-windows-3e4b406.md](p0-13-subscription-ask-windows-3e4b406.md).
+- **Assignment:** lead `handoff_de323dc5105b08860c398a13b7206dbd` (P0-13 / G4); driver task
+  `handoff_16a192142160536115f6087460e33b77`; release `handoff_d548b28a9fa5613b7543be19858a5ca2`.
+- **Released candidate:** `3e4b40654460a2dc2407f1d9be60d8e1a5b39a3e` (Windows app tree of the owner's `84fc56a`).
+- **Read:** [ADR 0003](../../adr/0003-managed-subscription-ask.md) (interface version 1), the user's decision
+  [D-SUBSCRIPTION-FIRST](../../requirements/intent-and-decisions.md#subscription-first) ("先接入官方订阅") with R38, §3.8
+  and G4, R04/R42/R52/R57, and the lead's
+  [release note](../lead/subscription-ask/windows-release/README.md).
+- **Budget:** exactly one real image submission, reserved by the lead for QA, conditional on the managed sign-in, a
+  picture model, the generated surface and valid source and ink evidence. No automatic retry.
+- **What exists** (in [tests/e2e/windows/](../../../tests/e2e/windows/), harness `677323a`):
+  - `surface.html`, `judge_surface_answer.py` (rule fixed before any call; 31 self-test cases);
+  - `qa_fake_bridge.py`: QA's stand-in connector for the deterministic controls; `qa_sub_watch.py`: a read-only
+    process watch;
+  - scenarios `surfacecheck`, `subcontrols`, `subselect` and `subtype` (probes), `subrehearsal`, `subcheck` and `subask`;
+  - `analyze_sub.py` for all of them; `signin_launcher.mjs` for the user's own sign-in entry;
+  - `sub_copy.mjs` and `qa_sub_copy_check.py`: the private Backend copy is the commit's `services/` and `packages/`
+    file for file, and the connector's own preparation of a question is run in it, offline, before any real run;
+  - `run.mjs` interlocks: the real connector needs `QA_SUB_ALLOW_REAL_CONNECTOR=1`; a real question needs
+    `QA_SUB_ALLOW_REAL_TURN=<allocation id>`, which is single-use (a ledger outside the run folders).
 
 ## 1. The one real image turn
 
@@ -42,11 +41,18 @@ identifies visual-only content appears in the same ASK card.
 - **The random content exists only as pixels.** Which number, shape and color a card has is in no file name, title,
   URL, DOM text or attribute, and in no fixture. The page's file holds only the vocabulary it draws from.
 - The page hands its truth to the harness through DevTools. The harness keeps it in its private run folder for
-  judging. It is never given to the app. The truth is read before Start and again before ASK and must be the same.
+  judging. It is never given to the app. The truth is read before Start, before the selection and at the press, and
+  must be the same.
+- **The page's own "full screen" is not proof of what is on the screen.** In the first dry check another app's window
+  stayed above QA's Edge window and was what the app captured. So, before any capture, the top window under 16 points
+  of the grid must be QA's Edge window. And before anything can be asked, the selected picture itself is read from its
+  pixels in the page: twelve cards with a grey ground, a coloured shape and dark digits, white between them, and the
+  pen's ring around exactly the two circled cards. Nothing of the truth is given to the page for this.
 - The cards sit at fixed screen positions, so the strokes are planned before the page exists.
-- **The mouse pointer.** The user's pointer is in every captured frame and QA never moves it. The run stops unless
-  the pointer is outside the ASK region, checked before Start and again before ASK. The display owner is asked to
-  park it at the right edge.
+- **The mouse pointer.** The user's pointer may be in a captured frame (the app's capture call sets no cursor option;
+  not measured). The run stops unless the pointer is outside the ASK region, checked before Start, before the
+  selection and at the press. QA moves the pointer only in `subcheck` and `subtype` (OS clicks on the question box) and
+  puts it back; never in the real turn.
 
 ### The ink and the selection
 
@@ -61,18 +67,26 @@ identifies visual-only content appears in the same ASK card.
 
 ### The question
 
-Typed into the ASK card as the user's question, with no value of the surface in it:
+Set in the ASK card's question box as the user's question, with no value of the surface in it (the driver assigns the
+text and the level through DevTools; typing into the box was checked separately in `subcheck` and `subtype`):
 
 > I circled two cards with my pen. Name only those two cards. For each one, write one line: the number written in
 > the card, then the color and the shape next to the number.
 
-The assistance level is the one that allows a direct factual answer (`explain`, unless the released UI names it
-differently). Before the call QA reads the released prompt for each assistance level, to confirm that the chosen
-level does not forbid stating what is visible. The exact text sent is recorded from the app's retained request.
+**Assistance level: `full_solution`.** QA read the released prompt for each level
+(`services/learning/subscription_ask.py`). `explain` ends "Do not reveal a full solution or the problem's final
+answer" and `hint` "Do not reveal the final answer or a full solution"; a model that obeys could withhold the two
+cards, and the one attempt would be unjudgeable for a reason that is not picture input. `full_solution` has no such
+clause. Against it stands QA-SUB-03 (a turn with more than 4096 notifications is killed), which makes a long answer
+risky; the question asks for two lines only. The lead decides, and can set `QA_SUB_ASSISTANCE=explain` or `hint`; the
+analyzer follows the level the run used. The exact text sent is recomputed from the app's retained request and
+compared with the connector's receipt.
 
 ### Judging rule (fixed now, before any call)
 
 `judge_surface_answer.py` applies the rule (31 self-test cases); nobody reads the answer first and then chooses a rule.
+Only the surface's own shape and colour words are judged; a word outside them ("purple", "circle") counts as not
+stated, and the person reading the answer checks it.
 
 **A matcher pass is necessary, never sufficient.** The right numbers merely occurring in the text do not show that the
 answer asserts them. So:
@@ -88,7 +102,7 @@ The hold is a deliberately broad tripwire, not language understanding. A false h
 | Outcome | Rule | Counts as |
 | --- | --- | --- |
 | `identified` | Names both circled cards' numbers and no other card's number; for each, its shape and no other shape, with its color as the color said nearest to the shape | **matcher pass**, then the semantic reading |
-| `numbers_identified` | Both circled numbers and no other; a shape or a color is not stated, and none is stated wrong | **matcher pass on the image-only criterion**, reported as "shape/color not confirmed", then the semantic reading |
+| `numbers_identified` | Both circled numbers and no other; a shape or a color is not stated, and none is stated wrong | **matcher pass on the image-only criterion**, reported as "shape or colour not confirmed", then the semantic reading |
 | `held` | The numbers match, but the answer holds a negation, refusal or uncertainty marker | **not a pass**; the full answer goes to semantic review |
 | `contradicted` | Both circled numbers and no other, but a stated shape or color of a circled card is wrong | not a pass |
 | `several_cards` | Both circled numbers are named together with other cards' numbers | not a pass; reported in full |
@@ -102,7 +116,8 @@ The hold is a deliberately broad tripwire, not language understanding. A false h
   ADR's criterion. Shape and color cannot be read by OCR, so `identified` is the stronger result.
 - **A completed turn is required.** An incomplete, errored or cancelled turn is never judged as an answer; it is
   reported as what it was.
-- Account, login, quota or model-catalog success is recorded but is never a pass.
+- Account, login, quota or model-catalog success is recorded and checked as a precondition; it is never a pass of the
+  image acceptance.
 - A number written out in words ("four two seven one") is not recognized, neither as an answer nor as a leak.
 
 ### What must also hold for a pass
@@ -111,32 +126,42 @@ The hold is a deliberately broad tripwire, not language understanding. A false h
    `image.sha256` and the selection the card shows. Its width and height equal the integer `region_px` width and
    height, and `region_px` follows the ADR's rule from `region_dip` (floor the scaled left and top, ceil the right and
    bottom, using the actual frame size).
-2. **No leak of the truth.** `leaks()` looks for every card number, also written with separators, in each text QA can
-   read: the question, the retained request and response, the prompt text (recomputed by QA with the released
-   `prepare_subscription_ask` on the retained request), file names, the page's title, URL and DOM text, and logs.
+2. **No leak of the truth.** `leaks()` looks for every card number, also written with separators, in these texts: the
+   question, the card's text (without the app's own sentence of region, frame, capture time and ink revision, which
+   is cut out before the search) and status before the press, the page's title and DOM text, the picture's and the
+   record's file names, the prompt text (recomputed by QA with the released `prepare_subscription_ask` on the retained
+   request, and a pass only if the connector's receipt hashes that same text), the request's context and the receipt.
    - A hit in free text voids the pass: the answer could then be echoed text.
-   - A hit in a named numeric field (a size, a count, a sequence) is listed with its field and does not void it.
-   - Hashes, UUIDs and timestamps are masked first; base64 is never searched.
+   - A hit in the context or the receipt (sizes, counts, sequences) is listed and does not void it; so is a number of
+     the prompt that equals one of the request's own sizes.
+   - Hashes, UUIDs and timestamps are masked first; base64 is never searched. The page's URL is only required to have
+     no query or fragment; no log and no response text is searched.
 3. **The ink was in the image.** `ink_revision` and `ink_sha256` in the request are those of the retained ink
-   document with the two circles. The app reports both strokes as verified before ASK, and the selection PNG shows the
-   solid stroke color at planned points of both ellipses.
-4. **Exact provenance in the same card.** The response's provenance has exactly the ADR's shape
-   (`request_id`, `question`, `assistance`, `image {sha256, width, height}`, `context`) and equals the retained request
-   field by field, nulls included, with no base64 and no credential in it. The card shows the answer text together
-   with those source facts: capture session, frame, captured time, region, ink revision and hashes. It also shows the
-   actual model and `auth_mode: "chatgpt"`. Latency and the official thread and turn identifiers are recorded.
-5. **The answer is rendered as text.** No HTML or command in it is executed.
+   document, which holds exactly two visible strokes. A required runner step waits until every stroke the app holds is
+   drawn as verified (the run stops otherwise). The selected picture's ringed cards, read from its pixels before the
+   press, are the ones the step asked for, which are the two circled cards.
+4. **Exact provenance in the same card.** The app shows an answer only if its whole provenance equals the retained
+   request and its mode is `chatgpt`: this is the app's own check, read in the source and shown with the stand-in's
+   answer for another picture. QA cannot see the real response's provenance; it compares the retained request with the
+   connector's receipt instead. The analyzer checks that the card names the selection's region, frame number and ink
+   revision, and the model; the captured time and the time-taken figure on the card are not compared with the request.
+   The session id and the hashes are in the kept record, not on the card. Latency and the official thread and turn
+   identifiers are recorded.
+5. **The answer is rendered as text.** The analyzer checks that the answer box holds no child elements and exactly the
+   recorded text. That an answer cannot act in the app rests on the source review; it is not tested unless the real
+   answer happens to hold markup.
 6. **Exactly one turn, with the image, and no tool.** This needs evidence from the connector, not only the app's
    request (see section 5): one `thread/start` and one `turn/start` since launch; that turn's input is one text item
-   and one image item whose bytes hash to `image.sha256`; the turn completed; it produced an assistant message and no
-   command, tool, approval or web item. Without that record QA reports "official image input: not shown" and does
-   not pass this point on the app's request alone.
+   and one image item whose bytes hash to `image.sha256`; the turn completed; it produced only the user message,
+   reasoning and an assistant message. The record is the connector's receipt of that request. Without it QA reports
+   "official image input: not shown" and does not pass this point on the app's request alone.
 7. **Product language.** The answer is in simple English (R57). This is recorded; it does not decide the pass.
 
 ### Budget and stop rules
 
-- The lead owns the ledger. QA makes no real call before the lead names the exact number of submission attempts
-  assigned to QA. The plan needs **one**.
+- The lead owns the ledger and has reserved **one** submission attempt for QA
+  ([request-budget.json](../lead/subscription-ask/request-budget.json)). QA's harness makes that one attempt
+  single-use: a second run under the same allocation id starts only if the first provably stopped before the press.
 - A completed or an incomplete submission each use one attempt.
 - QA stops and reports, without another attempt, on any of:
   - a quota or rate-limit answer;
@@ -150,80 +175,73 @@ The hold is a deliberately broad tripwire, not language understanding. A false h
   any existing agent state, and infers nothing about the product's login or model from the development agents'
   accounts. If the product state has no managed login, the login is the user's own browser step.
 
-## 2. Dry check before any real call (`surfacecheck`)
+## 2. Dry check and rehearsal before the real call
 
-Run once on the released build, when the lead gives the display, with **no link and no provider**:
+- `surfacecheck` (no link, no connection): **done**, 4 of 4. The page fills the display, the pen circles the two
+  chosen cards, ASK selects the grid, the selected picture shows the cards and the rings. QA looked at the picture
+  privately: twelve readable cards, two clear circles that touch no digit.
+- `smoke`: **done**, 20 of 20 steps (the runner's Edge start had changed).
+- `subrehearsal`: **done**. The real turn's steps with the stand-in bridge: every gate, the one press, the wait, the
+  reads after it and the analysis ran, and the prompt is recomputed from the kept request with the Backend copy. (In
+  the rehearsal at `3002218` that recomputation failed: the copy lacked `packages/`; in the first rehearsal it was not
+  attempted. Corrected in `110c733`.) Its "answer"
+  is SYNTHETIC text; every would-be pass about the turn is reported as `limit`.
 
-- the page fills the screen and reports that every card is at its planned place; QA's own screenshot is checked for
-  the cards at the planned pixels;
-- the pen circles the two chosen cards and ASK selects the grid;
-- the pointer is outside the region and both strokes are drawn solid;
-- the local card shows the composed selection, which QA inspects privately for legibility: twelve readable cards and
-  two clear circles that touch no digit.
+None of this is acceptance evidence for the real turn.
 
-No model call is spent on a surface or a stroke that does not work. It is not acceptance evidence for the real turn.
+## 3. Deterministic controls (separate evidence, labelled)
 
-The same display window also runs the existing `smoke` scenario once. The runner's Edge start was changed for the
-full-screen option, and `smoke` confirms that the ordinary start still works.
+- **The seam** (as the lead corrected it): QA's stand-in is an outer bridge named as `launch.python` in the trusted
+  connector configuration, so the app starts it exactly as it starts the connector. `LC_SUBSCRIPTION_CODEX_BIN` is not
+  used for it: the official binary's admission stays pinned. The stand-in never gives a sign-in address and spends no
+  allowance.
+- **Run on the real app (`subcontrols`, 18 of 18):**
 
-## 3. Deterministic controls (separate evidence, clearly labelled)
-
-These use a fake child in place of the official one, as the lead allows. They are labelled "deterministic control, no
-real model" and are never mixed with the real turn's evidence. The ADR names the trusted launch settings
-`LC_SUBSCRIPTION_CODEX_BIN` and `LC_SUBSCRIPTION_STATE_DIR`; if the release supports them for this purpose, the fake
-child is a QA-owned program given through the first, with a QA-owned empty state folder. Their exact form waits for
-the released code; the cases come from ADR interface version 1.
-
-| Control | Expected |
+| Control | Shown |
 | --- | --- |
-| Cancel before submission | No `turn/start` is sent later; the card shows no answer; no late text appears |
-| Stop while a turn is in flight | The request is cancelled and its late result is suppressed. No further ask is accepted for that capture session; only a later explicit Start with a different session may ask again |
-| Late result after cancel | The text never reaches the card or the retained answers; uncertainty about the interruption is said, and no quota rollback is promised |
-| A tool or approval request from the child | Rejected; no action is taken |
-| Unauthenticated, busy, an unsupported image model, a malformed or oversize image, a stopped session | Each refused before submission with its closed error code (`unauthenticated`, `busy`, `unsupported_model`, `invalid_request`, `session_stopped`), shown as the app's fixed text, never a raw error message |
-| `ask/cancel` answers | `cancelled: true` fences local submission and presentation; `uncertain: true` is shown as an unconfirmed interruption |
-| A login URL that is not HTTPS, has userinfo, or is not `openai.com` / `chatgpt.com` or a subdomain | Not opened; nothing of it is logged |
-| A quota answer | Shown as `quota`; no retry and no fallback |
-| EOF or app close | The connector and its child end within the bounded interval; nothing is left running |
-| Start, writing and capture with the connection enabled, but no ASK | The fake child receives no `turn/start` at all |
-| Screen content that reads like an instruction | It is learning material only: no action is taken and no tool is used. If the lead assigns a real attempt for it, the surface gets one visible instruction line; otherwise only the control runs |
+| Off by default; nothing before the user's Check | no section without the configuration; with it, a capture, ink, a selection and an Ask start no child |
+| Selecting without asking | the bridge received only the account read |
+| An answer for the exact picture and question | the card shows exactly the stand-in's text (no markup in it, so text-only rendering is not tested here); recorded as shown |
+| An answer bound to another picture (the only unbound case run) | not shown, not kept |
+| `quota`, `busy`, `unsupported_model`, `invalid_request`, `failed`, `unavailable`, `unauthenticated` | each the app's fixed sentence; refused; never sent again |
+| Cancel: confirmed, unconfirmed, and a late answer | said as such; the late answer appears nowhere |
+| Stop with a question out | the session is stopped; the late answer is not kept; a later Start can ask |
+| An over-long line while the app's re-read is out | the child is ended; none is started without the user's Check |
+| App close | the app and the bridge end by themselves |
 
-## 4. Independent source review on the released SHA
+- **Not run on the display:** a sign-in address that is not an official HTTPS address; a tool or approval request from
+  the official child; a malformed or oversize picture and a stopped session as the real connector answers them; screen
+  text that reads like an instruction.
+  - The stand-in sits at the app's boundary and cannot produce a tool or approval request from the official child. A
+    refused sign-in address was not run because QA never presses Sign in and the stand-in gives no address.
+  - These rest on the owners' tests and on the source review of section 4, except screen text that reads like an
+    instruction: only the prompt's wording and quoting are covered; whether a model obeys such text is not shown.
 
-Before the run, QA reads the changed code for:
+## 4. Independent source review on the released commit
 
-- **Auth:** only the official managed calls; no auth file is opened or copied; no token, cookie or email reaches logs
-  or evidence; API-key and other auth modes are not accepted as this mode.
-- **Isolation:** a dedicated empty work folder and no project instructions. Shell, hooks, MCP/apps, web and
-  computer-use are disabled by actual configuration, and the isolation is verified before any inference.
-- **Input:** the request's limits and rectangle checks; one image; source facts supplied by the trusted main process;
-  unknown URL, version and media position stay null.
-- **Cancellation:** the fences before `turn/start`, after submission and after Stop; no retry of an uncertain turn.
-- **Lifecycle:** a private child of a private child, with no listener and no daemon; bounded cleanup.
-- **Presentation:** model text is rendered as text and kept apart from the originals.
+- QA's pre-run review of its own harness read the released app and connector closely and found QA-SUB-01 (a valid
+  selection refused when a frame is sampled during the selection's encoding).
+- A focused QA source review of what the display cannot show (sign-in and secrecy; isolation and tools; input,
+  provenance and the lifecycle fences) is recorded in the result document: QA-SUB-02 to QA-SUB-08 and what was found
+  to hold. QA-SUB-03 (a turn with more than 4096 notifications is killed) is a risk to the one attempt.
+- Findings go to the lead with file and line. QA makes no production fix.
 
-Findings go to the lead with file and line. QA makes no production fix.
+## 5. What the real turn still needs
 
-## 5. What QA needs from the release
-
-- The exact released SHA, the display and the number of attempts assigned to QA.
-- How QA enables the connection for one app process, and whether the fake child may be given through
-  `LC_SUBSCRIPTION_CODEX_BIN` for the controls.
-- Whether the product state already holds a managed login made by the user. QA does not log in.
-- **A sanitized record of the turn from the connector**, or the lead's permission to read only that turn's own record
-  in the product state folder (never an auth file). It should hold:
-  - the input item types of the one `turn/start`, with the text's length and sha256 and the image's byte length and
-    sha256;
-  - the terminal turn status and the item types the turn produced;
-  - the counts of `thread/start` and `turn/start` since launch;
-  - the model the server reported, the Codex path and version, and whether `LC_SUBSCRIPTION_CODEX_BIN` was set.
-- That the display owner parks the mouse pointer at the right edge of the screen before the run.
-- Where the app retains the request and the response, and the ASK card's element ids for the question, the
-  assistance level and the answer.
+- **The user's sign-in**, through the start file QA prepared and checked up to the Check connection press. QA does not
+  sign in, sees no address and no token.
+- A Backend copy that can answer a question: the commit's `services/` and `packages/`. The harness now checks this
+  before any real run (file-for-file comparison, and the connector's own preparation of a question run offline).
+- The lead's decision on QA-SUB-03 and on the assistance level.
+- The lead's allocation id for `QA_SUB_ALLOW_REAL_TURN` and the display.
+- Then one `subask` run. It is judged by `analyze_sub.py` with the receipt of that one request
+  (`receipts/<launch>/<sha256(request_id)>.json`, the only thing QA reads in the product state) and by a person
+  reading the full answer.
 
 ## 6. What will not be claimed
 
 - One completed image turn is not continuous screen understanding, and it is not either complete §7.1 gate.
 - The pen is injected (synthetic); no physical pen is used.
 - Nothing is claimed for macOS, audio, video, Notability, or for any model or plan other than the one actually used.
-- The deterministic controls are not real-model evidence.
+- The deterministic controls and the rehearsal are not real-model evidence. A signed-in account, a model list or a
+  usage figure is not a pass.
