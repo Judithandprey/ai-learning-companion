@@ -108,3 +108,39 @@ the existing managed ordinary-turn lifecycle, with explicit submission accountin
 original guards and no unrequested additional turns. Lead reviews exact source and
 allocates at most a bounded generated-audio test when it is ready. No API key,
 credential extraction, new billing, endpoint override or uncontrolled retry.
+
+## Ordinary-turn follow-up: actual source finding received
+
+At main `667c31f`, Backend actually replied to its existing continuation
+`handoff_43f653a148a064ba56055bf800a90d87`. Initial
+`handoff_c85be0aa0b0471cd33288cd50c011eeb` proposed extracting a private ordinary-turn
+lifecycle from `chatgpt_rpc.py`; the existing PNG wrapper and text/image receipt
+schema cannot truthfully be reused by substituting audio after their checks.
+Lead read those actual call paths and started a narrow read-only boundary review.
+
+Before any delegation or production change, Backend's later
+`handoff_2ce789671cb5b7b9ed90d2077700106f` withdrew that proposal. It reports pinned
+`064c6b8` `core/session/turn.rs` → `history.for_prompt` →
+`strip_audio_when_unsupported`: without `InputModality::Audio`, the upstream
+request substitutes an unsupported-media text placeholder. The already recorded
+14:58 catalog contains seven text/image models, no declared audio model. Exact
+source/model-info mapping and artifact provenance are still due in Backend's
+bounded evidence delivery; this paragraph records the actual report, not an
+independent installed-binary run or an account rejection. No audio request was
+made, and successful text after removal of audio could not prove acoustic input.
+
+Lead's substantive same-task reply was actually accepted as
+`handoff_4a9dc3e9cba791893944719dbffd404f`: hold the extraction/adapter, finish the
+precise evidence and smallest official prerequisite, preserve all production
+interfaces and do not take an account/device lease. Initial receipt is unread /
+execution_started=false, not proof the reply was adopted. The previous source
+response itself establishes actual Backend work, rather than mere dispatch.
+No new assignment, auth path, provider, model fallback or broad survey was opened.
+
+The interrupted extraction review made no edits or calls. Its already-observed
+constraints remain relevant if a supported route later exists: preserve durable
+pre-write intent and post-I/O cancellation fencing; keep audio facts out of the
+image receipt; retain modality guards; handle legitimate early turn events while
+rejecting foreign inference, and await owned-child reap. These are design
+constraints, not implemented changes or executed acceptance. Windows' current
+TTS/whole-frame consumer and Mac's current correction retain their owners.
