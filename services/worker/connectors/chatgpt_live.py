@@ -128,13 +128,15 @@ class LiveSubscriptionBridge(SubscriptionBridge):
             if rpc_id in self.rpc_ids:
                 raise RPCError("invalid_request")
             method, params = checked["method"], checked["params"]
-            if len(self.rpc_ids) >= MAX_HISTORY:
+            if self.exhausted.is_set() or len(self.rpc_ids) >= MAX_HISTORY:
+                self.exhausted.set()
                 if method in ("companion/interrupt", "companion/stop"):
                     self._control(rpc_id, params, stopping=method == "companion/stop")
                     return
-                if self.session is not None:
-                    self._stop_session(self.session, "session_stopped")
-                raise RPCError("invalid_request")
+                if method == "connection/login/cancel" and params["login_id"] == self.login_id:
+                    self._spawn(self._cancel_login(rpc_id, params["login_id"]))
+                    return
+                raise RPCError("unavailable")
             self.rpc_ids.add(rpc_id)
             if method in ("companion/interrupt", "companion/stop"):
                 self._control(rpc_id, params, stopping=method == "companion/stop")
@@ -158,6 +160,14 @@ class LiveSubscriptionBridge(SubscriptionBridge):
             self.error(rpc_id, "invalid_request")
         except RPCError as exc:
             self.error(rpc_id, exc.code)
+        finally:
+            if self.exhausted.is_set():
+                self._retire()
+
+    def _retire(self):
+        self.exhausted.set()
+        if self.session is not None and not self.session.stopped:
+            self._stop_session(self.session, "unavailable")
 
     async def _connection(self, rpc_id, method):
         if method != "connection/read":
@@ -363,14 +373,19 @@ class LiveSubscriptionBridge(SubscriptionBridge):
             outcome = "completed"
             self.emit({"id": job.rpc_id, "result": result}, submission=self._submission(job))
         except asyncio.CancelledError:
-            outcome = "cancelled" if job.user_cancelled else "uncertain" if job.provider_started else "not_submitted"
+            failure = getattr(self.client, "request_failure", lambda: None)()
+            outcome = ("cancelled" if job.user_cancelled else "not_submitted" if self._submission(job) == "not_submitted"
+                       else "uncertain" if self.exhausted.is_set() else getattr(failure, "outcome", None) or "uncertain")
             if not self.closed:
-                self.error(job.rpc_id, job.reason or "cancelled", self._submission(job))
+                self.error(job.rpc_id, job.reason or getattr(failure, "code", "unavailable"), self._submission(job))
         except Exception as exc:
             failure = _code(getattr(exc, "code", "unavailable"))
             code = job.reason or failure
             submission = self._submission(job)
-            outcome = "cancelled" if job.user_cancelled else "uncertain" if submission == "unknown" else "failed"
+            outcome = ("cancelled" if job.user_cancelled else "not_submitted" if submission == "not_submitted"
+                       else "uncertain" if self.exhausted.is_set() else getattr(exc, "outcome", None) or
+                       ("uncertain" if submission == "unknown" or getattr(exc, "code", None) in
+                        ("outcome_unknown", "timeout", "cancellation_uncertain") else "failed"))
             if job.provider_started and (submission == "unknown"
                     or failure not in ("cancelled", "stale_context", "session_stopped")):
                 self._stop_session(job.session, failure)
@@ -390,7 +405,7 @@ class LiveSubscriptionBridge(SubscriptionBridge):
         if job is not None:
             # A failed interruption does not replace the user's existing Stop
             # or cancellation reason; its uncertainty is reported separately.
-            if reason != "interrupt_unconfirmed" or job.reason is None:
+            if not job.user_cancelled and (reason != "interrupt_unconfirmed" or job.reason is None):
                 job.reason = reason
             job.user_cancelled = job.user_cancelled or reason in ("cancelled", "session_stopped")
             job.cancelled.set()
@@ -455,6 +470,10 @@ class LiveSubscriptionBridge(SubscriptionBridge):
     async def close(self, *, terminal_failure=False):
         if self.closed:
             return
+        if terminal_failure and self.active is not None:
+            job = self.active
+            failure = getattr(self.client, "request_failure", lambda: None)()
+            self.error(job.rpc_id, job.reason or getattr(failure, "code", "unavailable"), self._submission(job))
         self.closed = True
         if self.session is not None:
             self.session.active, self.session.stopped = False, True

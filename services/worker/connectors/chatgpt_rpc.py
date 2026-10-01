@@ -78,6 +78,9 @@ class RPCError(Exception):
     def __init__(self, code, *, submission="not_submitted"):
         self.code = code if code in _MESSAGES else "unavailable"
         self.submission = submission if submission in ("not_submitted", "submitted", "unknown") else "unknown"
+        # Private request result, independent of bytes written/acknowledged.
+        # A generic JSON-RPC error is not proof that inference never started.
+        self.outcome = None
         self.message = _MESSAGES[self.code]
         super().__init__(self.message)
 
@@ -159,6 +162,7 @@ class ChatGPTAppServer:
         self.expected_provider = expected_provider
         self._receipt = None
         self._request_submission = "not_submitted"
+        self._request_failure = None
         self._thread_start_count = self._turn_start_count = 0
         # A supplied launch verifier always wins over the synthetic-test gate.
         self.isolation_verified = isolation_verified if verify_config is None else False
@@ -231,6 +235,7 @@ class ChatGPTAppServer:
         if self._active is not None:
             raise RPCError("busy")
         self._request_submission = "not_submitted"
+        self._request_failure = None
         self._receipt = {"request_id": request_id, "input_types": [], "text_bytes": None,
             "text_sha256": None, "image_bytes": None, "image_sha256": None,
             "submission": "not_submitted", "terminal_status": None, "outcome": "pending",
@@ -241,6 +246,10 @@ class ChatGPTAppServer:
     def request_submission(self):
         """Actual latest request transport state, independent of receipt I/O."""
         return self._request_submission
+
+    def request_failure(self):
+        """Retain sanitized failure facts across bounded owned-child reaping."""
+        return self._request_failure
 
     def finish_request(self, outcome):
         if outcome not in ("completed", "cancelled", "failed", "not_submitted", "uncertain"):
@@ -747,6 +756,7 @@ class ChatGPTAppServer:
     async def ask(self, text, image_bytes, *, model, cancelled, send_guard=None):
         if self._active is None:
             self._request_submission = "not_submitted"
+            self._request_failure = None
         self._ready()
         if not self.isolation_verified:
             raise RPCError("isolation_unverified")
@@ -845,7 +855,8 @@ class ChatGPTAppServer:
                 confirmed = await self._interrupt_request(active)
                 raise RPCError("cancelled" if confirmed else "cancellation_uncertain")
             if not done:
-                await self._interrupt_request(active)
+                # The exception path retains unknown completion before bounded
+                # interruption/reaping can outlast the outer reply grace.
                 raise RPCError("outcome_unknown")
             turn = active["done"].result()
             if "failure" in turn:
@@ -866,9 +877,21 @@ class ChatGPTAppServer:
             await self._interrupt_request(active)
             raise
         except RPCError as error:
+            terminal = active["done"].result() if active["done"].done() else {}
+            error.outcome = ("not_submitted" if not active["submitted"] else
+                "uncertain" if error.code in ("outcome_unknown", "timeout", "cancellation_uncertain")
+                or terminal.get("status") not in ("completed", "failed", "interrupted") else "failed")
+            error.submission = self.request_submission()
+            # Save before cleanup awaits: the outer stream may exhaust its
+            # reply grace while this child is being interrupted/reaped.
+            # Keep only fixed metadata, never the raised exception's traceback
+            # (which would retain the original prompt/image and active frame).
+            self._request_failure = RPCError(error.code, submission=error.submission)
+            self._request_failure.outcome = error.outcome
             if active["submitted"] and not active["done"].done():
                 await self._interrupt_request(active)
             error.submission = self.request_submission()
+            self._request_failure.submission = error.submission
             raise
         finally:
             if cancel_wait is not None:

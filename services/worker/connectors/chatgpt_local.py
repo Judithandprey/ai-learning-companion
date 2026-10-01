@@ -124,6 +124,7 @@ class _Ask:
     cancelled: asyncio.Event
     task: asyncio.Task | None = None
     provider_started: bool = False
+    retired: bool = False
 
 
 class SubscriptionBridge:
@@ -133,7 +134,8 @@ class SubscriptionBridge:
         self.active = None
         self.stopped_sessions, self.request_ids, self.rpc_ids = set(), set(), set()
         self.tasks = set()
-        self.closed = self.exhausted = self.login_starting = False
+        self.closed = self.login_starting = False
+        self.exhausted = asyncio.Event()
         self.login_id = None
         self.login_events = []
         client.on_event = self.on_event
@@ -160,6 +162,12 @@ class SubscriptionBridge:
         task.add_done_callback(self.tasks.discard)
         return task
 
+    def _retire(self):
+        self.exhausted.set()
+        if self.active is not None and not self.active.cancelled.is_set():
+            self.active.retired = True
+            self.active.cancelled.set()
+
     async def handle(self, message):
         """Set fences in input order; provider latency never blocks Stop/cancel."""
         rpc_id = message.get("id") if type(message) is dict else None
@@ -173,13 +181,13 @@ class SubscriptionBridge:
                 raise LocalError("unavailable")
             if rpc_id in self.rpc_ids:
                 raise LocalError("duplicate_request")
-            if len(self.rpc_ids) >= MAX_HISTORY:
-                self.exhausted = True
-                if self.active is not None:
-                    self.active.cancelled.set()
-                raise LocalError("resource_limit")
-            self.rpc_ids.add(rpc_id)
             method, params = message["method"], message["params"]
+            if self.exhausted.is_set() or len(self.rpc_ids) >= MAX_HISTORY:
+                self.exhausted.set()
+                if method not in {"ask/cancel", "session/stop", "connection/login/cancel"}:
+                    raise LocalError("resource_limit")
+            else:
+                self.rpc_ids.add(rpc_id)
             if len(self.tasks) >= 32 and method not in {"ask/cancel", "session/stop"}:
                 raise LocalError("busy")
             if method in {"connection/read", "connection/login/start"}:
@@ -222,6 +230,9 @@ class SubscriptionBridge:
                 raise LocalError("unsupported")
         except LocalError as exc:
             self.error(safe_id, exc.code)
+        finally:
+            if self.exhausted.is_set():
+                self._retire()
 
     def _start_ask(self, rpc_id, params):
         if (set(params) != {"request", "model"} or type(params["request"]) is not dict
@@ -235,7 +246,7 @@ class SubscriptionBridge:
             raise LocalError()
         if session in self.stopped_sessions:
             raise LocalError("session_stopped")
-        if self.exhausted:
+        if self.exhausted.is_set():
             raise LocalError("resource_limit")
         if request_id in self.request_ids:
             raise LocalError("duplicate_request")
@@ -256,9 +267,15 @@ class SubscriptionBridge:
         return self.closed or active.cancelled.is_set() or active.session_id in self.stopped_sessions
 
     def _unfinished_outcome(self, active):
-        if active.cancelled.is_set() or active.session_id in self.stopped_sessions:
+        if not active.retired and (active.cancelled.is_set() or active.session_id in self.stopped_sessions):
             return "cancelled"
-        return "uncertain" if active.provider_started else "not_submitted"
+        submission = getattr(self.client, "request_submission", lambda: "unknown")()
+        if not active.provider_started or submission == "not_submitted":
+            return "not_submitted"
+        if active.retired:
+            return "uncertain"
+        failure = getattr(self.client, "request_failure", lambda: None)()
+        return getattr(failure, "outcome", None) or "uncertain"
 
     async def _ask(self, active, request, model):
         started = time.monotonic()
@@ -298,20 +315,25 @@ class SubscriptionBridge:
             outcome = "completed"
             self.emit({"id": active.rpc_id, "result": result})
         except asyncio.CancelledError:
-            outcome = self._unfinished_outcome(active) if self.client.terminal.is_set() else "cancelled"
-            if not self.closed and not self.client.terminal.is_set():
+            outcome = self._unfinished_outcome(active) if self.client.terminal.is_set() or active.retired else "cancelled"
+            if not self.closed and not self.client.terminal.is_set() and not active.retired:
                 self.error(active.rpc_id, "cancelled")
         except Exception as exc:
-            if active.cancelled.is_set() or active.session_id in self.stopped_sessions:
+            if not active.retired and (active.cancelled.is_set() or active.session_id in self.stopped_sessions):
                 outcome = "cancelled"
-            elif self.closed and self.client.terminal.is_set():
+            elif active.retired or self.client.terminal.is_set():
                 outcome = self._unfinished_outcome(active)
+            elif getattr(exc, "outcome", None) is not None:
+                outcome = exc.outcome
             elif getattr(exc, "code", None) not in {"outcome_unknown", "uncertain", "timeout"} and active.provider_started:
                 outcome = "failed"
+            if outcome == "uncertain":
+                self.exhausted.set()
             # On an unusable transport, EOF carries the unknown send outcome
             # to the desktop. A normal error reply would claim a known refusal.
-            if not self.closed and not self.client.terminal.is_set():
-                self.error(active.rpc_id, "cancelled" if self._cancelled(active)
+            if not self.closed and outcome != "uncertain" and (not self.client.terminal.is_set()
+                    or getattr(exc, "outcome", None) == "failed"):
+                self.error(active.rpc_id, "unavailable" if active.retired else "cancelled" if self._cancelled(active)
                            else getattr(exc, "code", "unavailable"))
         finally:
             finish = getattr(self.client, "finish_request", None)
@@ -321,7 +343,7 @@ class SubscriptionBridge:
                 except Exception:
                     # Failure receipts cannot expose private data or grant an
                     # answer. The failing writer also fences future submissions.
-                    self.exhausted = True
+                    self._retire()
             if self.active is active:
                 self.active = None
 
@@ -393,6 +415,10 @@ class SubscriptionBridge:
     async def close(self, *, terminal_failure=False):
         if self.closed:
             return
+        if terminal_failure and self.active is not None:
+            failure = getattr(self.client, "request_failure", lambda: None)()
+            if self._unfinished_outcome(self.active) == "failed" and failure is not None:
+                self.error(self.active.rpc_id, failure.code)
         self.closed = True
         if self.active is not None and not terminal_failure:
             self.active.cancelled.set()
@@ -419,12 +445,14 @@ async def run_stream(read_line, emit, client, *, prepare=_prepare, bind=_bind, s
     terminal = asyncio.create_task(client.terminal.wait())
     bridge = None
     reading = None
+    retirement = None
     terminal_failure = False
     try:
         while True:
             reading = asyncio.create_task(read_line())
-            done, _ = await asyncio.wait((reading, terminal), return_when=asyncio.FIRST_COMPLETED)
-            if terminal in done or client.terminal.is_set():
+            done, _ = await asyncio.wait((reading, terminal, *([retirement] if retirement else [])),
+                                         return_when=asyncio.FIRST_COMPLETED)
+            if terminal in done or client.terminal.is_set() or (bridge is not None and bridge.exhausted.is_set()):
                 terminal_failure = True
                 # A permanently unusable inner client must also end its outer
                 # pipe. A later explicit user Check can create a new owner;
@@ -459,10 +487,11 @@ async def run_stream(read_line, emit, client, *, prepare=_prepare, bind=_bind, s
                     break
                 if select_version is not None:
                     select_version(version)
+                retirement = asyncio.create_task(bridge.exhausted.wait())
             await bridge.handle(message)
             await asyncio.sleep(0)
     finally:
-        waiting = [terminal] + ([reading] if reading is not None else [])
+        waiting = [terminal] + ([reading] if reading is not None else []) + ([retirement] if retirement else [])
         for task in waiting:
             task.cancel()
         await asyncio.gather(*waiting, return_exceptions=True)

@@ -219,7 +219,7 @@ def test_receipt_binding_records_eof_before_reserved_ask_coroutine_runs(ask_requ
 
 @pytest.mark.parametrize("mode,outcome,terminal", [("hang", "uncertain", False),
     ("ignore_interrupt", "uncertain", True), ("late_complete", "uncertain", False),
-    ("start_error", "failed", True)])
+    ("start_error", "uncertain", True)])
 def test_real_rpc_cleanup_does_not_report_user_cancellation(tmp_path, ask_request, mode, outcome, terminal):
     from services.worker.connectors.chatgpt_local import SubscriptionBridge
     from services.worker.connectors.tests.test_chatgpt_rpc import client, requests, MODEL as rpc_model
@@ -236,11 +236,8 @@ def test_real_rpc_cleanup_does_not_report_user_cancellation(tmp_path, ask_reques
             await asyncio.wait_for(active.task, 3)
             assert active.cancelled.is_set() is False
             assert rpc.terminal.is_set() is terminal
-            if terminal:
-                assert emitted == [], "the terminal outer pipe reports a lost, uncertain request"
-            else:
-                assert len(emitted) == 1
-                assert_closed_error(emitted[0], "outer-one", "failed")
+            assert emitted == [], "v1 ends the outer pipe for an unknown result, not a definite refusal"
+            assert bridge.exhausted.is_set()
             assert receipts[-1]["outcome"] == outcome
             assert receipts[-1]["turn_start_count"] == 1
             assert sum(row.get("method") == "turn/start" for row in requests(rpc)) == 1
@@ -489,7 +486,11 @@ def test_inner_refusals_stay_fixed_errors_without_automatic_retry(ask_request, c
         c.client.complete.set()
         try:
             await c.bridge.handle(message("ask/start", {"request": ask_request, "model": MODEL}))
-            assert_closed_error(await response(c, "outer-one"), "outer-one", expected)
+            if code == "outcome_unknown":
+                await asyncio.wait_for(c.bridge.active.task, 1)
+                assert c.emitted == [] and c.bridge.exhausted.is_set()
+            else:
+                assert_closed_error(await response(c, "outer-one"), "outer-one", expected)
             assert c.learning.bound == []
             assert len([call for call in c.client.calls if call[0] == "ask"]) == 1
         finally:
@@ -679,7 +680,7 @@ def test_fatal_rpc_ends_stream_and_only_explicit_new_check_creates_fresh_client(
             await asyncio.wait_for(asyncio.shield(old.task), 1)
             assert [row["id"] for row in old.emitted] == ["first-check"]
             assert old.read_cancelled.is_set() and old.client._process.returncode is not None
-            assert old.receipts[-1]["outcome"] == "failed"
+            assert old.receipts[-1]["outcome"] == "uncertain"
             assert old.receipts[-1]["turn_start_count"] == 1
             assert old.learning.bound == []
             before = requests(old.client)
@@ -869,11 +870,11 @@ def test_terminal_wins_answer_publication_and_receipt_finalization(ask_request, 
             c.client.complete.set()
             await asyncio.wait_for(active.task, 1)
             assert c.emitted == [] and not active.cancelled.is_set()
-            assert outcomes[-1] == "failed"
+            assert outcomes[-1] == "uncertain"
             if when == "before_bind":
                 assert c.learning.bound == []
             else:
-                assert outcomes == ["completed", "failed"]
+                assert outcomes == ["completed", "uncertain"]
         finally:
             await c.bridge.close(terminal_failure=True)
 
@@ -1112,7 +1113,7 @@ def test_fatal_inner_child_closes_real_outer_pipe_with_parent_still_open(tmp_pat
         assert not process.stdin.closed
         assert process.wait(timeout=5) == 0
         assert process.stderr.read() == b""
-        assert json.loads(report.read_text()) == {"child_reaped": True, "turn_starts": 1, "outcome": "failed"}
+        assert json.loads(report.read_text()) == {"child_reaped": True, "turn_starts": 1, "outcome": "uncertain"}
     finally:
         process.stdin.close()
         if process.poll() is None:
