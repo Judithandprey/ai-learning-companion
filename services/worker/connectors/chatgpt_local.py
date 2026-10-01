@@ -19,8 +19,10 @@ import unicodedata
 
 
 VERSION = "lc-subscription-ask/1"
+LIVE_VERSION = "lc-subscription-live/1"
 MAX_LINE_BYTES = 12 * 1024 * 1024
 MAX_OUTPUT_BYTES = 256 * 1024
+MAX_LIVE_OUTPUT_BYTES = 1024 * 1024
 MAX_HISTORY = 4096
 # Includes the inner child's 3s terminate + 3s kill/reap allowance.
 SHUTDOWN_SECONDS = 8
@@ -46,6 +48,7 @@ ERROR_CODES = {
     # Version 1 has no precise quota/credit reasons. Do not mislabel transient
     # throttling, included-use denial or workspace controls as exhausted quota.
     "rate_limited": "failed", "session_budget_exceeded": "failed",
+    "context_limit": "failed", "overloaded": "failed",
     "usage_not_allowed": "unavailable", "workspace_limit": "unavailable",
     "uncertain": "failed", "outcome_unknown": "failed", "request_failed": "failed",
     "incomplete_turn": "failed", "model_mismatch": "failed", "tool_activity": "failed",
@@ -410,11 +413,11 @@ class SubscriptionBridge:
                     self.active = None
 
 
-async def run_stream(read_line, emit, client, *, prepare=_prepare, bind=_bind):
-    """Run one bounded private stream. EOF closes only the owned client."""
+async def run_stream(read_line, emit, client, *, prepare=_prepare, bind=_bind, select_version=None):
+    """Pin one protocol on its first envelope; EOF closes only the owned client."""
     ready = asyncio.create_task(client.start())
     terminal = asyncio.create_task(client.terminal.wait())
-    bridge = SubscriptionBridge(client, emit=emit, prepare=prepare, bind=bind, ready=ready)
+    bridge = None
     reading = None
     terminal_failure = False
     try:
@@ -429,7 +432,7 @@ async def run_stream(read_line, emit, client, *, prepare=_prepare, bind=_bind):
                 reading.cancel()
                 await asyncio.gather(reading, return_exceptions=True)
                 reading = None
-                await asyncio.wait({ready, *bridge.tasks}, timeout=TERMINAL_REPLY_SECONDS)
+                await asyncio.wait({ready, *(bridge.tasks if bridge else ())}, timeout=TERMINAL_REPLY_SECONDS)
                 break
             raw = reading.result()
             reading = None
@@ -438,8 +441,24 @@ async def run_stream(read_line, emit, client, *, prepare=_prepare, bind=_bind):
             try:
                 message = parse_line(raw)
             except LocalError as exc:
-                bridge.error(None, exc.code)
+                if bridge is not None:
+                    bridge.error(None, exc.code)
+                else:
+                    emit({"id": None, "error": {"code": exc.code, "message": ERRORS[exc.code]}})
                 break
+            if bridge is None:
+                version = message.get("version")
+                if version == LIVE_VERSION:
+                    from .chatgpt_live import LiveSubscriptionBridge
+                    bridge = LiveSubscriptionBridge(client, emit=emit, ready=ready)
+                elif version == VERSION:
+                    bridge = SubscriptionBridge(client, emit=emit, prepare=prepare, bind=bind, ready=ready)
+                else:
+                    emit({"id": message.get("id") if identifier(message.get("id")) else None,
+                          "error": {"code": "invalid_request", "message": ERRORS["invalid_request"]}})
+                    break
+                if select_version is not None:
+                    select_version(version)
             await bridge.handle(message)
             await asyncio.sleep(0)
     finally:
@@ -449,14 +468,18 @@ async def run_stream(read_line, emit, client, *, prepare=_prepare, bind=_bind):
         await asyncio.gather(*waiting, return_exceptions=True)
         ready.cancel()
         try:
-            await bridge.close(terminal_failure=terminal_failure)
+            if bridge is not None:
+                await bridge.close(terminal_failure=terminal_failure)
+            else:
+                async with asyncio.timeout(SHUTDOWN_SECONDS):
+                    await client.close()
         finally:
             await asyncio.gather(ready, return_exceptions=True)
 
 
-def encode_line(value):
+def encode_line(value, *, max_bytes=MAX_OUTPUT_BYTES):
     raw = json.dumps(value, ensure_ascii=False, separators=(",", ":"), allow_nan=False).encode("utf-8") + b"\n"
-    if len(raw) > MAX_OUTPUT_BYTES:
+    if len(raw) > max_bytes:
         raise LocalError("unavailable")
     return raw
 
@@ -470,6 +493,8 @@ class _Pipes:
 
     def __init__(self, loop):
         self.loop = loop
+        self.version = None
+        self.output_limit = MAX_OUTPUT_BYTES
         self.incoming = asyncio.Queue(maxsize=2)
         self.outgoing = queue.Queue(maxsize=8)
         self.failed = asyncio.Event()
@@ -531,9 +556,15 @@ class _Pipes:
         except Exception:
             self._fail()
 
+    def select_version(self, version):
+        if version not in (VERSION, LIVE_VERSION) or self.version not in (None, version):
+            raise LocalError()
+        self.version = version
+        self.output_limit = MAX_LIVE_OUTPUT_BYTES if version == LIVE_VERSION else MAX_OUTPUT_BYTES
+
     def emit(self, value):
         try:
-            self.outgoing.put_nowait(encode_line(value))
+            self.outgoing.put_nowait(encode_line(value, max_bytes=self.output_limit))
         except (queue.Full, LocalError):
             self.failed.set()
 
@@ -561,7 +592,8 @@ async def _main():
     try:
         try:
             async with create_client() as client:
-                runner = asyncio.create_task(run_stream(pipes.incoming.get, pipes.emit, client))
+                runner = asyncio.create_task(run_stream(pipes.incoming.get, pipes.emit, client,
+                                                       select_version=pipes.select_version))
                 failure = asyncio.create_task(pipes.failed.wait())
                 await asyncio.wait((runner, failure), return_when=asyncio.FIRST_COMPLETED)
                 if not runner.done():
@@ -579,8 +611,10 @@ async def _main():
                     if read in done and read.result():
                         value = parse_line(read.result())
                         rpc_id = value.get("id")
-                        pipes.emit({"id": rpc_id if identifier(rpc_id) else None,
-                                    "error": {"code": "unavailable", "message": ERRORS["unavailable"]}})
+                        error = ({"code": "unavailable", "submission": "not_submitted"}
+                                 if value.get("version") == LIVE_VERSION else
+                                 {"code": "unavailable", "message": ERRORS["unavailable"]})
+                        pipes.emit({"id": rpc_id if identifier(rpc_id) else None, "error": error})
                 except LocalError:
                     pass
                 finally:

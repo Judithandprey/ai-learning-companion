@@ -11,6 +11,7 @@ import pytest
 
 from services.worker.connectors.chatgpt_rpc import ChatGPTAppServer, RPCError
 from services.worker.connectors import chatgpt_rpc as rpc
+from packages.contracts import live_companion
 
 
 PNG = b"\x89PNG\r\n\x1a\nsynthetic-transport-payload"
@@ -402,6 +403,98 @@ def test_account_catalog_quota_are_exact_and_redacted(tmp_path, capfd):
     assert capfd.readouterr() == ("", "")
 
 
+def test_live_connection_projects_one_complete_quota_snapshot_and_preserves_v1(tmp_path):
+    async def run():
+        c = client(tmp_path)
+        credits = {"hasCredits": True, "unlimited": False, "balance": "12.5000000000000000000001"}
+        payload = quota_response(credits, allowed=False, reached="workspace_member_usage_limit_reached", spend=True)
+        payload["rateLimits"]["normalModelSlug"] = MODEL
+        payload["rateLimits"]["individualLimit"] = {
+            "limit": "00100.000", "used": "100.000000001", "remainingPercent": -1, "resetsAt": -1}
+        payload["rateLimitsByLimitId"] = {"codex": payload["rateLimits"], "other": {"limitId": "other"}}
+        c.env["QUOTA_RESPONSE"] = json.dumps(payload)
+        try:
+            await c.start()
+            result = await c.connection_read_live()
+            assert live_companion.validate("Connection", result) == result
+            assert result["quota"] == {"available": True, "ordinary_usage_allowed": False, "windows": [{
+                "limit_id": "codex", "normal_model_slug": MODEL,
+                "primary": {"used_percent": 100, "window_duration_mins": 300, "resets_at": "1970-01-01T00:00:00Z"},
+                "secondary": {"used_percent": 100, "window_duration_mins": 10080, "resets_at": "1970-01-01T00:00:00Z"},
+                "credits": {"has_credits": True, "unlimited": False, "balance": credits["balance"]},
+                "rate_limit_reached_type": "workspace_member_usage_limit_reached", "spend_control_reached": True,
+                "individual_limit": {"limit": "00100.000", "used": "100.000000001", "remaining_percent": -1,
+                                     "resets_at": "1969-12-31T23:59:59Z"}}, {
+                "limit_id": "other", "normal_model_slug": None, "primary": None, "secondary": None, "credits": None,
+                "rate_limit_reached_type": None, "spend_control_reached": None, "individual_limit": None}]}
+            assert sum(row.get("method") == "account/rateLimits/read" for row in requests(c)) == 1
+            old = await c.connection_read()
+            assert old == {"auth": result["auth"], "rate_limits": [
+                {"label": "codex/primary", "used_percent": 100, "resets_at": "1970-01-01T00:00:00Z"},
+                {"label": "codex/secondary", "used_percent": 100, "resets_at": "1970-01-01T00:00:00Z"}],
+                "models": result["models"]}
+            assert list(old) == ["auth", "rate_limits", "models"]
+            assert "private-account" not in json.dumps(result) and "secret@example.invalid" not in json.dumps(result)
+        finally:
+            await c.close()
+    asyncio.run(run())
+
+
+@pytest.mark.parametrize("mode", ["quota_error", "signed_out", "api_key"])
+def test_live_connection_unknown_quota_is_exact_and_does_not_read_nonmanaged_accounts(tmp_path, mode):
+    async def run():
+        c = client(tmp_path, mode)
+        try:
+            await c.start()
+            result = await c.connection_read_live()
+            assert live_companion.validate("Connection", result) == result
+            assert result["quota"] == {"available": False, "ordinary_usage_allowed": None, "windows": []}
+            assert sum(row.get("method") == "account/rateLimits/read" for row in requests(c)) == int(mode == "quota_error")
+        finally:
+            await c.close()
+    asyncio.run(run())
+
+
+@pytest.mark.parametrize("value", [None, "missing", {"hasCredits": False, "unlimited": False, "balance": "0"},
+                                  {"hasCredits": True, "unlimited": True, "balance": None}])
+def test_live_connection_preserves_unknown_and_known_credit_states(tmp_path, value):
+    async def run():
+        c = client(tmp_path)
+        payload = quota_response(None if value == "missing" else value)
+        if value == "missing":
+            del payload["rateLimits"]["credits"]
+        c.env["QUOTA_RESPONSE"] = json.dumps(payload)
+        try:
+            await c.start()
+            result = await c.connection_read_live()
+            assert live_companion.validate("Connection", result) == result
+            actual = result["quota"]["windows"][0]["credits"]
+            assert actual == (None if value in (None, "missing") else {
+                "has_credits": value["hasCredits"], "unlimited": value["unlimited"], "balance": value["balance"]})
+        finally:
+            await c.close()
+    asyncio.run(run())
+
+
+@pytest.mark.parametrize("field,value", [("remainingPercent", True), ("remainingPercent", -(2**31)-1),
+    ("remainingPercent", 2**31), ("limit", 2.5), ("used", "x"*129), ("resetsAt", None),
+    ("resetsAt", 1.5), ("resetsAt", 2**63-1)])
+def test_live_connection_rejects_unrepresentable_individual_limits(tmp_path, field, value):
+    async def run():
+        c = client(tmp_path)
+        payload = quota_response(None)
+        payload["rateLimits"]["individualLimit"] = {
+            "limit": "100", "used": "101", "remainingPercent": -1, "resetsAt": 0, field: value}
+        c.env["QUOTA_RESPONSE"] = json.dumps(payload)
+        try:
+            await c.start()
+            with pytest.raises(RPCError) as error:
+                await c.connection_read_live()
+            assert error.value.code == "protocol_error" and error.value.submission == "not_submitted"
+            assert not any(row.get("method") == "turn/start" for row in requests(c))
+        finally:
+            await c.close()
+    asyncio.run(run())
 @pytest.mark.parametrize("mode,expected", [("signed_out", "signed_out"), ("api_key", "unknown")])
 def test_non_managed_auth_stays_unsigned(tmp_path, mode, expected):
     async def run():
@@ -678,6 +771,177 @@ def test_cancellation_while_waiting_for_write_lock_prevents_prompt(tmp_path):
     asyncio.run(run())
 
 
+def test_live_send_guard_is_synchronous_at_both_actual_writes(tmp_path):
+    async def run():
+        c = client(tmp_path, isolation_verified=True)
+        seen, scheduled = [], []
+
+        def guard(method):
+            seen.append(("guard", method, c.request_submission()))
+            asyncio.get_running_loop().call_soon(scheduled.append, method)
+
+        try:
+            await c.start()
+            original_write = c._process.stdin.write
+
+            def inspect_write(data):
+                method = json.loads(data).get("method")
+                if method in ("thread/start", "turn/start"):
+                    assert method not in scheduled  # No intervening event-loop yield.
+                    seen.append(("write", method, c.request_submission()))
+                return original_write(data)
+
+            c._process.stdin.write = inspect_write
+            answer = await c.ask("An explicit ASK.", PNG, model=MODEL, cancelled=asyncio.Event(), send_guard=guard)
+            assert answer["text"] == "Completed answer."
+            assert seen == [("guard", "thread/start", "not_submitted"), ("write", "thread/start", "not_submitted"),
+                            ("guard", "turn/start", "not_submitted"), ("guard", "turn/start", "not_submitted"),
+                            ("write", "turn/start", "unknown")]
+            assert c.request_submission() == "submitted"
+            c.begin_request("next-request")
+            assert c.request_submission() == "not_submitted"
+        finally:
+            await c.close()
+    asyncio.run(run())
+
+
+def test_live_send_guard_rechecks_deadline_after_synchronous_receipt_io(tmp_path):
+    async def run():
+        now, reserved, checks, receipts = 0, False, [], []
+
+        def receipt_writer(row):
+            nonlocal now
+            receipts.append(row)
+            if row["submission"] == "uncertain":
+                now = 3  # Simulate the monotonic clock advancing during durable I/O.
+
+        def guard(method):
+            nonlocal reserved
+            checks.append((method, now))
+            if now >= 2:
+                raise RPCError("budget_reached")
+            if method == "turn/start" and not reserved:
+                reserved = True
+
+        c = client(tmp_path, isolation_verified=True, on_receipt=receipt_writer)
+        try:
+            await c.start()
+            c.begin_request("deadline-during-receipt")
+            with pytest.raises(RPCError) as error:
+                await c.ask("An explicit ASK.", PNG, model=MODEL, cancelled=asyncio.Event(), send_guard=guard)
+            assert error.value.code == "budget_reached"
+            assert error.value.submission == c.request_submission() == "not_submitted"
+            assert checks == [("thread/start", 0), ("turn/start", 0), ("turn/start", 3)]
+            assert reserved is True  # A conservative reservation is not refunded.
+            assert receipts[-1]["submission"] == "not_submitted"
+            assert receipts[-1]["turn_start_count"] == 0
+            assert not any(row.get("method") == "turn/start" for row in requests(c))
+        finally:
+            await c.close()
+    asyncio.run(run())
+
+
+@pytest.mark.parametrize("method", ["thread/start", "turn/start"])
+@pytest.mark.parametrize("code", ["session_stopped", "budget_reached", "stale_context"])
+def test_live_send_guard_refusal_before_either_write_is_not_submitted(tmp_path, method, code):
+    async def run():
+        receipts = []
+        c = client(tmp_path, isolation_verified=True, on_receipt=receipts.append)
+        seen = []
+
+        def guard(actual):
+            seen.append(actual)
+            if actual == method:
+                raise RPCError(code)
+
+        try:
+            await c.start()
+            c.begin_request("guarded")
+            with pytest.raises(RPCError) as error:
+                await c.ask("An explicit ASK.", PNG, model=MODEL, cancelled=asyncio.Event(), send_guard=guard)
+            assert error.value.code == code
+            assert error.value.submission == c.request_submission() == "not_submitted"
+            assert seen == (["thread/start"] if method == "thread/start" else ["thread/start", "turn/start"])
+            assert not any(row.get("method") == method for row in requests(c))
+            assert receipts[-1]["submission"] == "not_submitted" and c._turn_start_count == 0
+        finally:
+            await c.close()
+    asyncio.run(run())
+
+
+@pytest.mark.parametrize("method", ["thread/start", "turn/start"])
+def test_live_send_guard_rechecks_state_after_waiting_for_write_lock(tmp_path, method):
+    async def run():
+        c = client(tmp_path, isolation_verified=True)
+        blocked = asyncio.Event()
+        valid = True
+        original_rpc = c._rpc
+
+        async def lock_before_write(actual, params, **kwargs):
+            if actual == method:
+                await c._write_lock.acquire()
+                blocked.set()
+            return await original_rpc(actual, params, **kwargs)
+
+        def guard(_method):
+            if not valid:
+                raise RPCError("stale_context")
+
+        c._rpc = lock_before_write
+        try:
+            await c.start()
+            task = asyncio.create_task(c.ask("An explicit ASK.", PNG, model=MODEL,
+                                            cancelled=asyncio.Event(), send_guard=guard))
+            await asyncio.wait_for(blocked.wait(), 1)
+            valid = False
+            c._write_lock.release()
+            with pytest.raises(RPCError) as error:
+                await task
+            assert error.value.code == "stale_context" and error.value.submission == "not_submitted"
+            assert not any(row.get("method") == method for row in requests(c))
+        finally:
+            await c.close()
+    asyncio.run(run())
+
+
+@pytest.mark.parametrize("as_function", [False, True])
+def test_live_send_guard_rejects_async_checks_without_a_provider_write(tmp_path, as_function):
+    async def run():
+        c = client(tmp_path, isolation_verified=True)
+
+        async def asynchronous(_method):
+            return None
+
+        guard = asynchronous if as_function else lambda method: asynchronous(method)
+        try:
+            await c.start()
+            with pytest.raises(RPCError) as error:
+                await c.ask("An explicit ASK.", PNG, model=MODEL, cancelled=asyncio.Event(), send_guard=guard)
+            assert error.value.code == "invalid_request" and error.value.submission == "not_submitted"
+            assert not any(row.get("method") in ("thread/start", "turn/start") for row in requests(c))
+        finally:
+            await c.close()
+    asyncio.run(run())
+
+
+@pytest.mark.parametrize("mode,code,submission", [("text_only", "unsupported_model", "not_submitted"),
+    ("network_enabled", "isolation_unverified", "not_submitted"), ("failed", "incomplete_turn", "submitted"),
+    ("start_hang", "outcome_unknown", "submitted")])
+def test_live_error_submission_is_transport_evidence_not_error_cause_or_receipt_availability(tmp_path, mode, code, submission):
+    async def run():
+        c = client(tmp_path, mode, isolation_verified=True)
+        try:
+            await c.start()
+            with pytest.raises(RPCError) as error:
+                await invoke(c)
+            assert error.value.code == code
+            assert error.value.submission == c.request_submission() == submission
+            assert c._receipt is None
+        finally:
+            await c.close()
+    asyncio.run(run())
+
+
 def test_unknown_quota_is_not_zero_or_a_false_allowance(tmp_path):
     async def run():
         c = client(tmp_path, "quota_error", isolation_verified=True)
@@ -694,6 +958,8 @@ def test_unknown_quota_is_not_zero_or_a_false_allowance(tmp_path):
 @pytest.mark.parametrize("info,expected", [
     ("usageLimitExceeded", "quota_exhausted"), ("rateLimitExceeded", "rate_limited"),
     ("sessionBudgetExceeded", "session_budget_exceeded"), ("unauthorized", "unauthenticated"),
+    ("contextWindowExceeded", "context_limit"), ("serverOverloaded", "overloaded"),
+    ("flexUnavailable", "overloaded"),
     ("other", "incomplete_turn"), (None, "incomplete_turn"), ("futureUnknownError", "incomplete_turn"),
     ({"responseTooManyFailedAttempts": {"httpStatusCode": 429}}, "incomplete_turn"),
 ])
@@ -709,6 +975,7 @@ def test_authoritative_error_classification_is_shared_without_retry_or_message_p
             with pytest.raises(RPCError) as error:
                 await invoke(c, cancelled=stop)
             assert error.value.code == expected
+            assert error.value.submission == c.request_submission() == "submitted"
             assert "TOKEN-secret" not in str(error.value)
             assert not stop.is_set()
             assert sum(row.get("method") == "turn/start" for row in requests(c)) == 1
@@ -1256,8 +1523,9 @@ def test_receipt_marks_drain_failure_uncertain_without_claiming_acknowledgment(t
         c._send = fail_at_turn
         await c.start()
         c.begin_request("uncertain-write")
-        with pytest.raises(RPCError):
+        with pytest.raises(RPCError) as error:
             await invoke(c)
+        assert error.value.submission == c.request_submission() == "unknown"
         c.finish_request("uncertain")
         final = receipts[-1]
         assert final["submission"] == "uncertain" and final["terminal_status"] is None
@@ -1285,6 +1553,7 @@ def test_send_intent_receipt_failure_prevents_prompt_write(tmp_path):
         with pytest.raises(RPCError) as error:
             await invoke(c)
         assert error.value.code == "unavailable"
+        assert error.value.submission == c.request_submission() == "not_submitted"
         assert c._turn_start_count == 0
         assert not any(row.get("method") == "turn/start" for row in requests(c))
         assert receipts[-1]["submission"] == "not_submitted"

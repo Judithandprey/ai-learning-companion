@@ -17,6 +17,8 @@ import math
 import re
 from urllib.parse import urlsplit
 
+from packages.contracts import live_companion
+
 
 MAX_LINE_BYTES = 12 * 1024 * 1024
 MAX_IMAGE_BYTES = 8 * 1024 * 1024
@@ -57,6 +59,11 @@ _MESSAGES = {
     "workspace_limit": "The workspace reports a usage restriction.",
     "usage_not_allowed": "The subscription does not currently permit included usage.",
     "session_budget_exceeded": "The managed session reports its budget limit was reached.",
+    "context_limit": "The managed request exceeds the available context.",
+    "overloaded": "The managed service is temporarily unavailable; it was not retried.",
+    "session_stopped": "The live session is stopped.",
+    "budget_reached": "The live session has reached its request or time bound.",
+    "stale_context": "The live request no longer matches the current session.",
     "busy": "Another managed request is in progress.",
     "invalid_request": "The managed request is invalid.",
     "login_not_found": "This connection has no matching pending login.",
@@ -68,8 +75,9 @@ _MESSAGES = {
 class RPCError(Exception):
     """Only fixed codes/messages may cross the desktop bridge."""
 
-    def __init__(self, code):
+    def __init__(self, code, *, submission="not_submitted"):
         self.code = code if code in _MESSAGES else "unavailable"
+        self.submission = submission if submission in ("not_submitted", "submitted", "unknown") else "unknown"
         self.message = _MESSAGES[self.code]
         super().__init__(self.message)
 
@@ -93,8 +101,19 @@ def _turn_error_code(error):
     if type(info) is not str:
         return "incomplete_turn"
     return {"usageLimitExceeded": "quota_exhausted", "rateLimitExceeded": "rate_limited",
-            "sessionBudgetExceeded": "session_budget_exceeded", "unauthorized": "unauthenticated"}.get(
+            "sessionBudgetExceeded": "session_budget_exceeded", "unauthorized": "unauthenticated",
+            "contextWindowExceeded": "context_limit", "serverOverloaded": "overloaded",
+            "flexUnavailable": "overloaded"}.get(
                 info, "incomplete_turn")
+
+
+def _utc_timestamp(value):
+    if value is None:
+        return None
+    try:
+        return datetime.fromtimestamp(value, timezone.utc).isoformat().replace("+00:00", "Z")
+    except (ValueError, OverflowError, OSError):
+        raise RPCError("protocol_error") from None
 
 
 def _pairs(pairs):
@@ -139,6 +158,7 @@ class ChatGPTAppServer:
         self.on_receipt = on_receipt
         self.expected_provider = expected_provider
         self._receipt = None
+        self._request_submission = "not_submitted"
         self._thread_start_count = self._turn_start_count = 0
         # A supplied launch verifier always wins over the synthetic-test gate.
         self.isolation_verified = isolation_verified if verify_config is None else False
@@ -210,12 +230,17 @@ class ChatGPTAppServer:
             raise RPCError("invalid_request")
         if self._active is not None:
             raise RPCError("busy")
+        self._request_submission = "not_submitted"
         self._receipt = {"request_id": request_id, "input_types": [], "text_bytes": None,
             "text_sha256": None, "image_bytes": None, "image_sha256": None,
             "submission": "not_submitted", "terminal_status": None, "outcome": "pending",
             "produced_item_types": [], "thread_start_count": self._thread_start_count,
             "turn_start_count": self._turn_start_count, "actual_model": None, "thread_id": None, "turn_id": None}
         self._record(self._receipt)
+
+    def request_submission(self):
+        """Actual latest request transport state, independent of receipt I/O."""
+        return self._request_submission
 
     def finish_request(self, outcome):
         if outcome not in ("completed", "cancelled", "failed", "not_submitted", "uncertain"):
@@ -249,6 +274,8 @@ class ChatGPTAppServer:
             if len(encoded) > MAX_LINE_BYTES:
                 raise RPCError("invalid_request")
             async with self._write_lock:
+                if self._closed or self._fatal is not None:
+                    raise RPCError(self._fatal or "closed")
                 if before_send is not None:
                     before_send()
                 if method == "turn/start":
@@ -256,6 +283,13 @@ class ChatGPTAppServer:
                     # a crash after write must not leave a definitive no-send
                     # receipt. Callback failure here prevents stdin.write.
                     self._record(receipt, submission="uncertain")
+                    # Durable receipt I/O may take time. The caller's guard is
+                    # idempotent: recheck the deadline/session after it, without
+                    # reserving a second submission slot.
+                    if before_send is not None:
+                        before_send()
+                    self._request_submission = "unknown"
+                    self._active["submitted"] = True
                 sending = True
                 self._process.stdin.write(encoded)
                 if method == "thread/start":
@@ -263,17 +297,21 @@ class ChatGPTAppServer:
                 elif method == "turn/start":
                     self._turn_start_count += 1
                 await asyncio.wait_for(self._process.stdin.drain(), self.rpc_timeout)
+                if method == "turn/start":
+                    self._request_submission = "submitted"
                 if method in ("thread/start", "turn/start"):
                     self._record(receipt, **({"submission": "written"} if method == "turn/start" else {}))
         except asyncio.CancelledError:
-            if sending and method == "turn/start":
-                self._record(receipt, submission="uncertain")
+            if method == "turn/start":
+                self._record(receipt, submission="uncertain" if sending else "not_submitted")
             raise
         except RPCError:
+            if method == "turn/start" and not sending:
+                self._record(receipt, submission="not_submitted")
             raise
         except Exception:
-            if sending and method == "turn/start":
-                self._record(receipt, submission="uncertain")
+            if method == "turn/start":
+                self._record(receipt, submission="uncertain" if sending else "not_submitted")
             self._fail("unavailable")
             raise RPCError("unavailable") from None
 
@@ -429,6 +467,7 @@ class ChatGPTAppServer:
             if active["turn_id"] is not None and turn_id != active["turn_id"]:
                 raise RPCError("protocol_error")
             active["turn_id"] = turn_id
+            self._request_submission = "submitted"
             self._record(active["receipt"], turn_id=turn_id)
             active["known"].set()
             if method == "turn/completed":
@@ -450,6 +489,7 @@ class ChatGPTAppServer:
             if not active["submitted"] or (active["turn_id"] is not None and turn_id != active["turn_id"]):
                 raise RPCError("protocol_error")
             active["turn_id"] = turn_id
+            self._request_submission = "submitted"
             active["known"].set()
             self._item(active, params.get("item"), completed=method == "item/completed")
         elif method == "error":
@@ -553,6 +593,19 @@ class ChatGPTAppServer:
         # nor proof that included usage is authorized.
         return {"hasCredits": value["hasCredits"], "unlimited": value["unlimited"], "balance": balance}
 
+    @staticmethod
+    def _individual_limit(value):
+        if value is None:
+            return None
+        value = _object(value)
+        remaining, resets = value.get("remainingPercent"), value.get("resetsAt")
+        if (any(type(value.get(k)) is not str or len(value[k]) > 128 for k in ("limit", "used"))
+                or type(remaining) is not int or not -(2**31) <= remaining < 2**31
+                or type(resets) is not int or not -(2**63) <= resets < 2**63):
+            raise RPCError("protocol_error")
+        return {"limit": value["limit"], "used": value["used"],
+                "remaining_percent": remaining, "resets_at": resets}
+
     async def _quota(self):
         quota = {"available": False, "ordinary_usage_allowed": None, "windows": []}
         try:
@@ -586,7 +639,8 @@ class ChatGPTAppServer:
                                 "secondary": self._window(snapshot.get("secondary")),
                                 "credits": self._credits(snapshot.get("credits")),
                                 "rate_limit_reached_type": reached, "spend_control_reached": spend,
-                                "normal_model_slug": model_slug})
+                                "normal_model_slug": model_slug,
+                                "individual_limit": self._individual_limit(snapshot.get("individualLimit"))})
             allowed = result.get("ordinaryUsageAllowed")
             if allowed is not None and type(allowed) is not bool:
                 raise RPCError("protocol_error")
@@ -596,11 +650,23 @@ class ChatGPTAppServer:
                 raise
         return quota
 
-    async def connection_read(self):
+    async def _read_connection(self):
         self._ready()
         account = await self._account()
         models = await self._models()
-        quota = await self._quota() if account["auth_mode"] == "chatgpt" else {"available": False}
+        quota = await self._quota() if account["auth_mode"] == "chatgpt" else {
+            "available": False, "ordinary_usage_allowed": None, "windows": []}
+        return {"auth": {"state": {"authenticated": "signed_in", "needs_auth": "signed_out",
+                                    "unsupported": "unknown"}[account["auth_status"]],
+                         "mode": account["auth_mode"], "plan": account["plan"]},
+                "quota": quota,
+                "models": [{"id": row["model"], "label": row["display_name"],
+                            "image_input": "image" in row["input_modalities"], "default": row["is_default"]}
+                           for row in models]}
+
+    async def connection_read(self):
+        facts = await self._read_connection()
+        quota = facts["quota"]
         limits = None
         if quota["available"]:
             limits = []
@@ -608,20 +674,25 @@ class ChatGPTAppServer:
                 for role in ("primary", "secondary"):
                     window = snapshot[role]
                     if window is not None:
-                        try:
-                            reset = (None if window["resets_at"] is None else
-                                     datetime.fromtimestamp(window["resets_at"], timezone.utc).isoformat().replace("+00:00", "Z"))
-                        except (ValueError, OverflowError, OSError):
-                            raise RPCError("protocol_error") from None
                         limits.append({"label": f"{snapshot['limit_id']}/{role}" if snapshot["limit_id"] else role,
-                                       "used_percent": window["used_percent"], "resets_at": reset})
-        return {"auth": {"state": {"authenticated": "signed_in", "needs_auth": "signed_out",
-                                    "unsupported": "unknown"}[account["auth_status"]],
-                         "mode": account["auth_mode"], "plan": account["plan"]},
-                "rate_limits": limits,
-                "models": [{"id": row["model"], "label": row["display_name"],
-                            "image_input": "image" in row["input_modalities"], "default": row["is_default"]}
-                           for row in models]}
+                                       "used_percent": window["used_percent"],
+                                       "resets_at": _utc_timestamp(window["resets_at"])})
+        return {"auth": facts["auth"], "rate_limits": limits, "models": facts["models"]}
+
+    async def connection_read_live(self):
+        facts = await self._read_connection()
+        for row in facts["quota"]["windows"]:
+            for field in ("primary", "secondary", "individual_limit"):
+                if row[field] is not None:
+                    row[field]["resets_at"] = _utc_timestamp(row[field]["resets_at"])
+            if row["credits"] is not None:
+                credits = row["credits"]
+                row["credits"] = {"has_credits": credits["hasCredits"], "unlimited": credits["unlimited"],
+                                  "balance": credits["balance"]}
+        try:
+            return live_companion.validate("Connection", facts)
+        except live_companion.ValidationError:
+            raise RPCError("protocol_error") from None
 
     async def login_start(self):
         self._ready()
@@ -673,7 +744,9 @@ class ChatGPTAppServer:
         if active["cancelled"].is_set():
             raise RPCError("cancelled")
 
-    async def ask(self, text, image_bytes, *, model, cancelled):
+    async def ask(self, text, image_bytes, *, model, cancelled, send_guard=None):
+        if self._active is None:
+            self._request_submission = "not_submitted"
         self._ready()
         if not self.isolation_verified:
             raise RPCError("isolation_unverified")
@@ -683,13 +756,26 @@ class ChatGPTAppServer:
                 or type(image_bytes) is not bytes or not 8 <= len(image_bytes) <= MAX_IMAGE_BYTES
                 or not image_bytes.startswith(b"\x89PNG\r\n\x1a\n")
                 or type(model) is not str or _IDENTIFIER.fullmatch(model) is None
-                or not isinstance(cancelled, asyncio.Event)):
+                or not isinstance(cancelled, asyncio.Event)
+                or (send_guard is not None and (not callable(send_guard) or inspect.iscoroutinefunction(send_guard)))):
             raise RPCError("invalid_request")
         active = {"thread_id": None, "turn_id": None, "submitted": False, "cancelled": cancelled,
                   "known": asyncio.Event(), "done": asyncio.get_running_loop().create_future(),
                   "messages": {}, "events": 0, "wire_bytes": 0, "receipt": self._receipt}
         self._active = active
         cancel_wait = None
+
+        def guard_write(method):
+            # Runs under the actual write lock. A caller may fence the session,
+            # deadline and request, reserving one budget slot for turn/start.
+            self._check_cancelled(active)
+            if send_guard is not None:
+                result = send_guard(method)
+                if inspect.isawaitable(result):
+                    if inspect.iscoroutine(result):
+                        result.close()
+                    raise RPCError("invalid_request")
+
         try:
             self._check_cancelled(active)
             try:
@@ -725,7 +811,7 @@ class ChatGPTAppServer:
                 "model": model, "modelProvider": self.expected_provider,
                 "allowProviderModelFallback": False, "cwd": self.cwd,
                 "ephemeral": True, "sandbox": "read-only", "approvalPolicy": "never",
-                "dynamicTools": [], "environments": []})
+                "dynamicTools": [], "environments": []}, before_send=lambda: guard_write("thread/start"))
             actual_model = _identifier(started.get("model"))
             thread = _object(started.get("thread"))
             active["thread_id"] = _identifier(thread.get("id"))
@@ -740,21 +826,16 @@ class ChatGPTAppServer:
                     or thread.get("ephemeral") is not True):
                 raise RPCError("isolation_unverified")
             self._check_cancelled(active)
-            def submitting():
-                # The write lock may itself yield. Fence at the actual write,
-                # with no await between this check and publishing prompt bytes.
-                self._check_cancelled(active)
-                active["submitted"] = True
-
             result = await self._rpc("turn/start", {
                 "threadId": active["thread_id"], "model": model,
                 "input": [{"type": "text", "text": text}, {"type": "image",
                     "url": "data:image/png;base64," + base64.b64encode(image_bytes).decode("ascii")}],
-                "environments": [], "approvalPolicy": "never"}, before_send=submitting)
+                "environments": [], "approvalPolicy": "never"}, before_send=lambda: guard_write("turn/start"))
             turn_id = _identifier(_object(result.get("turn")).get("id"))
             if active["turn_id"] is not None and active["turn_id"] != turn_id:
                 raise RPCError("protocol_error")
             active["turn_id"] = turn_id
+            self._request_submission = "submitted"
             self._record(active["receipt"], submission="acknowledged", turn_id=turn_id)
             active["known"].set()
             cancel_wait = asyncio.create_task(cancelled.wait())
@@ -784,9 +865,10 @@ class ChatGPTAppServer:
         except asyncio.CancelledError:
             await self._interrupt_request(active)
             raise
-        except RPCError:
+        except RPCError as error:
             if active["submitted"] and not active["done"].done():
                 await self._interrupt_request(active)
+            error.submission = self.request_submission()
             raise
         finally:
             if cancel_wait is not None:
