@@ -1,0 +1,29 @@
+{
+  "checked_at": "2026-10-01T06:32:30.585955+00:00",
+  "assigned_baseline": "871aabd974a8b1c11d18072da7200b0a2413ae73",
+  "local_platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.43",
+  "python_version": "3.14.4",
+  "scope": "Offline guards/lifecycle and official Mac artifact integrity; no Mac execution",
+  "probe_file_sha256": {
+    "tests/probes/support/codex_macos_metadata.py": "9705d1749123261b1f99c5c50df01ab7bed0566bd7d414567d271a7da8940e45",
+    "tests/probes/support/test_codex_macos_metadata.py": "44a74e86b3d33ba3b97390858103221aa9e340839851e6deb492d7f471fa5620",
+    ".github/workflows/subscription-compatibility.yml": "9a04d5e88025d62f8f06a4de487fe6d1f6adb55805279a2a28e73901d888bcfb"
+  },
+  "reused_baseline_sha256": {
+    "chatgpt_launch.py": "02a4f1da659405a4f34828a41d1ac5d322bac38d91a172f384999eada41b5f35",
+    "chatgpt_rpc.py": "7f0801be526e44be3773446c8a186dbaad2a8df978331308a088423aeb2c049f",
+    "chatgpt_receipts.py": "cf3ec73ce51f83056d147b6a0997a5c3c245c9a7b2deae295f29ee9165a17cae"
+  },
+  "official_archive_sha256": "341c4a08f9ce1935b3007376dc2a3d50a0a89112930e9a474ae61367218f6e8a",
+  "measured_executable_sha256": "788a818fbb9596869c7a487554507cb8bdca17584b8671112b23f9e225ba35c8",
+  "measured_executable_format": "Mach-O 64-bit arm64",
+  "archive_integrity_and_extraction": "passed",
+  "offline_tests_passed": 9,
+  "python_ast": "passed",
+  "workflow_yaml_and_structure": "passed",
+  "hosted_run": "not_dispatched",
+  "macos_metadata_compatibility": "not_measured",
+  "production_macos_admission": "unchanged_linux_only",
+  "provider_or_device_acceptance": "not_measured",
+  "independent_review": "No remaining material findings; diagnostic correction reviewed"
+}
