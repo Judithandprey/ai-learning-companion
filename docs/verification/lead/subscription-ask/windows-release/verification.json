@@ -1,0 +1,16 @@
+{
+  "owner_candidate": "84fc56a99a6e5c9dd98c39fb945cb93b573687ba",
+  "integrated_candidate": "eb9dea4",
+  "source_tree_equal": true,
+  "main_test_cases": 55,
+  "restricted_sandbox_pass": 54,
+  "restricted_sandbox_fail": 1,
+  "failed_case": "real synthetic Node child pipes",
+  "exact_approved_retry_pass": 1,
+  "retry_seconds": 0.098,
+  "effective_cases_passed": 55,
+  "typescript_static_build": "passed",
+  "diff_check": "passed",
+  "provider_calls": 0,
+  "windows_gui_runs": 0
+}

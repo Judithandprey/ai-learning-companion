@@ -1,0 +1,30 @@
+{
+  "owner_candidate": "84fc56a99a6e5c9dd98c39fb945cb93b573687ba",
+  "integrated_candidate": "eb9dea4d82e70259191e64743411dee807410d09",
+  "receipts": [
+    {
+      "receipt": "docs/verification/web/evidence/windows-subscription-ask/windows-fence.json",
+      "source_hashes": 63,
+      "log_hash_matches": true,
+      "counts": {
+        "tests": 55,
+        "pass": 55,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0
+      }
+    },
+    {
+      "receipt": "docs/verification/web/evidence/windows-subscription-ask/linux-fence.json",
+      "source_hashes": 63,
+      "log_hash_matches": true,
+      "counts": {
+        "tests": 55,
+        "pass": 55,
+        "fail": 0,
+        "cancelled": 0,
+        "skipped": 0
+      }
+    }
+  ]
+}

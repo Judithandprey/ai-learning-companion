@@ -127,3 +127,14 @@ not rerun. This does not yet establish Mac production-factory execution, login,
 image inference or device acceptance. Next owner: Native consumes this released
 connector in its existing UI/build slice; Windows correction and independent real
 image acceptance retain their separate pending status.
+
+
+Current Windows source release: owner `84fc56a` and prior leaves integrate through
+`eb9dea4`; [release verification](windows-release/README.md) closes the bounded
+source findings, verifies 55 integrated cases (one synthetic pipe case via approved
+exact retry) and passes build. This supersedes the earlier source HOLD. QA's
+existing runner/behavior task is next; one real image attempt is now reserved
+under the [ledger conditions](request-budget.json), **zero attempted so far**.
+Earlier zero-allocation entries are historical. Missing managed login stops at
+an actual user-operated official connection entry. Neither source approval nor
+this conditional allocation is evidence of real image inference or a GUI run.

@@ -66,7 +66,7 @@
       "owner": "web",
       "accepted_assignment": "handoff_df27ff4f210a4ac419401e8a00aa568c",
       "actual_start_reply": "handoff_a34384aef035e6150ab3e41cea52d18c",
-      "state": "correction_received_one_fence_followup_accepted",
+      "state": "final_source_approved_integrated",
       "accepted_dependency_release": "handoff_9133b93c8d97ec7c8b41b49724ad7a7e",
       "actual_delivery": "handoff_bdc1d66d3338cf027a9df924f2f8845d",
       "delivery_commit": "68b4cd9344dc0a2b36f151b911c7f9c4f2a797d8",
@@ -84,7 +84,16 @@
       },
       "correction_delivery": "handoff_31ae184a77baa3279672bb5152167895",
       "correction_commit": "c977df5523b0e57d49205ec9ca691bd965854e59",
-      "fence_followup": "handoff_d8906c713bc535bbf591fea9e8347dbb"
+      "fence_followup": "handoff_d8906c713bc535bbf591fea9e8347dbb",
+      "fence_delivery": "handoff_cf2e71e40d02d91ca065d1bd800509ac",
+      "fence_commit": "84fc56a99a6e5c9dd98c39fb945cb93b573687ba",
+      "integrated_sequence": [
+        "8cfb04b",
+        "dbc6365",
+        "c801135",
+        "eb9dea4"
+      ],
+      "focused_main_cases_verified": 55
     },
     {
       "owner": "native",
@@ -117,6 +126,7 @@
     }
   ],
   "isolated_support_followup": "handoff_a18e73172e84d36e9ae952c877a8c90b",
-  "provider_calls_authorized_to_workers": 0,
-  "connector_release": "871aabd974a8b1c11d18072da7200b0a2413ae73"
+  "provider_calls_authorized_to_workers": 1,
+  "connector_release": "871aabd974a8b1c11d18072da7200b0a2413ae73",
+  "provider_call_condition": "QA only after exact candidate, generated safe surface and managed login; no retry or fallback"
 }

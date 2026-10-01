@@ -1,0 +1,60 @@
+{
+  "decision": "approve",
+  "candidate": "84fc56a99a6e5c9dd98c39fb945cb93b573687ba",
+  "parent": "c977df5523b0e57d49205ec9ca691bd965854e59",
+  "scope": "final narrow Windows transport fence correction, including the three same-class stale-state guards",
+  "archive": "/tmp/windows-subscription-84fc56a-ngphfeda",
+  "source_sha256": {
+    "apps/windows/src/main/subscription.ts": "98574346019811c8cd208867ddc93666c96f57b32c90651498931642b96dbad5",
+    "apps/windows/tests/subscription.test.ts": "cac5a822257dfffcda4dc6afdd318fd4aa4e9f225ad6d3f4c4fcd493a2f05811"
+  },
+  "finding_status": {
+    "W-SUB-T01-FENCE": "closed",
+    "W-SUB-T01": "closed",
+    "W-SUB-T02": "closed by previous focused review; unchanged here",
+    "W-SUB-T03": "closed by previous focused review; preserved here"
+  },
+  "checks": {
+    "independent_exact_prior_fence_probe": {
+      "passed": true,
+      "evidence": "/tmp/windows-subscription-fence-final-probe.json",
+      "observed": {
+        "candidate": "84fc56a",
+        "synthetic_only": true,
+        "original_child_exited": true,
+        "spawn_count": 1,
+        "methods": [
+          [
+            "connection/read"
+          ]
+        ],
+        "status": {
+          "mode": "managed",
+          "state": "unavailable",
+          "plan": null,
+          "rate_limits": null,
+          "models": [],
+          "model": null,
+          "login": "none",
+          "detail": "the connector was lost while the account was being read",
+          "asking": false
+        }
+      }
+    },
+    "focused_owner_tests": {
+      "passed": 4,
+      "failed": 0,
+      "total": 4
+    },
+    "scoped_diff_check": "passed"
+  },
+  "new_findings": [],
+  "auth_configuration_changes": false,
+  "provider_request_changes": false,
+  "repository_edits": false,
+  "real_account_calls": 0,
+  "real_provider_calls": 0,
+  "display_operations": 0,
+  "next_owner_action": "Lead runs assigned 55 tests/build and integrates; real image acceptance remains separate",
+  "report": "/tmp/windows-subscription-fence-final-review.md"
+}
