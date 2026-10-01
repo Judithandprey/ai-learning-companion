@@ -144,3 +144,31 @@ image receipt; retain modality guards; handle legitimate early turn events while
 rejecting foreign inference, and await owned-child reap. These are design
 constraints, not implemented changes or executed acceptance. Windows' current
 TTS/whole-frame consumer and Mac's current correction retain their owners.
+
+## Independent work while the input source evidence is prepared
+
+Lead's bounded read-only review of Web checkpoint `d0e5f80` (same reviewed paths
+at `79d0811`) found two TTS issues before release. Owner work remained untouched:
+
+- `apps/windows/src/main/main.ts:1032` records `spoken=started` before `say()`;
+  an immediate throw becomes `interrupted` even without playback. The existing
+  `overlay-surfaces.test.ts:643–650` expects that false-positive record. Actual
+  voice start/completion evidence must distinguish played help from attempted or
+  unknown output. `audible=true` alone is not evidence a piece reached playback.
+- `main.ts:1511–1517` joins exit cleanup with `Promise.all(...).catch(...)`. One
+  rejection can allow final quit before another disposal finishes. Await each
+  owned cleanup within its bound, including synchronous failure isolation.
+
+Current-answer text authority, per-piece Talk/mute/session/request checks and
+stale-reading identity guards were inspected; no additional blocker was found
+in that limited path. No concrete voice adapter was connected at those commits,
+so neither audible output nor child termination was exercised. Both offending
+patterns were also observed in current Web WIP; this is source evidence only,
+with no new test count or device/account claim.
+
+The existing owner received these two concrete corrections as accepted native
+message `handoff_b94b00e95d6fb7fb0c50418399f5c17a`, initially unread with
+execution_started=false. They amend the current TTS/live handoff, not a second
+task or independent QA campaign. Web fixes and returns exact checks; Lead reviews
+and integrates, then QA executes the existing changed-flow acceptance on the
+versioned actual app. Input-route evidence remains Backend's current dependency.
