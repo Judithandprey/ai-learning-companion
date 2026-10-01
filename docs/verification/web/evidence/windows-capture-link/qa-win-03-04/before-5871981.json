@@ -1,0 +1,75 @@
+{
+ "what": "the real app on the Windows desktop (Electron, a normal start), driven over DevTools; no database, no AI",
+ "source": {
+  "prebuilt": "5871981 (git archive of that commit, built with the same tsc)"
+ },
+ "staged_files": 56,
+ "staged_tree_sha256": "b9aaf734396ad8088fb17e7e0809600227abb4c3f014c0fc936dac01cf9e5107",
+ "started": "2026-10-01T00:53:39.053Z",
+ "ended": "2026-10-01T00:54:43.435Z",
+ "electron_left_running": false,
+ "driver_exit": 1,
+ "runtime": {
+  "electron": "44.5.1",
+  "node": "24.21.0",
+  "platform": "win32-x64"
+ },
+ "cases": [
+  "control",
+  "idle"
+ ],
+ "checks": [
+  {
+   "id": "control.exits_without_link",
+   "pass": true,
+   "actual": "without the link the app exited by itself (code 0) 171 ms after its window closed"
+  },
+  {
+   "id": "idle.linked_app_exits",
+   "pass": false,
+   "actual": "with the link configured and never started the app had not exited 30014 ms after its window closed, and was ended by its PID"
+  },
+  {
+   "id": "idle.same_profile_relaunch",
+   "pass": false,
+   "actual": "the same profile started again and did not exit by itself"
+  }
+ ],
+ "observed": {
+  "control": {
+   "before_close": {
+    "header": "No AI is connected: captured frames and ink stay on this device, and nothing is sent anywhere.",
+    "link": null
+   },
+   "close": {
+    "exited_by_itself": true,
+    "exit_code": 0,
+    "ms": 171
+   }
+  },
+  "idle": {
+   "before_close": {
+    "header": "Development mode: captured frames and ink are kept on this device and, while capturing, also stored in a local test capture service on it. No AI is connected; nothing is sent to any AI.",
+    "link": "Capture storage (development): connected when you press Start. 0 record(s) stored. AI: not connected."
+   },
+   "close": {
+    "exited_by_itself": false,
+    "exit_code": null,
+    "ms": 30014
+   },
+   "relaunch": {
+    "started": true,
+    "before_close": {
+     "header": "Development mode: captured frames and ink are kept on this device and, while capturing, also stored in a local test capture service on it. No AI is connected; nothing is sent to any AI.",
+     "link": "Capture storage (development): connected when you press Start. 0 record(s) stored. AI: not connected."
+    },
+    "close": {
+     "exited_by_itself": false,
+     "exit_code": null,
+     "ms": 30014
+    }
+   }
+  }
+ },
+ "error": null
+}

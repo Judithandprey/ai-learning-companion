@@ -38,18 +38,24 @@ statement bounds. The file is read at each host start and passed only in the hos
   3. every frame retained from then on, with its raw and composed PNG and its editable-ink original, is stored in
      the test service, in manifest order;
   4. gaps, frames not retained, refusals and unwritten lines are sent as coverage records.
-- **The control window** shows the link's state (connecting, storing, offline, stopping, stopped, not connected,
-  ended by the service) and counts:
+- **The control window** shows the link's state (not connected yet, connecting, storing, not storing now: trying
+  again, offline, stopping, stopped, not connected, ended by the service) and the latest capture's counts:
   - records stored;
   - records not known whether stored;
   - records refused;
   - records not sent, which are kept on this device;
   - earlier streams whose end is not known.
 
-  It always ends with "AI: not connected". Its header says frames and ink are also stored in a local test capture
-  service and that no AI is connected. The overlay's ASK card says so too. If the link's record cannot be written,
-  the header says further sends have stopped; the counts, and a Stop not confirmed, stay shown. Earlier sends are not
-  undone, so the header never then says nothing is sent anywhere.
+  It always ends with "AI: not connected".
+  - The header and the overlay's ASK card say what is so now, never what is merely configured. Only while a Start's
+    stream is live on the service do they say frames are also being stored in a local test capture service. At
+    every other time (before Start, connecting, a send not answered, not connected, offline, stopping, stopped,
+    ended by the service) they say the service is not storing frames now, and point to the link line for its state
+    and the latest capture's counts. The ASK card adds that frames are kept on this device and are stored there too
+    only if the service becomes available during this capture: frames retained while connecting are sent once the
+    stream is live, so it promises neither. Both always say no AI is connected.
+  - If the link's record cannot be written, the header says further sends have stopped; the counts, and a Stop not
+    confirmed, stay shown. Earlier sends are not undone, so the header never then says nothing is sent anywhere.
 - **Stop**, and any other end of the session, stops the stream. The service stopping or withdrawing the stream ends
   the local capture too, through the app's own end.
 
@@ -132,6 +138,9 @@ statement bounds. The file is read at each host start and passed only in the hos
 - **Sending**:
   - After each successful manifest append, one job at a time: the oldest unsettled job first, then the next lines.
   - A job is written before its first send.
+  - A send that gets no answer (a 503, a lost answer, a missing dependency) leaves the stream live but `stalled`:
+    the status says it is not storing now and that the same record(s) are tried again, until one is answered.
+  - Before the first retained frame there is no manifest yet; that is nothing to send, not an error.
   - While the Start is live, a job whose outcome is unknown is sent again with the same key and body. A later
     refusal never makes it known; it is kept as a note.
   - A refusal by the service leads to a state read.
@@ -171,9 +180,12 @@ statement bounds. The file is read at each host start and passed only in the hos
 - a successful `appendRetention` calls `appended`, with whole lines only;
 - `end` latches the Stop, and `finish` stops however the session ended;
 - `will-quit` waits up to 20 s for the Stop: one Stop at a time, every quit while it is pending waits too, and the
-  app quits once it has settled or reached its bound;
+  app quits once it has settled or reached its bound. The quit is asked again in a later task (`setImmediate`),
+  never from the Stop's own continuation: with nothing to stop that continuation runs while Electron is still
+  delivering `will-quit`, when a quit is ignored, and the prevented quit is then dropped;
 - the control window gets the `lc:link` status and `lc:link-state`;
-- the overlay's ready answer carries `stored`.
+- the overlay's ready answer carries `storage` (`storing`, `not_storing`, or null without the link), and every link
+  notification sends it to the overlay again (`lc:storage`), so an ASK card says what is so when it is made.
 
 ## The released host's limits (reported, not worked around)
 
@@ -227,7 +239,7 @@ never the token.
   - a lost host is reconnected;
   - a Stop before any host was asked makes no stream and no request;
   - a pending grant is abandoned at restart.
-- `capture-link-rules.test.ts` (15), one per rule the reviews found unproven:
+- `capture-link-rules.test.ts` (16), one per rule the reviews found unproven:
   - consent is fresh only at the Start; the lost host's startups are recorded as without consent;
   - a registration without an answer is settled by a read, stopped and never abandoned, and the next Start names it
     as its predecessor;
@@ -245,7 +257,9 @@ never the token.
   - a Start whose host was never started is known to have no grant;
   - one Stop per revision: a Stop that never reached the service is sent again at the next Start under the same key;
   - READY `pending` with the port never reached is known pending, abandoned at the Stop, and the next Start registers;
-  - a manifest not yet written when the link is ready does not leave a lasting fault in the status.
+  - a manifest not yet written when the link is ready does not leave a lasting fault in the status;
+  - sends that get no answer are said as not storing now, the same key throughout, and storing again from the
+    answer on.
 - `capture-link-record.test.ts` (26), without the Backend (a fake host child and fake answers):
   - a record as this app writes it is used: its live stream is reconciled with a read and one Stop, and its unknown
     job stays unknown;
@@ -263,7 +277,8 @@ never the token.
   - after a fault no host is started again and nothing is registered again;
   - a state answer the record could not read back (revision 0) is not written: the registration stays not known,
     and the record stays readable.
-- `app-link.test.ts` (8): the real `main.ts` and overlay under the fakes.
+- `app-link.test.ts` (12): the real `main.ts` and overlay under the fakes. The fake app quits as Electron does: a
+  quit asked for while `will-quit` is being delivered is ignored, and a prevented quit is dropped.
   - Off: nothing changes.
   - On: exact bytes for an explicit Start.
   - The app's Stop latch: a frame retained while the Stop waits is never sent.
@@ -271,13 +286,24 @@ never the token.
   - A service Stop ends the app's own session, with its `ended` line naming the service.
   - A link that cannot write its record leaves the Start and local capture working, and the control window says
     why.
+  - Closing the app with the link on and nothing to stop: the app really quits, and no quit was asked while one
+    was under way (QA-WIN-03).
   - Quitting while the link is still stopping: both quits wait for the one Stop, and the app quits once, after it
-    settled; the quit after that goes through.
+    settled.
+  - A service that is not available (a fake host that ends as `unavailable`): before Start, while connecting, once
+    not connected and after the Stop, the link line, the header and the ASK card never say frames are stored
+    (QA-WIN-04).
+  - The texts follow the link as it changes (a fake host and a stand-in service): storing once live, with the
+    overlay told after it opened; not storing while an upload goes unanswered; never storing once the Stop has
+    begun.
+  - A Stop while frames are being stored: its first status already says not storing, and the overlay is told.
   - After a record-write fault, a new Start's overlay is not told its frames are stored; after the Stop the control
     window shows the last recorded outcome, with further sends stopped (POSIX: it makes a folder read-only).
-- `control-link.test.ts` (4): the control line and header in the off, unavailable and development modes. Only
-  development mode changes the header. After a record-write fault the counts and the unconfirmed Stop stay, and
-  the header says further sends have stopped, never that nothing is sent anywhere.
+- `control-link.test.ts` (5): the control line and header in the off, unavailable and development modes. The
+  header says frames are also being stored only while they are; in every other state it says the service is not
+  storing them now. The idle, stalled and offline lines promise neither a connection nor that frames are never
+  stored. After a record-write fault the counts and the unconfirmed Stop stay, and the header says further sends
+  have stopped, never that nothing is sent anywhere.
 - `uploader.test.ts`: the transport change adds header-exactness and not-sent cases. Its Windows lock helper is
   main's, released at `4038e41`.
 
@@ -388,12 +414,79 @@ bytes):
 Not changed, reported: there is no folder fsync after the rename (Windows has none either); a reused Stop that was
 refused as `stale_revision` and then succeeds keeps that earlier refusal's status next to `stopped`.
 
+## QA at `c4c84a5` (13/15): QA-WIN-03 and QA-WIN-04, and their repair
+
+Independent QA ran the real app on the Windows display with its own WSL host and `lc_p0_test`
+(`docs/verification/qa/p0-13-windows-parent-c4c84a5.md` at `7b1b24e`). Capture, storage, readback, Stop, reopen and
+the unavailable-service fault passed; two checks failed. Both are repaired in `5cd0bec` (lead `handoff_9ceac232`).
+
+**QA-WIN-03: with the link configured the app did not exit after its window closed** (5 of 5, even never started).
+- Cause, as QA inferred and now shown: `will-quit` prevented the quit and asked for it again from the Stop's
+  continuation. With nothing to stop, that continuation is a microtask that runs while Electron is still delivering
+  `will-quit`; a quit asked then is ignored, the prevented quit is dropped, and nothing asks again.
+- Repair: the quit is asked again in a later task (`setImmediate`). One pending Stop still holds every quit, and the
+  bound is unchanged (20 s).
+- Regression: `app-link.test.ts`, with the harness's app quitting as Electron does. It fails with the old line.
+
+**QA-WIN-04: while the service was unavailable the ASK card and the header said frames are "also stored".**
+- Cause: both followed "the link is configured", fixed when the overlay opened.
+- Repair: `LinkStatus.storing` is true only while a Start's stream is live on the service, answered and not
+  stopping. The header follows it; the overlay is told at its start and on every change, and an ASK card uses the
+  value when it is made.
+- Regressions: `app-link.test.ts` and `control-link.test.ts` above. Each fails when the texts follow the
+  configuration again, when the overlay is not told of a change, or when the header claims storage.
+
+**Review of the repair.** An independent three-lens review (the quit path, truthful copy, the tests and the check
+script), each finding verified by a second reviewer, found no defect in the quit path and confirmed six others; two
+more were reported unverified. All eight are fixed:
+- `storing` stayed true while every upload went unanswered on a running host: now the `stalled` state, not storing;
+- the not-storing ASK card said frames "stay on this device" although frames retained while connecting are sent once
+  live: it now promises neither;
+- "what was stored before, is below" pointed at counts of the latest capture only: the texts now say so;
+- a link live before the first retained frame said "the retention manifest could not be read": no longer an error;
+- the idle line said "connected when you press Start": now "not connected yet (a connection is tried …)";
+- the check script did not own its driver's process (PowerShell does not wait for a windowed program), removed its
+  folders before writing its report, and could pass with the link off or without the host having said
+  `unavailable`: each corrected;
+- no test without a Backend covered the overlay being told of a change, or the Stop: added;
+- a failed fake-host test kept its file running for a minute: its fake hosts are now ended first.
+
+**The real app on Windows** (`apps/windows/scripts/link-quit-check.mjs`; `evidence/windows-capture-link/qa-win-03-04/`).
+The app is staged and started as a normal Windows process (Electron 44.5.1, not the self-test mode), its control
+window closed with `window.close()` over DevTools as a user's close, and the time to its own exit measured. No
+database: the link's DSN names a socket that does not exist, so the released host, launched by the app through
+`wsl.exe`, ends as `unavailable`. Each report names the commit, the SHA-256 of the staged tree, and that no Electron
+process remained.
+- `before-5871981.json`, the build QA ran (its staged tree hash is QA's, `b9aaf734…`): without the link the app
+  exited by itself in 171 ms; **with the link idle it had not exited after 30 s** and was ended by its own PID. This
+  reproduces QA-WIN-03.
+- `after-5cd0bec.json`, 7 of 7:
+  - without the link: exited by itself (code 0) in 166 ms;
+  - link idle, never started: exited by itself (code 0) in 154 ms;
+  - the same profile started again (the single-instance lock was free) and exited in 164 ms;
+  - Start with the service unavailable: the line read "not connected (the frames stay on this device). 0 record(s)
+    stored. the host ended without READY (unavailable). AI: not connected."; the header and the ASK card (a real
+    region of the captured display, by window-scoped input) said the service is not storing frames now, and that no
+    AI is connected; neither said frames are stored;
+  - after Stop and close: exited by itself (code 0) in 247 ms.
+- Limits: this is the author's own run, with DevTools input and no pen. It stored nothing (no reachable service), so
+  it shows no "storing" text on the real app; those texts are shown by the tests above. The frames it retained were
+  in a temporary folder, removed with the run. QA's narrow retest of the changed paths is still to come.
+
+**Results at `5cd0bec`:** the whole `apps/windows` suite on Linux against the released host at main `05465cc` (kept
+in-memory store): 232 tests, 227 pass, 5 skipped (the owned flows); without a Backend 189 pass, 43 skipped. `tsc` is
+clean. The owned `lc_p0_test` runs were not rerun.
+
+Noted from QA, not changed: the host writes `__pycache__` into the Backend folder it runs from, because
+`PYTHONDONTWRITEBYTECODE` does not cross `wsl.exe`; the launch stays exactly `python -m services.api.desktop_local`.
+
 ## Gaps and next owners
 
-- **No GUI run yet.** The real app on the Windows display, with real display capture and pen ink sent through the
-  link, has not been run. It needs the display to be explicitly claimed and released. The owned runs use the real
-  main-process and overlay code under the unit-test fakes, not native capture; they and every test above are
-  synthetic or database evidence, not interactive GUI evidence.
+- **The real app on the display.** QA ran it at `c4c84a5` with synthetic pen input (13 of 15; above). The repair's
+  own real run covers only exit, reopen and the unavailable-service texts. A real run of the repaired build that
+  stores frames, and any physical pen, are still to come. The owned runs and every test above use the real
+  main-process and overlay code under the unit-test fakes: synthetic or database evidence, not interactive GUI
+  evidence.
 - **Development only.** WSL-assisted development is not native packaging or real product-host acceptance. Killing
   `wsl.exe` is not relied on; a host that does not end is reported as such.
 - **The released host's limits** above.
@@ -404,5 +497,5 @@ refused as `stale_revision` and then succeeds keeps that earlier refusal's statu
   - Native pen and macOS gates are separate.
   - The Windows portability item (the uploader's unreadable-original precondition on the hosted stock Node runner)
     is closed: main `4038e41`, hosted run `36773932867`.
-- **Next owner:** the lead reviews the correction and integrates the owned commits; independent QA then receives
-  the runnable candidate for one Windows interaction, storage and Stop pass.
+- **Next owner:** the lead reviews the repair and integrates the owned commits; independent QA then retests the
+  changed paths only (exit with the link, the failure texts).

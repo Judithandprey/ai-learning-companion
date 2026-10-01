@@ -1,0 +1,117 @@
+{
+ "what": "the real app on the Windows desktop (Electron, a normal start), driven over DevTools; no database, no AI",
+ "source": {
+  "commit": "5cd0bec87db7a1f0989ab8e7f0ed702261dbccf2",
+  "uncommitted_app_changes": false
+ },
+ "staged_files": 57,
+ "staged_tree_sha256": "dc2b09ebe995861c685e43fb25db9e5ab18c5b127718204a7277e214c0e55006",
+ "started": "2026-10-01T00:54:45.391Z",
+ "ended": "2026-10-01T00:54:51.113Z",
+ "electron_left_running": false,
+ "driver_exit": 0,
+ "runtime": {
+  "electron": "44.5.1",
+  "node": "24.21.0",
+  "platform": "win32-x64"
+ },
+ "cases": [
+  "control",
+  "idle",
+  "failure"
+ ],
+ "checks": [
+  {
+   "id": "control.exits_without_link",
+   "pass": true,
+   "actual": "without the link the app exited by itself (code 0) 166 ms after its window closed"
+  },
+  {
+   "id": "idle.linked_app_exits",
+   "pass": true,
+   "actual": "with the link configured and never started the app exited by itself (code 0) 154 ms after its window closed"
+  },
+  {
+   "id": "idle.same_profile_relaunch",
+   "pass": true,
+   "actual": "the same profile started again and exited by itself (code 0) after 164 ms"
+  },
+  {
+   "id": "failure.link_line_truthful",
+   "pass": true,
+   "actual": "Capture storage (development): not connected (the frames stay on this device). 0 record(s) stored. the host ended without READY (unavailable). AI: not connected."
+  },
+  {
+   "id": "failure.header_does_not_claim_storage",
+   "pass": true,
+   "actual": "Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI."
+  },
+  {
+   "id": "failure.ask_card_does_not_claim_storage",
+   "pass": true,
+   "actual": "No AI is connected: this selection was not sent to any AI. (Development mode: the local test capture service is not storing frames now. Frames are kept on this device; they are stored there too only if the service becomes available during this capture. The control window shows its state and the latest capture's counts.)"
+  },
+  {
+   "id": "failure.linked_app_exits_after_stop",
+   "pass": true,
+   "actual": "after Start and Stop with the service unavailable the app exited by itself (code 0) 247 ms after its window closed"
+  }
+ ],
+ "observed": {
+  "control": {
+   "before_close": {
+    "header": "No AI is connected: captured frames and ink stay on this device, and nothing is sent anywhere.",
+    "link": null
+   },
+   "close": {
+    "exited_by_itself": true,
+    "exit_code": 0,
+    "ms": 166
+   }
+  },
+  "idle": {
+   "before_close": {
+    "header": "Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI.",
+    "link": "Capture storage (development): not connected yet (a connection is tried when you press Start). 0 record(s) stored. AI: not connected."
+   },
+   "close": {
+    "exited_by_itself": true,
+    "exit_code": 0,
+    "ms": 154
+   },
+   "relaunch": {
+    "started": true,
+    "before_close": {
+     "header": "Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI.",
+     "link": "Capture storage (development): not connected yet (a connection is tried when you press Start). 0 record(s) stored. AI: not connected."
+    },
+    "close": {
+     "exited_by_itself": true,
+     "exit_code": 0,
+     "ms": 164
+    }
+   }
+  },
+  "failure": {
+   "before_start": {
+    "header": "Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI.",
+    "link": "Capture storage (development): not connected yet (a connection is tried when you press Start). 0 record(s) stored. AI: not connected."
+   },
+   "service_unavailable": {
+    "header": "Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI.",
+    "link": "Capture storage (development): not connected (the frames stay on this device). 0 record(s) stored. the host ended without READY (unavailable). AI: not connected."
+   },
+   "ask_card": "No AI is connected: this selection was not sent to any AI. (Development mode: the local test capture service is not storing frames now. Frames are kept on this device; they are stored there too only if the service becomes available during this capture. The control window shows its state and the latest capture's counts.)",
+   "after_stop": {
+    "header": "Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI.",
+    "link": "Capture storage (development): stopped. 0 record(s) stored; 1 earlier stream(s) whose end is not known. the stream was never confirmed registered; whether it or a grant exists is not known. AI: not connected."
+   },
+   "close": {
+    "exited_by_itself": true,
+    "exit_code": 0,
+    "ms": 247
+   }
+  }
+ },
+ "error": null
+}
