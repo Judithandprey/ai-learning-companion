@@ -1,0 +1,55 @@
+{
+  "reviewed_commit": "dbc7c54eb3da0234f58556654cfb559361078bbe",
+  "review_start_main": "099a16dd7469cbd65cbac8c1ccfaab8295acf4bc",
+  "verdict": "no_blocker_for_support_evidence_integration",
+  "changed_paths": [
+    "docs/verification/support/windows-winrt-speech-metadata-receipt.json",
+    "docs/verification/support/windows-winrt-speech-route.md",
+    "tests/probes/support/windows_winrt_speech_metadata.ps1",
+    "tests/probes/support/windows_winrt_speech_metadata.py"
+  ],
+  "probe_sha256": "79dc108eb64a192c6fbbfea52f8a05aedaa6f037b1925280db2fe662c0ae267b",
+  "receipt_sha256": "5fa9990ac80ed8cf52971fabfe0c8da215a584ae0adfdc4683e0e5527f04810e",
+  "checks": {
+    "exact_four_support_paths": true,
+    "python_compile": true,
+    "receipt_report_script_hash_match": true,
+    "receipt_observations_match_report": true,
+    "relative_links_resolve": [
+      "docs/verification/support/windows-winrt-speech-metadata-receipt.json",
+      "docs/verification/support/windows-audio-offline-route.md"
+    ],
+    "targeted_secret_patterns": {
+      "matches": 0,
+      "manual_review": "No credentials, auth material, user content, private balance, or personal host identity found in the four delivered files."
+    },
+    "offline_mock_groups": [
+      "success: exact encoded script, flags, timeout and observation round trip",
+      "timeout: failure with native cleanup explicitly unobserved, no retry",
+      "nonzero/deadline: only stderr byte count and hash retained",
+      "invalid receipts: malformed JSON, wrong root/status, invalid UTF-8 and recognizer/start flags rejected",
+      "launcher error: sanitized failure and no observed native exit",
+      "existing output: refused before invocation, bytes preserved"
+    ],
+    "mock_process_calls": 11,
+    "native_or_provider_invocations": 0,
+    "production_edits": 0
+  },
+  "static_scope_review": "PowerShell resolves/refects two WinRT types, reads language static properties and OneCore recognizer registrations, reads own package identity. No recognizer construction, recognition/constraint call, mic/display/speaker acquisition, install, setting/account change, or provider request.",
+  "evidence_limits": [
+    "Native run and its observation are the author-retained receipt; not independently rerun.",
+    "No PS runtime/parser run in this Linux/offline review; Python syntax compiled and PS source reviewed.",
+    "0.887-second duration is author-reported, not encoded in retained JSON.",
+    "No English/Chinese recognition, explicit stream acceptance, audio quality, concurrency, Stop/late-result or joint screen/audio gate is verified by metadata.",
+    "No local English grammar language was reported on this host; no universal Windows recognizer conclusion follows.",
+    "Parent separately checks the official Microsoft documentation; this child did not repeat browsing."
+  ],
+  "integrated_commit": "7ebebb6",
+  "main_verification": {
+    "candidate": "7ebebb6",
+    "four_paths_equal_delivery": true,
+    "python_compile": true,
+    "native_reexecution": false,
+    "production_files_changed": false
+  }
+}

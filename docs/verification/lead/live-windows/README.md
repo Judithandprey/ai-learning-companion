@@ -43,8 +43,8 @@ it or that the complete companion is usable. Accepted mail is not owner adoption
 | Learning | `handoff_3c92d9028eb9810a64daec76fc42ae35` | Actual start `handoff_bcf1a8b26d7d55238ceba0332e0e2a6c`, normal merge `23b49b9`; implementation/checkpoint and exact-shape feedback `handoff_43cccaffe25b169f6a1f97694cf51098`. Actual90da1a6/handoff_880284d4851e79a5f2ed947bf0cc5e95 delivered after normal merge2f1be514 of released9b33a76; independent source review plus175 new/legacy ASK checks and seven independent controls pass. Integrated as8683eb7;175 resulting-main checks pass. Provider/runtime acceptance remains open. |
 | Windows | `handoff_0dde292d7bd2b8ae876640770b8a8b22` | Actual safe checkpoint/start `handoff_f1d063aabe44754eb061c92b1b0603c0`: lifecycle `4ef42cc`, then toolbar/caption implementation. Root found one historical-count edge, returned once; actual3023c41/handoff_adbbac83abfb005f9ce45481b23fa066 closes it. Both leaves integrate as a35d250/75c2ac7 with six initial and two changed-case main passes; TypeScript/static build passes. Layout28f0504 is reviewed/integrated as073c96d; native TTS/full-frame/auto-focus/live UI work continues in the same assignment. |
 | Native/Mac | `handoff_ed8a301873ab085a027e8ada8f54dc76` | Accepted receipt only for this amendment; prior queued/partial-write Stop correction remains its one task, then common seam. No mobile dispatch. |
-| Support | `handoff_cdfa998fe3e79e1b5fa3ccd30e895186` | Actual delivered `0640446` / `handoff_690d0a7146b8703c66242b047cb64113`: Windows generated in-memory speech probe and installed schema evidence. Independently verified source/receipt/schema manifests and four offline launcher tests; integrated as01bc0ab, four main tests pass. Actual preparation3167dbf/handoff_84e4a609a4fa94991277a031be1521c7 is reviewed/integrated as e04a196 (27 independent/21 main checks); it includes hardened offline candidate and precise managed-route/delegation constraints. No product adapter or actual audio request is claimed. No actual account/device lease. |
-| QA | `handoff_a6d4a4baf7e368565b8de52e935a3d91` | Accepted scoped amendment, not new execution/acceptance. Changed-flow candidate and coordinated generated test display/audio remain dependencies. Preserve prior evidence and unused narrower real-image allocation. |
+| Support | `handoff_cdfa998fe3e79e1b5fa3ccd30e895186` | Actual delivered `0640446` / `handoff_690d0a7146b8703c66242b047cb64113`: Windows generated in-memory speech probe and installed schema evidence. Independently verified source/receipt/schema manifests and four offline launcher tests; integrated as01bc0ab, four main tests pass. Actual preparation3167dbf/handoff_84e4a609a4fa94991277a031be1521c7 is reviewed/integrated as e04a196 (27 independent/21 main checks); it includes hardened offline candidate and precise managed-route/delegation constraints. No product adapter or actual audio request is claimed. The later WinRT delivery dbc7c54 →7ebebb6 completes that bounded check: Chinese-only metadata, no supported explicit stream input, no recognition run; [review](realtime-input-review/README.md#installed-winrt-route-completed-bounded-handoff). Support is on demand; Lead owns the missing input route. No actual account/device lease. |
+| QA | `handoff_a6d4a4baf7e368565b8de52e935a3d91` | Actual eda32c2 delivery is integrated through099a16d; 86 frozen-c44e620 offline checks reproduced, not new GUI acceptance. [Review](qa-changed-paths/README.md). Changed-flow candidate and coordinated display/account lease remain dependencies. Old one-request allocation is retired unused; five ordinary image/text actions are reserved, not released, and include no raw-audio provider allowance. |
 
 ## Historical quota diagnosis and retained v1 limitation
 
@@ -95,11 +95,14 @@ The next actual user-facing candidate combines corrected quota messaging, fresh
 full-screen context, focus without a second Ask, follow-up, movable controls and
 captions. Windows source/build, actual Windows interaction, real subscription,
 actual audio and actual Mac remain independently reported. Support has measured
-only in-memory speech; its zh-CN recognizer performed poorly and no English
-recognizer was available. Installed managed schema has audio/localAudio; account,
-model audio capability, codec and real source coverage remain unverified despite readable account/voice metadata. Do not claim audio unavailable
-from SIWC or working from a schema/device list. Support's report informs the next
-bounded existing-owner adapter, not a replacement architecture.
+in-memory System.Speech and metadata-only WinRT: the first Chinese recognizer
+performed poorly, and neither measured runtime supplied a verified English input
+route. The [current input-route review](realtime-input-review/README.md#installed-winrt-route-completed-bounded-handoff)
+records distinct model-modality, managed-realtime delegation, installed-language
+and stream-input dependencies. No production input adapter or actual audio
+acceptance follows. TTS is separate from microphone/system-source understanding;
+Web continues the existing TTS/live consumer, while Lead owns resolving the input
+route before real audio allocation. No repeated account/schema survey is assigned.
 
 Lead releases the tested exact seam to active owners, reviews returned production
 commits and prepares a distinct versioned package. QA then verifies only the changed

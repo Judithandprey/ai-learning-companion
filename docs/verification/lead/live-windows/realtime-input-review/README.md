@@ -211,21 +211,54 @@ consumer, two TTS corrections and one eventual integrated QA pass continue.
 Lead owns the next input decision; do not run repeated ordinary-audio attempts
 or reopen the same schema-only candidate without new capability evidence.
 
-## Next bounded existing-owner route check
+## Installed WinRT route: completed bounded handoff
 
-Reviewed evidence/current task baseline `3f4580b` was normally pushed to origin/main.
-Support's prior System.Speech receipt explicitly leaves other Windows speech APIs
-unmeasured. Lead sent one next current-task check of installed
-`Windows.Media.SpeechRecognition`/WinRT capability, native runtime and actual local
-English recognition availability; no repeated Codex/realtime/account survey.
+Support answered the single continuation `handoff_c0c29265c5847247938fd5430c5ae5f6`
+with actual delivery `handoff_e5e54bb6e4944f57acb548d3d3a3da36`, exact
+`dbc7c54eb3da0234f58556654cfb559361078bbe`, now integrated as `7ebebb6`.
+The four files are the [probe/report](../../../support/windows-winrt-speech-route.md),
+its retained native metadata receipt and fixed PowerShell/Python wrappers. No
+production application or connector changes are included.
 
-Native receipt `handoff_c0c29265c5847247938fd5430c5ae5f6` was accepted, initially
-unread with execution_started=false. The bounded write paths remain Support's
-probe/evidence directories. No installation, online activation, private capture,
-audio device, model/account call or new framework is permitted. A single generated
-in-memory fixture is conditional on a supported local non-device input interface;
-language catalog metadata alone cannot pass. If such a path is unavailable, return
-the precise installed/runtime/consent dependency and finish. Lead then decides the
-input implementation, retaining Web's production ownership and current TTS/live
-work. This continuation is one actual pending owner action, not proof it started
-or a claim that usable voice input has been delivered.
+The author-run Windows probe exited 0. Both WinRT language lists contain only
+`zh-Hans-CN`; the separate OneCore recognizer registration is Chinese. Its own
+PowerShell process had no package identity. That is not a measurement of the
+product package, a recognition failure, or proof that all Windows speech routes
+lack English. Neither inspected public class exposes explicit PCM/stream/file
+input, so no recognition instance or generated-audio attempt was started.
+The reported 0.887-second duration is author-reported, absent from the retained
+receipt, and not independently measured here.
+
+Independent review approves the bounded evidence: all four paths, script/receipt
+hashes and facts, Python compile, report links and public-data scope match.
+Six in-process wrapper groups (11 mocked calls) cover successful metadata,
+timeout uncertainty, nonzero/deadline sanitization, malformed receipts, launcher
+failure and existing-output preservation. No native/device/provider call was
+made during review. [Exact checks](winrt-delivery-checks.json). Lead separately
+checked current official Microsoft guidance: [package identity and microphone / online
+dictation requirements](https://learn.microsoft.com/en-us/windows/apps/develop/input/speech-recognition)
+and [local grammar versus online topic languages](https://learn.microsoft.com/en-us/windows/apps/develop/input/specify-the-speech-recognizer-language).
+These agree with the report; language metadata is not recognition acceptance.
+
+**Disposition and next owner:** do not build a WinRT production input adapter
+from this result. A local grammar language/eligible package/microphone path would
+still not establish open English dictation, arbitrary system-audio input or the
+required classroom experience. Installing a language pack alone must not be
+presented as the complete missing fix. Support's scoped investigation is complete;
+no repeated metadata, same-route account attempt or broad survey is assigned.
+Lead owns resolving the missing usable input engine/official route before releasing
+an actual audio test. Current route evidence is specific: ordinary managed audio
+lacks the declared model modality; managed WebRTC's no-extra-delegation boundary
+is unresolved; the inspected local APIs do not supply a verified English freeform
+stream route. None is a blanket claim that audio is impossible or a new product
+choice the user must restate. No account/device/audio allocation is released.
+
+Web retains its existing TTS/whole-screen/automatic-focus consumer and must keep
+input availability distinct from Talk/playback, with honest unavailable state.
+Backend has now delivered receipt/error/ledger correction `69c0a0c` as
+`handoff_bbf03873362dc28fc2bc713c1c94bc53`; Lead review is underway. Native retains
+its queued/partial-write Stop correction. Existing Windows/Native dirty work was
+observed and preserved, not treated as tested delivery. Lead reviews exact commits,
+then releases one versioned candidate to the existing QA changed-flow assignment;
+voice/input cases remain unaccepted until a real route exists. No user package,
+profile, private screen, microphone, settings or requirements were changed.
