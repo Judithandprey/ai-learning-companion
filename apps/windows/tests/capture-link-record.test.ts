@@ -368,6 +368,34 @@ test('a job known not sent, sent again to a service that does not answer: writte
   assert.deepEqual(end.mode === 'development' && [end.unknown, end.not_sent, end.stored], [2, 0, 0], 'cancelled while out: it may have arrived, so it stays not known');
 });
 
+test('a job known not sent whose resend cannot be written first is not sent, and is said as it is: still not sent, further sends stopped', async () => {
+  // Three refused connections make the job not_sent. The next write, the resend's "being sent", then fails.
+  let refused = 0;
+  const w = started({ hold: (_method, p) => (p.startsWith('/v2/process/originals/') ? (refused++, Promise.reject(Object.assign(new Error('refused'), { code: 'ECONNREFUSED' }))) : null) });
+  const recorded = (): string | undefined => (fs.existsSync(w.file) ? ((JSON.parse(fs.readFileSync(w.file, 'utf8')) as Seed).streams[0]?.jobs[0] as { status: string } | undefined)?.status : undefined);
+  let failed = 0;
+  await withRecordWrites((original, fd, data, offset, length) => {
+    if (refused >= 3 && data.includes('"status":"sending"')) {
+      failed += 1;
+      throw Object.assign(new Error('ENOSPC: no space left on device (injected)'), { code: 'ENOSPC' });
+    }
+    return original(fd, data, offset, length);
+  }, async () => {
+    w.link.begin(SESSION, w.capture);
+    w.append(3);
+    await until('the fault', () => (w.link.status() as { sends_stopped?: boolean }).sends_stopped === true);
+    await new Promise((r) => setTimeout(r, 100));
+  });
+  assert.deepEqual([refused, failed], [3, 1], 'no request after the failed write');
+  assert.equal(recorded(), 'not_sent', 'the record before stays: the job is not sent');
+  // What was said last is what is so: not sent (not "not known"), further sends stopped, nothing out.
+  const now = w.link.status();
+  assert.deepEqual(w.said.at(-1), now, 'the last notification is the status');
+  assert.deepEqual(now.mode === 'development' && [now.state, now.unknown, now.not_sent, now.stored, now.awaiting, now.storing, now.sends_stopped], ['not connected', 0, 2, 0, false, false, true]);
+  w.link.stopSending(SESSION);
+  await until('stopped', () => stateOf(w.link) === 'stopped');
+});
+
 test('a send the service refuses is said at once, before the state read that follows (another wait)', async () => {
   // The first original is refused (a typed 403); the state read that follows is held.
   const atRead: Array<LinkStatus | undefined> = [];

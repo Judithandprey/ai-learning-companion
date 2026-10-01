@@ -731,8 +731,10 @@ export class CaptureLink {
     if (job.status === 'not_sent') {
       job.status = 'sending';
       if (!this.save()) {
+        // Not written: not sent. The fault was just said with this job as being sent; it is said again as it is.
         job.status = 'not_sent';
-        return false; // not written: not sent
+        this.o.notify(this.status());
+        return false;
       }
     }
     // Said before the wait, which can be long (a service that holds its connection and does not answer): from here
