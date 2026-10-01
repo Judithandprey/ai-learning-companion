@@ -451,7 +451,6 @@ def test_exact_image_and_authoritative_completed_answer(tmp_path, mode, answer):
 
 @pytest.mark.parametrize("mode,code", [
     ("text_only", "unsupported_model"), ("missing_modality", "unsupported_model"),
-    ("quota_denied", "usage_not_allowed"),
     ("model_mismatch", "model_mismatch"), ("instructions", "isolation_unverified"),
     ("missing_instructions", "isolation_unverified"), ("server_request", "tool_activity"),
     ("network_enabled", "isolation_unverified"), ("network_missing", "isolation_unverified"),
@@ -702,6 +701,8 @@ def test_authoritative_error_classification_is_shared_without_retry_or_message_p
     async def run():
         c = client(tmp_path, "structured_error_" + channel, isolation_verified=True)
         c.env["ERROR_INFO"] = json.dumps(info)
+        c.env["QUOTA_RESPONSE"] = json.dumps(quota_response(
+            {"hasCredits": True, "unlimited": False, "balance": "12.5"}, allowed=False))
         stop = asyncio.Event()
         try:
             await c.start()
@@ -729,7 +730,7 @@ def quota_response(credits, *, allowed=None, reached=None, spend=None):
     {"hasCredits": True, "unlimited": True, "balance": None},
     None, "missing",
 ])
-@pytest.mark.parametrize("allowed", [True, None, "missing"])
+@pytest.mark.parametrize("allowed", [False, True, None, "missing"])
 def test_full_windows_and_credit_facts_do_not_invent_an_admission_denial(tmp_path, credits, allowed):
     async def run():
         c = client(tmp_path, isolation_verified=True)
@@ -762,7 +763,7 @@ def test_full_windows_and_credit_facts_do_not_invent_an_admission_denial(tmp_pat
     {"hasCredits": True, "unlimited": True}, None,
 ])
 @pytest.mark.parametrize("cancel", [False, True])
-def test_explicit_included_usage_denial_or_precancel_never_submits_even_with_credits(tmp_path, credits, cancel):
+def test_included_usage_flag_preserves_explicit_ask_and_precancel(tmp_path, credits, cancel):
     async def run():
         receipts = []
         c = client(tmp_path, isolation_verified=True, on_receipt=receipts.append)
@@ -772,16 +773,18 @@ def test_explicit_included_usage_denial_or_precancel_never_submits_even_with_cre
             stop.set()
         try:
             await c.start()
-            c.begin_request("denied-or-cancelled")
-            with pytest.raises(RPCError) as error:
-                await invoke(c, cancelled=stop)
-            assert error.value.code == ("cancelled" if cancel else "usage_not_allowed")
-            c.finish_request("cancelled" if cancel else "failed")
+            c.begin_request("explicit-or-cancelled")
+            if cancel:
+                with pytest.raises(RPCError) as error:
+                    await invoke(c, cancelled=stop)
+                assert error.value.code == "cancelled"
+            else:
+                assert (await invoke(c, cancelled=stop))["text"] == "Completed answer."
+            c.finish_request("cancelled" if cancel else "completed")
             assert stop.is_set() is cancel
-            assert receipts[-1]["submission"] == "not_submitted"
-            assert receipts[-1]["terminal_status"] is None
-            assert receipts[-1]["thread_start_count"] == receipts[-1]["turn_start_count"] == 0
-            assert not any(row.get("method") in ("thread/start", "turn/start") for row in requests(c))
+            assert receipts[-1]["submission"] == ("not_submitted" if cancel else "acknowledged")
+            assert receipts[-1]["terminal_status"] == (None if cancel else "completed")
+            assert receipts[-1]["thread_start_count"] == receipts[-1]["turn_start_count"] == int(not cancel)
         finally:
             await c.close()
     asyncio.run(run())
@@ -791,16 +794,20 @@ def test_explicit_included_usage_denial_or_precancel_never_submits_even_with_cre
     "workspace_owner_credits_depleted", "workspace_member_credits_depleted",
     "workspace_owner_usage_limit_reached", "workspace_member_usage_limit_reached",
 ])
-def test_exact_single_codex_workspace_classification_is_retained_and_distinct(tmp_path, reached):
+@pytest.mark.parametrize("allowed", [False, True, None, "missing"])
+def test_exact_single_codex_workspace_classification_is_retained_and_distinct(tmp_path, reached, allowed):
     async def run():
         c = client(tmp_path, isolation_verified=True)
         credits = {"hasCredits": True, "unlimited": False, "balance": "7.00"}
-        c.env["QUOTA_RESPONSE"] = json.dumps(quota_response(credits, allowed=False, reached=reached, spend=True))
+        payload = quota_response(credits, allowed=allowed, reached=reached, spend=False)
+        if allowed == "missing":
+            del payload["ordinaryUsageAllowed"]
+        c.env["QUOTA_RESPONSE"] = json.dumps(payload)
         try:
             await c.start()
             snapshot, = (await c._quota())["windows"]
             assert snapshot["credits"] == credits
-            assert snapshot["rate_limit_reached_type"] == reached and snapshot["spend_control_reached"] is True
+            assert snapshot["rate_limit_reached_type"] == reached and snapshot["spend_control_reached"] is False
             with pytest.raises(RPCError) as error:
                 await invoke(c)
             assert error.value.code == "workspace_limit"
@@ -811,42 +818,102 @@ def test_exact_single_codex_workspace_classification_is_retained_and_distinct(tm
 
 
 @pytest.mark.parametrize("case", ["other_bucket", "mixed_buckets", "spend_only", "rate_only", "permission_unknown",
-                                  "null_id_other_key", "different_normal_model"])
-def test_workspace_cause_is_not_inferred_from_unrelated_buckets_or_spend_flag(tmp_path, case):
+                                  "null_id_other_key", "different_normal_model", "mixed_codex_restriction",
+                                  "named_model_bucket", "legacy_null_bucket"])
+def test_workspace_admission_uses_only_applicable_bucket(tmp_path, case):
     async def run():
         c = client(tmp_path, isolation_verified=True)
         payload = quota_response(None, allowed=False, reached="workspace_member_credits_depleted", spend=True)
         if case == "other_bucket":
             payload["rateLimits"]["limitId"] = "unrelated-model"
         elif case == "mixed_buckets":
-            payload["rateLimitsByLimitId"] = {"codex": {**payload["rateLimits"], "rateLimitReachedType": None},
+            payload["rateLimitsByLimitId"] = {"codex": {**payload["rateLimits"], "rateLimitReachedType": None,
+                                                       "spendControlReached": False},
                                                "other": {**payload["rateLimits"], "limitId": "other"}}
+        elif case == "mixed_codex_restriction":
+            payload["rateLimitsByLimitId"] = {"codex": payload["rateLimits"], "other": {
+                **payload["rateLimits"], "limitId": "other", "rateLimitReachedType": None,
+                "spendControlReached": False, "credits": {"hasCredits": True, "unlimited": True, "balance": "12.5"}}}
         elif case == "spend_only":
             payload["rateLimits"]["rateLimitReachedType"] = None
         elif case == "rate_only":
             payload["rateLimits"]["rateLimitReachedType"] = "rate_limit_reached"
+            payload["rateLimits"]["spendControlReached"] = False
         elif case == "null_id_other_key":
             payload["rateLimitsByLimitId"] = {"other": {**payload["rateLimits"], "limitId": None}}
         elif case == "different_normal_model":
             payload["rateLimits"]["normalModelSlug"] = "another-model"
+        elif case == "named_model_bucket":
+            # An identifier equal to a model name does not prove bucket scope.
+            payload["rateLimits"]["limitId"] = MODEL
+        elif case == "legacy_null_bucket":
+            payload["rateLimits"]["limitId"] = None
         else:
             del payload["ordinaryUsageAllowed"]
         c.env["QUOTA_RESPONSE"] = json.dumps(payload)
         try:
             await c.start()
             snapshots = (await c._quota())["windows"]
-            assert snapshots[-1]["spend_control_reached"] is True
             if case == "null_id_other_key":
                 assert snapshots[0]["limit_id"] == "other"
             if case == "different_normal_model":
                 assert snapshots[0]["normal_model_slug"] == "another-model"
-            if case == "permission_unknown":
-                assert (await invoke(c))["text"] == "Completed answer."
-            else:
+            if case in ("spend_only", "permission_unknown", "mixed_codex_restriction", "legacy_null_bucket"):
                 with pytest.raises(RPCError) as error:
                     await invoke(c)
-                assert error.value.code == "usage_not_allowed"
+                assert error.value.code == "workspace_limit"
                 assert not any(row.get("method") == "turn/start" for row in requests(c))
+            else:
+                assert (await invoke(c))["text"] == "Completed answer."
+        finally:
+            await c.close()
+    asyncio.run(run())
+
+
+@pytest.mark.parametrize("allowed", [False, True, None])
+@pytest.mark.parametrize("other_bucket", [False, True])
+def test_applicable_spend_control_wins_over_included_permission_and_other_credits(tmp_path, allowed, other_bucket):
+    async def run():
+        c = client(tmp_path, isolation_verified=True)
+        payload = quota_response({"hasCredits": True, "unlimited": False, "balance": "12.5"},
+                                 allowed=allowed, spend=True)
+        if other_bucket:
+            payload["rateLimitsByLimitId"] = {"codex": payload["rateLimits"], "other": {
+                "limitId": "other", "credits": {"hasCredits": True, "unlimited": True, "balance": None},
+                "spendControlReached": False}}
+        c.env["QUOTA_RESPONSE"] = json.dumps(payload)
+        try:
+            await c.start()
+            with pytest.raises(RPCError) as error:
+                await invoke(c)
+            assert error.value.code == "workspace_limit"
+            assert not any(row.get("method") in ("thread/start", "turn/start") for row in requests(c))
+        finally:
+            await c.close()
+    asyncio.run(run())
+
+
+@pytest.mark.parametrize("case", ["empty_spend", "empty_workspace", "empty_credit", "nonempty_foreign"])
+def test_empty_multibucket_view_falls_back_without_borrowing_into_foreign_buckets(tmp_path, case):
+    async def run():
+        c = client(tmp_path, isolation_verified=True)
+        credits = {"hasCredits": True, "unlimited": False, "balance": "12.5"}
+        payload = quota_response(credits, allowed=False, spend=case in ("empty_spend", "nonempty_foreign"),
+                                 reached="workspace_owner_credits_depleted" if case == "empty_workspace" else None)
+        payload["rateLimitsByLimitId"] = {} if case != "nonempty_foreign" else {"other": {"limitId": "other"}}
+        c.env["QUOTA_RESPONSE"] = json.dumps(payload)
+        try:
+            await c.start()
+            snapshot, = (await c._quota())["windows"]
+            assert snapshot["limit_id"] == ("other" if case == "nonempty_foreign" else "codex")
+            assert snapshot["credits"] == (None if case == "nonempty_foreign" else credits)
+            if case in ("empty_spend", "empty_workspace"):
+                with pytest.raises(RPCError) as error:
+                    await invoke(c)
+                assert error.value.code == "workspace_limit"
+                assert not any(row.get("method") == "turn/start" for row in requests(c))
+            else:
+                assert (await invoke(c))["text"] == "Completed answer."
         finally:
             await c.close()
     asyncio.run(run())

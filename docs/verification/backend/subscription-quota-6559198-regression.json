@@ -1,0 +1,106 @@
+{
+  "created_at": "2026-10-01T13:59:15.807696+00:00",
+  "head": "65591981e184f2d9b9808fd477a467959d4b2db6",
+  "scope": "offline fake child only; no product server, account, model, or microphone",
+  "source_sha256": {
+    "services/worker/connectors/tests/test_chatgpt_rpc.py": "5c0b69ea09a2956e60dd48649d215a0d9e608a7eea8632c17555322a418a9df3",
+    "services/worker/connectors/chatgpt_rpc.py": "bf55abc3222b155139271a4f0618e4fbdbb355fb33a7a22d8f4670d76fba4352",
+    "services/worker/connectors/chatgpt_local.py": "6e819f53a71137e81852b5fb18b41b02dcc5550e0d8ffd3d8cc5bc828b51369b"
+  },
+  "probe_sha256": "41f46f704c0c53ee50012241b6a469fab96c103248dd6315878c9d8539a6f1af",
+  "checks": [
+    {
+      "name": "included allowance does not veto available credits",
+      "status": "FAIL",
+      "evidence": {
+        "outcome": "refused",
+        "connector_code": "usage_not_allowed",
+        "public_code": "unavailable",
+        "turn_starts": 0
+      }
+    },
+    {
+      "name": "terminal rate and usage limits stay distinct through public mapping",
+      "status": "PASS",
+      "evidence": {
+        "rate": "failed",
+        "usage": "quota"
+      }
+    },
+    {
+      "name": "notification rate and usage limits stay distinct through public mapping",
+      "status": "PASS",
+      "evidence": {
+        "rate": "failed",
+        "usage": "quota"
+      }
+    },
+    {
+      "name": "unknown credits remain distinguishable from both known states",
+      "status": "FAIL",
+      "evidence": {
+        "null_equals_omitted": true,
+        "null_equals_empty": true,
+        "null_equals_available": true
+      }
+    },
+    {
+      "name": "credit availability stays attached to its bucket",
+      "status": "FAIL",
+      "evidence": {
+        "swapped_bucket_credits_have_same_public_view": true
+      }
+    },
+    {
+      "name": "available credits in the applicable bucket can submit",
+      "status": "FAIL",
+      "evidence": {
+        "outcome": "refused",
+        "connector_code": "usage_not_allowed",
+        "turn_starts": 0
+      }
+    },
+    {
+      "name": "spend_control_with_credits does not bypass explicit spend control",
+      "status": "PASS",
+      "evidence": {
+        "outcome": "refused",
+        "connector_code": "workspace_limit",
+        "turn_starts": 0
+      }
+    },
+    {
+      "name": "spend_control_other_bucket_credits does not bypass explicit spend control",
+      "status": "PASS",
+      "evidence": {
+        "outcome": "refused",
+        "connector_code": "usage_not_allowed",
+        "turn_starts": 0
+      }
+    },
+    {
+      "name": "one authorized request never retries or performs credit/account mutations",
+      "status": "PASS",
+      "evidence": {
+        "terminal_rate_limit": {
+          "turn_starts": 1,
+          "thread_starts": 1
+        },
+        "terminal_usage_limit": {
+          "turn_starts": 1,
+          "thread_starts": 1
+        },
+        "notification_rate_limit": {
+          "turn_starts": 1,
+          "thread_starts": 1
+        },
+        "notification_usage_limit": {
+          "turn_starts": 1,
+          "thread_starts": 1
+        }
+      }
+    }
+  ],
+  "evidence_kind": "Summary of unchanged independent probe; all checks retained",
+  "original_evidence_sha256": "509f41095af435027a98797169008a4390d5c54ea34262bc76d7f7b0d62bc2ba"
+}

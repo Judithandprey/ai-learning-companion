@@ -558,7 +558,7 @@ class ChatGPTAppServer:
         try:
             result = await self._rpc("account/rateLimits/read", {})
             snapshots = result.get("rateLimitsByLimitId")
-            if snapshots is None:
+            if snapshots is None or (type(snapshots) is dict and not snapshots):
                 snapshots = {None: _object(result.get("rateLimits"))}
             if type(snapshots) is not dict or len(snapshots) > 100:
                 raise RPCError("protocol_error")
@@ -706,14 +706,18 @@ class ChatGPTAppServer:
             if not any(row["model"] == model and "image" in row["input_modalities"] for row in models):
                 raise RPCError("unsupported_model")
             quota = await self._quota()
-            if quota["ordinary_usage_allowed"] is False:
-                # Do not apply a different model bucket's restriction here.
-                # Ambiguous/missing cause remains a denial, not exhaustion.
-                windows = quota["windows"]
-                workspace = (len(windows) == 1 and windows[0]["limit_id"] in (None, "codex")
-                             and windows[0]["normal_model_slug"] in (None, model)
-                             and windows[0]["rate_limit_reached_type"] in _WORKSPACE_LIMITS)
-                raise RPCError("workspace_limit" if workspace else "usage_not_allowed")
+            windows = quota["windows"]
+            applicable = [row for row in windows if row["limit_id"] == "codex"
+                          and row["normal_model_slug"] in (None, model)]
+            if not applicable and len(windows) == 1 and windows[0]["limit_id"] is None:
+                applicable = [row for row in windows if row["normal_model_slug"] in (None, model)]
+            # Included usage is not all credit-backed usage. Neither its flag
+            # nor a percentage/balance authorizes or vetoes this explicit ASK.
+            # Preserve an applicable spend/workspace restriction; other model
+            # buckets cannot donate credits or erase that restriction.
+            if len(applicable) == 1 and (applicable[0]["spend_control_reached"] is True
+                    or applicable[0]["rate_limit_reached_type"] in _WORKSPACE_LIMITS):
+                raise RPCError("workspace_limit")
             self._check_cancelled(active)
             await self._verify_isolation()
             self._check_cancelled(active)
