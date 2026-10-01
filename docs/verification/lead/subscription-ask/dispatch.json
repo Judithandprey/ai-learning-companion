@@ -89,7 +89,12 @@
       "actual_start_reply": "handoff_0f6cb3f23f2e2bd91ec1ceec55f428bd",
       "state": "actual_start_reported",
       "accepted_dependency_release": "handoff_578d3bb3a91d3611fee7d128ca7b8126",
-      "mac_metadata_update": "handoff_48ecf142f05aa34aa7e3a57fb885adb6"
+      "mac_metadata_update": "handoff_48ecf142f05aa34aa7e3a57fb885adb6",
+      "mac_admission_release": {
+        "baseline": "c9be9072ebe4b3662bbec4d38c705c19acced596",
+        "accepted_message": "handoff_f95d4c08f5ea52ecd99ec5c50bba349f",
+        "actual_read_reply": null
+      }
     },
     {
       "owner": "qa",
