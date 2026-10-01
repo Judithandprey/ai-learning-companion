@@ -1,0 +1,111 @@
+{
+  "assigned_baseline": "3f4580b058555b54922a876df0a7f05df1096ac3",
+  "probe_sha256": "79dc108eb64a192c6fbbfea52f8a05aedaa6f037b1925280db2fe662c0ae267b",
+  "runner_status": "completed",
+  "native_process_exit_observed": true,
+  "native_process_exit_code": 0,
+  "observations": {
+    "status": "metadata_completed",
+    "observed_utc": "2026-10-01T16:22:19.2639412Z",
+    "windows_version": "10.0.26200.0",
+    "powershell_version": "5.1.26100.9444",
+    "process_64bit": true,
+    "scope": "Static language lists, installed recognizer registration and reflected public API; not recognition acceptance.",
+    "recognizer_constructed": false,
+    "constraints_compiled": false,
+    "recognition_started": false,
+    "microphone_requested": false,
+    "audio_fixture_submitted": false,
+    "online_recognition_activated": false,
+    "settings_changed": false,
+    "package_identity": {
+      "api_result": 15700,
+      "interpretation": "no_package_identity"
+    },
+    "recognizer_api": {
+      "status": "type_resolved",
+      "name": "Windows.Media.SpeechRecognition.SpeechRecognizer",
+      "constructors": [
+        "Void .ctor()",
+        "Void .ctor(Windows.Globalization.Language)"
+      ],
+      "methods": [
+        "System.Collections.Generic.IList`1[Windows.Media.SpeechRecognition.ISpeechRecognitionConstraint] get_Constraints()",
+        "System.Collections.Generic.IReadOnlyList`1[Windows.Globalization.Language] get_SupportedGrammarLanguages()",
+        "System.Collections.Generic.IReadOnlyList`1[Windows.Globalization.Language] get_SupportedTopicLanguages()",
+        "System.Runtime.InteropServices.WindowsRuntime.EventRegistrationToken add_HypothesisGenerated(Windows.Foundation.TypedEventHandler`2[Windows.Media.SpeechRecognition.SpeechRecognizer,Windows.Media.SpeechRecognition.SpeechRecognitionHypothesisGeneratedEventArgs])",
+        "System.Runtime.InteropServices.WindowsRuntime.EventRegistrationToken add_RecognitionQualityDegrading(Windows.Foundation.TypedEventHandler`2[Windows.Media.SpeechRecognition.SpeechRecognizer,Windows.Media.SpeechRecognition.SpeechRecognitionQualityDegradingEventArgs])",
+        "System.Runtime.InteropServices.WindowsRuntime.EventRegistrationToken add_StateChanged(Windows.Foundation.TypedEventHandler`2[Windows.Media.SpeechRecognition.SpeechRecognizer,Windows.Media.SpeechRecognition.SpeechRecognizerStateChangedEventArgs])",
+        "Void Dispose()",
+        "Void remove_HypothesisGenerated(System.Runtime.InteropServices.WindowsRuntime.EventRegistrationToken)",
+        "Void remove_RecognitionQualityDegrading(System.Runtime.InteropServices.WindowsRuntime.EventRegistrationToken)",
+        "Void remove_StateChanged(System.Runtime.InteropServices.WindowsRuntime.EventRegistrationToken)",
+        "Windows.Foundation.IAsyncAction StopRecognitionAsync()",
+        "Windows.Foundation.IAsyncOperation`1[System.Boolean] TrySetSystemSpeechLanguageAsync(Windows.Globalization.Language)",
+        "Windows.Foundation.IAsyncOperation`1[Windows.Media.SpeechRecognition.SpeechRecognitionCompilationResult] CompileConstraintsAsync()",
+        "Windows.Foundation.IAsyncOperation`1[Windows.Media.SpeechRecognition.SpeechRecognitionResult] RecognizeAsync()",
+        "Windows.Foundation.IAsyncOperation`1[Windows.Media.SpeechRecognition.SpeechRecognitionResult] RecognizeWithUIAsync()",
+        "Windows.Globalization.Language get_CurrentLanguage()",
+        "Windows.Globalization.Language get_SystemSpeechLanguage()",
+        "Windows.Media.SpeechRecognition.SpeechContinuousRecognitionSession get_ContinuousRecognitionSession()",
+        "Windows.Media.SpeechRecognition.SpeechRecognizerState get_State()",
+        "Windows.Media.SpeechRecognition.SpeechRecognizerTimeouts get_Timeouts()",
+        "Windows.Media.SpeechRecognition.SpeechRecognizerUIOptions get_UIOptions()"
+      ],
+      "properties": [
+        "System.Collections.Generic.IList`1[Windows.Media.SpeechRecognition.ISpeechRecognitionConstraint] Constraints",
+        "System.Collections.Generic.IReadOnlyList`1[Windows.Globalization.Language] SupportedGrammarLanguages",
+        "System.Collections.Generic.IReadOnlyList`1[Windows.Globalization.Language] SupportedTopicLanguages",
+        "Windows.Globalization.Language CurrentLanguage",
+        "Windows.Globalization.Language SystemSpeechLanguage",
+        "Windows.Media.SpeechRecognition.SpeechContinuousRecognitionSession ContinuousRecognitionSession",
+        "Windows.Media.SpeechRecognition.SpeechRecognizerState State",
+        "Windows.Media.SpeechRecognition.SpeechRecognizerTimeouts Timeouts",
+        "Windows.Media.SpeechRecognition.SpeechRecognizerUIOptions UIOptions"
+      ]
+    },
+    "continuous_api": {
+      "status": "type_resolved",
+      "name": "Windows.Media.SpeechRecognition.SpeechContinuousRecognitionSession",
+      "constructors": [],
+      "methods": [
+        "System.Runtime.InteropServices.WindowsRuntime.EventRegistrationToken add_Completed(Windows.Foundation.TypedEventHandler`2[Windows.Media.SpeechRecognition.SpeechContinuousRecognitionSession,Windows.Media.SpeechRecognition.SpeechContinuousRecognitionCompletedEventArgs])",
+        "System.Runtime.InteropServices.WindowsRuntime.EventRegistrationToken add_ResultGenerated(Windows.Foundation.TypedEventHandler`2[Windows.Media.SpeechRecognition.SpeechContinuousRecognitionSession,Windows.Media.SpeechRecognition.SpeechContinuousRecognitionResultGeneratedEventArgs])",
+        "System.TimeSpan get_AutoStopSilenceTimeout()",
+        "Void put_AutoStopSilenceTimeout(System.TimeSpan)",
+        "Void remove_Completed(System.Runtime.InteropServices.WindowsRuntime.EventRegistrationToken)",
+        "Void remove_ResultGenerated(System.Runtime.InteropServices.WindowsRuntime.EventRegistrationToken)",
+        "Void Resume()",
+        "Windows.Foundation.IAsyncAction CancelAsync()",
+        "Windows.Foundation.IAsyncAction PauseAsync()",
+        "Windows.Foundation.IAsyncAction StartAsync()",
+        "Windows.Foundation.IAsyncAction StartAsync(Windows.Media.SpeechRecognition.SpeechContinuousRecognitionMode)",
+        "Windows.Foundation.IAsyncAction StopAsync()"
+      ],
+      "properties": [
+        "System.TimeSpan AutoStopSilenceTimeout"
+      ]
+    },
+    "SupportedGrammarLanguages": {
+      "status": "observed",
+      "language_tags": [
+        "zh-Hans-CN"
+      ]
+    },
+    "SupportedTopicLanguages": {
+      "status": "observed",
+      "language_tags": [
+        "zh-Hans-CN"
+      ]
+    },
+    "onecore_recognizer_registration": {
+      "status": "observed",
+      "tokens": [
+        {
+          "token_id": "MS-2052-110-WINMO-DNN",
+          "language_lcid_hex": "804"
+        }
+      ]
+    }
+  }
+}
