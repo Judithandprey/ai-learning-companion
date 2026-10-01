@@ -1,0 +1,48 @@
+{
+  "interface_baseline": "ff163a6ebbb9d974055e23ae97d0359e17cecef4",
+  "clarified_interface": "06f4fc61a65172a8595371cc26855cc47ab22457",
+  "pushed_decision_baseline": "1b7c90558165c87c83564b1d6c777905923b8528",
+  "owners": [
+    {
+      "owner": "support",
+      "accepted_assignment": "handoff_fbe401de52ae85b625c76f3b0e9314fc",
+      "actual_start_reply": null,
+      "state": "schema_evidence_integrated_isolation_followup_assigned",
+      "actual_delivery": "handoff_18949b99a24930d71b290113330387d9",
+      "delivery_commit": "324fb11cdee5ce14dec64a0da78a1a0ab49e3086",
+      "integrated_commit": "b459e9676c331c2df98ec7a05047313ceba44b0b"
+    },
+    {
+      "owner": "backend",
+      "accepted_assignment": "handoff_ba8e541a6a2a89041ee20b35b1c3173d",
+      "actual_start_reply": "handoff_7ff3eca55ab7ef971c8836f7a887a664",
+      "state": "actual_start_reported"
+    },
+    {
+      "owner": "learning",
+      "accepted_assignment": "handoff_1b9d3140707feab4388c0991d9006376",
+      "actual_start_reply": "handoff_43be7a0146b91f6d57315c34b3fb804a",
+      "state": "actual_start_reported"
+    },
+    {
+      "owner": "web",
+      "accepted_assignment": "handoff_df27ff4f210a4ac419401e8a00aa568c",
+      "actual_start_reply": "handoff_a34384aef035e6150ab3e41cea52d18c",
+      "state": "actual_start_reported"
+    },
+    {
+      "owner": "native",
+      "accepted_assignment": "handoff_d98adf0e2c88ebeb0bde9d50c30bd5cb",
+      "actual_start_reply": "handoff_0f6cb3f23f2e2bd91ec1ceec55f428bd",
+      "state": "actual_start_reported"
+    },
+    {
+      "owner": "qa",
+      "accepted_assignment": "handoff_de323dc5105b08860c398a13b7206dbd",
+      "actual_start_reply": "handoff_bc59ff1b65e150182c353cf2bffd6142",
+      "state": "preparing_conditional_qa"
+    }
+  ],
+  "isolated_support_followup": "handoff_a18e73172e84d36e9ae952c877a8c90b",
+  "provider_calls_authorized_to_workers": 0
+}

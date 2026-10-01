@@ -1,0 +1,11 @@
+{
+  "scope": "Existing subscription allowance; generated non-sensitive text/image verification only",
+  "initial_submission_attempt_limit": 3,
+  "allocated_to_qa": 0,
+  "allocated_to_lead": 0,
+  "attempts": [],
+  "automatic_retry": false,
+  "api_key_fallback": false,
+  "account_status_is_inference": false,
+  "next_release_owner": "lead"
+}
