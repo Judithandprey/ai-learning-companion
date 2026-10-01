@@ -1,5 +1,11 @@
 # G4 / P0-08: installed managed Codex compatibility
 
+**Follow-up:** the authorized [isolated fake-transport probe](codex-app-server-isolation-followup.md)
+now measures the advertised tool set and one no-retry failure. It resolves the
+`unified_exec` flag ambiguity for that tested configuration, while retaining
+provider/model and host-boundary limits. The original schema findings below
+remain the record of what was known before any server was started.
+
 2026-10-01 UTC. Lead card `handoff_fbe401de52ae85b625c76f3b0e9314fc`;
 assigned main `e9ccccad6ac425a3d19a654e74340c565e3564c4`.
 Refreshed the complete affected source/English decision and ADR 0003 at

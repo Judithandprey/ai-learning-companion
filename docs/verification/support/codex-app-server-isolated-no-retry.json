@@ -1,0 +1,163 @@
+{
+  "date_utc": "2026-10-01T05:33:18.334577+00:00",
+  "command": [
+    "/usr/bin/bwrap",
+    "--unshare-user",
+    "--unshare-net",
+    "--unshare-pid",
+    "--die-with-parent",
+    "--ro-bind",
+    "/usr",
+    "/usr",
+    "--ro-bind",
+    "/bin",
+    "/bin",
+    "--ro-bind",
+    "/lib",
+    "/lib",
+    "--ro-bind",
+    "/lib64",
+    "/lib64",
+    "--ro-bind",
+    "/home/agentsdock/.codex/packages/standalone/releases/0.158.0-x86_64-unknown-linux-musl/bin/codex",
+    "/opt/codex",
+    "--ro-bind",
+    "/home/agentsdock/Projects/learning-companion/wt-support/tests/probes/support/codex_app_server_isolation.py",
+    "/probe.py",
+    "--bind",
+    "/tmp/lc-support-codex-retry-lvknfxuw",
+    "/case",
+    "--proc",
+    "/proc",
+    "--dev",
+    "/dev",
+    "--tmpfs",
+    "/tmp",
+    "--dir",
+    "/home",
+    "--dir",
+    "/home/agentsdock",
+    "--dir",
+    "/etc",
+    "--chdir",
+    "/case",
+    "--",
+    "/usr/bin/python3",
+    "/probe.py",
+    "--clean-state",
+    "--transient-failure"
+  ],
+  "outer_timeout_seconds": 55,
+  "network_boundary": "private network namespace; loopback only",
+  "filesystem_boundary": "runtime libraries read-only; exact CLI/probe read-only; owned /case writable; no host home or Windows mount",
+  "exit_code": 0,
+  "stderr": "",
+  "probe": {
+    "scope": "Synthetic loopback transport only; no managed auth or real inference",
+    "requests": [
+      {
+        "model": "lc-support-synthetic",
+        "stream": true,
+        "body_sha256": "e8d5233a3bb500dc4345401414db6866bc03638ca675e8ff6221ff4586b49a60",
+        "body_bytes": 23835,
+        "tools": [
+          {
+            "type": "function",
+            "name": "request_user_input"
+          }
+        ],
+        "tools_sha256": "61655861a2af99f0fdc685a54ae0c0c7b5d8d45d1e1f12d22b86d2839ec14f34",
+        "tool_choice": "auto",
+        "canaries_in_body": {
+          "LC_GLOBAL_AGENTS_CANARY_701": false,
+          "LC_PARENT_AGENTS_CANARY_702": false
+        }
+      }
+    ],
+    "rpc_methods": [
+      "remoteControl/status/changed",
+      "thread/started",
+      "warning",
+      "warning",
+      "thread/status/changed",
+      "turn/started",
+      "item/started",
+      "item/completed",
+      "thread/status/changed",
+      "error",
+      "turn/completed"
+    ],
+    "server_requests_rejected": [],
+    "disabled_features": [
+      "hooks",
+      "shell_tool",
+      "shell_snapshot",
+      "code_mode",
+      "code_mode_host",
+      "code_mode_prewarm",
+      "apps",
+      "plugins",
+      "remote_plugin",
+      "browser_use",
+      "computer_use",
+      "image_generation",
+      "view_image",
+      "multi_agent",
+      "multi_agent_v2",
+      "goals",
+      "memories",
+      "skill_mcp_dependency_install",
+      "skill_search",
+      "tool_suggest",
+      "workspace_dependencies",
+      "daemon_auto_start",
+      "enable_request_compression"
+    ],
+    "probe_sha256": "90ead4614125b8f62d0ba0e27f9ac6c3cc411247527d3193c0038ba7fc5c5983",
+    "clean_state": true,
+    "transient_failure": true,
+    "selected_model": "lc-support-synthetic",
+    "provider": "lc_probe",
+    "config": "model=\"lc-support-synthetic\"\nmodel_provider=\"lc_probe\"\ncli_auth_credentials_store=\"file\"\napproval_policy=\"never\"\nsandbox_mode=\"read-only\"\nweb_search=\"disabled\"\nproject_doc_max_bytes=0\nallow_login_shell=false\n[analytics]\nenabled=false\n[shell_environment_policy]\ninherit=\"none\"\n[model_providers.lc_probe]\nname=\"Synthetic loopback only\"\nbase_url=\"http://127.0.0.1:42759/v1\"\nwire_api=\"responses\"\nrequires_openai_auth=false\nsupports_websockets=false\nrequest_max_retries=0\nstream_max_retries=0\nstream_idle_timeout_ms=5000\n[mcp_servers.probe_canary]\nenabled=false\ncommand=\"/usr/bin/python3\"\nargs=[\"-c\", \"open('/case/mcp-fired','w').write('canary')\"]\n[features]\nskip_host_skill_discovery=true\nhooks=false\nshell_tool=false\nshell_snapshot=false\ncode_mode=false\ncode_mode_host=false\ncode_mode_prewarm=false\napps=false\nplugins=false\nremote_plugin=false\nbrowser_use=false\ncomputer_use=false\nimage_generation=false\nview_image=false\nmulti_agent=false\nmulti_agent_v2=false\ngoals=false\nmemories=false\nskill_mcp_dependency_install=false\nskill_search=false\ntool_suggest=false\nworkspace_dependencies=false\ndaemon_auto_start=false\nenable_request_compression=false\n",
+    "config_sha256": "803bf63d447773800f9299c150a4a6fe31f05e71b097fb3df53a42625a37053b",
+    "cwd_initially_empty": true,
+    "child_pid": 4,
+    "initialized": true,
+    "thread_effective": {
+      "model": "lc-support-synthetic",
+      "modelProvider": "lc_probe",
+      "approvalPolicy": "never",
+      "sandbox": {
+        "type": "readOnly",
+        "networkAccess": false
+      },
+      "cwd": "/case/parent/empty",
+      "instructionSources": []
+    },
+    "error_notifications": [
+      {
+        "willRetry": false,
+        "cause": {
+          "httpConnectionFailed": {
+            "httpStatusCode": 503
+          }
+        }
+      }
+    ],
+    "turn_status": "failed",
+    "turn_error_cause": {
+      "httpConnectionFailed": {
+        "httpStatusCode": 503
+      }
+    },
+    "turn_item_types": [],
+    "child_exit_code": 0,
+    "owned_threads_closed": true,
+    "hook_marker_created": false,
+    "mcp_marker_created": false,
+    "elapsed_ms": 452,
+    "observation_complete": true,
+    "clean_instruction_sources": true
+  },
+  "owned_stage_removed": true
+}
