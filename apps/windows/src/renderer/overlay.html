@@ -9,6 +9,7 @@
 <body>
 <canvas id="ink" aria-hidden="true"></canvas>
 <div id="toolbar" class="toolbar" role="toolbar" aria-label="Learning companion">
+  <button type="button" id="toolbarHandle" class="handle" aria-label="Move the toolbar: drag, or use the arrow keys; Home puts it back">⠿</button>
   <button type="button" data-mode="NAV" aria-label="Navigate: clicks go to your apps">✋</button>
   <button type="button" data-mode="ASK" aria-label="Ask: circle something on the screen">?</button>
   <button type="button" data-mode="WRITE" aria-label="Write: notes over the screen">✎</button>
@@ -23,8 +24,20 @@
   <button type="button" id="cancel" class="text" hidden>Cancel</button>
   <span id="hint" class="hint"></span>
 </div>
-<section id="card" class="card" role="region" aria-label="Selection" hidden>
-  <button type="button" id="close" class="close" aria-label="Close">×</button>
+<section id="card" class="card" role="region" aria-label="Selection and response" hidden>
+  <div class="cardBar">
+    <button type="button" id="cardHandle" class="handle" aria-label="Move this card: drag, or use the arrow keys; Home puts it back">⠿</button>
+    <span id="talkControls" class="talk" role="group" aria-label="Reading responses aloud" hidden>
+      <button type="button" id="talk" aria-pressed="false">Talk</button>
+      <button type="button" id="mute" aria-pressed="false" hidden>Mute</button>
+      <button type="button" id="slower" aria-label="Read more slowly" hidden>−</button>
+      <span id="rate" hidden></span>
+      <button type="button" id="faster" aria-label="Read faster" hidden>+</button>
+      <button type="button" id="interrupt" hidden>Stop reading</button>
+    </span>
+    <button type="button" id="close" class="close" aria-label="Close">×</button>
+  </div>
+  <p id="talkStatus" class="text" role="status" hidden></p>
   <p id="badge" class="badge">Selection · no AI connected</p>
   <img id="crop" alt="The selected region with your ink, from the captured frame">
   <p id="cardText" class="text"></p>

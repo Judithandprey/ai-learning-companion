@@ -8,6 +8,8 @@ import * as modes from '../../safari-extension/src/mode.ts';
 import * as desktopInk from '../src/shared/desktop-ink.ts';
 import * as samples from '../src/shared/samples.ts';
 import * as retention from '../src/shared/retention.ts';
+import * as placement from '../src/shared/placement.ts';
+import * as voiceRules from '../src/shared/voice.ts';
 import { plain, PNG_BYTES, type H, type Session } from './main-harness.ts';
 import { png } from './png.ts';
 import { appSource, replaceOnce } from './source.ts';
@@ -66,7 +68,7 @@ function averaged(src: Luma, [sx, sy, sw, sh]: number[], cw: number, ch: number,
 }
 
 /** The overlay page for session `s`, with pointer input into its ink canvas and a gate on PNG encoding. */
-export async function overlayPage(h: H, s: Session, policy?: retention.RetentionPolicy) {
+export async function overlayPage(h: H, s: Session, policy?: retention.RetentionPolicy, options: { /** A stand-in voice is connected (the product connects none in this build). */ voice?: boolean } = {}) {
   /**
    * What the fake screen shows: every pixel's shade (grids, hashes and fingerprints read it), or, when a test sets
    * `luma`, that grayscale 1280×800 screen: each frame taken keeps its own pixels, and canvases read back the area
@@ -79,9 +81,29 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
   const acks: Array<string | null> = [];
   const saves: desktopInk.DesktopInk[] = [];
   const encoding = { gate: null as Promise<void> | null };
+  /** What the page asked of the main process about taking the pointer (NAV passes clicks through unless over a surface). */
+  const interactive: boolean[] = [];
+  /**
+   * A stand-in for a connected voice (`options.voice`; the product connects none in this build): what was handed
+   * over to be said, each with the way a test ends it, and how often it was told to stop. Nothing is played.
+   */
+  const voice = { spoken: [] as Array<{ text: string; rate: number; end: (spoken?: boolean) => void }>, cancels: 0, broken: false };
   class FakeNode {
+    id = '';
     width = 1280;
     height = 800;
+    /** The size of this element as laid out (a surface), for getBoundingClientRect. */
+    boxWidth = 300;
+    boxHeight = 50;
+    readonly vars = new Map<string, string>();
+    readonly attrs = new Map<string, string>();
+    readonly captured = new Set<number>();
+    /** How this element was brought into view, each time (the card scrolls to what just came). */
+    readonly revealed: string[] = [];
+    scrollIntoView(o?: { block?: string }) {
+      this.revealed.push(o?.block ?? 'start');
+    }
+    style = { setProperty: (k: string, v: string) => void this.vars.set(k, v), getPropertyValue: (k: string) => this.vars.get(k) ?? '' };
     hidden = true;
     disabled = false;
     textContent = '';
@@ -123,9 +145,35 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
     addEventListener(n: string, f: (e: unknown) => void) {
       this.handlers.set(n, f);
     }
-    setAttribute() {}
-    setPointerCapture() {}
-    closest() {
+    setAttribute(k: string, v: string) {
+      this.attrs.set(k, v);
+    }
+    getAttribute(k: string) {
+      return this.attrs.get(k) ?? null;
+    }
+    setPointerCapture(id: number) {
+      this.captured.add(id);
+    }
+    releasePointerCapture(id: number) {
+      this.captured.delete(id);
+    }
+    hasPointerCapture(id: number) {
+      return this.captured.has(id);
+    }
+    /** As the style sheet lays a surface out: its corner at the fractions of the free room in the usable area. */
+    getBoundingClientRect() {
+      const px = (k: string): number => Number.parseFloat(root.vars.get(k) ?? '0');
+      const f = (k: string): number => Number(this.vars.get(k) ?? '0');
+      // (a surface is never larger than the area: max-width and max-height in the style sheet)
+      const width = Math.min(this.boxWidth, px('--aw'));
+      const height = Math.min(this.boxHeight, px('--ah'));
+      const left = px('--ax') + f('--fx') * (px('--aw') - width);
+      const top = px('--ay') + f('--fy') * (px('--ah') - height);
+      return { left, top, width, height, right: left + width, bottom: top + height };
+    }
+    closest(selector: string) {
+      if (selector === '#toolbar') return this.id === 'toolbar' ? this : null;
+      if (selector === '#card:not([hidden])') return this.id === 'card' && !this.hidden ? this : null;
       return null;
     }
     async convertToBlob() {
@@ -139,14 +187,28 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
     }
   }
   const node = (id: string): FakeNode => {
-    if (!nodes.has(id)) nodes.set(id, new FakeNode());
+    if (!nodes.has(id)) nodes.set(id, Object.assign(new FakeNode(), { id }));
     return nodes.get(id)!;
   };
+  const root = new FakeNode();
+  node('toolbar').hidden = false;
+  Object.assign(node('card'), { boxWidth: 360, boxHeight: 200 });
+  const documentHandlers = new Map<string, (e: unknown) => void>();
+  /** The surface under a point, as the page would find it (the toolbar, or the card when it is shown). */
+  const surfaceAt = (x: number, y: number): FakeNode | null =>
+    [node('toolbar'), node('card')].find((n) => {
+      const b = n.getBoundingClientRect();
+      return !n.hidden && x >= b.left && x < b.right && y >= b.top && y < b.bottom;
+    }) ?? null;
   const buttons = ['NAV', 'ASK', 'WRITE'].map((m) => Object.assign(new FakeNode(), { dataset: { mode: m } }));
   const radios = ['hint', 'explain', 'full_solution'].map((v, i) => Object.assign(new FakeNode(), { value: v, checked: i === 0 }));
   const lc = {
-    ready: async () => ({ display: s.doc.display, doc: plain(s.doc), source_id: 'screen:1:0', address_sha256: crypto.createHash('sha256').update(s.doc.id).digest('hex'), retention_policy: policy, ...(plain(await h.handlers['lc:overlay-ready']!({ sender: s.overlay.webContents })) as { development: boolean; subscription: boolean }) }),
-    interactive() {},
+    ready: async () => ({ ...(plain(await h.handlers['lc:overlay-ready']!({ sender: s.overlay.webContents })) as { work_area: unknown; places: unknown; speech_rate: number }), display: s.doc.display, doc: plain(s.doc), source_id: 'screen:1:0', address_sha256: crypto.createHash('sha256').update(s.doc.id).digest('hex'), retention_policy: policy, ...(plain(await h.handlers['lc:overlay-ready']!({ sender: s.overlay.webContents })) as { development: boolean; subscription: boolean }) }),
+    interactive: (on: boolean) => void interactive.push(on),
+    place: async (surface: string, place: unknown) => plain(await h.handlers['lc:place']!({ sender: s.overlay.webContents }, surface, plain(place))),
+    speechRate: async (rate: number) => plain(await h.handlers['lc:speech-rate']!({ sender: s.overlay.webContents }, rate)),
+    onWorkArea: (f: (...a: unknown[]) => void) => events.set('work-area', f),
+    askSpoken: (id: string, request: string, state: string) => void h.handlers['lc:ask-spoken']!({ sender: s.overlay.webContents }, id, request, state),
     armCapture: async () => true,
     saveInk: async (d: desktopInk.DesktopInk, p: unknown[]) => {
       saves.push(plain(d) as desktopInk.DesktopInk);
@@ -186,6 +248,8 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
     ...desktopInk,
     ...samples,
     ...retention,
+    ...placement,
+    ...voiceRules,
     lc,
     crypto: crypto.webcrypto,
     TextEncoder,
@@ -200,7 +264,21 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
     performance,
     OffscreenCanvas: FakeNode,
     createImageBitmap: async () => frame(),
-    document: { getElementById: node, createElement: () => ({ videoWidth: 1280, requestVideoFrameCallback() {} }), querySelectorAll: (q: string) => (q.includes('assistance') ? radios : buttons), querySelector: (q: string) => (q.includes('assistance') ? radios.find((r) => r.checked) ?? null : null), addEventListener() {}, elementFromPoint: () => null },
+    document: { getElementById: node, createElement: () => ({ videoWidth: 1280, requestVideoFrameCallback() {} }), querySelectorAll: (q: string) => (q.includes('assistance') ? radios : buttons), querySelector: (q: string) => (q.includes('assistance') ? radios.find((r) => r.checked) ?? null : null), addEventListener: (n: string, f: (e: unknown) => void) => void documentHandlers.set(n, f), elementFromPoint: surfaceAt, documentElement: root },
+    ...(options.voice
+      ? {
+          lcVoice: {
+            say: (text: string, rate: number) => {
+              if (voice.broken) throw new Error('the voice failed (stand-in)');
+              return new Promise<boolean>((end) => void voice.spoken.push({ text, rate, end: (spoken = true) => end(spoken) }));
+            },
+            stop: () => {
+              voice.cancels += 1;
+              if (voice.broken) throw new Error('the voice failed to stop (stand-in)');
+            },
+          },
+        }
+      : {}),
     window: { innerWidth: 1280, innerHeight: 800, devicePixelRatio: 1, addEventListener() {} },
     setTimeout() {},
     FileReader: class {
@@ -233,6 +311,7 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
   s.overlay.webContents.send = (...args: unknown[]) => {
     send(...args);
     if (args[0] === 'lc:stop') queueMicrotask(() => events.get('stop')!(...args.slice(1)));
+    if (args[0] === 'lc:work-area') queueMicrotask(() => events.get('work-area')!(...(plain(args.slice(1)) as unknown[])));
     if (args[0] === 'lc:ask-result') queueMicrotask(() => events.get('ask-result')!(...(plain(args.slice(1)) as unknown[])));
   };
   let t = 0;
@@ -243,6 +322,17 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
   /** A press on a mode button, as the user's (the mode before is remembered, as in the app). */
   const press = (m: string): void => buttons.find((b) => b.dataset.mode === m)!.handlers.get('click')!({});
   const choose = (assistance: string): void => radios.forEach((r) => void (r.checked = r.value === assistance));
-  return { review, scene, acks, saves, encoding, pointer, click, hint: () => node('hint').textContent, undoDisabled: () => node('undo').disabled, userData: h.userData, captureId: s.doc.id, ask, choose, press, holdSubmitAck, question: (text: string) => void (node('question').value = text) };
+  /** A pointer event on a surface's handle (or any element), and a mouse move over the page. */
+  const on = (id: string, name: string, e: { pointerId?: number; x?: number; y?: number; pointerType?: string; button?: number; key?: string; primary?: boolean } = {}): boolean => {
+    let prevented = false;
+    node(id).handlers.get(name)!({ pointerId: e.pointerId ?? 7, isPrimary: e.primary ?? true, pointerType: e.pointerType ?? 'mouse', button: e.button ?? 0, clientX: e.x ?? 0, clientY: e.y ?? 0, key: e.key ?? '', preventDefault: () => void (prevented = true) });
+    return prevented;
+  };
+  const mouseMove = (x: number, y: number): void => documentHandlers.get('mousemove')?.({ clientX: x, clientY: y });
+  /** Where a surface is, as laid out, and the rest of what a test reads of the movable surfaces and the talk controls. */
+  const box = (id: string) => node(id).getBoundingClientRect();
+  const talkLabel = (): string | null => node('talk').getAttribute('aria-label');
+  const talkState = () => ({ controls: !node('talkControls').hidden, talk: node('talk').getAttribute('aria-pressed') === 'true', muted: node('mute').getAttribute('aria-pressed') === 'true', mute: !node('mute').hidden, interrupt: !node('interrupt').hidden, rate: node('rate').hidden ? null : node('rate').textContent, status: node('talkStatus').hidden ? null : node('talkStatus').textContent });
+  return { on, mouseMove, box, node, root, interactive, voice, talkState, talkLabel, /** From now the stand-in voice throws when asked to say or to stop. */ breakVoice: () => void (voice.broken = true), review, scene, acks, saves, encoding, pointer, click, hint: () => node('hint').textContent, undoDisabled: () => node('undo').disabled, userData: h.userData, captureId: s.doc.id, ask, choose, press, holdSubmitAck, question: (text: string) => void (node('question').value = text) };
 }
 

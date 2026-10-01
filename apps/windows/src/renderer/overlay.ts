@@ -29,10 +29,16 @@ import { addStroke, erase, redo, stacks, undo, type InkDisplay, type InkDocument
 import { INITIAL_MODE_STATE, reduceMode, type Mode, type ModeState } from '../../../safari-extension/src/mode.ts';
 import { contextImages, forkDesktopInk, MAX_CONTEXTS, NOT_OBSERVED, PICTURE_BYTES_PER_SAVE, PICTURES_PER_SAVE, type DesktopDisplay, type DesktopInk, type PixelEvidence, type StrokeContext } from '../shared/desktop-ink.ts';
 import { decideRetention, DEFAULT_RETENTION_POLICY, type Retained, type RetentionPolicy } from '../shared/retention.ts';
+import { clampRate, DEFAULT_PLACE, placeAt, RATE_DEFAULT, RATE_STEP, SURFACES, usableArea, type DisplayPlaces, type Place, type Rect, type Surface } from '../shared/placement.ts';
+import { speechPieces } from '../shared/voice.ts';
 import { alignmentOf, DETAIL_DELTA, detailChange, detailGrid, fingerprintFromBase64, fingerprintToBase64, lumaChange, luminance, sampleState, toFramePixels, type Alignment, type Detail, type DisplaySample, type InkMarks } from '../shared/samples.ts';
 
 type Api = {
-  ready(): Promise<{ source_id: string; display: DesktopDisplay; doc: DesktopInk; address_sha256: string; retention_policy?: RetentionPolicy; development?: boolean; subscription?: boolean } | null>;
+  ready(): Promise<{ source_id: string; display: DesktopDisplay; doc: DesktopInk; address_sha256: string; retention_policy?: RetentionPolicy; development?: boolean; subscription?: boolean; work_area?: Rect; places?: DisplayPlaces; speech_rate?: number } | null>;
+  place(surface: Surface, place: Place): Promise<Saved>;
+  speechRate(rate: number): Promise<Saved>;
+  onWorkArea(fn: (area: Rect) => void): void;
+  askSpoken(selectionId: string, requestId: string, state: 'started' | 'finished' | 'interrupted'): void;
   retainFrame(facts: unknown, raw: Uint8Array, composed: Uint8Array | null, ink: Uint8Array | null): Promise<{ ok: true } | { ok: false; reason: string; limit?: true; retry?: true }>;
   notRetained(run: { from_seq: number; to_seq: number; samples: number; reason: string }): void;
   observationGap(gap: { sample_seq: number; gap_ms: number; sampled_at: string; monotonic_ms: number }): void;
@@ -106,6 +112,219 @@ let mode: ModeState = INITIAL_MODE_STATE;
 let tool: 'pen' | 'eraser' = 'pen';
 let placement: InkDisplay = 'screen';
 let mouseWrites = false;
+
+// ---- the movable surfaces: the toolbar, and the card that shows a selection and its response -------------------
+// Each has a visible handle. A drag of the handle moves the surface and nothing else: it never reaches the ink
+// canvas, so it writes nothing, erases nothing, selects nothing and asks nothing, and the mode stays as it is. The
+// place is kept per display by the main process and restored at the next Start, inside whatever the work area is
+// then (the style sheet keeps the whole surface inside it).
+let area: Rect = usableArea(info.work_area ?? { x: 0, y: 0, width: window.innerWidth, height: window.innerHeight });
+const surfaces: Record<Surface, { el: HTMLElement; handle: HTMLElement; place: Place; label: string }> = {
+  toolbar: { el: $('toolbar'), handle: $('toolbarHandle'), place: info.places?.toolbar ?? DEFAULT_PLACE.toolbar, label: 'toolbar' },
+  caption: { el: $('card'), handle: $('cardHandle'), place: info.places?.caption ?? DEFAULT_PLACE.caption, label: 'card' },
+};
+/** The surface being moved by a pointer, and where on the surface the pointer took hold. */
+let drag: { surface: Surface; pointerId: number; dx: number; dy: number; moved: boolean } | null = null;
+function applyArea(): void {
+  const root = document.documentElement.style;
+  root.setProperty('--ax', `${area.x}px`);
+  root.setProperty('--ay', `${area.y}px`);
+  root.setProperty('--aw', `${area.width}px`);
+  root.setProperty('--ah', `${area.height}px`);
+}
+function applyPlace(name: Surface): void {
+  const s = surfaces[name];
+  s.el.style.setProperty('--fx', String(s.place.fx));
+  s.el.style.setProperty('--fy', String(s.place.fy));
+}
+/** The place is kept by the main process; when it cannot be written it holds for this session, and that is said. */
+async function keepPlace(name: Surface): Promise<void> {
+  let r: Saved;
+  try {
+    r = await lc.place(name, surfaces[name].place);
+  } catch {
+    r = { saved: false, reason: 'the app did not answer' };
+  }
+  if (r.saved) return;
+  transientHint = `The place of the ${surfaces[name].label} could not be kept on this device (${r.reason ?? 'unknown'}): it stays here for this session.`;
+  render();
+}
+function moveTo(name: Surface, left: number, top: number): void {
+  const s = surfaces[name];
+  const box = s.el.getBoundingClientRect();
+  s.place = placeAt(left, top, { width: box.width, height: box.height }, area);
+  applyPlace(name);
+}
+function endDrag(): { surface: Surface; moved: boolean } | null {
+  const d = drag;
+  if (!d) return null;
+  drag = null;
+  const handle = surfaces[d.surface].handle;
+  if (handle.hasPointerCapture(d.pointerId)) handle.releasePointerCapture(d.pointerId);
+  return d;
+}
+applyArea();
+for (const name of SURFACES) {
+  const s = surfaces[name];
+  applyPlace(name);
+  s.handle.addEventListener('pointerdown', (e) => {
+    if (drag || !e.isPrimary || (e.pointerType === 'mouse' && e.button !== 0)) return;
+    const box = s.el.getBoundingClientRect();
+    drag = { surface: name, pointerId: e.pointerId, dx: e.clientX - box.left, dy: e.clientY - box.top, moved: false };
+    s.handle.setPointerCapture(e.pointerId); // the moves come here even when the pointer leaves the handle
+    e.preventDefault();
+  });
+  s.handle.addEventListener('pointermove', (e) => {
+    if (!drag || drag.surface !== name || drag.pointerId !== e.pointerId) return;
+    drag.moved = true;
+    moveTo(name, e.clientX - drag.dx, e.clientY - drag.dy);
+  });
+  const release = (e: PointerEvent): void => {
+    if (!drag || drag.surface !== name || drag.pointerId !== e.pointerId) return;
+    const d = endDrag();
+    if (d?.moved) void keepPlace(name);
+    if (mode.mode === 'NAV') setInteractive(overUi(e.clientX, e.clientY)); // the pointer goes back to the apps unless it is still over a surface
+  };
+  s.handle.addEventListener('pointerup', release);
+  s.handle.addEventListener('pointercancel', release);
+  s.handle.addEventListener('lostpointercapture', release); // the pointer was taken elsewhere without an up: the drag is over
+  // Without a pointer: the arrow keys move the surface, Home puts it back where it starts.
+  s.handle.addEventListener('keydown', (e) => {
+    const step: Record<string, [number, number]> = { ArrowLeft: [-16, 0], ArrowRight: [16, 0], ArrowUp: [0, -16], ArrowDown: [0, 16] };
+    const by = step[e.key];
+    if (!by && e.key !== 'Home') return;
+    e.preventDefault();
+    if (by) {
+      const box = s.el.getBoundingClientRect();
+      moveTo(name, box.left + by[0], box.top + by[1]);
+    } else {
+      s.place = DEFAULT_PLACE[name];
+      applyPlace(name);
+    }
+    void keepPlace(name);
+  });
+}
+// The work area changed while the capture runs (the taskbar moved): the surfaces are kept inside the new one.
+lc.onWorkArea((next) => {
+  area = usableArea(next);
+  applyArea();
+});
+
+// ---- talk: a response read aloud ------------------------------------------------------------------------------
+// Silent unless the user turns Talk on: a response is shown as text on its card, and is read aloud only while Talk
+// is on and not muted. What is read is exactly the text the card shows, and only while the card shows it: closing
+// the card, a new selection, a new question, Cancel, Stop reading, Mute, turning Talk off and the capture's end
+// each stop the voice at once, with everything not yet spoken.
+// The voice itself is not part of this page: a build connects one through a route that was measured on the device
+// (`lcVoice`). None is connected in this build, so Talk says that and nothing is played. Speaking TO the AI is not
+// connected either: questions are typed.
+/** A connected voice: says one piece (resolves true when it was spoken to its end), and stops at once. */
+type Voice = { say(text: string, rate: number): Promise<boolean>; stop(): void };
+const voice = (globalThis as { lcVoice?: Voice }).lcVoice ?? null;
+const NO_VOICE = 'no voice is connected in this build, so responses are not read aloud; they are shown as text';
+let talk = false;
+let muted = false;
+let rate = clampRate(info.speech_rate ?? RATE_DEFAULT);
+/** What is being read aloud: the card's response, the pieces of its text, and the piece being spoken now. */
+let speaking: { selection: string; request: string; pieces: string[]; at: number; rate: number } | null = null;
+let talkNote = '';
+/** Stops the voice at once, with everything not yet spoken. */
+function interrupt(): void {
+  const was = speaking;
+  speaking = null;
+  if (!was) return;
+  try {
+    voice?.stop();
+  } catch {
+    // a voice that fails to stop is handed nothing more; what follows (a Stop, a new card) goes on
+  }
+  lc.askSpoken(was.selection, was.request, 'interrupted');
+  renderTalk();
+}
+/** Reads this card's response aloud, piece by piece (only with Talk on, not muted, and a connected voice). */
+function speak(selection: string, request: string, text: string): void {
+  interrupt();
+  if (!talk || muted || ended || !voice) return;
+  const pieces = speechPieces(text);
+  if (pieces.length === 0) return;
+  const mine = { selection, request, pieces, at: 0, rate };
+  speaking = mine;
+  talkNote = '';
+  lc.askSpoken(selection, request, 'started');
+  // One piece at a time: what was not yet handed to the voice is simply never said after an interruption.
+  const next = (): void => {
+    if (speaking !== mine) return;
+    if (mine.at >= pieces.length) {
+      speaking = null;
+      lc.askSpoken(selection, request, 'finished');
+      return renderTalk();
+    }
+    mine.rate = rate; // the rate this piece is said at (a change of the rate holds from the next piece)
+    renderTalk();
+    // A voice that throws, or whose promise is rejected, is a piece that was not spoken to its end.
+    void new Promise<boolean>((said) => said(voice.say(pieces[mine.at]!, mine.rate))).then((spoken) => spoken === true, () => false).then((spoken) => {
+      if (speaking !== mine) return; // interrupted meanwhile: its late end is nobody's
+      if (!spoken) {
+        speaking = null;
+        talkNote = 'The voice stopped before the end; the response is shown as text.';
+        lc.askSpoken(selection, request, 'interrupted');
+        return renderTalk();
+      }
+      mine.at += 1;
+      next();
+    });
+  };
+  next();
+}
+function renderTalk(): void {
+  $('talkControls').hidden = !subscription;
+  $('talk').setAttribute('aria-pressed', String(talk));
+  $('talk').setAttribute('aria-label',
+    !voice ? (talk ? `Talk is on, but ${NO_VOICE}. Press to turn it off.` : `Talk is off: responses are shown as text only. Turning it on reads nothing aloud: ${NO_VOICE}.`)
+    : !talk ? 'Talk is off: responses are shown as text only. Press to have them read aloud.'
+    : muted ? 'Talk is on, muted: responses are shown as text and not read aloud. Press to turn Talk off.'
+    : 'Talk is on: responses are read aloud. Press to turn it off.');
+  $('mute').setAttribute('aria-pressed', String(muted));
+  $('mute').setAttribute('aria-label', muted ? 'Muted: responses are not read aloud. Press to unmute.' : 'Mute: stop reading aloud, keep the text.');
+  for (const id of ['mute', 'slower', 'rate', 'faster']) $(id).hidden = !talk || !voice; // (nothing to mute or pace without a voice)
+  $('rate').textContent = `${rate.toFixed(1)}×`;
+  $('interrupt').hidden = speaking === null;
+  const status = speaking
+    ? `Reading the response aloud at ${speaking.rate.toFixed(1)}× (part ${speaking.at + 1} of ${speaking.pieces.length}). The text below is what is read.`
+    : !talk ? ''
+    : !voice ? `Talk is on, but ${NO_VOICE}. Speaking to the AI is not connected either: type your question.`
+    : muted ? 'Talk is on, muted: responses are shown as text and not read aloud.'
+    : `Talk is on: the response to your next question is read aloud at ${rate.toFixed(1)}× and shown as text. Speaking to the AI is not connected in this build: type your question.`;
+  const said = [talkNote, status].filter((t) => t !== '').join(' ');
+  $('talkStatus').textContent = said;
+  $('talkStatus').hidden = !subscription || said === '';
+}
+$('talk').addEventListener('click', () => {
+  if (ended) return;
+  talk = !talk;
+  talkNote = '';
+  if (!talk) {
+    muted = false;
+    interrupt();
+  }
+  renderTalk();
+});
+$('mute').addEventListener('click', () => {
+  muted = !muted;
+  if (muted) interrupt();
+  renderTalk();
+});
+$('interrupt').addEventListener('click', () => interrupt());
+for (const [id, by] of [['slower', -RATE_STEP], ['faster', RATE_STEP]] as const) {
+  $(id).addEventListener('click', () => {
+    const next = clampRate(rate + by);
+    if (next === rate) return;
+    rate = next; // from the next part on
+    void lc.speechRate(rate).catch(() => undefined);
+    renderTalk();
+  });
+}
+renderTalk();
 let saveText = 'Ink is saved on this device at every change.';
 let saveChain: Promise<void> = Promise.resolve();
 /** Why the newest ink is not saved, or null when it is. */
@@ -214,6 +433,7 @@ function endCapture(reason: string): void {
   if (ended) return;
   ended = true;
   endReason = reason;
+  interrupt(); // nothing is read aloud after the end
   for (const t of stream?.getTracks() ?? []) t.stop();
   sampling = sampling.then(() => takeSample(0)); // after a sample in progress, which is then dropped
   lc.ended(reason);
@@ -752,6 +972,9 @@ function askForm(state: 'hidden' | 'ready' | 'asking'): void {
 }
 /** The card is closed or replaced: its selection is no longer asked about, and a question out about it is cancelled. */
 function resetAsk(): void {
+  interrupt(); // a response is read aloud only while its card shows it
+  talkNote = ''; // (what was said of that response's reading goes with it)
+  renderTalk();
   if (asked) lc.askClosed(); // the main process cancels what is out for it; its answer is never shown
   asked = null;
   for (const el of document.querySelectorAll<HTMLInputElement>('input[name="assistance"]')) el.checked = el.value === 'hint'; // the help is chosen per selection
@@ -850,6 +1073,9 @@ function takeEarly(a: NonNullable<typeof asked>): NonNullable<typeof asked>['ear
 async function submitAsk(): Promise<void> {
   const a = asked;
   if (ended || !a || !a.selection || a.request || a.submitting) return;
+  interrupt(); // a new question: the response before is no longer read
+  talkNote = '';
+  renderTalk();
   a.submitting = true;
   a.cancelling = false;
   a.early = null;
@@ -887,6 +1113,7 @@ async function submitAsk(): Promise<void> {
 function cancelAsk(): void {
   const a = asked;
   if (!a?.selection || (!a.request && !a.submitting)) return;
+  interrupt();
   a.cancelling = true;
   lc.askCancel(a.selection); // by selection: the main process cancels the question that is out for it
   $('askCancel').hidden = true;
@@ -924,8 +1151,12 @@ function showOutcome(a: NonNullable<typeof asked>, outcome: AskOutcome, record: 
       : out.status === 'refused' ? `No answer: ${out.reason}. It was not sent again.` : `No answer: ${out.reason}. It is not sent again automatically.`;
   }
   saved(a, text, record);
+  // What came is brought into view: the card may be scrolled to its form, with the response below what is visible.
+  (out.status === 'answered' ? $('answerBox') : $('askStatus')).scrollIntoView({ block: out.status === 'answered' ? 'start' : 'nearest' });
   // The main process is told what was done with an answer (shown, or not after all); its record follows that.
   if (outcome.status === 'answered' && a.selection) void lc.askPresented(a.selection, request, !suppressed).then((r) => saved(a, text, r), () => undefined);
+  // Read aloud only with Talk on, and only what is shown here (said to the main process after "shown", in that order).
+  if (out.status === 'answered' && a.selection) speak(a.selection, request, out.answer.text);
 }
 /** Says when how a question ended is not written on this device, and offers to write it again. */
 function saved(a: NonNullable<typeof asked>, text: string, record: Saved, what = 'This'): void {
@@ -969,7 +1200,7 @@ const overUi = (x: number, y: number): boolean => {
 };
 // In NAV the window passes clicks through; forwarded moves tell when the pointer is over the toolbar.
 document.addEventListener('mousemove', (e) => {
-  if (mode.mode === 'NAV') setInteractive(overUi(e.clientX, e.clientY));
+  if (mode.mode === 'NAV') setInteractive(drag !== null || overUi(e.clientX, e.clientY)); // a surface being moved keeps the pointer
 });
 
 const sampleOf = (e: PointerEvent, t0: number): InkPoint => [Math.round(e.clientX * 100) / 100, Math.round(e.clientY * 100) / 100, Math.round(e.timeStamp - t0), Math.round((e.pressure || 0) * 100) / 100];
@@ -1262,6 +1493,7 @@ lc.onLoadDoc((loaded) => {
 // Stop: the capture ends at once; a stroke still being written keeps what was written (and its context);
 // the newest ink is saved once more (or kept by the main process), and only then is the Stop confirmed.
 lc.onStop((reason) => {
+  endDrag(); // a surface being moved is let go: nothing takes input after the end
   endCapture(reason);
   // No sample considers retention after the end, so the steps not yet recorded are recorded now, before anything slow.
   if (deferredSeqs.length > 0) lc.notRetained({ from_seq: deferredSeqs[0]!, to_seq: deferredSeqs.at(-1)!, samples: deferredSeqs.length, reason: 'a material step waited for the retention interval when the capture ended' });

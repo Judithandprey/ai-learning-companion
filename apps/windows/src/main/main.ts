@@ -37,6 +37,7 @@ import { ASSISTANCE, contextProblem, PNG_MAX_BYTES, questionOf, questionProblem,
 import { DEFAULT_RETENTION_POLICY, pngSize, RETENTION_FORMAT, type RetentionPolicy } from '../shared/retention.ts';
 import { CaptureLink, readLinkConfig, type LinkStatus } from './capture-link.ts';
 import { earlierNotes, readConnectorConfig, Subscription, type AskOutcome, type ConnectorEnd, type SubscriptionStatus } from './subscription.ts';
+import { clampRate, isPlace, isSurface, NO_PREFERENCES, placesOf, readPreferences, storedPreferences, withPlace, type Preferences, type Rect } from '../shared/placement.ts';
 
 const HERE = dirname(fileURLToPath(import.meta.url)); // dist/apps/windows/src/main
 const DIST = normalize(join(HERE, '..', '..', '..', '..')); // dist/
@@ -758,8 +759,10 @@ function continues(doc: DesktopInk): { ok: true } | { ok: false; reason: string 
  * `presentation` is written for an answer: 'unconfirmed' from the moment it is sent to the overlay, 'shown' once the
  * overlay reported it. An answer left 'unconfirmed' (the overlay was lost, or the session ended, before it reported)
  * may or may not have been seen: it keeps its text, and it is not displayed help as far as this record knows.
+ * `spoken` is written only for an answer that was shown and that the overlay began to read aloud (Talk on): 'started'
+ * while it is being read, then 'finished' or 'interrupted'. An answer never read aloud has no `spoken`.
  */
-type AskEntry = { request_id: string; question: string; assistance: Assistance; model: string | null; submitted_at: string; ended_at: string | null; outcome: unknown; shown: boolean; presentation?: 'shown' | 'unconfirmed' };
+type AskEntry = { request_id: string; question: string; assistance: Assistance; model: string | null; submitted_at: string; ended_at: string | null; outcome: unknown; shown: boolean; presentation?: 'shown' | 'unconfirmed'; spoken?: 'started' | 'finished' | 'interrupted' };
 type Selection = {
   readonly id: string;
   readonly image: Picture;
@@ -951,6 +954,18 @@ function askPresented(s: Session, selectionId: unknown, requestId: unknown, show
   else notShown(entry);
   const unwritten = saveAsk(s, sel);
   return { saved: unwritten === null, reason: unwritten };
+}
+/**
+ * The overlay says an answer it showed is being read aloud, or stopped being read (to its end, or interrupted). Taken
+ * only for the current selection's answer that was reported shown; played help is recorded as what happened.
+ */
+function askSpoken(s: Session, selectionId: unknown, requestId: unknown, state: unknown): void {
+  const sel = s.ask;
+  const entry = sel && sel.id === selectionId ? sel.record.requests.find((r) => r.request_id === requestId) : undefined;
+  if (!sel || !entry || !entry.shown || (state !== 'started' && state !== 'finished' && state !== 'interrupted')) return;
+  if (state !== 'started' && entry.spoken !== 'started') return; // an end is taken only for a reading that began
+  entry.spoken = state;
+  saveAsk(s, sel);
 }
 /** An answer the overlay itself says it did not show (or never took, its card being gone): its text is not kept. */
 function notShown(entry: AskEntry): void {
@@ -1242,15 +1257,81 @@ ipcMain.handle('lc:discard-recovery', async (e, id: unknown) => {
   notifyRecoveries();
   return { ok: true };
 });
+// ---- where the overlay's movable surfaces are, and the speech rate: kept on this device, per display ------------------
+const preferencesFile = (): string => join(app.getPath('userData'), 'overlay-preferences.json');
+/** What this run keeps; `unreadable`: the file found is not of this format, and is left untouched (nothing is saved). */
+let preferences: Preferences = NO_PREFERENCES;
+let preferencesUnreadable = false;
+function loadPreferences(): void {
+  preferences = NO_PREFERENCES;
+  preferencesUnreadable = false;
+  if (!existsSync(preferencesFile())) return;
+  let text: string;
+  try {
+    text = readFileSync(preferencesFile(), 'utf8');
+  } catch {
+    return void (preferencesUnreadable = true);
+  }
+  let value: unknown;
+  try {
+    value = JSON.parse(text);
+  } catch {
+    // Not JSON at all (empty or cut short, as a write that was interrupted leaves it): set aside under another
+    // name, never deleted, so that the next change can be kept again.
+    try {
+      renameSync(preferencesFile(), `${preferencesFile()}.unreadable`);
+    } catch {
+      preferencesUnreadable = true;
+    }
+    return;
+  }
+  // JSON of another shape (another format, say a later version's): left as it is, and nothing is written over it.
+  const read = readPreferences(value);
+  if (read) preferences = read;
+  else preferencesUnreadable = true;
+}
+/** Keeps a changed preference for this run and writes it. Null, or why it is not written (it then holds for this run only). */
+function savePreferences(next: Preferences): string | null {
+  preferences = next;
+  if (preferencesUnreadable) return 'the overlay preferences on this device are not readable, so they are left untouched';
+  try {
+    mkdirSync(app.getPath('userData'), { recursive: true });
+    writeAtomic(preferencesFile(), storedPreferences(next));
+    return null;
+  } catch (error) {
+    return message(error);
+  }
+}
+/** The work area of the session's display, relative to the display's own corner (the overlay covers the whole display). */
+function workAreaOf(s: Session): Rect {
+  const d = screen.getAllDisplays().find((x) => String(x.id) === s.display.display_id);
+  const b = s.display.bounds;
+  const w = d?.workArea ?? b;
+  return { x: w.x - b.x, y: w.y - b.y, width: w.width, height: w.height };
+}
+// A surface was moved (the user's drag): its place is kept for this display. Only numbers in [0, 1] are taken.
+ipcMain.handle('lc:place', (e, surface: unknown, place: unknown) => {
+  if (!fromOverlay(e) || !current || !isSurface(surface) || !isPlace(place)) return { saved: false, reason: 'refused' };
+  const reason = savePreferences(withPlace(preferences, current.display.display_id, surface, place));
+  return { saved: reason === null, reason };
+});
+ipcMain.handle('lc:speech-rate', (e, rate: unknown) => {
+  if (!fromOverlay(e) || !current || typeof rate !== 'number' || clampRate(rate) !== rate) return { saved: false, reason: 'refused' };
+  const reason = savePreferences({ displays: preferences.displays, speech_rate: rate });
+  return { saved: reason === null, reason };
+});
+
 ipcMain.handle('lc:overlay-ready', (e) => {
   if (!fromOverlay(e) || !current) return null;
-  return { source_id: current.sourceId, display: current.display, doc: current.doc, address_sha256: sha256(current.doc.id), retention_policy: current.retention.policy, development: linkStatus.mode === 'development', subscription: subscriptionStatus.mode === 'managed' };
+  return {
+    work_area: workAreaOf(current), places: placesOf(preferences, current.display.display_id), speech_rate: preferences.speech_rate, source_id: current.sourceId, display: current.display, doc: current.doc, address_sha256: sha256(current.doc.id), retention_policy: current.retention.policy, development: linkStatus.mode === 'development', subscription: subscriptionStatus.mode === 'managed' };
 });
 // ASK: a selection is retained; a question about it is sent only by lc:ask-submit, the user's own press.
 ipcMain.handle('lc:ask-selection', (e, facts: unknown, png: unknown, ink: unknown) => (fromOverlay(e) && current ? retainSelection(current, facts, png, ink ?? null) : { ok: false, reason: 'refused' }));
 ipcMain.handle('lc:ask-submit', (e, selectionId: unknown, question: unknown, assistance: unknown) => (fromOverlay(e) && current ? submitAsk(current, selectionId, question, assistance) : { ok: false, reason: 'refused' }));
 ipcMain.on('lc:ask-cancel', (e, selectionId: unknown) => void (fromOverlay(e) && current ? cancelAsk(current, selectionId) : undefined));
 ipcMain.handle('lc:ask-presented', (e, selectionId: unknown, requestId: unknown, shown: unknown) => (fromOverlay(e) && current ? askPresented(current, selectionId, requestId, shown) : { saved: false, reason: 'refused' }));
+ipcMain.on('lc:ask-spoken', (e, selectionId: unknown, requestId: unknown, state: unknown) => void (fromOverlay(e) && current ? askSpoken(current, selectionId, requestId, state) : undefined));
 ipcMain.handle('lc:ask-save', (e, selectionId: unknown) => (fromOverlay(e) && current ? saveAskAgain(current, selectionId) : { saved: false, reason: 'refused' }));
 ipcMain.on('lc:ask-closed', (e) => void (fromOverlay(e) && current ? dropSelection(current) : undefined)); // the card was closed or replaced
 // Retained frames keep arriving while a Stop waits for the overlay: they were observed before the end.
@@ -1413,6 +1494,7 @@ app.whenReady().then(async () => {
     void link.reconcile();
   }
   // The managed ChatGPT subscription: explicitly configured; nothing is started or asked until the user presses.
+  loadPreferences();
   const connector = readConnectorConfig(process.env);
   // What earlier runs recorded of connector ends that were not seen is read once, and said as past records (also
   // when the configuration named now cannot be used).
@@ -1486,6 +1568,10 @@ app.whenReady().then(async () => {
     if (current && String(d.id) === current.display.display_id) end('the display was removed');
   });
   // Frames, overlay and ink are laid out for the geometry at Start; a changed geometry ends the session.
+  // The work area alone changed (the taskbar moved or resized): the overlay keeps its surfaces inside the new one.
+  screen.on('display-metrics-changed', (_e, d, changed) => {
+    if (current && String(d.id) === current.display.display_id && changed.length > 0 && changed.every((k) => k === 'workArea') && !current.overlay.isDestroyed()) current.overlay.webContents.send('lc:work-area', workAreaOf(current));
+  });
   screen.on('display-metrics-changed', (_e, d, changed) => {
     if (current && String(d.id) === current.display.display_id && changed.some((k) => k === 'bounds' || k === 'rotation' || k === 'scaleFactor')) end(`the display's ${changed.join(', ')} changed; start again to capture it as it is now`);
   });

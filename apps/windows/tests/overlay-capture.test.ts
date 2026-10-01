@@ -20,7 +20,7 @@ function overlay(arm: Promise<boolean>, media: Promise<unknown>) {
     Promise,
   };
   vm.createContext(ctx);
-  vm.runInContext(`let stream = null, ended = false, endReason = '', sampling = Promise.resolve(), asked = null;\n${FUNCTIONS}\nglobalThis.t = { startCapture, endCapture, state: () => ({ ended, stream: stream !== null, shown: video.srcObject !== null }) };`, ctx);
+  vm.runInContext(`let stream = null, ended = false, endReason = '', sampling = Promise.resolve(), asked = null;\nconst interrupt = () => undefined;\n${FUNCTIONS}\nglobalThis.t = { startCapture, endCapture, state: () => ({ ended, stream: stream !== null, shown: video.srcObject !== null }) };`, ctx);
   return { ...(ctx as unknown as { t: { startCapture(): Promise<void>; endCapture(r: string): void; state(): { ended: boolean; stream: boolean; shown: boolean } } }).t, calls };
 }
 const fakeStream = (surface = 'monitor', audio = 0) => {

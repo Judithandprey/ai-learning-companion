@@ -23,5 +23,10 @@ contextBridge.exposeInMainWorld('lc', {
   askClosed: () => ipcRenderer.send('lc:ask-closed'),
   askPresented: (selectionId, requestId, shown) => ipcRenderer.invoke('lc:ask-presented', String(selectionId), String(requestId), shown === true),
   askSave: (selectionId) => ipcRenderer.invoke('lc:ask-save', String(selectionId)),
+  askSpoken: (selectionId, requestId, state) => ipcRenderer.send('lc:ask-spoken', String(selectionId), String(requestId), String(state)),
+  // Where the movable surfaces are, and the speech rate: kept by the main process, per display.
+  place: (surface, place) => ipcRenderer.invoke('lc:place', String(surface), { fx: Number(place?.fx), fy: Number(place?.fy) }),
+  speechRate: (rate) => ipcRenderer.invoke('lc:speech-rate', Number(rate)),
+  onWorkArea: (fn) => ipcRenderer.on('lc:work-area', (_e, area) => fn(area)),
   onAskResult: (fn) => ipcRenderer.on('lc:ask-result', (_e, selectionId, requestId, outcome, record) => fn(selectionId, requestId, outcome, record)),
 });

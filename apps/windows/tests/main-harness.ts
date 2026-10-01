@@ -15,6 +15,7 @@ import { CaptureLink, readLinkConfig, type LinkOptions } from '../src/main/captu
 import { earlierNotes, readConnectorConfig, Subscription, type SubscriptionOptions } from '../src/main/subscription.ts';
 import { toFramePixels } from '../src/shared/samples.ts';
 import { ASSISTANCE, contextProblem, PNG_MAX_BYTES, questionOf, questionProblem } from '../src/shared/subscription-ask.ts';
+import { clampRate, isPlace, isSurface, NO_PREFERENCES, placesOf, readPreferences, storedPreferences, withPlace } from '../src/shared/placement.ts';
 import { appSource } from './source.ts';
 
 export const HERE = path.dirname(url.fileURLToPath(import.meta.url));
@@ -114,7 +115,8 @@ export function harness(options: { env?: Record<string, string>; /** The app dat
   /** `only`: when set, writes of files whose path contains it fail (the others go on). */
   const failWrites = { on: false, only: null as string | null, reads: false, partialAppend: 0, truncate: false };
   const timers: Array<{ f: () => void; ms: number }> = [];
-  const display = { id: 1, bounds: { x: 0, y: 0, width: 1280, height: 800 }, scaleFactor: 1 };
+  // The work area: the display without a taskbar of 40 DIP at the bottom (a test may change it).
+  const display = { id: 1, bounds: { x: 0, y: 0, width: 1280, height: 800 }, workArea: { x: 0, y: 0, width: 1280, height: 760 }, scaleFactor: 1 };
   const source = { id: 'screen:1:0', display_id: '1', name: 'Display 1', thumbnail: { toDataURL: () => '' } };
   /** n: times the app really quit (its will-quit not prevented). ignored: quits asked for while one was under way. */
   const quits = { n: 0, ignored: 0 };
@@ -218,6 +220,14 @@ export function harness(options: { env?: Record<string, string>; /** The app dat
     PNG_MAX_BYTES,
     questionOf,
     questionProblem,
+    clampRate,
+    isPlace,
+    isSurface,
+    NO_PREFERENCES,
+    placesOf,
+    readPreferences,
+    storedPreferences,
+    withPlace,
     shell: { openExternal: async (url: string) => void opened.push(url) },
     Buffer,
     Response,
@@ -234,7 +244,7 @@ export function harness(options: { env?: Record<string, string>; /** The app dat
   const fire = (ms: number): void => {
     for (const t of timers.splice(0).filter((x) => (x.ms === ms ? true : (timers.push(x), false)))) t.f();
   };
-  return { ...review, app, userData, sources, handlers, permission, failWrites, source, quits, opened, fire, liveOverlays: () => FakeWindow.all.filter((w) => w.opts.transparent && !w.destroyed) };
+  return { ...review, app, userData, sources, handlers, permission, failWrites, source, display, screen: sandbox.screen as EventEmitter, quits, opened, fire, liveOverlays: () => FakeWindow.all.filter((w) => w.opts.transparent && !w.destroyed) };
 }
 export type H = ReturnType<typeof harness>;
 export type Session = { overlay: FakeWindow; ending: boolean; capture: string; doc: desktopInk.DesktopInk };
