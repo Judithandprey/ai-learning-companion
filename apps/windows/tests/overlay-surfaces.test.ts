@@ -962,4 +962,24 @@ test('[synthetic connector, stand-in voice] a response is read only if it was as
   await until('interrupted', () => c.fakes.last().count('companion/interrupt') === 1);
   await until('said as cancelled', () => /^Cancelled/.test(c.page.ask().status ?? ''));
   assert.deepEqual([c.page.ask().answer, c.records()[0]!.requests[0]!['shown']], [null, false]);
+  // A response to an earlier circle that was still on its way to the overlay when the next circle was drawn (it
+  // arrives before the next one's acknowledgement) is not the new card's: nothing of it is shown there.
+  const d = await app();
+  const results: unknown[][] = [];
+  const send = d.s.overlay.webContents.send;
+  d.s.overlay.webContents.send = (...args: unknown[]) => {
+    if (args[0] === 'lc:ask-result') results.push(args);
+    send(...args);
+  };
+  await d.select();
+  await d.ask('The first circle\'s hint.');
+  const hold = d.page.holdSubmitAck();
+  d.circle(420, 150);
+  await until('the second circle\'s own request', () => d.fakes.last().asks().length === 2);
+  assert.equal(results.length, 1);
+  send(...results[0]!); // the first one's, delivered late
+  await settle();
+  hold();
+  await until('the second is acknowledged', () => /^Asked at/.test(d.page.ask().status ?? ''));
+  assert.deepEqual([d.page.ask().answer, d.page.review.card()?.text.includes('Region 412,87 ')], [null, true], 'the card of the second circle waits for its own response');
 });
