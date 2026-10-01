@@ -1,0 +1,26 @@
+[
+  {
+    "receipt": "docs/verification/web/evidence/windows-subscription-ask/windows-correction.json",
+    "source_hashes_verified": 63,
+    "log_hash_verified": true,
+    "owner_counts": {
+      "tests": 102,
+      "pass": 95,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 7
+    }
+  },
+  {
+    "receipt": "docs/verification/web/evidence/windows-subscription-ask/linux-correction.json",
+    "source_hashes_verified": 63,
+    "log_hash_verified": true,
+    "owner_counts": {
+      "tests": 102,
+      "pass": 96,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 6
+    }
+  }
+]

@@ -1,0 +1,44 @@
+{
+  "candidate": "c977df5",
+  "synthetic_only": true,
+  "original_child_exited": true,
+  "spawn_count": 2,
+  "methods": [
+    [
+      "connection/read"
+    ],
+    [
+      "connection/read"
+    ]
+  ],
+  "status": {
+    "mode": "managed",
+    "state": "signed_in",
+    "plan": "Pro",
+    "rate_limits": [
+      {
+        "label": "5 h",
+        "used_percent": 12.4,
+        "resets_at": "2026-10-01T10:00:00Z"
+      }
+    ],
+    "models": [
+      {
+        "id": "text-only-model",
+        "label": "Text only",
+        "image_input": false,
+        "default": true
+      },
+      {
+        "id": "vision-model",
+        "label": "Vision",
+        "image_input": true,
+        "default": false
+      }
+    ],
+    "model": "vision-model",
+    "login": "none",
+    "detail": null,
+    "asking": false
+  }
+}

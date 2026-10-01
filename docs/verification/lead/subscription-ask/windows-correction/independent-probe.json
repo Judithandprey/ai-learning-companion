@@ -1,0 +1,100 @@
+{
+  "candidate": "c977df5",
+  "synthetic_only": true,
+  "results": [
+    {
+      "probe": "login_success_during_connection_read",
+      "fixed": true,
+      "observed": {
+        "status": {
+          "mode": "managed",
+          "state": "signed_in",
+          "plan": "Pro",
+          "rate_limits": [
+            {
+              "label": "5 h",
+              "used_percent": 12.4,
+              "resets_at": "2026-10-01T10:00:00Z"
+            }
+          ],
+          "models": [
+            {
+              "id": "text-only-model",
+              "label": "Text only",
+              "image_input": false,
+              "default": true
+            },
+            {
+              "id": "vision-model",
+              "label": "Vision",
+              "image_input": true,
+              "default": false
+            }
+          ],
+          "model": "vision-model",
+          "login": "none",
+          "detail": null,
+          "asking": false
+        },
+        "reads": 2
+      },
+      "expected": "An account-change/login-completed event queues a fresh read; stale signed_out is not the final state."
+    },
+    {
+      "probe": "non_confirmation_cancel_receipt",
+      "receipt": {},
+      "observed": {
+        "status": "cancelled",
+        "uncertain": true
+      },
+      "fixed": true,
+      "expected": "uncertain:true unless the method-specific receipt confirms interruption."
+    },
+    {
+      "probe": "non_confirmation_cancel_receipt",
+      "receipt": null,
+      "observed": {
+        "status": "cancelled",
+        "uncertain": true
+      },
+      "fixed": true,
+      "expected": "uncertain:true unless the method-specific receipt confirms interruption."
+    },
+    {
+      "probe": "non_confirmation_cancel_receipt",
+      "receipt": {
+        "cancelled": true,
+        "uncertain": "unknown"
+      },
+      "observed": {
+        "status": "cancelled",
+        "uncertain": true
+      },
+      "fixed": true,
+      "expected": "uncertain:true unless the method-specific receipt confirms interruption."
+    },
+    {
+      "probe": "non_confirmation_cancel_receipt",
+      "receipt": {
+        "cancelled": false,
+        "uncertain": false
+      },
+      "observed": {
+        "status": "cancelled",
+        "uncertain": true
+      },
+      "fixed": true,
+      "expected": "uncertain:true unless the method-specific receipt confirms interruption."
+    },
+    {
+      "probe": "oversize_line_exit_settlement",
+      "fixed": true,
+      "observed": {
+        "already_exited": true,
+        "kill_calls_after_exit": 0,
+        "state": "unavailable"
+      },
+      "expected": "Resolve exited even after protocol fence, with no timeout/kill of an already exited child."
+    }
+  ]
+}

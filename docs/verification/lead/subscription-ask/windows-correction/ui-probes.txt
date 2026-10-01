@@ -1,0 +1,14 @@
+(node:9) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+{"probe":"completion_write_failure","ui":{"badge":"Selection · answered by ChatGPT below","form":true,"submit":true,"cancel":false,"status":"Answered by ChatGPT (vision-model) in 1.2 s, about the picture above and your question only. This is NOT saved on this device yet: it could not be written (Error: EIO: i/o error (injected)). It is kept in the app and tried again when this card closes; press Save to try now.","answer":"SYNTHETIC retained assistance","save":true},"disk":{"request_id":"ask-64602eca92329e15.1","question":"Explain what is selected.","assistance":"hint","model":"vision-model","submitted_at":"2026-10-01T07:46:51.132Z","ended_at":null,"outcome":null,"shown":false}}
+✔ lead storage fault after submission: shown answer must not silently lose assistance history (34.336534ms)
+{"probe":"immediate_refusal","ui":{"badge":"Selection · asked: no answer shown","form":true,"submit":true,"cancel":false,"status":"No answer: ChatGPT is not signed in (sign in from the control window). It was not sent again.","answer":null,"save":false},"disk":[{"request_id":"ask-8474ced1c31611d6.1","question":"Explain what is selected.","assistance":"hint","model":"vision-model","submitted_at":"2026-10-01T07:46:51.153Z","ended_at":"2026-10-01T07:46:51.154Z","outcome":{"status":"refused","code":"unauthenticated","reason":"ChatGPT is not signed in (sign in from the control window)"},"shown":false}]}
+✔ lead immediate local refusal reaches the request card (15.324573ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 54.768834
