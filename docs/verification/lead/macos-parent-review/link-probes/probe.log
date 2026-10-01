@@ -1,0 +1,126 @@
+{
+  "cases" : 3,
+  "commit" : "f625b480e591682be75dd6a7617c08eee4cf7bd6",
+  "results" : [
+    {
+      "bug_reproduced" : false,
+      "case" : "positive_control_registration_source_Stop",
+      "fresh_starts" : [
+        true
+      ],
+      "requests" : [
+        {
+          "body" : "{\"authorization_generation\":1,\"continuity\":{\"kind\":\"initial\"},\"contract_version\":\"0.2.1\",\"device_id\":\"probe-device\",\"membership_revision\":1,\"session_id\":\"probe-session\",\"stream_id\":\"stream-7a16543acafbfdabcf9710a9\"}",
+          "detail_before_send" : "",
+          "key" : "stream-7a16543acafbfdabcf9710a9.register",
+          "method" : "POST",
+          "path" : "\/v2\/process\/streams",
+          "status_before_send" : "connecting"
+        },
+        {
+          "body" : "",
+          "detail_before_send" : "",
+          "key" : "",
+          "method" : "GET",
+          "path" : "\/v2\/process\/streams\/stream-7a16543acafbfdabcf9710a9",
+          "status_before_send" : "connecting"
+        },
+        {
+          "body" : "{\"contract_version\":\"0.2.4\",\"project_id\":null,\"source_id\":\"src-864464c02283755937db8509\",\"source_timezone\":\"America\/Los_Angeles\",\"stream_id\":\"stream-7a16543acafbfdabcf9710a9\"}",
+          "detail_before_send" : "",
+          "key" : "",
+          "method" : "PUT",
+          "path" : "\/v2\/process\/display-sources\/src-864464c02283755937db8509",
+          "status_before_send" : "connecting"
+        },
+        {
+          "body" : "{\"action\":{\"kind\":\"stop\",\"pre_stop_sequence\":null},\"contract_version\":\"0.2.1\",\"device_id\":\"probe-device\",\"expected_revision\":1,\"session_id\":\"probe-session\",\"stream_id\":\"stream-7a16543acafbfdabcf9710a9\"}",
+          "detail_before_send" : "nothing new is sent",
+          "key" : "stream-7a16543acafbfdabcf9710a9.stop.1",
+          "method" : "POST",
+          "path" : "\/v2\/process\/streams\/stream-7a16543acafbfdabcf9710a9:control",
+          "status_before_send" : "stopping"
+        },
+        {
+          "body" : "",
+          "detail_before_send" : "nothing new is sent",
+          "key" : "",
+          "method" : "GET",
+          "path" : "\/v2\/process\/streams\/stream-7a16543acafbfdabcf9710a9",
+          "status_before_send" : "stopping"
+        }
+      ]
+    },
+    {
+      "bug_reproduced" : true,
+      "case" : "sticky_save_fault_still_PUTs_source",
+      "fresh_starts" : [
+        true
+      ],
+      "requests" : [
+        {
+          "body" : "{\"authorization_generation\":1,\"continuity\":{\"kind\":\"initial\"},\"contract_version\":\"0.2.1\",\"device_id\":\"probe-device\",\"membership_revision\":1,\"session_id\":\"probe-session\",\"stream_id\":\"stream-d17cd3644b131cc8a13415bd\"}",
+          "detail_before_send" : "",
+          "key" : "stream-d17cd3644b131cc8a13415bd.register",
+          "method" : "POST",
+          "path" : "\/v2\/process\/streams",
+          "status_before_send" : "connecting"
+        },
+        {
+          "body" : "",
+          "detail_before_send" : "the capture link record could not be written; nothing more is sent",
+          "key" : "",
+          "method" : "GET",
+          "path" : "\/v2\/process\/streams\/stream-d17cd3644b131cc8a13415bd",
+          "status_before_send" : "notConnected"
+        },
+        {
+          "body" : "{\"contract_version\":\"0.2.4\",\"project_id\":null,\"source_id\":\"src-7a60bb7c6e18ac086405b616\",\"source_timezone\":\"America\/Los_Angeles\",\"stream_id\":\"stream-d17cd3644b131cc8a13415bd\"}",
+          "detail_before_send" : "the capture link record could not be written; nothing more is sent",
+          "key" : "",
+          "method" : "PUT",
+          "path" : "\/v2\/process\/display-sources\/src-7a60bb7c6e18ac086405b616",
+          "status_before_send" : "notConnected"
+        }
+      ]
+    },
+    {
+      "bug_reproduced" : true,
+      "case" : "unknown_Stop_reopen_changes_key_same_revision_body",
+      "fresh_starts" : [
+        false
+      ],
+      "persisted_key" : "probe-stream.stop.1",
+      "requests" : [
+        {
+          "body" : "",
+          "detail_before_send" : "checking earlier streams",
+          "key" : "",
+          "method" : "GET",
+          "path" : "\/v2\/process\/streams\/probe-stream",
+          "status_before_send" : "reconciling"
+        },
+        {
+          "body" : "{\"action\":{\"kind\":\"stop\",\"pre_stop_sequence\":null},\"contract_version\":\"0.2.1\",\"device_id\":\"probe-device\",\"expected_revision\":1,\"session_id\":\"probe-session\",\"stream_id\":\"probe-stream\"}",
+          "detail_before_send" : "checking earlier streams",
+          "key" : "probe-stream.stop.2",
+          "method" : "POST",
+          "path" : "\/v2\/process\/streams\/probe-stream:control",
+          "status_before_send" : "reconciling"
+        },
+        {
+          "body" : "",
+          "detail_before_send" : "checking earlier streams",
+          "key" : "",
+          "method" : "GET",
+          "path" : "\/v2\/process\/streams\/probe-stream",
+          "status_before_send" : "reconciling"
+        }
+      ],
+      "same_body" : true,
+      "sent_key" : "probe-stream.stop.2"
+    }
+  ],
+  "scope" : "Linux Swift interpreter with pre-existing Apple stubs, actual candidate CaptureLink logic, fake launcher and in-memory transport; no child\/socket\/database\/GUI\/provider. Not macOS compile or native test evidence.",
+  "temp_directory" : "\/tmp\/macos-parent-link-f625-probes\/cases-E374994D-AA0F-4F6E-886D-14514AB64187"
+}

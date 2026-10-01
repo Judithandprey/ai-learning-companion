@@ -49,3 +49,5 @@ QA retests only quit, clean relaunch and failure UI on the new exact SHA.
 No repeated full campaign, provider activation, user-preview database operation
 or service restart is authorized by this correction. Real AI, physical input,
 macOS interaction, audio, Notability and both complete §7.1 gates remain open.
+
+Conditional QA retest was accepted as `handoff_47984d838c7d001ba869d5b2f3fac80a`; it waits for the corrected exact release and Web display release. A subsequent read-only owner worktree inspection finds Windows source/test modifications on5871981, retained untouched; this is observed work in progress, not a delivered or verified repair.

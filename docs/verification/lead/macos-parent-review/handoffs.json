@@ -1,0 +1,38 @@
+{
+  "candidate": "f625b480e591682be75dd6a7617c08eee4cf7bd6",
+  "review_baseline": "b408f4f",
+  "native_correction": {
+    "message_id": "handoff_2bedf7ee1ad4bca823a2de9f24046f36",
+    "reply_to": "handoff_272773cc71abc32339799a07d8800bb1",
+    "accepted": true,
+    "state_at_receipt": "unread",
+    "execution_started_at_receipt": false
+  },
+  "windows_correction": {
+    "message_id": "handoff_9ceac232576c4ed6db9eb82c817b40fb",
+    "accepted": true,
+    "state_at_receipt": "unread",
+    "execution_started_at_receipt": false,
+    "subsequent_read_only_worktree_observation": {
+      "head": "5871981",
+      "modified_owned_paths": [
+        "apps/windows/src/main/capture-link.ts",
+        "apps/windows/src/main/main.ts",
+        "apps/windows/src/preload/overlay.cjs",
+        "apps/windows/src/renderer/control.ts",
+        "apps/windows/src/renderer/overlay.ts",
+        "apps/windows/tests/main-harness.ts",
+        "apps/windows/tests/overlay-frames.test.ts",
+        "apps/windows/tests/overlay-page.ts"
+      ],
+      "meaning": "Work in progress observed; no delivery, test result or read acknowledgment inferred."
+    }
+  },
+  "qa_conditional_retest": {
+    "message_id": "handoff_47984d838c7d001ba869d5b2f3fac80a",
+    "reply_to": "handoff_9b3da39a99a880434cea8512052342bc",
+    "accepted": true,
+    "execution_started_at_receipt": false,
+    "dependency": "Exact reviewed Windows correction and author display release; no full campaign now."
+  }
+}

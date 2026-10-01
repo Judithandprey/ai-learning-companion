@@ -46,3 +46,5 @@ Deliver one exact correction commit with honest executed/unexecuted boundaries.
 Lead rechecks these cases, integrates approved source and runs the existing
 macOS-only hosted workflow. Actual interactive Mac permission/Start/Stop/ink,
 physical input, audio, provider and Notability remain separate open gates.
+
+The native correction was actually accepted as `handoff_2bedf7ee1ad4bca823a2de9f24046f36`, initially unread with `execution_started:false`. [Receipts and observed Windows work](handoffs.json) also retain the existing Web correction and conditional QA retest. No native correction delivery or Mac CI success is implied.
