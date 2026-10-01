@@ -88,3 +88,23 @@ were read. Windows continues current trusted TTS and whole-frame/auto-focus/live
 consumer work; Backend owns later verified audio transport, and QA retains one
 integrated behavior pass. Transcription + image + TTS is an explicitly limited
 composition, not native acoustic/visual fusion or complete AUDIO/AVTEST acceptance.
+
+## Received correction and integration
+
+Actual Support delivery `3167dbf103986bf0a6b339c0138ccb9579847135`, received as
+`handoff_84e4a609a4fa94991277a031be1521c7`, corrects the inference/oracle failures
+above. [Independent review](support-delivery-review.md) approves its **offline
+scope**: 17 lifecycle + four fixture mocks + six production-RPC/in-memory cases
+pass. Integrated as `e04a196`; all seven changed paths match and 21 resulting-main
+unittests pass in 0.065s. [Exact checks](support-delivery-checks.json).
+No actual account, microphone, playback or model request was run.
+
+The live gate stays closed: managed WebRTC auth is source-supported, but incoming
+handoffs are admitted before client observation, so this input-only experiment
+cannot enforce no additional backing inference. A peer implementation alone cannot
+fix that. This is not a blanket managed-audio refusal. Existing ordinary
+`audio/localAudio` remains untested; Backend owns the next minimal candidate over
+the existing managed ordinary-turn lifecycle, with explicit submission accounting,
+original guards and no unrequested additional turns. Lead reviews exact source and
+allocates at most a bounded generated-audio test when it is ready. No API key,
+credential extraction, new billing, endpoint override or uncontrolled retry.

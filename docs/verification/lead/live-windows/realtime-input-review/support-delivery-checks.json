@@ -1,0 +1,25 @@
+{
+  "owner_commit": "3167dbf103986bf0a6b339c0138ccb9579847135",
+  "integrated_commit": "e04a196e6bd657de8d0907428ded99df89a59fee",
+  "independent_tests": {
+    "fake_lifecycle": 17,
+    "fixture_wrapper_mocks": 4,
+    "production_rpc_in_memory": 6
+  },
+  "integrated_main_unittest": {
+    "passed": 21,
+    "failed": 0
+  },
+  "exact_changed_paths": {
+    "docs/verification/support/windows-realtime-fixture-receipt.json": "dc291ed8ba868ce436aa21756caf8c2d06963c29f0508052fb675d4e34570d38",
+    "docs/verification/support/windows-realtime-offline-checks.json": "57dc5d7266189d715a6932631abfa5470970dd49c6de9ea1d15d7bd0b19b85d5",
+    "docs/verification/support/windows-realtime-protocol-preconditions.md": "1227a499b9ee1ed0c233ac4a7c59d7ba8bd796d65836c5863d5df0496633c710",
+    "tests/probes/support/realtime_input_probe.py": "a1440ca19511643b3d855633335f1a97f3c843c321b2ab2a5e1fa70c21ce8338",
+    "tests/probes/support/test_realtime_input_probe.py": "fabf65c3b8b23bf08afd74600bae925e42112eef6324482aa3aeae0ebc8df609",
+    "tests/probes/support/test_windows_realtime_fixture.py": "16e82c072b736fc5350c31a97cef2e304337f974f1d18fbcea5a29ce0d23d058",
+    "tests/probes/support/windows_realtime_fixture.py": "4d7b8cfe8ad542fe6338a6fcc542b63e9d7f80f08b7780d9b534800dc83178fc"
+  },
+  "actual_account_audio_calls": 0,
+  "live_probe_gate": "retained_blocked",
+  "product_audio_acceptance": "not_run"
+}

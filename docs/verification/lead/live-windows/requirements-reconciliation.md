@@ -67,3 +67,21 @@ normative audio sections, 69 added/changed links and `git diff --check`.
 The temporary checker initially under-matched R headings, then assumed one G row
 per ID; correcting the checker preserved all document assertions. No application
 suite or provider request was run for this documentation adoption.
+
+## Published revision and actual current-owner handoffs
+
+Canonical revision `f35fae9aad1a6ba0e18ec1bfa925a01b118b1132` was normally pushed
+to origin/main. Its substantive same-task amendments were accepted through native
+routes: Web `handoff_852e41b7b949a954622434594f725644`, QA
+`handoff_d24ad03a755e5f9ef436ea1bb3feb345`, Native
+`handoff_2cb659447a3531fd18906b08afb595cc`. All initially unread with
+execution_started=false; no claim that the owners already adopted them. No new
+QA campaign or duplicate implementation was assigned. Backend/Learning's longer
+journey gaps remain in their existing P1/P2/P3 cards, not another immediate batch.
+
+During this adoption, Support actually delivered3167dbf. Its bounded offline
+correction was independently reviewed and integrated ase04a196; 27 independent
+and21 main checks are recorded separately in the [audio review](realtime-input-review/README.md).
+They are not tests of this document change or audio-product acceptance. Windows
+live/TTS and Native's current correction continue; the next constrained input
+candidate is delegated to existing Backend, with no real-account lease yet.
