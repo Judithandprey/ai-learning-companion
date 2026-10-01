@@ -1,6 +1,26 @@
-# macOS selected-image consumer: source review HOLD
+# macOS selected-image consumer: source approved, native build next
 
-## Current correction review — 2026-10-01
+## Retirement fix accepted — 2026-10-01
+
+Actual `c9e8e0b` delivery `handoff_066e40a971a4448456aeae7759d8ca50`
+closes the remaining cleanup gap. Both unchanged reviewer probes now pass:
+Quit waits for the owned child to exit. Lost-child/reconnect/parallel Connect and
+Quit admission regressions also pass, four tests in 23.648 seconds. The original
+partial-write fence is unchanged. [Independent review](retirement-fix/review.md)
+and [integration evidence](retirement-fix/integration.json) retain exact scope.
+
+The three reviewed leaves integrate as `fc2af15` / `b373f2a` / `ccbfd9a`;
+the complete native tree equals `c9e8e0b`. Main's three focused CI orchestration
+tests/five subtests pass in 3.28 seconds. Existing desktop CI now receives the
+Swift-generated ASK fixture, runs the released Python validator over the actual
+ImageIO PNG, and retains it in checksums/artifacts. Hosted macOS execution is the
+next check; no compiled/native/provider success is inferred here. The component
+still uses selected-image v1, not the current full-screen/live product flow.
+After actual compile/test corrections, Native's existing next assignment adopts
+`lc-subscription-live/1` and complete quota facts. No new mobile task.
+
+
+## Previous correction review — retained history
 
 Native delivered `704894f7e6e0a95c90f6a74bba68fb4394b45f9e` in
 `handoff_dff1a342e1dffab6296ebe2839d19a96`, on the original `a2fe30c`

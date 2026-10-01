@@ -1,0 +1,10 @@
+{
+  "review.md": "eddee9b5529de670fdcb51d010bbc990cdda566f2842854c7dbdeb687c8cf7aa",
+  "source-provenance.json": "9e397adfc496b240f2cb11c41aafd258fea03f3f77bdff84a2623e7d4422bd8a",
+  "focused-tests.txt": "3854435df55fa9e5e3111a4857ca5829eba4c8b7435bfce36db231db1c76f00d",
+  "harness/run.sh": "34c00d6cef9964bd6169d81cbbcaf287e382f4f481bffdfac52fb01b9daa7462",
+  "harness/src/main.swift": "3d2c8be79a096821a9102287b956159750fcc4f5e8778245d7e2215d5ab4a8ba",
+  "harness/src/ZQuitReview.swift": "60c662c564b415dbe03c1a56d909c43e2b8c49fe59fa6c0cbe10ecd9ca0d9821",
+  "harness/src/ZRealQuitReview.swift": "62366786a01d96e81879569dbcd2440ee90af255bac4392e456060eb5adf95cf",
+  "harness/src/AppleShim.swift": "288e161271773849213f3f7edcf141c0b169a1be9609b9dfdea624aaa380aa6c"
+}

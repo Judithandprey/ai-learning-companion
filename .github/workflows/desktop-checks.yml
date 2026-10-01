@@ -74,6 +74,7 @@ jobs:
             ${{ runner.temp }}/desktop-evidence/macos-composed-fixture/**
             ${{ runner.temp }}/desktop-evidence/macos-retained-frame-fixture/**
             ${{ runner.temp }}/desktop-evidence/macos-upload-fixture/**
+            ${{ runner.temp }}/desktop-evidence/macos-ask-fixture/**
             !${{ runner.temp }}/desktop-evidence/work/**
           if-no-files-found: error
           retention-days: 14

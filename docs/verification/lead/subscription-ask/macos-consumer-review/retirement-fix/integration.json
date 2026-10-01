@@ -1,0 +1,30 @@
+{
+  "reviewed_owner": "c9e8e0bcca67970adef9dd5bc21ecc0f1d0ee4a1",
+  "delivery": "handoff_066e40a971a4448456aeae7759d8ca50",
+  "integration": {
+    "a2fe30c": "fc2af15",
+    "704894f": "b373f2a",
+    "c9e8e0b": "ccbfd9a"
+  },
+  "native_tree_equal_to_reviewed": true,
+  "independent_checks": {
+    "tests": 4,
+    "failures": 0,
+    "seconds": 23.648,
+    "scope": "Linux portability harness with real local child processes; not native Mac"
+  },
+  "integrated_ci_wiring_checks": {
+    "tests": 3,
+    "subtests": 5,
+    "deselected": 21,
+    "seconds": 3.28,
+    "exit": 0,
+    "scope": "orchestration with fake OS/Swift; not native build"
+  },
+  "shell_syntax": "passed",
+  "git_diff_check": "passed",
+  "hosted_macos": "not_run_yet",
+  "interactive_mac": false,
+  "provider_called": false,
+  "next": "Exact-source macOS-only existing build; then Native consumes released live/quota interface after compile/test corrections."
+}

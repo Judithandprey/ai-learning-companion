@@ -48,7 +48,8 @@ with (out / "SHA256SUMS").open("w", encoding="utf-8") as hashes:
                 + list((out / "macos-ingress-fixture").rglob("*"))
                 + list((out / "macos-composed-fixture").rglob("*"))
                 + list((out / "macos-retained-frame-fixture").rglob("*"))
-                + list((out / "macos-upload-fixture").rglob("*")))
+                + list((out / "macos-upload-fixture").rglob("*"))
+                + list((out / "macos-ask-fixture").rglob("*")))
     for path in sorted(evidence):
         if path.is_file() and path.name != "SHA256SUMS":
             digest = hashlib.sha256()
@@ -217,11 +218,13 @@ PY
     composed_fixture="$out/macos-composed-fixture"
     mac_frame_fixture="$out/macos-retained-frame-fixture"
     mac_upload_fixture="$out/macos-upload-fixture"
+    mac_ask_fixture="$out/macos-ask-fixture"
     run_logged tests env COMPANION_DESKTOP_FIXTURE_DIR="$fixture" \
         COMPANION_DESKTOP_INGRESS_FIXTURE_DIR="$ingress_fixture" \
         COMPANION_DESKTOP_COMPOSED_FIXTURE_DIR="$composed_fixture" \
         COMPANION_DESKTOP_MAC_FRAME_FIXTURE_DIR="$mac_frame_fixture" \
-        COMPANION_DESKTOP_MAC_UPLOAD_FIXTURE_DIR="$mac_upload_fixture" swift test --configuration release
+        COMPANION_DESKTOP_MAC_UPLOAD_FIXTURE_DIR="$mac_upload_fixture" \
+        COMPANION_DESKTOP_ASK_FIXTURE_DIR="$mac_ask_fixture" swift test --configuration release
     run_logged fixture "$python_bin" - "$fixture" <<'PY'
 import json
 from pathlib import Path
@@ -246,6 +249,7 @@ PY
     run_logged composed-fixture "$python_bin" checks/validate_composed_frames.py "$composed_fixture"
     run_logged mac-frame-fixture "$python_bin" checks/validate_mac_retained_frames.py "$mac_frame_fixture"
     run_logged mac-upload-fixture "$python_bin" checks/validate_mac_upload.py "$mac_upload_fixture"
+    run_logged mac-ask-fixture "$python_bin" checks/validate_ask_request.py "$mac_ask_fixture"
 fi
 phase=complete
 state=checks-completed

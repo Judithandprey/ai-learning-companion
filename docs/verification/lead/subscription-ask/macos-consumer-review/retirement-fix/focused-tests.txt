@@ -1,0 +1,28 @@
+src/AskLinkTests.swift:944:36: warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 942 |             ending.connection = FakeConnector.connection(state: "signed_out", mode: NSNull())
+ 943 |             // In the first round the exit is reported only after the sign-in start has returned.
+ 944 |             ending.afterLoginStart = round == 0 ? { $0.endChildUnreported() } : { $0.exitChild() }
+     |                                    `- warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 945 |             let endingLink = askLink(ending)
+ 946 |             await endingLink.connect()
+
+Test Suite 'All tests' started at 2026-10-01 10:43:58.911
+Test Suite 'bin.xctest' started at 2026-10-01 10:43:58.913
+Test Suite 'DesktopCaptureTests' started at 2026-10-01 10:43:58.913
+Test Case 'DesktopCaptureTests.testReviewQuitWaitsForPartialCancelCleanup' started at 2026-10-01 10:43:58.913
+REVIEW partial-cancel Quit returned in 1.5003161430358887s; completed child ends=1
+Test Case 'DesktopCaptureTests.testReviewQuitWaitsForPartialCancelCleanup' passed (1.727 seconds)
+Test Case 'DesktopCaptureTests.testReviewRealChildQuitJoinsPartialCancelCleanup' started at 2026-10-01 10:44:00.640
+REVIEW real partial-cancel Quit returned in 2.1554062366485596s; child alive=false; partial bytes=65536:False
+REVIEW host-kept-alive cleanup completed=true after 2.1556261777877808s
+Test Case 'DesktopCaptureTests.testReviewRealChildQuitJoinsPartialCancelCleanup' passed (2.957 seconds)
+Test Case 'DesktopCaptureTests.testAskQuitAndConnectWaitForAConnectorThatIsStillEnding' started at 2026-10-01 10:44:03.597
+Test Case 'DesktopCaptureTests.testAskQuitAndConnectWaitForAConnectorThatIsStillEnding' passed (7.429 seconds)
+Test Case 'DesktopCaptureTests.testAskQuitWaitsForARealConnectorThatIsStillEnding' started at 2026-10-01 10:44:11.027
+Test Case 'DesktopCaptureTests.testAskQuitWaitsForARealConnectorThatIsStillEnding' passed (11.534 seconds)
+Test Suite 'DesktopCaptureTests' passed at 2026-10-01 10:44:22.561
+	 Executed 4 tests, with 0 failures (0 unexpected) in 23.648 (23.648) seconds
+Test Suite 'bin.xctest' passed at 2026-10-01 10:44:22.561
+	 Executed 4 tests, with 0 failures (0 unexpected) in 23.648 (23.648) seconds
+Test Suite 'All tests' passed at 2026-10-01 10:44:22.561
+	 Executed 4 tests, with 0 failures (0 unexpected) in 23.648 (23.648) seconds

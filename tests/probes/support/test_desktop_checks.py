@@ -121,6 +121,13 @@ elif name == 'swift':
             (upload / 'exchanges/request.json').write_text(json.dumps({'synthetic': True}))
             if os.environ.get('FIXTURE_CASE') == 'bad-mac-upload-fixture':
                 (upload / 'manifest.json').write_text('invalid JSON')
+        if os.environ.get('FIXTURE_CASE') != 'missing-mac-ask-fixture':
+            ask = pathlib.Path(os.environ['COMPANION_DESKTOP_ASK_FIXTURE_DIR'])
+            assert not ask.exists(), 'the ASK producer requires a new output directory'
+            ask.mkdir(parents=True)
+            (ask / 'ask-start.jsonl').write_text(json.dumps({'synthetic': True}) + '\n')
+            if os.environ.get('FIXTURE_CASE') == 'bad-mac-ask-fixture':
+                (ask / 'ask-start.jsonl').write_text('invalid JSON')
         if failed:
             print('injected test failure after fixture write', file=sys.stderr)
             sys.exit(17)
@@ -206,6 +213,21 @@ json.loads((root / 'exchanges/request.json').read_text())
 print('stub Mac upload validator invoked; not Swift or HTTP acceptance')
 '''
 
+MAC_ASK_CHECK = r'''import json, os, pathlib, sys
+with open(os.environ['PROBE_TRACE'], 'a') as trace:
+    trace.write(json.dumps({'tool': 'mac-ask-validator', 'args': sys.argv[1:],
+        'cwd': str(pathlib.Path.cwd()), 'python': sys.executable, 'source': __file__}) + '\n')
+if os.environ.get('FAIL_COMMAND') == 'mac-ask-validator':
+    print('injected Mac ASK validator failure', file=sys.stderr)
+    sys.exit(41)
+root = pathlib.Path(sys.argv[1])
+lines = (root / 'ask-start.jsonl').read_text().splitlines()
+assert lines
+for line in lines:
+    json.loads(line)
+print('stub Mac ASK validator invoked; not Swift, image or provider acceptance')
+'''
+
 
 class DesktopChecks(unittest.TestCase):
     def setUp(self):
@@ -267,6 +289,7 @@ class DesktopChecks(unittest.TestCase):
             (source / "checks/validate_composed_frames.py").write_text(COMPOSED_CHECK)
             (source / "checks/validate_mac_retained_frames.py").write_text(MAC_FRAME_CHECK)
             (source / "checks/validate_mac_upload.py").write_text(MAC_UPLOAD_CHECK)
+            (source / "checks/validate_ask_request.py").write_text(MAC_ASK_CHECK)
             # Byte-for-byte owner package-app.sh at 7efa46a. Execute it against
             # stub Swift/plutil here; it remains the owner's production script.
             shutil.copyfile(ROOT / "tests/probes/support/fixtures/macos-package-app.sh", source / "package-app.sh")
@@ -522,6 +545,31 @@ class DesktopChecks(unittest.TestCase):
         self.assertGreater(trace.index(uploaded[0]), trace.index(mapped[0]))
         for file in ["manifest.json", "exchanges/request.json"]:
             self.assertIn(f"macos-upload-fixture/{file}", (self.out / "SHA256SUMS").read_text())
+        asked = [call for call in trace if call["tool"] == "mac-ask-validator"]
+        self.assertEqual(len(asked), 1)
+        self.assertEqual(asked[0]["args"], [str(self.out / "macos-ask-fixture")])
+        self.assertEqual(asked[0]["python"], str(self.root / ".venv/bin/python"))
+        self.assertEqual(Path(asked[0]["source"]).resolve(),
+                         self.out / "work/source/apps/macos/CompanionDesktop/checks/validate_ask_request.py")
+        self.assertGreater(trace.index(asked[0]), trace.index(uploaded[0]))
+        self.assertIn("macos-ask-fixture/ask-start.jsonl", (self.out / "SHA256SUMS").read_text())
+
+    def test_mac_missing_bad_ask_or_validator_failure_remains_failure(self):
+        self.source("macos")
+        self.commit()
+        for case, failure in [("missing-mac-ask-fixture", ""), ("bad-mac-ask-fixture", ""),
+                              ("validator-failure", "mac-ask-validator")]:
+            with self.subTest(case=case):
+                self.out = Path(self.temp.name) / case
+                result, status = self.run_checks("macos", failure, case)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertEqual(status["last_phase"], "mac-ask-fixture")
+                self.assertTrue((self.out / "MacDesktop.zip").is_file())
+                self.assertTrue((self.out / "mac-ask-fixture.log").read_text())
+                if case != "missing-mac-ask-fixture":
+                    self.assertIn("macos-ask-fixture/ask-start.jsonl", (self.out / "SHA256SUMS").read_text())
+                if failure:
+                    self.assertEqual(result.returncode, 41)
 
     def test_mac_missing_bad_upload_or_validator_failure_remains_failure(self):
         self.source("macos")
@@ -657,6 +705,8 @@ class DesktopChecks(unittest.TestCase):
                     self.assertIn("macos-upload-fixture/exchanges/request.json",
                                   (self.out / "SHA256SUMS").read_text())
                     self.assertFalse((self.out / "mac-upload-fixture.log").exists())
+                    self.assertIn("macos-ask-fixture/ask-start.jsonl", (self.out / "SHA256SUMS").read_text())
+                    self.assertFalse((self.out / "mac-ask-fixture.log").exists())
 
     def test_mac_toolchain_failure_is_not_hidden_by_later_command(self):
         self.source("macos")
