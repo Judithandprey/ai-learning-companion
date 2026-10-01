@@ -28,7 +28,7 @@
       "owner": "backend",
       "accepted_assignment": "handoff_ba8e541a6a2a89041ee20b35b1c3173d",
       "actual_start_reply": "handoff_7ff3eca55ab7ef971c8836f7a887a664",
-      "state": "corrected_connector_reviewed_integrated_waiting_desktop_join",
+      "state": "linux_integrated_mac_pin_followup_accepted",
       "actual_delivery": "handoff_b69b31940669698bc7b3a8368aba2b4a",
       "delivery_commit": "18fe4788e9cba52d7f336c273047432e00525499",
       "launch_followup": "handoff_9aa9afa6f12bdfa0279320454611d396",
@@ -42,7 +42,10 @@
       "correction_integration": "9884c601d03b2fc626a69a269fcec093d05f2357",
       "main_focused_tests": 313,
       "real_connection_state": "signed_out",
-      "inference_calls": 0
+      "inference_calls": 0,
+      "mac_admission_assignment": "handoff_9b3310ff500df0caa3adef668de610b2",
+      "mac_admission_baseline": "80bcd81e603eed14f0ab1c44dbe5b647e6e4cac9",
+      "mac_admission_start_reply": null
     },
     {
       "owner": "learning",
@@ -65,14 +68,24 @@
       "delivery_commit": "68b4cd9344dc0a2b36f151b911c7f9c4f2a797d8",
       "evidence_commit": "4944cc38091f5f53a175deefa58c69fe26391b32",
       "review_correction": "handoff_fdc6d726f4dbb300c050e4866781708b",
-      "transport_correction": "handoff_76d2d16d9567ccd13fd3b88a28020bb1"
+      "transport_correction": "handoff_76d2d16d9567ccd13fd3b88a28020bb1",
+      "correction_activity_observed": {
+        "type": "read_only_worktree_diff",
+        "baseline": "4944cc38091f5f53a175deefa58c69fe26391b32",
+        "facts": [
+          "subscription.ts contains coalesced readAgain refresh and method-specific confirmation guards",
+          "main/renderer/preload correction edits present"
+        ],
+        "delivered_or_tested": false
+      }
     },
     {
       "owner": "native",
       "accepted_assignment": "handoff_d98adf0e2c88ebeb0bde9d50c30bd5cb",
       "actual_start_reply": "handoff_0f6cb3f23f2e2bd91ec1ceec55f428bd",
       "state": "actual_start_reported",
-      "accepted_dependency_release": "handoff_578d3bb3a91d3611fee7d128ca7b8126"
+      "accepted_dependency_release": "handoff_578d3bb3a91d3611fee7d128ca7b8126",
+      "mac_metadata_update": "handoff_48ecf142f05aa34aa7e3a57fb885adb6"
     },
     {
       "owner": "qa",

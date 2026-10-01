@@ -103,3 +103,14 @@ The existing Web owner has one accepted bounded correction, not a new task.
 All probes are synthetic; the real request budget remains unallocated/unspent.
 Support metadata-only macOS workflow/probe `d8a402b` is [independently approved](mac-metadata-review.md), integrated and pushed as `de46212ac6c4800d8e0170c1ee4fe59f716a2de4`. All nine focused tests pass on integrated main (0.165s). The one [hosted metadata run](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36825904220) passed on that exact SHA. Its [actual receipt](mac-metadata-hosted.json) records macOS 26.6.2/arm64, CLI 0.158.0 and matching pinned binary; effective configuration and six disabled skills passed. Lead verified all five source hashes, metadata-only method sequence and child/state cleanup. No account/login/model/turn request occurred. Production binary admission remains Linux-only until a bounded Backend correction is integrated; interactive Mac and inference remain unverified. No new account/device result
 is inferred from either delivery.
+
+
+At pushed evidence baseline `80bcd81`, Backend received one precise continuation
+for the measured Mac platform/architecture/hash admission (actual accepted receipt
+in dispatch.json). Native received the same evidence and cancellation/login race
+constraints for its existing slice. Neither receipt is a start or acceptance claim.
+Read-only Web worktree inspection observes matching correction edits at owner HEAD
+`4944cc3`; these are active uncommitted work, not a reviewed delivery. Lead waits
+for that exact correction before integrating the Windows candidate and releasing
+QA's user-operated official login/real image path. No credentials or private user
+screens have been captured, and no real requests have been allocated or spent.
