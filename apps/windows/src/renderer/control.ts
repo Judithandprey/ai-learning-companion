@@ -27,7 +27,7 @@ type SessionInfo = { running: true; starting: boolean; ending: boolean; display:
 type LinkStatus =
   | { mode: 'off' }
   | { mode: 'unavailable'; reason: string }
-  | { mode: 'development'; state: string; stored: number; unknown: number; refused: number; not_sent: number; detail: string | null; earlier_unknown: number; sends_stopped: boolean; storing: boolean };
+  | { mode: 'development'; state: string; stored: number; unknown: number; refused: number; not_sent: number; detail: string | null; earlier_unknown: number; sends_stopped: boolean; awaiting: boolean; storing: boolean };
 type Api = {
   listDisplays(): Promise<DisplayChoice[]>;
   sessionState(): Promise<SessionInfo | null>;
@@ -289,20 +289,24 @@ function showLink(l: LinkStatus): void {
     el.textContent = `Capture storage (development): off. ${l.reason}.`;
     return;
   }
-  // The header says what is happening now, never what is merely configured. After a fault, earlier sends are not
-  // undone and stay counted; only further sends have stopped.
+  // The header says what is known now, never what is merely configured, and never that frames are being stored:
+  // a send's outcome is known only once the service answers. After a fault, earlier sends are not undone and stay
+  // counted; only further sends have stopped.
   $('ai').textContent = l.sends_stopped
     ? 'Development mode: captured frames and ink are kept on this device. Further sends to the local test capture service on it have stopped; what the latest capture sent before is counted below. No AI is connected; nothing is sent to any AI.'
-    : l.storing
-      ? 'Development mode: captured frames and ink are kept on this device and are also being stored in a local test capture service on it; the counts are below. No AI is connected; nothing is sent to any AI.'
-      : 'Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture\'s counts, are below. No AI is connected; nothing is sent to any AI.';
+    : l.state === 'sending'
+      ? 'Development mode: captured frames and ink are kept on this device and are also sent to a local test capture service on it. A record counts as stored only once that service confirms it; the counts are below. No AI is connected; nothing is sent to any AI.'
+      : l.state === 'stalled' || l.awaiting // a send still out (at a Stop, say) may yet be confirmed
+        ? 'Development mode: captured frames and ink are kept on this device. Whether a local test capture service on it is storing them now is not confirmed; its state, and the latest capture\'s counts, are below. No AI is connected; nothing is sent to any AI.'
+        : 'Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture\'s counts, are below. No AI is connected; nothing is sent to any AI.';
   const states: Record<string, string> = {
     idle: 'not connected yet (a connection is tried when you press Start)',
     connecting: 'connecting',
-    sending: 'storing',
-    stalled: 'not storing now (the frames are kept on this device)',
+    // Connected and live: a send out and not yet answered is said as that, apart from what is confirmed as stored.
+    sending: l.awaiting ? 'sending: waiting for the service to confirm' : 'connected: frames are sent as they are kept',
+    stalled: 'storage not confirmed now (the frames are kept on this device)',
     offline: 'offline (the frames are kept on this device)',
-    stopping: 'stopping: nothing new is sent',
+    stopping: l.awaiting ? 'stopping: nothing new is sent; the last send is waiting for the service to confirm' : 'stopping: nothing new is sent',
     stopped: 'stopped',
     'not connected': 'not connected (the frames stay on this device)',
     'ended by the service': 'ended by the service',

@@ -93,14 +93,20 @@ export type SeedRecord = ReturnType<typeof seedRecord>;
  * The service's answers without a service (no socket): a registration (live), the display source, the state, a Stop,
  * read from the coordination record `file` as the app wrote it; `own` answers first where it returns one. Uploads
  * (originals, batches) are answered 503 unless `own` answers them. Every request but the port probe is in `requests`.
+ * `hold`: a request it returns a promise for is not answered until that settles (a service that holds its connection
+ * and says nothing); a cancelled request still ends at once, as the real transport's does.
  */
-export function fakeService(file: string, own?: (method: string, path: string, body: string | null) => { status: number; text: string } | null) {
+export function fakeService(file: string, own?: (method: string, path: string, body: string | null) => { status: number; text: string } | null, hold?: (method: string, path: string) => Promise<void> | null) {
   const requests: string[] = [];
   let stopped = false;
   const transport: Transport = async (r) => {
     const p = new URL(r.url).pathname;
     if (p === '/openapi.json') return { status: 404, text: '{}' };
     requests.push(`${r.method} ${p}`);
+    const held = hold?.(r.method, p);
+    if (held) {
+      await Promise.race([held, new Promise<never>((_ok, fail) => r.signal?.addEventListener('abort', () => fail(Object.assign(new Error('aborted'), { name: 'AbortError' })), { once: true }))]);
+    }
     const record = JSON.parse(fs.readFileSync(file, 'utf8')) as { actor: { user_id: string }; streams: Array<{ stream_id: string }> };
     const state = (revision: number, s: string) => ({ status: 200, text: JSON.stringify({ contract_version: '0.2.1', stream_id: record.streams.at(-1)!.stream_id, revision, state: s, pre_stop_sequence: null }) });
     const mine = own?.(r.method, p, r.body);

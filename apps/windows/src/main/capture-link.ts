@@ -158,7 +158,7 @@ export type LinkStatus =
   | { readonly mode: 'unavailable'; readonly reason: string }
   | {
       readonly mode: 'development';
-      /** What this app's capture link is doing now. `stalled`: live, but not storing now (the detail says why). */
+      /** What this app's capture link is doing now. `stalled`: live, but storage is not confirmed now (the detail says why). */
       readonly state: 'idle' | 'connecting' | 'sending' | 'stalled' | 'offline' | 'stopping' | 'stopped' | 'not connected' | 'ended by the service' | 'reconciling';
       readonly stored: number;
       readonly unknown: number;
@@ -170,9 +170,14 @@ export type LinkStatus =
       /** The record could not be written: nothing further is sent in this run (the detail says so); the counts stay. */
       readonly sends_stopped: boolean;
       /**
-       * Retained frames are being stored now: a Start's stream is live on the service, not stopping, and no send has
-       * gone unanswered since the last one that was answered (a queue with nothing left to send is not an answer).
-       * What the app says about storage follows this, never the mere configuration.
+       * A send is out and not yet answered (said before the wait begins): whether its records are stored is not
+       * known until it is. They are counted as not known meanwhile, never as stored and never as not stored.
+       */
+      readonly awaiting: boolean;
+      /**
+       * Storage is confirmed as far as is known: a Start's stream is live on the service, not stopping, no send is out
+       * (`awaiting`), and none has gone unconfirmed since the last one that was answered (a queue with nothing left
+       * to send is not an answer). Nothing the app says of storage goes beyond this, or the mere configuration.
        */
       readonly storing: boolean;
     };
@@ -216,8 +221,10 @@ type Active = {
   stopped: Promise<void> | null;
   /** Whether a startup record ever reached a host for this stream (a grant may exist from then on). */
   asked: boolean;
-  /** A send's storage was not confirmed, and none has been answered since: storing is not said again until one is. */
+  /** A send's storage was not confirmed, and none has been answered since: it stays "not confirmed" until one is. */
   unanswered: boolean;
+  /** A send is out, not yet answered. */
+  awaiting: boolean;
 };
 
 const CONTROL = { contract_version: '0.2.1' } as const;
@@ -425,7 +432,8 @@ export class CaptureLink {
       detail: [this.fault, stuck ? `${stuck} record(s) in doubt cannot be sent again from this device; whether they were stored stays not known` : null, detail].filter(Boolean).join('; ') || null,
       earlier_unknown: earlier,
       sends_stopped: this.fault !== null,
-      storing: a !== null && a.live && !a.stopping && this.fault === null && a.state === 'sending',
+      awaiting: a !== null && a.awaiting,
+      storing: a !== null && a.live && !a.stopping && this.fault === null && a.state === 'sending' && !a.awaiting,
     };
   }
   private say(a: Active, state: Active['state'], detail: string | null = a.detail): void {
@@ -521,7 +529,7 @@ export class CaptureLink {
     try {
       const before = this.active;
       if (this.broken || this.fault || (before && !before.stopping)) return void this.o.notify(this.status());
-      const a: Active = { capture_session: captureSession, capture_dir: captureDir, rec: null, host: null, hostEnded: false, authority: null, live: false, stopping: false, validBytes: 0, runner: null, again: false, controller: new AbortController(), reconnects: 0, state: 'connecting', detail: null, connecting: null, stopped: null, asked: false, unanswered: false };
+      const a: Active = { capture_session: captureSession, capture_dir: captureDir, rec: null, host: null, hostEnded: false, authority: null, live: false, stopping: false, validBytes: 0, runner: null, again: false, controller: new AbortController(), reconnects: 0, state: 'connecting', detail: null, connecting: null, stopped: null, asked: false, unanswered: false, awaiting: false };
       this.active = a;
       this.last = null;
       this.o.notify(this.status());
@@ -658,10 +666,10 @@ export class CaptureLink {
   }
   /**
    * Nothing to send now, or connected again. Neither is an answered send: after a send whose storage is not
-   * confirmed (its job then set aside, say), the stream stays "not storing now" until a later send is answered.
+   * confirmed (its job then set aside, say), the stream stays "not confirmed" until a later send is answered.
    */
   private rest(a: Active): void {
-    if (a.unanswered) this.say(a, 'stalled', 'storage of the last send is not confirmed; storing is said again once a later send is answered');
+    if (a.unanswered) this.say(a, 'stalled', 'storage of the last send is not confirmed; it stays not confirmed until the service confirms a later send');
     else this.say(a, 'sending', null);
   }
   private facts(rec: StreamRecord): StreamFacts {
@@ -718,7 +726,25 @@ export class CaptureLink {
   /** One upload of `job` (its exact plan and body). Returns whether it is settled (committed, refused). */
   private async send(a: Active, job: JobRecord): Promise<boolean> {
     const wasInDoubt = job.status === 'unknown';
-    const result: UploadResult = await uploadRetained(a.authority!, { capture_dir: a.rec!.capture_dir, plan: job.plan!, prepared: { idempotency_key: job.key, body: job.body!, request: JSON.parse(job.body!), unrepresented: [] } }, { signal: a.controller.signal, transport: this.transport, attempts: 3, pause_ms: 500 });
+    // A job known not sent is being sent now: written as that before it leaves (as its first send was), so that it
+    // is counted as not known while it is out, and after a crash; each outcome below sets it again.
+    if (job.status === 'not_sent') {
+      job.status = 'sending';
+      if (!this.save()) {
+        job.status = 'not_sent';
+        return false; // not written: not sent
+      }
+    }
+    // Said before the wait, which can be long (a service that holds its connection and does not answer): from here
+    // until an answer, this job's storage is pending, and nothing says frames are being stored.
+    a.awaiting = true;
+    this.o.notify(this.status());
+    let result: UploadResult;
+    try {
+      result = await uploadRetained(a.authority!, { capture_dir: a.rec!.capture_dir, plan: job.plan!, prepared: { idempotency_key: job.key, body: job.body!, request: JSON.parse(job.body!), unrepresented: [] } }, { signal: a.controller.signal, transport: this.transport, attempts: 3, pause_ms: 500 });
+    } finally {
+      a.awaiting = false; // each outcome below says the status again
+    }
     job.originals = [...new Set([...job.originals, ...result.originals])];
     if (result.status === 'committed') {
       Object.assign(job, { status: 'committed', ack_sha256: sha(JSON.stringify(result.ack)) });
@@ -759,6 +785,9 @@ export class CaptureLink {
         Object.assign(job, { status: 'refused', ...(result.http_status ? { http_status: result.http_status } : {}), ...(result.error ? { error: result.error } : {}), reason: result.reason });
       }
       this.save();
+      // Said before the state is read (another wait): the send is no longer out, and it was refused.
+      if (a.live && !a.stopping && !this.fault) this.say(a, 'stalled', 'the service refused the last send; its state is being read');
+      else this.o.notify(this.status());
       await this.refusedBy(a, result);
       return !wasInDoubt;
     }
@@ -768,7 +797,7 @@ export class CaptureLink {
     else job.status = 'not_sent';
     if (result.status === 'unknown' && result.error === 'dependency_missing') job.reason = result.reason;
     this.save();
-    // Live, but this send's storage is not confirmed (it may have arrived): storing is not said until a send is
+    // Live, but this send's storage is not confirmed (it may have arrived): it stays "not confirmed" until a send is
     // answered (the same record(s) are tried again).
     a.unanswered = true;
     if (a.live && !a.stopping && !this.fault) this.say(a, 'stalled', 'storage of the last send is not confirmed (no answer, or the service said to send it again later); the same record(s) are tried again');

@@ -235,7 +235,7 @@ real('an ASK card left open while storing is lost and then recovers is never unt
   };
   await step(20);
   await until('storing', () => w.said()?.storing === true && (w.said()?.stored ?? 0) >= 1, 30_000);
-  assert.match(header(), /are also being stored/);
+  assert.match(header(), LIVE_HEADER);
   const card = await askCard(page, true); // left open
   assert.match(card, CARD_DEVELOPMENT);
   assert.doesNotMatch(card, CLAIMS_STORAGE);
@@ -243,13 +243,13 @@ real('an ASK card left open while storing is lost and then recovers is never unt
   losing = true;
   const before = w.said()?.stored ?? 0;
   await step(60);
-  await until('not storing now', () => w.said()?.state === 'stalled', 30_000);
+  await until('storage not confirmed', () => w.said()?.state === 'stalled', 30_000);
   assert.equal(w.said()?.storing, false);
   assert.doesNotMatch(header(), CLAIMS_STORAGE);
   assert.deepEqual(plain(page.review.card()), { text: card, image: true }, 'the open card is unchanged, and still true');
   // Recovery: the same job is answered.
   await until('storing again', () => w.said()?.storing === true && (w.said()?.stored ?? 0) > before, 30_000);
-  assert.match(header(), /are also being stored/);
+  assert.match(header(), LIVE_HEADER);
   assert.deepEqual(plain(page.review.card()), { text: card, image: true }, 'unchanged again, and still true');
   page.click('close');
   w.h.end('stopped by the test');
@@ -303,6 +303,8 @@ async function askCard(page: Awaited<ReturnType<typeof frames>>['page'], leaveOp
   if (!leaveOpen) page.click('close');
   return text;
 }
+/** The header with a live stream: frames are sent; stored is only what the service confirmed. */
+const LIVE_HEADER = /are also sent to a local test capture service on it\. A record counts as stored only once that service confirms it/;
 /** Any text saying frames are stored (as a fact, now): what must not be said while they are not. */
 const CLAIMS_STORAGE = /(are|is) (also )?(being )?stored|also (being )?stored in a local test capture service/;
 /** The ASK card with the link on: what the service may do, and where its state is; nothing that can change after. */
@@ -376,17 +378,18 @@ test('the texts follow the link as it changes: storing only while the stream is 
   // Live, nothing retained yet: storing, with no false error about a manifest not yet made.
   await until('live', () => said()?.state === 'sending', 5000);
   assert.deepEqual([said()?.storing, said()?.detail], [true, null]);
-  assert.match(shown(), /are also being stored in a local test capture service on it; the counts are below[\s\S]*Capture storage \(development\): storing\. 0 record\(s\) stored\. AI: not connected\.$/);
+  assert.match(shown(), /are also sent to a local test capture service on it\. A record counts as stored only once that service confirms it; the counts are below[\s\S]*Capture storage \(development\): connected: frames are sent as they are kept\. 0 record\(s\) stored\. AI: not connected\.$/);
+  assert.doesNotMatch(shown(), CLAIMS_STORAGE, 'even live, nothing says frames are being stored: only what the service confirmed is counted');
   // An ASK card made now, and left open (W-COPY-01): it says nothing of whether frames are being stored.
   const card = await askCard(page, true);
   assert.match(card, CARD_DEVELOPMENT);
   assert.doesNotMatch(card, CLAIMS_STORAGE);
-  // A frame is retained; its upload is not answered (503): not storing now, and that is said in the control window.
+  // A frame is retained; its upload is not answered (503): storage is not confirmed, and the control window says so.
   await step(20);
   await until('a send not answered', () => said()?.state === 'stalled', 10_000);
   assert.deepEqual([said()?.storing, said()?.stored], [false, 0]);
   assert.doesNotMatch(shown(), CLAIMS_STORAGE);
-  assert.match(shown(), /Capture storage \(development\): not storing now \(the frames are kept on this device\)\. 0 record\(s\) stored;[\s\S]*storage of the last send is not confirmed \(no answer, or the service said to send it again later\); the same record\(s\) are tried again\. AI: not connected\.$/);
+  assert.match(shown(), /Whether a local test capture service on it is storing them now is not confirmed[\s\S]*Capture storage \(development\): storage not confirmed now \(the frames are kept on this device\)\. 0 record\(s\) stored;[\s\S]*storage of the last send is not confirmed \(no answer, or the service said to send it again later\); the same record\(s\) are tried again\. AI: not connected\.$/);
   // The card still open is the same card (its picture, region, frame, time and ink line), and still true.
   assert.deepEqual(plain(page.review.card()), { text: card, image: true });
   page.click('close');

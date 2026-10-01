@@ -12,6 +12,8 @@ import { CaptureLink } from '../src/main/capture-link.ts';
 import { loopbackTransport } from '../src/main/loopback-http.ts';
 import { hostAvailable, memoryLaunch, privateBackend, removeCopies } from './host-fixture.ts';
 import { MANIFEST, ownHostPid, removeTemps, SESSION, state, temp, until, world as linkWorld, type WorldOptions } from './link-world.ts';
+import { controlPage } from './control-page.ts';
+import type { LinkStatus } from '../src/main/capture-link.ts';
 
 after(removeCopies);
 after(removeTemps);
@@ -320,7 +322,7 @@ real('a manifest not yet written when the link is ready is not a lasting fault: 
   await until('stopped', () => state(link.status()) === 'stopped');
 });
 
-real('sends that get no answer: the link says it is not storing now (the same job is tried again), and storing again once one is answered', { timeout: 120_000 }, async () => {
+real('sends that get no answer: the link says storage is not confirmed (the same job is tried again), and confirmed again once one is answered', { timeout: 120_000 }, async () => {
   let dropped = 0;
   // One whole upload (its three tries of the batch) gets no answer; the next is answered.
   const w = world({ fault: (r) => (r.method === 'POST' && r.path.endsWith(':batch') && dropped++ < 3 ? 'drop-answer' : null) });
@@ -335,6 +337,50 @@ real('sends that get no answer: the link says it is not storing now (the same jo
   const now = link.status();
   assert.deepEqual(now.mode === 'development' && [now.state, now.storing, now.detail], ['sending', true, null], 'answered again: storing');
   assert.equal(new Set(w.requests.filter((r) => r.path.endsWith(':batch')).map((r) => r.key)).size, 1, 'the same key throughout');
+  link.stopSending(SESSION);
+  await until('stopped', () => state(link.status()) === 'stopped');
+});
+
+// QA-WIN-05.
+real('a later send that is slow to be answered: said as waiting from before it leaves, the confirmed count kept; the answer restores storing with the new count', { timeout: 120_000 }, async () => {
+  let slow = false;
+  const atRequest: Array<LinkStatus | undefined> = [];
+  let w!: ReturnType<typeof world>;
+  // Once `slow`, the answer to each batch is held back 1.2 s (the host has answered; the app has not been told).
+  w = world({ fault: (r) => {
+    if (!slow || r.method !== 'POST' || !r.path.endsWith(':batch')) return null;
+    atRequest.push(w.statuses.at(-1)); // what the app had said when this request left
+    return { delay: 1200 };
+  } });
+  const shown = (s: LinkStatus): string => {
+    const p = controlPage();
+    p.showLink(s);
+    return `${p.nodes['ai']!.textContent}\n${p.nodes['link']!.textContent}`;
+  };
+  const claims = /(are|is) (also )?(being )?stored|also (being )?stored in/;
+  const link = w.make();
+  link.begin(SESSION, w.capture);
+  w.append(link, 3);
+  await until('the first lines stored', () => stored(link) === 2 && (link.status() as { storing: boolean }).storing);
+  slow = true;
+  w.append(link, 2);
+  await until('the slow send left', () => atRequest.length === 1);
+  // No gap: before the request left the app had said a send is out, with the confirmed count unchanged.
+  const before = atRequest[0]!;
+  assert.deepEqual(before.mode === 'development' && [before.state, before.awaiting, before.storing, before.stored], ['sending', true, false, 2]);
+  const waiting = link.status();
+  assert.deepEqual(waiting.mode === 'development' && [waiting.awaiting, waiting.storing, waiting.stored, waiting.unknown > 0], [true, false, 2, true]);
+  assert.doesNotMatch(shown(waiting), claims);
+  assert.match(shown(waiting), /Capture storage \(development\): sending: waiting for the service to confirm\. 2 record\(s\) stored; \d+ not known whether stored\./);
+  // The answer: confirmed counts, nothing out, storing again.
+  await until('answered', () => stored(link) > 2 && (link.status() as { awaiting: boolean }).awaiting === false);
+  slow = false;
+  await until('all stored', () => (link.status() as { unknown: number; storing: boolean }).unknown === 0 && (link.status() as { storing: boolean }).storing);
+  const after = link.status();
+  assert.deepEqual(after.mode === 'development' && [after.state, after.awaiting, after.storing, after.unknown], ['sending', false, true, 0]);
+  assert.match(shown(after), /Capture storage \(development\): connected: frames are sent as they are kept\. \d+ record\(s\) stored\. AI: not connected\.$/);
+  assert.equal(w.statuses.some((s) => s.mode === 'development' && s.storing && s.awaiting), false, 'never both');
+  assert.equal(new Set(w.requests.filter((r) => r.path.endsWith(':batch')).map((r) => r.key)).size, 2, 'two jobs, each under its own key, none resent');
   link.stopSending(SESSION);
   await until('stopped', () => state(link.status()) === 'stopped');
 });

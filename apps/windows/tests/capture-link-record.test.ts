@@ -199,7 +199,7 @@ const WSL = { kind: 'wsl', distribution: 'test-only', user: 'test-only', cd: '/'
  * An explicit Start over the harness-ink capture: its host a fake child (READY as the released host says it), its
  * answers the service's (a registration, the display source, the state, a Stop), or `own` where it answers.
  */
-function started(o: { own?: Parameters<typeof fakeService>[1]; token_life_ms?: number } = {}) {
+function started(o: { own?: Parameters<typeof fakeService>[1]; hold?: Parameters<typeof fakeService>[2]; token_life_ms?: number } = {}) {
   const userData = fs.mkdtempSync(path.join(os.tmpdir(), 'lc-link-record-'));
   temps.push(userData);
   const capture = path.join(userData, 'captures', SESSION);
@@ -207,7 +207,7 @@ function started(o: { own?: Parameters<typeof fakeService>[1]; token_life_ms?: n
   for (const d of ['frames', 'ink']) fs.cpSync(path.join(INK, d), path.join(capture, d), { recursive: true });
   const file = path.join(userData, 'capture-host', 'coordination.json');
   const children: FakeChild[] = [];
-  const { transport, requests } = fakeService(file, o.own);
+  const { transport, requests } = fakeService(file, o.own, o.hold);
   const said: LinkStatus[] = [];
   const link = new CaptureLink({
     userData, config: { launch: WSL, dsn_file: '/not-read' }, notify: (s) => void said.push(s), endCapture: () => undefined,
@@ -264,8 +264,138 @@ test('a state answer the record could not read back is not written: the registra
   await until('stopped', () => stateOf(w.link) === 'stopped');
 });
 
+/** Any text saying, as a fact, that frames are (being) stored. */
+const CLAIMS = /(are|is) (also )?(being )?stored|also (being )?stored in/;
+
+// QA-WIN-05.
+test('a service that holds its connection and does not answer: the wait is said before it begins (pending, not stored, not "not stored"); a Stop during it keeps every fact', async () => {
+  // The first upload request is held: nothing is answered until released (never, here: the Stop cancels it).
+  const seen: Array<{ at: string; last: LinkStatus | undefined }> = [];
+  let w!: ReturnType<typeof started>;
+  w = started({ hold: (method, p) => {
+    if (method !== 'PUT' || !p.startsWith('/v2/process/originals/')) return null;
+    seen.push({ at: `${method} ${p}`, last: w.said.at(-1) }); // what the app had said when the request reached the service
+    return new Promise<void>(() => undefined);
+  } });
+  const shown = (s: LinkStatus): string => {
+    const p = controlPage();
+    p.showLink(s);
+    return `${p.nodes['ai']!.textContent}\n${p.nodes['link']!.textContent}`;
+  };
+  w.link.begin(SESSION, w.capture);
+  await until('live', () => stateOf(w.link) === 'sending');
+  const live = w.link.status();
+  assert.deepEqual(live.mode === 'development' && [live.storing, live.awaiting, live.stored, live.unknown], [true, false, 0, 0], 'live, nothing sent yet');
+  w.append(3);
+  await until('the first upload request reached the service', () => seen.length === 1);
+  // No gap: the status said before the request left already says a send is out.
+  const before = seen[0]!.last!;
+  assert.deepEqual(before.mode === 'development' && [before.state, before.awaiting, before.storing, before.stored, before.unknown], ['sending', true, false, 0, 2]);
+  // While it waits (the service says nothing), the same holds, and the texts claim nothing.
+  await new Promise((r) => setTimeout(r, 150));
+  const waiting = w.link.status();
+  assert.deepEqual(waiting.mode === 'development' && [waiting.state, waiting.awaiting, waiting.storing, waiting.stored, waiting.unknown], ['sending', true, false, 0, 2]);
+  assert.equal(w.said.at(-1), before, 'nothing else was said meanwhile');
+  assert.doesNotMatch(shown(waiting), CLAIMS);
+  assert.doesNotMatch(shown(waiting), /not stored|not storing/);
+  assert.match(shown(waiting), /are also sent to a local test capture service on it\. A record counts as stored only once that service confirms it[\s\S]*Capture storage \(development\): sending: waiting for the service to confirm\. 0 record\(s\) stored; 2 not known whether stored\. AI: not connected\.$/);
+  // The Stop: latched at once; the send out is cancelled at the bound and stays in doubt; nothing is lost or made up.
+  const from = w.said.length;
+  w.link.stopSending(SESSION);
+  assert.deepEqual([stateOf(w.link), (w.link.status() as { storing: boolean }).storing], ['stopping', false]);
+  await until('stopped', () => stateOf(w.link) === 'stopped');
+  const end = w.link.status();
+  assert.deepEqual(end.mode === 'development' && [end.awaiting, end.storing, end.stored, end.unknown], [false, false, 0, 2], 'still not known; nothing counted as stored');
+  assert.equal(w.said.slice(from).some((s) => s.mode === 'development' && s.storing), false);
+  const afterStop = w.said.slice(from).flatMap((s) => (s.mode === 'development' ? [[s.state, s.awaiting] as const] : []));
+  assert.deepEqual(afterStop[0], ['stopping', true], 'the send is still out when the Stop begins, and that is said');
+  assert.deepEqual(afterStop.at(-1), ['stopped', false]);
+  assert.deepEqual(afterStop.filter(([st]) => st === 'stopped').map(([, awaiting]) => awaiting).includes(true), false, 'no send is out once it was cancelled');
+  const job = (JSON.parse(fs.readFileSync(w.file, 'utf8')) as Seed).streams[0]!.jobs[0] as { status: string; key: string; body?: string; body_sha256?: string };
+  assert.deepEqual([job.status, typeof job.body, sha(job.body!) === job.body_sha256], ['unknown', 'string', true], 'its exact key and body are kept');
+  assert.equal(w.requests.filter((r) => r.startsWith('PUT /v2/process/originals/')).length, 1, 'one request went out; nothing was sent again after the Stop');
+});
+
+test('every upload request leaves only after the app has said a send is out, on retries too; between sends none is out', async () => {
+  // Every upload is answered 503: the same job is tried again and again.
+  const atRequest: Array<LinkStatus | undefined> = [];
+  let w!: ReturnType<typeof started>;
+  w = started({ hold: (method, p) => {
+    if (p.startsWith('/v2/process/originals/') || p.endsWith(':batch')) atRequest.push(w.said.at(-1));
+    return null;
+  } });
+  w.link.begin(SESSION, w.capture);
+  w.append(3);
+  await until('several tries', () => atRequest.length >= 7); // more than two whole uploads (three tries each)
+  assert.deepEqual(atRequest.map((s) => s?.mode === 'development' && s.awaiting), atRequest.map(() => true), 'said before each request');
+  assert.equal(atRequest.some((s) => s?.mode === 'development' && s.storing), false);
+  // After each unanswered upload, and before the next one leaves: stalled, nothing out, the counts unchanged.
+  const between = w.said.filter((s) => s.mode === 'development' && s.state === 'stalled' && !s.awaiting);
+  assert.equal(between.length >= 2, true);
+  assert.equal(between.every((s) => s.mode === 'development' && s.stored === 0 && s.unknown + s.not_sent === 2), true);
+  const retry = atRequest.at(-1)!;
+  assert.deepEqual(retry.mode === 'development' && [retry.state, retry.awaiting, retry.stored, retry.unknown + retry.not_sent], ['stalled', true, 0, 2], 'a retry out: still not confirmed, still counted');
+  w.link.stopSending(SESSION);
+  await until('stopped', () => stateOf(w.link) === 'stopped');
+  const last = w.said.at(-1)!;
+  assert.equal(last.mode === 'development' && last.awaiting, false);
+});
+
+test('a job known not sent, sent again to a service that does not answer: written and counted as not known while it is out, never as "not sent"', async () => {
+  // The first three requests are refused connections (nothing was sent: the job is not_sent); the next is held.
+  let refused = 0;
+  const atHeld: Array<{ last: LinkStatus | undefined; recorded: string }> = [];
+  let w!: ReturnType<typeof started>;
+  w = started({ hold: (method, p) => {
+    if (!p.startsWith('/v2/process/originals/')) return null;
+    if (refused++ < 3) return Promise.reject(Object.assign(new Error('refused'), { code: 'ECONNREFUSED' }));
+    atHeld.push({ last: w.said.at(-1), recorded: ((JSON.parse(fs.readFileSync(w.file, 'utf8')) as Seed).streams[0]!.jobs[0] as { status: string }).status });
+    return new Promise<void>(() => undefined);
+  } });
+  w.link.begin(SESSION, w.capture);
+  w.append(3);
+  await until('known not sent', () => w.said.some((s) => s.mode === 'development' && s.not_sent === 2 && !s.awaiting));
+  await until('sent again, and held', () => atHeld.length === 1);
+  const out = atHeld[0]!;
+  assert.equal(out.recorded, 'sending', 'written as being sent before it left');
+  assert.deepEqual(out.last?.mode === 'development' && [out.last.awaiting, out.last.unknown, out.last.not_sent, out.last.stored], [true, 2, 0, 0], 'counted as not known while it is out');
+  const p = controlPage();
+  p.showLink(w.link.status());
+  assert.doesNotMatch(p.nodes['link']!.textContent, /not sent/);
+  w.link.stopSending(SESSION);
+  await until('stopped', () => stateOf(w.link) === 'stopped');
+  const end = w.link.status();
+  assert.deepEqual(end.mode === 'development' && [end.unknown, end.not_sent, end.stored], [2, 0, 0], 'cancelled while out: it may have arrived, so it stays not known');
+});
+
+test('a send the service refuses is said at once, before the state read that follows (another wait)', async () => {
+  // The first original is refused (a typed 403); the state read that follows is held.
+  const atRead: Array<LinkStatus | undefined> = [];
+  let release!: () => void;
+  let w!: ReturnType<typeof started>;
+  w = started({
+    own: (method, p) => (method === 'PUT' && p.startsWith('/v2/process/originals/') ? { status: 403, text: JSON.stringify({ contract_version: '0.2.4', error: 'forbidden', retryable: false }) } : null),
+    hold: (method, p) => {
+      if (method !== 'GET' || !p.startsWith('/v2/process/streams/') || atRead.length > 0) return null; // the first read only
+      atRead.push(w.said.at(-1));
+      return new Promise<void>((r) => (release = r));
+    },
+  });
+  w.link.begin(SESSION, w.capture);
+  w.append(3);
+  await until('the state read is out', () => atRead.length === 1);
+  const said = atRead[0]!;
+  assert.deepEqual(said.mode === 'development' && [said.state, said.awaiting, said.storing, said.refused, said.unknown, said.detail], ['stalled', false, false, 2, 0, 'the service refused the last send; its state is being read']);
+  const now = w.link.status();
+  assert.deepEqual(now.mode === 'development' && [now.awaiting, now.storing], [false, false], 'read directly, too');
+  release();
+  await until('ended by the service', () => stateOf(w.link) === 'ended by the service');
+  w.link.stopSending(SESSION);
+  await until('stopped', () => stateOf(w.link) === 'stopped');
+});
+
 // W-COPY-02.
-test('a job in doubt set aside leaves nothing to send, and that is not an answer: the link stays "not storing now", its outcome not known', async () => {
+test('a job in doubt set aside leaves nothing to send, and that is not an answer: storage stays not confirmed, its outcome not known', async () => {
   // The service takes each original (a receipt) and answers no batch.
   const w = started({ own: (method, p, body) => {
     if (method !== 'PUT' || !p.startsWith('/v2/process/originals/')) return null;
@@ -292,9 +422,9 @@ test('a job in doubt set aside leaves nothing to send, and that is not an answer
   assert.equal(s.mode, 'development');
   if (s.mode !== 'development') return;
   assert.deepEqual([s.state, s.storing, s.stored, s.unknown], ['stalled', false, 0, 2], 'no send was answered: not storing, and its outcome stays not known');
-  assert.match(s.detail ?? '', /storage of the last send is not confirmed; storing is said again once a later send is answered/);
-  assert.doesNotMatch(header(), /are also being stored/);
-  assert.match(header(), /not storing them now[\s\S]*Capture storage \(development\): not storing now \(the frames are kept on this device\)\. 0 record\(s\) stored; 2 not known whether stored/);
+  assert.match(s.detail ?? '', /storage of the last send is not confirmed; it stays not confirmed until the service confirms a later send/);
+  assert.doesNotMatch(header(), CLAIMS);
+  assert.match(header(), /Whether a local test capture service on it is storing them now is not confirmed[\s\S]*Capture storage \(development\): storage not confirmed now \(the frames are kept on this device\)\. 0 record\(s\) stored; 2 not known whether stored/);
   // The host is lost and the link connects again: a connection is not an answered send either.
   const from = w.said.length;
   w.children.at(-1)!.exit(1);
