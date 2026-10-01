@@ -1,0 +1,436 @@
+{
+  "qa_commit": "6a3611e2567cf97e858ff146a55c8d0fda7d832c",
+  "candidate": "86d240550803022e02dbbb5ae2323793fbfdebfa",
+  "export": "/tmp/windows-qa-retest-6a3611e",
+  "verdict": "APPROVE actual historical evidence; HOLD reusable analyzer pending separately reviewed correction",
+  "anomalies": [],
+  "changed_file_sha256": {
+    "docs/verification/qa/p0-13-windows-quit-copy-retest-86d2405.md": "3c9acbba0c49f1bde8644392dc92d6621e743e0588b1d6f1327e0dbf4ba663b6",
+    "docs/verification/qa/p0-13-windows-quit-copy-retest-86d2405/build.json": "4b837d0c68ebc2fbb243b14d8ecf907a8b3e3b85e12cce12a460d89b272b62a4",
+    "docs/verification/qa/p0-13-windows-quit-copy-retest-86d2405/cleanup.json": "9393ca37546645dab63c5405ada0701d08b5ceac656a7e0ff5fbdcb97dfe03f5",
+    "docs/verification/qa/p0-13-windows-quit-copy-retest-86d2405/coordination-final.json": "da766f156069ab3c793933a84c73ea38f0c0353668bd520e99a16bebeeabd13b",
+    "docs/verification/qa/p0-13-windows-quit-copy-retest-86d2405/coordination-paused-8s.json": "fc3582f844a9e624f44e98bc12ccfe4adc1642a89df992258a0f26d4e37aaa51",
+    "docs/verification/qa/p0-13-windows-quit-copy-retest-86d2405/coordination-stalled.json": "d17739d3b2cdfee5725b4f996485d89c6d5c9340c7ae16cffea4090e50f603df",
+    "docs/verification/qa/p0-13-windows-quit-copy-retest-86d2405/database-readback.json": "23e0e934c6afcaa3e4aa55fe8cc103feec2a2c7914c6ac2bd20d8e868dd5ffd9",
+    "docs/verification/qa/p0-13-windows-quit-copy-retest-86d2405/hash-checkpoints.json": "f272a3122f290b41d5fec0d5b38cd89f3c820e5bfaa26b2ad1d2a5f4c62b14ed",
+    "docs/verification/qa/p0-13-windows-quit-copy-retest-86d2405/host-watch.json": "33c991e2d69f82394f1755ac0b3f84d99755d62fdbca6e9b3fe7414d3342d50c",
+    "docs/verification/qa/p0-13-windows-quit-copy-retest-86d2405/manifest-ends.json": "8acfb84cc5eca74aca03a582d58750cf92e2c83660cb2cf2b80c7f7b223d6200",
+    "docs/verification/qa/p0-13-windows-quit-copy-retest-86d2405/preflight.json": "ddc8c91383e57d636ef14434884117135898e5d346ff094eb44c6fb9bd3df2eb",
+    "docs/verification/qa/p0-13-windows-quit-copy-retest-86d2405/run.json": "31bf572f67415d2f0cc1914ebfdf728c25648ff312f5b0e2f1c2ca636aea441b",
+    "docs/verification/qa/p0-13-windows-quit-copy-retest-86d2405/runner-results.json": "0d37aed2775be952b2a2b356f1d4d8d9e8a3ea47154947c76814bcba14b84bbe",
+    "docs/verification/qa/p0-13-windows-quit-copy-retest-86d2405/steps.json": "aa462d9ecb67ff4cc1c13d47fe9e28e1bf22e9c33c2281f97e848197343ba9f5",
+    "docs/verification/qa/p0-13-windows-quit-copy-retest-86d2405/summary.json": "d23587adc05ade12ffd7a7b211c3198c6a0f50f5a56133e6f367b9b31b5c8aee",
+    "tests/e2e/windows/analyze_fix.py": "ba2b42095a4218e14c947e848dd3a08c8cd264a105596a48fd8420f1a1a28103",
+    "tests/e2e/windows/qa-electron-runner.ps1": "0dfb3b4c2e40cc56ae48378b9a6e4c2998270e1b26f4a251fd5b958fe0d0d612",
+    "tests/e2e/windows/qa_parent_db.py": "17bc8dea331c14c0559246a884e7787f3d880db7f2f62652fd45eaa350cd9cd7",
+    "tests/e2e/windows/run.mjs": "0bff3999fd5564d0287c115cbc39471761eb5208321d73da3a56707de511ca33",
+    "tests/e2e/windows/scenarios.mjs": "335a8f64e62df441eef9b1602d25974b51ce206a9965c2bb955cc45f30e3f93a"
+  },
+  "harness_receipts": {
+    "analyze.py": {
+      "reported": "3bd0e0eeebba00865c1c35fab0be6c5ebb41a7d1e3a8e56bfd2805572b25cbe7",
+      "actual": "3bd0e0eeebba00865c1c35fab0be6c5ebb41a7d1e3a8e56bfd2805572b25cbe7"
+    },
+    "analyze_fix.py": {
+      "reported": "ba2b42095a4218e14c947e848dd3a08c8cd264a105596a48fd8420f1a1a28103",
+      "actual": "ba2b42095a4218e14c947e848dd3a08c8cd264a105596a48fd8420f1a1a28103"
+    },
+    "analyze_ink.py": {
+      "reported": "f497dd24f101d61fca273128060d8cd39d4c8f0bbf94b08a5b81e8a4f450d4c1",
+      "actual": "f497dd24f101d61fca273128060d8cd39d4c8f0bbf94b08a5b81e8a4f450d4c1"
+    },
+    "analyze_parent.py": {
+      "reported": "28a4ad8eafa1e18f2fecfddb4ab0f4acca1553e757dc4570a51f74c140ff87ac",
+      "actual": "28a4ad8eafa1e18f2fecfddb4ab0f4acca1553e757dc4570a51f74c140ff87ac"
+    },
+    "course.html": {
+      "reported": "2cecf763803f33e64c283dfb7f0f133bc2b9b0412f08873bb5cb1caf831c03ab",
+      "actual": "2cecf763803f33e64c283dfb7f0f133bc2b9b0412f08873bb5cb1caf831c03ab"
+    },
+    "notes.txt": {
+      "reported": "ca986c9c569bcdd36100d87df9ce28eeabd3025fc7d5a43f171c4a957f55b53c",
+      "actual": "ca986c9c569bcdd36100d87df9ce28eeabd3025fc7d5a43f171c4a957f55b53c"
+    },
+    "qa-electron-runner.ps1": {
+      "reported": "0dfb3b4c2e40cc56ae48378b9a6e4c2998270e1b26f4a251fd5b958fe0d0d612",
+      "actual": "0dfb3b4c2e40cc56ae48378b9a6e4c2998270e1b26f4a251fd5b958fe0d0d612"
+    },
+    "qa-png-to-bmp.ps1": {
+      "reported": "6f887944f49430065891d294ddba78d88e235ad88344890deaa304ac91f4a675",
+      "actual": "6f887944f49430065891d294ddba78d88e235ad88344890deaa304ac91f4a675"
+    },
+    "qa_parent_db.py": {
+      "reported": "17bc8dea331c14c0559246a884e7787f3d880db7f2f62652fd45eaa350cd9cd7",
+      "actual": "17bc8dea331c14c0559246a884e7787f3d880db7f2f62652fd45eaa350cd9cd7"
+    },
+    "run.mjs": {
+      "reported": "0bff3999fd5564d0287c115cbc39471761eb5208321d73da3a56707de511ca33",
+      "actual": "0bff3999fd5564d0287c115cbc39471761eb5208321d73da3a56707de511ca33"
+    },
+    "scenarios.mjs": {
+      "reported": "335a8f64e62df441eef9b1602d25974b51ce206a9965c2bb955cc45f30e3f93a",
+      "actual": "335a8f64e62df441eef9b1602d25974b51ce206a9965c2bb955cc45f30e3f93a"
+    }
+  },
+  "production_tree_closure": {
+    "apps": {
+      "86d240550803022e02dbbb5ae2323793fbfdebfa": "cb2142ba11a47db9906e239253e8e876f57b41ff",
+      "b64669f8525f8ac5e52c7f9484a5acf0dddbd147": "cb2142ba11a47db9906e239253e8e876f57b41ff",
+      "6a3611e2567cf97e858ff146a55c8d0fda7d832c": "cb2142ba11a47db9906e239253e8e876f57b41ff"
+    },
+    "services": {
+      "86d240550803022e02dbbb5ae2323793fbfdebfa": "ce4488fc9c58cc69ef2d8efc0681260c20b92a9c",
+      "b64669f8525f8ac5e52c7f9484a5acf0dddbd147": "ce4488fc9c58cc69ef2d8efc0681260c20b92a9c",
+      "6a3611e2567cf97e858ff146a55c8d0fda7d832c": "ce4488fc9c58cc69ef2d8efc0681260c20b92a9c"
+    },
+    "packages": {
+      "86d240550803022e02dbbb5ae2323793fbfdebfa": "b53b166330a8e15cfd4130110496694e0086436e",
+      "b64669f8525f8ac5e52c7f9484a5acf0dddbd147": "b53b166330a8e15cfd4130110496694e0086436e",
+      "6a3611e2567cf97e858ff146a55c8d0fda7d832c": "b53b166330a8e15cfd4130110496694e0086436e"
+    }
+  },
+  "candidate_matches_final_owner": true,
+  "services_packages_equal_previous_qa": {
+    "services": true,
+    "packages": true
+  },
+  "independent_exact_stage_rebuild": {
+    "files": 57,
+    "tree_sha256": "ce19204576470ef25dddde667ae1c726d573331e1d06e662e4662353867af893",
+    "matches_report": true,
+    "file_sha256": {
+      "package.json": "ca62c237282a825cc36aceab1ed44e2673061369ef05694f25689dc3b574db49",
+      "dist/apps/windows/tests/uploader.test.js": "fd1d2e98473f7dd336756286b420809eb6c64e3324f0aab8f834df21a78526b4",
+      "dist/apps/windows/tests/capture-link-rules.test.js": "4e190e2b13c4ff476af9e9c1446e2ec18b42c31a25d2dde51523ccab8db1450b",
+      "dist/apps/windows/tests/owned-host-flow.test.js": "c8f9f3789b728780c0dd741c20ec8693731997ae6a9b59fa3ea8d935e6f6d0db",
+      "dist/apps/windows/tests/overlay-page.js": "40ed60288d6b8d7713d085858c19dfcd120d78f756d6c2431948534246c0e603",
+      "dist/apps/windows/tests/capture-link-record.test.js": "1761657c6dcb3c16983a960198a5b81bf54c727a958040f055cd28955915c279",
+      "dist/apps/windows/tests/frame-ingress.test.js": "ae6d5161ef6200fa2618543050c9b8ad3a3c723ee2817e282a2192339edc457f",
+      "dist/apps/windows/tests/control-page.js": "4a89d4083a20c9e0bc1ba9f2ec3ce92ab8ea7797261159e7ebf02878ccb2b376",
+      "dist/apps/windows/tests/overlay-capture.test.js": "0822fbfedcc463ec20c15a1bd1fbded902310a9031a0cdc66d6603ba6ee68f3a",
+      "dist/apps/windows/tests/host-fixture.js": "fae4c6a61661846c199a432be8a2875e548b9abfce7d5ddd5fc2713a382d4b84",
+      "dist/apps/windows/tests/retention-correction.test.js": "72dffec79a5ec00f6c0484e53de2dccbde79d5661e127f864797f93a8394a663",
+      "dist/apps/windows/tests/capture-plan.test.js": "07edc042980bce152852b04ba572b873de31c2fb735412dc7eca5f424c8bafae",
+      "dist/apps/windows/tests/shared.test.js": "ee51870b784a7c7b340c18736c63612036b876b9c7ca74ade52a7c7b03a71dc0",
+      "dist/apps/windows/tests/capture-link.test.js": "acd423f91c9ffdfa1826dc199fdb3c03bc140d0042bdd546d7f171bea94ad907",
+      "dist/apps/windows/tests/app-link.test.js": "29feba7bcfd42a78d110e2613155dfef4d2e1ff47f5b80dcf4958b396009c6f4",
+      "dist/apps/windows/tests/ink-original.test.js": "ba623a79daaac5d72f663e0ea3010f29a17622da3ba2186cea3c2f338ae5e720",
+      "dist/apps/windows/tests/png.js": "8f72448cefabd850931cb74a92d3e4c14c1c24885961351a90309d3fbbbde08e",
+      "dist/apps/windows/tests/control-link.test.js": "fe11ee12164876859fb453abd313d08918052802761029026304ae750ae6c8e4",
+      "dist/apps/windows/tests/overlay-stop.test.js": "7f26c3376dcbc835659e77d9e572c9c54aa2e074decbb34a80ed430f4e779cfe",
+      "dist/apps/windows/tests/retention.test.js": "2df279503af67e39f54f69dfb2ba76dcd001e6676e571b3303bc8f3e0f513dcc",
+      "dist/apps/windows/tests/link-fakes.js": "8407d2373e082f9b9db6a2c3f878509382734b84d775da06f7ef0c2c6836c913",
+      "dist/apps/windows/tests/capture-host.test.js": "fe89d26c84d0e95869b66b804c66f6a9ad9cd40f95ded7ebc676e9847111b950",
+      "dist/apps/windows/tests/main-lifecycle.test.js": "5c059850b1134a2dcbf23204d84a458aa5f4173a5e8187ab19c4d58f5a9ab619",
+      "dist/apps/windows/tests/link-world.js": "673074f9a53fbbaabf21cd6ff0a303f28c883d06a878c57b842d43990be3a4d8",
+      "dist/apps/windows/tests/overlay-frames.test.js": "60999491992b37ecce6bea68c01eb52a207f0c1da1ae36494d08201d25dcd4de",
+      "dist/apps/windows/tests/overlay-alignment.test.js": "95b455341fc9f9559d248cc6034d4cf7225c6070f4b6c654f6c94e5169d1131f",
+      "dist/apps/windows/tests/source.js": "a3b346a33f1f7ef4e727bfc92a0bba5921e86048a8e8f2c6607a4391823aeec4",
+      "dist/apps/windows/tests/main-harness.js": "2c52216fea5f52c02c7db6ecbfc76a5797b79f119427ef055a2b26de819fc194",
+      "dist/apps/windows/tests/context-pictures.test.js": "a459bdafc202406f0ff010736da6320bc98f56f1786ff34cf11dc9e59174ea40",
+      "dist/apps/windows/scripts/ingress-harness-capture.js": "9cf9374f0aaec537d61c37a50369a4dd7e954fb99760d9cf293004fa3937f6cf",
+      "dist/apps/windows/scripts/ingress-fixtures.js": "3ca6ee305a8d8632827c9ec5c370945bf8e9da8da274987fa60657a96c616395",
+      "dist/apps/windows/scripts/ingress-harness-ink-capture.js": "ffd3babd1904da9ff32dd8053d8a3f523307956a7934900fb3c258f49b237cc8",
+      "dist/apps/windows/src/preload/overlay.cjs": "8f64ca59de80b3bbc2ae9974900700bcf18adb5482603c021ad6639c586a2cc7",
+      "dist/apps/windows/src/preload/control.cjs": "45b9b3668e532f48190f6c26567eeea7eb6c032f47d0a415fa1435a6529378be",
+      "dist/apps/windows/src/shared/frame-ingress.js": "07a8657d591a65449a8ec0ec62e91997d70ff80b0f7d7102b2cacc042f28b63d",
+      "dist/apps/windows/src/shared/retention.js": "1a5bc8c1c0efe9b3c25817dc7208b5eb3b8795ec952412aaef0e47027cf39d82",
+      "dist/apps/windows/src/shared/samples.js": "58436143034e76b17de2b186769815ad77af64846bdaba49d67254a09f3ae256",
+      "dist/apps/windows/src/shared/desktop-ink.js": "ab621526d1ced3b5afcfa791688af5fb2b6b17af5e9895061e3df04a7ab4036d",
+      "dist/apps/windows/src/shared/capture-plan.js": "51315a5d197ce0821fb3340f2e4352166f4d7fd0d98cdcd1c69bd789e91ae7f6",
+      "dist/apps/windows/src/renderer/probe.html": "e6cbdd4b53b386fc49a8ed67d16fe8585b615121b2f5544fac733e5153ead515",
+      "dist/apps/windows/src/renderer/probe.css": "d91de633b9677107cfcee8008ac20694988871781ef04c786a252861c088fb5f",
+      "dist/apps/windows/src/renderer/overlay.html": "65fe23136ec3f753c466741498c81076224eb1cb5bd575bd1033ef4c661ee090",
+      "dist/apps/windows/src/renderer/overlay.css": "c20319aab61f7446dd4cb509e898402fa264f343d23773a3419c2501e6726fc8",
+      "dist/apps/windows/src/renderer/control.html": "32911876ddbd49f62e919c3262be980690eddb7e6fb2329dd706dd2bdb2efe34",
+      "dist/apps/windows/src/renderer/control.css": "7d523ddbd330de12bdad1b8329f2c5f70beb9bd81e122fb35f48b61f7c4110ca",
+      "dist/apps/windows/src/renderer/overlay.js": "515df65e1d97a12f53eb1d1b182c06914013a7e6df2e5ff4d0f8e573c5228b54",
+      "dist/apps/windows/src/renderer/control.js": "270911fdcb8779b3e561fc9c0aea129f2fa25c3bc9dd88f175fcc049d5cdfadd",
+      "dist/apps/windows/src/renderer/probe.js": "a47f669467b32d4d2baed8a9b17afd219a4407eac5d1d87640e803995b94c08d",
+      "dist/apps/windows/src/main/self-test.js": "81d3adab338aebfaa0d60c04ab71914c37ffe92bd6a06e668f26bbf1c9599f7c",
+      "dist/apps/windows/src/main/capture-link.js": "658092b0b6c09e0cd4531be124b61fc1262ad4feb36a3b920cc00d05e7e7cae3",
+      "dist/apps/windows/src/main/main.js": "8c6afedbcedae9b629d9682da2ac2117a3d8d1742534c3a0ea5d67a01785ccae",
+      "dist/apps/windows/src/main/uploader.js": "9dfa70ddd00ca6c66460320a954e06847dfa2b2e38ece614df5a316f5feb2497",
+      "dist/apps/windows/src/main/capture-host.js": "4860bbd7090ee64bdd73817bccf3d021e69e741900f94935eda195e6bb5690d9",
+      "dist/apps/windows/src/main/self-test-course.js": "a02a8bf6832c23ef6434ceb47227517b4505ddd585979c861166b4d972034d68",
+      "dist/apps/windows/src/main/loopback-http.js": "96c4000e0f3b041730711eab16fcab1f229b662b3c7ddb57c5f77a711f345103",
+      "dist/apps/safari-extension/src/ink.js": "081e838aa457d3020ca699e1feec28494c51b88ae56ba6e2b349a01789a8d7ee",
+      "dist/apps/safari-extension/src/mode.js": "28f40e4c9d6750c40cd31ac70d458d039f34b0f995d3810cbb859dd49121037b"
+    },
+    "command": "pinned Node 24.21.0, existing TypeScript 7.0.2 tsc -p exact exported tsconfig; copy-static.mjs; no install/native run"
+  },
+  "checks": {
+    "pass": 24,
+    "limit": 2
+  },
+  "steps": {
+    "planned": 223,
+    "executed": 223,
+    "failed": 0,
+    "errors": []
+  },
+  "app_exits": {
+    "app": {
+      "pid": 55764,
+      "close_via": "page",
+      "exit_ms": 118,
+      "exit_code": 0,
+      "exited": true,
+      "killed": null,
+      "closed_in_finally": null
+    },
+    "app-idle": {
+      "pid": 60936,
+      "close_via": "wm_close",
+      "exit_ms": 154,
+      "exit_code": 0,
+      "exited": true,
+      "killed": null,
+      "closed_in_finally": null
+    },
+    "app-main": {
+      "pid": 75440,
+      "close_via": "page",
+      "exit_ms": 140,
+      "exit_code": 0,
+      "exited": true,
+      "killed": null,
+      "closed_in_finally": null
+    },
+    "app-capturing": {
+      "pid": 13320,
+      "close_via": "wm_close",
+      "exit_ms": 661,
+      "exit_code": 0,
+      "exited": true,
+      "killed": null,
+      "closed_in_finally": null
+    },
+    "app-after-capturing": {
+      "pid": 72972,
+      "close_via": "page",
+      "exit_ms": 91,
+      "exit_code": 0,
+      "exited": true,
+      "killed": null,
+      "closed_in_finally": null
+    },
+    "app-unavail": {
+      "pid": 74964,
+      "close_via": "wm_close",
+      "exit_ms": 119,
+      "exit_code": 0,
+      "exited": true,
+      "killed": null,
+      "closed_in_finally": null
+    },
+    "app-unavail-capturing": {
+      "pid": 24832,
+      "close_via": "wm_close",
+      "exit_ms": 260,
+      "exit_code": 0,
+      "exited": true,
+      "killed": null,
+      "closed_in_finally": null
+    },
+    "app-final": {
+      "pid": 64604,
+      "close_via": "page",
+      "exit_ms": 105,
+      "exit_code": 0,
+      "exited": true,
+      "killed": null,
+      "closed_in_finally": null
+    }
+  },
+  "relaunches": 7,
+  "immutable_checkpoint_receipts": {
+    "checkpoints": 19,
+    "frame_hash_checkpoints": 13,
+    "distinct_original_paths": 25,
+    "kinds": {
+      "context_png": 4,
+      "immutable_ink_json": 8,
+      "capture_png": 13
+    },
+    "problems": [],
+    "byte_revalidation": "not performed; private originals intentionally not inspected"
+  },
+  "readback_receipts": {
+    "records": 8,
+    "distinct_originals": 15,
+    "raw_composed_comparisons": 16,
+    "ink_comparisons": 8,
+    "digest_and_length_linkage_to_local_checkpoints": true,
+    "database_unchanged": true,
+    "by_kind": {
+      "artifact": 15,
+      "authorization": 1,
+      "capture_artifact_ref": 15,
+      "capture_binding": 2,
+      "capture_record": 8,
+      "capture_replay": 8,
+      "capture_slot": 8,
+      "control_lineage": 1,
+      "control_membership": 1,
+      "control_replay": 4,
+      "control_start": 2,
+      "control_stream": 2,
+      "device": 1,
+      "raw_capture_frame": 8,
+      "session": 1,
+      "snapshot": 2,
+      "source": 2
+    }
+  },
+  "cleanup": {
+    "after": {
+      "actor_row": false,
+      "documents": 0
+    },
+    "at": "2026-10-01T02:31:06.702006+00:00",
+    "before": {
+      "actor_row": true,
+      "documents": 81
+    },
+    "cleanup": "this run's proven actor only"
+  },
+  "release": {
+    "hosts_appeared": 8,
+    "hosts_exited": 8,
+    "watch_end": {
+      "event": "watch_end",
+      "at": "2026-10-01T02:30:10.855024+00:00",
+      "remaining": []
+    },
+    "wsl_children": [
+      {
+        "pid": 73856,
+        "running_at_end": false
+      },
+      {
+        "pid": 36448,
+        "running_at_end": false
+      }
+    ],
+    "external_process_list_checks": "QA-reported times in build.json only; external raw listings not retained"
+  },
+  "status_reads": {
+    "count": 20,
+    "storing_true": 6,
+    "bad": []
+  },
+  "limits": [
+    {
+      "id": "relaunch.unavailable_hosts_before_a_start_observed",
+      "status": "limit",
+      "observed": {
+        "hosts_before_a_start": {
+          "app-unavail": [],
+          "app-unavail-capturing": [
+            {
+              "pid": 1087492,
+              "appeared": 1790821760.87232,
+              "exited": 1790821761.285167
+            }
+          ],
+          "app-final": [
+            {
+              "pid": 1087537,
+              "appeared": 1790821781.33229,
+              "exited": 1790821781.745373
+            },
+            {
+              "pid": 1087542,
+              "appeared": 1790821781.745334,
+              "exited": 1790821782.160065
+            }
+          ]
+        },
+        "status": {
+          "app-unavail": {
+            "l": {
+              "mode": "development",
+              "state": "stopped",
+              "stored": 3,
+              "unknown": 0,
+              "refused": 0,
+              "not_sent": 0,
+              "detail": "the host ended",
+              "earlier_unknown": 0,
+              "sends_stopped": false,
+              "storing": false
+            },
+            "line": "Capture storage (development): stopped. 3 record(s) stored. the host ended. AI: not connected."
+          },
+          "app-unavail-capturing": {
+            "l": {
+              "mode": "development",
+              "state": "not connected",
+              "stored": 0,
+              "unknown": 0,
+              "refused": 0,
+              "not_sent": 0,
+              "detail": "not reconciled: the host ended without READY (unavailable)",
+              "earlier_unknown": 1,
+              "sends_stopped": false,
+              "storing": false
+            },
+            "line": "Capture storage (development): not connected (the frames stay on this device). 0 record(s) stored; 1 earlier stream(s) whose end is not known. not reconciled: the host ended without READY (unavailable). AI: not connected."
+          },
+          "app-final": {
+            "l": {
+              "mode": "development",
+              "state": "not connected",
+              "stored": 0,
+              "unknown": 0,
+              "refused": 0,
+              "not_sent": 0,
+              "detail": "not reconciled: the host ended without READY (unavailable)",
+              "earlier_unknown": 2,
+              "sends_stopped": false,
+              "storing": false
+            },
+            "line": "Capture storage (development): not connected (the frames stay on this device). 0 record(s) stored; 2 earlier stream(s) whose end is not known. not reconciled: the host ended without READY (unavailable). AI: not connected."
+          }
+        }
+      },
+      "note": "observation, not judged: 3 host(s) appeared after a relaunch and before any Start while earlier streams were never confirmed; each ended"
+    },
+    {
+      "id": "copy.says_storing_while_a_send_waits",
+      "status": "limit",
+      "observed": {
+        "8_s_into_the_pause": {
+          "state": "sending",
+          "storing": true,
+          "stored": 3,
+          "unknown": 0,
+          "header_says_storing": true,
+          "line": "Capture storage (development): storing. 3 record(s) stored. AI: not connected."
+        },
+        "jobs_out_in_the_record_then": [
+          [
+            "src-c1377d202effe9d80cd8beec.b5-5",
+            "sending"
+          ]
+        ],
+        "seconds_until_the_app_said_not_storing": 182.7
+      },
+      "note": "observation, not judged here: 8 s into the pause the record held a send still out and the app still said 'storing' (its stored count unchanged); it said 'not storing now' 182.7 s after the pause"
+    }
+  ],
+  "review_limits": [
+    "No GUI/DB/provider/service or scenario rerun.",
+    "No private raw screenshots, PNG or ink inspected; original byte comparisons remain recorded QA operations with independently checked hash linkage.",
+    "QA-WIN-05 remains a residual fault, not a pass or product acceptance.",
+    "WM_CLOSE is synthetic native window-message delivery, not a physical close click; pen events are DevTools injected.",
+    "No second quit during pending link Stop, hung Stop bound, held-unsaved ink, repeated record batch, native Mac, provider, audio, Notability or full desktop gates."
+  ],
+  "separate_harness_review": {
+    "source": "Lead notification during finalization",
+    "finding": "Two missing-evidence false passes reproduced by separate reviewer; required data present in actual run",
+    "reproduced_by_this_reviewer": false,
+    "next_action": "Existing QA owner analyzer-only correction; no desktop/DB rerun"
+  }
+}

@@ -1,0 +1,127 @@
+{
+  "verdict": "HOLD_ANALYZER_REUSE",
+  "candidate": "6a3611e2567cf97e858ff146a55c8d0fda7d832c",
+  "historical_retained_result": {
+    "pass": 24,
+    "limit": 2,
+    "remains_valid": true,
+    "actual_resume_pid": 1086763,
+    "actual_ink_comparisons": 8
+  },
+  "findings": [
+    {
+      "id": "QA-HARNESS-01",
+      "severity": "P2",
+      "file": "tests/e2e/windows/analyze_fix.py",
+      "lines": [
+        348,
+        350
+      ],
+      "reproduction": "Set resumed[0].hosts = []; recovery check still passes."
+    },
+    {
+      "id": "QA-HARNESS-02",
+      "severity": "P2",
+      "file": "tests/e2e/windows/analyze_fix.py",
+      "lines": [
+        392,
+        405
+      ],
+      "reproduction": "Set every readback job ink_originals = []; ink-equality check still passes despite expected references."
+    }
+  ],
+  "analyzer_runs": [
+    {
+      "case": "baseline",
+      "counts": {
+        "pass": 24,
+        "limit": 2
+      }
+    },
+    {
+      "case": "missing-resume-hosts",
+      "counts": {
+        "pass": 24,
+        "limit": 2
+      }
+    },
+    {
+      "case": "missing-ink-comparisons",
+      "counts": {
+        "pass": 24,
+        "limit": 2
+      }
+    },
+    {
+      "case": "forced-kill-control",
+      "counts": {
+        "pass": 21,
+        "fail": 3,
+        "limit": 2
+      }
+    },
+    {
+      "case": "missing-status-control",
+      "counts": {
+        "pass": 22,
+        "limit": 2,
+        "fail": 2
+      }
+    }
+  ],
+  "scenario_compatibility": {
+    "existing": [
+      {
+        "scenario": "full",
+        "steps": 300,
+        "identical": true
+      },
+      {
+        "scenario": "ink",
+        "steps": 188,
+        "identical": true
+      },
+      {
+        "scenario": "parent",
+        "steps": 248,
+        "identical": true
+      },
+      {
+        "scenario": "parentquit",
+        "steps": 41,
+        "identical": true
+      },
+      {
+        "scenario": "smoke",
+        "steps": 20,
+        "identical": true
+      }
+    ],
+    "parentfix": {
+      "steps": 223,
+      "closeRequests": 8,
+      "launches": 7,
+      "forceKillSteps": 0
+    }
+  },
+  "source_sha256": {
+    "analyze_fix.py": "ba2b42095a4218e14c947e848dd3a08c8cd264a105596a48fd8420f1a1a28103",
+    "qa-electron-runner.ps1": "0dfb3b4c2e40cc56ae48378b9a6e4c2998270e1b26f4a251fd5b958fe0d0d612",
+    "qa_parent_db.py": "17bc8dea331c14c0559246a884e7787f3d880db7f2f62652fd45eaa350cd9cd7",
+    "run.mjs": "0bff3999fd5564d0287c115cbc39471761eb5208321d73da3a56707de511ca33",
+    "scenarios.mjs": "335a8f64e62df441eef9b1602d25974b51ce206a9965c2bb955cc45f30e3f93a"
+  },
+  "probe_sha256": {
+    "analyzer_probes.py": "6f4f92b235fc594cdaf1fcf9922ffb173d71084055e54fdf0e64fe67b926c156",
+    "analyzer-results.json": "da78e61444a6c268b1bd2c7caf40948f62c9ca47c537998541f25c4ffb94e5f6",
+    "analyzer-probes.log": "1449b1510432dfaa2f443f3aee2d35e42982bb279a498fcb8af5526209a1bfea",
+    "scenario-check.mjs": "55f53816c01fb5693cb96f8c179e5a2a4b05850c21c137bbc6ea7e22cacde0cd",
+    "scenario-results.json": "042fefc1e1bf6f224ac26e5b614397e0ef44a363a764ed76a25145fab7108f17"
+  },
+  "limits": [
+    "Read-only exact leaf source review",
+    "Pure committed sanitized metadata replay and explicit mutations only",
+    "No GUI, DB, process signals, network or campaign rerun",
+    "No repository/worker edits; previous native reports untouched"
+  ]
+}

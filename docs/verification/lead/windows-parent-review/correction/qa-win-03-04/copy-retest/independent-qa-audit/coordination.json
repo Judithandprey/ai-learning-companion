@@ -1,0 +1,62 @@
+{
+  "baseline": "bde0cb1d01dbdfd4d5486d5686d65c73f28a58d4",
+  "tested_candidate": "86d240550803022e02dbbb5ae2323793fbfdebfa",
+  "qa_delivery": "6a3611e2567cf97e858ff146a55c8d0fda7d832c",
+  "incoming": {
+    "message_id": "handoff_4eb9dc01ea2f20382a1778e9a2fd44e3",
+    "created_at": "2026-10-01T02:45:22Z",
+    "read_at": "2026-10-01T02:45:37Z",
+    "body_sha256": "ebae674c79e6770776cdc94074ed4e9e1ae07a2acb9e5db0da9a5ae5a1771bc6"
+  },
+  "followups": [
+    {
+      "owner": "web",
+      "body": "Continue existing P0-02/07/12: ONE bounded QA-WIN-05 correction, after completed QA-WIN-03/04. Baseline main bde0cb1d01dbdfd4d5486d5686d65c73f28a58d4; its apps/windows exactly equals your 41fd2cb. Preserve branch/work and merge normally at a safe boundary. Actual independent QA delivery is 6a3611e2567cf97e858ff146a55c8d0fda7d832c (read git show SHA:docs/verification/qa/p0-13-windows-quit-copy-retest-86d2405.md); Lead is auditing/integrating that evidence. QA-WIN-03 and original QA-WIN-04 pass their reported scope:8self-exits,7clean relaunches. Do not repeat that campaign.\n\nConcrete residual QA-WIN-05: during an actual paused own host, one request remained unanswered; at8s the UI still said frames \"are also being stored\"/\"storing\", persisting until ~182.7s when3x60s retries ended. Confirmed counts stay accurate. Lead traced capture-link.ts send(): no notification before await uploadRetained; status.storing only checks active.state==='sending', control.ts turns that into a present storage claim. This is worth fixing for truthful outcomes, not a new protocol or timeout redesign.\n\nWrite only apps/windows plus your owned tests/evidence. Make pending transmission vs confirmed saved results clear as soon as a send begins; during waiting/stall do not assert current successful storage, and never turn uncertainty into \"not stored.\" Preserve exact retry keys/bodies, timeout/retry policy, actual ACK counts, Stop/quit fences, local originals, recovery and the conditional ASK card/no-AI wording. Prefer simple outcome wording/current in-flight notification over a new state framework; you choose the minimal correct readable implementation. Refresh requirements source/English §7.1/7.2, R03/R07/R35/R36/R51/R52, A12/A14/A27/A31 and current workflow.\n\nFocused checks: delayed transport before first and subsequent ACK, no status event gap at send start, later ACK restores confirmed counts, unknown/stuck and Stop retain prior facts; visible header/link wording matches state. Existing quit and original-preservation checks only as affected. No full DB/GUI campaign; source/unit/build evidence first, Lead will release exact candidate for a narrow independent check. QA explicitly released display/all owned processes02:30:23Z (later Edge cleanup verified02:43:52Z), but any new GUI run needs fresh occupancy check and explicit ownership/release.\n\nNo provider activation, dependencies/shared contracts/backend changes, user-preview/DB/services or Paperclip actions. Deliver exact commit, focused checks and remaining boundaries once. Next owner Lead review/integration, then QA only changed behavior. No acknowledgment-only reply.",
+      "receipt": {
+        "ok": true,
+        "route_id": "route_8608e3d1ee5a44f7bddfe1fa43c2a202",
+        "action": "instruction",
+        "accepted": true,
+        "mode": "async_route_v1",
+        "delivery_mode": "mailbox",
+        "message_id": "handoff_f11b8b54812dc73825a10735587c3aa7",
+        "duplicate": false,
+        "state": "unread",
+        "execution_started": false
+      }
+    },
+    {
+      "owner": "qa",
+      "body": "Continue the SAME 6a3611e QA-WIN-03/04 delivery with one small analyzer-only correction; do not rerun Windows/GUI/DB. Lead audit confirms actual retained evidence is present and supports the historical24pass/2limit,8self-exits,7relaunches. The runtime result is not invalidated; QA-WIN-05 is already sent to Web as handoff_f11b8b54812dc73825a10735587c3aa7. Display release remains in force.\n\nIndependent review found two concrete missing-evidence false positives in committed tests/e2e/windows/analyze_fix.py:\n1. lines348–350 fault_ok: mutate the sole resumed event to hosts:[]; all(h.get('continued') for ... in []) remains true, so fault.only_this_runs_host_paused_and_resumed still passes. Require a nonempty exact resumed-host identity match to the paused/session host, with continued evidence.\n2. lines392–405 counts_ok: remove every readback job's ink_originals comparisons; all(...) over empty entries still passes while its note claims all ink bytes match. Require expected original identities/coverage from the retained committed plan/server records, including both streams, not merely a single nonempty comparison. Reject missing/duplicate/unrelated comparison evidence and byte mismatch without demanding ink on records that do not require it.\n\nScope: your tests/e2e/windows analyzer and small pure replay/negative checks plus owned QA evidence. Preserve the executed6a3611e report/raw sanitized JSON/harness hash as historical; append a clear post-run analyzer correction, do not relabel a new file hash as executed on Windows. Baseline mainbde0cb1, delivery6a3611e; preserve work. Recompute against already-retained evidence only and show both mutations now fail, baseline still24pass/2limit, relevant wrong-PID/hash controls fail. This needs no new display, service, actor, provider, account or production change. Deliver one correction commit and exact checks; Lead integrates base+fix after review. Avoid broad harness refactor or another campaign.",
+      "receipt": {
+        "ok": true,
+        "route_id": "route_6fd5946d12ac46e98ef15d2140c7261f",
+        "action": "instruction",
+        "accepted": true,
+        "mode": "async_route_v1",
+        "delivery_mode": "mailbox",
+        "message_id": "handoff_1e29884b68d0ea9599cfdbb56faa481d",
+        "duplicate": false,
+        "state": "unread",
+        "execution_started": false
+      }
+    },
+    {
+      "owner": "ios",
+      "body": "Next bounded continuation within existing P0-03/11/P0-07 macOS parent task, not a new mobile task. Exact main bde0cb1d01dbdfd4d5486d5686d65c73f28a58d4 contains your fb891d6 unchanged and audited native run36803694899 (78 XCTest + app package). Preserve that completed evidence; no replay of its campaign.\n\nA concrete source-only macOS analogue of Windows QA-WIN-05 needs truthful pending/confirmed storage copy. At this baseline:\n- Sources/CompanionDesktop/ContentView.swift:190 says \"Storing while capturing.\"\n- DesktopCapture/CaptureLink.swift:667 publishes .storing just after source registration, before any frame ACK.\n- send around941 awaits the uploader without publishing newly journaled pending state; unknown outcomes at950–954 update counters but leave .storing. Actual committed count is correctly tied to verified batch ACK; preserve it.\nThis is a source finding, not a reproduced Mac GUI fault. No interactive Mac is confirmed.\n\nWrite only apps/macos and owned platform evidence. Implement the smallest truthful presentation: do not assert current successful storage while nothing is confirmed or while an operation awaits a response; expose pending/unknown vs last confirmed counts promptly after durable send intent, preserve existing exact retry/idempotency, journal-failure fence, Stop/restart and uncertainty. Neutral active-link wording plus the existing counts may suffice; no new state framework, wire, retry/timeout redesign, backend/dependency changes. An unanswered operation can have arrived; do not claim \"not stored\". Keep raw/composed/editable originals, conditional no-AI labels and accepted C1/C2/control fixes intact.\n\nFocused tests: delayed first ACK, later delayed batch after prior confirmed records, still-pending immediate notification, timeout/unknown remains unknown, later exact ACK counts, Stop/journal failure cannot publish sending authority. Refresh current workflow and source/English requirements§7.1/7.2,R03/R07/R35/R36/R51/R52,A12/A14/A27/A31. Use existing test transport for bounded source checks; keep real Mac UI/provider/physical pen unverified. No mobile/signing/device campaign or repeated full hosted build now; Lead will review the exact leaf and run proportional native checks if needed.\n\nReturn one commit, exact checks and remaining limitations; next owner Lead integration and independent review. No user-preview/services/Paperclip change or paid action. No acknowledgment-only reply.",
+      "receipt": {
+        "ok": true,
+        "route_id": "route_dade7cb2bf0f4756aed8f816e92b88dd",
+        "action": "instruction",
+        "accepted": true,
+        "mode": "async_route_v1",
+        "delivery_mode": "mailbox",
+        "message_id": "handoff_e315d6df5277bb8e006e4d94af5dcfa5",
+        "duplicate": false,
+        "state": "unread",
+        "execution_started": false
+      }
+    }
+  ],
+  "scope": "Actual run evidence supports original QA-WIN-03/04 closure. Hold new analyzer reuse/integration pending bounded missing-evidence correction; QA-WIN-05 and source-only Mac analogue remain open. Receipts are dispatch only, not execution."
+}

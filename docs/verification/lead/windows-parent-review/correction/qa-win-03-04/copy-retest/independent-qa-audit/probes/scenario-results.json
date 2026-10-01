@@ -1,0 +1,35 @@
+{
+  "existing": [
+    {
+      "scenario": "full",
+      "steps": 300,
+      "identical": true
+    },
+    {
+      "scenario": "ink",
+      "steps": 188,
+      "identical": true
+    },
+    {
+      "scenario": "parent",
+      "steps": 248,
+      "identical": true
+    },
+    {
+      "scenario": "parentquit",
+      "steps": 41,
+      "identical": true
+    },
+    {
+      "scenario": "smoke",
+      "steps": 20,
+      "identical": true
+    }
+  ],
+  "parentfix": {
+    "steps": 223,
+    "closeRequests": 8,
+    "launches": 7,
+    "forceKillSteps": 0
+  }
+}

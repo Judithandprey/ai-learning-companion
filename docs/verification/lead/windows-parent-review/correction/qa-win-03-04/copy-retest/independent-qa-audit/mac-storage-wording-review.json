@@ -1,0 +1,87 @@
+{
+  "verdict": "SCOPED_CORRECTION_RECOMMENDED",
+  "candidate_main": "bde0cb1d01dbdfd4d5486d5686d65c73f28a58d4",
+  "native_source": "fb891d699cc33cde10c2a1fa25928f3c87346b3f",
+  "scope": "Current storage summary and counters during pending/unknown upload; no reopening of accepted persistence or control corrections",
+  "evidence_kind": "Source-confirmed call flow; no runtime/UI stall reproduction",
+  "finding": {
+    "id": "MAC-STORAGE-COPY-01",
+    "title": "Current-storage summary appears before any frame ACK and remains through pending/unknown upload",
+    "locations": [
+      {
+        "file": "apps/macos/CompanionDesktop/Sources/CompanionDesktop/ContentView.swift",
+        "line": 190,
+        "fact": "storing maps to Storing while capturing.; also used by menuLine"
+      },
+      {
+        "file": "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureLink.swift",
+        "line": 667,
+        "fact": "Successful display-source registration publishes storing then starts upload runner"
+      },
+      {
+        "file": "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureLink.swift",
+        "line": 941,
+        "fact": "Whole uploader awaited with no pending-status publication first"
+      },
+      {
+        "file": "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureLink.swift",
+        "line": 950,
+        "fact": "Unknown upload changes job outcome only; publishCounts preserves overall state"
+      },
+      {
+        "file": "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureLink.swift",
+        "line": 1282,
+        "fact": "counts copies existing status, so unknown counts do not clear storing summary"
+      }
+    ],
+    "counter_distinction": "Confirmed stored total is not optimistic: committed only after fully corresponding batch ACK. The newly journaled sending job is not immediately published, so pending/unknown count may remain stale or hidden during first await.",
+    "impact": "Potentially misleading current-service progress/receipt wording; not demonstrated data loss, unauthorized sends or premature stored-count increment."
+  },
+  "smallest_owner_change": [
+    "Use a neutral active-link/attempting-transfer summary that does not promise current server storage while requests may be pending; retain confirmed receipt counters.",
+    "Publish the existing sending/unknown counts before awaiting a journaled upload so a held request is visible. No new protocol or timer framework is required.",
+    "Pending, missing reply and timeout must remain unknown, never relabeled known not stored; later corresponding ACK may increment confirmed count."
+  ],
+  "bounded_followup_acceptance": [
+    "Hold the first original/batch transport answer: pending count is visible and summary makes no current-storage assertion; stored remains unchanged.",
+    "Release exact receipts/ACK: only then increment confirmed stored count.",
+    "Return or exhaust unknown: retain unknown and keep neutral summary; preserve prior ACK counts."
+  ],
+  "executions": {
+    "runtime_probes": 0,
+    "native_tests_rerun": 0,
+    "gui_db_network_ci_provider": false
+  },
+  "existing_evidence": "Root reports actual native78 pass for fb891d6; accepted as prior evidence, not rerun or recounted here. Windows182-second observation is Windows-only and not a measured Mac duration.",
+  "limitations": [
+    "No Mac GUI hang was reproduced; actual duration and Darwin timeout behavior are unmeasured.",
+    "60-second request/300-second resource timeout defaults and bounded retries exist in source; they do not establish actual end-to-end stall timing."
+  ],
+  "source_manifest": [
+    {
+      "file": "apps/macos/CompanionDesktop/Sources/CompanionDesktop/ContentView.swift",
+      "sha256": "280c67d00fc1cf904b56eaa7ff0baeb25e70ce3113e204ab2a82667b97debe88",
+      "matches_committed_main": true,
+      "matches_fb891d6": true
+    },
+    {
+      "file": "apps/macos/CompanionDesktop/Sources/CompanionDesktop/CaptureController.swift",
+      "sha256": "49e0a0c0feb63db7f1a30d8c2f5787c06cb0dc637f7e1e2be5e1980922a12075",
+      "matches_committed_main": true,
+      "matches_fb891d6": true
+    },
+    {
+      "file": "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureLink.swift",
+      "sha256": "7628c3479160f5f61314838f112d77a7104e8f7875f860650d05278f370b2ae3",
+      "matches_committed_main": true,
+      "matches_fb891d6": true
+    },
+    {
+      "file": "apps/macos/CompanionDesktop/Sources/DesktopCapture/MacIngressUpload.swift",
+      "sha256": "1e208be4afd4412786e59810952ed00eeb653027d2fad0b00fdb07a829d9aa52",
+      "matches_committed_main": true,
+      "matches_fb891d6": true
+    }
+  ],
+  "repository_edits": false
+}
