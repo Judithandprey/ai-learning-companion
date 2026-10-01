@@ -1,0 +1,79 @@
+{
+  "version": "lc-subscription-live/1",
+  "id": "ipc-focus-example",
+  "method": "companion/turn",
+  "params": {
+    "request_id": "focus-example",
+    "session_id": "companion-example",
+    "epoch": 1,
+    "permission_revision": 1,
+    "trigger": "focus",
+    "allowed_assistance": "hint",
+    "presentation": "silent",
+    "user_text": null,
+    "audio_source": null,
+    "image": {
+      "png_base64": "iVBORw0KGgoAAAANSUhEUgAAAZAAAADwCAIAAAChXqV1AAADLUlEQVR4nO3UQQ0AIBDAsPOvCik4AQv8yJImFbDXZu0DkDDfCwAeGRaQYVhAhmEBGYYFZBgWkGFYQIZhARmGBWQYFpBhWECGYQEZhgVkGBaQYVhAhmEBGYYFZBgWkGFYQIZhARmGBWQYFpBhWECGYQEZhgVkGBaQYVhAhmEBGYYFZBgWkGFYQIZhARmGBWQYFpBhWECGYQEZhgVkGBaQYVhAhmEBGYYFZBgWkGFYQIZhARmGBWQYFpBhWECGYQEZhgVkGBaQYVhAhmEBGYYFZBgWkGFYQIZhARmGBWQYFpBhWECGYQEZhgVkGBaQYVhAhmEBGYYFZBgWkGFYQIZhARmGBWQYFpBhWECGYQEZhgVkGBaQYVhAhmEBGYYFZBgWkGFYQIZhARmGBWQYFpBhWECGYQEZhgVkGBaQYVhAhmEBGYYFZBgWkGFYQIZhARmGBWQYFpBhWECGYQEZhgVkGBaQYVhAhmEBGYYFZBgWkGFYQIZhARmGBWQYFpBhWECGYQEZhgVkGBaQYVhAhmEBGYYFZBgWkGFYQIZhARmGBWQYFpBhWECGYQEZhgVkGBaQYVhAhmEBGYYFZBgWkGFYQIZhARmGBWQYFpBhWECGYQEZhgVkGBaQYVhAhmEBGYYFZBgWkGFYQIZhARmGBWQYFpBhWECGYQEZhgVkGBaQYVhAhmEBGYYFZBgWkGFYQIZhARmGBWQYFpBhWECGYQEZhgVkGBaQYVhAhmEBGYYFZBgWkGFYQIZhARmGBWQYFpBhWECGYQEZhgVkGBaQYVhAhmEBGYYFZBgWkGFYQIZhARmGBWQYFpBhWECGYQEZhgVkGBaQYVhAhmEBGYYFZBgWkGFYQIZhARmGBWQYFpBhWECGYQEZhgVkGBaQYVhAhmEBGYYFZBgWkGFYQIZhARmGBWQYFpBhWECGYQEZhgVkGBaQYVhAhmEBGYYFZBgWkGFYQIZhARmGBWQYFpBhWECGYQEZhgVkGBaQYVhAhmEBGYYFZBgWkGFYQIZhARmGBWQYFpBhWECGYQEZhgVkGBaQYVhAhmEBGYYFZBgWkGFYQIZhARmGBWQYFpBhWEDGBfN3Ipoa+6XEAAAAAElFTkSuQmCC",
+      "sha256": "b5f52e1137bfdde9caaf53983dde7f8a56fe05d1390fbb419ff6f843a0c22dd3",
+      "width": 400,
+      "height": 240
+    },
+    "context": {
+      "capture_session_id": "capture-example",
+      "frame_seq": 3,
+      "frame_captured_at": "2026-10-01T14:00:00Z",
+      "frame_width": 400,
+      "frame_height": 240,
+      "display": {
+        "id": "generated-display",
+        "bounds": {
+          "x": -200,
+          "y": 0,
+          "width": 200,
+          "height": 120
+        },
+        "scale_factor": 2
+      },
+      "region_dip": {
+        "x": 0,
+        "y": 0,
+        "width": 200,
+        "height": 120
+      },
+      "region_px": {
+        "x": 0,
+        "y": 0,
+        "width": 400,
+        "height": 240
+      },
+      "ink_revision": 0,
+      "ink_sha256": null,
+      "source_url": null,
+      "source_version": null,
+      "media_position": null
+    },
+    "focus": {
+      "frame_seq": 3,
+      "region_dip": {
+        "x": 10,
+        "y": 20,
+        "width": 40,
+        "height": 30
+      },
+      "region_px": {
+        "x": 20,
+        "y": 40,
+        "width": 80,
+        "height": 60
+      }
+    },
+    "history": [],
+    "gaps": [
+      {
+        "from_frame_seq": 1,
+        "to_frame_seq": 2,
+        "reason": "coalesced"
+      }
+    ]
+  }
+}

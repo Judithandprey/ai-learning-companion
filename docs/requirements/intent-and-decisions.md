@@ -13,8 +13,8 @@
 | 主题 | 有效决定与完整条款 | 来源记录 | 验收／当前状态 |
 | --- | --- | --- | --- |
 | 双桌面优先 | [D-DESKTOP-FIRST](#desktop-first)：先在 Windows 和 macOS 都完成完整功能，再考虑 iPad／手机原生端；代码、历史及后续目标保留。Sidecar 仅后续候选。 | 下文保留的用户本次原话 | 两个桌面分别通过完整适用验收；尚未完成，移动端后置而非通过。 |
-| 官方订阅先接入 | [D-SUBSCRIPTION-FIRST](#subscription-first)、R38/§3.8/G4：个人本地原型先用 Codex App Server 托管 ChatGPT，经现有采集／ASK／learning／回应路径完成有界文字＋图像切片；另选／购买视觉 API key 不是下一前置。 | 用户原话：“先接入官方订阅”；本次交互实施指令 | 路线已选，连接器未实现／真实图像未验收；先在可用 Windows 主机取证，macOS 复用共享连接器并独立构建。 |
-| 原学习屏幕 | R03/R08/R46–48/R59、主规格 §7.4–7.5/7.8：实时原屏幕、页面可操作、AI 实收叠加、可编辑原稿／来源与独立 AI 补充；自有／冻结备选不通过原位路径。 | §1 来源引用；历史[笔迹决定](history/audio-screen-discussion-2026-09-28.md#quote-ink-display) | A26–28/A44–46；真机／导入未验证。 |
+| 官方订阅先接入 | [D-SUBSCRIPTION-FIRST](#subscription-first)、R38/§3.8/G4：个人本地原型沿用 Codex App Server 托管 ChatGPT；selected-image ASK 是历史有界切片，当前流程按 §7.1/7.3 实施；另选／购买视觉 API key 不是前置。 | 用户原话：“先接入官方订阅”；下文当前实施指令归纳 | `d37f7a4` 已有连接器／桌面接入源码，实际图像及持续流程未验收；额度症状根因未知。Windows 先取证，macOS 复用共享连接器并独立构建。 |
+| 原学习屏幕 | R03/R08/R46–48/R59、主规格 §7.1/7.3–7.5/7.8：Start 持续全屏＋可取得墨迹＋相关对话；圈选突出焦点并自动语境回应，无第二次 Ask／文字前置。静音点读、说话／静音控件、每条播音的悬浮字幕及可拖动控件；保留原稿／来源和独立 AI 补充。 | §1 原来源与[笔迹决定](history/audio-screen-discussion-2026-09-28.md#quote-ink-display)；字幕／移动控件为本次新增明确细化，非旧来源原话 | §7.1 两关、A26–28/A44–46 与原目标用例；实际连续回应／交互／导入仍待验收，备选不通过原位目标。 |
 | 显示、用途与去向 | Q-INK-DISPLAY/Q-NOTE-EXPORT-SCOPE 及下文三维表：两种显示；依情境可纠正用途；草稿留存，笔记进 Notability。显示不决定用途／去向。 | [已选选项](history/audio-screen-discussion-2026-09-28.md#quote-ink-display)、[完整答复](history/audio-screen-discussion-2026-09-28.md#quote-ink-note-export) | INTENT-INK-MODES/INTENT-NOTE-CLASSIFICATION；未验收。 |
 | 最终解答 | D-FINAL-ANSWER/Q-HOMEWORK-DESTINATION：完成即询问，呈现真实可用选项／预览／暂不整理，保留原解，不自动提交作业。 | [最终解答来源](history/audio-screen-discussion-2026-09-28.md#quote-ink-final-answer)、[去向](history/audio-screen-discussion-2026-09-28.md#quote-ink-destination) | INTENT-ANSWER-PROMPT/INTENT-HOMEWORK-CHOICE/INTENT-FAITHFUL-EXPORT；未验收。 |
 | 实时音画伙伴 | D-AUDIO-SCREEN、R60、AUDIO-01–15：实际共享画面、现场与内部播放声音、低声用户及老师与其他人，有效声学／语境证据、可逆纠错与未知。 | [初始目标](history/audio-screen-discussion-2026-09-28.md#quote-audio-01)、[屏幕](history/audio-screen-discussion-2026-09-28.md#quote-audio-03)、[伙伴](history/audio-screen-discussion-2026-09-28.md#quote-audio-05) | A47–49/AVTEST-01–12，含 AVTEST-09 正向对照；not_run。 |
@@ -32,13 +32,17 @@ P0–P4 可继续划分双桌面内部实施切片；完整桌面交付须逐项
 
 保留 iPad／手机源码、原稿、历史、Pencil、原生 App 原屏幕覆盖与三设备测试，标为**后置／未验收**，不删除、不判通过，也不阻塞所有桌面工作；适用行为现在有 Windows 和 macOS 对应验收。Mac 串流／Sidecar 只是后续待验证候选，不是本次桌面完成的依赖、已选实现或原生 iPad 跨 App 覆盖层证据。
 
-Windows 环境可用，交互式 Mac 访问尚未确认。托管 macOS CI／Xcode 编译不证明 macOS 权限、全屏采集、音频、笔层或 Sidecar 实际可用。当前产品供应商 disabled 与可信运行时 user/device/session/start bootstrap 未完成仍是开放依赖，文档更新不接通真实 AI。缺某设备或目的地时继续独立工作，保留具体缺口，不虚报完整交付。Notability 仍为偏好去向，显示不可用原因及待办／可用选择；分享或 PDF/PNG 不等于实际导入，备选不把完整链路标通过。模型、effort、预算、权限与购买边界不变。
+Windows 环境可用，交互式 Mac 访问尚未确认。托管 macOS CI／Xcode 编译不证明 macOS 权限、全屏采集、音频、笔层或 Sidecar 实际可用。`d37f7a4` 已有订阅连接器和桌面接入源码，源码实现、真实输入／回应、来源权限初始化及完整持续验收须分别记录，不能再以“连接器未实现”概括当前状态。缺某设备或目的地时继续独立工作，保留具体缺口，不虚报完整交付。Notability 仍为偏好去向，显示不可用原因及待办／可用选择；分享或 PDF/PNG 不等于实际导入，备选不把完整链路标通过。模型、effort、预算、权限与购买边界不变。
+
+**当前实时流程实施指令（归纳，不是逐字引文）：**先落实可用 Windows 上的 §7.1/7.3，Start 明确开启所选授权来源的持续全屏、可取得墨迹和相关对话上下文；完成有效圈选便在全屏中突出焦点并自动给局部语境解释／提示，不另按 Ask、不必先打字，文字／语音追问可选。点读默认静音；显式说话／静音控件与来源采集状态分开，每条实际播出的 AI 回应都配对应悬浮字幕。工具条／字幕有可见拖动入口，跨 DPI／多显示器和重开时留在可用工作区；字幕和移动控件是本次新增明确细化。圈选不授权完整解法，探索／披露规则仍适用。来源、麦克风和系统播放的实际限制如实呈现，不以保存录音为前置。保留正在运行的用户版本 `3e4b406`；新实现单独版本化交付，不因文档修订替换、重启或关闭它。macOS 同等目标与独立构建继续，不因缺交互式硬件阻塞共享工作。
 
 <a id="subscription-first"></a>
 
 ## D-SUBSCRIPTION-FIRST：先接入官方订阅 — 已确认
 
-2026-09-30 用户明确原话：“先接入官方订阅”。本次是交互式实施授权，独立于只读监控 heartbeat；它落实 R38、主规格 §3.8 和 G4 已有的优先已授权权益原则。下一实施步骤已选为**个人本地原型的 Codex App Server 托管 ChatGPT 连接**，不是重新选购视觉 API key。复用已接受组件和现有七角色负责人／交接，接通桌面采集 → ASK → learning → 回应的一段真实文字＋图像流程。当前基线 `e9ccccad6ac425a3d19a654e74340c565e3564c4` 尚无该产品连接器实现或真实图像通过证据；已选路线、已实现、已登录与实际通过分开记录。
+2026-09-30 用户明确原话：“先接入官方订阅”。这是交互式实施授权，独立于只读监控 heartbeat；它落实 R38、主规格 §3.8 和 G4 已有的优先已授权权益原则。选定路线仍为**个人本地原型的 Codex App Server 托管 ChatGPT 连接**，不是重新选购视觉 API key。复用已接受组件和现有七角色负责人／交接。选择时的历史基线 `e9ccccad6ac425a3d19a654e74340c565e3564c4` 尚无连接器；当前 `d37f7a4` 已有相关源码，真实图像回应仍未验收。[ADR 0003](../adr/0003-managed-subscription-ask.md) 的“选图后输入问题／Submit”保留为历史有界切片，不是覆盖当前 Start 连续上下文与圈选自动回应的产品限制；已选路线、已实现、已登录与实际通过分开记录。
+
+额度按主规格 §3.8 区分：官方允许时，可在已授权有界会话内自动使用已拥有的普通 plan／workspace credits，不以本地 100% 窗口一律拦截。未知余额仍未知；本次禁止 `account/rateLimitResetCredit/consume`／reset-credit 消费、购买、新 API 计费、认证责任方变更及自动重试。混同 `usageLimitExceeded`／`rateLimitExceeded` 和丢弃 credits 的源码问题已确认；当前用户实际症状／拒绝或预检的根因须由脱敏回执与官方 schema 核实，不据此宣称余额耗尽或推定可调用。
 
 实现前对照[官方 App Server 文档](https://learn.chatgpt.com/docs/app-server)核实已安装 CLI 与 RPC schema。采用 Codex 管理的 OAuth 登录、令牌存储及刷新；产品 UI 提供官方 `account/login/start`、完成／错误处理与取消，并使用可用的 `account/read`、`account/rateLimits/read` 及模型能力信息。缺登录／同意时准备具体官方登录动作，报告用户可直接执行的步骤，同时继续独立集成。不从 Codex 桌面 App 或私有文件提取／复制凭据、cookie、令牌，不让用户在聊天粘贴令牌。
 
