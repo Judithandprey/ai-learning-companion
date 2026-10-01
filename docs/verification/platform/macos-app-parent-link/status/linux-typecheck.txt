@@ -1,0 +1,12 @@
+== tests and sources, Linux Swift 6.3.3 (corelibs, functional Apple stubs)
+src/MacIngressUploadTests.swift:400:14: warning: concurrently-executed local function 'alteredAck' must be marked as '@Sendable'; this is an error in the Swift 6 language mode
+398 |         let userID = macSource.userID
+399 |         /// The honest ACK with one change.
+400 |         func alteredAck(_ change: (inout [String: Any]) -> Void) -> MacHTTPReply {
+    |              `- warning: concurrently-executed local function 'alteredAck' must be marked as '@Sendable'; this is an error in the Swift 6 language mode
+401 |             var ack = Self.ackObject(prepared, userID: userID)
+402 |             change(&ack)
+
+== DesktopCapture module with Darwin stub modules (-enable-testing)
+== DesktopCapture module (Swift 5, -enable-testing)
+== module ok

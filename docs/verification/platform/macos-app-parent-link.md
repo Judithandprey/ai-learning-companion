@@ -9,7 +9,14 @@ The first delivery was `f625b48`. The lead's review `b408f4f` held it for three 
 (`handoff_2bedf7ee1ad4bca823a2de9f24046f36`). They are corrected in the commit that carries this
 text; see [Correction after the lead's review](#correction-after-the-leads-review-b408f4f). The
 flow table below describes the corrected behaviour. "Checks and results" and "Review" record the
-first delivery, whose logs are kept unchanged; the correction section has the current counts.
+first delivery, whose logs are kept unchanged; the correction section has the counts of `fb891d6`.
+
+`fb891d6` was approved and integrated by the lead (`295d778`), and the hosted macOS run
+36803694899 built the app and passed all 78 XCTests (the lead's record is
+`docs/verification/lead/macos-parent-review/correction/`). A follow-up within the same task
+(`handoff_e315d6df5277bb8e006e4d94af5dcfa5`, baseline `bde0cb1`) then made the shown storage
+status truthful; see [Truthful storage status](#truthful-storage-status). That change has not
+been built or run on macOS.
 
 Read for this task:
 - `services/api/desktop_local.py` and its README section;
@@ -26,7 +33,7 @@ provider, AI or auto-start. **AI stays not connected**, and the UI says so.
 ## The one flow
 
 The link connects the app's explicit Start/Stop, its retained raw/composed/immutable-ink
-pipeline, and a visible stored/not-known/refused/not-sent status through the reviewed trusted
+pipeline, and a visible confirmed-stored/awaiting/not-known/refused/not-sent status through the reviewed trusted
 foreground host. Local capture, ink, save and reopen never wait for the link or depend on it.
 
 | Step | Behaviour |
@@ -43,11 +50,11 @@ foreground host. Local capture, ink, save and reopen never wait for the link or 
 | Stop | The capture gate closes first, so nothing new is sent. The connection or reconnection and an in-flight batch each get 5 s, then are cancelled and stay **not known**. The unknown-boundary Stop is journaled before dispatch and sent with the same key and bytes on retry. A Stop already recorded for exactly this stream and read revision is the same command: its key and exact bytes are sent again, also after a restart, and only if its stored bytes equal this stream's Stop at that revision. A new command is made only when there is none for the read revision. A believed `stopped` answer settles the stream; the state is read back either way. A stale revision gets one new Stop at the read revision. A refusal that follows an attempt in doubt leaves the Stop **not known**; a 401 then still gets a new child and bearer for the same key and bytes. Then the child gets EOF. After Stop the host refuses uploads, so unsent frames stay on this Mac, counted "not sent". |
 | Stop before a registration | If no child ever got the record, or the registration was never POSTed, the stream is `abandoned`. It was never registered, and it is never registered after Stop. No later launch starts a child for it. |
 | Server end | A believed `stopped` or `withdrawn` state after a 409 `capture_stopped`, 403 or 404 ends this capture through the app's normal Stop path (`server_stopped`/`server_withdrawn`). So does a believed non-live state in a registration replay's answer, and a 403/404 on the state, the source or a replay of a registration already known committed (`server_permission_lost`). The app acts on it only while that same capture's gate is open, never on a later capture. No Stop is sent for a withdrawn stream. |
-| Child loss / renewal | A **tracked** reconnection, which Stop waits for, starts a new child with `fresh_consent=false`. It happens at most 2 times per Start and only while the capture is current and open. The registration is replayed under its own key, followed by the same GET and source checks, before sending resumes. A child that exits before its stream went live is replaced the same way. It never registers anew or revives a stopped stream. A reconnection never leaves two children, and one that finds Stop begun hands its child to the Stop. Child EOF or exit is not treated as a server or physical Stop. |
+| Child loss / renewal | A **tracked** reconnection, which Stop waits for, starts a new child with `fresh_consent=false`. It happens at most 2 times per Start and only while the capture is current and open. The registration is replayed under its own key, followed by the same GET and source checks, before sending resumes. A child that exits before its stream went live is replaced the same way. While a child is being replaced the link shows "Connecting.", not linked. It never registers anew or revives a stopped stream. A reconnection never leaves two children, and one that finds Stop begun hands its child to the Stop. Child EOF or exit is not treated as a server or physical Stop. |
 | Restart | Each launch reconciles every unsettled stream once, with `fresh_consent=false` and the stream's own recorded identities. A `consumed` stream is read and, if still live, Stopped (journaled first) and read again. A `pending` or never-POSTed stream is `abandoned` and never registered. No batch or registration is resent; a Stop already recorded for the read revision is sent again under its own key and bytes. No source is created, and no capture starts. A new stream needs a new explicit Start. |
 | Link record | `CaptureLink/journal.json` (directory `700`, file `600`) holds identities, keys, each batch body's relative path and SHA-256, Stop bodies and outcomes, but no bearer, DSN or pixels. The exact batch bytes are in one file per batch, `CaptureLink/<stream-id>/<batch-key>.json` (`600`). Every file is written completely and flushed (`F_FULLFSYNC` on Darwin) before an atomic rename, and the directory is flushed after it. A failed, short or stalled write keeps the old file. A write failure is sticky: no child is started and nothing more is requested or sent in this run, this stream's own child is ended, no Stop goes out unwritten, and the counts so far stay shown. Local capture is not ended by it; a believed server stop or withdrawal still is. A batch that was never written shows as not sent. A record that does not decode, or whose consumed fields do not have the form this link writes, is left byte for byte; no host, grant or Stop uses it. |
 | Quit | Capture and ink end first, and the link's Stop starts at once, even if Quit is then held for unsaved ink. Quit waits once, bounded to 10 s, for that Stop. A second Quit meanwhile is refused and does not skip the first. Whatever does not finish is reconciled at the next launch. |
-| UI | A "Capture storage (development)" section and menu line show the state (not set up, unavailable, connecting, storing, not connected, stopping, stopped, ended by the service). They also show counts (stored, not known, refused, not sent, earlier streams not settled) and a fixed-word detail, plus: "a stored frame is not seen by any AI. AI: not connected." The ASK selection message now says "it is not sent to any AI" instead of "nothing is sent". |
+| UI | A "Capture storage (development)" section and menu line show the state (not set up, unavailable, connecting, linked, not connected, stopping, stopped, ended by the service). The linked state reads "Linked to the capture service." and never says frames are being stored. A counts line shows frames confirmed stored (a verified ACK only), awaiting an answer, not known, refused and not sent, plus earlier streams not settled; it is shown whenever the link is up. There is also a fixed-word detail, plus: "a stored frame is not seen by any AI. AI: not connected." The ASK selection message now says "it is not sent to any AI" instead of "nothing is sent". |
 
 **Windows findings (`ddcae90`) applied in Swift:**
 
@@ -247,13 +254,90 @@ fixed:
 - two stale statements in this record, an overstated index sentence, and mutations that were
   not described.
 
+## Truthful storage status
+
+The lead's source finding (the macOS analogue of Windows QA-WIN-05,
+`handoff_e315d6df5277bb8e006e4d94af5dcfa5`; not a reproduced Mac GUI fault): the linked state
+read "Storing while capturing." from the moment the display source answered, before any frame
+was acknowledged. A batch being sent was not shown until its answer came, and frames not yet
+answered were counted as "not known".
+
+| Before | Now |
+| --- | --- |
+| Linked state: "Storing while capturing." | "Linked to the capture service." The state only means the stream is registered, read live and its source answered. |
+| No counts line until something was counted. | The counts line is shown whenever the link is up: "N frame(s) confirmed stored, N awaiting an answer, N not known, N refused, N not sent yet." |
+| `stored` | Unchanged: only frames in a batch with a verified ACK. |
+| Frames of a batch being sent were counted "not known", and only after the answer. | They are `awaiting an answer`, published as soon as the send is recorded and before the batch's first request. An unanswered batch is never called "not stored". |
+| A batch not taken for an expired bearer or a 401 stayed "not sent" while it was sent again. | Its new send is recorded first (`sending`), so it shows as awaiting an answer. If that record cannot be written, or the capture stopped, it stays "not sent" and nothing is sent. |
+| Not known | Unchanged meaning: no believed answer, or cut off. It stays not known until an exact ACK for the same bytes and key. |
+| A record fault while a send was being recorded was published before the counts were corrected. | The fault and the corrected counts are published once: a batch that was never sent is never shown as awaiting. |
+| The linked state stayed shown while a lost child was being replaced, and until Stop's own status after the gate closed. | Replacing a child shows "Connecting.". Once the capture gate has closed, a count update shows "Stopping: nothing new is sent.". |
+| "Not sent" was silent about originals already uploaded for a batch that was then not sent. | "Not sent" still counts frames whose batch the service did not accept. The originals accepted for such a batch are counted in the record (`acceptedOriginals`), and the final status says "N original file(s) of frames not sent were already accepted by the capture service". |
+
+The wording and counts moved from the app target into `CaptureLinkStatus` in the library
+(`summaryLine`, `countsLine`, `menuLine`), so the hosted XCTests cover the exact text. Retry,
+idempotency, the record-fault fence, Stop, restart and the three corrected findings are unchanged.
+`CaptureLink` takes the batch size as a parameter (default and maximum 20), used by the tests.
+
+No status after Stop or a record fault shows the linked state. A batch in flight at Stop stays
+"awaiting an answer" only until it is answered or cut off, then it is not known; the final status
+has none awaiting. A batch that was not sent because of Stop or a record fault is never shown as
+awaiting.
+
+**Tests** (5 new in `CaptureLinkTests.swift`: 28 there, **83** declared in 8 files):
+1. `testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK`: with two batches whose answers are
+   held back, it checks:
+   - nothing is confirmed while the first ACK is delayed;
+   - the batch's frames are shown as awaiting before its first request;
+   - a later batch awaits its own ACK after the earlier ones are confirmed;
+   - the exact lines, and that no published status says "storing".
+2. `testBatchWithoutABelievedAnswerStaysNotKnownUntilItsExactACK`: three attempts answered 503 (no
+   believed answer) leave 7 not known and 0 stored; the held resend carries the same bytes and
+   key; its exact ACK then counts 7. A batch that gets no answer at all is covered only by the
+   Stop cut-off in the next test.
+3. `testStopOrARecordFaultNeverShowsTheLinkAsUpAndEndsWithNothingAwaiting`:
+   - a Stop while a batch awaits its answer publishes exactly stopping (7 awaiting), stopping
+     (7 not known), stopped (7 not known);
+   - a record fault at the first ACK keeps its 4 confirmed, sends nothing more, and publishes no
+     later linked or awaiting status;
+   - a record fault just before the next batch's send is recorded never shows that batch as
+     awaiting.
+4. `testResendIntentIsRecordedShownAndFenced`:
+   - a batch refused 401 and sent again shows 7 awaiting, with the record at `sending`;
+   - the same with the record unwritable after the new child is linked: no second batch request
+     and no awaiting status;
+   - a Stop between planning and sending: nothing is sent, nothing is shown as awaiting, and no
+     later status shows the link as up.
+5. `testOriginalsOfAnUnsentBatchAreReportedAsAlreadyAccepted`.
+
+`testChildLossReconnectsWithoutConsentAndStopsOnce` also checks that the link shows "Connecting."
+while the child is replaced.
+
+**Results (Linux reviewers' harness; none is macOS).** Logs are in
+[`macos-app-parent-link/status/`](macos-app-parent-link/status/) with `SHA256SUMS`.
+
+| Check | Result |
+| --- | --- |
+| Type-check, module with Darwin stubs and the test target | 0 errors, no warning in the changed files ([log](macos-app-parent-link/status/linux-typecheck.txt)). |
+| Link tests / whole suite | **27/28** and **79/83** ([link log](macos-app-parent-link/status/linux-link-tests.txt), [suite log](macos-app-parent-link/status/linux-all-tests.txt)). The failures are the same four as before: the corelibs redirect limitation and three stub artefacts. |
+| Mutations | 14, each with file, line and before/after; all are caught ([log](macos-app-parent-link/status/mutations.txt)). They include the old wording, counting a sending batch as not known or as stored, no pending publication, and each fence around the resend. |
+| Actual `desktop_local` probes | Rerun and unchanged ([log](macos-app-parent-link/status/linux-host-probes.txt)). |
+| App target (`ContentView.swift`, `CompanionDesktopApp.swift`) | Source only: the text extension was removed from the app, and `CompanionDesktopApp.swift` now imports `DesktopCapture`. **Not type-checked anywhere.** |
+| macOS build/test, real Mac UI | **NOT_RUN / none.** |
+
+**Review.** Workflow `wf_161190f4-550` (code, and tests with the record, with adversarial
+verification) raised 9 findings, all confirmed and all fixed: a fault published with frames still
+"awaiting"; the linked state shown while a child was replaced; originals of an unsent batch;
+untested resend-intent branches; and five record or evidence statements.
+
 ## Retained gaps and next action
 
-- **Lead:** recheck the three findings on the correction commit, then run the hosted macOS
-  build/test on it. Swift may differ on Darwin: the socket redirect, `F_SETNOSIGPIPE`, and
-  `Process` pipe ends and exit notification. Fix failures first.
+- **Lead:** review the storage-status leaf and run proportional native checks. The app target
+  changed in two files and is not type-checked here.
 - **Not verified on a Mac:** screen permission, live UI, Start/Stop/Quit timing, ATS, the real
-  PostgreSQL host and its lineage refusals, and sleep/logout. The app target is uncompiled.
+  PostgreSQL host and its lineage refusals, and sleep/logout. The app target was built by the
+  hosted run at `fb891d6`; the storage-status change's app delta (two files) is not compiled or
+  type-checked anywhere.
 - **After a record fault** the server stream stays live until the record is writable again and
   the app is relaunched: no Stop is sent without a written witness.
 - **Unverified on Darwin:** URLSession may itself replay a GET or PUT whose connection dropped

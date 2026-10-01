@@ -391,9 +391,30 @@ extension DesktopCaptureTests {
         try XCTUnwrap(try linkStreams(directory).last?["sourceID"] as? String)
     }
 
-    func stubLink(_ stub: StubHost, _ directory: URL, stopWait: TimeInterval = 1) -> CaptureLink {
+    func stubLink(_ stub: StubHost, _ directory: URL, stopWait: TimeInterval = 1, framesPerBatch: Int = 20) -> CaptureLink {
         CaptureLink(config: .success(stub.config), directory: directory,
-                    launcher: ProcessHostLauncher(readyTimeout: 10, endGrace: 3), stopWait: stopWait)
+                    launcher: ProcessHostLauncher(readyTimeout: 10, endGrace: 3), stopWait: stopWait,
+                    framesPerBatch: framesPerBatch)
+    }
+
+    /// Every status the link published, in order.
+    final class StatusLog: @unchecked Sendable {
+        private let lock = NSLock()
+        private var statuses: [CaptureLinkStatus] = []
+        func add(_ status: CaptureLinkStatus) { lock.withLock { statuses.append(status) } }
+        var all: [CaptureLinkStatus] { lock.withLock { statuses } }
+    }
+
+    /// Keeps a stand-in answer back until the test lets it go (bounded, so a failed test ends).
+    final class Hold: @unchecked Sendable {
+        private let semaphore = DispatchSemaphore(value: 0)
+        func wait() { _ = semaphore.wait(timeout: .now() + 30) }
+        func release() { semaphore.signal() }
+    }
+
+    /// The counts a status shows, in the order of its counts line.
+    func shown(_ status: CaptureLinkStatus) -> [Int] {
+        [status.stored, status.awaiting, status.unknown, status.refused, status.notSent]
     }
 
     // MARK: - Configuration and secrets
@@ -1069,12 +1090,15 @@ extension DesktopCaptureTests {
         let session = try writeMacSession(root: root.appending(path: "reconnect-session", directoryHint: .isDirectory))
         let directory = root.appending(path: "reconnect-link", directoryHint: .isDirectory)
         let link = stubLink(stub, directory)
+        let states = StatusLog()
+        await link.setStatusHandler { states.add($0) }
         let gate = LiveGate()
         await link.begin(gate: gate, session: session) { _ in }
         let stored = await until(20) { await link.currentStatus().stored == 7 }
         XCTAssertTrue(stored)
         let stream = try linkStreamID(directory)
         let before = server.requests.count
+        let shownBefore = states.all.count
         // The child dies: a new child for the same registration, without consent, and sending
         // resumes only after the same checks. Nothing is registered anew.
         let pid = try XCTUnwrap(stub.lines("pids").first.flatMap { Int32($0) })
@@ -1083,6 +1107,10 @@ extension DesktopCaptureTests {
         XCTAssertTrue(again)
         let resumed = await until(20) { await link.currentStatus().state == .storing }
         XCTAssertTrue(resumed)
+        // While its child was being replaced the link was shown as connecting, not as linked.
+        let replacing = states.all.dropFirst(shownBefore).map(\.state)
+        XCTAssertEqual(replacing.first, .connecting, "\(replacing)")
+        XCTAssertEqual(replacing.last, .storing, "\(replacing)")
         XCTAssertEqual(stub.records().last?["fresh_consent"] as? Bool, false)
         let reopened = server.requests.dropFirst(before).prefix(3)
         XCTAssertEqual(reopened.map { "\($0.method) \($0.target)" }, [
@@ -1767,6 +1795,391 @@ extension DesktopCaptureTests {
             XCTAssertEqual(status.state, .endedByService, variant.name)
             XCTAssertEqual(try linkStreams(directory).first?["final"] as? String, variant.final, variant.name)
         }
+    }
+
+    // MARK: - What the link shows: confirmed, awaiting an answer, not known
+
+    func testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK() async throws {
+        let service = ServiceStandIn()
+        let holds = [Hold(), Hold()]
+        let arrived = EndLog()
+        let log = StatusLog()
+        let seenAtFirstUpload = EndLog()
+        // Each batch's answer is held back; the first original's upload notes what was shown then.
+        service.override = { request, _ in
+            if request.target.hasPrefix("/v2/process/originals/"), seenAtFirstUpload.all.isEmpty {
+                seenAtFirstUpload.add("\(log.all.last?.awaiting ?? -1)")
+            }
+            guard request.target == "/v2/process/macos-frames:batch" else { return nil }
+            let index = arrived.all.count
+            arrived.add("batch")
+            if index < holds.count { holds[index].wait() }
+            return nil
+        }
+        let server = try LoopbackServer { service.respond($0, $1) }
+        defer { server.stop() }
+        defer { holds.forEach { $0.release() } }
+        let stub = try stubHost("pending-host", origin: server.origin)
+        let session = try writeMacSession(root: root.appending(path: "pending-session", directoryHint: .isDirectory))
+        let directory = root.appending(path: "pending-link", directoryHint: .isDirectory)
+        let link = stubLink(stub, directory, framesPerBatch: 4)
+        await link.setStatusHandler { log.add($0) }
+        let gate = LiveGate()
+        await link.begin(gate: gate, session: session) { _ in }
+
+        // The first batch is at the service and not answered: nothing is confirmed, and its frames
+        // were shown as awaiting an answer before its first request went out.
+        let firstHeld = await until(20) { arrived.all.count == 1 }
+        XCTAssertTrue(firstHeld)
+        let first = await link.currentStatus()
+        XCTAssertEqual(first.state, .storing)
+        XCTAssertEqual(shown(first), [0, 4, 0, 0, 4])
+        XCTAssertEqual(first.summaryLine, "Linked to the capture service.")
+        XCTAssertEqual(first.countsLine, "0 frame(s) confirmed stored, 4 awaiting an answer, 0 not known, 0 refused, 4 not sent yet.")
+        XCTAssertEqual(first.menuLine, "Capture storage: Linked to the capture service.")
+        XCTAssertEqual(seenAtFirstUpload.all, ["4"], "shown before the batch's first request")
+        XCTAssertEqual(log.all.map(\.stored).max(), 0, "nothing confirmed before an ACK")
+        // Linked with nothing sent yet: the counts line is there and confirms nothing.
+        let linked = try XCTUnwrap(log.all.first { $0.state == .storing })
+        XCTAssertEqual(linked.countsLine?.hasPrefix("0 frame(s) confirmed stored, 0 awaiting an answer, 0 not known, 0 refused, "), true)
+
+        // Its exact ACK confirms those four; the next batch then awaits its own answer.
+        holds[0].release()
+        let secondHeld = await until(20) { arrived.all.count == 2 }
+        XCTAssertTrue(secondHeld)
+        let second = await link.currentStatus()
+        XCTAssertEqual(shown(second), [4, 3, 0, 0, 1])
+        XCTAssertEqual(second.countsLine, "4 frame(s) confirmed stored, 3 awaiting an answer, 0 not known, 0 refused, 1 not sent yet.")
+        XCTAssertEqual(log.all.map(\.stored).max(), 4, "the later batch is not confirmed before its ACK")
+        holds[1].release()
+        let allStored = await until(20) { await link.currentStatus().stored == 7 }
+        XCTAssertTrue(allStored)
+        let third = await link.currentStatus()
+        XCTAssertEqual(shown(third), [7, 0, 0, 0, 1])
+
+        gate.close("user_stop")
+        await link.stop()
+        let final = await link.currentStatus()
+        XCTAssertEqual(final.summaryLine, "Stopped.")
+        XCTAssertEqual(final.countsLine, "7 frame(s) confirmed stored, 0 awaiting an answer, 0 not known, 0 refused, 1 not sent.")
+        // No status ever said frames were being stored, and `stored` only ever grew by an ACK.
+        for status in log.all {
+            XCTAssertFalse(status.summaryLine.lowercased().contains("storing"), status.summaryLine)
+            XCTAssertTrue([0, 4, 7].contains(status.stored), "\(status)")
+            if status.state == .storing { XCTAssertNotNil(status.countsLine) }
+        }
+    }
+
+    func testBatchWithoutABelievedAnswerStaysNotKnownUntilItsExactACK() async throws {
+        let service = ServiceStandIn()
+        let hold = Hold()
+        let posts = EndLog()
+        // The batch is answered 503 three times (one whole upload call with no believed answer); its
+        // resend is then held back, and at last answered exactly.
+        service.override = { request, _ in
+            guard request.target == "/v2/process/macos-frames:batch" else { return nil }
+            let attempt = posts.all.count
+            posts.add("post")
+            if attempt < 3 {
+                return service.reply(503, ["contract_version": "0.2.12", "error": "unavailable", "retryable": true])
+            }
+            if attempt == 3 { hold.wait() }
+            return nil
+        }
+        let server = try LoopbackServer { service.respond($0, $1) }
+        defer { server.stop() }
+        defer { hold.release() }
+        let stub = try stubHost("unanswered-host", origin: server.origin)
+        let session = try writeMacSession(root: root.appending(path: "unanswered-session", directoryHint: .isDirectory))
+        let directory = root.appending(path: "unanswered-link", directoryHint: .isDirectory)
+        let link = stubLink(stub, directory)
+        let log = StatusLog()
+        await link.setStatusHandler { log.add($0) }
+        let gate = LiveGate()
+        await link.begin(gate: gate, session: session) { _ in }
+        let resent = await until(30) { posts.all.count == 4 }
+        XCTAssertTrue(resent)
+        // Not known: never "stored", never "not stored", and the link is not shown as storing.
+        let doubt = await link.currentStatus()
+        XCTAssertEqual(doubt.state, .storing)
+        XCTAssertEqual(shown(doubt), [0, 0, 7, 0, 1])
+        XCTAssertEqual(doubt.summaryLine, "Linked to the capture service.")
+        XCTAssertEqual(doubt.countsLine, "0 frame(s) confirmed stored, 0 awaiting an answer, 7 not known, 0 refused, 1 not sent yet.")
+        XCTAssertEqual(log.all.map(\.stored).max(), 0)
+        // The same bytes and key every time; the exact ACK then counts them.
+        hold.release()
+        let stored = await until(20) { await link.currentStatus().stored == 7 }
+        XCTAssertTrue(stored)
+        let settled = await link.currentStatus()
+        XCTAssertEqual(shown(settled), [7, 0, 0, 0, 1])
+        let batches = server.requests.filter { $0.target == "/v2/process/macos-frames:batch" }
+        XCTAssertEqual(batches.count, 4)
+        XCTAssertEqual(Set(batches.map(\.body)).count, 1)
+        XCTAssertEqual(Set(batches.compactMap { $0.header("Idempotency-Key").first }).count, 1)
+        gate.close("user_stop")
+        await link.stop()
+    }
+
+    func testStopOrARecordFaultNeverShowsTheLinkAsUpAndEndsWithNothingAwaiting() async throws {
+        let session = try writeMacSession(root: root.appending(path: "shown-session", directoryHint: .isDirectory))
+
+        // Stop while a batch awaits its answer: cut off, it is not known; the link is not shown up.
+        let slow = ServiceStandIn()
+        slow.override = { request, _ in
+            guard request.target == "/v2/process/macos-frames:batch" else { return nil }
+            var reply = slow.route(request)
+            reply.delay = 3
+            return reply
+        }
+        let slowServer = try LoopbackServer { slow.respond($0, $1) }
+        defer { slowServer.stop() }
+        let slowStub = try stubHost("shown-stop-host", origin: slowServer.origin)
+        let slowDirectory = root.appending(path: "shown-stop-link", directoryHint: .isDirectory)
+        let slowLink = stubLink(slowStub, slowDirectory)
+        let slowLog = StatusLog()
+        await slowLink.setStatusHandler { slowLog.add($0) }
+        let slowGate = LiveGate()
+        await slowLink.begin(gate: slowGate, session: session) { _ in }
+        let sending = await until(20) { slowServer.requests.contains { $0.target == "/v2/process/macos-frames:batch" } }
+        XCTAssertTrue(sending)
+        let awaiting = await slowLink.currentStatus()
+        XCTAssertEqual(shown(awaiting), [0, 7, 0, 0, 1])
+        slowGate.close("user_stop")
+        let atStop = slowLog.all.count
+        await slowLink.stop()
+        let stopped = await slowLink.currentStatus()
+        XCTAssertEqual(stopped.state, .stopped)
+        XCTAssertEqual(shown(stopped), [0, 0, 7, 0, 1])
+        XCTAssertEqual(stopped.countsLine, "0 frame(s) confirmed stored, 0 awaiting an answer, 7 not known, 0 refused, 1 not sent.")
+        // The batch in flight stays "awaiting" only until it is cut off; then it is not known.
+        let afterStop = slowLog.all.dropFirst(atStop)
+        XCTAssertFalse(afterStop.contains { $0.state == .storing }, "\(afterStop.map(\.state))")
+        XCTAssertEqual(afterStop.map { "\($0.state.rawValue) \(shown($0))" },
+                       ["stopping [0, 7, 0, 0, 1]", "stopping [0, 0, 7, 0, 1]", "stopped [0, 0, 7, 0, 1]"])
+
+        // The record becomes unwritable as the first batch is answered: its verified ACK still
+        // counts, nothing else is sent, and the link is no longer shown as up.
+        let service = ServiceStandIn()
+        let directory = root.appending(path: "shown-fault-link", directoryHint: .isDirectory)
+        let path = directory.path(percentEncoded: false)
+        service.override = { request, _ in
+            guard request.target == "/v2/process/macos-frames:batch" else { return nil }
+            let answer = service.route(request)
+            try? FileManager.default.setAttributes([.posixPermissions: 0o500], ofItemAtPath: path)
+            return answer
+        }
+        let server = try LoopbackServer { service.respond($0, $1) }
+        defer { server.stop() }
+        let stub = try stubHost("shown-fault-host", origin: server.origin)
+        let link = stubLink(stub, directory, framesPerBatch: 4)
+        let log = StatusLog()
+        await link.setStatusHandler { log.add($0) }
+        let gate = LiveGate()
+        await link.begin(gate: gate, session: session) { _ in }
+        let faulted = await until(20) { await link.currentStatus().detail?.hasSuffix("nothing more is sent") == true }
+        XCTAssertTrue(faulted)
+        link.framesChanged()
+        try await Task.sleep(nanoseconds: 1_500_000_000)
+        try FileManager.default.setAttributes([.posixPermissions: 0o700], ofItemAtPath: path)
+        let fault = await link.currentStatus()
+        XCTAssertEqual(fault.state, .notConnected)
+        XCTAssertEqual(shown(fault), [4, 0, 0, 0, 4])
+        XCTAssertEqual(server.requests.filter { $0.target == "/v2/process/macos-frames:batch" }.count, 1)
+        let firstFault = try XCTUnwrap(log.all.firstIndex { $0.state == .notConnected })
+        let afterFault = log.all.dropFirst(firstFault)
+        XCTAssertFalse(afterFault.contains { $0.state == .storing || $0.awaiting > 0 }, "\(afterFault)")
+        XCTAssertTrue(gate.isOpen, "local capture is not ended by the fault")
+        gate.close("user_stop")
+        await link.stop()
+
+        // The record becomes unwritable just before the next batch's send is recorded: that batch
+        // is never sent, and it is never shown as awaiting an answer.
+        let later = ServiceStandIn()
+        let laterServer = try LoopbackServer { later.respond($0, $1) }
+        defer { laterServer.stop() }
+        let laterStub = try stubHost("shown-intent-host", origin: laterServer.origin)
+        let laterDirectory = root.appending(path: "shown-intent-link", directoryHint: .isDirectory)
+        let laterPath = laterDirectory.path(percentEncoded: false)
+        let laterLink = stubLink(laterStub, laterDirectory, framesPerBatch: 4)
+        let laterLog = StatusLog()
+        await laterLink.setStatusHandler { status in
+            laterLog.add(status)
+            if status.stored == 4 {
+                try? FileManager.default.setAttributes([.posixPermissions: 0o500], ofItemAtPath: laterPath)
+            }
+        }
+        let laterGate = LiveGate()
+        await laterLink.begin(gate: laterGate, session: session) { _ in }
+        let laterFault = await until(20) { await laterLink.currentStatus().state == .notConnected }
+        XCTAssertTrue(laterFault)
+        try await Task.sleep(nanoseconds: 500_000_000)
+        try FileManager.default.setAttributes([.posixPermissions: 0o700], ofItemAtPath: laterPath)
+        let laterStatus = await laterLink.currentStatus()
+        XCTAssertEqual(shown(laterStatus), [4, 0, 0, 0, 4])
+        XCTAssertEqual(laterServer.requests.filter { $0.target == "/v2/process/macos-frames:batch" }.count, 1)
+        let laterFirst = try XCTUnwrap(laterLog.all.firstIndex { $0.state == .notConnected })
+        let laterAfter = laterLog.all.dropFirst(laterFirst)
+        XCTAssertFalse(laterAfter.contains { $0.state == .storing || $0.awaiting > 0 }, "\(laterAfter.map { shown($0) })")
+        laterGate.close("user_stop")
+        await laterLink.stop()
+    }
+
+    func testResendIntentIsRecordedShownAndFenced() async throws {
+        let session = try writeMacSession(root: root.appending(path: "resend-session", directoryHint: .isDirectory))
+        func batches(_ server: LoopbackServer) -> [LoopbackServer.Request] {
+            server.requests.filter { $0.target == "/v2/process/macos-frames:batch" }
+        }
+        func jobStatus(_ directory: URL) throws -> String? {
+            let jobs = try XCTUnwrap(try linkStreams(directory).first?["jobs"] as? [[String: Any]])
+            return jobs.first?["status"] as? String
+        }
+
+        // A batch not taken for a 401 is sent again with a new bearer: its new send is recorded and
+        // shown as awaiting an answer before the answer comes.
+        let service = ServiceStandIn()
+        let hold = Hold()
+        let posts = EndLog()
+        service.override = { request, _ in
+            guard request.target == "/v2/process/macos-frames:batch" else { return nil }
+            let attempt = posts.all.count
+            posts.add("post")
+            if attempt == 0 { return service.typed(401, "unauthenticated", "0.2.12") }
+            if attempt == 1 { hold.wait() }
+            return nil
+        }
+        let server = try LoopbackServer { service.respond($0, $1) }
+        defer { server.stop() }
+        defer { hold.release() }
+        let stub = try stubHost("resend-host", origin: server.origin)
+        let directory = root.appending(path: "resend-link", directoryHint: .isDirectory)
+        let link = stubLink(stub, directory)
+        let gate = LiveGate()
+        await link.begin(gate: gate, session: session) { _ in }
+        let resent = await until(30) { posts.all.count == 2 }
+        XCTAssertTrue(resent)
+        let pending = await link.currentStatus()
+        XCTAssertEqual(pending.state, .storing)
+        XCTAssertEqual(shown(pending), [0, 7, 0, 0, 1], "awaiting its answer, not \"not sent\"")
+        XCTAssertEqual(try jobStatus(directory), "sending")
+        XCTAssertEqual(stub.records().count, 2, "a new child and bearer")
+        hold.release()
+        let stored = await until(20) { await link.currentStatus().stored == 7 }
+        XCTAssertTrue(stored)
+        XCTAssertEqual(Set(batches(server).map(\.body)).count, 1)
+        XCTAssertEqual(Set(batches(server).compactMap { $0.header("Idempotency-Key").first }).count, 1)
+        gate.close("user_stop")
+        await link.stop()
+
+        // The same, but the record becomes unwritable after the new child is linked: the batch is
+        // not sent again, and it is never shown as awaiting an answer.
+        let faulty = ServiceStandIn()
+        let refused = EndLog()
+        faulty.override = { request, _ in
+            guard request.target == "/v2/process/macos-frames:batch", refused.all.isEmpty else { return nil }
+            refused.add("401")
+            return faulty.typed(401, "unauthenticated", "0.2.12")
+        }
+        let faultyServer = try LoopbackServer { faulty.respond($0, $1) }
+        defer { faultyServer.stop() }
+        let faultyStub = try stubHost("resend-fault-host", origin: faultyServer.origin)
+        let faultyDirectory = root.appending(path: "resend-fault-link", directoryHint: .isDirectory)
+        let faultyPath = faultyDirectory.path(percentEncoded: false)
+        let faultyLink = stubLink(faultyStub, faultyDirectory)
+        let faultyLog = StatusLog()
+        let reconnecting = Toggle()
+        await faultyLink.setStatusHandler { status in
+            faultyLog.add(status)
+            if !refused.all.isEmpty, status.state == .connecting { reconnecting.isOn = true }
+            if reconnecting.isOn, status.state == .storing {
+                try? FileManager.default.setAttributes([.posixPermissions: 0o500], ofItemAtPath: faultyPath)
+            }
+        }
+        let faultyGate = LiveGate()
+        await faultyLink.begin(gate: faultyGate, session: session) { _ in }
+        let faulted = await until(30) { await faultyLink.currentStatus().state == .notConnected && reconnecting.isOn }
+        XCTAssertTrue(faulted)
+        try await Task.sleep(nanoseconds: 500_000_000)
+        try FileManager.default.setAttributes([.posixPermissions: 0o700], ofItemAtPath: faultyPath)
+        XCTAssertEqual(batches(faultyServer).count, 1, "not sent again without a written record")
+        let faultyStatus = await faultyLink.currentStatus()
+        XCTAssertEqual(shown(faultyStatus), [0, 0, 0, 0, 8])
+        let firstFault = try XCTUnwrap(faultyLog.all.firstIndex { $0.state == .notConnected })
+        let afterFault = faultyLog.all.dropFirst(firstFault)
+        XCTAssertFalse(afterFault.contains { $0.state == .storing || $0.awaiting > 0 }, "\(afterFault.map { shown($0) })")
+        faultyGate.close("user_stop")
+        await faultyLink.stop()
+
+        // Stop between planning a batch and sending it: the batch is not sent, never shown as
+        // awaiting, and no later status shows the link as up.
+        let quiet = ServiceStandIn()
+        let quietServer = try LoopbackServer { quiet.respond($0, $1) }
+        defer { quietServer.stop() }
+        let quietStub = try stubHost("resend-stop-host", origin: quietServer.origin)
+        let quietDirectory = root.appending(path: "resend-stop-link", directoryHint: .isDirectory)
+        let quietGate = LiveGate()
+        let armed = Toggle()
+        let quietLog = StatusLog()
+        let closedAt = EndLog()
+        // The link reads the clock after it checked the gate and before it sends.
+        let quietLink = CaptureLink(config: .success(quietStub.config), directory: quietDirectory,
+                                    launcher: ProcessHostLauncher(readyTimeout: 10, endGrace: 3),
+                                    clock: {
+                                        if armed.isOn, quietGate.close("user_stop") { closedAt.add("\(quietLog.all.count)") }
+                                        return Date()
+                                    }, stopWait: 1)
+        await quietLink.setStatusHandler { status in
+            quietLog.add(status)
+            if status.state == .storing { armed.isOn = true }
+        }
+        await quietLink.begin(gate: quietGate, session: session) { _ in }
+        let closed = await until(20) { !closedAt.all.isEmpty }
+        XCTAssertTrue(closed)
+        await quietLink.stop()
+        XCTAssertFalse(quietServer.requests.contains { $0.target.hasPrefix("/v2/process/originals/") })
+        XCTAssertEqual(batches(quietServer).count, 0)
+        XCTAssertFalse(quietLog.all.contains { $0.awaiting > 0 }, "\(quietLog.all.map { shown($0) })")
+        let from = try XCTUnwrap(closedAt.all.first.flatMap { Int($0) })
+        let afterClose = quietLog.all.dropFirst(from)
+        XCTAssertFalse(afterClose.contains { $0.state == .storing }, "\(afterClose.map(\.state))")
+        let jobs = try XCTUnwrap(try linkStreams(quietDirectory).first?["jobs"] as? [[String: Any]])
+        XCTAssertTrue(jobs.allSatisfy { ($0["status"] as? String) == "not_sent" }, "\(jobs)")
+        let final = await quietLink.currentStatus()
+        XCTAssertEqual(final.state, .stopped)
+        XCTAssertEqual(final.countsLine, "0 frame(s) confirmed stored, 0 awaiting an answer, 0 not known, 0 refused, 8 not sent.")
+    }
+
+    func testOriginalsOfAnUnsentBatchAreReportedAsAlreadyAccepted() async throws {
+        let service = ServiceStandIn()
+        let gate = LiveGate()
+        let puts = EndLog()
+        // The user stops as the third original is accepted: the batch itself is never sent.
+        service.override = { request, _ in
+            guard request.target.hasPrefix("/v2/process/originals/") else { return nil }
+            let answer = service.route(request)
+            puts.add("put")
+            if puts.all.count == 3 { gate.close("user_stop") }
+            return answer
+        }
+        let server = try LoopbackServer { service.respond($0, $1) }
+        defer { server.stop() }
+        let stub = try stubHost("accepted-host", origin: server.origin)
+        let session = try writeMacSession(root: root.appending(path: "accepted-session", directoryHint: .isDirectory))
+        let directory = root.appending(path: "accepted-link", directoryHint: .isDirectory)
+        let link = stubLink(stub, directory)
+        await link.begin(gate: gate, session: session) { _ in }
+        let stopped = await until(20) { !gate.isOpen }
+        XCTAssertTrue(stopped)
+        await link.stop()
+        XCTAssertEqual(puts.all.count, 3)
+        XCTAssertFalse(server.requests.contains { $0.target == "/v2/process/macos-frames:batch" })
+        let final = await link.currentStatus()
+        XCTAssertEqual(final.countsLine, "0 frame(s) confirmed stored, 0 awaiting an answer, 0 not known, 0 refused, 8 not sent.")
+        // "Not sent" is about the frames' batch: their accepted originals are said to be there.
+        XCTAssertEqual(final.detail, "the stream is stopped; 3 original file(s) of frames not sent were already accepted by "
+                       + "the capture service")
+        let jobs = try XCTUnwrap(try linkStreams(directory).first?["jobs"] as? [[String: Any]])
+        XCTAssertEqual(jobs.first?["status"] as? String, "not_sent")
+        XCTAssertEqual(jobs.first?["acceptedOriginals"] as? Int, 3)
     }
 
     // MARK: - URLSession on a real loopback socket

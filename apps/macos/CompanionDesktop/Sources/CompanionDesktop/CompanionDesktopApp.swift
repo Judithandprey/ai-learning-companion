@@ -1,4 +1,5 @@
 import AppKit
+import DesktopCapture
 import SwiftUI
 
 @main

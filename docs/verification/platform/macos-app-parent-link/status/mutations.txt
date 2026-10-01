@@ -1,0 +1,157 @@
+Mutations of the storage-status change, each run on the Linux harness against the named tests.
+A mutation is caught when the run reports an error. File and line are the repository file; the logged test lines are
+harness lines (repository line + 1, for the harness import header).
+
+== S1-no-pending-publication: CAUGHT
+file: CaptureLink.swift:1004
+before:         publishCounts(a)
+                let result = await MacIngressUpload.upload(
+after:          let result = await MacIngressUpload.upload(
+tests: testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK
+/tmp/lc-status-mut/src/CaptureLinkTests.swift:1837: error: DesktopCaptureTests.testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK : XCTAssertEqual failed: ("[0, 0, 0, 0, 0]") is not equal to ("[0, 4, 0, 0, 4]") - 
+/tmp/lc-status-mut/src/CaptureLinkTests.swift:1839: error: DesktopCaptureTests.testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK : XCTAssertEqual failed: ("Optional("0 frame(s) confirmed stored, 0 awaiting an answer, 0 not known, 0 refused, 0 not sent yet.")") is not equal to ("Optional("0 frame(s) confirmed stored, 4 awaiting an answer, 0 not known, 0 refused, 4 not sent yet.")") - 
+/tmp/lc-status-mut/src/CaptureLinkTests.swift:1841: error: DesktopCaptureTests.testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK : XCTAssertEqual failed: ("["0"]") is not equal to ("["4"]") - shown before the batch's first request
+/tmp/lc-status-mut/src/CaptureLinkTests.swift:1852: error: DesktopCaptureTests.testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK : XCTAssertEqual failed: ("[4, 0, 0, 0, 4]") is not equal to ("[4, 3, 0, 0, 1]") - 
+/tmp/lc-status-mut/src/CaptureLinkTests.swift:1853: error: DesktopCaptureTests.testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK : XCTAssertEqual failed: ("Optional("4 frame(s) confirmed stored, 0 awaiting an answer, 0 not known, 0 refused, 4 not sent yet.")") is not equal to ("Optional("4 frame(s) confirmed stored, 3 awaiting an answer, 0 not known, 0 refused, 1 not sent yet.")") - 
+	 Executed 1 test, with 5 failures (0 unexpected) in 0.374 (0.374) seconds
+
+== S2-sending-counted-not-known: CAUGHT
+file: CaptureLink.swift:1368
+before:         result.awaiting = records(["sending"])
+                result.unknown = records(["unknown"])
+after:          result.awaiting = 0
+                result.unknown = records(["unknown", "sending"])
+tests: testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK,testStopOrARecordFaultNeverShowsTheLinkAsUpAndEndsWithNothingAwaiting
+/tmp/lc-status-mut/src/CaptureLinkTests.swift:1837: error: DesktopCaptureTests.testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK : XCTAssertEqual failed: ("[0, 0, 4, 0, 4]") is not equal to ("[0, 4, 0, 0, 4]") - 
+/tmp/lc-status-mut/src/CaptureLinkTests.swift:1839: error: DesktopCaptureTests.testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK : XCTAssertEqual failed: ("Optional("0 frame(s) confirmed stored, 0 awaiting an answer, 4 not known, 0 refused, 4 not sent yet.")") is not equal to ("Optional("0 frame(s) confirmed stored, 4 awaiting an answer, 0 not known, 0 refused, 4 not sent yet.")") - 
+/tmp/lc-status-mut/src/CaptureLinkTests.swift:1841: error: DesktopCaptureTests.testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK : XCTAssertEqual failed: ("["0"]") is not equal to ("["4"]") - shown before the batch's first request
+/tmp/lc-status-mut/src/CaptureLinkTests.swift:1852: error: DesktopCaptureTests.testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK : XCTAssertEqual failed: ("[4, 0, 3, 0, 1]") is not equal to ("[4, 3, 0, 0, 1]") - 
+/tmp/lc-status-mut/src/CaptureLinkTests.swift:1853: error: DesktopCaptureTests.testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK : XCTAssertEqual failed: ("Optional("4 frame(s) confirmed stored, 0 awaiting an answer, 3 not known, 0 refused, 1 not sent yet.")") is not equal to ("Optional("4 frame(s) confirmed stored, 3 awaiting an answer, 0 not known, 0 refused, 1 not sent yet.")") - 
+... 2 more error lines
+	 Executed 2 tests, with 7 failures (0 unexpected) in 5.81 (5.81) seconds
+
+== S3-old-wording: CAUGHT
+file: CaptureLink.swift:86
+before:         case .storing: return "Linked to the capture service."
+after:          case .storing: return "Storing while capturing."
+tests: testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK
+/tmp/lc-status-mut/src/CaptureLinkTests.swift:1838: error: DesktopCaptureTests.testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK : XCTAssertEqual failed: ("Storing while capturing.") is not equal to ("Linked to the capture service.") - 
+/tmp/lc-status-mut/src/CaptureLinkTests.swift:1840: error: DesktopCaptureTests.testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK : XCTAssertEqual failed: ("Capture storage: Storing while capturing.") is not equal to ("Capture storage: Linked to the capture service.") - 
+/tmp/lc-status-mut/src/CaptureLinkTests.swift:1868: error: DesktopCaptureTests.testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK : XCTAssertFalse failed - Storing while capturing.
+/tmp/lc-status-mut/src/CaptureLinkTests.swift:1868: error: DesktopCaptureTests.testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK : XCTAssertFalse failed - Storing while capturing.
+/tmp/lc-status-mut/src/CaptureLinkTests.swift:1868: error: DesktopCaptureTests.testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK : XCTAssertFalse failed - Storing while capturing.
+... 3 more error lines
+	 Executed 1 test, with 8 failures (0 unexpected) in 0.372 (0.372) seconds
+
+== S4-no-counts-line-when-linked: CAUGHT
+file: CaptureLink.swift:99
+before:         guard linked || stored + awaiting + unknown + refused + notSent > 0 || !earlier.isEmpty else { return nil }
+after:          guard stored + awaiting + unknown + refused + notSent > 0 || !earlier.isEmpty else { return nil }
+tests: testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK
+/tmp/lc-status-mut/src/CaptureLinkTests.swift:1845: error: DesktopCaptureTests.testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK : XCTAssertEqual failed: ("nil") is not equal to ("Optional(true)") - 
+/tmp/lc-status-mut/src/CaptureLinkTests.swift:1870: error: DesktopCaptureTests.testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK : XCTAssertNotNil failed - 
+	 Executed 1 test, with 2 failures (0 unexpected) in 0.371 (0.371) seconds
+
+== S5-send-without-usable-check: CAUGHT
+file: CaptureLink.swift:997
+before:             guard usable(a), before == "sending" || save(quiet: true) else {
+after:              guard before == "sending" || save(quiet: true) else {
+tests: testResendIntentIsRecordedShownAndFenced
+/tmp/lc-status-mut/src/CaptureLinkTests.swift:2141: error: DesktopCaptureTests.testResendIntentIsRecordedShownAndFenced : XCTAssertFalse failed - [[0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 0, 0, 0, 0], [0, 7, 0, 0, 1], [0, 0, 0, 0, 8], [0, 0, 0, 0, 8], [0, 0, 0, 0, 8]]
+	 Executed 1 test, with 1 failure (0 unexpected) in 2.082 (2.082) seconds
+
+== S6-resend-intent-not-recorded: CAUGHT
+file: CaptureLink.swift:995
+before:         if before != "unknown" {
+                    journal.streams[index].jobs[job].status = "sending"
+after:          if before == "sending" {
+                    journal.streams[index].jobs[job].status = "sending"
+tests: testResendIntentIsRecordedShownAndFenced
+/tmp/lc-status-mut/src/CaptureLinkTests.swift:2063: error: DesktopCaptureTests.testResendIntentIsRecordedShownAndFenced : XCTAssertEqual failed: ("[0, 0, 0, 0, 8]") is not equal to ("[0, 7, 0, 0, 1]") - awaiting its answer, not "not sent"
+/tmp/lc-status-mut/src/CaptureLinkTests.swift:2064: error: DesktopCaptureTests.testResendIntentIsRecordedShownAndFenced : XCTAssertEqual failed: ("Optional("not_sent")") is not equal to ("Optional("sending")") - 
+/tmp/lc-status-mut/src/CaptureLinkTests.swift:2104: error: DesktopCaptureTests.testResendIntentIsRecordedShownAndFenced : XCTAssertEqual failed: ("2") is not equal to ("1") - not sent again without a written record
+/tmp/lc-status-mut/src/CaptureLinkTests.swift:2106: error: DesktopCaptureTests.testResendIntentIsRecordedShownAndFenced : XCTAssertEqual failed: ("[7, 0, 0, 0, 1]") is not equal to ("[0, 0, 0, 0, 8]") - 
+	 Executed 1 test, with 4 failures (0 unexpected) in 2.122 (2.122) seconds
+
+== S7-resend-despite-failed-record: CAUGHT
+file: CaptureLink.swift:997
+before: before == "sending" || save(quiet: true) else {
+after:  before == "sending" || save(quiet: true) || true else {
+tests: testResendIntentIsRecordedShownAndFenced
+/tmp/lc-status-mut/src/CaptureLinkTests.swift:2104: error: DesktopCaptureTests.testResendIntentIsRecordedShownAndFenced : XCTAssertEqual failed: ("2") is not equal to ("1") - not sent again without a written record
+/tmp/lc-status-mut/src/CaptureLinkTests.swift:2106: error: DesktopCaptureTests.testResendIntentIsRecordedShownAndFenced : XCTAssertEqual failed: ("[7, 0, 0, 0, 1]") is not equal to ("[0, 0, 0, 0, 8]") - 
+/tmp/lc-status-mut/src/CaptureLinkTests.swift:2109: error: DesktopCaptureTests.testResendIntentIsRecordedShownAndFenced : XCTAssertFalse failed - [[0, 7, 0, 0, 1], [7, 0, 0, 0, 1]]
+	 Executed 1 test, with 3 failures (0 unexpected) in 2.085 (2.085) seconds
+
+== S8-fault-published-before-correction: CAUGHT
+file: CaptureLink.swift:952
+before:         guard save(quiet: true) else {
+                    // Never sent: shown as not sent
+after:          guard save() else {
+                    // Never sent: shown as not sent
+tests: testStopOrARecordFaultNeverShowsTheLinkAsUpAndEndsWithNothingAwaiting
+/tmp/lc-status-mut/src/CaptureLinkTests.swift:2023: error: DesktopCaptureTests.testStopOrARecordFaultNeverShowsTheLinkAsUpAndEndsWithNothingAwaiting : XCTAssertFalse failed - [[4, 3, 0, 0, 1], [4, 0, 0, 0, 4]]
+	 Executed 1 test, with 1 failure (0 unexpected) in 5.436 (5.436) seconds
+
+== S9-resend-fault-published-before-correction: CAUGHT
+file: CaptureLink.swift:997
+before:             guard usable(a), before == "sending" || save(quiet: true) else {
+after:              guard usable(a), before == "sending" || save() else {
+tests: testResendIntentIsRecordedShownAndFenced
+/tmp/lc-status-mut/src/CaptureLinkTests.swift:2109: error: DesktopCaptureTests.testResendIntentIsRecordedShownAndFenced : XCTAssertFalse failed - [[0, 7, 0, 0, 1], [0, 0, 0, 0, 8]]
+	 Executed 1 test, with 1 failure (0 unexpected) in 2.084 (2.084) seconds
+
+== S10-linked-while-reconnecting: CAUGHT
+file: CaptureLink.swift:1100
+before:             // Not linked while its child is being replaced.
+                    publish(.connecting, detail: nil)
+        
+after:  (removed)
+tests: testChildLossReconnectsWithoutConsentAndStopsOnce
+/tmp/lc-status-mut/src/CaptureLinkTests.swift:1113: error: DesktopCaptureTests.testChildLossReconnectsWithoutConsentAndStopsOnce : XCTAssertEqual failed: ("Optional(LCRun.CaptureLinkStatus.State.storing)") is not equal to ("Optional(LCRun.CaptureLinkStatus.State.connecting)") - [LCRun.CaptureLinkStatus.State.storing]
+	 Executed 1 test, with 1 failure (0 unexpected) in 1.235 (1.235) seconds
+
+== S11-linked-after-gate-closed: CAUGHT
+file: CaptureLink.swift:1379
+before:         if next.state == .storing, !a.gate.isOpen {
+after:          if false {
+tests: testResendIntentIsRecordedShownAndFenced
+/tmp/lc-status-mut/src/CaptureLinkTests.swift:2144: error: DesktopCaptureTests.testResendIntentIsRecordedShownAndFenced : XCTAssertFalse failed - [LCRun.CaptureLinkStatus.State.storing, LCRun.CaptureLinkStatus.State.stopping, LCRun.CaptureLinkStatus.State.stopped]
+	 Executed 1 test, with 1 failure (0 unexpected) in 2.074 (2.074) seconds
+
+== S12-accepted-originals-unreported: CAUGHT
+file: CaptureLink.swift:1224
+before:         if orphaned > 0 {
+after:          if false {
+tests: testOriginalsOfAnUnsentBatchAreReportedAsAlreadyAccepted
+/tmp/lc-status-mut/src/CaptureLinkTests.swift:2179: error: DesktopCaptureTests.testOriginalsOfAnUnsentBatchAreReportedAsAlreadyAccepted : XCTAssertEqual failed: ("Optional("the stream is stopped")") is not equal to ("Optional("the stream is stopped; 3 original file(s) of frames not sent were already accepted by the capture service")") - 
+	 Executed 1 test, with 1 failure (0 unexpected) in 0.224 (0.224) seconds
+
+== S13-stored-before-ack: CAUGHT
+file: CaptureLink.swift:1367
+before:         result.stored = records(["committed"])
+after:          result.stored = records(["committed", "sending"])
+tests: testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK
+/tmp/lc-status-mut/src/CaptureLinkTests.swift:1837: error: DesktopCaptureTests.testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK : XCTAssertEqual failed: ("[4, 4, 0, 0, 4]") is not equal to ("[0, 4, 0, 0, 4]") - 
+/tmp/lc-status-mut/src/CaptureLinkTests.swift:1839: error: DesktopCaptureTests.testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK : XCTAssertEqual failed: ("Optional("4 frame(s) confirmed stored, 4 awaiting an answer, 0 not known, 0 refused, 4 not sent yet.")") is not equal to ("Optional("0 frame(s) confirmed stored, 4 awaiting an answer, 0 not known, 0 refused, 4 not sent yet.")") - 
+/tmp/lc-status-mut/src/CaptureLinkTests.swift:1842: error: DesktopCaptureTests.testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK : XCTAssertEqual failed: ("Optional(4)") is not equal to ("Optional(0)") - nothing confirmed before an ACK
+/tmp/lc-status-mut/src/CaptureLinkTests.swift:1852: error: DesktopCaptureTests.testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK : XCTAssertEqual failed: ("[7, 3, 0, 0, 1]") is not equal to ("[4, 3, 0, 0, 1]") - 
+/tmp/lc-status-mut/src/CaptureLinkTests.swift:1853: error: DesktopCaptureTests.testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK : XCTAssertEqual failed: ("Optional("7 frame(s) confirmed stored, 3 awaiting an answer, 0 not known, 0 refused, 1 not sent yet.")") is not equal to ("Optional("4 frame(s) confirmed stored, 3 awaiting an answer, 0 not known, 0 refused, 1 not sent yet.")") - 
+... 2 more error lines
+	 Executed 1 test, with 7 failures (0 unexpected) in 0.328 (0.328) seconds
+
+== S14-unknown-shown-as-not-sent: CAUGHT
+file: CaptureLink.swift:1369
+before:         result.unknown = records(["unknown"])
+                result.refused = records(["refused", "unsendable"])
+                result.notSent = max(0, a.kept - journal.streams[a.index].planned.count) + records(["not_sent"])
+after:          result.unknown = 0
+                result.refused = records(["refused", "unsendable"])
+                result.notSent = max(0, a.kept - journal.streams[a.index].planned.count) + records(["not_sent", "unknown"])
+tests: testBatchWithoutABelievedAnswerStaysNotKnownUntilItsExactACK,testStopOrARecordFaultNeverShowsTheLinkAsUpAndEndsWithNothingAwaiting
+/tmp/lc-status-mut/src/CaptureLinkTests.swift:1906: error: DesktopCaptureTests.testBatchWithoutABelievedAnswerStaysNotKnownUntilItsExactACK : XCTAssertEqual failed: ("[0, 0, 0, 0, 8]") is not equal to ("[0, 0, 7, 0, 1]") - 
+/tmp/lc-status-mut/src/CaptureLinkTests.swift:1908: error: DesktopCaptureTests.testBatchWithoutABelievedAnswerStaysNotKnownUntilItsExactACK : XCTAssertEqual failed: ("Optional("0 frame(s) confirmed stored, 0 awaiting an answer, 0 not known, 0 refused, 8 not sent yet.")") is not equal to ("Optional("0 frame(s) confirmed stored, 0 awaiting an answer, 7 not known, 0 refused, 1 not sent yet.")") - 
+/tmp/lc-status-mut/src/CaptureLinkTests.swift:1953: error: DesktopCaptureTests.testStopOrARecordFaultNeverShowsTheLinkAsUpAndEndsWithNothingAwaiting : XCTAssertEqual failed: ("[0, 0, 0, 0, 8]") is not equal to ("[0, 0, 7, 0, 1]") - 
+/tmp/lc-status-mut/src/CaptureLinkTests.swift:1954: error: DesktopCaptureTests.testStopOrARecordFaultNeverShowsTheLinkAsUpAndEndsWithNothingAwaiting : XCTAssertEqual failed: ("Optional("0 frame(s) confirmed stored, 0 awaiting an answer, 0 not known, 0 refused, 8 not sent.")") is not equal to ("Optional("0 frame(s) confirmed stored, 0 awaiting an answer, 7 not known, 0 refused, 1 not sent.")") - 
+/tmp/lc-status-mut/src/CaptureLinkTests.swift:1958: error: DesktopCaptureTests.testStopOrARecordFaultNeverShowsTheLinkAsUpAndEndsWithNothingAwaiting : XCTAssertEqual failed: ("["stopping [0, 7, 0, 0, 1]", "stopping [0, 0, 0, 0, 8]", "stopped [0, 0, 0, 0, 8]"]") is not equal to ("["stopping [0, 7, 0, 0, 1]", "stopping [0, 0, 7, 0, 1]", "stopped [0, 0, 7, 0, 1]"]") - 
+	 Executed 2 tests, with 5 failures (0 unexpected) in 7.263 (7.263) seconds

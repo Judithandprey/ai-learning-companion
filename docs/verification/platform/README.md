@@ -533,3 +533,11 @@ On the Linux harness 22/23 link tests pass and the new tests fail on the `f625b4
 lead's control probe passes unchanged (6/6), and the lead's link-probe scenarios no longer
 reproduce the two defects (3/3 with corrected expectations). Details are in the record's
 correction section.
+
+**Truthful storage status (2026-10-01 UTC).** Lead follow-up
+`handoff_e315d6df5277bb8e006e4d94af5dcfa5` on baseline `bde0cb1`, after `fb891d6` passed the
+hosted macOS run 36803694899 (78 XCTests). The linked state no longer says frames are being
+stored. A counts line separates frames confirmed stored (verified ACK only) from frames awaiting
+an answer, not known, refused and not sent, and pending frames are shown as soon as their send is
+recorded. There are 5 new tests (83 declared); on the Linux harness 27/28 link tests pass and all
+14 mutations are caught. This change has not been built or run on macOS.

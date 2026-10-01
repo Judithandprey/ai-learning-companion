@@ -39,6 +39,8 @@ public struct CaptureLinkStatus: Equatable, Sendable {
         case idle
         case reconciling
         case connecting
+        /// Linked: the stream is registered and was read live, and its display source answered.
+        /// It says nothing about any frame: only `stored` counts what the service confirmed.
         case storing
         /// Frames stay on this Mac; the service is not reachable or not permitted for this stream.
         case notConnected
@@ -49,10 +51,16 @@ public struct CaptureLinkStatus: Equatable, Sendable {
     }
 
     public var state: State
+    /// Frames in batches the service answered with a verified ACK: the only confirmed storage.
     public var stored = 0
+    /// Frames in a batch whose send is recorded and whose answer has not come yet. It may already
+    /// have arrived at the service.
+    public var awaiting = 0
+    /// Frames in a batch that got no believed answer, or whose send was cut off: it may have taken
+    /// effect.
     public var unknown = 0
     public var refused = 0
-    /// Kept frames not sent yet (while storing) or not sent at all (after Stop).
+    /// Kept frames not sent yet (while linked) or not sent at all (after Stop).
     public var notSent = 0
     /// Earlier streams whose server state could not be settled.
     public var earlierUnknown = 0
@@ -61,6 +69,41 @@ public struct CaptureLinkStatus: Equatable, Sendable {
     public init(state: State, detail: String? = nil) {
         self.state = state
         self.detail = detail
+    }
+}
+
+extension CaptureLinkStatus {
+    /// The link's state in fixed words. It never says frames are being stored: what the service
+    /// confirmed is in `countsLine`. Local pixels are "live" only in the capture line.
+    public var summaryLine: String {
+        switch state {
+        case .notConfigured:
+            return "Not set up on this Mac (no capture-host.json): frames stay on this Mac."
+        case .unavailable: return "Unavailable: frames stay on this Mac."
+        case .idle: return "Connects when you press Start."
+        case .reconciling: return "Checking earlier streams."
+        case .connecting: return "Connecting."
+        case .storing: return "Linked to the capture service."
+        case .notConnected: return "Not connected: frames stay on this Mac."
+        case .stopping: return "Stopping: nothing new is sent."
+        case .stopped: return "Stopped."
+        case .endedByService: return "Ended by the capture service."
+        }
+    }
+
+    /// What is confirmed stored, apart from what awaits an answer, is not known, was refused or
+    /// was not sent. Shown whenever the link is up, also before anything is confirmed.
+    public var countsLine: String? {
+        let earlier = earlierUnknown > 0 ? " \(earlierUnknown) earlier stream(s) not settled." : ""
+        let linked = state == .storing
+        guard linked || stored + awaiting + unknown + refused + notSent > 0 || !earlier.isEmpty else { return nil }
+        let unsent = linked || state == .connecting ? "not sent yet" : "not sent"
+        return "\(stored) frame(s) confirmed stored, \(awaiting) awaiting an answer, \(unknown) not known, "
+            + "\(refused) refused, \(notSent) \(unsent).\(earlier)"
+    }
+
+    public var menuLine: String {
+        "Capture storage: " + summaryLine
     }
 }
 
@@ -111,7 +154,7 @@ extension LinkStream {
         }
         for job in jobs {
             guard jobStates.contains(job.status), DesktopIngress.isIdentifier(job.key), job.sends >= 0,
-                  job.callbacks.allSatisfy({ $0 >= 0 }) else { return "a malformed batch" }
+                  (job.acceptedOriginals ?? 0) >= 0, job.callbacks.allSatisfy({ $0 >= 0 }) else { return "a malformed batch" }
         }
         let stopPrefix = registration.streamID + ".stop."
         guard stops.allSatisfy({ stop in
@@ -174,6 +217,9 @@ struct LinkJob: Codable, Equatable {
     var httpStatus: Int?
     var code: String?
     var sends = 0
+    /// Original files the service accepted for this batch although the batch was not accepted
+    /// then: the frames of a batch "not sent" can still have originals there.
+    var acceptedOriginals: Int?
 }
 
 struct LinkStop: Codable, Equatable {
@@ -249,6 +295,8 @@ public actor CaptureLink {
     /// How long Stop waits for the connection or an in-flight batch before cancelling it
     /// (engineering default 5 s).
     private let stopWait: UInt64
+    /// Kept frames per batch (engineering default 20).
+    private let framesPerBatch: Int
     private var journal = LinkJournal()
     private var fault: String?
     private var status: CaptureLinkStatus
@@ -263,9 +311,11 @@ public actor CaptureLink {
     public init(config: Result<CaptureHostConfig, CaptureHostProblem>, directory: URL = CaptureLink.defaultDirectory,
                 launcher: any CaptureHostLauncher = ProcessHostLauncher(),
                 transport: @escaping @Sendable () -> any MacIngressTransport = { LoopbackHTTPTransport() },
-                clock: @escaping @Sendable () -> Date = { Date() }, stopWait: TimeInterval = 5) {
+                clock: @escaping @Sendable () -> Date = { Date() }, stopWait: TimeInterval = 5,
+                framesPerBatch: Int = 20) {
         self.config = config
         self.stopWait = UInt64(max(stopWait, 0) * 1_000_000_000)
+        self.framesPerBatch = min(max(framesPerBatch, 1), Self.framesPerBatch)
         self.directory = directory
         self.launcher = launcher
         self.transport = transport
@@ -836,7 +886,7 @@ public actor CaptureLink {
             publishCounts(a)
             return nil
         }
-        let chosen = Array(ready.prefix(Self.framesPerBatch))
+        let chosen = Array(ready.prefix(framesPerBatch))
         switch journalBatch(a, frames: chosen) {
         case .job(let job): return job
         case .notNow: return nil
@@ -899,8 +949,9 @@ public actor CaptureLink {
         journal.streams[index].planned += frames
         journal.streams[index].jobs.append(LinkJob(key: key, file: file, bodySHA256: Self.sha256(prepared.body),
                                                    callbacks: frames, status: "sending"))
-        guard save() else {
-            // Never sent: shown as not sent (the failure is sticky, so nothing sends it).
+        guard save(quiet: true) else {
+            // Never sent: shown as not sent, never as awaiting an answer (the failure is sticky, so
+            // nothing sends it).
             journal.streams[index].jobs[journal.streams[index].jobs.count - 1].status = "not_sent"
             publishCounts(a)
             return .notNow
@@ -938,6 +989,19 @@ public actor CaptureLink {
         let key = journal.streams[index].jobs[job].key
         guard let prepared = a.prepared[key], let authority = a.authority else { return }
         let gate = a.gate
+        // The send intent is recorded before the request, and shown at once: until the answer comes
+        // these frames await it. After Stop or a record fault nothing is sent, so nothing awaits.
+        let before = journal.streams[index].jobs[job].status
+        if before != "unknown" {
+            journal.streams[index].jobs[job].status = "sending"
+            guard usable(a), before == "sending" || save(quiet: true) else {
+                journal.streams[index].jobs[job].status = "not_sent"
+                _ = save()
+                publishCounts(a)
+                return
+            }
+        }
+        publishCounts(a)
         let result = await MacIngressUpload.upload(prepared, authority: authority, transport: transport(),
                                                    shouldStop: { !gate.isOpen })
         journal.streams[index].jobs[job].sends += 1
@@ -946,17 +1010,20 @@ public actor CaptureLink {
         case .committed:
             journal.streams[index].jobs[job].status = "committed"
             journal.streams[index].jobs[job].inDoubt = nil
+            journal.streams[index].jobs[job].acceptedOriginals = nil
             a.prepared[key] = nil
         case .unknown(_, _, let status, let code, let inDoubt, _):
             journal.streams[index].jobs[job].status = "unknown"
             journal.streams[index].jobs[job].inDoubt = inDoubt ?? journal.streams[index].jobs[job].inDoubt
             journal.streams[index].jobs[job].httpStatus = status
             journal.streams[index].jobs[job].code = code
-        case .cancelled(_, _, let inDoubt, _):
+        case .cancelled(_, _, let inDoubt, let originals):
             let doubt = earlier || inDoubt != nil
             journal.streams[index].jobs[job].status = doubt ? "unknown" : "not_sent"
             journal.streams[index].jobs[job].inDoubt = inDoubt ?? journal.streams[index].jobs[job].inDoubt
-        case .refused(let stage, _, let status, let code, _):
+            accepted(originals.count, index: index, job: job)
+        case .refused(let stage, _, let status, let code, let originals):
+            accepted(originals.count, index: index, job: job)
             // An expired bearer or a 401 is not the service refusing the batch: it is sent again
             // with a new bearer. A later refusal never makes an earlier doubt known.
             let expired = status == nil && authority.expiresAt <= clock()
@@ -971,6 +1038,12 @@ public actor CaptureLink {
         }
         _ = save()
         publishCounts(a)
+    }
+
+    /// Originals the service accepted for a batch that itself was not accepted in that send.
+    private func accepted(_ originals: Int, index: Int, job: Int) {
+        guard originals > 0 else { return }
+        journal.streams[index].jobs[job].acceptedOriginals = max(originals, journal.streams[index].jobs[job].acceptedOriginals ?? 0)
     }
 
     private func refusedBy(_ a: Active, stage: MacIngressStage, status: Int?, code: String?, expired: Bool) async {
@@ -1024,6 +1097,8 @@ public actor CaptureLink {
         defer { a.reconnecting = false }
         repeat {
             a.live = false
+            // Not linked while its child is being replaced.
+            publish(.connecting, detail: nil)
             a.reconnects += 1
             let old = a.host
             a.host = nil
@@ -1144,6 +1219,11 @@ public actor CaptureLink {
         default: detail = "the server Stop is not confirmed"
         }
         if let fault { detail = fault + "; " + detail }
+        // "Not sent" counts frames whose batch was not accepted; some of their originals may be there.
+        let orphaned = journal.streams[index].jobs.filter { $0.status == "not_sent" }.reduce(0) { $0 + ($1.acceptedOriginals ?? 0) }
+        if orphaned > 0 {
+            detail += "; \(orphaned) original file(s) of frames not sent were already accepted by the capture service"
+        }
         var result = counts(a)
         result.state = a.endedByService ? .endedByService : .stopped
         result.detail = detail
@@ -1285,7 +1365,8 @@ public actor CaptureLink {
             jobs.filter { states.contains($0.status) }.reduce(0) { $0 + $1.callbacks.count }
         }
         result.stored = records(["committed"])
-        result.unknown = records(["unknown", "sending"])
+        result.awaiting = records(["sending"])
+        result.unknown = records(["unknown"])
         result.refused = records(["refused", "unsendable"])
         result.notSent = max(0, a.kept - journal.streams[a.index].planned.count) + records(["not_sent"])
         result.earlierUnknown = journal.streams.indices.filter { $0 != a.index && journal.streams[$0].open }.count
@@ -1293,8 +1374,14 @@ public actor CaptureLink {
     }
 
     private func publishCounts(_ a: Active) {
-        status = counts(a)
-        onStatus?(status)
+        var next = counts(a)
+        // Once the capture gate has closed, the link is no longer shown as up.
+        if next.state == .storing, !a.gate.isOpen {
+            next.state = .stopping
+            next.detail = "nothing new is sent"
+        }
+        status = next
+        onStatus?(next)
     }
 
     private func publish(_ state: CaptureLinkStatus.State, detail: String?) {
@@ -1318,8 +1405,10 @@ public actor CaptureLink {
     /// Writes the whole record: owner-only, complete and flushed before it replaces the old one. A
     /// failure is sticky: nothing more is sent in this run, the Stop is not sent unwritten, the old
     /// record stays, earlier outcomes stay shown, and local capture continues.
+    /// With `quiet`, a failure is not published here: the caller first corrects what it had
+    /// counted on this write, then publishes once.
     @discardableResult
-    private func save() -> Bool {
+    private func save(quiet: Bool = false) -> Bool {
         guard fault == nil else { return false }
         let encoder = JSONEncoder()
         encoder.outputFormatting = [.sortedKeys]
@@ -1327,18 +1416,23 @@ public actor CaptureLink {
                                                          attributes: [.posixPermissions: 0o700])) != nil,
               let data = try? encoder.encode(journal),
               Self.writeComplete(data, to: directory.appending(path: "journal.json")) else {
-            failed("the capture link record could not be written; nothing more is sent")
+            failed("the capture link record could not be written; nothing more is sent", quiet: quiet)
             return false
         }
         return true
     }
 
     /// The sticky fault: sending ends, the counts so far stay shown.
-    private func failed(_ reason: String) {
+    private func failed(_ reason: String, quiet: Bool = false) {
         guard fault == nil else { return }
         fault = reason
         active?.live = false
-        publish(.notConnected, detail: reason)
+        if quiet {
+            status.state = .notConnected
+            status.detail = reason
+        } else {
+            publish(.notConnected, detail: reason)
+        }
     }
 
     /// A batch's exact bytes, written once; an existing different file is left as it is.
