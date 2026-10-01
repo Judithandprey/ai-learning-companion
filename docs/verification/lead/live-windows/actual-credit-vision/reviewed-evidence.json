@@ -1,0 +1,101 @@
+{
+  "scope": "Reviewed operator-provided actual generated-image evidence; lead did not repeat model/device requests. Public summary excludes balance, auth paths, account/session/thread IDs and raw operational logs.",
+  "source_commit": "91e72fe5c3d25b0372df79a51a6683df869d757a",
+  "integrated_transport_commit": "0f3c16e30b0a616d21813bc9fe230d18d4befb9f",
+  "reviewed_main": "44a576c64354c57a83f84ddaa6e097e555c512e3",
+  "matching_inventory_count": 26,
+  "source_sha256": {
+    "packages/contracts/live_companion/__init__.py": "68226d193c3f7755b056ee05dcb590102e760686071ce55f6a44a51859b7e880",
+    "packages/contracts/live_companion/examples/focus.json": "36a5c267affd49a4595b0205b2e98e582e9a1238008f7096ebe5f94c20cc2388",
+    "packages/contracts/live_companion/schema.json": "3b1eedfaa70299b2f23fbbd2cd9a7b6f30ab220c00dc69f7be2f28bd371a5786",
+    "services/learning/__init__.py": "fb69e1c6dec85cdac78383037b37e222533a42da505350be12460be18ee14023",
+    "services/learning/archive.py": "28defd382ad70ddf11c6d48be2921d9dc4043dfa805cb1673df0d019e01cb49c",
+    "services/learning/context.py": "61727338291ddf1dec25770ed2369bd3620de9ec43612040554394bd4a93bebd",
+    "services/learning/evaluate.py": "19c0137ebd6c763d7d951982ea729b2eeae49579100c79a70ab6fc0e4700e67d",
+    "services/learning/images.py": "cddefd2d8be348c32637bc7af9bae7bbfba848353b5e5b6db3b579abc635aa65",
+    "services/learning/live_session.py": "94f5e4f82259419b7ff6f5f5f640b3961bfbba48834e4afcae0e43f30ccb43f2",
+    "services/learning/process_context.py": "40cdb62b0cfe64631a46db01cf11a47ead11b9ed802f87f9c0926e60fcc2a0b9",
+    "services/learning/retrieval.py": "c3f7effb49a59bb2335b84ca3ed717edd72f10a0b3bd3ff3898b8cae734cf8e7",
+    "services/learning/subscription_ask.py": "3e1d52eb166ffcd83d5c9b2405bee27628faedc13f0798450d473cd5933955ae",
+    "services/learning/timestamps.py": "362566bff201545bbdebe6d21d37b83632c37c9566e0f536013e14009607ac5e",
+    "services/worker/connectors/chatgpt_launch.py": "b4c89171f025056062a091dab47ac6c3b3f372843da428a72b35f7d8eab49090",
+    "services/worker/connectors/chatgpt_live.py": "0fc06cd706a434e438db9e1160ace57c832b6244f6d25822147a4dd956a6253f",
+    "services/worker/connectors/chatgpt_local.py": "10d6207c84799e7d91e40728cd0bb44462696f299d59f826b7377bc0d8a88094",
+    "services/worker/connectors/chatgpt_receipts.py": "cf3ec73ce51f83056d147b6a0997a5c3c245c9a7b2deae295f29ee9165a17cae",
+    "services/worker/connectors/chatgpt_rpc.py": "28d1f3102b5e1d1b5c8eb173748da168a16f19fc21eafbd275395c7c0dd7fdb3",
+    "services/worker/connectors/disabled.py": "b1a3994e3e4bdfba8cb7f12f70a78aa83b8402b9f7dfba2e90c811f1bae9fc8b",
+    "services/worker/connectors/tests/check_subscription_configuration.py": "651d9b05d5dd04e52c7b04f5ac908f110da63da05a8c7d73e2fb849767657447",
+    "services/worker/connectors/tests/test_chatgpt_launch.py": "2b21148c64868554af66df25d2ab0d3c7bde51496cd545a9d828254ff99cd322",
+    "services/worker/connectors/tests/test_chatgpt_live.py": "6bb62a9e0d275b9c16d28c4f524d2563dbf1c8d1744c27a7567136681cbcea88",
+    "services/worker/connectors/tests/test_chatgpt_live_stream.py": "fbcad9fdbd7eaf0f20979a4290d4cde940f6495580000d98dce2f534892aa198",
+    "services/worker/connectors/tests/test_chatgpt_local.py": "1ba652bd5a1c0fd739afbf0e693aede7daea3acd1cdc830a489fade50624aaea",
+    "services/worker/connectors/tests/test_chatgpt_receipts.py": "2f65d77640e110034862949eff348bbd7f3c1a316933350b1469de9f21cade44",
+    "services/worker/connectors/tests/test_chatgpt_rpc.py": "0e7be28756fbfba63f6345fc262d2a42980934d6250a84ad5f4645532e01ae00"
+  },
+  "actual_result": {
+    "started_at": "2026-10-01T15:01:37.197818+00:00",
+    "finished_at": "2026-10-01T15:01:46.733950+00:00",
+    "auth_mode": "chatgpt",
+    "selected_model": "gpt-6-astra",
+    "status": "completed",
+    "response_text": "Inside the rectangle: **MANGO 17**.\nUpper-left corner: **CEDAR 42**.",
+    "model_latency_ms": 6300,
+    "elapsed_seconds": 6.388,
+    "image_sha256": "32ca3b3c5fb217dcced75aabcff90366ab9aa6f5f1c2345ad6cc3be0a48daf2a",
+    "stop": {
+      "cancelled": false,
+      "uncertain": false
+    },
+    "connector_exit_code": 0,
+    "actual_screen_capture": false,
+    "actual_microphone": false,
+    "actual_device_playback": false,
+    "app_GUI_acceptance": false
+  },
+  "first_fixture_failure": {
+    "error": {
+      "code": "invalid_request",
+      "submission": "not_submitted"
+    },
+    "connector_exit_code": 0,
+    "note": "Local timestamp format rejected. turn_messages_written counts public companion/turn, not official turn/start. Fixed timestamp and validated locally before second attempt; no provider retry."
+  },
+  "quota_scope": {
+    "ordinary_usage_allowed": false,
+    "included_weekly_used_percent": 100,
+    "credits_present": true,
+    "spend_control_reached": false,
+    "credit_units": "Exact provider decimal string; private value omitted. No currency/request-count/billing inference."
+  },
+  "audio_metadata": {
+    "status": "metadata_observed",
+    "model_count": 7,
+    "all_listed_modalities": [
+      "text",
+      "image"
+    ],
+    "voice_metadata_readable": true,
+    "actual_audio_or_realtime_accepted": false
+  },
+  "external_offline_checks": {
+    "live_quota_pass": 25,
+    "saved_fact_replay_pass": 3,
+    "layout28f0504_pass": 15,
+    "layout_fail": 0
+  },
+  "evidence_sha256": {
+    "managed-quota-after-user-exit-01.json": "58c7459c3d8c8ec42e8b33fdf480e399e203666318e1792706100469f2fce39c",
+    "audio-metadata-after-user-exit-01.json": "d23d9cc6fe006b87f542ef2fcec40ef8da9b0e922dd0dbf7598cf83cea000829",
+    "actual-credit-vision-01/result.json": "16412b70eaa94ab8b1251ac44c23bd2a34b2a97390f479e7273d615d0c11b8c8",
+    "actual-credit-vision-02/result.json": "f6fd296176b1e58a57b82897ac5ffe1b4937474ef7e377f6ea29f29cf891c111",
+    "actual-credit-vision-02/generated-request.json": "c4e8bf9851b6a099f86589106a983cc5bffe38ebc166ea801e555a06b0c27ec2",
+    "actual-credit-vision-02/fixture.png": "32ca3b3c5fb217dcced75aabcff90366ab9aa6f5f1c2345ad6cc3be0a48daf2a",
+    "actual-credit-vision-02/verify.py": "1e6b7b89073bc67f5973fd1f38efaa9b79242c9af0ae82cc73b6ca1fbb0f8f23",
+    "live-quota-wire-candidate-91e72fe-01.json": "9d421738aa21f358a9b2a20cde38b48c2c047588cae29c0d5edbe3d029be5855",
+    "live-quota-observed-replay-91e72fe-01.json": "56f2047abc4515691750f05df96ea1924bade26dc290ba0172fb8b037cd9b000",
+    "quota-live-independent-acceptance-91e72fe.md": "c6c400c6681bf84436956d5e4ce17024c3be27bc081668d5a490739ed4b98bab",
+    "offscreen-controls/review-28f0504.md": "a2b30aa05ac2458a6b6eea371efca3c5f6a2326d6151459a19a66ffe756ee24f",
+    "offscreen-controls/run-05/result.json": "6ed56b4ef12b56c158f451808aa83a00f3816f127dba14ab3afaa250098d9ff7",
+    "offscreen-controls/build-28f0504/source-manifest.json": "9b99a1b0ddb56debbcc17f7a7044004b5d1b8a346bfe99e9bb419857374d5f96"
+  }
+}

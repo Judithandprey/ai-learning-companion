@@ -158,8 +158,10 @@ automatic inference and fences its pending queue; it must not become a request
 every sampling interval. Show the actual reason and distinguish any still-local
 capture from AI observation. A later explicit user check/Start is required; do
 not replay the failed frame or refund a potentially submitted budget slot.
-The user is actively using an older package: preparing this implementation does
-not authorize touching their current display, microphone, app, files or auth state.
+Preserve the user's old package, files and managed auth state. The user has now
+explicitly stopped/exited that package; later actual account/display/audio checks
+require a prepared exact candidate and lead-coordinated exclusive use. No private
+screen/microphone sampling or unrequested restart follows from implementation.
 
 `CurrentState.provenance` identifies the still-authorized active response request,
 not each unrelated newer capture observation. Advancing a video alone must not
@@ -211,4 +213,4 @@ text/voice follow-up, audible reply plus matching caption, drag/DPI/navigation,
 Stop and truthful quota failure. Build/offline/real Windows/real subscription/Mac
 statuses remain separate. A fixture or schema pass closes no real-AI/audio gate.
 The corrected release gets a distinct directory/version and reversible reopen
-instructions; the user's active old package/profile is not overwritten or stopped.
+instructions; the user's preserved old package/profile is not overwritten.
