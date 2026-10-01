@@ -1,0 +1,30 @@
+// Exact-source, pure process-table observations. No Windows, spawn, signal, or actual folder removal.
+import assert from 'node:assert/strict';
+import {readFileSync,writeFileSync} from 'node:fs';
+import {argv,windowsCalls,releaseOwned,launches,ownedKind} from '/tmp/qa-launcher-complete-0e210ed/tests/e2e/windows/signin_cleanup.mjs';
+const dir='/tmp/qa-launcher-complete-0e210ed';
+const old=readFileSync(dir+'/baseline-launcher.mjs','utf8');
+const oldExpr=old.match(/processes: (seen\.processes\.filter\([^\n]+\)) \};/)[1];
+const priorFilter=new Function('seen','argv',`return ${oldExpr};`);
+const source=readFileSync(dir+'/tests/e2e/windows/signin_launcher.mjs','utf8');
+assert.match(source,/const \{ look, signal \} = windowsCalls\(ps, port\);/);
+assert.match(source,/releaseOwned\(\{ look, signal, expected,/);
+assert.doesNotMatch(source,/processes:\s*seen\.processes\.filter/);
+const E='C:\\T\\electron.exe',S='C:\\T\\stage';
+const expected={exe:E,app:[S,'--remote-debugging-port=43000','--remote-debugging-address=127.0.0.1'],checker:['C:\\T\\check\\qa-check.js','--qa-check-port=43000'],markers:['--remote-debugging-port=43000','--qa-check-port=43000'],notBefore:'1000'};
+const p={pid:741,created:'2000',exe:E,command_line:`"${E}" "${S}" --remote-debugging-port=43000 --remote-debugging-address=127.0.0.1`};
+async function scenario(rows,filter=false){let n=0,clock=0,removed=0;const sent=[];const calls=windowsCalls((command)=>{if(!command.includes('Get-NetTCPConnection')){sent.push(command);return 'signalled';}const v={now:'1500',processes:rows[Math.min(n++,rows.length-1)],listen:[]};return Buffer.from(JSON.stringify(v)).toString('base64');},43000);const look=filter?async()=>{const seen=await calls.look();return {...seen,processes:priorFilter(seen,argv)};}:calls.look;const result=await releaseOwned({look,signal:calls.signal,sleep:async()=>{clock++;},now:()=>clock,expected,ownsFolder:true,removeFolder:async()=>{removed++;return true;},waitSelfMs:2,waitCloseMs:0,waitForceMs:0,stepMs:1});return {exit:result.exit,folder:result.folder,removed,signals:sent.length,not_revalidated:result.not_revalidated,children:result.children,foreign:result.foreign,unresolved:result.unresolved};}
+const changed={...p,command_line:p.command_line+' --type=renderer'};
+const before=await scenario([[p],[changed]],true),after=await scenario([[p],[changed]]);
+assert.equal(before.exit,'confirmed');assert.equal(before.removed,1);
+assert.equal(after.exit,'unknown');assert.equal(after.removed,0);assert.equal(after.signals,0);assert.deepEqual(after.not_revalidated,[{pid:741,created:'2000'}]);assert.deepEqual(after.children,[]);
+const unreadableExe=await scenario([[p],[{...changed,exe:null}]]);
+assert.equal(unreadableExe.exit,'unknown');assert.equal(unreadableExe.removed,0);assert.equal(unreadableExe.signals,0);
+const child={pid:51,created:'2050',exe:null,command_line:`"${E}" --type=renderer`};
+const ordinary=await scenario([[p,child],[child]]);
+assert.equal(ownedKind(child,expected),'foreign');assert.equal(ordinary.exit,'confirmed');assert.equal(ordinary.removed,1);assert.equal(ordinary.signals,0);assert.deepEqual(ordinary.children,[51]);
+const undated={...child,created:null};
+assert.equal(launches([child]).length,0);assert.deepEqual(launches([undated]),[undated]);assert.equal(ownedKind(undated,expected),'unresolved');
+const uncertain=await scenario([[undated]]);assert.equal(uncertain.exit,'unknown');assert.equal(uncertain.removed,0);assert.equal(uncertain.signals,0);
+const out={candidate:'0e210edf219744e49b3b4a96fe262831bac01f29',scope:'pure actual wrapper/helper with synthetic process tables; no native operations',observations:{previous_filter_negative_control:before,full_snapshot_same_identity_changed_type:after,remembered_changed_type_unreadable_exe:unreadableExe,never_remembered_child_control:ordinary,undated_child_refused_preflight_and_unknown_cleanup:uncertain},passed:5};
+writeFileSync('/tmp/qa-launcher-complete-snapshot-probe.json',JSON.stringify(out,null,2)+'\n');console.log(JSON.stringify(out,null,2));

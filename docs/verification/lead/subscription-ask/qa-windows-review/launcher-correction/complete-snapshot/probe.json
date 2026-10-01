@@ -1,0 +1,74 @@
+{
+  "candidate": "0e210edf219744e49b3b4a96fe262831bac01f29",
+  "scope": "pure actual wrapper/helper with synthetic process tables; no native operations",
+  "observations": {
+    "previous_filter_negative_control": {
+      "exit": "confirmed",
+      "folder": "removed",
+      "removed": 1,
+      "signals": 0,
+      "not_revalidated": [],
+      "children": [],
+      "foreign": [],
+      "unresolved": []
+    },
+    "full_snapshot_same_identity_changed_type": {
+      "exit": "unknown",
+      "folder": "kept",
+      "removed": 0,
+      "signals": 0,
+      "not_revalidated": [
+        {
+          "pid": 741,
+          "created": "2000"
+        }
+      ],
+      "children": [],
+      "foreign": [],
+      "unresolved": []
+    },
+    "remembered_changed_type_unreadable_exe": {
+      "exit": "unknown",
+      "folder": "kept",
+      "removed": 0,
+      "signals": 0,
+      "not_revalidated": [
+        {
+          "pid": 741,
+          "created": "2000"
+        }
+      ],
+      "children": [],
+      "foreign": [],
+      "unresolved": []
+    },
+    "never_remembered_child_control": {
+      "exit": "confirmed",
+      "folder": "removed",
+      "removed": 1,
+      "signals": 0,
+      "not_revalidated": [],
+      "children": [
+        51
+      ],
+      "foreign": [],
+      "unresolved": []
+    },
+    "undated_child_refused_preflight_and_unknown_cleanup": {
+      "exit": "unknown",
+      "folder": "kept",
+      "removed": 0,
+      "signals": 0,
+      "not_revalidated": [],
+      "children": [],
+      "foreign": [],
+      "unresolved": [
+        {
+          "pid": 51,
+          "created": null
+        }
+      ]
+    }
+  },
+  "passed": 5
+}

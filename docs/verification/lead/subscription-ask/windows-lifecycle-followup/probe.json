@@ -1,0 +1,73 @@
+{
+  "candidate": "0b42bbc1088cf48f2c8daf4dcf4b3ea885a566c5",
+  "synthetic_only": true,
+  "default_end_ms": 10000,
+  "results": [
+    {
+      "case": "cancel_unsolicited",
+      "passed": true,
+      "outcome": {
+        "status": "cancelled",
+        "uncertain": true
+      },
+      "asks": 1,
+      "children": 1
+    },
+    {
+      "case": "cancel_cancel",
+      "passed": true,
+      "outcome": {
+        "status": "cancelled",
+        "uncertain": false
+      },
+      "asks": 1,
+      "children": 1
+    },
+    {
+      "case": "cancel_stop",
+      "passed": true,
+      "outcome": {
+        "status": "cancelled",
+        "uncertain": false
+      },
+      "asks": 1,
+      "children": 1
+    },
+    {
+      "case": "out_of_order_children_late_exit_no_stale_account_or_replay",
+      "passed": true,
+      "children": 3,
+      "asks": 0,
+      "late_status": {
+        "mode": "managed",
+        "state": "unavailable",
+        "plan": "Pro",
+        "rate_limits": [
+          {
+            "label": "5 h",
+            "used_percent": 12.4,
+            "resets_at": "2026-10-01T10:00:00Z"
+          }
+        ],
+        "models": [
+          {
+            "id": "text-only-model",
+            "label": "Text only",
+            "image_input": false,
+            "default": true
+          },
+          {
+            "id": "vision-model",
+            "label": "Vision",
+            "image_input": true,
+            "default": false
+          }
+        ],
+        "model": "vision-model",
+        "login": "none",
+        "detail": "a connector that was ended here did not end by itself in time; its wsl.exe shim was ended, which does not show that the connector, or the Codex app server it runs, ended in WSL",
+        "asking": false
+      }
+    }
+  ]
+}

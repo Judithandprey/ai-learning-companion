@@ -235,8 +235,7 @@ None of this is acceptance evidence for the real turn.
 
 ## 5. What the real turn still needs
 
-- **The corrected source**, released by the lead: QA-SUB-03 first (Backend, with 02; released as `cd9b0ef`, not yet
-  run by QA); Web has 01, 04, 05, 06 and a bounded assessment of 07 and 08, still open. QA stages that exact commit and makes its Backend copy from it. The harness checks
+- **The corrected source**: combined `8eac9fc` was actually adopted by QA as `75fa327` for offline changed-path preparation. Backend02/03 and Web01/04–08 have source/synthetic corrections; independent changed-path display acceptance is still pending. Further reviewed Windows lifecycle source integrates as `ba30b46`, with quit-report persistence still assigned to Web. Use the Lead’s next exact released candidate, preserving completed preparation rather than repeating the18 controls. QA stages that exact commit and makes its Backend copy from it. The harness checks
   the copy before any real run (file-for-file comparison, and the connector's own preparation of a question run
   offline).
 - **The user's sign-in**, through the start file QA prepared and checked up to the Check connection press. QA does not

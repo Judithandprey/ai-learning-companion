@@ -1,0 +1,116 @@
+{
+  "verdict": "APPROVE_BOUNDED_SOURCE",
+  "candidate": "0e210edf219744e49b3b4a96fe262831bac01f29",
+  "report_commit": "706141489ffae093f263d7f8665d14a3083681d8",
+  "baseline": "28f67be",
+  "blocking_findings": [],
+  "source_hashes_sha256": {
+    "tests/e2e/windows/signin_cleanup.mjs": "efa06295262ea27006769e0dea363051fbd6401f4c810d2049db5937ee939b2b",
+    "tests/e2e/windows/signin_cleanup.test.mjs": "717c10778f5592e1a22a3c79c5999d128b8a6e2ba4d1d55473ab4c7db1004b88",
+    "tests/e2e/windows/signin_launcher.mjs": "87eee2eb13fef9d37598331af8cf4f4732b51266d9ac97f37155dc2d9a9681d8",
+    "tests/e2e/windows/signin_launcher.test.mjs": "cd1abd9d449f4c8b7ce671f38d1d0f1f5971b46cf3c22a740d7f1a274bf485b4",
+    "tests/e2e/windows/signin_played_windows.mjs": "8ecac2d91b300635c1525aa0bcd8106883b65bec564fd063b8c8e884f24d9edb"
+  },
+  "declared_test_counts": {
+    "cleanup": 39,
+    "launcher": 3,
+    "total": 42
+  },
+  "independent_pure_probe": {
+    "candidate": "0e210edf219744e49b3b4a96fe262831bac01f29",
+    "scope": "pure actual wrapper/helper with synthetic process tables; no native operations",
+    "observations": {
+      "previous_filter_negative_control": {
+        "exit": "confirmed",
+        "folder": "removed",
+        "removed": 1,
+        "signals": 0,
+        "not_revalidated": [],
+        "children": [],
+        "foreign": [],
+        "unresolved": []
+      },
+      "full_snapshot_same_identity_changed_type": {
+        "exit": "unknown",
+        "folder": "kept",
+        "removed": 0,
+        "signals": 0,
+        "not_revalidated": [
+          {
+            "pid": 741,
+            "created": "2000"
+          }
+        ],
+        "children": [],
+        "foreign": [],
+        "unresolved": []
+      },
+      "remembered_changed_type_unreadable_exe": {
+        "exit": "unknown",
+        "folder": "kept",
+        "removed": 0,
+        "signals": 0,
+        "not_revalidated": [
+          {
+            "pid": 741,
+            "created": "2000"
+          }
+        ],
+        "children": [],
+        "foreign": [],
+        "unresolved": []
+      },
+      "never_remembered_child_control": {
+        "exit": "confirmed",
+        "folder": "removed",
+        "removed": 1,
+        "signals": 0,
+        "not_revalidated": [],
+        "children": [
+          51
+        ],
+        "foreign": [],
+        "unresolved": []
+      },
+      "undated_child_refused_preflight_and_unknown_cleanup": {
+        "exit": "unknown",
+        "folder": "kept",
+        "removed": 0,
+        "signals": 0,
+        "not_revalidated": [],
+        "children": [],
+        "foreign": [],
+        "unresolved": [
+          {
+            "pid": 51,
+            "created": null
+          }
+        ]
+      }
+    },
+    "passed": 5
+  },
+  "lead_test_receipt": {
+    "passed": 42,
+    "failed": 0,
+    "duration_seconds": 21.252,
+    "source": "Parent message: exact 7061414 archive, pinned Node24, permissioned synthetic child. Not rerun by this reviewer."
+  },
+  "integration_ordinary_leaves_in_order": [
+    "85d79e629068da017604386bcbf41a444e9c3149",
+    "a926e91a2f4dcc883e3061fdd9730099619e2557",
+    "b5839698c6199c3d8ac6d190fc5bae9032adc414",
+    "87c15998a73d9e1d69ea0fd0200304c904d1fc45",
+    "0e210edf219744e49b3b4a96fe262831bac01f29",
+    "706141489ffae093f263d7f8665d14a3083681d8"
+  ],
+  "exclude_merges": [
+    "4d5c81f",
+    "75fa327"
+  ],
+  "limits": [
+    "No Windows launch/inspection/signal, GUI, login, auth, provider or private state operations performed.",
+    "Actual corrected launcher on Windows and its reported real launch argv remain not verified here.",
+    "24 mutation checks remain author-reported; historical Windows 30-argv/sleeper evidence was not rerun."
+  ]
+}

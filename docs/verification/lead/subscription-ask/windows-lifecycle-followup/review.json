@@ -1,0 +1,109 @@
+{
+  "candidate": "0b42bbc1088cf48f2c8daf4dcf4b3ea885a566c5",
+  "parent": "0fae1350464de1dcd408f076316192d3840d35cb",
+  "verdict": "APPROVE_SCOPED_PARTIAL_ADOPTION",
+  "new_blockers": [],
+  "fixed": [
+    "W-KNOWN-CANCEL unsolicited cancellation uncertainty",
+    "W-KNOWN-END-BUDGET 10-second grace and per-child in-memory uncertainty"
+  ],
+  "known_open": [
+    {
+      "item": "W-KNOWN-END-BUDGET durable quit reporting",
+      "status": "incomplete; separately assigned by Lead",
+      "next_action": "Web handoff7ae38cb: sanitized durable lifecycle note before final quit and historical status on next launch, including truthful write-failure handling"
+    }
+  ],
+  "independent_probes": {
+    "candidate": "0b42bbc1088cf48f2c8daf4dcf4b3ea885a566c5",
+    "synthetic_only": true,
+    "default_end_ms": 10000,
+    "results": [
+      {
+        "case": "cancel_unsolicited",
+        "passed": true,
+        "outcome": {
+          "status": "cancelled",
+          "uncertain": true
+        },
+        "asks": 1,
+        "children": 1
+      },
+      {
+        "case": "cancel_cancel",
+        "passed": true,
+        "outcome": {
+          "status": "cancelled",
+          "uncertain": false
+        },
+        "asks": 1,
+        "children": 1
+      },
+      {
+        "case": "cancel_stop",
+        "passed": true,
+        "outcome": {
+          "status": "cancelled",
+          "uncertain": false
+        },
+        "asks": 1,
+        "children": 1
+      },
+      {
+        "case": "out_of_order_children_late_exit_no_stale_account_or_replay",
+        "passed": true,
+        "children": 3,
+        "asks": 0,
+        "late_status": {
+          "mode": "managed",
+          "state": "unavailable",
+          "plan": "Pro",
+          "rate_limits": [
+            {
+              "label": "5 h",
+              "used_percent": 12.4,
+              "resets_at": "2026-10-01T10:00:00Z"
+            }
+          ],
+          "models": [
+            {
+              "id": "text-only-model",
+              "label": "Text only",
+              "image_input": false,
+              "default": true
+            },
+            {
+              "id": "vision-model",
+              "label": "Vision",
+              "image_input": true,
+              "default": false
+            }
+          ],
+          "model": "vision-model",
+          "login": "none",
+          "detail": "a connector that was ended here did not end by itself in time; its wsl.exe shim was ended, which does not show that the connector, or the Codex app server it runs, ended in WSL",
+          "asking": false
+        }
+      }
+    ]
+  },
+  "probe_source": "/tmp/web-known-followup-probe.ts",
+  "archive": "/tmp/web-known-0b42bbc-ybn6rsu7",
+  "source_sha256": {
+    "apps/windows/src/main/subscription.ts": "348f7ab3e545e9b752db32f7035cbba220624e20437ecdf7d090c489abf3b6d0",
+    "apps/windows/tests/subscription.test.ts": "8cdf02be6f11d8c633bfdef93e276ed36a41d659d4b29bd6d44fef8d0e8bc178",
+    "apps/windows/tests/app-ask.test.ts": "ce4555afa3ebc1b8e818ae4c9616269904d0aa80ec9ec1ac1d396c7e5cb13635"
+  },
+  "owned_evidence_reviewed": {
+    "focused_tests": 67,
+    "mutants": 14,
+    "rerun_by_this_reviewer": false,
+    "root_independent_confirmation": "67/67, 16.968 seconds including 8.2-second delayed EOF; TypeScript/build and 63 hashes/log verified by Lead"
+  },
+  "limits": [
+    "Synthetic in-process streams only",
+    "No real Windows process, GUI, login, credentials, provider or model call",
+    "Does not release real-image acceptance or claim Linux child reaping",
+    "No repository edits"
+  ]
+}
