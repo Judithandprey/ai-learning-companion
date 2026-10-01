@@ -13,13 +13,14 @@
   [release note](../lead/subscription-ask/windows-release/README.md).
 - **Budget:** exactly one real image submission, reserved by the lead for QA, conditional on the managed sign-in, a
   picture model, the generated surface and valid source and ink evidence. No automatic retry.
-- **What exists** (in [tests/e2e/windows/](../../../tests/e2e/windows/), harness `85d79e6`):
+- **What exists** (in [tests/e2e/windows/](../../../tests/e2e/windows/), harness `b583969`):
   - `surface.html`, `judge_surface_answer.py` (rule fixed before any call; 31 self-test cases);
   - `qa_fake_bridge.py`: QA's stand-in connector for the deterministic controls; `qa_sub_watch.py`: a read-only
     process watch;
   - scenarios `surfacecheck`, `subcontrols`, `subselect` and `subtype` (probes), `subrehearsal`, `subcheck` and `subask`;
   - `analyze_sub.py` for all of them; `signin_launcher.mjs` for the user's own sign-in entry (its check runs in a
-    folder of its own and lets go only of what it started: `signin_cleanup.mjs`, 21 offline tests);
+    folder of its own and lets go only of an exact launch identity it started: `signin_cleanup.mjs`, 35 offline tests,
+    and `signin_signal_check.mjs` for the two Windows commands);
   - `sub_copy.mjs` and `qa_sub_copy_check.py`: the private Backend copy is the commit's `services/` and `packages/`
     file for file, and the connector's own preparation of a question is run in it, offline, before any real run;
   - `run.mjs` interlocks: the real connector needs `QA_SUB_ALLOW_REAL_CONNECTOR=1`; a real question needs

@@ -1,0 +1,35 @@
+{
+ "what": "tests/e2e/windows/signin_signal_check.mjs, run headlessly: argv() against Windows' CommandLineToArgvW; the look command; and the signal command against a windowless PowerShell sleeper that the script started itself. No app, no window, no sign-in",
+ "result": {
+  "argv_against_CommandLineToArgvW": {
+   "command_lines": 30,
+   "equal": 30,
+   "differing": []
+  },
+  "look_electron_free_port": {
+   "processes": 0,
+   "listen": [],
+   "now_is_ticks": true
+  },
+  "sleeper_found": 1,
+  "identity": {
+   "pid_is_number": true,
+   "created_is_ticks": true,
+   "exe_ends": "powershell.exe",
+   "command_line_has_tag": true
+  },
+  "wrong_creation": "stale",
+  "alive_after_wrong_creation": 1,
+  "wrong_command_line": "unverified",
+  "command_line_with_an_invisible_character": "unverified",
+  "wrong_executable": "unverified",
+  "executable_in_other_letter_case": "unverified",
+  "alive_after_wrong_launch": 1,
+  "close_request": "no_window",
+  "alive_after_close_request": 1,
+  "force_exact_identity": "signalled",
+  "alive_after_force": 0,
+  "again": "gone",
+  "no_such_pid": "gone"
+ }
+}

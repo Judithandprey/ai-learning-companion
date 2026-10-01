@@ -4,11 +4,11 @@
   (`handoff_de323dc5105b08860c398a13b7206dbd`, driver task `handoff_16a192142160536115f6087460e33b77`).
 - **Candidate:** pushed `3e4b40654460a2dc2407f1d9be60d8e1a5b39a3e`. Its Windows app tree is the owner's `84fc56a`
   (both `5bda4761…`, compared by QA). Staged from `team/qa` at the normal merge `a9ff602`, Electron 44.5.1.
-- **QA harness:** `team/qa` `85d79e6`. The final runs executed exactly the bytes of the commit named for each in
+- **QA harness:** `team/qa` `b583969`. The final runs executed exactly the bytes of the commit named for each in
   [harness.json](p0-13-subscription-ask-windows-3e4b406/harness.json): six runs at `110c733`, the click probe at
   `9cac50b`, and one earlier probe run at `3002218`. The real turn's step list is the same at `110c733` and `9cac50b`.
-  `677323a` changes one note text of the analyzer after those runs. `85d79e6` corrects the cleanup of the start-file check
-  (see "What happened on the way"); it was not run on the display.
+  `677323a` changes one note text of the analyzer after those runs. `85d79e6` and `b583969` correct the cleanup of the
+  start-file check (see "What happened on the way"); the corrected check was not run on the display.
 - **Plan:** [p0-13-subscription-ask-plan.md](p0-13-subscription-ask-plan.md), updated to this stage.
 - **Date and display:** 2026-10-01, 08:22–09:10 and 10:04–10:14 UTC, the Windows host (2560×1600 at scale 2 =
   1280×800 DIP), WSL2 Ubuntu.
@@ -289,16 +289,29 @@ provenance is compared before an answer is shown; answers are rendered as text o
   probe was then run again.
 - **The start-file check let go of too much, and of too little.** The lead's review found that the check had no
   cleanup of its own after a DevTools failure or at its 150 s limit, and that it removed the entry's profile folder
-  unconditionally. Corrected in `85d79e6`, without a display run:
-  - The check now runs byte-identical copies of the start file and its configuration in a new folder of its own. The
-    user's entry folder and its profile are never touched.
-  - It refuses to start beside an open Electron app or a connector running from the copy.
-  - It ends only processes that carry its own port in their command line: first it waits, then asks them to close,
-    then ends them. A process on the port that is not its own is never ended.
-  - Its folder is removed only when it made it and the exit is confirmed. If the look fails, nothing is ended and
-    nothing is removed, and that is said (exit 3).
-  - The rule has 21 offline tests; the read-only process query was run without a window. The corrected check itself,
-    and its force path, have not been run on the display. The three saved checks ended by themselves and stay valid.
+  unconditionally. A first correction (`85d79e6`) was held by the lead for one ownership boundary: it remembered bare
+  PIDs, took a process it could no longer read for a foreign one, and matched its port as text. Corrected in `b583969`,
+  without a display run:
+  - The check runs byte-identical copies of the start file and its configuration in a new folder of its own. The
+    user's entry folder and its profile are never touched. It refuses to start beside an open Electron app or a
+    connector running from the copy.
+  - **Owned is an exact launch identity**: the staged runtime's exact path, exactly the arguments the check launched
+    (whole arguments, so port 43000 is not found inside 430009), created after the check began. It is remembered by
+    PID and creation time. A PID alone is never trusted.
+  - **The signal is bound to that identity.** One command takes hold of the process, so the PID cannot be given to
+    another process meanwhile; it reads the creation time, executable and command line again, compares them character
+    for character, and only then asks the window to close or ends the process. First it waits, then asks, then ends.
+  - **When it cannot tell, it does nothing.** A remembered process that no longer shows that launch, a new process it
+    cannot read, its own port argument in another launch, or a failed look: nothing is signalled, nothing is removed,
+    and the check says "not released" (exit 3).
+  - Its folder is removed only when it made it and everything it started is confirmed gone.
+  - Verified without a window: 35 offline tests of the rule, with regressions for the lead's three observations; the
+    argument splitting equals Windows' own for 30 command lines; the two Windows commands were run on a windowless
+    process the script started itself ([result](p0-13-subscription-ask-windows-3e4b406/signin-signal-headless-check.json)):
+    a wrong creation time, command line or executable is not signalled, the exact identity is.
+  - Not shown: the corrected check itself on the display, and that Windows reports the app's launch in exactly the
+    expected form. If it does not, the check reports "not released" and signals nothing. The three saved checks were
+    made before these corrections, ended by themselves, and stay valid.
 - **QA's own pre-run review** (five reviewers, a skeptic each) gave 40 findings on the harness, 38 confirmed: among
   them the single-use allocation, the gates at the press, the 300 s wait, the step-dispatch fault that would have
   skipped the click and keys, and the evidence writer's refusal. All are fixed in the frozen harness
