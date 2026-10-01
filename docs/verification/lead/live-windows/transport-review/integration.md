@@ -85,5 +85,25 @@ The TTS candidate's memory-only synthesis does not prove audible playback. Actua
 audio input, continuous real-AI vision, provider earlier-image retention and
 interactive Mac acceptance remain open. Real account/audio/display operations
 remain gated on safe user availability; no user app, lock, microphone, private
-screen or audible output was accessed. Publication and substantive delivery
-receipts are recorded after the reviewed commit exists.
+screen or audible output was accessed.
+
+## Actual publication and consumer handoffs
+
+Reviewed release `af4f5da1e01e5bab89dda5c65521b4dd510e0bfc` was ordinarily pushed
+to the existing `origin/main`; local HEAD and remote-tracking main matched after
+successful push. Native `chats list` returned the six current granted worker
+routes. These existing-task dependency releases were actually accepted:
+
+| Owner | Actual message ID | Released next action |
+| --- | --- | --- |
+| Windows | `handoff_ac35994a5a737d1d6ba5fb6b7a2a2476` | Consume exact live transport, retain full-frame/focus and finite session behavior; finish current caption/layout/native-TTS integration and provide distinct versioned candidate. |
+| QA | `handoff_42b81664e74948b8616f00002c7d1242` | Keep one focused changed-flow pass, add released local-budget/active-focus semantics; candidate and safe availability remain prerequisites. |
+| Native/Mac | `handoff_c9b167d01f8cb9b65a707ff60b1b7e6a` | Preserve current Stop correction; common live transport is ready for its existing next consumer boundary. |
+| Backend | `handoff_cc0f355266f53011d1c9dcfd993de661` | Current held pair is integrated/released; retain ownership for concrete caller feedback, without another speculative task or repeated batch. |
+
+All four receipts initially reported `unread` / `execution_started:false`.
+They establish successful delivery only; newest worker adoption is not yet
+observed. Backend's actual source-delivery receipt above remains separate. No
+acknowledgement was requested, and no repeated wait/poll or duplicate task was
+used. Lead's next action is review/integration of the actual Windows/native
+deliveries; the released shared transport no longer blocks their local work.
