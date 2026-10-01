@@ -32,6 +32,8 @@ _PLANS = frozenset(("free", "go", "plus", "pro", "prolite", "promax", "team",
     "self_serve_business_prolite", "self_serve_business_usage_based", "business",
     "ent26", "enterprise_cbp_automation", "enterprise_cbp_usage_based",
     "enterprise", "edu", "edu_plus", "edu_pro", "unknown"))
+_WORKSPACE_LIMITS = frozenset(("workspace_owner_credits_depleted", "workspace_member_credits_depleted",
+    "workspace_owner_usage_limit_reached", "workspace_member_usage_limit_reached"))
 _ITEM_TYPES = frozenset(("userMessage", "hookPrompt", "agentMessage", "functionCallOutput", "plan",
     "reasoning", "commandExecution", "fileChange", "mcpToolCall", "dynamicToolCall", "collabAgentToolCall",
     "subAgentActivity", "webSearch", "imageView", "sleep", "imageGeneration", "enteredReviewMode",
@@ -51,6 +53,10 @@ _MESSAGES = {
     "tool_activity": "Tool activity is not permitted for this request.",
     "incomplete_turn": "The managed turn did not produce a completed answer.",
     "quota_exhausted": "The subscription reports an unavailable usage allowance.",
+    "rate_limited": "The managed request was rate limited; it was not retried.",
+    "workspace_limit": "The workspace reports a usage restriction.",
+    "usage_not_allowed": "The subscription does not currently permit included usage.",
+    "session_budget_exceeded": "The managed session reports its budget limit was reached.",
     "busy": "Another managed request is in progress.",
     "invalid_request": "The managed request is invalid.",
     "login_not_found": "This connection has no matching pending login.",
@@ -78,6 +84,17 @@ def _object(value):
     if type(value) is not dict:
         raise RPCError("protocol_error")
     return value
+
+
+def _turn_error_code(error):
+    # Official structured classifications only; provider prose and HTTP status
+    # do not establish exhausted credits or a workspace restriction.
+    info = error.get("codexErrorInfo") if type(error) is dict else None
+    if type(info) is not str:
+        return "incomplete_turn"
+    return {"usageLimitExceeded": "quota_exhausted", "rateLimitExceeded": "rate_limited",
+            "sessionBudgetExceeded": "session_budget_exceeded", "unauthorized": "unauthenticated"}.get(
+                info, "incomplete_turn")
 
 
 def _pairs(pairs):
@@ -436,10 +453,7 @@ class ChatGPTAppServer:
             active["known"].set()
             self._item(active, params.get("item"), completed=method == "item/completed")
         elif method == "error":
-            error = params.get("error", {})
-            code = error.get("codexErrorInfo") if type(error) is dict else None
-            self._fail("quota_exhausted" if code in ("usageLimitExceeded", "rateLimitExceeded")
-                       else "unauthenticated" if code == "unauthorized" else "incomplete_turn")
+            self._fail(_turn_error_code(params.get("error")))
 
     def _item(self, active, item, *, completed):
         item = _object(item)
@@ -526,6 +540,19 @@ class ChatGPTAppServer:
             result[target] = value
         return result
 
+    @staticmethod
+    def _credits(value):
+        if value is None:
+            return None
+        value = _object(value)
+        balance = value.get("balance")
+        if (type(value.get("hasCredits")) is not bool or type(value.get("unlimited")) is not bool
+                or (balance is not None and (type(balance) is not str or len(balance) > 128))):
+            raise RPCError("protocol_error")
+        # Preserve the official string exactly; it is neither a float amount
+        # nor proof that included usage is authorized.
+        return {"hasCredits": value["hasCredits"], "unlimited": value["unlimited"], "balance": balance}
+
     async def _quota(self):
         quota = {"available": False, "ordinary_usage_allowed": None, "windows": []}
         try:
@@ -538,10 +565,28 @@ class ChatGPTAppServer:
             windows = []
             for limit_id, snapshot in snapshots.items():
                 snapshot = _object(snapshot)
-                limit_id = snapshot.get("limitId", limit_id)
+                snapshot_id = snapshot.get("limitId")
+                if limit_id is not None:
+                    _identifier(limit_id)
+                if snapshot_id is not None:
+                    _identifier(snapshot_id)
+                    if limit_id is not None and limit_id != snapshot_id:
+                        raise RPCError("protocol_error")
+                    limit_id = snapshot_id
+                model_slug = snapshot.get("normalModelSlug")
+                if model_slug is not None:
+                    model_slug = _identifier(model_slug)
+                reached, spend = snapshot.get("rateLimitReachedType"), snapshot.get("spendControlReached")
+                if ((reached is not None and (type(reached) is not str or reached not in
+                         _WORKSPACE_LIMITS | {"rate_limit_reached"}))
+                        or (spend is not None and type(spend) is not bool)):
+                    raise RPCError("protocol_error")
                 windows.append({"limit_id": _identifier(limit_id) if limit_id is not None else None,
                                 "primary": self._window(snapshot.get("primary")),
-                                "secondary": self._window(snapshot.get("secondary"))})
+                                "secondary": self._window(snapshot.get("secondary")),
+                                "credits": self._credits(snapshot.get("credits")),
+                                "rate_limit_reached_type": reached, "spend_control_reached": spend,
+                                "normal_model_slug": model_slug})
             allowed = result.get("ordinaryUsageAllowed")
             if allowed is not None and type(allowed) is not bool:
                 raise RPCError("protocol_error")
@@ -660,8 +705,15 @@ class ChatGPTAppServer:
             models = await self._models()
             if not any(row["model"] == model and "image" in row["input_modalities"] for row in models):
                 raise RPCError("unsupported_model")
-            if (await self._quota())["ordinary_usage_allowed"] is False:
-                raise RPCError("quota_exhausted")
+            quota = await self._quota()
+            if quota["ordinary_usage_allowed"] is False:
+                # Do not apply a different model bucket's restriction here.
+                # Ambiguous/missing cause remains a denial, not exhaustion.
+                windows = quota["windows"]
+                workspace = (len(windows) == 1 and windows[0]["limit_id"] in (None, "codex")
+                             and windows[0]["normal_model_slug"] in (None, model)
+                             and windows[0]["rate_limit_reached_type"] in _WORKSPACE_LIMITS)
+                raise RPCError("workspace_limit" if workspace else "usage_not_allowed")
             self._check_cancelled(active)
             await self._verify_isolation()
             self._check_cancelled(active)
@@ -714,13 +766,7 @@ class ChatGPTAppServer:
             if "failure" in turn:
                 raise RPCError(turn["failure"])
             if turn.get("status") != "completed" or turn.get("error") is not None:
-                error = turn.get("error")
-                info = error.get("codexErrorInfo") if type(error) is dict else None
-                if info in ("usageLimitExceeded", "rateLimitExceeded"):
-                    raise RPCError("quota_exhausted")
-                if info == "unauthorized":
-                    raise RPCError("unauthenticated")
-                raise RPCError("incomplete_turn")
+                raise RPCError(_turn_error_code(turn.get("error")))
             messages = list(active["messages"].values())
             final = [value for phase, value in messages if phase == "final_answer"]
             if not final:

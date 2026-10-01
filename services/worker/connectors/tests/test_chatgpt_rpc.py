@@ -72,9 +72,10 @@ for line in sys.stdin:
         if mode=='quota_error':
             send({'id':request['id'],'error':{'code':-1,'message':'TOKEN-secret'}}); continue
         result={'accountId':'private-account','ordinaryUsageAllowed':None,
-            'rateLimits':{'limitId':'codex','credits':{'balance':'PRIVATE'},
+            'rateLimits':{'limitId':'codex','credits':{'hasCredits':True,'unlimited':False,'balance':'4.500'},
                 'primary':{'usedPercent':23,'windowDurationMins':300,'resetsAt':0},'secondary':None}}
         if mode=='quota_denied': result['ordinaryUsageAllowed']=False
+        if 'QUOTA_RESPONSE' in os.environ: result=json.loads(os.environ['QUOTA_RESPONSE'])
     elif method=='account/login/start':
         if mode=='early_login': event('account/login/completed',loginId='login-1',success=True,error=None)
         result={'type':'chatgpt','loginId':'login-1','authUrl':'https://auth.openai.com/oauth/authorize?private=not-logged'}
@@ -159,6 +160,13 @@ for line in sys.stdin:
             event('error',threadId='thread-1',turnId='turn-1',willRetry=True,
                 error={'message':'TOKEN-secret','codexErrorInfo':'rateLimitExceeded'})
             completed(); continue
+        if mode.startswith('structured_error_'):
+            error={'message':'TOKEN-secret quota credits rate limited','codexErrorInfo':json.loads(os.environ['ERROR_INFO'])}
+            if mode=='structured_error_notification':
+                event('error',threadId='thread-1',turnId='turn-1',willRetry=True,error=error)
+                completed()
+            else: completed('failed',error=error)
+            continue
         if mode=='failed': completed('failed',error={'message':'TOKEN-secret'}); continue
         if mode=='interrupted': completed('interrupted'); continue
         if mode=='commentary':
@@ -443,7 +451,7 @@ def test_exact_image_and_authoritative_completed_answer(tmp_path, mode, answer):
 
 @pytest.mark.parametrize("mode,code", [
     ("text_only", "unsupported_model"), ("missing_modality", "unsupported_model"),
-    ("quota_denied", "quota_exhausted"),
+    ("quota_denied", "usage_not_allowed"),
     ("model_mismatch", "model_mismatch"), ("instructions", "isolation_unverified"),
     ("missing_instructions", "isolation_unverified"), ("server_request", "tool_activity"),
     ("network_enabled", "isolation_unverified"), ("network_missing", "isolation_unverified"),
@@ -452,7 +460,7 @@ def test_exact_image_and_authoritative_completed_answer(tmp_path, mode, answer):
     ("ephemeral_false", "isolation_unverified"),
     ("user_input_request", "tool_activity"),
     ("tool_item", "tool_activity"), ("rerouted", "model_mismatch"),
-    ("retry_error", "quota_exhausted"), ("failed", "incomplete_turn"),
+    ("retry_error", "rate_limited"), ("failed", "incomplete_turn"),
     ("interrupted", "incomplete_turn"), ("commentary", "incomplete_turn"),
     ("empty", "incomplete_turn"), ("summary_only", "incomplete_turn"),
     ("oversized_answer", "protocol_error"), ("wrong_turn", "protocol_error"),
@@ -678,6 +686,206 @@ def test_unknown_quota_is_not_zero_or_a_false_allowance(tmp_path):
             await c.start()
             assert (await c.connection_read())["rate_limits"] is None
             assert (await invoke(c))["text"] == "Completed answer."
+        finally:
+            await c.close()
+    asyncio.run(run())
+
+
+@pytest.mark.parametrize("channel", ["notification", "turn"])
+@pytest.mark.parametrize("info,expected", [
+    ("usageLimitExceeded", "quota_exhausted"), ("rateLimitExceeded", "rate_limited"),
+    ("sessionBudgetExceeded", "session_budget_exceeded"), ("unauthorized", "unauthenticated"),
+    ("other", "incomplete_turn"), (None, "incomplete_turn"), ("futureUnknownError", "incomplete_turn"),
+    ({"responseTooManyFailedAttempts": {"httpStatusCode": 429}}, "incomplete_turn"),
+])
+def test_authoritative_error_classification_is_shared_without_retry_or_message_parsing(tmp_path, channel, info, expected):
+    async def run():
+        c = client(tmp_path, "structured_error_" + channel, isolation_verified=True)
+        c.env["ERROR_INFO"] = json.dumps(info)
+        stop = asyncio.Event()
+        try:
+            await c.start()
+            with pytest.raises(RPCError) as error:
+                await invoke(c, cancelled=stop)
+            assert error.value.code == expected
+            assert "TOKEN-secret" not in str(error.value)
+            assert not stop.is_set()
+            assert sum(row.get("method") == "turn/start" for row in requests(c)) == 1
+        finally:
+            await c.close()
+    asyncio.run(run())
+
+
+def quota_response(credits, *, allowed=None, reached=None, spend=None):
+    return {"ordinaryUsageAllowed": allowed, "accountId": "private-account", "rateLimits": {
+        "limitId": "codex", "primary": {"usedPercent": 100, "windowDurationMins": 300, "resetsAt": 0},
+        "secondary": {"usedPercent": 100, "windowDurationMins": 10080, "resetsAt": 0},
+        "credits": credits, "rateLimitReachedType": reached, "spendControlReached": spend}}
+
+
+@pytest.mark.parametrize("credits", [
+    {"hasCredits": True, "unlimited": False, "balance": "3.000000000000000000000001"},
+    {"hasCredits": False, "unlimited": False, "balance": "0.00"},
+    {"hasCredits": True, "unlimited": True, "balance": None},
+    None, "missing",
+])
+@pytest.mark.parametrize("allowed", [True, None, "missing"])
+def test_full_windows_and_credit_facts_do_not_invent_an_admission_denial(tmp_path, credits, allowed):
+    async def run():
+        c = client(tmp_path, isolation_verified=True)
+        payload = quota_response(None if credits == "missing" else credits, allowed=allowed)
+        if credits == "missing":
+            del payload["rateLimits"]["credits"]
+        if allowed == "missing":
+            del payload["ordinaryUsageAllowed"]
+        c.env["QUOTA_RESPONSE"] = json.dumps(payload)
+        try:
+            await c.start()
+            quota = await c._quota()
+            assert quota["ordinary_usage_allowed"] is (None if allowed == "missing" else allowed)
+            assert quota["windows"][0]["credits"] == (None if credits == "missing" else credits)
+            assert (await invoke(c))["text"] == "Completed answer."
+            status = await c.connection_read()
+            assert set(status) == {"auth", "rate_limits", "models"}
+            assert status["rate_limits"] == [
+                {"label": "codex/primary", "used_percent": 100, "resets_at": "1970-01-01T00:00:00Z"},
+                {"label": "codex/secondary", "used_percent": 100, "resets_at": "1970-01-01T00:00:00Z"}]
+            assert "credits" not in json.dumps(status) and "private-account" not in json.dumps(status)
+        finally:
+            await c.close()
+    asyncio.run(run())
+
+
+@pytest.mark.parametrize("credits", [
+    {"hasCredits": True, "unlimited": False, "balance": "5.25"},
+    {"hasCredits": False, "unlimited": False, "balance": "0"},
+    {"hasCredits": True, "unlimited": True}, None,
+])
+@pytest.mark.parametrize("cancel", [False, True])
+def test_explicit_included_usage_denial_or_precancel_never_submits_even_with_credits(tmp_path, credits, cancel):
+    async def run():
+        receipts = []
+        c = client(tmp_path, isolation_verified=True, on_receipt=receipts.append)
+        c.env["QUOTA_RESPONSE"] = json.dumps(quota_response(credits, allowed=False))
+        stop = asyncio.Event()
+        if cancel:
+            stop.set()
+        try:
+            await c.start()
+            c.begin_request("denied-or-cancelled")
+            with pytest.raises(RPCError) as error:
+                await invoke(c, cancelled=stop)
+            assert error.value.code == ("cancelled" if cancel else "usage_not_allowed")
+            c.finish_request("cancelled" if cancel else "failed")
+            assert stop.is_set() is cancel
+            assert receipts[-1]["submission"] == "not_submitted"
+            assert receipts[-1]["terminal_status"] is None
+            assert receipts[-1]["thread_start_count"] == receipts[-1]["turn_start_count"] == 0
+            assert not any(row.get("method") in ("thread/start", "turn/start") for row in requests(c))
+        finally:
+            await c.close()
+    asyncio.run(run())
+
+
+@pytest.mark.parametrize("reached", [
+    "workspace_owner_credits_depleted", "workspace_member_credits_depleted",
+    "workspace_owner_usage_limit_reached", "workspace_member_usage_limit_reached",
+])
+def test_exact_single_codex_workspace_classification_is_retained_and_distinct(tmp_path, reached):
+    async def run():
+        c = client(tmp_path, isolation_verified=True)
+        credits = {"hasCredits": True, "unlimited": False, "balance": "7.00"}
+        c.env["QUOTA_RESPONSE"] = json.dumps(quota_response(credits, allowed=False, reached=reached, spend=True))
+        try:
+            await c.start()
+            snapshot, = (await c._quota())["windows"]
+            assert snapshot["credits"] == credits
+            assert snapshot["rate_limit_reached_type"] == reached and snapshot["spend_control_reached"] is True
+            with pytest.raises(RPCError) as error:
+                await invoke(c)
+            assert error.value.code == "workspace_limit"
+            assert not any(row.get("method") == "turn/start" for row in requests(c))
+        finally:
+            await c.close()
+    asyncio.run(run())
+
+
+@pytest.mark.parametrize("case", ["other_bucket", "mixed_buckets", "spend_only", "rate_only", "permission_unknown",
+                                  "null_id_other_key", "different_normal_model"])
+def test_workspace_cause_is_not_inferred_from_unrelated_buckets_or_spend_flag(tmp_path, case):
+    async def run():
+        c = client(tmp_path, isolation_verified=True)
+        payload = quota_response(None, allowed=False, reached="workspace_member_credits_depleted", spend=True)
+        if case == "other_bucket":
+            payload["rateLimits"]["limitId"] = "unrelated-model"
+        elif case == "mixed_buckets":
+            payload["rateLimitsByLimitId"] = {"codex": {**payload["rateLimits"], "rateLimitReachedType": None},
+                                               "other": {**payload["rateLimits"], "limitId": "other"}}
+        elif case == "spend_only":
+            payload["rateLimits"]["rateLimitReachedType"] = None
+        elif case == "rate_only":
+            payload["rateLimits"]["rateLimitReachedType"] = "rate_limit_reached"
+        elif case == "null_id_other_key":
+            payload["rateLimitsByLimitId"] = {"other": {**payload["rateLimits"], "limitId": None}}
+        elif case == "different_normal_model":
+            payload["rateLimits"]["normalModelSlug"] = "another-model"
+        else:
+            del payload["ordinaryUsageAllowed"]
+        c.env["QUOTA_RESPONSE"] = json.dumps(payload)
+        try:
+            await c.start()
+            snapshots = (await c._quota())["windows"]
+            assert snapshots[-1]["spend_control_reached"] is True
+            if case == "null_id_other_key":
+                assert snapshots[0]["limit_id"] == "other"
+            if case == "different_normal_model":
+                assert snapshots[0]["normal_model_slug"] == "another-model"
+            if case == "permission_unknown":
+                assert (await invoke(c))["text"] == "Completed answer."
+            else:
+                with pytest.raises(RPCError) as error:
+                    await invoke(c)
+                assert error.value.code == "usage_not_allowed"
+                assert not any(row.get("method") == "turn/start" for row in requests(c))
+        finally:
+            await c.close()
+    asyncio.run(run())
+
+
+@pytest.mark.parametrize("conflict", [False, True])
+def test_workspace_bucket_with_matching_model_retains_scope_and_rejects_conflicting_ids(tmp_path, conflict):
+    async def run():
+        c = client(tmp_path, isolation_verified=True)
+        payload = quota_response(None, allowed=False, reached="workspace_owner_usage_limit_reached")
+        payload["rateLimits"]["normalModelSlug"] = MODEL
+        payload["rateLimitsByLimitId"] = {"other" if conflict else "codex": payload["rateLimits"]}
+        c.env["QUOTA_RESPONSE"] = json.dumps(payload)
+        try:
+            await c.start()
+            with pytest.raises(RPCError) as error:
+                await invoke(c)
+            assert error.value.code == ("protocol_error" if conflict else "workspace_limit")
+            assert not any(row.get("method") == "turn/start" for row in requests(c))
+        finally:
+            await c.close()
+    asyncio.run(run())
+
+
+@pytest.mark.parametrize("credits", [
+    {"hasCredits": 1, "unlimited": False, "balance": "1"},
+    {"hasCredits": True, "unlimited": False, "balance": 1.5},
+    {"hasCredits": True, "unlimited": False, "balance": "x" * 129},
+])
+def test_credit_snapshot_rejects_wrong_types_or_unbounded_balance_without_submission(tmp_path, credits):
+    async def run():
+        c = client(tmp_path, isolation_verified=True)
+        c.env["QUOTA_RESPONSE"] = json.dumps(quota_response(credits))
+        try:
+            await c.start()
+            with pytest.raises(RPCError) as error:
+                await invoke(c)
+            assert error.value.code == "protocol_error"
+            assert not any(row.get("method") == "turn/start" for row in requests(c))
         finally:
             await c.close()
     asyncio.run(run())

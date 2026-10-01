@@ -475,7 +475,10 @@ def test_preparation_refusal_withholds_submission_and_redacts_validation_details
 
 
 @pytest.mark.parametrize("code,expected", [("needs_auth", "unauthenticated"), ("unsupported_model", "unsupported_model"),
-                                          ("quota_exhausted", "quota"), ("outcome_unknown", "failed")])
+                                          ("quota_exhausted", "quota"), ("outcome_unknown", "failed"),
+                                          ("rate_limited", "failed"), ("session_budget_exceeded", "failed"),
+                                          ("usage_not_allowed", "unavailable"), ("workspace_limit", "unavailable"),
+                                          ("incomplete_turn", "failed")])
 def test_inner_refusals_stay_fixed_errors_without_automatic_retry(ask_request, code, expected):
     async def run():
         c = await fixture_bridge()

@@ -43,6 +43,10 @@ ERROR_CODES = {
     "payload_too_large": "invalid_request", "duplicate_request": "invalid_request",
     "not_found": "invalid_request", "unsupported": "invalid_request",
     "needs_auth": "unauthenticated", "quota_exhausted": "quota",
+    # Version 1 has no precise quota/credit reasons. Do not mislabel transient
+    # throttling, included-use denial or workspace controls as exhausted quota.
+    "rate_limited": "failed", "session_budget_exceeded": "failed",
+    "usage_not_allowed": "unavailable", "workspace_limit": "unavailable",
     "uncertain": "failed", "outcome_unknown": "failed", "request_failed": "failed",
     "incomplete_turn": "failed", "model_mismatch": "failed", "tool_activity": "failed",
     "cancellation_uncertain": "interrupt_unconfirmed", "login_not_found": "invalid_request",
