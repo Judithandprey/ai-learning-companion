@@ -64,3 +64,12 @@ lease. The user has already exited the old app; preserve its profile and auth.
 Support's existing audio probe preparation remains offline until separately
 coordinated. Real input/output audio, GUI-to-provider continuity and Mac runtime
 remain unaccepted; no complete-product claim follows from this layout build.
+
+Reviewed milestone `79f7ab197cefb2a851d607e7a1d5bc718f25847b` was successfully
+pushed to `origin/main`; HEAD and remote-tracking main matched. Exact release and
+the P3 correction were sent to the existing Web task as native
+`handoff_a422b1782a580654f9c74a9685c2b7a9`, accepted initially unread with
+execution_started:false. Read-only owner status shows preserved main/preload/
+renderer/voice/test edits after `28f0504`; this is WIP evidence, not delivery or
+proof that the latest message was read. Support's offline probe continuation and
+QA's candidate dependency remain as recorded in the actual-credit evidence.
