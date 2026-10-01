@@ -1,0 +1,404 @@
+{
+  "candidate": "30807f23a911739c089126d86b2b34d51976ea18",
+  "parent": "1e0e5a1fb79efe19028ac76e632e80d318816ba7",
+  "verdict": "APPROVE bounded presentation/source/evidence review; native build/tests pending",
+  "blocking_findings": [],
+  "source_identity": {
+    "apps/macos/CompanionDesktop/README.md": {
+      "sha256": "98f48347611adfa300d3d7a4ca35e0bc28fd2a13e15a6d97dabf7ae4f6cc4c05",
+      "export_exact": true
+    },
+    "apps/macos/CompanionDesktop/Sources/CompanionDesktop/CompanionDesktopApp.swift": {
+      "sha256": "0ea32237479632d5a238efc20ecc6b717f69254c8b6a80b9d3d04c64ff6ac192",
+      "export_exact": true
+    },
+    "apps/macos/CompanionDesktop/Sources/CompanionDesktop/ContentView.swift": {
+      "sha256": "f438eb53e19d6fd6e399be79f632efe4025cac9d4c9af5be3d7cdeaf777b6e5d",
+      "export_exact": true
+    },
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureLink.swift": {
+      "sha256": "1132425230eb9e0fb1706825296126a6957d91a494ebffa798d569e140399a51",
+      "export_exact": true
+    },
+    "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/CaptureLinkTests.swift": {
+      "sha256": "cf282073c1e6cf826bc502629cec93315906d7789bc3d0ba998a4039345a08fe",
+      "export_exact": true
+    },
+    "docs/verification/platform/README.md": {
+      "sha256": "8a66bd41540554059f9d846d92c26da0d011b891ccc823828efd2322e2415ccd",
+      "export_exact": null
+    },
+    "docs/verification/platform/macos-app-parent-link.md": {
+      "sha256": "48c3ee321b2e2092db325987777f7333d22060df20d4c931c517c2bc0d79ca52",
+      "export_exact": true
+    },
+    "docs/verification/platform/macos-app-parent-link/status/SHA256SUMS": {
+      "sha256": "8a4a51527a37f45cc5446674e2f86fde4d9baa800f9d44fa12ff91281bc77853",
+      "export_exact": true
+    },
+    "docs/verification/platform/macos-app-parent-link/status/linux-all-tests.txt": {
+      "sha256": "51597dfeb95b6420e87bc1668a512c56b668ef57346bf02f0fbf12da181e8eca",
+      "export_exact": true
+    },
+    "docs/verification/platform/macos-app-parent-link/status/linux-harness-main.swift": {
+      "sha256": "4a09fc15c63dfece8de0d2875c238f9120c9e43ad87ec1041240a11d2594a498",
+      "export_exact": true
+    },
+    "docs/verification/platform/macos-app-parent-link/status/linux-host-probes.txt": {
+      "sha256": "90e8e11f764f71c423d16f1dc650ccb44581e0b8e756f8ad151818b916817df0",
+      "export_exact": true
+    },
+    "docs/verification/platform/macos-app-parent-link/status/linux-link-tests.txt": {
+      "sha256": "76639298f40c1272cb8a7f8bfb5bb89099e3d57c07edf2ff2f813d38ce8436fc",
+      "export_exact": true
+    },
+    "docs/verification/platform/macos-app-parent-link/status/linux-typecheck.txt": {
+      "sha256": "13a538fd0ef27ed2501a0f52fb02e45b1d2a2e788f91fbeffcfef0f5fec89e27",
+      "export_exact": true
+    },
+    "docs/verification/platform/macos-app-parent-link/status/linux-upload-tests.txt": {
+      "sha256": "8e0d1dd9cbaf3efb2cc5a007c95ab557e3cb0e500e942bae5419b44d726a4228",
+      "export_exact": true
+    },
+    "docs/verification/platform/macos-app-parent-link/status/mutations.txt": {
+      "sha256": "76830b9db1e7e369a086f64ccb21c4a08579266adfa80605ed950d342bb77004",
+      "export_exact": true
+    }
+  },
+  "test_declarations": {
+    "CaptureLinkTests.swift": 28,
+    "DesktopCaptureTests.swift": 20,
+    "DesktopIngressTests.swift": 7,
+    "InkCompositionTests.swift": 5,
+    "InkOriginalTests.swift": 3,
+    "InkTests.swift": 10,
+    "MacIngressUploadTests.swift": 8,
+    "MacRetainedFramesTests.swift": 2
+  },
+  "total_declared": 83,
+  "test_source_files": 8,
+  "new_declared_methods": [
+    "testBatchWithoutABelievedAnswerStaysNotKnownUntilItsExactACK",
+    "testOriginalsOfAnUnsentBatchAreReportedAsAlreadyAccepted",
+    "testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK",
+    "testResendIntentIsRecordedShownAndFenced",
+    "testStopOrARecordFaultNeverShowsTheLinkAsUpAndEndsWithNothingAwaiting"
+  ],
+  "status_evidence_manifest": {
+    "entries": {
+      "linux-all-tests.txt": {
+        "sha256": "51597dfeb95b6420e87bc1668a512c56b668ef57346bf02f0fbf12da181e8eca",
+        "matches": true
+      },
+      "linux-harness-main.swift": {
+        "sha256": "4a09fc15c63dfece8de0d2875c238f9120c9e43ad87ec1041240a11d2594a498",
+        "matches": true
+      },
+      "linux-host-probes.txt": {
+        "sha256": "90e8e11f764f71c423d16f1dc650ccb44581e0b8e756f8ad151818b916817df0",
+        "matches": true
+      },
+      "linux-link-tests.txt": {
+        "sha256": "76639298f40c1272cb8a7f8bfb5bb89099e3d57c07edf2ff2f813d38ce8436fc",
+        "matches": true
+      },
+      "linux-typecheck.txt": {
+        "sha256": "13a538fd0ef27ed2501a0f52fb02e45b1d2a2e788f91fbeffcfef0f5fec89e27",
+        "matches": true
+      },
+      "linux-upload-tests.txt": {
+        "sha256": "8e0d1dd9cbaf3efb2cc5a007c95ab557e3cb0e500e942bae5419b44d726a4228",
+        "matches": true
+      },
+      "mutations.txt": {
+        "sha256": "76830b9db1e7e369a086f64ccb21c4a08579266adfa80605ed950d342bb77004",
+        "matches": true
+      }
+    },
+    "coverage_exact": true,
+    "all_hashes_match": true,
+    "sha256": "8a4a51527a37f45cc5446674e2f86fde4d9baa800f9d44fa12ff91281bc77853"
+  },
+  "author_linux_stub_logs": {
+    "linux-link-tests.txt": {
+      "started_methods": 28,
+      "passed_methods": 27,
+      "failed_methods": 1,
+      "failed_names": [
+        "DesktopCaptureTests.testLoopbackTransportOnARealSocket"
+      ],
+      "summaries": [
+        [
+          "28",
+          "2",
+          "0"
+        ],
+        [
+          "28",
+          "2",
+          "0"
+        ],
+        [
+          "28",
+          "2",
+          "0"
+        ]
+      ],
+      "exit": [
+        "exit 1"
+      ]
+    },
+    "linux-all-tests.txt": {
+      "started_methods": 83,
+      "passed_methods": 79,
+      "failed_methods": 4,
+      "failed_names": [
+        "DesktopCaptureTests.testLoopbackTransportOnARealSocket",
+        "DesktopCaptureTests.testFrameStoreIsTheReviewedScreenObserverCopy",
+        "DesktopCaptureTests.testMapsRetainedFramesToDesktopFrames",
+        "DesktopCaptureTests.testComposedImagesDrawTheInkCommittedWhenThePixelsWereOnScreen"
+      ],
+      "summaries": [
+        [
+          "83",
+          "11",
+          "1"
+        ],
+        [
+          "83",
+          "11",
+          "1"
+        ],
+        [
+          "83",
+          "11",
+          "1"
+        ]
+      ],
+      "exit": [
+        "exit 1"
+      ]
+    },
+    "linux-upload-tests.txt": {
+      "started_methods": 8,
+      "passed_methods": 8,
+      "failed_methods": 0,
+      "failed_names": [],
+      "summaries": [
+        [
+          "8",
+          "0",
+          "0"
+        ],
+        [
+          "8",
+          "0",
+          "0"
+        ],
+        [
+          "8",
+          "0",
+          "0"
+        ]
+      ],
+      "exit": [
+        "exit 0"
+      ]
+    }
+  },
+  "author_mutation_results": [
+    {
+      "name": "S1-no-pending-publication: CAUGHT",
+      "assertion_failure_logged": true,
+      "summaries": [
+        [
+          "1",
+          "5"
+        ]
+      ]
+    },
+    {
+      "name": "S2-sending-counted-not-known: CAUGHT",
+      "assertion_failure_logged": true,
+      "summaries": [
+        [
+          "2",
+          "7"
+        ]
+      ]
+    },
+    {
+      "name": "S3-old-wording: CAUGHT",
+      "assertion_failure_logged": true,
+      "summaries": [
+        [
+          "1",
+          "8"
+        ]
+      ]
+    },
+    {
+      "name": "S4-no-counts-line-when-linked: CAUGHT",
+      "assertion_failure_logged": true,
+      "summaries": [
+        [
+          "1",
+          "2"
+        ]
+      ]
+    },
+    {
+      "name": "S5-send-without-usable-check: CAUGHT",
+      "assertion_failure_logged": true,
+      "summaries": [
+        [
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "name": "S6-resend-intent-not-recorded: CAUGHT",
+      "assertion_failure_logged": true,
+      "summaries": [
+        [
+          "1",
+          "4"
+        ]
+      ]
+    },
+    {
+      "name": "S7-resend-despite-failed-record: CAUGHT",
+      "assertion_failure_logged": true,
+      "summaries": [
+        [
+          "1",
+          "3"
+        ]
+      ]
+    },
+    {
+      "name": "S8-fault-published-before-correction: CAUGHT",
+      "assertion_failure_logged": true,
+      "summaries": [
+        [
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "name": "S9-resend-fault-published-before-correction: CAUGHT",
+      "assertion_failure_logged": true,
+      "summaries": [
+        [
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "name": "S10-linked-while-reconnecting: CAUGHT",
+      "assertion_failure_logged": true,
+      "summaries": [
+        [
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "name": "S11-linked-after-gate-closed: CAUGHT",
+      "assertion_failure_logged": true,
+      "summaries": [
+        [
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "name": "S12-accepted-originals-unreported: CAUGHT",
+      "assertion_failure_logged": true,
+      "summaries": [
+        [
+          "1",
+          "1"
+        ]
+      ]
+    },
+    {
+      "name": "S13-stored-before-ack: CAUGHT",
+      "assertion_failure_logged": true,
+      "summaries": [
+        [
+          "1",
+          "7"
+        ]
+      ]
+    },
+    {
+      "name": "S14-unknown-shown-as-not-sent: CAUGHT",
+      "assertion_failure_logged": true,
+      "summaries": [
+        [
+          "2",
+          "5"
+        ]
+      ]
+    }
+  ],
+  "presentation": {
+    "public_library_properties": {
+      "summaryLine": true,
+      "countsLine": true,
+      "menuLine": true
+    },
+    "app_imports_DesktopCapture": true,
+    "view_imports_DesktopCapture": true,
+    "duplicate_app_extension_removed": true,
+    "window_renders_summary_counts_detail": true,
+    "menu_renders_summary": true
+  },
+  "preserved_build_and_checker_paths": {
+    "apps/macos/CompanionDesktop/Package.swift": true,
+    "apps/macos/CompanionDesktop/package-app.sh": true,
+    "apps/macos/CompanionDesktop/Packaging": true,
+    "apps/macos/CompanionDesktop/checks": true,
+    "scripts/desktop-checks.sh": true,
+    ".github/workflows/desktop-checks.yml": true
+  },
+  "historical_78_evidence_paths_unchanged": {
+    "docs/verification/lead/macos-parent-review/correction": true,
+    "docs/verification/platform/macos-app-parent-link/correction": true
+  },
+  "ci_recommendation": {
+    "workflow": ".github/workflows/desktop-checks.yml",
+    "ref": "published integrated main SHA whose native tree equals candidate",
+    "platform": "macos",
+    "runner": "macos-26",
+    "command": "bash scripts/desktop-checks.sh macos \"$RUNNER_TEMP/desktop-evidence\"",
+    "app_build": "snapshot package-app.sh -> swift build -c release --product CompanionDesktop",
+    "library_tests": "swift test --configuration release with existing five fixture environment variables",
+    "expected_declared_tests": 83,
+    "expected_source_files": 8,
+    "expected_capture_link_tests": 28,
+    "expectations_are_not_results": true,
+    "artifact_audit_note": "Use a separate 83/8 adaptation/expectation check; do not overwrite historical 78/8 or 55-test audit evidence."
+  },
+  "limits": [
+    "No tests/build/Swift/GUI/DB/network/workflow run by reviewer.",
+    "Seven status checksums cover saved evidence integrity, not independently attested executed source bytes; no executed-source hash receipt is present in this status set.",
+    "Linux Swift6.3.3/corelibs + Apple stubs; app target explicitly never typechecked for this delta; native NOT_RUN.",
+    "Source-level Text/access-control inspection is not VoiceOver, layout, accessibility or runtime acceptance.",
+    "Runtime transition/record/ACK logic is separately reviewed; earlier native78 result stays historical."
+  ],
+  "retained_log_whitespace": {
+    "reported_by": "Lead",
+    "command": "git diff --check 30807f2^ 30807f2",
+    "exit_code": 2,
+    "scope": "Only retained raw XCTest/mutation .txt trailing whitespace; source/current prose subset passes",
+    "log": "/tmp/macos-storage-owner-diff-check.txt",
+    "disposition": "Nonblocking raw-evidence preservation exception; do not alter checksum-bound logs or add broad attributes"
+  }
+}

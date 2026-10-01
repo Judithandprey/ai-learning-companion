@@ -1,0 +1,224 @@
+{
+  "verdict": "APPROVE",
+  "scope": "MAC-STORAGE-COPY-01 changed library runtime versus parent only",
+  "candidate": "30807f23a911739c089126d86b2b34d51976ea18",
+  "parent": "1e0e5a1fb79efe19028ac76e632e80d318816ba7",
+  "findings": [],
+  "reviewed_facts": [
+    {
+      "lines": "CaptureLink.swift:74-106,1360-1372",
+      "fact": "Neutral linked summary; confirmed/awaiting/unknown/refused/unsent counts are distinct. Unknown retries remain unknown until ACK, intentionally not overwritten by pending."
+    },
+    {
+      "lines": "CaptureLink.swift:987-1008",
+      "fact": "not_sent retry becomes sending and is persisted before upload. usable/gate or quiet-save failure restores not_sent then publishes corrected counts. Same prepared body/key retained."
+    },
+    {
+      "lines": "CaptureLink.swift:949-959,1408-1440",
+      "fact": "Initial journal failure is quiet until caller reclassifies unsent; sticky fault disables sending and notification retains fault."
+    },
+    {
+      "lines": "CaptureLink.swift:1376-1385,1180-1237",
+      "fact": "Gate-closed count publication becomes stopping; Stop waits/cancels in-flight work then converts leftover sending to unknown and final counts have no sending."
+    },
+    {
+      "lines": "CaptureLink.swift:1013-1046,1223-1227; MacIngressUpload.swift:195-216; MacIngressBatch.swift:149-156",
+      "fact": "acceptedOriginals only records verified receipt-prefix count for an unchanged ordered/deduplicated prepared batch. max across retry calls avoids adding repeated receipts; successful batch ACK clears field. It never increments confirmed frame count."
+    },
+    {
+      "lines": "CaptureLink.swift:295-300,313-319,889",
+      "fact": "framesPerBatch test seam defaults20 and clamps1...20; existing batch planning/identity logic retained."
+    }
+  ],
+  "execution": {
+    "kind": "Linux Swift exact extracted value types only",
+    "groups": 2,
+    "passed": 2,
+    "exit_code": 0,
+    "stderr_empty": true,
+    "command": "bash /tmp/macos-storage-30807-runtime-probes/run.sh",
+    "results": [
+      {
+        "case": "legacy_LinkJob_decodes_without_optional_field_and_new_field_roundtrips",
+        "pass": true
+      },
+      {
+        "case": "exact_library_status_text_separates_pending_unknown_confirmed",
+        "pass": true,
+        "pending": "0 frame(s) confirmed stored, 2 awaiting an answer, 0 not known, 0 refused, 0 not sent yet.",
+        "unknown": "0 frame(s) confirmed stored, 0 awaiting an answer, 2 not known, 0 refused, 0 not sent yet."
+      }
+    ],
+    "actor_upload_runtime_executed": false
+  },
+  "compatibility": "Optional acceptedOriginals decodes absent as nil in old LinkJob journal and roundtrips new counts. Awaiting is derived status, not a wire schema change. Accepted prior C1/C2/control fixes remain intact.",
+  "source_manifest": [
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureControl.swift",
+      "sha256": "0e7d90263d3071633dec649a1c0777f35605f0fc473ee058e63974a60260ab37",
+      "bytes": 15046,
+      "exact_export_matches_commit": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureHost.swift",
+      "sha256": "fa8507c08f66653d04ac09c54cd15579165066a3f72fc709bac9e6d25fcf5aa7",
+      "bytes": 21833,
+      "exact_export_matches_commit": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureLink.swift",
+      "sha256": "1132425230eb9e0fb1706825296126a6957d91a494ebffa798d569e140399a51",
+      "bytes": 72947,
+      "exact_export_matches_commit": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureRecorder.swift",
+      "sha256": "6c04de1c2494f098a5d6b9bde05aa617e3d484303e2a726fee1e532217f339d2",
+      "bytes": 30173,
+      "exact_export_matches_commit": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureRecords.swift",
+      "sha256": "7154dff12f83fa6dd996307649da18ad2f6d4c9f52ca50f3c2ca38b2ab3daa72",
+      "bytes": 12397,
+      "exact_export_matches_commit": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureStart.swift",
+      "sha256": "5253ac128a19bf8e8103800af65bffc7c2b02f581010133b79867234e25b8c33",
+      "bytes": 2201,
+      "exact_export_matches_commit": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/DesktopIngress.swift",
+      "sha256": "fb6da5ddb5512378ea61ecc11d6304eba2736cddfc4d7e77a12e72bb3c124d34",
+      "bytes": 43453,
+      "exact_export_matches_commit": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/DesktopJSON.swift",
+      "sha256": "2936142964f2a601f5f71e54546c4883318b8e30232024341312ce63b901e929",
+      "bytes": 3980,
+      "exact_export_matches_commit": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/FrameFacts.swift",
+      "sha256": "30e6e0886f13af1d2d77631a77603dff505c825137c0e58b2ab930d7163f6d83",
+      "bytes": 4198,
+      "exact_export_matches_commit": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/FrameStore.swift",
+      "sha256": "0ba0759dde8d09c8d13cd503b6b8da9ce596a3107b4cbc5f270586a9152a19d8",
+      "bytes": 4579,
+      "exact_export_matches_commit": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/Freshness.swift",
+      "sha256": "564bf292e82b2de77710db305e198fca540c9df25476fc0f96a223311751c614",
+      "bytes": 3263,
+      "exact_export_matches_commit": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/HostClock.swift",
+      "sha256": "fa23661c0d5649dd52ce066aa864473bc49e5390bed3cf90e5dd6b9d3702b040",
+      "bytes": 1017,
+      "exact_export_matches_commit": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/Ink.swift",
+      "sha256": "f10f1acb1c7084a7b10e3123bd5e751dbe77cef3ab5381a6b972d16fc497623d",
+      "bytes": 44497,
+      "exact_export_matches_commit": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/InkComposition.swift",
+      "sha256": "29a5ce8b0205ffe8e9d5861ca99a94c78599e86ab7a4d09c361763c467d5c243",
+      "bytes": 17785,
+      "exact_export_matches_commit": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/LiveGate.swift",
+      "sha256": "53c6feabfd3cabbdf922a45c22b4df888b881fea22025c6a0a4ab02b45327be6",
+      "bytes": 1832,
+      "exact_export_matches_commit": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/MacIngressBatch.swift",
+      "sha256": "f1fe46620b773e43eecdeac3572e1b7f01c7f61e48cd4d757662284251852600",
+      "bytes": 13909,
+      "exact_export_matches_commit": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/MacIngressUpload.swift",
+      "sha256": "1e208be4afd4412786e59810952ed00eeb653027d2fad0b00fdb07a829d9aa52",
+      "bytes": 36639,
+      "exact_export_matches_commit": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/MacRetainedFrames.swift",
+      "sha256": "b298b9ed9e9fde1e8252477ecf836b9c953f43daa2f78da720a8181d08973430",
+      "bytes": 42872,
+      "exact_export_matches_commit": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/SelectionCrop.swift",
+      "sha256": "06b5b90ee42b3a89133139d022161c433a27788b78b02ce6c7b3a8c4897eaa81",
+      "bytes": 5011,
+      "exact_export_matches_commit": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/StopReason.swift",
+      "sha256": "87c34730de4b93063cd25f595d4e0cf7d024687dd9367c8f5af573daee41df45",
+      "bytes": 1212,
+      "exact_export_matches_commit": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/CaptureLinkTests.swift",
+      "sha256": "cf282073c1e6cf826bc502629cec93315906d7789bc3d0ba998a4039345a08fe",
+      "bytes": 133845,
+      "exact_export_matches_commit": true
+    },
+    {
+      "path": "docs/verification/platform/macos-app-parent-link.md",
+      "sha256": "48c3ee321b2e2092db325987777f7333d22060df20d4c931c517c2bc0d79ca52",
+      "bytes": 41357,
+      "exact_export_matches_commit": true
+    }
+  ],
+  "probe_artifacts": [
+    {
+      "path": "/tmp/macos-storage-30807-runtime-probes/probe.swift",
+      "sha256": "fdd8aa7c6c45b2115ba7a192eed96b172935ddb89e2adba6961940083783198f",
+      "bytes": 5703
+    },
+    {
+      "path": "/tmp/macos-storage-30807-runtime-probes/run.sh",
+      "sha256": "7d7eb75a28f2c56f7a323205b81cc8720767ef8244c7a170c1dd19843992058a",
+      "bytes": 470
+    },
+    {
+      "path": "/tmp/macos-storage-30807-runtime-probes/source.json",
+      "sha256": "b5fb5df110a5159e1a62690c4f2ac6996b9a4563439cf89c22d3eaba470aa9f3",
+      "bytes": 327
+    },
+    {
+      "path": "/tmp/macos-storage-30807-runtime-probes/result.json",
+      "sha256": "a7893644c4204d3e53cc50a763a457ecd717f06fb2c8f193650fa14cdf50345f",
+      "bytes": 682
+    },
+    {
+      "path": "/tmp/macos-storage-30807-runtime-probes/stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  ],
+  "limits": [
+    "No new actor/transport integration test in this review; lifecycle conclusions are source analysis",
+    "No GUI/DB/provider/network/nativeCI or fullsuite",
+    "Owner83declaredtests and Linux79/83 are reported owner evidence, not independent passes",
+    "App target/public extension relocation needs root selected native compile/test; not claimed compiled here",
+    "No repository or worker changes"
+  ],
+  "policy": "PONYTAIL LITE; current affected source/English \u00a77.1/7.2 and existing requirement acceptance boundaries preserved."
+}

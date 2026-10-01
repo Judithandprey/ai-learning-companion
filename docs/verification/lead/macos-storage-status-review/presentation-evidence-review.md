@@ -1,0 +1,24 @@
+# MAC-STORAGE-COPY-01 presentation/build-evidence review
+
+**APPROVE the bounded app presentation / source / evidence slice at `30807f23a911739c089126d86b2b34d51976ea18`, pending actual native build/tests.** No concrete new compile or presentation blocker found. Runtime state/record/ACK behavior belongs to the separate reviewer. Export: `/tmp/macos-storage-30807`.
+
+The app delta is appropriately small: `ContentView.swift` loses its local `CaptureLinkStatus` text extension, and `CompanionDesktopApp.swift` adds `import DesktopCapture`. The existing SwiftPM executable already depends on that module. All three moved properties (`summaryLine`, `countsLine`, `menuLine`) are explicitly public; the app has no duplicate extension. This adds no unfamiliar Apple API or package dependency.
+
+The main window still renders summary, optional counts, detail, and the existing local-only/no-AI explanation as SwiftUI `Text`. The linked case now always shows the counts, even all zero; “Linked to the capture service” distinguishes connection from “confirmed stored”, “awaiting an answer”, “not known”, “refused” and “not sent yet”. The menu uses the same library summary rather than claiming storage. Text remains exposed through ordinary SwiftUI text elements, with no new color-only state, hidden accessibility content, disabled control, line limit or gesture-only interaction. This is source inspection, not VoiceOver, native layout or interactive accessibility verification.
+
+The delivered tests assert the exact strings consumed by the views, including zero confirmed while ACKs are held, separate pending/unknown counts, Stop text/counts, and the menu line. The five new method declarations are present. Declaration totals are **83 tests / 8 files**, including **28 CaptureLink tests**; those are upcoming native expectations, not native passes.
+
+Evidence integrity and limits:
+
+- All inspected exported changed source/test/report/status files match raw candidate Git blobs; machine record includes each hash. All **7 status/SHA256SUMS entries** match with exact coverage of that evidence directory.
+- Parsed author Linux logs: Link **27 pass / 1 failed method** (2 assertions); full suite **79 pass / 4 failed methods** (11 assertions, 1 unexpected); upload **8/8**. Link/full logs retain exit 1. Failed names are the prior corelibs redirect and three reported stub-dependent cases. These logs are not green native results.
+- All **14 recorded mutations** contain named XCTest assertion failures, rather than merely an unsubstantiated “caught” label. No mutation or test was rerun here.
+- The checksum manifest proves saved evidence integrity, but the status set contains no independently attested executed-source hash receipt. Provenance remains the author's Linux Swift 6.3.3/corelibs + Apple-stub harness and the committed harness/test correspondence. The app's two changed files are explicitly **not type-checked anywhere** in this delivery. Current native status remains **NOT_RUN**.
+- Historical 78-test native evidence and the earlier correction evidence directories are unchanged. The report explicitly separates that earlier hosted success from this uncompiled 83-test delta.
+- Lead's full `git diff --check` found trailing whitespace only in retained raw XCTest/mutation `.txt` logs; source/current prose subset passes. Preserve the raw logs and their checksums. This is a nonblocking evidence-format exception, not a reason to rewrite logs or add broad configuration. Lead receipt: `/tmp/macos-storage-owner-diff-check.txt`.
+
+Proportional native verification recommendation: after all assigned source reviews approve and Lead publishes the integrated main SHA, use the **existing manual `desktop-checks.yml` with `platform=macos`**, on `macos-26`. Confirm that published `apps/macos/CompanionDesktop` tree equals this reviewed candidate. Its unchanged script already builds the actual release app through `package-app.sh` (`swift build -c release --product CompanionDesktop`), then runs `swift test --configuration release` with all five existing fixture paths and checker/artifact retention. This one existing job covers the moved cross-module getters, both app consumers, 28 Link tests and 83 total declarations without a new workflow or separate campaign. Require actual full pass/name/count evidence; do not exempt the Linux failures on macOS. Use a separately adapted 83/8 artifact expectation/audit, preserving historical 78/8 and 55-test audits.
+
+No workflow dispatch, test/build/Swift execution, GUI, DB, network/provider operation or repository/worker edit was performed. Hosted compilation/library tests would still not establish Mac screen permission, live UI, physical input, actual PostgreSQL/provider or full desktop gates.
+
+Machine facts: `/tmp/macos-storage-30807-evidence-review.json`.

@@ -1,0 +1,31 @@
+{
+  "default_full_saved_artifact_audit": {
+    "exit_code": 0,
+    "historical_run": 36803694899,
+    "passed_tests": 78,
+    "anomalies": [],
+    "receipt_equal_to_previous_except_added_milestone": true
+  },
+  "storage_status_exact_test_gate_on_same_old_artifact": {
+    "verdict": "HOLD as required",
+    "observed_tests": 78,
+    "expected_tests": 83,
+    "anomalies": [
+      "storage-status milestone must declare the reviewed 83 tests in 8 source files",
+      "Corrected parent-link declarations or successful native executions are missing"
+    ]
+  },
+  "added_required_test_names": [
+    "testBatchWithoutABelievedAnswerStaysNotKnownUntilItsExactACK",
+    "testOriginalsOfAnUnsentBatchAreReportedAsAlreadyAccepted",
+    "testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK",
+    "testResendIntentIsRecordedShownAndFenced",
+    "testStopOrARecordFaultNeverShowsTheLinkAsUpAndEndsWithNothingAwaiting"
+  ],
+  "new_source_declares": {
+    "CaptureLinkTests.swift": 28
+  },
+  "new_macos_execution": "NOT_RUN; no 83-test pass claimed",
+  "gate_sha256": "b37dc8c68ab87524d20fae7db9edc7a33eb4fb4a2bc51289e39f2c641b89160e",
+  "patch_sha256": "3eb3f73d2efcf72ac620c7636d79e752edfee847c524f8c6c4003d0e7be6b340"
+}

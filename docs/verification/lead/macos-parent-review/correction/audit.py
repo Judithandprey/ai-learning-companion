@@ -6,8 +6,9 @@
     --approved FULL_REVIEWED_NATIVE_SHA --run RUN --output /tmp/mac-parent-audit.json
 
 Run only after actual hosted output and both raw metadata receipts have arrived.
-Expected milestone: 78 declared/executed XCTests in 8 source files, and the retained
-upload checker with 24 PASS lines including 18 negative controls. Counts are
+Expected milestones: parent-link (default), 78 XCTests in 8 source files;
+storage-status, 83 XCTests in the same 8 files including five storage-status tests.
+Both require the retained upload checker with 24 PASS lines including 18 negative controls. Counts are
 requirements checked against actual source/logs, never a prepared-result claim.
 The retained upload transcript uses an in-process synthetic host. Parent-link tests
 include test-owned child/loopback cases; they do not establish app UI, system
@@ -36,6 +37,8 @@ parser.add_argument('--run', type=int, required=True)
 parser.add_argument('--output', type=Path, required=True, help='new receipt outside the artifact directory')
 parser.add_argument('--run-metadata', type=Path)
 parser.add_argument('--artifact-metadata', type=Path)
+parser.add_argument('--milestone', choices=['parent-link', 'storage-status'], default='parent-link',
+                    help='reviewed test milestone; defaults to the historical 78-test parent link')
 args = parser.parse_args()
 if not all(re.fullmatch(r'[0-9a-f]{40}', value) for value in (args.commit, args.approved)):
     parser.error('--commit and --approved must be complete Git SHAs')
@@ -47,6 +50,7 @@ if OUT.is_relative_to(P) or OUT.exists():
 ROOT = 'apps/macos/CompanionDesktop/'
 issues = []
 result = {'commit': COMMIT, 'run': RUN, 'artifact_directory': str(P), 'approved_commit': APPROVED, 'scope': 'Saved artifact inspection, no native execution or test rerun'}
+result['milestone'] = args.milestone
 
 def check(ok, message):
     if not ok:
@@ -196,7 +200,7 @@ observed = [name.split()[-1] for name in passed]
 check(started == passed and not failed and len(passed) == len(set(passed)), 'Started/passed/failed XCTest set differs')
 check(Counter(observed) == Counter(declared), 'Native tests do not exhaust source declarations')
 expected_test_counts = {
-    'CaptureLinkTests.swift': 23,
+    'CaptureLinkTests.swift': 28 if args.milestone == 'storage-status' else 23,
     'DesktopCaptureTests.swift': 20,
     'DesktopIngressTests.swift': 7,
     'InkCompositionTests.swift': 5,
@@ -205,9 +209,10 @@ expected_test_counts = {
     'MacIngressUploadTests.swift': 8,
     'MacRetainedFramesTests.swift': 2,
 }
+expected_test_total = 83 if args.milestone == 'storage-status' else 78
 check({PurePosixPath(name).name: len(tests) for name, tests in source_tests.items()} == expected_test_counts
-      and len(source_tests) == 8 and len(declared) == 78,
-      'Parent-link milestone must declare the reviewed 78 tests in 8 source files')
+      and len(source_tests) == 8 and len(declared) == expected_test_total,
+      f'{args.milestone} milestone must declare the reviewed {expected_test_total} tests in 8 source files')
 link_test_file = ROOT + 'Tests/DesktopCaptureTests/CaptureLinkTests.swift'
 link_tests = source_tests[link_test_file]
 link_regressions = {
@@ -220,6 +225,14 @@ link_regressions = {
     'testServerEndInARegistrationReplayEndsTheCaptureDespiteARecordFault',
     'testReconnectReplayActsOnABelievedServerEndOrLostPermission',
 }
+if args.milestone == 'storage-status':
+    link_regressions.update({
+        'testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK',
+        'testBatchWithoutABelievedAnswerStaysNotKnownUntilItsExactACK',
+        'testStopOrARecordFaultNeverShowsTheLinkAsUpAndEndsWithNothingAwaiting',
+        'testResendIntentIsRecordedShownAndFenced',
+        'testOriginalsOfAnUnsentBatchAreReportedAsAlreadyAccepted',
+    })
 check(link_regressions.issubset(link_tests) and all(name in observed for name in link_tests),
       'Corrected parent-link declarations or successful native executions are missing')
 upload_test_file = ROOT + 'Tests/DesktopCaptureTests/MacIngressUploadTests.swift'

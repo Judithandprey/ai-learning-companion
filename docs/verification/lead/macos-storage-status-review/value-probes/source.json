@@ -1,0 +1,5 @@
+{
+  "file": "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureLink.swift",
+  "sha256": "1132425230eb9e0fb1706825296126a6957d91a494ebffa798d569e140399a51",
+  "transforms": "Extracted full exact CaptureLinkStatus including extension and LinkJob; no edits to declarations or methods. Added own value-type probes only."
+}

@@ -1,0 +1,18 @@
+{
+  "candidate" : "30807f23a911739c089126d86b2b34d51976ea18",
+  "checks" : [
+    {
+      "case" : "legacy_LinkJob_decodes_without_optional_field_and_new_field_roundtrips",
+      "pass" : true
+    },
+    {
+      "case" : "exact_library_status_text_separates_pending_unknown_confirmed",
+      "pass" : true,
+      "pending" : "0 frame(s) confirmed stored, 2 awaiting an answer, 0 not known, 0 refused, 0 not sent yet.",
+      "unknown" : "0 frame(s) confirmed stored, 0 awaiting an answer, 2 not known, 0 refused, 0 not sent yet."
+    }
+  ],
+  "groups" : 2,
+  "limits" : "Exact extracted value types on Linux Swift; no actor\/upload\/transport\/native UI execution",
+  "passed" : 2
+}

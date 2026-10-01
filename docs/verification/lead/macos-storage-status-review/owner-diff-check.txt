@@ -1,0 +1,62 @@
+docs/verification/platform/macos-app-parent-link/status/linux-all-tests.txt:59: trailing whitespace.
++src/CaptureLinkTests.swift:2227: error: DesktopCaptureTests.testLoopbackTransportOnARealSocket : XCTAssertEqual failed: ("200") is not equal to ("307") - 
+docs/verification/platform/macos-app-parent-link/status/linux-all-tests.txt:104: trailing whitespace.
++src/DesktopIngressTests.swift:138: error: DesktopCaptureTests.testMapsRetainedFramesToDesktopFrames : XCTAssertEqual failed: ("Optional(18446744073.709557)") is not equal to ("Optional(18446744073.709553)") - 
+docs/verification/platform/macos-app-parent-link/status/linux-all-tests.txt:119: trailing whitespace.
++src/InkCompositionTests.swift:181: error: DesktopCaptureTests.testComposedImagesDrawTheInkCommittedWhenThePixelsWereOnScreen : XCTAssertTrue failed - 
+docs/verification/platform/macos-app-parent-link/status/linux-all-tests.txt:122: trailing whitespace.
++src/InkCompositionTests.swift:190: error: DesktopCaptureTests.testComposedImagesDrawTheInkCommittedWhenThePixelsWereOnScreen : XCTAssertTrue failed - 
+docs/verification/platform/macos-app-parent-link/status/linux-link-tests.txt:59: trailing whitespace.
++src/CaptureLinkTests.swift:2227: error: DesktopCaptureTests.testLoopbackTransportOnARealSocket : XCTAssertEqual failed: ("200") is not equal to ("307") - 
+docs/verification/platform/macos-app-parent-link/status/mutations.txt:11: trailing whitespace.
++/tmp/lc-status-mut/src/CaptureLinkTests.swift:1837: error: DesktopCaptureTests.testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK : XCTAssertEqual failed: ("[0, 0, 0, 0, 0]") is not equal to ("[0, 4, 0, 0, 4]") - 
+docs/verification/platform/macos-app-parent-link/status/mutations.txt:12: trailing whitespace.
++/tmp/lc-status-mut/src/CaptureLinkTests.swift:1839: error: DesktopCaptureTests.testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK : XCTAssertEqual failed: ("Optional("0 frame(s) confirmed stored, 0 awaiting an answer, 0 not known, 0 refused, 0 not sent yet.")") is not equal to ("Optional("0 frame(s) confirmed stored, 4 awaiting an answer, 0 not known, 0 refused, 4 not sent yet.")") - 
+docs/verification/platform/macos-app-parent-link/status/mutations.txt:14: trailing whitespace.
++/tmp/lc-status-mut/src/CaptureLinkTests.swift:1852: error: DesktopCaptureTests.testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK : XCTAssertEqual failed: ("[4, 0, 0, 0, 4]") is not equal to ("[4, 3, 0, 0, 1]") - 
+docs/verification/platform/macos-app-parent-link/status/mutations.txt:15: trailing whitespace.
++/tmp/lc-status-mut/src/CaptureLinkTests.swift:1853: error: DesktopCaptureTests.testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK : XCTAssertEqual failed: ("Optional("4 frame(s) confirmed stored, 0 awaiting an answer, 0 not known, 0 refused, 4 not sent yet.")") is not equal to ("Optional("4 frame(s) confirmed stored, 3 awaiting an answer, 0 not known, 0 refused, 1 not sent yet.")") - 
+docs/verification/platform/macos-app-parent-link/status/mutations.txt:25: trailing whitespace.
++/tmp/lc-status-mut/src/CaptureLinkTests.swift:1837: error: DesktopCaptureTests.testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK : XCTAssertEqual failed: ("[0, 0, 4, 0, 4]") is not equal to ("[0, 4, 0, 0, 4]") - 
+docs/verification/platform/macos-app-parent-link/status/mutations.txt:26: trailing whitespace.
++/tmp/lc-status-mut/src/CaptureLinkTests.swift:1839: error: DesktopCaptureTests.testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK : XCTAssertEqual failed: ("Optional("0 frame(s) confirmed stored, 0 awaiting an answer, 4 not known, 0 refused, 4 not sent yet.")") is not equal to ("Optional("0 frame(s) confirmed stored, 4 awaiting an answer, 0 not known, 0 refused, 4 not sent yet.")") - 
+docs/verification/platform/macos-app-parent-link/status/mutations.txt:28: trailing whitespace.
++/tmp/lc-status-mut/src/CaptureLinkTests.swift:1852: error: DesktopCaptureTests.testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK : XCTAssertEqual failed: ("[4, 0, 3, 0, 1]") is not equal to ("[4, 3, 0, 0, 1]") - 
+docs/verification/platform/macos-app-parent-link/status/mutations.txt:29: trailing whitespace.
++/tmp/lc-status-mut/src/CaptureLinkTests.swift:1853: error: DesktopCaptureTests.testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK : XCTAssertEqual failed: ("Optional("4 frame(s) confirmed stored, 0 awaiting an answer, 3 not known, 0 refused, 1 not sent yet.")") is not equal to ("Optional("4 frame(s) confirmed stored, 3 awaiting an answer, 0 not known, 0 refused, 1 not sent yet.")") - 
+docs/verification/platform/macos-app-parent-link/status/mutations.txt:38: trailing whitespace.
++/tmp/lc-status-mut/src/CaptureLinkTests.swift:1838: error: DesktopCaptureTests.testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK : XCTAssertEqual failed: ("Storing while capturing.") is not equal to ("Linked to the capture service.") - 
+docs/verification/platform/macos-app-parent-link/status/mutations.txt:39: trailing whitespace.
++/tmp/lc-status-mut/src/CaptureLinkTests.swift:1840: error: DesktopCaptureTests.testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK : XCTAssertEqual failed: ("Capture storage: Storing while capturing.") is not equal to ("Capture storage: Linked to the capture service.") - 
+docs/verification/platform/macos-app-parent-link/status/mutations.txt:51: trailing whitespace.
++/tmp/lc-status-mut/src/CaptureLinkTests.swift:1845: error: DesktopCaptureTests.testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK : XCTAssertEqual failed: ("nil") is not equal to ("Optional(true)") - 
+docs/verification/platform/macos-app-parent-link/status/mutations.txt:52: trailing whitespace.
++/tmp/lc-status-mut/src/CaptureLinkTests.swift:1870: error: DesktopCaptureTests.testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK : XCTAssertNotNil failed - 
+docs/verification/platform/macos-app-parent-link/status/mutations.txt:71: trailing whitespace.
++/tmp/lc-status-mut/src/CaptureLinkTests.swift:2064: error: DesktopCaptureTests.testResendIntentIsRecordedShownAndFenced : XCTAssertEqual failed: ("Optional("not_sent")") is not equal to ("Optional("sending")") - 
+docs/verification/platform/macos-app-parent-link/status/mutations.txt:73: trailing whitespace.
++/tmp/lc-status-mut/src/CaptureLinkTests.swift:2106: error: DesktopCaptureTests.testResendIntentIsRecordedShownAndFenced : XCTAssertEqual failed: ("[7, 0, 0, 0, 1]") is not equal to ("[0, 0, 0, 0, 8]") - 
+docs/verification/platform/macos-app-parent-link/status/mutations.txt:82: trailing whitespace.
++/tmp/lc-status-mut/src/CaptureLinkTests.swift:2106: error: DesktopCaptureTests.testResendIntentIsRecordedShownAndFenced : XCTAssertEqual failed: ("[7, 0, 0, 0, 1]") is not equal to ("[0, 0, 0, 0, 8]") - 
+docs/verification/platform/macos-app-parent-link/status/mutations.txt:108: trailing whitespace.
++        
+docs/verification/platform/macos-app-parent-link/status/mutations.txt:127: trailing whitespace.
++/tmp/lc-status-mut/src/CaptureLinkTests.swift:2179: error: DesktopCaptureTests.testOriginalsOfAnUnsentBatchAreReportedAsAlreadyAccepted : XCTAssertEqual failed: ("Optional("the stream is stopped")") is not equal to ("Optional("the stream is stopped; 3 original file(s) of frames not sent were already accepted by the capture service")") - 
+docs/verification/platform/macos-app-parent-link/status/mutations.txt:135: trailing whitespace.
++/tmp/lc-status-mut/src/CaptureLinkTests.swift:1837: error: DesktopCaptureTests.testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK : XCTAssertEqual failed: ("[4, 4, 0, 0, 4]") is not equal to ("[0, 4, 0, 0, 4]") - 
+docs/verification/platform/macos-app-parent-link/status/mutations.txt:136: trailing whitespace.
++/tmp/lc-status-mut/src/CaptureLinkTests.swift:1839: error: DesktopCaptureTests.testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK : XCTAssertEqual failed: ("Optional("4 frame(s) confirmed stored, 4 awaiting an answer, 0 not known, 0 refused, 4 not sent yet.")") is not equal to ("Optional("0 frame(s) confirmed stored, 4 awaiting an answer, 0 not known, 0 refused, 4 not sent yet.")") - 
+docs/verification/platform/macos-app-parent-link/status/mutations.txt:138: trailing whitespace.
++/tmp/lc-status-mut/src/CaptureLinkTests.swift:1852: error: DesktopCaptureTests.testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK : XCTAssertEqual failed: ("[7, 3, 0, 0, 1]") is not equal to ("[4, 3, 0, 0, 1]") - 
+docs/verification/platform/macos-app-parent-link/status/mutations.txt:139: trailing whitespace.
++/tmp/lc-status-mut/src/CaptureLinkTests.swift:1853: error: DesktopCaptureTests.testPendingFramesAreShownAtOnceAndStoredOnlyAfterTheirACK : XCTAssertEqual failed: ("Optional("7 frame(s) confirmed stored, 3 awaiting an answer, 0 not known, 0 refused, 1 not sent yet.")") is not equal to ("Optional("4 frame(s) confirmed stored, 3 awaiting an answer, 0 not known, 0 refused, 1 not sent yet.")") - 
+docs/verification/platform/macos-app-parent-link/status/mutations.txt:152: trailing whitespace.
++/tmp/lc-status-mut/src/CaptureLinkTests.swift:1906: error: DesktopCaptureTests.testBatchWithoutABelievedAnswerStaysNotKnownUntilItsExactACK : XCTAssertEqual failed: ("[0, 0, 0, 0, 8]") is not equal to ("[0, 0, 7, 0, 1]") - 
+docs/verification/platform/macos-app-parent-link/status/mutations.txt:153: trailing whitespace.
++/tmp/lc-status-mut/src/CaptureLinkTests.swift:1908: error: DesktopCaptureTests.testBatchWithoutABelievedAnswerStaysNotKnownUntilItsExactACK : XCTAssertEqual failed: ("Optional("0 frame(s) confirmed stored, 0 awaiting an answer, 0 not known, 0 refused, 8 not sent yet.")") is not equal to ("Optional("0 frame(s) confirmed stored, 0 awaiting an answer, 7 not known, 0 refused, 1 not sent yet.")") - 
+docs/verification/platform/macos-app-parent-link/status/mutations.txt:154: trailing whitespace.
++/tmp/lc-status-mut/src/CaptureLinkTests.swift:1953: error: DesktopCaptureTests.testStopOrARecordFaultNeverShowsTheLinkAsUpAndEndsWithNothingAwaiting : XCTAssertEqual failed: ("[0, 0, 0, 0, 8]") is not equal to ("[0, 0, 7, 0, 1]") - 
+docs/verification/platform/macos-app-parent-link/status/mutations.txt:155: trailing whitespace.
++/tmp/lc-status-mut/src/CaptureLinkTests.swift:1954: error: DesktopCaptureTests.testStopOrARecordFaultNeverShowsTheLinkAsUpAndEndsWithNothingAwaiting : XCTAssertEqual failed: ("Optional("0 frame(s) confirmed stored, 0 awaiting an answer, 0 not known, 0 refused, 8 not sent.")") is not equal to ("Optional("0 frame(s) confirmed stored, 0 awaiting an answer, 7 not known, 0 refused, 1 not sent.")") - 
+docs/verification/platform/macos-app-parent-link/status/mutations.txt:156: trailing whitespace.
++/tmp/lc-status-mut/src/CaptureLinkTests.swift:1958: error: DesktopCaptureTests.testStopOrARecordFaultNeverShowsTheLinkAsUpAndEndsWithNothingAwaiting : XCTAssertEqual failed: ("["stopping [0, 7, 0, 0, 1]", "stopping [0, 0, 0, 0, 8]", "stopped [0, 0, 0, 0, 8]"]") is not equal to ("["stopping [0, 7, 0, 0, 1]", "stopping [0, 0, 7, 0, 1]", "stopped [0, 0, 7, 0, 1]"]") - 

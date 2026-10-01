@@ -1,0 +1,30 @@
+{
+  "owner_commit": "30807f23a911739c089126d86b2b34d51976ea18",
+  "parent": "1e0e5a1fb79efe19028ac76e632e80d318816ba7",
+  "lead_baseline": "c99ffd4733bbb9f2fda36e2849d51139d2f6c9e5",
+  "message_id": "handoff_5f123c736a6e803ba04d69cc271f5e7d",
+  "reply_to": "handoff_e315d6df5277bb8e006e4d94af5dcfa5",
+  "body_sha256": "5cf243cb63fca869cca525837f5db10be1579d97032930ccad7cff5f4d453e78",
+  "received_at": "2026-10-01T03:52:33Z",
+  "read_at": "2026-10-01T03:52:51Z",
+  "changed_paths": [
+    "apps/macos/CompanionDesktop/README.md",
+    "apps/macos/CompanionDesktop/Sources/CompanionDesktop/CompanionDesktopApp.swift",
+    "apps/macos/CompanionDesktop/Sources/CompanionDesktop/ContentView.swift",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureLink.swift",
+    "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/CaptureLinkTests.swift",
+    "docs/verification/platform/README.md",
+    "docs/verification/platform/macos-app-parent-link.md",
+    "docs/verification/platform/macos-app-parent-link/status/SHA256SUMS",
+    "docs/verification/platform/macos-app-parent-link/status/linux-all-tests.txt",
+    "docs/verification/platform/macos-app-parent-link/status/linux-harness-main.swift",
+    "docs/verification/platform/macos-app-parent-link/status/linux-host-probes.txt",
+    "docs/verification/platform/macos-app-parent-link/status/linux-link-tests.txt",
+    "docs/verification/platform/macos-app-parent-link/status/linux-typecheck.txt",
+    "docs/verification/platform/macos-app-parent-link/status/linux-upload-tests.txt",
+    "docs/verification/platform/macos-app-parent-link/status/mutations.txt"
+  ],
+  "frame_store_unchanged": true,
+  "native_build_at_delivery": "not_run",
+  "actual_mac_ui_provider": "not_run"
+}
