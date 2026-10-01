@@ -450,6 +450,167 @@ test('a change, or a completed sign-in, said while the account is being read is 
   assert.equal(idle.fakes.last().count('connection/read'), 0);
 });
 
+test('an account read belongs to the connector it went to: once that one is fenced, lost or ended, nothing it said is published, nothing is read again, and no other connector is started', async () => {
+  const line = (v: unknown): string => `${JSON.stringify(v)}\n`;
+  const OVER = 'x'.repeat(256 * 1024 + 1); // over the bound, with no line end: the connector is fenced
+  const CHANGED = line({ method: 'connection/changed', params: {} });
+  const world = () => subscription(WSL, {}, (c) => void (c.account = null)); // every read is answered by hand
+  const LOST = 'the connector was lost while the account was being read';
+  // The lead's case, in one chunk: a change, the read's valid answer, then a line that is not the envelope's.
+  const a = world();
+  const checking = a.s.check();
+  await until('read', () => a.fakes.made.length === 1 && a.fakes.last().count('connection/read') === 1);
+  const c = a.fakes.last();
+  c.stdout.write(CHANGED + line({ id: c.calls[0]!.id, result: ACCOUNT }) + OVER);
+  await checking;
+  await new Promise((r) => setTimeout(r, 30));
+  assert.deepEqual([a.fakes.made.length, c.count('connection/read'), a.now().state, a.now().detail], [1, 1, 'unavailable', LOST], 'no second connector, no second read, and not said as signed in');
+  assert.deepEqual([a.now().plan, a.now().models, a.now().model], [null, [], null], 'nothing of the answer is published');
+  assert.deepEqual(a.said.filter((x) => x.mode === 'managed' && (x.state === 'signed_in' || x.state === 'signed_out' || x.state === 'unknown')), [], 'at no moment');
+  assert.deepEqual(await a.s.ask(request()), { status: 'refused', code: 'local', reason: 'the connector, or the official Codex app server it runs, is not available' });
+  assert.equal(a.fakes.made.length, 1, 'a question starts none either');
+  // Only the user's own Check starts one again.
+  const again = a.s.check();
+  await until('a new connector, by the press', () => a.fakes.made.length === 2 && a.fakes.last().count('connection/read') === 1);
+  a.fakes.last().reply(a.fakes.last().calls[0]!.id, ACCOUNT);
+  await again;
+  assert.deepEqual([a.now().state, a.now().detail, a.fakes.made.length], ['signed_in', null, 2]);
+  // The same without any change said: a valid answer, then the fence, in one chunk.
+  const b = world();
+  const plain = b.s.check();
+  await until('read', () => b.fakes.made.length === 1 && b.fakes.last().count('connection/read') === 1);
+  b.fakes.last().stdout.write(line({ id: b.fakes.last().calls[0]!.id, result: ACCOUNT }) + OVER);
+  await plain;
+  assert.deepEqual([b.fakes.made.length, b.fakes.last().count('connection/read'), b.now().state, b.now().detail], [1, 1, 'unavailable', LOST]);
+  // Fenced during the read that followed a change: the same.
+  const d = world();
+  const second = d.s.check();
+  await until('read', () => d.fakes.made.length === 1 && d.fakes.last().count('connection/read') === 1);
+  d.fakes.last().stdout.write(CHANGED + line({ id: d.fakes.last().calls[0]!.id, result: ACCOUNT }));
+  await until('read again', () => d.fakes.last().count('connection/read') === 2);
+  d.fakes.last().stdout.write(CHANGED + line({ id: d.fakes.last().calls[1]!.id, result: ACCOUNT }) + OVER);
+  await second;
+  await new Promise((r) => setTimeout(r, 30));
+  assert.deepEqual([d.fakes.made.length, d.fakes.last().count('connection/read'), d.now().state, d.now().detail], [1, 2, 'unavailable', LOST]);
+  // The app quits while a read is out, and the connector still answers it before it ends (the released one closes
+  // its own child first): the quit is a fence too. Nothing it then says is published, and none is started.
+  for (const reread of [false, true]) {
+    const q = subscription(WSL, {}, (k) => void ((k.account = null), (k.endDelayMs = 80)));
+    const quitting = q.s.check();
+    await until('read', () => q.fakes.made.length === 1 && q.fakes.last().count('connection/read') === 1);
+    const k = q.fakes.last();
+    if (reread) {
+      k.stdout.write(CHANGED + line({ id: k.calls[0]!.id, result: ACCOUNT }));
+      await until('read again', () => k.count('connection/read') === 2);
+    }
+    const quit = q.s.quit();
+    await new Promise((r) => setTimeout(r, 10));
+    assert.equal(k.exited, false, 'still ending');
+    k.stdout.write(line({ id: k.calls.at(-1)!.id, result: ACCOUNT })); // a valid answer, and nothing else
+    await quitting;
+    await quit;
+    assert.deepEqual([q.fakes.made.length, k.count('connection/read'), q.now().state, q.now().plan, k.exited], [1, reread ? 2 : 1, 'unavailable', null, true]);
+    assert.deepEqual(q.said.filter((x) => x.mode === 'managed' && ['signed_in', 'signed_out', 'unknown'].includes(x.state)), [], 'nothing of it was said at any moment');
+  }
+  // The connector ends by itself right after its valid answer (the answer is read first): the same.
+  const e = world();
+  const ending = e.s.check();
+  await until('read', () => e.fakes.made.length === 1 && e.fakes.last().count('connection/read') === 1);
+  e.fakes.last().stdout.once('data', () => e.fakes.last().exit(1)); // its exit is seen as the answer's chunk is read
+  e.fakes.last().stdout.write(CHANGED + line({ id: e.fakes.last().calls[0]!.id, result: ACCOUNT }));
+  await ending;
+  await new Promise((r) => setTimeout(r, 30));
+  assert.deepEqual([e.fakes.made.length, e.fakes.last().count('connection/read'), e.now().state], [1, 1, 'unavailable']);
+  // Positive control: the same chunk without the fence is one more read, to the same connector, and then published.
+  const ok = world();
+  const fine = ok.s.check();
+  await until('read', () => ok.fakes.made.length === 1 && ok.fakes.last().count('connection/read') === 1);
+  ok.fakes.last().stdout.write(CHANGED + line({ id: ok.fakes.last().calls[0]!.id, result: { auth: { state: 'signed_out', mode: null, plan: null }, rate_limits: null, models: [] } }));
+  await until('read again, by the same connector', () => ok.fakes.last().count('connection/read') === 2);
+  ok.fakes.last().reply(ok.fakes.last().calls[1]!.id, ACCOUNT);
+  await fine;
+  assert.deepEqual([ok.fakes.made.length, ok.fakes.last().count('connection/read'), ok.now().state, ok.now().detail, ok.now().model], [1, 2, 'signed_in', null, 'vision-model']);
+});
+
+test('a sign-in whose start was answered by a connector that is then fenced in the same chunk opens nothing and is said as failed', async () => {
+  const { s, fakes, opened, now } = subscription();
+  await s.check();
+  const c = fakes.last();
+  c.stdin.removeAllListeners('data'); // answered by hand
+  let id = '';
+  c.stdin.on('data', (b: Buffer) => void (id = (JSON.parse(b.toString('utf8')) as { id: string }).id));
+  const signing = s.login();
+  await until('asked', () => id !== '');
+  c.stdout.write(`${JSON.stringify({ id, result: { login_id: 'login-1', auth_url: LOGIN_URL } })}\n${'x'.repeat(256 * 1024 + 1)}`);
+  await signing;
+  await new Promise((r) => setTimeout(r, 30));
+  assert.deepEqual([opened, now().login, now().state, now().detail, fakes.made.length], [[], 'failed', 'unavailable', 'the connector ended before the sign-in completed', 1]);
+  // Positive control: the same answer without the fence opens the official page once and waits.
+  const fine = subscription();
+  await fine.s.check();
+  await fine.s.login();
+  assert.deepEqual([fine.opened, fine.now().login, fine.fakes.made.length], [[LOGIN_URL], 'waiting', 1]);
+  // The app quits while the start is out, and the connector still answers it before it ends: nothing is opened.
+  const q = subscription(WSL, {}, (k) => void (k.endDelayMs = 80));
+  await q.s.check();
+  const k = q.fakes.last();
+  k.stdin.removeAllListeners('data');
+  let start = '';
+  k.stdin.on('data', (b: Buffer) => void (start = (JSON.parse(b.toString('utf8')) as { id: string }).id));
+  k.stdin.on('end', () => void setTimeout(() => k.exit(0), 80)); // (its own handler was removed with the others)
+  const press = q.s.login();
+  await until('asked', () => start !== '');
+  const quit = q.s.quit();
+  await new Promise((r) => setTimeout(r, 10));
+  k.stdout.write(`${JSON.stringify({ id: start, result: { login_id: 'login-1', auth_url: LOGIN_URL } })}\n`);
+  await press;
+  await quit;
+  assert.deepEqual([q.opened, q.now().login, q.fakes.made.length, k.exited], [[], 'failed', 1, true]);
+  assert.equal(q.said.some((x) => x.mode === 'managed' && x.login === 'waiting'), false);
+  // The browser cannot be opened, and the connector was lost (or the sign-in cancelled) before that was known: the
+  // "still waiting" text is not said over a sign-in that is over.
+  for (const by of ['lost', 'cancelled'] as const) {
+    let fail = (): void => undefined;
+    const b = subscription(WSL, { openExternal: () => new Promise<void>((_ok, no) => (fail = () => no(new Error('no browser')))) });
+    await b.s.check();
+    const opening = b.s.login();
+    await until('waiting', () => b.now().login === 'waiting');
+    if (by === 'lost') b.fakes.last().exit(1);
+    else await b.s.cancelLogin();
+    const before = [b.now().login, b.now().detail];
+    fail();
+    await opening;
+    assert.deepEqual([b.now().login, b.now().detail], before);
+    assert.deepEqual(before, by === 'lost' ? ['failed', 'the connector ended before the sign-in completed'] : ['cancelled', null]);
+  }
+  // Positive control: it cannot be opened while the sign-in is waiting: said, and it goes on waiting.
+  const nob = subscription(WSL, { openExternal: () => Promise.reject(new Error('no browser')) });
+  await nob.s.check();
+  await nob.s.login();
+  assert.deepEqual([nob.now().login, nob.now().detail], ['waiting', 'the browser could not be opened; the sign-in is still waiting']);
+});
+
+test('a question refused as not signed in by a connector that is fenced in the same chunk is not said as signed out: the connector is not available', async () => {
+  const { s, fakes, now, said } = subscription();
+  await s.check();
+  const c = fakes.last();
+  const done = s.ask(request());
+  await until('sent', () => c.asks().length === 1);
+  const from = said.length;
+  c.stdout.write(`${JSON.stringify({ id: c.asks()[0]!.id, error: { code: 'unauthenticated', message: 'raw' } })}\n${'x'.repeat(256 * 1024 + 1)}`);
+  assert.deepEqual(await done, { status: 'refused', code: 'unauthenticated', reason: 'ChatGPT is not signed in (sign in from the control window)' });
+  assert.deepEqual([now().state, fakes.made.length], ['unavailable', 1]);
+  assert.equal(said.slice(from).some((x) => x.mode === 'managed' && x.state === 'signed_out'), false);
+  // Positive control: the same refusal from a connector that goes on running is said as signed out.
+  const live = subscription();
+  await live.s.check();
+  const asked = live.s.ask(request());
+  await until('sent', () => live.fakes.last().asks().length === 1);
+  live.fakes.last().fail(live.fakes.last().asks()[0]!.id, 'unauthenticated');
+  await asked;
+  assert.equal(live.now().state, 'signed_out');
+});
+
 test('a cancel or a Stop is a confirmed interruption only by its own exact receipt; anything else, cancelled:false included, stays not confirmed', async () => {
   const outcomeOf = async (set: (c: FakeConnector) => void, by: 'cancel' | 'stop'): Promise<AskOutcome> => {
     const { s, fakes } = subscription();

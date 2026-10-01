@@ -183,19 +183,22 @@ export class Subscription {
         buffered = [];
         size = 0;
         from = nl + 1;
-        if (line.length > LINE_FROM_CONNECTOR_MAX) return void this.violation(child);
+        if (line.length > LINE_FROM_CONNECTOR_MAX) return void this.fence(child);
         this.line(line.toString('utf8'));
       }
       const rest = chunk.subarray(from);
       size += rest.length;
-      if (size > LINE_FROM_CONNECTOR_MAX) return void this.violation(child); // more than one line may be: not kept
+      if (size > LINE_FROM_CONNECTOR_MAX) return void this.fence(child); // more than one line may be: not kept
       if (rest.length > 0) buffered.push(rest);
     });
     this.child = child;
     return child;
   }
-  /** A line that is not the envelope's: nothing more of the child is read, what was out gets no answer, and it is ended. */
-  private violation(child: Child): void {
+  /**
+   * The child is ended here (a line that is not the envelope's, or the quit): from now nothing more of it is read,
+   * what was out gets no answer, and its end is waited for in `closing`.
+   */
+  private fence(child: Child): void {
     if (child.gone) return;
     child.gone = true;
     this.lost(child);
@@ -221,6 +224,10 @@ export class Subscription {
     if (m['method'] === 'connection/login/completed') this.loginCompleted(m['params']);
     // The connector says the account changed (signed in or out elsewhere in this product's state): read again.
     if (m['method'] === 'connection/changed' && this.state !== 'not_checked') void this.check();
+  }
+  /** Whether `child` is still the connector this app speaks to (not ended here, not gone, not replaced). */
+  private live(child: Child | null): boolean {
+    return child !== null && this.child === child && !child.gone;
   }
   /** The child is gone: what was out gets no answer (or, if it never started, was not sent). */
   private lost(child: Child, started = true): void {
@@ -262,17 +269,6 @@ export class Subscription {
       });
     });
   }
-  private async end(): Promise<void> {
-    const child = this.child;
-    if (!child) return;
-    if (child.gone) return;
-    await endChild(child.proc, () => child.proc.stdin?.end(), child.exited, this.o.end_ms ?? 5_000, 'wsl');
-    if (!child.gone) {
-      // It did not end, nor when killed: it is no longer this app's child to speak to.
-      child.gone = true;
-      this.lost(child);
-    }
-  }
 
   // ---- the connection ------------------------------------------------------------------------------------------
   /** Reads the sign-in state, the plan, the quota windows and the models (the connector's handshake). */
@@ -282,16 +278,26 @@ export class Subscription {
     this.state = 'checking';
     this.detail = null;
     this.say();
-    // Only reads: no sign-in and no question is ever started by this. Bounded, so a connector that says "changed" at
-    // every read cannot keep this app reading; the last read then stands until the user checks again.
-    let r: Reply;
-    let reads = 0;
-    do {
+    this.readAgain = false;
+    const first = this.request('connection/read', {}, this.o.request_ms ?? 30_000); // may start the connector (the user's Check)
+    const child = this.child; // the connector it went to: what follows is this one's, or nothing
+    let r = await first;
+    // Only reads: no sign-in and no question is ever started by this, and no connector either (a re-read goes only
+    // to the one that said it changed). Bounded, so a connector that says "changed" at every read cannot keep this
+    // app reading; the last read then stands until the user checks again.
+    for (let reads = 1; r.ok && this.live(child) && this.readAgain && reads < READS_MAX; reads += 1) {
       this.readAgain = false;
-      r = await this.request('connection/read', {}, this.o.request_ms ?? 30_000);
-    } while (this.readAgain && r.ok && ++reads < READS_MAX);
+      r = await this.request('connection/read', {}, this.o.request_ms ?? 30_000, true);
+    }
     const changedSince = this.readAgain && r.ok; // it changed again during the last read: what was read may be older
     this.readAgain = false;
+    if (r.ok && !this.live(child)) {
+      // It answered, and was then ended or lost (a line that is not the envelope's, its exit, the quit): what it said
+      // is not said as how the account is now, and no other connector is started for it.
+      this.state = 'unavailable';
+      this.detail = 'the connector was lost while the account was being read';
+      return this.say();
+    }
     const account = r.ok ? readAccount(r.result) : null;
     if (!account) {
       this.state = 'unavailable';
@@ -326,7 +332,10 @@ export class Subscription {
     this.detail = null;
     this.earlyLogins = [];
     this.say();
-    const r = await this.request('connection/login/start', {}, this.o.request_ms ?? 30_000);
+    const started = this.request('connection/login/start', {}, this.o.request_ms ?? 30_000);
+    const child = this.child;
+    const r = await started;
+    if (r.ok && !this.live(child)) return; // it answered, and was then ended or lost: said as failed already; nothing is opened
     const early = this.earlyLogins.splice(0);
     const result = r.ok && typeof r.result === 'object' && r.result !== null ? (r.result as Record<string, unknown>) : null;
     const id = result ? text(result['login_id'], 128) : null;
@@ -352,6 +361,7 @@ export class Subscription {
     try {
       await this.o.openExternal(url);
     } catch {
+      if (this.loginId !== id || this.loginState !== 'waiting') return; // over meanwhile (lost, cancelled, completed): what was said stands
       this.detail = 'the browser could not be opened; the sign-in is still waiting';
       this.say();
     }
@@ -409,7 +419,9 @@ export class Subscription {
     const a: Asking = { id: request.request_id, session, cancelled: false, interrupts: [] };
     this.asking = a;
     this.say();
-    const r = await this.request('ask/start', { request, model: this.model }, this.o.ask_ms ?? 300_000);
+    const sent = this.request('ask/start', { request, model: this.model }, this.o.ask_ms ?? 300_000);
+    const child = this.child; // the connector it went to
+    const r = await sent;
     // Given up here with no answer: the turn is interrupted, in the child that has it (never a new one).
     if (!r.ok && 'lost' in r && r.lost === 'no_answer' && !a.cancelled) void this.request('ask/cancel', { request_id: a.id }, this.o.request_ms ?? 30_000, true);
     // Cancelled, or its session stopped, while it was out: whatever came is not shown. Whether ChatGPT stopped
@@ -430,7 +442,8 @@ export class Subscription {
     if ('lost' in r) return r.lost === 'not_sent' ? { status: 'refused', code: 'unavailable', reason: 'the connector could not be reached, so the question was not sent' } : { status: 'uncertain', reason: 'no answer came; whether ChatGPT worked on the question is not known' };
     if (r.code === 'cancelled') return { status: 'cancelled', uncertain: false };
     if (r.code === 'interrupt_unconfirmed') return { status: 'cancelled', uncertain: true };
-    if (r.code === 'unauthenticated') {
+    if (r.code === 'unauthenticated' && this.live(child)) {
+      // (a connector ended or lost since is said as not available, not as signed out)
       this.state = 'signed_out';
       this.say();
     }
@@ -458,10 +471,10 @@ export class Subscription {
     }
   }
 
-  /** At quit: the child is ended (bounded); resolves when it is gone or at the bound. */
+  /** At quit: the child is ended (bounded); resolves when it is gone or at the bound. What it still writes is not read. */
   async quit(): Promise<void> {
     if (this.asking) this.asking.cancelled = true;
-    await this.end();
+    if (this.child) this.fence(this.child);
     await this.closing;
   }
 }

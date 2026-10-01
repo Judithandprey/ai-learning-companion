@@ -104,7 +104,13 @@ was sent).
 - **A stopped capture session** is remembered for the app's life: its question out is cancelled, the connector is
   told (`session/stop`) by the Stop itself, and no question of it is ever sent again, whatever child runs.
 - **A lost connector** is never replaced by the app itself, not even to cancel what it had: only the user's Check or
-  Sign in starts one. A line that is not the envelope's fences the child at once (nothing more of it is read).
+  Sign in starts one. A line that is not the envelope's fences the child at once (nothing more of it is read), and
+  so does the app's quit.
+- **What a connector answered belongs to that connector.** An account read, a re-read after a change, a sign-in's
+  start and a question remember the connector they went to. If it answered and was then fenced, lost or ended
+  (even in the same chunk of its output), nothing it said is published as the state now: the account is said as not
+  available ("the connector was lost while the account was being read"), no sign-in page is opened, no re-read is
+  sent, and no other connector is started.
 - **A sign-in's completion** that the connector writes together with its start's answer is taken as that sign-in's.
 - **End**: the end of its input, a bounded wait, then this child alone is killed. The app's quit waits for it,
   and for a child that was fenced here and is still ending. A fenced child's own end is seen as its end: it is not
@@ -159,7 +165,7 @@ All with a **synthetic** connector: a stand-in that speaks the envelope in-proce
 behaving as the released connector does for cancel and Stop) and a small real child process for the pipes
 (`tests/fake-connector.mjs`). No Codex, no ChatGPT, no sign-in, no network. Every "answer" is text a test wrote.
 
-- `tests/subscription.test.ts` (18 at `68b4cd9`, 21 now): the question, rectangle, account, sign-in address and provenance rules (every
+- `tests/subscription.test.ts` (18 at `68b4cd9`, 21 at `c977df5`, 24 now): the question, rectangle, account, sign-in address and provenance rules (every
   member of the provenance changed in turn; a `__proto__` stand-in; an answer of 32,000 astral characters); the
   configuration; nothing started before a check; the exact launch, its `stdio` and environment; the sign-in (opened
   only on the press, only at an official address; completion, failure, cancelled elsewhere, another product's
@@ -264,6 +270,52 @@ behaviour:
 on a real system:** the retry when Windows signs out or shuts down (the handlers are exercised under the test
 fakes only), and the Save button being pressable after a Stop in WRITE or ASK mode, where the overlay stops taking
 input (the overlay is destroyed within the Stop's bound; the control window then says what is unwritten).
+
+## Follow-up after the lead's review of `c977df5` (the fence and the coalesced read)
+
+One commit after `c977df5`, in `apps/windows/src/main/subscription.ts`, its test file and this folder only.
+Synthetic connector only.
+
+**The lead's finding.** In one chunk of the connector's output: `connection/changed`, a valid `connection/read`
+answer, then an over-long line. The over-long line fenced the connector before the read's continuation ran; the
+continuation then saw "answered" and "changed", sent the re-read, and so started a **second connector by itself** and
+published `signed_in`. Reproducer `/tmp/windows-subscription-correction-fence-probe.ts`: `spawn_count` 2.
+
+**What it does now.**
+- `check()` remembers the connector its first read went to. A re-read goes only to that connector, while it is
+  still this app's (`request(..., running)`, which never starts one).
+- If a read was answered and that connector is no longer this app's, the state is `unavailable` with "the connector
+  was lost while the account was being read". Nothing of the answer (state, plan, limits, models) is published.
+- The app's quit fences the connector at once, as a line that is not the envelope's does (`fence()`), instead of
+  reading it until its exit. The quit still waits for its end, bounded.
+- The same rule for the other continuations in that file, found by the check of this follow-up (same class, each
+  with a regression): a sign-in whose start was answered by a connector then fenced opens no page and is said as
+  failed; a question refused as `unauthenticated` by a connector then fenced is not said as "signed out"; a browser
+  that cannot be opened is not said as "the sign-in is still waiting" once that sign-in is over.
+
+**The lead's reproducer on the corrected tree** (its two assertions of the defect taken out): `spawn_count` 1, one
+`connection/read`, the original child exited, state `unavailable`.
+
+**Regressions** in `tests/subscription.test.ts` (21 to 24 cases):
+- the exact chunk above: one connector, one read, `unavailable`, no `signed_in`/`signed_out`/`unknown` said at any
+  moment, a question refused without starting one, and only the user's Check starting another;
+- a valid answer followed by the fence without any change; the fence during the re-read; the connector exiting as
+  its answer is read; the quit with the first read out and with the re-read out, where the connector answers
+  before it ends;
+- **positive control**: the same chunk without the fence is one more read to the same connector, then published;
+- the sign-in (fence, quit, and the control), the browser text (lost, cancelled, and the control), and the question
+  (fence, and the control).
+- Each fails on `c977df5`'s code; 9 mutants of the follow-up, all killed. Three more were equivalent: `live()`'s two
+  conditions hold together in every state the code reaches, and a re-read is sent only after `live()` held.
+
+**Runs.** The affected files (`subscription.test.ts`, `app-ask.test.ts`): 55 tests, 55 pass, on Linux
+(`evidence/windows-subscription-ask/linux-fence.txt`) and on Windows, Electron 44.5.1 run as Node, no window
+(`windows-fence.txt`); receipts `*-fence.json` carry the hashes of the files run, which are this commit's. The
+whole suite on Linux against the Backend checkout at `1f7ec5b`: 296 tests, 291 pass, 0 fail, 5 skipped. `tsc` and
+the build pass.
+
+**Check of this follow-up.** A two-lens check with a second reviewer per finding: 6 findings, all confirmed, all
+fixed above (four were the quit not being a fence, one the question's "signed out", one the browser text).
 
 ## Launch steps, element ids and evidence paths (for the first real check, on the released candidate)
 
