@@ -6,11 +6,19 @@
 // against that contract's example in the tests. Nothing here captures, sends or shows anything.
 
 import { hasLoneSurrogate } from './frame-ingress.ts';
-import { PIXELS_MAX, PNG_MAX_BYTES, type Assistance, type Model, type Rect } from './subscription-ask.ts';
 
 export const LIVE_VERSION = 'lc-subscription-live/1';
-/** One line from the connector in this version (the ADR's bound). */
+/** One line from the connector in this version, and one line to it (the ADR's bounds). */
 export const LIVE_LINE_FROM_CONNECTOR_MAX = 1024 * 1024;
+export const LINE_TO_CONNECTOR_MAX = 12 * 1024 * 1024;
+/** The bounds on the whole display's picture (the connector's own). */
+export const PNG_MAX_BYTES = 8 * 1024 * 1024;
+export const PIXELS_MAX = 16_000_000;
+/** How much the user allows a response to disclose. A circle alone never asks for more than a hint. */
+export const ASSISTANCE = ['hint', 'explain', 'full_solution'] as const;
+export type Assistance = (typeof ASSISTANCE)[number];
+export type Rect = { x: number; y: number; width: number; height: number };
+export type Model = { id: string; label: string; image_input: boolean; default: boolean };
 export const HISTORY_MAX = 24;
 export const HISTORY_TEXT_MAX = 4000;
 export const HISTORY_TOTAL_MAX = 32_000;
@@ -117,12 +125,18 @@ export function focusOf(region: Rect, frame: { width: number; height: number; se
   return { frame_seq: frame.seq, region_dip: { x: r.x, y: r.y, width: r.width, height: r.height }, region_px: px };
 }
 
-/** The user's words as they are sent: trimmed; null when empty, too long, or holding half of a surrogate pair. */
+/**
+ * The user's words as they are sent: trimmed; null when empty, over the limit, or holding half of a surrogate pair
+ * (text that is not valid Unicode cannot be written to the connector as it is; nothing of it is repaired).
+ */
 export function userTextOf(value: unknown): string | null {
   if (typeof value !== 'string') return null;
   const q = value.trim();
   return q.length > 0 && q.length <= USER_TEXT_MAX && !hasLoneSurrogate(q) ? q : null;
 }
+/** Why `userTextOf` refuses the words, in fixed words. */
+export const userTextProblem = (value: unknown): string =>
+  typeof value === 'string' && hasLoneSurrogate(value.trim()) ? 'the question holds a damaged character (half of a pair), so it cannot be sent as it is; type that part again' : 'the question is empty or too long';
 
 /** What is wrong with a turn as this app would send it (the contract's own rules), or null. Nothing is repaired. */
 export function turnProblem(t: Turn, pngBytes: number): string | null {
@@ -350,3 +364,28 @@ export function readLiveError(v: unknown): LiveError {
  * fate is not known. Nothing is sent again by itself after one of these; the user starts the AI again.
  */
 export const suspends = (e: LiveError): boolean => e.submission === 'unknown' || !['busy', 'cancelled', 'stale_context', 'budget_reached', 'invalid_request'].includes(e.code);
+
+/**
+ * The connector's closed codes as said for an account read and for a sign-in's start: no turn is involved in either,
+ * so nothing is said of one. (Its own message is never shown.)
+ */
+export const readErrorText = (code: string): string =>
+  ({ busy: 'the connector is busy, so the account was not read; check again', unavailable: LIVE_ERROR_TEXT['unavailable']!, unauthenticated: 'the account could not be read: the connector says ChatGPT is not signed in' })[code] ?? 'the account could not be read';
+/** The connector's closed codes as said for a Start of the AI session that it refused (no request is involved). */
+export const startErrorText = (code: string): string =>
+  ({ busy: 'the connector is busy (a sign-in is pending in it, or an earlier request is still being ended), so the AI was not started; try again in a moment', session_stopped: 'the connector refused that session as already used, so the AI was not started' })[code] ?? LIVE_ERROR_TEXT[code] ?? LIVE_ERROR_TEXT['failed']!;
+export const loginErrorText = (code: string): string =>
+  ({ busy: 'a sign-in is already pending in the connector, or the AI session is running, so no sign-in was started', unavailable: LIVE_ERROR_TEXT['unavailable']! })[code] ?? 'the sign-in could not be started';
+
+/** Whether a sign-in URL is one this app opens: https on openai.com or chatgpt.com (or a subdomain), nothing else. */
+export function officialLoginUrl(value: unknown): string | null {
+  if (typeof value !== 'string' || value.length > 4096) return null;
+  let u: URL;
+  try {
+    u = new URL(value);
+  } catch {
+    return null;
+  }
+  if (u.protocol !== 'https:' || u.username !== '' || u.password !== '' || u.port !== '') return null;
+  return /(^|\.)(openai\.com|chatgpt\.com)$/.test(u.hostname) ? u.toString() : null;
+}

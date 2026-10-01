@@ -13,10 +13,9 @@ import { fingerprintToBase64 } from '../src/shared/samples.ts';
 import * as retention from '../src/shared/retention.ts';
 import { CaptureLink, readLinkConfig, type LinkOptions } from '../src/main/capture-link.ts';
 import { earlierNotes, readConnectorConfig, Subscription, type SubscriptionOptions } from '../src/main/subscription.ts';
-import { toFramePixels } from '../src/shared/samples.ts';
-import { ASSISTANCE, contextProblem, PNG_MAX_BYTES, questionOf, questionProblem } from '../src/shared/subscription-ask.ts';
+import * as live from '../src/shared/live.ts';
 import { clampRate, isPlace, isSurface, NO_PREFERENCES, placesOf, readPreferences, storedPreferences, withPlace } from '../src/shared/placement.ts';
-import { speechCulture, speechPieces } from '../src/shared/voice.ts';
+import { speechCultures, speechPieces } from '../src/shared/voice.ts';
 import { appSource } from './source.ts';
 
 export const HERE = path.dirname(url.fileURLToPath(import.meta.url));
@@ -91,7 +90,8 @@ export class FakeWindow extends EventEmitter {
 }
 
 export type Review = {
-  start(sourceId: string): Promise<{ ok: boolean; reason?: string }>;
+  /** `ai`: the user's Start also starts the AI's observation, within these bounds. */
+  start(sourceId: string, ai?: { policy: live.Policy } | null): Promise<{ ok: boolean; reason?: string }>;
   end(reason: string): void;
   current(): unknown;
   control(): unknown;
@@ -210,19 +210,14 @@ export function harness(options: { env?: Record<string, string>; /** The app dat
         super({ ...o, ...options.subscription });
         subscriptions.push(this);
         if (options.leakySubscription) {
-          this.cancel = () => undefined;
+          this.interrupt = () => undefined;
           this.stopSession = () => undefined;
         }
       }
     },
     readConnectorConfig,
     earlierNotes,
-    toFramePixels,
-    ASSISTANCE,
-    contextProblem,
-    PNG_MAX_BYTES,
-    questionOf,
-    questionProblem,
+    ...live,
     clampRate,
     isPlace,
     isSurface,
@@ -231,7 +226,7 @@ export function harness(options: { env?: Record<string, string>; /** The app dat
     readPreferences,
     storedPreferences,
     withPlace,
-    speechCulture,
+    speechCultures,
     speechPieces,
     shell: { openExternal: async (url: string) => void opened.push(url) },
     Buffer,
@@ -258,9 +253,10 @@ export const plain = (v: unknown): unknown => JSON.parse(JSON.stringify(v));
 export const settle = async (): Promise<void> => {
   for (let i = 0; i < 5; i++) await Promise.resolve();
 };
-export async function running(h: H): Promise<Session> {
+/** A capture started on the fake display; with `ai`, the AI's observation too (its session starts in a later task). */
+export async function running(h: H, ai: { policy: live.Policy } | null = null): Promise<Session> {
   await settle(); // the app starts
-  assert.deepEqual(plain(await h.start('screen:1:0')), { ok: true });
+  assert.deepEqual(plain(await h.start('screen:1:0', ai)), { ok: true });
   return h.current() as Session;
 }
 export function grantPermission(h: H, s: Session): boolean {

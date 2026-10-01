@@ -11,6 +11,6 @@ export function controlPage() {
   const nodes: Record<string, Node> = { ai: node(HEADER, false), link: node() };
   const ctx = { $: (id: string) => (nodes[id] ??= node()), nodes, document: { createElement: () => ({}) } };
   vm.createContext(ctx);
-  vm.runInContext(`${showLink}\nglobalThis.showLink = showLink; globalThis.showSubscription = showSubscription;`, ctx);
-  return ctx as typeof ctx & { showLink: (l: unknown) => void; showSubscription: (s: unknown) => void };
+  vm.runInContext(`${showLink}\nglobalThis.showLink = showLink; globalThis.showSubscription = showSubscription; globalThis.quotaText = quotaText; globalThis.liveLine = liveLine; globalThis.policyOf = policyOf;`, ctx);
+  return ctx as typeof ctx & { showLink: (l: unknown) => void; showSubscription: (s: unknown) => void; /** The quota as ChatGPT states it, as the control window says it. */ quotaText: (q: unknown) => string; /** The AI's session as one line. */ liveLine: (l: unknown, nowMs: number) => string; /** The session's bounds as typed (requests, minutes, seconds), or what is wrong with them. */ policyOf: (requests: number, minutes: number, seconds: number) => unknown };
 }

@@ -4,7 +4,10 @@ const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('lc', {
   listDisplays: () => ipcRenderer.invoke('lc:list-displays'),
   sessionState: () => ipcRenderer.invoke('lc:session-state'),
-  start: (sourceId) => ipcRenderer.invoke('lc:start', String(sourceId)),
+  // Start: the capture; with `ai` (the box beside it, and the bounds shown there), the AI's observation too.
+  start: (sourceId, ai) => ipcRenderer.invoke('lc:start', String(sourceId), ai ?? null),
+  liveStart: (policy) => ipcRenderer.invoke('lc:live-start', policy),
+  liveStop: () => ipcRenderer.send('lc:live-stop'),
   stop: () => ipcRenderer.invoke('lc:stop'),
   listInk: () => ipcRenderer.invoke('lc:list-ink'),
   openInk: (id) => ipcRenderer.invoke('lc:open-ink', String(id)),

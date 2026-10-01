@@ -3,7 +3,7 @@
 // self-test.mjs and launch.mjs.
 
 import { execFileSync } from 'node:child_process';
-import { mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -23,13 +23,20 @@ export function copyTree(from, to) {
   }
 }
 
-/** Builds, stages into %TEMP%\<name> (replacing an earlier stage) and returns its paths and electron.exe. */
-export function buildAndStage(name) {
+/**
+ * Builds, stages into %TEMP%\<name> and returns its paths and electron.exe. An earlier stage of that name is
+ * replaced, unless `fresh` is set: then an existing directory of that name is refused and left as it is (a stage
+ * that someone may be running, or may want to go back to, is never written over).
+ */
+export function buildAndStage(name, { fresh = false } = {}) {
+  // A fresh stage is built from nothing: no file of an earlier build (of a module since removed, say) goes into it.
+  if (fresh) rmSync(join(APP, 'dist'), { recursive: true, force: true });
   run(process.execPath, [join(APP, 'node_modules', 'typescript', 'bin', 'tsc'), '-p', join(APP, 'tsconfig.json')], { stdio: 'inherit', cwd: APP });
   run(process.execPath, [join(APP, 'scripts', 'copy-static.mjs')], { cwd: APP });
   const electron = run(process.execPath, [join(APP, 'scripts', 'windows-runtime.mjs')], { cwd: APP });
   const winTemp = run('cmd.exe', ['/c', 'echo %TEMP%'], { cwd: '/mnt/c' });
   const stage = join(run('wslpath', ['-u', winTemp]), name);
+  if (fresh && existsSync(stage)) throw new Error(`a stage named ${name} already exists; it is left as it is (choose another name)`);
   rmSync(stage, { recursive: true, force: true });
   mkdirSync(stage, { recursive: true });
   copyTree(join(APP, 'package.json'), join(stage, 'package.json'));

@@ -16,9 +16,11 @@ contextBridge.exposeInMainWorld('lc', {
   stopped: (unsaved) => ipcRenderer.send('lc:stopped', unsaved == null ? null : String(unsaved)),
   onLoadDoc: (fn) => ipcRenderer.on('lc:load-doc', (_e, doc) => fn(doc)),
   onStop: (fn) => ipcRenderer.on('lc:stop', (_e, reason) => fn(reason)),
-  // ASK with the managed ChatGPT subscription: a selection is retained; a question is sent only by askSubmit.
+  // ASK with the AI's session: a circle is kept with the whole frame it is on (and a small hint asked for at once,
+  // when the session runs); a follow-up is sent only by askSubmit, with a fresh whole frame.
   askSelection: (facts, png, ink) => ipcRenderer.invoke('lc:ask-selection', facts, png, ink ?? null),
-  askSubmit: (selectionId, question, assistance) => ipcRenderer.invoke('lc:ask-submit', String(selectionId), String(question), String(assistance)),
+  askSubmit: (selectionId, question, assistance, facts, png, ink) => ipcRenderer.invoke('lc:ask-submit', String(selectionId), String(question), String(assistance), facts, png, ink ?? null),
+  onLive: (fn) => ipcRenderer.on('lc:live', (_e, live) => fn(live)),
   askCancel: (selectionId) => ipcRenderer.send('lc:ask-cancel', String(selectionId)),
   askClosed: () => ipcRenderer.send('lc:ask-closed'),
   askPresented: (selectionId, requestId, shown) => ipcRenderer.invoke('lc:ask-presented', String(selectionId), String(requestId), shown === true),

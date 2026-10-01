@@ -21,3 +21,7 @@ button:disabled { opacity: .4; cursor: default; }
 .contexts li { padding: 6px 0; border-bottom: 1px solid #e5e5e5; font-size: 12px; }
 .contexts img { display: block; max-width: 100%; border: 1px solid #ccc; margin-bottom: 4px; }
 button.plain { background: #fff; color: #0a84ff; }
+.aiSession { border: 1px solid #d0d0d0; border-radius: 8px; margin: 8px 0 0; padding: 6px 10px 8px; font-size: 12px; }
+.aiSession legend { font-weight: 600; padding: 0 4px; }
+.aiSession .bounds { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; margin: 4px 0; }
+.aiSession input[type="number"] { width: 5em; font: inherit; }

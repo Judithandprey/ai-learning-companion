@@ -74,7 +74,7 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
    * `luma`, that grayscale 1280×800 screen: each frame taken keeps its own pixels, and canvases read back the area
    * average of what was drawn into them, so local changes and separately pinned frames are real.
    */
-  const scene = { shade: 20, luma: null as Uint8Array | null, exactPng: false };
+  const scene = { shade: 20, luma: null as Uint8Array | null, exactPng: false, /** Encoding a picture fails from now (a test's fault). */ encodingFails: false };
   if (policy) (s as unknown as { retention: { policy: retention.RetentionPolicy } }).retention.policy = policy; // the main process enforces the same
   const nodes = new Map<string, FakeNode>();
   const events = new Map<string, (...a: unknown[]) => void>();
@@ -192,6 +192,7 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
       return null;
     }
     async convertToBlob() {
+      if (scene.encodingFails) throw new Error('the encoder failed (injected)');
       if (encoding.gate) await encoding.gate;
       // Whole-frame canvases give a PNG of their size (retention checks it); small ones the context picture.
       // `exactPng` (ASK selections): a small canvas too gives a PNG of its own size.
@@ -218,7 +219,7 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
   const buttons = ['NAV', 'ASK', 'WRITE'].map((m) => Object.assign(new FakeNode(), { dataset: { mode: m } }));
   const radios = ['hint', 'explain', 'full_solution'].map((v, i) => Object.assign(new FakeNode(), { value: v, checked: i === 0 }));
   const lc = {
-    ready: async () => ({ ...(plain(await h.handlers['lc:overlay-ready']!({ sender: s.overlay.webContents })) as { work_area: unknown; places: unknown; speech_rate: number; voice: unknown }), display: s.doc.display, doc: plain(s.doc), source_id: 'screen:1:0', address_sha256: crypto.createHash('sha256').update(s.doc.id).digest('hex'), retention_policy: policy, ...(plain(await h.handlers['lc:overlay-ready']!({ sender: s.overlay.webContents })) as { development: boolean; subscription: boolean }) }),
+    ready: async () => ({ ...(plain(await h.handlers['lc:overlay-ready']!({ sender: s.overlay.webContents })) as { work_area: unknown; places: unknown; speech_rate: number; voice: unknown; live: unknown }), display: s.doc.display, doc: plain(s.doc), source_id: 'screen:1:0', address_sha256: crypto.createHash('sha256').update(s.doc.id).digest('hex'), retention_policy: policy, ...(plain(await h.handlers['lc:overlay-ready']!({ sender: s.overlay.webContents })) as { development: boolean; subscription: boolean }) }),
     interactive: (on: boolean) => void interactive.push(on),
     place: async (surface: string, place: unknown) => plain(await h.handlers['lc:place']!({ sender: s.overlay.webContents }, surface, plain(place))),
     speechRate: async (rate: number) => plain(await h.handlers['lc:speech-rate']!({ sender: s.overlay.webContents }, rate)),
@@ -244,12 +245,17 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
     onStop: (f: (...a: unknown[]) => void) => events.set('stop', f),
     onLoadDoc: (f: (...a: unknown[]) => void) => events.set('load', f),
     // ASK with the subscription: as over IPC (bytes cross as Uint8Array, the rest as plain data).
-    askSelection: async (facts: unknown, png: Uint8Array, inkBytes: Uint8Array) => plain(await h.handlers['lc:ask-selection']!({ sender: s.overlay.webContents }, plain(facts), Uint8Array.from(png), Uint8Array.from(inkBytes))),
-    askSubmit: async (id: string, question: string, assistance: string) => {
-      const answer = plain(await h.handlers['lc:ask-submit']!({ sender: s.overlay.webContents }, id, question, assistance));
+    askSelection: async (facts: unknown, png: Uint8Array, inkBytes: Uint8Array) => {
+      const answer = plain(await h.handlers['lc:ask-selection']!({ sender: s.overlay.webContents }, plain(facts), Uint8Array.from(png), Uint8Array.from(inkBytes)));
       await submitAck; // the main process has answered; a test may hold its answer back on the way to the overlay
       return answer;
     },
+    askSubmit: async (id: string, question: string, assistance: string, facts: unknown, png: Uint8Array, inkBytes: Uint8Array) => {
+      const answer = plain(await h.handlers['lc:ask-submit']!({ sender: s.overlay.webContents }, id, question, assistance, plain(facts), Uint8Array.from(png), Uint8Array.from(inkBytes)));
+      await submitAck;
+      return answer;
+    },
+    onLive: (f: (...a: unknown[]) => void) => events.set('live', f),
     askCancel: (id: string) => void h.handlers['lc:ask-cancel']!({ sender: s.overlay.webContents }, id),
     askClosed: () => void h.handlers['lc:ask-closed']!({ sender: s.overlay.webContents }),
     askPresented: async (id: string, request: string, shown: boolean) => plain(await h.handlers['lc:ask-presented']!({ sender: s.overlay.webContents }, id, request, shown)),
@@ -302,7 +308,7 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
   const review = (sandbox as unknown as { review: Review }).review;
   review.frame({ bitmap: frame(), seq: 1, at: '2026-09-30T12:00:00.000Z', presented: 1, presentedAt: performance.now() });
   let submitAck: Promise<void> = Promise.resolve();
-  /** Holds the answers to lc:ask-submit back from the overlay until the returned function is called. */
+  /** Holds the answers to lc:ask-selection and lc:ask-submit back from the overlay until the returned function is called. */
   const holdSubmitAck = (): (() => void) => {
     let release = (): void => undefined;
     submitAck = new Promise((r) => (release = r));
@@ -316,6 +322,7 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
     if (args[0] === 'lc:stop') queueMicrotask(() => events.get('stop')!(...args.slice(1)));
     if (args[0] === 'lc:work-area') queueMicrotask(() => events.get('work-area')!(...(plain(args.slice(1)) as unknown[])));
     if (args[0] === 'lc:ask-result') queueMicrotask(() => events.get('ask-result')!(...(plain(args.slice(1)) as unknown[])));
+    if (args[0] === 'lc:live') queueMicrotask(() => events.get('live')?.(...(plain(args.slice(1)) as unknown[])));
   };
   let t = 0;
   const pointer = (name: string, id = 1, x = 10, y = 10): void => node('ink').handlers.get(name)!({ pointerId: id, isPrimary: true, pointerType: 'pen', button: 0, buttons: 1, clientX: x, clientY: y, timeStamp: (t += 10), pressure: 0.5 });

@@ -15,10 +15,13 @@
 //   No AI is connected. Nothing is sent anywhere, except in an explicitly enabled development mode
 //   (LC_DEV_CAPTURE_HOST, capture-link.ts): there each retained frame and ink original of a Start is also stored in a
 //   local test capture service through the released local host, and the control window says so.
-// - No AI watches the screen. Only when the managed ChatGPT subscription is explicitly configured
-//   (LC_SUBSCRIPTION_CONNECTOR, subscription.ts), and only when the user presses Ask on a selection, that one picture
-//   and the user's question are sent to ChatGPT through the official Codex app server; the selection, the request
-//   and its outcome are kept under the session's capture folder (asks/).
+// - An AI observes the chosen display only when the managed ChatGPT subscription is explicitly configured
+//   (LC_SUBSCRIPTION_CONNECTOR, subscription.ts), the user is signed in, and the user's own Start says so (the control
+//   window names it, with the session's bounds: requests and time). Then whole pictures of that display, with the
+//   user's ink, are given to ChatGPT through the official Codex app server as the screen changes (never every frame,
+//   never more than the session's bounds), and a circle in ASK asks for a small hint about that part with the whole
+//   display as its context. The session is never renewed by this app; a failure ends it until the user starts it
+//   again. What was sent and how it ended is kept under the session's capture folder (asks/, live.jsonl).
 // - Whole-display frames showing a material step are retained as files (userData/captures/<session>/:
 //   raw and composed PNGs by file SHA-256 under frames/, one manifest.jsonl line per retained, not
 //   retained, refused and ended event), within per-session caps; nothing retained is ever deleted.
@@ -32,13 +35,13 @@ import { release } from 'node:os';
 import { dirname, join, normalize, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { contextImages, forkDesktopInk, isSessionId, newDesktopInk, parseDesktopInk, PICTURE_BYTES_PER_SAVE, PICTURES_PER_SAVE, summarize, type DesktopDisplay, type DesktopInk, type DesktopInkSummary, type StrokeContext } from '../shared/desktop-ink.ts';
-import { toFramePixels, type DisplaySample } from '../shared/samples.ts';
-import { ASSISTANCE, contextProblem, PNG_MAX_BYTES, questionOf, questionProblem, type AskContext, type AskRequest, type Assistance } from '../shared/subscription-ask.ts';
+import type { DisplaySample } from '../shared/samples.ts';
+import { ASSISTANCE, boundedHistory, carryFocus, DEFAULT_POLICY, focusOf, GAPS_MAX, isPolicy, PNG_MAX_BYTES, provenanceOf, reserveOf, suspends, turnProblem, userTextOf, userTextProblem, wholeRegions, type Assistance, type Focus, type Gap, type HistoryEntry, type LiveContext, type Policy, type Provenance, type Trigger, type Turn } from '../shared/live.ts';
 import { DEFAULT_RETENTION_POLICY, pngSize, RETENTION_FORMAT, type RetentionPolicy } from '../shared/retention.ts';
 import { CaptureLink, readLinkConfig, type LinkStatus } from './capture-link.ts';
-import { earlierNotes, readConnectorConfig, Subscription, type AskOutcome, type ConnectorEnd, type SubscriptionStatus } from './subscription.ts';
+import { earlierNotes, readConnectorConfig, Subscription, type ConnectorEnd, type SubscriptionStatus, type TurnOutcome } from './subscription.ts';
 import { clampRate, isPlace, isSurface, NO_PREFERENCES, placesOf, readPreferences, storedPreferences, withPlace, type Preferences, type Rect } from '../shared/placement.ts';
-import { speechCulture, speechPieces, type Culture } from '../shared/voice.ts';
+import { speechCultures, speechPieces, type Culture } from '../shared/voice.ts';
 
 const HERE = dirname(fileURLToPath(import.meta.url)); // dist/apps/windows/src/main
 const DIST = normalize(join(HERE, '..', '..', '..', '..')); // dist/
@@ -85,6 +88,12 @@ type Session = {
   talk: { on: boolean; muted: boolean };
   /** The response being read aloud, or null. */
   reading: Reading | null;
+  /** The AI session of this capture (started by the user's Start; never renewed by this app), or null. */
+  live: Live | null;
+  /** A Start of the AI session is out. */
+  liveStarting: boolean;
+  /** Why this capture has no AI session, as it is said in the windows; null when one is running or was never asked for. */
+  liveOff: string | null;
 };
 type Retention = {
   readonly id: string;
@@ -146,7 +155,8 @@ export async function listDisplays(): Promise<DisplayChoice[]> {
 /** Before Windows 10 2004 (build 19041) content protection shows the window black in captures instead of leaving it out. */
 const exclusionUnsupported = (): boolean => process.platform === 'win32' && Number(release().split('.')[2] ?? 0) < 19041;
 
-export async function start(sourceId: string): Promise<{ ok: true } | { ok: false; reason: string }> {
+/** `ai`: the user's Start also starts the AI's observation of that display, within these bounds (null: capture only). */
+export async function start(sourceId: string, ai: { policy: Policy } | null = null): Promise<{ ok: true } | { ok: false; reason: string }> {
   writeUnrecordedEnds();
   if (current || starting) return { ok: false, reason: current ? 'a session is running; stop it first' : 'a session is starting' };
   if (exclusionUnsupported()) return { ok: false, reason: `this Windows version (${release()}) cannot leave the overlay out of the capture; Windows 10 version 2004 or later is needed` };
@@ -187,7 +197,7 @@ export async function start(sourceId: string): Promise<{ ok: true } | { ok: fals
   overlay.setIgnoreMouseEvents(true, { forward: true });
   const s: Session = { sourceId, display, overlay, doc: newDesktopInk(id, sha256(id), new Date().toISOString(), display), ignoring: true, samples: [], ending: false, capture: 'unused', opening: null, offered: null, shown: false,
     retention: { id, startedAt: new Date().toISOString(), policy: retentionPolicy, frames: 0, bytes: 0, notRetained: 0, refused: 0, unwritten: 0, headerWritten: false, validBytes: 0, pending: new Map(), answered: new Set(), unfinished: null, endRecorded: false },
-    progress: 0, ask: null, talk: { on: false, muted: false }, reading: null };
+    progress: 0, ask: null, talk: { on: false, muted: false }, reading: null, live: null, liveStarting: false, liveOff: null };
   current = s;
   lastEnd = null;
   link?.begin(id, captureDir(id)); // the explicit user Start is the only one that asks for a stream
@@ -223,6 +233,7 @@ export async function start(sourceId: string): Promise<{ ok: true } | { ok: fals
   overlay.setBounds(choice.bounds); // Windows fits a new window to the work area; cover the taskbar too
   s.shown = true;
   notifyControl();
+  if (ai) void startLive(s, ai.policy); // said in the windows as it starts, runs and ends
   return { ok: true };
 }
 
@@ -240,7 +251,7 @@ export function end(reason: string): void {
   if (!s || s.ending) return;
   s.ending = true;
   link?.stopSending(s.retention.id); // latched now: nothing new is sent after the Stop begins
-  stopAsking(s); // and no question of this session is sent or answered from here
+  stopAsking(s, 'the capture was stopped'); // and nothing of this session is sent or answered from here
   hush(s); // nor is anything more of a response read aloud
   lastEnd = reason;
   notifyControl();
@@ -295,7 +306,7 @@ function finish(s: Session, reason: string): void {
   if (current !== s) return;
   current = null;
   link?.stopSending(s.retention.id); // however the session ended
-  stopAsking(s);
+  stopAsking(s, 'the capture ended');
   hush(s);
   lastEnd ??= reason;
   // Records of questions that could not be written are written now; what still cannot be is said, not dropped silently.
@@ -318,7 +329,7 @@ function finish(s: Session, reason: string): void {
 
 const sessionInfo = (): unknown =>
   current
-    ? { running: true, starting: !current.shown, ending: current.ending, display: current.display, session_id: String(current.overlay.id) }
+    ? { running: true, starting: !current.shown, ending: current.ending, display: current.display, session_id: String(current.overlay.id), live: liveInfo(current) }
     : { running: false, starting: starting !== null, ended: lastEnd };
 function notifyControl(): void {
   if (!control || control.isDestroyed()) return;
@@ -697,6 +708,9 @@ function retainFrame(s: Session, factsValue: unknown, rawValue: unknown, compose
   if (!appendRetention(s, line)) return { ok: false, reason: 'the files were written, but the manifest line could not be', retry: true };
   r.frames += 1;
   notifyRetention(s);
+  // A frame kept as a material step is also what the AI is given to look at, when a session runs (as it is on this
+  // device: the composed picture when there is ink, else the raw one).
+  lookAt(s, composed ?? raw, new Date(f['taken_at'] as string).toISOString(), composed && f.composed ? { revision: f.composed['ink_revision'] as number, sha256: inkData?.sha256 ?? null } : { revision: null, sha256: null });
   return { ok: true };
 }
 /** Samples observed but not retained (a run of them, with the reason), as the overlay reports them. */
@@ -756,88 +770,307 @@ function continues(doc: DesktopInk): { ok: true } | { ok: false; reason: string 
   const kept = stored.doc.ink.history.every((op, i) => JSON.stringify(op) === JSON.stringify(doc.ink.history[i]));
   return kept ? { ok: true } : { ok: false, reason: 'the stored history is not the start of this one, so it was left untouched' };
 }
-// ---- ASK: a selection, and a question about it to the managed ChatGPT subscription ----------------------------------
-// Only with the subscription configured. A selection is the exact composed PNG the overlay showed, the facts of where
-// and when it was captured, and the exact ink document drawn into it, kept under the session's capture folder:
-// asks/<sha256>.png, ink/<sha256>.json, and asks/<selection>.json (the selection, each question about it and how it
-// ended; an answer's text is there, apart from the originals). Nothing is sent until the user presses Ask.
+// ---- the AI's session: looks at the whole display, within the user's own bounds ------------------------------------
+// Only with the subscription configured, signed in, and the user's own Start saying so. The session's bounds (how
+// many requests, how long, the least time between two unattended looks) are the user's, shown before Start; they are
+// never the provider's quota, and the session is never renewed or started again by this app. One line of what it did
+// is kept per event under the capture's folder (live.jsonl); the pictures it was given are the capture's own files.
+/** A whole frame of the display as it is given to the AI: where and when it was taken, and its picture. */
+type Frame = { readonly context: LiveContext; readonly image: Picture };
+type Live = {
+  readonly id: string;
+  readonly model: string;
+  readonly policy: Policy;
+  /** When it ends by its own time bound (this device's clock, from what the connector answered the Start). */
+  readonly expiresAt: number;
+  /** Requests that reached ChatGPT, or may have: each uses one of the session's requests, and none is given back. */
+  used: number;
+  /** This session's own count of whole frames taken for the AI, sent or not (one not sent is a gap). */
+  frames: number;
+  /** The frame the newest turn was sent with: a later turn is about this frame or a newer one, never an older. */
+  latest: Frame | null;
+  /** What was said and seen, for the turns to come (whole entries; what does not fit a turn is said there as left out). */
+  history: HistoryEntry[];
+  gaps: Gap[];
+  /** The newest frame waiting to be looked at (an older one waiting is a gap). */
+  waiting: Frame | null;
+  /** A look was sent less than the least time between two looks ago: the next one waits. */
+  cooling: boolean;
+  /** The last look the AI completed. */
+  seen: { at: string; frame_seq: number } | null;
+  /** Why unattended looks are no longer sent while the session goes on for the user's own requests, or null. */
+  paused: string | null;
+  /** Why the newest look was not sent or not taken, or null. */
+  missed: string | null;
+  /** Why the session ended, or null while it runs. Nothing is sent, shown or read aloud for it after that. */
+  ended: string | null;
+  /** Turns that are out. */
+  out: number;
+  /** Lines of live.jsonl that could not be written on this device. */
+  unwritten: number;
+};
+const liveFile = (id: string): string => join(captureDir(id), 'live.jsonl');
+/** One line of what the AI session did. A line that cannot be written is counted and said; nothing is sent again for it. */
+function appendLive(s: Session, live: Live | null, line: Record<string, unknown>): void {
+  try {
+    mkdirSync(captureDir(s.retention.id), { recursive: true });
+    appendFileSync(liveFile(s.retention.id), `${JSON.stringify({ at: new Date().toISOString(), ...line })}\n`);
+  } catch {
+    if (live) live.unwritten += 1;
+  }
+}
+/** The AI session as the windows are told: its state, its own bounds and what is left of them, and what it last saw. */
+function liveInfo(s: Session): unknown {
+  if (!subscription) return { state: 'none' };
+  if (s.liveStarting) return { state: 'starting' };
+  const l = s.live;
+  if (!l) return { state: 'off', reason: s.liveOff };
+  const max = l.policy.max_submissions;
+  // used_up: every request of the session is used. It sends nothing more, but it has not ended: its last response is
+  // still shown (and read) until its time is over, the user stops it, or the user starts the AI again.
+  return { state: l.ended !== null ? 'ended' : l.used >= max ? 'used_up' : 'on', model: l.model, max_submissions: max, used: l.used, reserve: reserveOf(max), expires_at: new Date(l.expiresAt).toISOString(), min_observation_interval_ms: l.policy.min_observation_interval_ms, paused: l.paused, missed: l.missed, ended: l.ended, seen: l.seen, frames: l.frames, out: l.out, unwritten: l.unwritten };
+}
+function notifyLive(s: Session): void {
+  if (current !== s) return;
+  notifyControl();
+  if (!s.overlay.isDestroyed()) s.overlay.webContents.send('lc:live', liveInfo(s));
+}
 /**
- * One question about a selection. `shown` is true only once the overlay reported that it showed the answer.
- * `presentation` is written for an answer: 'unconfirmed' from the moment it is sent to the overlay, 'shown' once the
- * overlay reported it. An answer left 'unconfirmed' (the overlay was lost, or the session ended, before it reported)
- * may or may not have been seen: it keeps its text, and it is not displayed help as far as this record knows.
- * `spoken` is written by the main process only, for an answer that was shown and that a voice playing on an audio
- * device began to say (Talk on): 'started' while it is being read, then 'finished' (the voice reported every piece
- * said to its end) or 'interrupted'. An answer never read aloud has no `spoken`. It records what the voice reported,
- * not that anything was heard.
+ * The user's Start (or Start the AI again): one AI session for this capture, with the bounds the user chose. Not
+ * started is said as that, with why; nothing starts it again but the user.
  */
-type AskEntry = { request_id: string; question: string; assistance: Assistance; model: string | null; submitted_at: string; ended_at: string | null; outcome: unknown; shown: boolean; presentation?: 'shown' | 'unconfirmed'; spoken?: 'started' | 'finished' | 'interrupted' };
+async function startLive(s: Session, policy: Policy): Promise<void> {
+  if (!subscription || s.liveStarting || (s.live && s.live.ended === null && s.live.used < s.live.policy.max_submissions) || s.ending || current !== s) return;
+  if (s.live && s.live.ended === null) endLive(s, s.live, 'all of its requests were used, and a new session was started'); // one session at a time
+  s.liveStarting = true;
+  s.liveOff = null;
+  notifyLive(s);
+  const id = `live-${randomBytes(8).toString('hex')}`;
+  const r = await subscription.startSession({ session_id: id, capture_session_id: s.retention.id, policy });
+  s.liveStarting = false;
+  if (current !== s || s.ending) {
+    // The capture ended meanwhile: a session that did start is stopped, and never used.
+    if (r.ok) subscription.stopSession(id);
+    return;
+  }
+  if (!r.ok) {
+    s.liveOff = r.reason;
+    appendLive(s, null, { kind: 'not_started', session_id: id, code: r.code, reason: r.reason });
+    return notifyLive(s);
+  }
+  const live: Live = { id, model: r.start.model, policy, expiresAt: Date.now() + r.expires_in_ms, used: policy.max_submissions - r.remaining_submissions, frames: 0, latest: null, history: [], gaps: [], waiting: null, cooling: false, seen: null, paused: null, missed: null, ended: null, out: 0, unwritten: 0 };
+  s.live = live;
+  setTimeout(() => endLive(s, live, 'this session\'s time is over'), r.expires_in_ms);
+  appendLive(s, live, { kind: 'started', session_id: id, model: live.model, policy, remaining_submissions: r.remaining_submissions, expires_in_ms: r.expires_in_ms });
+  notifyLive(s);
+}
+/** The session ends (Stop, its own bounds, a failure, the connector lost): nothing more is sent, shown or read aloud for it. */
+function endLive(s: Session, live: Live, reason: string): void {
+  if (live.ended !== null) return;
+  live.ended = reason;
+  if (live.waiting) gap(s, live, live.waiting.context.frame_seq, 'not_observed');
+  live.waiting = null;
+  live.latest = null;
+  subscription?.stopSession(live.id); // told to the connector that has it; its turns that are out are interrupted
+  if (s.live === live) hush(s);
+  appendLive(s, live, { kind: 'ended', session_id: live.id, reason, used: live.used, frames: live.frames });
+  notifyLive(s);
+}
+/** A frame taken for the AI that it was not given (or did not take): said in the turns to come, and kept as a line. */
+function gap(s: Session, live: Live, seq: number, reason: Gap['reason']): void {
+  const last = live.gaps.at(-1);
+  if (last && last.reason === reason && last.to_frame_seq === seq - 1) last.to_frame_seq = seq;
+  else live.gaps.push({ from_frame_seq: seq, to_frame_seq: seq, reason });
+  appendLive(s, live, { kind: 'gap', session_id: live.id, frame_seq: seq, reason });
+}
+/** A turn about `frame`, with the recent conversation and the gaps as they are now (copies: a turn that was sent never changes). */
+function turnOf(live: Live, frame: Frame, o: Pick<Turn, 'request_id' | 'trigger' | 'allowed_assistance' | 'presentation' | 'user_text' | 'focus'>, passed: Gap | null = null): Turn {
+  const seq = frame.context.frame_seq;
+  const { history, omitted } = boundedHistory(live.history, seq, 1); // (room is kept for the one entry that names an earlier focus)
+  // The newest gaps (every gap is in live.jsonl), the frame this very request passes by, and what was left out of the conversation.
+  const gaps = [...live.gaps.filter((g) => g.to_frame_seq <= seq).slice(-(GAPS_MAX - 2)), ...(passed ? [passed] : []), ...(omitted ? [omitted] : [])];
+  return { ...o, session_id: live.id, epoch: 1, permission_revision: 1, audio_source: null, image: { png_base64: Buffer.from(frame.image.data).toString('base64'), sha256: frame.image.sha256, width: frame.image.width, height: frame.image.height }, context: frame.context, history: history.map((h) => ({ ...h })), gaps: gaps.map((g) => ({ ...g })) };
+}
+/**
+ * Sends one turn of the session, once, and counts it against the session's own bounds. A failure that is not simply
+ * "not taken" (a sign-in, an allowance, a rate limit, the connector, an answer that did not come or was not bound)
+ * ends the session: nothing more is sent by itself, and only the user starts the AI again.
+ */
+async function sendTurn(s: Session, live: Live, t: Turn, frame: Frame): Promise<TurnOutcome> {
+  live.latest = frame;
+  live.out += 1;
+  notifyLive(s);
+  const out = await subscription!.turn(t);
+  live.out -= 1;
+  if (out.submission !== 'not_submitted') live.used += 1;
+  if (live.ended === null) {
+    const failed = out.status === 'uncertain' ? out.reason : out.status === 'refused' && suspends({ code: out.code, submission: out.submission }) ? out.reason : null;
+    if (failed !== null) endLive(s, live, `${failed}; nothing more is sent by itself`);
+  }
+  notifyLive(s);
+  return out;
+}
+/**
+ * A frame kept as a material step of the display is what the AI looks at next: the newest one waits (an older one
+ * still waiting becomes a gap), and it is sent when nothing else is out and the least time between two looks has
+ * passed. Never for every frame, and never into the requests kept for the user's own focus and follow-ups.
+ */
+function lookAt(s: Session, picture: Picture, capturedAt: string, ink: { revision: number | null; sha256: string | null }): void {
+  const live = s.live;
+  if (!subscription || !live || live.ended !== null || s.ending || current !== s) return;
+  const seq = (live.frames += 1);
+  if (live.paused !== null) return void gap(s, live, seq, 'budget');
+  if (live.waiting) gap(s, live, live.waiting.context.frame_seq, 'coalesced');
+  live.waiting = { context: liveContext(s, seq, picture, capturedAt, ink), image: picture };
+  flushLook(s, live);
+}
+function flushLook(s: Session, live: Live): void {
+  const w = live.waiting;
+  if (!w || live.ended !== null || live.out > 0 || live.cooling) return; // one request at a time from here, and not before its time: the newest frame waits
+  live.waiting = null;
+  if (live.used >= live.policy.max_submissions - reserveOf(live.policy.max_submissions)) {
+    live.paused = 'the requests left in this session are kept for your own focus and follow-ups';
+    gap(s, live, w.context.frame_seq, 'budget');
+    return notifyLive(s);
+  }
+  void look(s, live, w);
+}
+/** One unattended look: an observation only. What comes back is kept for the conversation, never shown as help. */
+async function look(s: Session, live: Live, frame: Frame): Promise<void> {
+  const seq = frame.context.frame_seq;
+  const t = turnOf(live, frame, { request_id: `${live.id}.look.${seq}`, trigger: 'observation', allowed_assistance: 'none', presentation: 'none', user_text: null, focus: null });
+  const problem = turnProblem(t, frame.image.data.length);
+  if (problem) {
+    live.missed = problem;
+    gap(s, live, seq, 'not_observed');
+    return notifyLive(s);
+  }
+  // The least time between two unattended looks starts when one is sent.
+  live.cooling = true;
+  setTimeout(() => {
+    live.cooling = false;
+    flushLook(s, live);
+  }, live.policy.min_observation_interval_ms);
+  appendLive(s, live, { kind: 'look', session_id: live.id, request_id: t.request_id, frame_seq: seq, frame_captured_at: frame.context.frame_captured_at, image: { file: `frames/${frame.image.sha256}.png`, sha256: frame.image.sha256 }, ink_revision: frame.context.ink_revision, ink_sha256: frame.context.ink_sha256 });
+  const out = await sendTurn(s, live, t, frame);
+  if (out.status === 'answered') {
+    live.seen = { at: new Date().toISOString(), frame_seq: seq };
+    live.missed = null;
+    live.history.push({ kind: 'observation', text: out.answer.text, at: frame.context.frame_captured_at, frame_seq: seq, request_id: t.request_id, audio_source: null, presentation: 'not_presented' });
+    appendLive(s, live, { kind: 'looked', session_id: live.id, request_id: t.request_id, frame_seq: seq, model: out.answer.model, latency_ms: out.answer.latency_ms, text: out.answer.text });
+  } else {
+    // Not looked at: a gap in what the AI saw. (Its own bound reached for unattended looks pauses them; a request
+    // of the user's own that replaced it, or a busy connector, is just this one frame.)
+    const reserved = out.status === 'refused' && out.code === 'budget_reached' && out.submission === 'not_submitted';
+    if (reserved && live.ended === null) live.paused = 'the requests left in this session are kept for your own focus and follow-ups';
+    live.missed = out.status === 'refused' ? out.reason : out.status === 'cancelled' ? 'it was interrupted' : out.reason;
+    gap(s, live, seq, reserved ? 'budget' : out.status === 'refused' && (out.code === 'busy' || out.code === 'stale_context') ? 'backpressure' : 'not_observed');
+    appendLive(s, live, { kind: 'not_looked', session_id: live.id, request_id: t.request_id, frame_seq: seq, status: out.status, code: out.status === 'refused' ? out.code : null, submission: out.submission });
+  }
+  notifyLive(s);
+  flushLook(s, live);
+}
+/** Where and when a whole frame was taken, as a turn's context: always the whole display, with its ink's identity. */
+function liveContext(s: Session, seq: number, picture: { width: number; height: number }, capturedAt: string, ink: { revision: number | null; sha256: string | null }): LiveContext {
+  const b = s.display.bounds;
+  const bounds = { x: b.x, y: b.y, width: b.width, height: b.height };
+  return { capture_session_id: s.retention.id, frame_seq: seq, frame_captured_at: capturedAt, frame_width: picture.width, frame_height: picture.height, display: { id: s.display.display_id, bounds, scale_factor: s.display.scale_factor }, ...wholeRegions(picture, bounds), ink_revision: ink.revision, ink_sha256: ink.revision === null ? null : ink.sha256, source_url: null, source_version: null, media_position: null };
+}
+
+// ---- ASK: a circle is a focus inside the whole display, and asks for a small hint at once ---------------------------
+// Only with the subscription configured. Completing a circle keeps the WHOLE composed frame (the display with the
+// user's ink) as the overlay took it, the circle as a rectangle of that frame, and the exact ink document, under the
+// session's capture folder: asks/<sha256>.png, ink/<sha256>.json, and asks/<selection>.json (the selection, each
+// request about it and how it ended; a response's text is there, apart from the originals). With the AI's session
+// running, a small hint about the circled part is asked for at once, with the whole frame as its context: no second
+// press and no typed question. A follow-up in the user's own words is sent only on the user's press, with a fresh
+// whole frame: on the same unchanged frame the circle is still its focus; on a later one the circle stays bound to
+// its own frame and is only named as an earlier focus, its pixels not attached.
+/** How a request ended, as the overlay and the record are told. Only `answered` carries text. */
+type AskOutcome =
+  | { status: 'answered'; answer: { request_id: string; text: string; model: string; latency_ms: number } }
+  | { status: 'refused'; code: string; reason: string }
+  | { status: 'cancelled'; uncertain: boolean }
+  | { status: 'uncertain'; reason: string };
+/**
+ * One request about a selection: the circle's own automatic hint (`focus`, no question), or a follow-up in the user's
+ * words. `frame`: the whole frame it was about, and where the selection's circle is in relation to it. `asked_as`:
+ * whether it was asked for with Talk on (only then may its response be read aloud). `shown` is true only once the
+ * overlay reported that it showed the response.
+ * `presentation` is written for a response: 'unconfirmed' from the moment it is sent to the overlay, 'shown' once the
+ * overlay reported it. A response left 'unconfirmed' (the overlay was lost, or the session ended, before it reported)
+ * may or may not have been seen: it keeps its text, and it is not displayed help as far as this record knows.
+ * `spoken` is written by the main process only, for a response that was shown and handed to a voice that plays on
+ * an audio device (Talk on), from what that voice itself reported: 'attempted' (handed to the voice; no piece was
+ * reported said to its end, so whether anything was played is NOT known: this is not played help), 'interrupted'
+ * (some pieces were reported said to their end, then it stopped) or 'finished' (every piece was). `spoken_pieces`
+ * counts the pieces reported said. A response never handed to a voice has no `spoken`. None of this shows that
+ * anything was heard.
+ */
+type AskEntry = {
+  request_id: string;
+  trigger: 'focus' | 'text_followup';
+  question: string | null;
+  assistance: Assistance;
+  asked_as: 'silent' | 'spoken';
+  model: string | null;
+  live_session_id: string;
+  frame: { frame_seq: number; sample_seq: number; captured_at: string | null; image: { file: string; sha256: string; bytes: number; width: number; height: number }; ink_original: unknown; focus: 'on_this_frame' | 'on_an_earlier_frame' | 'none' };
+  submitted_at: string;
+  ended_at: string | null;
+  outcome: AskOutcome | null;
+  submission?: TurnOutcome['submission'];
+  shown: boolean;
+  presentation?: 'shown' | 'unconfirmed';
+  spoken?: 'attempted' | 'interrupted' | 'finished';
+  spoken_pieces?: { said: number; of: number };
+};
 type Selection = {
   readonly id: string;
-  readonly image: Picture;
-  readonly context: AskContext;
-  readonly record: { format: 'lc-windows-ask/v1'; selection_id: string; selected_at: string; image: unknown; context: AskContext; ink_original: unknown; requests: AskEntry[] };
-  /** The question that is out, or the last one. */
+  /** The whole frame the circle was drawn on. */
+  readonly frame: Frame;
+  readonly kept: Kept;
+  readonly focus: Focus;
+  /** The circle's own turn as it was sent in a running AI session (a follow-up carries its focus from it), or null. */
+  origin: Provenance | null;
+  readonly record: { format: 'lc-windows-live-focus/v1'; selection_id: string; selected_at: string; sample_seq: number; image: unknown; context: LiveContext; focus: Focus; ink_original: unknown; requests: AskEntry[] };
+  /** The request that is out, or the last one. */
   request: { id: string; state: 'asking' | 'cancelled' | 'done' } | null;
   /** Why the record on this device is behind what is held here (its last write failed), or null. */
   unsaved: string | null;
 };
 const askFile = (id: string, name: string): string => join(captureDir(id), 'asks', name);
 const isRectValue = (v: unknown): v is { x: number; y: number; width: number; height: number } => isObj(v) && ['x', 'y', 'width', 'height'].every((k) => typeof v[k] === 'number' && Number.isFinite(v[k]));
-type AskAnswer = { ok: true; selection_id: string } | { ok: false; reason: string };
+/** A request that went out: its id, the session's model, and what it is about (when its frame was taken, and where the circle is in relation to that frame). */
+type Submitted = { ok: true; request_id: string; model: string; about: { captured_at: string | null; focus: AskEntry['frame']['focus'] } } | { ok: false; reason: string };
+type AskAnswer = { ok: true; selection_id: string; request: Submitted } | { ok: false; reason: string };
+/** A whole frame as it is kept on this device: the capture's own number of it, its picture's file and its ink's. */
+type Kept = { sample_seq: number; image: AskEntry['frame']['image']; ink_original: unknown };
+type Original = { name: string; file: string; sha: string; data: Uint8Array };
 
-/** Retains an ASK selection as the overlay composed it. Nothing is sent; a question in flight before it is cancelled. */
-function retainSelection(s: Session, factsValue: unknown, pngValue: unknown, inkValue: unknown): AskAnswer {
-  if (!subscription) return { ok: false, reason: 'no AI is connected' };
-  // A new selection replaces the card: the one before can no longer be asked about, and a question still out about
-  // it is cancelled, whether or not this one is retained.
-  dropSelection(s);
-  if (s.ending) return { ok: false, reason: 'the capture is ending' };
-  const f = factsValue;
-  if (!isObj(f) || !isRectValue(f['region_dip']) || !isSeq(f['frame_seq']) || !isTime(f['frame_captured_at']) || !isSeq(f['frame_width']) || !isSeq(f['frame_height']) || !isHex(f['ink_session'], 16) || !isCount(f['ink_revision']) || !isCount(f['visible_strokes'])) {
-    return { ok: false, reason: 'the selection facts are malformed' };
-  }
+/**
+ * A whole composed frame as the overlay took it (for a circle, or for a follow-up): its facts and picture checked
+ * here, never taken on trust. `seq`: this AI session's number for it. Nothing is written by this. A problem is text.
+ */
+function readFrame(s: Session, f: Record<string, unknown>, pngValue: unknown, inkValue: unknown, seq: number): { frame: Frame; kept: Kept; originals: Original[] } | string {
+  if (!isSeq(f['frame_seq']) || !isTime(f['frame_captured_at']) || !isSeq(f['frame_width']) || !isSeq(f['frame_height']) || !isHex(f['ink_session'], 16) || !isCount(f['ink_revision']) || !isCount(f['visible_strokes'])) return 'the frame facts are malformed';
   const most = (dip: number): number => Math.ceil(dip * s.display.scale_factor) + 16;
-  if (f['frame_width'] > most(s.display.bounds.width) || f['frame_height'] > most(s.display.bounds.height)) return { ok: false, reason: 'the frame is larger than the chosen display' };
-  // The pixels of the selection are worked out here, from the display and the frame, not taken from the overlay.
-  const region_dip = { x: f['region_dip'].x, y: f['region_dip'].y, width: f['region_dip'].width, height: f['region_dip'].height };
-  const region_px = toFramePixels(region_dip, s.display.bounds, { width: f['frame_width'], height: f['frame_height'] });
-  if (!region_px) return { ok: false, reason: 'the selected region is not inside the display' };
-  if (Object.prototype.toString.call(pngValue) === '[object Uint8Array]' && (pngValue as Uint8Array).length > PNG_MAX_BYTES) return { ok: false, reason: `the selection's picture is over ${PNG_MAX_BYTES} bytes` };
-  const image = readPicture(pngValue, region_px.width, region_px.height, s.retention.id);
-  if (typeof image === 'string') return { ok: false, reason: `the selection's picture is ${image}` };
+  if (f['frame_width'] > most(s.display.bounds.width) || f['frame_height'] > most(s.display.bounds.height)) return 'the frame is larger than the chosen display';
+  if (Object.prototype.toString.call(pngValue) === '[object Uint8Array]' && (pngValue as Uint8Array).length > PNG_MAX_BYTES) return `the display's picture is over ${PNG_MAX_BYTES} bytes as a PNG`;
+  const image = readPicture(pngValue, f['frame_width'], f['frame_height'], s.retention.id);
+  if (typeof image === 'string') return `the display's picture is ${image}`;
   const ink = readInkOriginal(inkValue, { ink_session: f['ink_session'], ink_revision: f['ink_revision'], visible_strokes: f['visible_strokes'] });
-  const context: AskContext = {
-    capture_session_id: s.retention.id,
-    frame_seq: f['frame_seq'],
-    frame_captured_at: new Date(f['frame_captured_at']).toISOString(),
-    frame_width: f['frame_width'],
-    frame_height: f['frame_height'],
-    display: { id: s.display.display_id, bounds: { x: s.display.bounds.x, y: s.display.bounds.y, width: s.display.bounds.width, height: s.display.bounds.height }, scale_factor: s.display.scale_factor },
-    region_dip,
-    region_px,
-    ink_revision: f['ink_revision'],
-    ink_sha256: 'data' in ink ? ink.sha256 : null, // null: the exact ink document could not be retained (the record says why)
-    source_url: null,
-    source_version: null,
-    media_position: null,
-  };
-  const problem = contextProblem(context, image);
-  if (problem) return { ok: false, reason: problem };
-  const id = `ask-${randomBytes(8).toString('hex')}`;
-  const originals = [
+  // (ink_sha256 null: the exact ink document could not be retained; the record says why)
+  const context = liveContext(s, seq, image, new Date(f['frame_captured_at']).toISOString(), { revision: f['ink_revision'], sha256: 'data' in ink ? ink.sha256 : null });
+  const originals: Original[] = [
     { name: `asks/${image.sha256}.png`, file: askFile(s.retention.id, `${image.sha256}.png`), sha: image.sha256, data: image.data },
     ...('data' in ink ? [{ name: `ink/${ink.sha256}.json`, file: inkOriginalFile(s.retention.id, ink.sha256), sha: ink.sha256, data: ink.data }] : []),
   ];
-  const record: Selection['record'] = {
-    format: 'lc-windows-ask/v1',
-    selection_id: id,
-    selected_at: new Date().toISOString(),
-    image: { file: originals[0]!.name, sha256: image.sha256, bytes: image.bytes, width: image.width, height: image.height },
-    context,
-    ink_original: 'data' in ink ? { file: `ink/${ink.sha256}.json`, sha256: ink.sha256, bytes: ink.bytes } : { refused: ink.refused },
-    requests: [],
-  };
+  const kept: Kept = { sample_seq: f['frame_seq'], image: { file: originals[0]!.name, sha256: image.sha256, bytes: image.bytes, width: image.width, height: image.height }, ink_original: 'data' in ink ? { file: `ink/${ink.sha256}.json`, sha256: ink.sha256, bytes: ink.bytes } : { refused: ink.refused } };
+  return { frame: { context, image }, kept, originals };
+}
+/** Writes a frame's originals at their content addresses (and `more`, after them). Null, or why not (nothing is replaced). */
+function storeOriginals(s: Session, originals: Original[], more: () => void = () => undefined): string | null {
   try {
     // What is already at an address is reused only if it is exactly these bytes; anything else is left untouched.
     const toWrite = originals.filter((o) => {
@@ -846,56 +1079,136 @@ function retainSelection(s: Session, factsValue: unknown, pngValue: unknown, ink
       return stored.state === 'absent';
     });
     const adding = toWrite.reduce((a, o) => a + o.data.length, 0);
-    if (s.retention.bytes + adding > s.retention.policy.max_bytes) return { ok: false, reason: `the retention limit of ${s.retention.policy.max_bytes} bytes for this session is reached` };
+    if (s.retention.bytes + adding > s.retention.policy.max_bytes) return `the retention limit of ${s.retention.policy.max_bytes} bytes for this session is reached`;
     for (const o of toWrite) {
       mkdirSync(dirname(o.file), { recursive: true });
       writeAtomic(o.file, o.data);
       s.retention.bytes += o.data.length;
     }
-    writeAtomic(askFile(s.retention.id, `${id}.json`), `${JSON.stringify(record)}\n`);
+    more();
+    return null;
   } catch (error) {
-    return { ok: false, reason: error instanceof NotItsBytes ? error.message : `the selection could not be written to this device (${message(error)})` };
+    return error instanceof NotItsBytes ? error.message : `it could not be written to this device (${message(error)})`;
   }
-  s.ask = { id, image, context, record, request: null, unsaved: null };
-  s.progress += 1;
-  notifyRetention(s);
-  return { ok: true, selection_id: id };
 }
 
-/** The user pressed Ask: one question about the current selection is written, then sent, once. */
-function submitAsk(s: Session, selectionId: unknown, questionValue: unknown, assistanceValue: unknown): { ok: true; request_id: string; model: string | null } | { ok: false; reason: string } {
+/**
+ * A circle was completed: the whole frame it is on is kept as the overlay composed it, with the circle as its focus;
+ * and, with the AI's session running, a small hint about it is asked for at once. A request out for the selection
+ * before is interrupted.
+ */
+function retainSelection(s: Session, factsValue: unknown, pngValue: unknown, inkValue: unknown): AskAnswer {
+  if (!subscription) return { ok: false, reason: 'no AI is connected' };
+  // A new selection replaces the card: the one before can no longer be asked about, and a request still out about
+  // it is interrupted, whether or not this one is retained.
+  dropSelection(s);
+  if (s.ending) return { ok: false, reason: 'the capture is ending' };
+  const f = factsValue;
+  if (!isObj(f) || !isRectValue(f['region_dip'])) return { ok: false, reason: 'the selection facts are malformed' };
+  const live = s.live && s.live.ended === null ? s.live : null;
+  const read = readFrame(s, f, pngValue, inkValue, live ? live.frames + 1 : 0);
+  if (typeof read === 'string') return { ok: false, reason: read };
+  const { frame, kept } = read;
+  // The pixels of the circle are worked out here, from the display and the frame, not taken from the overlay.
+  const focus = focusOf({ x: f['region_dip'].x, y: f['region_dip'].y, width: f['region_dip'].width, height: f['region_dip'].height }, { width: frame.image.width, height: frame.image.height, seq: frame.context.frame_seq }, s.display.bounds);
+  if (!focus) return { ok: false, reason: 'the selected region is not inside the display' };
+  const id = `ask-${randomBytes(8).toString('hex')}`;
+  const record: Selection['record'] = { format: 'lc-windows-live-focus/v1', selection_id: id, selected_at: new Date().toISOString(), sample_seq: kept.sample_seq, image: kept.image, context: frame.context, focus, ink_original: kept.ink_original, requests: [] };
+  const problem = storeOriginals(s, read.originals, () => writeAtomic(askFile(s.retention.id, `${id}.json`), `${JSON.stringify(record)}\n`));
+  if (problem) return { ok: false, reason: problem.replace(/^it could not/, 'the selection could not') };
+  if (live) live.frames += 1; // (a frame of the session: counted once it is kept)
+  const sel: Selection = { id, frame, kept, focus, origin: null, record, request: null, unsaved: null };
+  s.ask = sel;
+  s.progress += 1;
+  notifyRetention(s);
+  const request = submitTurn(s, sel, 'focus', null, 'hint', frame, kept);
+  if (!request.ok && live && live.ended === null) gap(s, live, frame.context.frame_seq, 'not_observed'); // a frame of the session the AI was not given
+  return { ok: true, selection_id: id, request };
+}
+
+/** Why nothing can be sent to the AI now, or null. */
+function notSendable(s: Session): string | null {
+  if (s.liveStarting) return 'the AI is being started';
+  if (!s.live) return `the AI is not started${s.liveOff ? ` (${s.liveOff})` : ''}; start it in the control window`;
+  if (s.live.ended !== null) return `the AI session has ended (${s.live.ended}); start it again in the control window`;
+  if (s.live.used >= s.live.policy.max_submissions) return 'all of this AI session\'s requests are used; start the AI again in the control window';
+  return null;
+}
+/**
+ * The user pressed Send on a follow-up: the user's own words about the current selection, with a fresh whole frame.
+ * The same picture and ink as the selection's own frame, with nothing newer sent since, IS that frame: the circle is
+ * still its focus. Anything else is a later frame: the circle stays on its own frame and is only named.
+ */
+function submitAsk(s: Session, selectionId: unknown, questionValue: unknown, assistanceValue: unknown, factsValue: unknown, pngValue: unknown, inkValue: unknown): Submitted {
   const sel = s.ask;
   if (!subscription) return { ok: false, reason: 'no AI is connected' };
   if (!sel || sel.id !== selectionId) return { ok: false, reason: 'this is no longer the current selection' };
   if (s.ending) return { ok: false, reason: 'the capture is ending' };
-  if (sel.request && sel.request.state !== 'done') return { ok: false, reason: sel.request.state === 'asking' ? 'this selection\'s question is still being answered' : 'the question before is still being cancelled' };
-  const question = questionOf(questionValue);
-  if (question === null) return { ok: false, reason: questionProblem(questionValue) };
+  if (sel.request && sel.request.state !== 'done') return { ok: false, reason: sel.request.state === 'asking' ? 'this selection\'s request is still being answered' : 'the request before is still being interrupted' };
+  const question = userTextOf(questionValue);
+  if (question === null) return { ok: false, reason: userTextProblem(questionValue) };
   if (!ASSISTANCE.includes(assistanceValue as Assistance)) return { ok: false, reason: 'the kind of help is not chosen' };
-  const no = subscription.notAskable(s.retention.id);
-  if (no) return { ok: false, reason: no };
-  const model = subscriptionStatus.mode === 'managed' ? subscriptionStatus.model : null;
-  const request: AskRequest = {
-    request_id: `${sel.id}.${sel.record.requests.length + 1}`,
-    question,
-    assistance: assistanceValue as Assistance,
-    image: { png_base64: Buffer.from(sel.image.data).toString('base64'), sha256: sel.image.sha256, width: sel.image.width, height: sel.image.height },
-    context: sel.context,
-  };
-  const entry: AskEntry = { request_id: request.request_id, question, assistance: request.assistance, model, submitted_at: new Date().toISOString(), ended_at: null, outcome: null, shown: false };
+  const off = notSendable(s);
+  if (off) return { ok: false, reason: off };
+  const live = s.live!;
+  if (!isObj(factsValue)) return { ok: false, reason: 'the frame facts are malformed' };
+  const read = readFrame(s, factsValue, pngValue, inkValue, live.frames + 1);
+  if (typeof read === 'string') return { ok: false, reason: read };
+  const same = live.latest === sel.frame && read.frame.image.sha256 === sel.frame.image.sha256 && read.frame.context.ink_revision === sel.frame.context.ink_revision && read.frame.context.ink_sha256 === sel.frame.context.ink_sha256;
+  if (same) return submitTurn(s, sel, 'text_followup', question, assistanceValue as Assistance, sel.frame, sel.kept);
+  const problem = storeOriginals(s, read.originals);
+  if (problem) return { ok: false, reason: problem.replace(/^it could not/, 'the display\'s picture could not') };
+  live.frames += 1;
+  const sent = submitTurn(s, sel, 'text_followup', question, assistanceValue as Assistance, read.frame, read.kept);
+  if (!sent.ok && live.ended === null) gap(s, live, read.frame.context.frame_seq, 'not_observed'); // kept, and not given to the AI
+  return sent;
+}
+/** One request about the current selection is written, then sent, once: the circle's own hint, or a follow-up. */
+function submitTurn(s: Session, sel: Selection, trigger: 'focus' | 'text_followup', question: string | null, assistance: Assistance, frame: Frame, kept: Kept): Submitted {
+  const off = notSendable(s);
+  if (off) return { ok: false, reason: off };
+  const live = s.live!;
+  const request_id = `${sel.id}.${sel.record.requests.length + 1}`;
+  // Asked for as spoken only with a voice connected and Talk on, not muted, now; else as silent text.
+  const asked_as = voice !== null && s.talk.on && !s.talk.muted ? 'spoken' : 'silent';
+  // An older frame still waiting for a look is passed by the user's own request: a gap, said in this very request.
+  const passed = live.waiting && live.waiting.context.frame_seq < frame.context.frame_seq ? live.waiting.context.frame_seq : null;
+  let t = turnOf(live, frame, { request_id, trigger, allowed_assistance: assistance, presentation: asked_as, user_text: question, focus: trigger === 'focus' ? sel.focus : null }, passed === null ? null : { from_frame_seq: passed, to_frame_seq: passed, reason: 'coalesced' });
+  let focus: AskEntry['frame']['focus'] = trigger === 'focus' ? 'on_this_frame' : 'none';
+  if (trigger === 'text_followup' && sel.origin) {
+    // The circle's focus goes with its follow-up: kept on the same unchanged frame, only named on a later one. (A
+    // circle of another AI session is not carried: the follow-up is then about the current frame alone.)
+    const carried = carryFocus(t, sel.origin);
+    if (typeof carried !== 'string') {
+      t = carried;
+      focus = carried.focus ? 'on_this_frame' : 'on_an_earlier_frame';
+    }
+  }
+  const problem = turnProblem(t, frame.image.data.length);
+  if (problem) return { ok: false, reason: problem };
+  const entry: AskEntry = { request_id, trigger, question, assistance, asked_as, model: live.model, live_session_id: live.id, frame: { frame_seq: frame.context.frame_seq, sample_seq: kept.sample_seq, captured_at: frame.context.frame_captured_at, image: kept.image, ink_original: kept.ink_original, focus }, submitted_at: new Date().toISOString(), ended_at: null, outcome: null, shown: false };
   sel.record.requests.push(entry);
   const before = sel.unsaved;
   const unwritten = saveAsk(s, sel); // written before it is sent
   if (unwritten) {
     sel.record.requests.pop();
     sel.unsaved = before; // nothing was asked: the record is as it was, written or not
-    return { ok: false, reason: `the question could not be written to this device (${unwritten}), so it was not sent` };
+    return { ok: false, reason: `the request could not be written to this device (${unwritten}), so it was not sent` };
   }
-  const mine = { id: request.request_id, state: 'asking' as 'asking' | 'cancelled' | 'done' };
+  // (kept as a gap, and no longer waiting, only now that the request is written and goes out)
+  if (passed !== null) {
+    gap(s, live, passed, 'coalesced');
+    live.waiting = null;
+  }
+  const mine = { id: request_id, state: 'asking' as 'asking' | 'cancelled' | 'done' };
   sel.request = mine;
-  hush(s); // a new question: the response before is no longer read
-  void subscription.ask(request).then((outcome) => askEnded(s, sel, mine, entry, outcome));
-  return { ok: true, request_id: request.request_id, model };
+  hush(s); // a new request: the response before is no longer read
+  if (trigger === 'focus') sel.origin = provenanceOf(t);
+  void sendTurn(s, live, t, frame).then((out) => {
+    askEnded(s, live, sel, mine, entry, t, out);
+    flushLook(s, live);
+  });
+  return { ok: true, request_id, model: live.model, about: { captured_at: frame.context.frame_captured_at, focus } };
 }
 
 /** Writes the selection's record. Null, or why it could not be written (it is then held here, and tried again). */
@@ -917,7 +1230,7 @@ function saveAsk(s: Session, sel: Selection): string | null {
 const asksUnrecorded = new Map<Selection, Session>();
 function holdUnrecorded(s: Session, sel: Selection): void {
   asksUnrecorded.set(sel, s);
-  sel.image.data = new Uint8Array(0); // only its record is held: it is never asked about again, and its picture is on this device
+  sel.frame.image.data = new Uint8Array(0); // only its record is held: it is never asked about again, and its picture is on this device
 }
 function writeUnrecordedAsks(): void {
   for (const [sel, s] of [...asksUnrecorded]) saveAsk(s, sel);
@@ -932,22 +1245,36 @@ function sayUnrecordedAsks(): void {
 const askNotice = (count: number, reason: string | null): string =>
   `How ${count} question(s) to ChatGPT ended (an answer included, if one was shown or may have been) could not be written to this device (${reason ?? 'unknown'}); the selections and their pictures are kept, without that outcome, and writing it is tried again at the next Start and when the app closes`;
 /**
- * How a question ended: recorded, and said to the overlay only if it is still the current selection's live question.
+ * How a request about a selection ended: recorded, and said to the overlay only if it is still the current
+ * selection's live request. This is the check before any text of a response leaves this process: the session it was
+ * sent in is still this capture's running one, the capture is not ending, the selection is still the card's and the
+ * request still its live one, and what came back was read as bound to the whole turn that was sent (subscription.ts).
  * An outcome that could not be written is held here and said as not saved (it is written again at the user's press,
- * when its card goes, and when the session ends); a question is never asked again to repair the record.
+ * when its card goes, and when the session ends); nothing is sent again to repair the record.
  */
-function askEnded(s: Session, sel: Selection, mine: NonNullable<Selection['request']>, entry: AskEntry, outcome: AskOutcome): void {
-  // Checked again here, whatever the connector checked: the session, the selection and the request are still these.
-  const live = current === s && !s.ending && s.ask === sel && sel.request === mine && mine.state === 'asking';
-  const view: AskOutcome = outcome.status === 'answered' && !live ? { status: 'cancelled', uncertain: true } : outcome;
+function askEnded(s: Session, live: Live, sel: Selection, mine: NonNullable<Selection['request']>, entry: AskEntry, t: Turn, outcome: TurnOutcome): void {
+  const current_ = current === s && !s.ending && s.live === live && live.ended === null && s.ask === sel && sel.request === mine && mine.state === 'asking';
+  const view: AskOutcome = outcome.status === 'answered'
+    ? current_ ? { status: 'answered', answer: { request_id: outcome.answer.request_id, text: outcome.answer.text, model: outcome.answer.model, latency_ms: outcome.answer.latency_ms } } : { status: 'cancelled', uncertain: true }
+    : outcome.status === 'refused' ? { status: 'refused', code: outcome.code, reason: outcome.reason }
+    : outcome.status === 'cancelled' ? { status: 'cancelled', uncertain: outcome.uncertain } : { status: 'uncertain', reason: outcome.reason };
   mine.state = 'done';
   entry.ended_at = new Date().toISOString();
   entry.outcome = view; // an answer's text is kept only when it is this selection's live answer; apart from the originals
+  entry.submission = outcome.submission;
   entry.shown = false; // until the overlay says it showed it
-  if (view.status === 'answered') entry.presentation = 'unconfirmed';
+  if (view.status === 'answered') {
+    entry.presentation = 'unconfirmed';
+    // What was asked and what was answered join the conversation the next turns carry (whole, or left out and said).
+    if (t.user_text !== null) live.history.push({ kind: 'user', text: t.user_text, at: entry.submitted_at, frame_seq: t.context.frame_seq, request_id: t.request_id, audio_source: null, presentation: null });
+    const said: HistoryEntry = { kind: 'assistant', text: view.answer.text, at: entry.ended_at, frame_seq: t.context.frame_seq, request_id: t.request_id, audio_source: null, presentation: 'unconfirmed' };
+    live.history.push(said);
+    presented.set(entry, said);
+  }
   const unwritten = saveAsk(s, sel);
-  // Said to the overlay only while this is still the selection on its card.
-  if (current === s && s.ask === sel && sel.request === mine && !s.overlay.isDestroyed()) return void s.overlay.webContents.send('lc:ask-result', sel.id, mine.id, view, { saved: unwritten === null, reason: unwritten });
+  // Said to the overlay only while this is still the selection on its card. `speak`: this response may be read aloud
+  // (it was asked for as spoken, with Talk on then); whether it is, is checked again before every piece.
+  if (current === s && s.ask === sel && sel.request === mine && !s.overlay.isDestroyed()) return void s.overlay.webContents.send('lc:ask-result', sel.id, mine.id, view, { saved: unwritten === null, reason: unwritten, speak: view.status === 'answered' && t.presentation === 'spoken' });
   if (unwritten === null || (current === s && s.ask === sel)) return;
   // Its card is gone: no window is left to say it on but the control window's, where the session's end is said.
   holdUnrecorded(s, sel);
@@ -955,13 +1282,18 @@ function askEnded(s: Session, sel: Selection, mine: NonNullable<Selection['reque
   sayUnrecordedAsks();
   notifyControl();
 }
+/** The conversation's own entry for an answer, by its record's entry: how it was presented is said there too. */
+const presented = new WeakMap<AskEntry, HistoryEntry>();
 /** The overlay says what it did with an answer: showed it, or (cancelled or ended meanwhile) did not. */
 function askPresented(s: Session, selectionId: unknown, requestId: unknown, shown: unknown): { saved: boolean; reason: string | null } {
   const sel = s.ask;
   const entry = sel && sel.id === selectionId ? sel.record.requests.find((r) => r.request_id === requestId) : undefined;
-  if (!sel || !entry || entry.shown || (entry.outcome as AskOutcome | null)?.status !== 'answered') return { saved: sel ? sel.unsaved === null : true, reason: sel?.unsaved ?? null };
-  if (shown === true) Object.assign(entry, { shown: true, presentation: 'shown' });
-  else notShown(entry);
+  if (!sel || !entry || entry.shown || entry.outcome?.status !== 'answered') return { saved: sel ? sel.unsaved === null : true, reason: sel?.unsaved ?? null };
+  if (shown === true) {
+    Object.assign(entry, { shown: true, presentation: 'shown' });
+    const said = presented.get(entry);
+    if (said) said.presentation = 'shown';
+  } else notShown(entry);
   const unwritten = saveAsk(s, sel);
   return { saved: unwritten === null, reason: unwritten };
 }
@@ -974,31 +1306,42 @@ function askPresented(s: Session, selectionId: unknown, requestId: unknown, show
 // starts nothing.
 /**
  * A voice: says one piece in a language's voice (true only when it was said to its end), stops at once, and is ended
- * with the app. `audible`: it plays on an audio device; a voice that only synthesizes (a test's) is false, and nothing
- * it says is recorded as read aloud.
+ * with the app (its `dispose` is waited for no longer than VOICE_END_MS). `audible`: it plays on an audio device; a
+ * voice that only synthesizes (a test's) is false, and nothing it says is recorded as read aloud.
  */
 export type Voice = { readonly audible: boolean; say(text: string, rate: number, culture: Culture): Promise<boolean>; stop(): void; dispose(): Promise<void> };
 /** The voice of this build. None is connected: Talk says so, and every response stays text. */
 let voice: Voice | null = null;
 /** Connects the build's voice (before a Start). Only main-process code can: no window can name a voice, a program or an output. */
 export const connectVoice = (v: Voice | null): void => void (voice = v);
-type Reading = { readonly sel: Selection; readonly entry: AskEntry; readonly pieces: string[]; /** The piece that is next, or being said. */ at: number; saying: boolean };
+type Reading = { readonly sel: Selection; readonly entry: AskEntry; readonly pieces: string[]; /** The voice of each piece. */ readonly cultures: Culture[]; /** The piece that is next, or being said. */ at: number; saying: boolean; /** What the voice reports of this reading is written to the record (a voice that plays on a device; not for an answer once read to its end). */ recorded: boolean };
 /**
- * The current session's current selection's last question, if it was answered and its answer reported shown, and
- * reading aloud is allowed now. (A question still out, cancelled or refused has no answer here: only the live answer
- * of the request that was sent is ever kept as one.)
+ * The current session's current selection's last request, if it was answered in the AI session that is still
+ * running, was asked for as spoken, its answer reported shown, and reading aloud is allowed now. (A request still
+ * out, cancelled or refused has no answer here: only the live answer of the turn that was sent is ever kept as one.)
  */
 function readable(s: Session, selectionId: unknown, requestId: unknown): { sel: Selection; entry: AskEntry; text: string } | null {
   const sel = s.ask;
-  if (s.ending || !s.talk.on || s.talk.muted || !sel || sel.id !== selectionId) return null;
+  if (s.ending || !s.live || s.live.ended !== null || !s.talk.on || s.talk.muted || !sel || sel.id !== selectionId) return null;
   const entry = sel.record.requests.at(-1);
-  const out = entry?.outcome as AskOutcome | null | undefined;
-  if (!entry || entry.request_id !== requestId || out?.status !== 'answered' || !entry.shown || entry.presentation !== 'shown') return null;
+  const out = entry?.outcome;
+  if (!entry || entry.request_id !== requestId || out?.status !== 'answered' || !entry.shown || entry.presentation !== 'shown' || entry.asked_as !== 'spoken') return null;
   return { sel, entry, text: out.answer.text };
 }
-/** What a voice playing on a device did with an answer: recorded as what happened, apart from shown. */
-function recordSpoken(s: Session, r: Reading, state: NonNullable<AskEntry['spoken']>): void {
-  r.entry.spoken = state;
+/**
+ * What the voice reported of a reading, written to the record apart from shown: handed to it ('attempted'), then by
+ * the pieces it reported said to their end. A reading that ends with no piece reported stays 'attempted': a call that
+ * was only attempted is never counted as played help.
+ */
+function recordSpoken(s: Session, r: Reading, over: boolean): void {
+  if (!r.recorded) return;
+  const said = r.at; // the pieces before the next one were each reported said to their end
+  r.entry.spoken = said === r.pieces.length ? 'finished' : over && said > 0 ? 'interrupted' : 'attempted';
+  r.entry.spoken_pieces = { said, of: r.pieces.length };
+  if (r.entry.spoken === 'finished') {
+    const entry = presented.get(r.entry);
+    if (entry) entry.presentation = 'spoken';
+  }
   saveAsk(s, r.sel);
 }
 /** Nothing more of a response is read: the voice is told to stop at once, with everything not yet said. */
@@ -1011,7 +1354,7 @@ function hush(s: Session): void {
   } catch {
     // a voice that fails to stop is handed nothing more; what follows (a Stop, a new card) goes on
   }
-  if (r.entry.spoken === 'started') recordSpoken(s, r, 'interrupted');
+  recordSpoken(s, r, true);
 }
 /**
  * The overlay asks for piece `at` of the current response: 0 begins a reading, each later one must be the next in
@@ -1025,30 +1368,31 @@ async function sayPiece(s: Session, selectionId: unknown, requestId: unknown, at
   if (!now || !ok) return NO;
   if (at === 0 && s.reading?.entry !== ok.entry) {
     hush(s);
-    s.reading = { sel: ok.sel, entry: ok.entry, pieces: speechPieces(ok.text), at: 0, saying: false };
+    const pieces = speechPieces(ok.text);
+    // (an answer once read to its end stays recorded as that, whatever a later reading of it comes to)
+    s.reading = { sel: ok.sel, entry: ok.entry, pieces, cultures: speechCultures(pieces), at: 0, saying: false, recorded: now.audible && ok.entry.spoken !== 'finished' };
   }
   const r = s.reading;
   if (!r || r.entry !== ok.entry || r.saying || at !== r.at || r.at >= r.pieces.length) return NO;
-  if (r.at === 0 && now.audible) recordSpoken(s, r, 'started');
+  if (r.at === 0) recordSpoken(s, r, false); // handed to the voice: 'attempted' until it reports a piece said
   r.saying = true;
   const piece = r.pieces[r.at]!;
   let said = false;
   try {
-    said = (await now.say(piece, preferences.speech_rate, speechCulture(piece))) === true;
+    said = (await now.say(piece, preferences.speech_rate, r.cultures[r.at]!)) === true;
   } catch {
     // a voice that throws, or whose promise is rejected, did not say the piece to its end
   }
   if (s.reading !== r) return NO; // stopped meanwhile: this late end starts nothing, and it was recorded where it was stopped
   r.saying = false;
   if (!said) {
-    s.reading = null;
-    if (r.entry.spoken === 'started') recordSpoken(s, r, 'interrupted');
+    hush(s); // not said to its end: the voice is told to stop too, whatever it still holds, and the reading is over
     return NO;
   }
   r.at += 1;
   if (r.at === r.pieces.length) {
     s.reading = null;
-    if (r.entry.spoken === 'started') recordSpoken(s, r, 'finished');
+    recordSpoken(s, r, true); // every piece was reported said to its end
   }
   return { spoken: true };
 }
@@ -1056,6 +1400,8 @@ async function sayPiece(s: Session, selectionId: unknown, requestId: unknown, at
 function notShown(entry: AskEntry): void {
   entry.outcome = { status: 'cancelled', uncertain: true };
   delete entry.presentation;
+  const said = presented.get(entry);
+  if (said) said.presentation = 'not_presented'; // (the conversation keeps what was generated, and that it was not shown)
 }
 /** The user's press on Save: the selection's record, held here since a write failed, is written again. */
 function saveAskAgain(s: Session, selectionId: unknown): { saved: boolean; reason: string | null } {
@@ -1076,7 +1422,7 @@ function dropSelection(s: Session): void {
   hush(s); // a response is read aloud only while its card shows it
   cancelAsk(s, sel.id);
   // An answer the overlay never said it showed (its messages come in order) was not shown on this card: not kept.
-  const unshown = sel.record.requests.filter((r) => !r.shown && (r.outcome as AskOutcome | null)?.status === 'answered');
+  const unshown = sel.record.requests.filter((r) => !r.shown && r.outcome?.status === 'answered');
   for (const r of unshown) notShown(r);
   if (unshown.length > 0) saveAsk(s, sel);
   retireSelection(s, sel);
@@ -1087,12 +1433,12 @@ function cancelAsk(s: Session, selectionId: unknown): void {
   const sel = s.ask;
   if (!sel || sel.id !== selectionId || sel.request?.state !== 'asking') return;
   sel.request.state = 'cancelled';
-  subscription?.cancel(sel.request.id);
+  subscription?.interrupt(sel.request.id); // told to the connector at once: its answer is never returned
 }
-/** The session is ending: no question of it is sent or answered from here. */
-function stopAsking(s: Session): void {
+/** The capture is ending: nothing of it is sent or answered from here, and its AI session ends with it. */
+function stopAsking(s: Session, why: string): void {
   if (s.ask?.request?.state === 'asking') s.ask.request.state = 'cancelled';
-  subscription?.stopSession(s.retention.id);
+  if (s.live && s.live.ended === null) endLive(s, s.live, why);
 }
 
 function writeAtomic(file: string, data: string | Uint8Array): void {
@@ -1310,7 +1656,24 @@ ipcMain.on('lc:sub-check', (e) => void (fromControl(e) && !endingConnector ? sub
 ipcMain.on('lc:sub-login', (e) => void (fromControl(e) && !endingConnector ? subscription?.login() : undefined));
 ipcMain.on('lc:sub-login-cancel', (e) => void (fromControl(e) ? subscription?.cancelLogin() : undefined));
 ipcMain.on('lc:sub-model', (e, id: unknown) => void (fromControl(e) ? subscription?.chooseModel(id) : undefined));
-ipcMain.handle('lc:start', async (e, sourceId: unknown) => (!fromControl(e) || typeof sourceId !== 'string' ? { ok: false, reason: 'refused' } : endingConnector ? { ok: false, reason: 'the app is closing' } : start(sourceId)));
+// Start: the capture of the chosen display; with `ai` (the user's own choice beside the button, and the bounds shown
+// there), the AI's observation of that display too. Bounds that are not the envelope's are refused, never clamped.
+ipcMain.handle('lc:start', async (e, sourceId: unknown, ai: unknown = null) => {
+  if (!fromControl(e) || typeof sourceId !== 'string' || !(ai === null || (isObj(ai) && Object.keys(ai).join() === 'policy' && isPolicy(ai['policy'])))) return { ok: false, reason: 'refused' };
+  return endingConnector ? { ok: false, reason: 'the app is closing' } : start(sourceId, ai === null ? null : { policy: ai['policy'] as Policy });
+});
+// The AI's observation, started (again) or stopped by the user while the capture runs. Never by anything else.
+ipcMain.handle('lc:live-start', async (e, policy: unknown) => {
+  if (!fromControl(e) || !isPolicy(policy)) return { ok: false, reason: 'refused' };
+  const s = current;
+  if (!s || s.ending || !s.shown) return { ok: false, reason: 'no capture is running' };
+  if (endingConnector) return { ok: false, reason: 'the app is closing' };
+  if (s.liveStarting || (s.live && s.live.ended === null && s.live.used < s.live.policy.max_submissions)) return { ok: false, reason: 'the AI is already started' };
+  const before = s.live;
+  await startLive(s, policy);
+  return s.live && s.live !== before && s.live.ended === null ? { ok: true } : { ok: false, reason: s.liveOff ?? s.live?.ended ?? 'the AI did not start' };
+});
+ipcMain.on('lc:live-stop', (e) => void (fromControl(e) && current?.live && current.live.ended === null ? endLive(current, current.live, 'stopped by you') : undefined));
 ipcMain.handle('lc:stop', (e) => {
   if (fromControl(e)) end('stopped by the user');
 });
@@ -1367,8 +1730,9 @@ function loadPreferences(): void {
     // Not JSON at all (empty or cut short, as a write that was interrupted leaves it): set aside under another
     // name, never deleted, so that the next change can be kept again. A file set aside before is never written
     // over: this one takes the next free name, and when none is free it is left where it is, untouched.
-    const aside = ['', ...Array.from({ length: UNREADABLE_KEPT - 1 }, (_, i) => `-${i + 2}`)].map((n) => `${preferencesFile()}.unreadable${n}`).find((f) => !existsSync(f));
     try {
+      // (free: nothing has that name, whatever it is; a name that cannot be looked at leaves the torn file where it is)
+      const aside = ['', ...Array.from({ length: UNREADABLE_KEPT - 1 }, (_, i) => `-${i + 2}`)].map((n) => `${preferencesFile()}.unreadable${n}`).find((f) => lstatSync(f, { throwIfNoEntry: false }) === undefined);
       if (aside === undefined) throw new Error('no free name');
       renameSync(preferencesFile(), aside);
     } catch {
@@ -1415,11 +1779,12 @@ ipcMain.handle('lc:speech-rate', (e, rate: unknown) => {
 ipcMain.handle('lc:overlay-ready', (e) => {
   if (!fromOverlay(e) || !current) return null;
   return {
-    work_area: workAreaOf(current), places: placesOf(preferences, current.display.display_id), speech_rate: preferences.speech_rate, voice: voice ? { audible: voice.audible } : null, source_id: current.sourceId, display: current.display, doc: current.doc, address_sha256: sha256(current.doc.id), retention_policy: current.retention.policy, development: linkStatus.mode === 'development', subscription: subscriptionStatus.mode === 'managed' };
+    work_area: workAreaOf(current), places: placesOf(preferences, current.display.display_id), speech_rate: preferences.speech_rate, voice: voice ? { audible: voice.audible } : null, live: liveInfo(current), source_id: current.sourceId, display: current.display, doc: current.doc, address_sha256: sha256(current.doc.id), retention_policy: current.retention.policy, development: linkStatus.mode === 'development', subscription: subscriptionStatus.mode === 'managed' };
 });
-// ASK: a selection is retained; a question about it is sent only by lc:ask-submit, the user's own press.
+// ASK: a circle is retained with the whole display it is on, and (with the AI's session running) a small hint about
+// it is asked for at once; a follow-up is sent only by lc:ask-submit, the user's own press.
 ipcMain.handle('lc:ask-selection', (e, facts: unknown, png: unknown, ink: unknown) => (fromOverlay(e) && current ? retainSelection(current, facts, png, ink ?? null) : { ok: false, reason: 'refused' }));
-ipcMain.handle('lc:ask-submit', (e, selectionId: unknown, question: unknown, assistance: unknown) => (fromOverlay(e) && current ? submitAsk(current, selectionId, question, assistance) : { ok: false, reason: 'refused' }));
+ipcMain.handle('lc:ask-submit', (e, selectionId: unknown, question: unknown, assistance: unknown, facts: unknown, png: unknown, ink: unknown) => (fromOverlay(e) && current ? submitAsk(current, selectionId, question, assistance, facts, png, ink ?? null) : { ok: false, reason: 'refused' }));
 ipcMain.on('lc:ask-cancel', (e, selectionId: unknown) => void (fromOverlay(e) && current ? cancelAsk(current, selectionId) : undefined));
 ipcMain.handle('lc:ask-presented', (e, selectionId: unknown, requestId: unknown, shown: unknown) => (fromOverlay(e) && current ? askPresented(current, selectionId, requestId, shown) : { saved: false, reason: 'refused' }));
 // Talk: the user's own setting in the overlay, kept here so that it is checked before every piece.
@@ -1503,13 +1868,21 @@ app.on('before-quit', () => writeUnrecordedEnds());
 // The development capture link is stopped before the app quits (bounded; its host ended by the end of its input). One
 // stop: every quit while it is pending waits too, and the app quits once it has settled or reached its bound.
 let linkQuitting: Promise<void> | null = null;
+/** The voice is ended with the app, but never holds it: an end that throws, is rejected or does not come is waited for no longer than this. */
+const VOICE_END_MS = 5_000;
+const endVoice = (): Promise<void> =>
+  new Promise<void>((done) => {
+    const v = voice;
+    if (!v) return done();
+    setTimeout(done, VOICE_END_MS);
+    new Promise<void>((ended) => ended(v.dispose())).then(done, done); // (a throw is a rejection here)
+  });
 let linkQuitDone = false;
 app.on('will-quit', (e) => {
   if ((!link && !subscription && !voice) || linkQuitDone) return;
   e.preventDefault();
   // (the voice's own child is ended with the app: asked to, then ended, and its end waited for within its bound)
-  linkQuitting ??= Promise.all([link?.quit(20_000), subscription?.quit(), voice?.dispose()])
-    .catch(() => undefined)
+  linkQuitting ??= Promise.allSettled([link?.quit(20_000), subscription?.quit(), endVoice()]) // each is waited for, whatever the others come to
     .then(() => {
       linkQuitDone = true;
       // In a later task, never from here: with nothing to stop this runs while Electron is still delivering this
@@ -1607,6 +1980,9 @@ app.whenReady().then(async () => {
       notify: (st) => {
         subscriptionStatus = st;
         notifySubscription();
+        // The connector that has the AI's session was lost or ended: the session is over (nothing starts it again but the user).
+        const s = current;
+        if (s?.live && s.live.ended === null && !subscription?.sessionLive(s.live.id)) endLive(s, s.live, 'the connection to ChatGPT was lost');
       },
       openExternal: (url) => shell.openExternal(url),
       recordEnd: recordConnectorEnd,

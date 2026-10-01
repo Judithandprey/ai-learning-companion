@@ -3,7 +3,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { clampRate, cornerOf, DEFAULT_PLACE, DISPLAYS_MAX, isPlace, NO_PREFERENCES, placeAt, PLACEMENT_FORMAT, placesOf, readPreferences, storedPreferences, usableArea, withPlace, type Rect } from '../src/shared/placement.ts';
-import { HAN_COST, PIECE_MAX, speechCulture, speechPieces } from '../src/shared/voice.ts';
+import { HAN_COST, PIECE_MAX, speechCulture, speechCultures, speechPieces } from '../src/shared/voice.ts';
 
 const AREA: Rect = { x: 10, y: 10, width: 1260, height: 740 };
 const SIZE = { width: 300, height: 50 };
@@ -71,8 +71,8 @@ test('the kept preferences are read only in their exact shape, per display, boun
 
 test('a response is read in pieces that are its own text, whole and in order: sentences, long ones cut at a space, nothing added or dropped', () => {
   const squeeze = (t: string): string => t.replace(/\s+/g, '');
-  /** What a piece takes: a letter 1, a Chinese character HAN_COST. */
-  const cost = (p: string): number => [...p].reduce((n, ch) => n + ch.length * (/\p{Script=Han}/u.test(ch) ? HAN_COST : 1), 0);
+  /** What a piece takes: a letter 1; a Chinese character or a digit HAN_COST. */
+  const cost = (p: string): number => [...p].reduce((n, ch) => n + ch.length * (/[\p{Script=Han}\p{Nd}]/u.test(ch) ? HAN_COST : 1), 0);
   const texts = [
     'The slope is 2. So the line rises! Does it cross zero? Yes: at x = -1.',
     'One line only',
@@ -84,6 +84,9 @@ test('a response is read in pieces that are its own text, whole and in order: se
     '没有空格的长句子'.repeat(60), // Chinese with nowhere to cut at
     `他说：“${'这是一个很长的句子，中间有逗号，'.repeat(12)}结束了。”然后走了。`,
     `Mixed: ${'the term 斜率 (slope) appears here, '.repeat(12)}and ends.`,
+    `3.${'1415926535'.repeat(30)}`, // a long run of digits
+    `${'今天天气很好!我们去公园玩吧!'.repeat(10)}`, // half-width stops with no space after them
+    '】'.repeat(500) + '。' + '”'.repeat(500),
     '   ',
     '',
   ];
@@ -112,6 +115,39 @@ test('a response is read in pieces that are its own text, whole and in order: se
   const uneven = '这是一个很长的句子，中间有个逗号；'.repeat(12);
   assert.deepEqual([speechPieces(uneven).join(''), speechPieces(uneven).every((p) => /[，；]$/.test(p)), speechPieces(uneven).length], [uneven, true, 3], 'cut at a pause mark, not in the middle of a clause');
   assert.deepEqual(speechPieces('没有空格的长句子'.repeat(60)).map((p) => p.length), [73, 73, 73, 73, 73, 73, 42], 'nowhere to cut at: hard cuts, nothing dropped');
+  // A half-width , ; : is a pause only before white space or a Chinese character: a number, a time, an address and a
+  // pair of coordinates stay whole, wherever the limit falls.
+  const tail = ['comes to roughly about 1,250,000 dollars in all', 'the quiz begins at 10:45:30 sharp today', 'see https://example.com/a;b:c for the rest of it', 'the point is at (3,4) on the grid and not elsewhere'];
+  for (const t of tail) {
+    for (let pad = 150; pad < 230; pad += 1) {
+      const sentence = `${'word '.repeat(Math.floor(pad / 5))}${'x'.repeat(pad % 5)} ${t}`;
+      const cut = speechPieces(sentence);
+      assert.equal(cut.join(' ').replace(/\s+/g, ' '), sentence.replace(/\s+/g, ' ').trim(), 'cut only at spaces here');
+      for (const whole of ['1,250,000', '10:45:30', 'https://example.com/a;b:c', '(3,4)']) if (t.includes(whole)) assert.equal(cut.some((p) => p.includes(whole)), true, `${whole} stays in one piece (pad ${pad})`);
+    }
+  }
+  assert.deepEqual(speechPieces(`${'很长的中文句子'.repeat(9)},然后还有后面的一半句子`).map((p) => p.at(-1)), [',', '子'], 'a half-width comma before a Chinese character is a pause');
+  // A half-width stop with a Chinese character right after it is a place to cut a long sentence at (not a sentence end: 1.首先 stays whole).
+  const stops = '今天天气很好!我们去公园玩吧!'.repeat(10);
+  assert.deepEqual([speechPieces(stops).join(''), speechPieces(stops).every((p) => p.endsWith('!')), speechPieces('1.首先，2.然后。')], [stops, true, ['1.首先，2.然后。']]);
+  // What closes a sentence stays with it, whatever mark it is; a mark alone is no piece of its own; a pause mark after a closed quotation goes on with the sentence.
+  assert.deepEqual(speechPieces('他说："你好。"然后走了。'), ['他说："你好。"', '然后走了。']);
+  assert.deepEqual(speechPieces('【注意！】下一步。《你好吗？》是一本书。'), ['【注意！】', '下一步。', '《你好吗？》', '是一本书。']);
+  assert.deepEqual(speechPieces('**这是重点。**然后继续。'), ['**这是重点。**', '然后继续。']);
+  assert.deepEqual(speechPieces('他说“好。”，然后走了。'), ['他说“好。”，然后走了。']);
+  assert.deepEqual(speechPieces('真的？!好。。。'), ['真的？!', '好。。。']);
+  assert.deepEqual(speechPieces('First.\n---\nSecond.'), ['First.---', 'Second.'], 'a line of marks is said with the piece before it');
+  assert.deepEqual(speechPieces('... and so on.'), ['... and so on.']);
+  // A digit takes a Chinese character's time: a long figure is cut shorter.
+  assert.equal(Math.max(...speechPieces(`3.${'1415926535'.repeat(30)}`).map((p) => p.length)) <= Math.ceil(PIECE_MAX / HAN_COST) + 1, true);
+  // The work grows with the text, not with its square: the longest answer, made of closing marks, is cut at once.
+  const began = performance.now();
+  for (const run of ['。' + '”'.repeat(32_000), '。'.repeat(32_000) + '，', ('。' + '）'.repeat(100)).repeat(320)]) assert.equal(speechPieces(run).join(''), run);
+  assert.equal(performance.now() - began < 1500, true, `took ${Math.round(performance.now() - began)} ms`);
+  // A piece without a letter is said in the voice of the piece after it (else before it; else English).
+  assert.deepEqual(speechCultures(['1.', '首先打开设置。', '2.', '然后选择语言。', '42']), ['zh-CN', 'zh-CN', 'zh-CN', 'zh-CN', 'zh-CN']);
+  assert.deepEqual(speechCultures(['1.', 'First.', '2.', 'Second.', '斜率是二。', '3', 'Yes.']), ['en-US', 'en-US', 'en-US', 'en-US', 'zh-CN', 'en-US', 'en-US']);
+  assert.deepEqual([speechCultures(['42', '...']), speechCultures([]), speechCultures(['The slope is 2.', '斜率是二。', '它过零点吗？', 'Yes.'])], [['en-US', 'en-US'], [], ['en-US', 'zh-CN', 'zh-CN', 'en-US']]);
   // One character is taken whatever it costs (no limit is too small to end).
   assert.deepEqual(speechPieces('中文', 1), ['中', '文']);
   // The voice a piece is said in: Chinese when it has a Chinese character, else English.

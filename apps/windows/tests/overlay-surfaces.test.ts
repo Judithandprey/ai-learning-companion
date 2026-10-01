@@ -1,7 +1,8 @@
 // The overlay's movable surfaces and the response read aloud, through the app: the real main.ts and overlay.ts
 // under the unit-test fakes. The toolbar and the card each have a handle; a drag moves the surface and nothing
-// else; its place is kept per display and restored inside whatever the work area is. A response is silent text
-// unless Talk is on; what is read aloud is the card's own text, and it stops at once when asked.
+// else; its place is kept per display and restored inside whatever the work area is. With the AI's session running
+// a circle asks for a small hint by itself; its response is silent text unless Talk was on when it was asked for;
+// what is read aloud is the card's own text, handed to the voice by the main process, and it stops at once when asked.
 // SYNTHETIC: the connector is a stand-in, the display is a fake, and the voice is a stand-in connected to the main
 // process that plays nothing (the product connects no voice in this build). No display, no audio device, no
 // microphone, no Codex, no ChatGPT and no network are involved.
@@ -9,7 +10,7 @@ import { after, test } from 'node:test';
 import assert from 'node:assert/strict';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { harness, plain, quitLinks, running, type FakeWindow, type Session } from './main-harness.ts';
+import { harness, plain, quitLinks, running, settle as started, type FakeWindow, type Session } from './main-harness.ts';
 import { overlayPage, until } from './overlay-page.ts';
 import { DEFAULT_RETENTION_POLICY } from '../src/shared/retention.ts';
 import { cornerOf } from '../src/shared/placement.ts';
@@ -22,32 +23,57 @@ const OVER = { x: 5000, y: 5000 };
 /** Everything already queued has run (a piece's end goes through the main process and back to the page). */
 const settle = (): Promise<void> => new Promise((done) => setImmediate(done));
 
-/** The app with the subscription checked (signed in) and one overlay page; `subscription: false` leaves it off. */
+/** The AI session's own bounds in these tests. */
+const AI = { policy: { max_submissions: 60, max_session_ms: 1_800_000, min_observation_interval_ms: 30_000 } };
+/**
+ * The app with the subscription checked (signed in), the capture started with the AI's session, and one overlay
+ * page; `subscription: false` leaves the subscription off (no AI at all).
+ */
 async function app(o: { subscription?: boolean; userData?: string; /** a stand-in voice is connected to the main process ('silent': one that only synthesizes) */ voice?: boolean | 'silent' } = {}) {
   const fakes = fakeConnectors();
   const h = harness({ ...(o.subscription === false ? {} : { env: { LC_SUBSCRIPTION_CONNECTOR: connectorConfig() }, subscription: { spawn: fakes.spawn, request_ms: 500, ask_ms: 20_000, end_ms: 500 } }), ...(o.userData ? { userData: o.userData } : {}) });
-  const s = await running(h);
+  await started(); // the app starts: its control window is there
   const control = h.control() as unknown as FakeWindow;
+  const live = (): { state?: string } => (plain(h.handlers['lc:session-state']!({ sender: control.webContents })) as { live?: { state?: string } }).live ?? {};
   if (o.subscription !== false) {
     h.handlers['lc:sub-check']!({ sender: control.webContents });
     await until('signed in', () => (plain(h.handlers['lc:sub-state']!({ sender: control.webContents })) as { state?: string }).state === 'signed_in', 3000);
   }
+  // Start, with the AI's observation when the subscription is on (as the control window's ticked box asks for).
+  const s = await running(h, o.subscription === false ? null : AI);
+  if (o.subscription !== false) await until('the AI is on', () => live().state === 'on', 3000);
   const page = await overlayPage(h, s, POLICY, { voice: o.voice ?? false });
   page.scene.exactPng = true;
   const file = path.join(h.userData, 'overlay-preferences.json');
   const stored = (): { displays: Record<string, Record<string, { fx: number; fy: number }>>; speech_rate: number } => JSON.parse(fs.readFileSync(file, 'utf8')) as never;
-  const select = async (x = 190, width = 210): Promise<void> => {
+  /** A circle drawn in ASK (nothing is waited for). */
+  const circle = (x = 190, width = 210): void => {
     page.press('ASK');
     page.pointer('pointerdown', 2, x, 95);
     for (const [px, py] of [[x + width, 95], [x + width, 125], [x, 125]] as const) page.pointer('pointermove', 2, px, py);
     page.pointer('pointerup', 2, x + 2, 97);
-    await until('the card', () => page.review.card()?.text.includes(`Region ${x - 8},87 `) === true && (o.subscription === false || page.ask().form));
   };
-  const ask = async (text: string): Promise<void> => {
+  /** A circle in ASK. With the AI on, its own request for a small hint goes out by itself: waited for here. */
+  const select = async (x = 190, width = 210): Promise<void> => {
+    const before = o.subscription === false ? 0 : fakes.last().asks().length;
+    circle(x, width);
+    await until('the card', () => page.review.card()?.text.includes(`Region ${x - 8},87 `) === true && (o.subscription === false || page.ask().form));
+    if (o.subscription !== false && live().state === 'on') await until('the circle\'s own request', () => fakes.last().asks().length === before + 1 && /^Asked at/.test(page.ask().status ?? ''));
+  };
+  /** A follow-up in the user's words, sent from the card (not answered yet). */
+  const followUp = async (words = 'And then?'): Promise<void> => {
     const before = fakes.last().asks().length;
+    page.question(words);
     page.click('askSubmit');
     await until('sent', () => fakes.last().asks().length === before + 1);
     await until('acknowledged', () => /^Asked at/.test(page.ask().status ?? ''));
+  };
+  /**
+   * The next response on the card, as `text`: of the request that is out (the circle's own, after a circle), else of
+   * a follow-up sent now.
+   */
+  const ask = async (text: string): Promise<void> => {
+    if (fakes.last().heldAsks().length === 0) await followUp();
     fakes.last().answer(text);
     await until('answered', () => page.ask().answer === text);
   };
@@ -55,7 +81,7 @@ async function app(o: { subscription?: boolean; userData?: string; /** a stand-i
     const dir = path.join(h.userData, 'captures', fs.readdirSync(path.join(h.userData, 'captures'))[0]!, 'asks');
     return fs.existsSync(dir) ? fs.readdirSync(dir).filter((f) => f.endsWith('.json')).sort().map((f) => JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'))) : [];
   };
-  return { h, s, fakes, page, control, file, stored, select, ask, records };
+  return { h, s, fakes, page, control, file, stored, circle, select, ask, followUp, records, live };
 }
 /** A drag of a surface by its handle: press at (x, y), move through the points, release at the last. */
 function dragBy(page: Awaited<ReturnType<typeof app>>['page'], handle: string, from: { x: number; y: number }, ...to: Array<{ x: number; y: number }>): void {
@@ -273,19 +299,19 @@ test('[synthetic connector] the card has a handle too: it moves with its selecti
   const sent = w.fakes.last().calls.length;
   dragBy(page, 'cardHandle', { x: 918, y: 558 }, { x: 108, y: 108 });
   await settle();
-  assert.deepEqual([round(page.box('card')), page.ask().form, page.review.card() !== null, w.fakes.last().calls.length, w.records()[0]!.requests.length], [[100, 100], true, true, sent, 0], 'moved; the card is as it was, and nothing was sent or asked');
+  assert.deepEqual([round(page.box('card')), page.ask().form, page.review.card() !== null, w.fakes.last().calls.length, w.records()[0]!.requests.length], [[100, 100], true, true, sent, 1], 'moved; the card is as it was, and nothing more was sent or asked than the circle\'s own request');
   assert.deepEqual(w.stored().displays['display:1'], { caption: { fx: (100 - 10) / (1260 - 360), fy: (100 - 10) / (740 - 200) } });
-  // The card's own controls work where it is: a question, its answer, another card in the same place.
-  await w.ask('An answer on the moved card.');
+  // The card's own controls work where it is: the response, a follow-up, another card in the same place.
+  await w.ask('A response on the moved card.');
   assert.deepEqual(round(page.box('card')), [100, 100]);
+  await w.ask('And a follow-up\'s response there.');
   await w.select(600, 120);
   assert.deepEqual(round(page.box('card')), [100, 100], 'the next card opens where the user keeps the card');
-  // Moved while a question is out: the question is not cancelled and its answer is shown.
-  page.click('askSubmit');
-  await until('sent', () => w.fakes.last().asks().length === 2);
+  // Moved while a request is out: it is not interrupted and its response is shown.
+  assert.equal(w.fakes.last().heldAsks().length, 1);
   dragBy(page, 'cardHandle', { x: 108, y: 108 }, { x: 508, y: 308 });
   await settle();
-  assert.equal(w.fakes.last().count('ask/cancel'), 0);
+  assert.equal(w.fakes.last().count('companion/interrupt'), 0);
   w.fakes.last().answer('Answered while the card was elsewhere.');
   await until('answered', () => page.ask().answer === 'Answered while the card was elsewhere.');
   assert.deepEqual(round(page.box('card')), [500, 300]);
@@ -307,26 +333,29 @@ test('[synthetic connector] no voice is connected in this build: a response is s
   assert.deepEqual([off.page.talkState().controls, off.page.talkState().status], [false, null]);
 });
 
-test('[synthetic connector, stand-in voice] a response is silent text unless Talk is on; with Talk on it is read from the card\'s own text, a piece at a time, at 1.3×, and recorded as read apart from shown', async () => {
+test('[synthetic connector, stand-in voice] a response is silent text unless Talk was on when it was asked for; then it is read from the card\'s own text, a piece at a time, at 1.3×, and what the voice reported is recorded apart from shown', async () => {
   const w = await app({ voice: true });
   const { page } = w;
-  await w.select();
-  // The default: nothing is on, and an answer is not read.
+  // The default: nothing is on, and a response is not read. (Talk is in the toolbar: in reach before any card.)
   assert.deepEqual(page.talkState(), { controls: true, talk: false, muted: false, mute: false, interrupt: false, rate: null, status: null });
+  await w.select();
   await w.ask('Silent by default. It is only shown.');
-  assert.deepEqual([page.voice.spoken.length, page.talkState().interrupt, 'spoken' in w.records()[0]!.requests[0]!], [0, false, false]);
+  assert.deepEqual([w.fakes.last().asks()[0]!.params['presentation'], page.voice.spoken.length, page.talkState().interrupt, 'spoken' in w.records()[0]!.requests[0]!, w.records()[0]!.requests[0]!['asked_as']], ['silent', 0, false, false, 'silent']);
   // Talk on: said, with what it does and what is not connected.
   page.click('talk');
-  assert.deepEqual(page.talkState(), { controls: true, talk: true, muted: false, mute: true, interrupt: false, rate: '1.3×', status: 'Talk is on: the response to your next question is read aloud at 1.3× and shown as text. Speaking to the AI is not connected in this build: type your question.' });
-  assert.equal(page.voice.spoken.length, 0, 'the answer already shown is not read: only a response to a question asked from now');
+  assert.deepEqual(page.talkState(), { controls: true, talk: true, muted: false, mute: true, interrupt: false, rate: '1.3×', status: 'Talk is on: the response to your next request is read aloud at 1.3× and shown as text. Speaking to the AI is not connected in this build: type your question.' });
+  assert.match(page.hint() ?? '', /Talk is on: the responses you ask for from now are read aloud\./, 'said in the toolbar too');
+  assert.equal(page.voice.spoken.length, 0, 'the response already shown is not read: only one asked for from now');
   const text = 'The slope is 2. So the line rises! Does it cross zero?';
   await w.ask(text);
+  assert.deepEqual([w.fakes.last().asks()[1]!.params['presentation'], w.records()[0]!.requests[1]!['asked_as']], ['spoken', 'spoken'], 'asked for as spoken: Talk was on then');
   // One piece at a time; the rest is not handed to the voice until the piece before has ended.
   assert.deepEqual(page.voice.spoken.map((u) => [u.text, u.rate]), [['The slope is 2.', 1.3]]);
   assert.deepEqual([page.ask().answer, page.review.card() !== null], [text, true], 'the text that is read is on the card');
   assert.deepEqual([page.node('answerBox').revealed.at(-1), page.node('answerBox').revealed.length], ['start', 2], 'each response is brought into view on the card when it comes');
   assert.deepEqual([page.talkState().interrupt, page.talkState().status], [true, 'Reading the response aloud at 1.3× (part 1 of 3). The text below is what is read.']);
-  assert.equal(w.records()[0]!.requests[1]!['spoken'], 'started');
+  // Handed to the voice, nothing reported yet: attempted, not played help.
+  assert.deepEqual([w.records()[0]!.requests[1]!['spoken'], w.records()[0]!.requests[1]!['spoken_pieces']], ['attempted', { said: 0, of: 3 }]);
   page.voice.spoken[0]!.end();
   await settle();
   assert.deepEqual([page.voice.spoken.length, page.voice.spoken[1]!.text, page.talkState().status], [2, 'So the line rises!', 'Reading the response aloud at 1.3× (part 2 of 3). The text below is what is read.']);
@@ -334,38 +363,47 @@ test('[synthetic connector, stand-in voice] a response is silent text unless Tal
   await settle();
   page.voice.spoken[2]!.end();
   await settle();
-  assert.deepEqual([page.voice.spoken.map((u) => u.text).join(' '), page.talkState().interrupt, w.records()[0]!.requests[1]!['spoken'], page.voice.cancels], [text, false, 'finished', 0]);
-  assert.deepEqual(w.records()[0]!.requests.map((r) => [r['shown'], r['spoken'] ?? null]), [[true, null], [true, 'finished']], 'read aloud is recorded apart from shown');
-  // A refusal is brought into view too (its status), not the answer box.
-  w.page.click('askSubmit');
-  await until('sent', () => w.fakes.last().asks().length === 3);
-  w.fakes.last().fail(w.fakes.last().asks()[2]!.id, 'quota');
+  assert.deepEqual([page.voice.spoken.map((u) => u.text).join(' '), page.talkState().interrupt, w.records()[0]!.requests[1]!['spoken'], w.records()[0]!.requests[1]!['spoken_pieces'], page.voice.cancels], [text, false, 'finished', { said: 3, of: 3 }, 0]);
+  assert.deepEqual(w.records()[0]!.requests.map((r) => [r['shown'], r['spoken'] ?? null]), [[true, null], [true, 'finished']], 'what the voice reported is recorded apart from shown');
+  // A refusal is brought into view too (its status), not the answer box. (A request simply not taken: the session goes on.)
+  await w.followUp();
+  w.fakes.last().fail(w.fakes.last().asks()[2]!.id, 'busy');
   await until('refused', () => /^No answer/.test(page.ask().status ?? ''));
-  assert.deepEqual([page.node('askStatus').revealed.at(-1), page.node('answerBox').revealed.length], ['nearest', 2]);
-  // The voice fails in the middle: said, recorded as interrupted, and the text stays.
+  assert.deepEqual([page.node('askStatus').revealed.at(-1), page.node('answerBox').revealed.length, w.live().state], ['nearest', 2, 'on']);
+  // The voice fails at its first piece: handed over, nothing reported said. Attempted, never played help; the text stays.
   await w.ask('First piece. Second piece.');
   page.voice.spoken.at(-1)!.end(false);
   await settle();
-  assert.deepEqual([page.voice.spoken.length, page.talkState().interrupt, w.records()[0]!.requests[3]!['spoken'], page.ask().answer], [4, false, 'interrupted', 'First piece. Second piece.']);
+  assert.deepEqual([page.voice.spoken.length, page.voice.cancels, page.talkState().interrupt, w.records()[0]!.requests[3]!['spoken'], w.records()[0]!.requests[3]!['spoken_pieces'], page.ask().answer], [4, 1, false, 'attempted', { said: 0, of: 2 }, 'First piece. Second piece.'], 'the voice was told to stop too');
   assert.match(page.talkState().status ?? '', /^The voice stopped before the end; the response is shown as text\./);
+  // It fails after a piece was reported said: interrupted, with how many.
+  await w.ask('Said to its end. Not this one.');
+  page.voice.spoken.at(-1)!.end();
+  await settle();
+  page.voice.spoken.at(-1)!.end(false);
+  await settle();
+  assert.deepEqual([page.voice.spoken.length, w.records()[0]!.requests[4]!['spoken'], w.records()[0]!.requests[4]!['spoken_pieces']], [6, 'interrupted', { said: 1, of: 2 }]);
 });
 
 test('[synthetic connector, stand-in voice] the voice stops at once, with everything not yet spoken: Stop reading, Mute, Talk off, closing the card, a new selection, a new question, Cancel and Stop', async () => {
   const text = 'One. Two. Three. Four.';
   const reading = async () => {
     const w = await app({ voice: true });
-    await w.select();
     w.page.click('talk');
+    await w.select();
     await w.ask(text);
     assert.deepEqual([w.page.voice.spoken.length, w.page.talkState().interrupt], [1, true]);
     return w;
   };
-  const stopped = async (w: Awaited<ReturnType<typeof reading>>, what: string, spoken = 'interrupted'): Promise<void> => {
+  // (Stopped while its first piece was being said: nothing was reported said, so the record stays "attempted".)
+  const stopped = async (w: Awaited<ReturnType<typeof reading>>, what: string, spoken = 'attempted'): Promise<void> => {
     await settle();
+    // The page's own state, before the voice's late end of the cut piece: stopped, and nothing said of a failure.
+    assert.deepEqual([w.page.voice.cancels, w.page.talkState().interrupt, /^Reading/.test(w.page.talkState().status ?? '')], [1, false, false], `${what}: stopped at once`);
     w.page.voice.spoken[0]!.end(); // the voice's own late end of the cut piece
     await settle();
-    assert.deepEqual([w.page.voice.spoken.length, w.page.voice.cancels, w.page.talkState().interrupt], [1, 1, false], `${what}: told to stop once, and nothing more is handed to it`);
-    if (spoken) assert.equal(w.records()[0]!.requests[0]!['spoken'], spoken, what);
+    assert.deepEqual([w.page.voice.spoken.length, w.page.voice.cancels, w.page.talkState().interrupt, /voice stopped/.test(w.page.talkState().status ?? '')], [1, 1, false, false], `${what}: told to stop once, and nothing more is handed to it`);
+    if (spoken) assert.deepEqual([w.records()[0]!.requests[0]!['spoken'], w.records()[0]!.requests[0]!['spoken_pieces']], [spoken, { said: 0, of: 4 }], what);
   };
   // Stop reading: Talk stays on, the text stays.
   let w = await reading();
@@ -396,6 +434,11 @@ test('[synthetic connector, stand-in voice] the voice stops at once, with everyt
   w.page.click('talk');
   await stopped(w, 'Talk off');
   assert.deepEqual(w.page.talkState(), { controls: true, talk: false, muted: false, mute: false, interrupt: false, rate: null, status: null });
+  const off = (w.records()[0] as unknown as { selection_id: string }).selection_id;
+  const asked = w.h.handlers['lc:say']!({ sender: w.s.overlay.webContents }, off, `${off}.1`, 0) as Promise<unknown>;
+  await settle();
+  assert.equal(w.page.voice.spoken.length, 1, 'the main process was told Talk is off: it says nothing, whoever asks');
+  assert.deepEqual(plain(await asked), { spoken: false });
   // Closing the card: no response is read without its text on the screen.
   w = await reading();
   w.page.click('close');
@@ -405,11 +448,12 @@ test('[synthetic connector, stand-in voice] the voice stops at once, with everyt
   w = await reading();
   await w.select(600, 120);
   await stopped(w, 'a new selection', '');
-  // A new question on the same card, and its Cancel.
+  // A follow-up on the same card, and its Cancel.
   w = await reading();
+  w.page.question('And then?');
   w.page.click('askSubmit');
   await until('sent', () => w.fakes.last().asks().length === 2);
-  await stopped(w, 'a new question');
+  await stopped(w, 'a follow-up');
   w.page.click('askCancel');
   await settle();
   assert.equal(w.page.voice.spoken.length, 1);
@@ -428,7 +472,11 @@ test('[synthetic connector, stand-in voice] the rate is the user\'s, inside its 
   const { page } = w;
   dragBy(page, 'toolbarHandle', { x: 978, y: 18 }, { x: 18, y: 18 }); // a place is kept first: the rate must not drop it
   await settle();
+  // A fresh Start: Talk is off in the main process too, whatever asks.
   await w.select();
+  await w.ask('Shown before Talk.');
+  const first = (w.records()[0] as unknown as { selection_id: string }).selection_id;
+  assert.deepEqual([plain(await w.h.handlers['lc:say']!({ sender: w.s.overlay.webContents }, first, `${first}.1`, 0)), page.voice.spoken.length], [{ spoken: false }, 0]);
   page.click('talk');
   for (let i = 0; i < 3; i += 1) page.click('faster');
   await settle();
@@ -454,21 +502,22 @@ test('[synthetic connector, stand-in voice] the rate is the user\'s, inside its 
   const say = async (sender: unknown, ...a: unknown[]): Promise<unknown> => plain(await w.h.handlers['lc:say']!(sender, ...a));
   const NO = { spoken: false };
   await w.ask('Being read now. Second piece. Third piece.');
-  assert.deepEqual([page.voice.spoken.length, page.voice.spoken[2]!.text, w.records()[0]!.requests[1]!['spoken']], [3, 'Being read now.', 'started']);
+  assert.deepEqual([page.voice.spoken.length, page.voice.spoken[2]!.text, w.records()[0]!.requests[2]!['spoken']], [3, 'Being read now.', 'attempted']);
   const before = JSON.stringify(w.records());
   for (const refused of [
-    say({ sender: w.control.webContents }, id, `${id}.2`, 1), // not the overlay
-    say({ sender: {} }, id, `${id}.2`, 1),
-    say(overlay, 'ask-0000000000000000', `${id}.2`, 1), // not the current selection
+    say({ sender: w.control.webContents }, id, `${id}.3`, 1), // not the overlay
+    say({ sender: {} }, id, `${id}.3`, 1),
+    say(overlay, 'ask-0000000000000000', `${id}.3`, 1), // not the current selection
     say(overlay, id, `${id}.9`, 1), // not a question of it
-    say(overlay, id, `${id}.1`, 0), // an earlier answer of it, not the current response
-    say(overlay, id, `${id}.2`, 0), // the piece being said, again
-    say(overlay, id, `${id}.2`, 1), // the next one, before this one ended
-    say(overlay, id, `${id}.2`, 2), // out of order
-    say(overlay, id, `${id}.2`, '1'),
-    say(overlay, id, `${id}.2`, -1),
-    say(overlay, id, `${id}.2`, 0.5),
-    say(overlay, id, `${id}.2`),
+    say(overlay, id, `${id}.2`, 0), // an earlier answer of it, not the current response
+    say(overlay, id, `${id}.1`, 0),
+    say(overlay, id, `${id}.3`, 0), // the piece being said, again
+    say(overlay, id, `${id}.3`, 1), // the next one, before this one ended
+    say(overlay, id, `${id}.3`, 2), // out of order
+    say(overlay, id, `${id}.3`, '1'),
+    say(overlay, id, `${id}.3`, -1),
+    say(overlay, id, `${id}.3`, 0.5),
+    say(overlay, id, `${id}.3`),
   ]) assert.deepEqual(await refused, NO);
   assert.deepEqual([page.voice.spoken.length, JSON.stringify(w.records())], [3, before], 'nothing was handed to the voice or recorded for any of them');
   page.voice.spoken[2]!.end();
@@ -476,38 +525,39 @@ test('[synthetic connector, stand-in voice] the rate is the user\'s, inside its 
   assert.deepEqual([page.voice.spoken.length, page.voice.spoken[3]!.text], [4, 'Second piece.'], 'the reading itself went on, in order');
   // Muted, or Talk off, as the main process holds it: the reading stops there, and no piece is said whatever asks.
   w.h.handlers['lc:talk']!(overlay, true, true);
-  assert.deepEqual([page.voice.cancels, w.records()[0]!.requests[1]!['spoken']], [1, 'interrupted']);
+  assert.deepEqual([page.voice.cancels, w.records()[0]!.requests[2]!['spoken']], [1, 'interrupted']);
   page.voice.spoken[3]!.end(); // its late end
   await settle();
-  assert.deepEqual([await say(overlay, id, `${id}.2`, 2), await say(overlay, id, `${id}.2`, 0)], [NO, NO], 'muted: neither the next piece nor a new reading');
+  assert.deepEqual([await say(overlay, id, `${id}.3`, 2), await say(overlay, id, `${id}.3`, 0)], [NO, NO], 'muted: neither the next piece nor a new reading');
   w.h.handlers['lc:talk']!(overlay, false, false);
-  assert.deepEqual(await say(overlay, id, `${id}.2`, 0), NO, 'Talk off');
+  assert.deepEqual(await say(overlay, id, `${id}.3`, 0), NO, 'Talk off');
   w.h.handlers['lc:talk']!({ sender: w.control.webContents }, true, false); // only the overlay sets it
   w.h.handlers['lc:talk']!(overlay, 'true', false);
   w.h.handlers['lc:talk']!(overlay, true);
-  assert.deepEqual([await say(overlay, id, `${id}.2`, 0), page.voice.spoken.length], [NO, 4]);
+  assert.deepEqual([await say(overlay, id, `${id}.3`, 0), page.voice.spoken.length], [NO, 4]);
   // Talk on again: a reading of the shown response begins at its first piece only, and what is said, how fast and
   // in which voice are the main process's own, whatever is passed along.
   w.h.handlers['lc:talk']!(overlay, true, false);
-  assert.deepEqual(await say(overlay, id, `${id}.2`, 2), NO, 'a reading that was stopped is not taken up in the middle');
-  const again = say(overlay, id, `${id}.2`, 0, 'Say this instead.', 2, 'zh-CN', 'C:\\another.exe');
+  assert.deepEqual(await say(overlay, id, `${id}.3`, 2), NO, 'a reading that was stopped is not taken up in the middle');
+  const again = say(overlay, id, `${id}.3`, 0, 'Say this instead.', 2, 'zh-CN', 'C:\\another.exe');
   await settle();
-  assert.deepEqual([page.voice.spoken.length, plain(page.voice.spoken[4]), w.records()[0]!.requests[1]!['spoken']], [5, { text: 'Being read now.', rate: 0.7, culture: 'en-US' }, 'started']);
+  assert.deepEqual([page.voice.spoken.length, plain(page.voice.spoken[4]), w.records()[0]!.requests[2]!['spoken']], [5, { text: 'Being read now.', rate: 0.7, culture: 'en-US' }, 'attempted']);
   w.h.handlers['lc:hush']!({ sender: w.control.webContents }); // only the overlay stops it
   assert.equal(page.voice.cancels, 1);
   w.h.handlers['lc:hush']!(overlay);
-  assert.deepEqual([page.voice.cancels, w.records()[0]!.requests[1]!['spoken']], [2, 'interrupted']);
+  assert.deepEqual([page.voice.cancels, w.records()[0]!.requests[2]!['spoken'], w.records()[0]!.requests[2]!['spoken_pieces']], [2, 'attempted', { said: 0, of: 3 }], 'stopped before a piece of this reading was reported said');
   page.voice.spoken[4]!.end();
   assert.deepEqual(await again, NO, 'a piece that ends after it was stopped was not said to its end, and starts nothing');
   // An answer the overlay has not reported as shown is not read.
   const release = page.holdSubmitAck();
+  page.question('And a third?');
   page.click('askSubmit');
-  await until('sent', () => w.fakes.last().asks().length === 3);
+  await until('sent', () => w.fakes.last().asks().length === 4);
   w.fakes.last().answer('Not shown yet.');
-  await until('recorded', () => w.records()[0]!.requests[2]!['outcome'] !== null);
-  assert.deepEqual([await say(overlay, id, `${id}.3`, 0), w.records()[0]!.requests[2]!['shown'], 'spoken' in w.records()[0]!.requests[2]!, page.voice.spoken.length], [NO, false, false, 5]);
+  await until('recorded', () => w.records()[0]!.requests[3]!['outcome'] !== null);
+  assert.deepEqual([await say(overlay, id, `${id}.4`, 0), w.records()[0]!.requests[3]!['shown'], 'spoken' in w.records()[0]!.requests[3]!, page.voice.spoken.length], [NO, false, false, 5]);
   release();
-  await until('shown, then read', () => w.records()[0]!.requests[2]!['spoken'] === 'started');
+  await until('shown, then read', () => w.records()[0]!.requests[3]!['spoken'] === 'attempted');
   assert.equal(page.voice.spoken[5]!.text, 'Not shown yet.');
   page.click('interrupt');
   await settle();
@@ -537,7 +587,7 @@ test('[synthetic connector] the card\'s handle too moves the card and nothing el
     dragBy(page, 'cardHandle', { x: page.box('card').left + 8, y: page.box('card').top + 8 }, { x: 308, y: 208 });
     await settle();
     assert.deepEqual(round(page.box('card')), [300, 200], m);
-    assert.deepEqual([ink(), page.review.state().gesture, JSON.stringify(page.review.card()), page.hint(), page.ask().form, w.fakes.last().calls.length, w.records()[0]!.requests.length], [before, null, card, hint, true, calls, 0], `${m}: no ink, no selection, the same card and mode, nothing sent or asked`);
+    assert.deepEqual([ink(), page.review.state().gesture, JSON.stringify(page.review.card()), page.hint(), page.ask().form, w.fakes.last().calls.length, w.records()[0]!.requests.length], [before, null, card, hint, true, calls, 1], `${m}: no ink, no selection, the same card and mode, nothing sent or asked beyond the circle's own request`);
     dragBy(page, 'cardHandle', { x: 308, y: 208 }, { x: 918, y: 558 });
     await settle();
   }
@@ -583,30 +633,31 @@ test('[synthetic connector] the card\'s handle too moves the card and nothing el
 test('[synthetic connector, stand-in voice] an answer that Cancel crossed is not read; a cut piece ending late does not disturb the reading after it; a voice that rejects or throws is said as stopped, and a Stop still completes', async () => {
   const w = await app({ voice: true });
   const { page } = w;
-  await w.select();
   page.click('talk');
-  // The answer had left the main process when Cancel was pressed: not shown, so not read.
+  // The circle's own response had left the main process when Cancel was pressed (before the card knew its request):
+  // not shown, so not read.
   const release = page.holdSubmitAck();
-  page.click('askSubmit');
+  w.circle();
   await until('sent', () => w.fakes.last().asks().length === 1);
   w.fakes.last().answer('Never shown, so never read.');
   await until('recorded', () => w.records()[0]!.requests[0]!['outcome'] !== null);
   page.click('askCancel');
   release();
   await until('said as cancelled', () => /^Cancelled/.test(page.ask().status ?? ''));
-  assert.deepEqual([page.ask().answer, page.voice.spoken.length, page.talkState().interrupt, 'spoken' in w.records()[0]!.requests[0]!], [null, 0, false, false]);
-  // A first reading is cut by a second question; the cut piece's late failure is nobody's.
+  assert.deepEqual([page.ask().answer, page.voice.spoken.length, page.talkState().interrupt, 'spoken' in w.records()[0]!.requests[0]!, w.records()[0]!.requests[0]!['shown']], [null, 0, false, false, false]);
+  // A first reading is cut by a second request; the cut piece's late failure is nobody's.
   await w.ask('One. Two.');
   await w.ask('Alpha. Beta.');
   assert.deepEqual(page.voice.spoken.map((u) => u.text), ['One.', 'Alpha.']);
   page.voice.spoken[0]!.end(false);
   await settle();
-  assert.deepEqual([page.talkState().interrupt, page.talkState().status, w.records()[0]!.requests.slice(1).map((r) => r['spoken'])], [true, 'Reading the response aloud at 1.3× (part 1 of 2). The text below is what is read.', ['interrupted', 'started']]);
+  // (the first was stopped before any piece of it was reported said: attempted, not played help)
+  assert.deepEqual([page.talkState().interrupt, page.talkState().status, w.records()[0]!.requests.slice(1).map((r) => r['spoken'])], [true, 'Reading the response aloud at 1.3× (part 1 of 2). The text below is what is read.', ['attempted', 'attempted']]);
   page.voice.spoken[1]!.end();
   await settle();
   page.voice.spoken[2]!.end();
   await settle();
-  assert.deepEqual(w.records()[0]!.requests.slice(1).map((r) => r['spoken']), ['interrupted', 'finished']);
+  assert.deepEqual(w.records()[0]!.requests.slice(1).map((r) => [r['spoken'], r['spoken_pieces']]), [['attempted', { said: 0, of: 2 }], ['finished', { said: 2, of: 2 }]]);
   // The rate shown for the piece being read is the one it is read at; a change holds from the next piece.
   await w.ask('Paced one. Paced two.');
   page.click('faster');
@@ -614,13 +665,16 @@ test('[synthetic connector, stand-in voice] an answer that Cancel crossed is not
   page.voice.spoken.at(-1)!.end();
   await settle();
   assert.deepEqual([page.voice.spoken.at(-1)!.rate, page.talkState().status], [1.4, 'Reading the response aloud at 1.4× (part 2 of 2). The text below is what is read.']);
-  // The voice's promise is rejected: said as stopped, recorded as interrupted, not left "Reading…".
+  // The voice's promise is rejected at the second piece: said as stopped, the voice told to stop, recorded as
+  // interrupted after the one piece it reported said, not left "Reading…".
+  const stops = page.voice.cancels;
   page.voice.spoken.at(-1)!.end(Promise.reject(new Error('device lost')) as never);
   await settle();
   await settle();
-  assert.deepEqual([page.talkState().interrupt, w.records()[0]!.requests.at(-1)!['spoken']], [false, 'interrupted']);
+  assert.deepEqual([page.talkState().interrupt, w.records()[0]!.requests.at(-1)!['spoken'], w.records()[0]!.requests.at(-1)!['spoken_pieces'], page.voice.cancels], [false, 'interrupted', { said: 1, of: 2 }, stops + 1]);
   assert.match(page.talkState().status ?? '', /^The voice stopped before the end; the response is shown as text\./);
-  // What was said of that reading goes with its response: a new question, and a new card, do not carry it.
+  // What was said of that reading goes with its response: a new request, and a new card, do not carry it.
+  page.question('And more?');
   page.click('askSubmit');
   await until('sent', () => w.fakes.last().asks().length === 5);
   assert.equal(/voice stopped/.test(page.talkState().status ?? ''), false);
@@ -633,22 +687,32 @@ test('[synthetic connector, stand-in voice] an answer that Cancel crossed is not
   assert.equal(/voice stopped/.test(page.talkState().status ?? ''), false);
   // A voice that throws when told to stop does not stop a Stop: the capture ends as it does otherwise.
   const t = await app({ voice: true });
-  await t.select();
   t.page.click('talk');
+  await t.select();
   await t.ask('Being read when Stop comes.');
   t.page.breakVoice();
   t.h.end('stopped by the test');
   await until('ended', () => t.h.current() === null, 5000);
   assert.deepEqual([t.page.review.state().ended, t.page.talkState().interrupt], [true, false]);
-  // A voice that throws when asked to say a piece: said as stopped, nothing left reading.
+  // A voice that throws when asked to say a piece: said as stopped, nothing left reading; a call that was only
+  // attempted is recorded as that, never as played help.
   const y = await app({ voice: true });
-  await y.select();
   y.page.click('talk');
+  await y.select();
   y.page.breakVoice();
   await y.ask('Cannot be said.');
   await settle();
-  assert.deepEqual([y.page.talkState().interrupt, y.records()[0]!.requests[0]!['spoken'], y.page.ask().answer], [false, 'interrupted', 'Cannot be said.']);
+  assert.deepEqual([y.page.talkState().interrupt, y.records()[0]!.requests[0]!['spoken'], y.records()[0]!.requests[0]!['spoken_pieces'], y.page.ask().answer], [false, 'attempted', { said: 0, of: 1 }, 'Cannot be said.']);
   assert.match(y.page.talkState().status ?? '', /^The voice stopped before the end/);
+  // The page's own handling of a call that fails (the bridge itself): said as stopped, nothing left reading.
+  const z = await app({ voice: true });
+  z.page.click('talk');
+  await z.select();
+  z.h.handlers['lc:say'] = () => Promise.reject(new Error('the bridge failed'));
+  await z.ask('The call fails.');
+  await settle();
+  assert.deepEqual([z.page.talkState().interrupt, z.page.voice.spoken.length], [false, 0]);
+  assert.match(z.page.talkState().status ?? '', /^The voice stopped before the end/);
 });
 
 test('[synthetic connector] the Talk control never says it reads aloud when no voice is connected; a preferences file cut short is set aside so places can be kept again, and one of another format is left as it is', async () => {
@@ -710,8 +774,8 @@ test('[synthetic connector] the Talk control never says it reads aloud when no v
 test('[synthetic connector, stand-in voice] each piece is said in its language\'s voice; the overlay lost, or the app closing, stops and ends the voice; a voice that only synthesizes is said as a test voice and recorded as nothing read', async () => {
   const w = await app({ voice: true });
   const { page } = w;
-  await w.select();
   page.click('talk');
+  await w.select();
   await w.ask('The slope is 2. 斜率是二。它过零点吗？ Yes.');
   for (let i = 0; i < 3; i += 1) {
     page.voice.spoken[i]!.end();
@@ -721,7 +785,7 @@ test('[synthetic connector, stand-in voice] each piece is said in its language\'
   assert.equal(page.talkState().status, 'Reading the response aloud at 1.3× (part 4 of 4). The text below is what is read.');
   // The overlay window is lost while a piece is being said: the voice is stopped by the main process itself.
   w.s.overlay.destroy();
-  assert.deepEqual([w.h.current(), page.voice.cancels, w.records()[0]!.requests[0]!['spoken']], [null, 1, 'interrupted']);
+  assert.deepEqual([w.h.current(), page.voice.cancels, w.records()[0]!.requests[0]!['spoken'], w.records()[0]!.requests[0]!['spoken_pieces']], [null, 1, 'interrupted', { said: 3, of: 4 }]);
   page.voice.spoken[3]!.end();
   await settle();
   assert.deepEqual([page.voice.spoken.length, w.records()[0]!.requests[0]!['spoken']], [4, 'interrupted'], 'its late end changes nothing');
@@ -736,8 +800,10 @@ test('[synthetic connector, stand-in voice] each piece is said in its language\'
 
   // A voice that only synthesizes (a test's): said as that on the card while it reads, and nothing is recorded as read aloud.
   const t = await app({ voice: 'silent' });
-  await t.select();
+  assert.equal(t.page.talkLabel(), 'TEST VOICE, nothing is played: Talk is off: responses are shown as text only. Press to have them read aloud.');
   t.page.click('talk');
+  assert.deepEqual([t.page.talkLabel(), t.page.talkState().status], ['TEST VOICE, nothing is played: Talk is on: responses are read aloud. Press to turn it off.', 'TEST VOICE, nothing is played: Talk is on: the response to your next request is read aloud at 1.3× and shown as text. Speaking to the AI is not connected in this build: type your question.']);
+  await t.select();
   await t.ask('Synthesized only. Not played.');
   assert.deepEqual([t.page.voice.spoken.length, t.page.talkState().status, 'spoken' in t.records()[0]!.requests[0]!], [1, 'TEST VOICE, nothing is played: Reading the response aloud at 1.3× (part 1 of 2). The text below is what is read.', false]);
   t.page.voice.spoken[0]!.end();
@@ -760,17 +826,33 @@ test('[synthetic connector, stand-in voice] each piece is said in its language\'
   assert.equal(only.h.quits.n, 0, 'it waits for the voice');
   await until('the app quit', () => only.h.quits.n === 1, 5000);
   assert.equal(only.page.voice.disposed, 1);
+  // A voice whose end never comes, or throws, does not hold the app: it is waited for within its bound, and the
+  // connector's own end is still waited for whatever the voice's comes to.
+  for (const bad of ['never', 'throws', 'rejects'] as const) {
+    const q = await app({ voice: true });
+    const ends = { connector: false };
+    q.h.connectVoice({ audible: true, say: async () => false, stop() {}, dispose: () => (bad === 'never' ? new Promise(() => undefined) : bad === 'throws' ? (() => { throw new Error('dispose failed (stand-in)'); })() : Promise.reject(new Error('dispose rejected (stand-in)'))) });
+    q.fakes.last().endDelayMs = 60;
+    q.fakes.last().once('exit', () => (ends.connector = true));
+    q.h.app.quit();
+    await settle();
+    assert.deepEqual([q.h.quits.n, ends.connector], [0, false], `${bad}: the app has not gone while its connector is still ending`);
+    if (bad === 'never') q.h.fire(5000); // the voice's own bound
+    await until('the app quit', () => q.h.quits.n === 1, 5000);
+    assert.equal(ends.connector, true, `${bad}: the connector's end was waited for`);
+  }
 });
 
-test('[synthetic connector, stand-in voice] the main process itself keeps the order and stops the voice, whatever the page does: pieces in order only, and a Stop, a closed card and a new question each stop it there', async () => {
+test('[synthetic connector, stand-in voice] the main process itself keeps the order and stops the voice, whatever the page does: pieces in order only, and a Stop, a closed card and a follow-up each stop it there', async () => {
   // The page's own Talk stays off (it asks for nothing and stops nothing): only the main process is driven here.
+  // (Talk is on in the main process when the circle is made, so its response is asked for as spoken.)
   const driven = async (text = 'One. Two. Three.') => {
     const w = await app({ voice: true });
+    const overlay = { sender: w.s.overlay.webContents };
+    w.h.handlers['lc:talk']!(overlay, true, false);
     await w.select();
     await w.ask(text);
     const id = (w.records()[0] as unknown as { selection_id: string }).selection_id;
-    const overlay = { sender: w.s.overlay.webContents };
-    w.h.handlers['lc:talk']!(overlay, true, false);
     const say = async (...a: unknown[]): Promise<unknown> => plain(await w.h.handlers['lc:say']!(overlay, ...a));
     return { ...w, id, overlay, say };
   };
@@ -792,7 +874,7 @@ test('[synthetic connector, stand-in voice] the main process itself keeps the or
   assert.deepEqual(w.page.voice.spoken.map((u) => u.text), ['One.', 'Two.']);
   // A Stop: the voice is stopped at once by the main process, before the overlay has answered anything, and no piece is said while the session ends.
   w.h.end('stopped by the test');
-  assert.deepEqual([w.h.current() !== null, w.page.voice.cancels, w.records()[0]!.requests[0]!['spoken']], [true, 1, 'interrupted']);
+  assert.deepEqual([w.h.current() !== null, w.page.voice.cancels, w.records()[0]!.requests[0]!['spoken'], w.records()[0]!.requests[0]!['spoken_pieces']], [true, 1, 'interrupted', { said: 1, of: 3 }]);
   assert.deepEqual([await w.say(w.id, `${w.id}.1`, 0), w.page.voice.spoken.length], [NO, 2]);
   w.page.voice.spoken[1]!.end();
   assert.deepEqual(await second, NO);
@@ -802,26 +884,44 @@ test('[synthetic connector, stand-in voice] the main process itself keeps the or
   void w.say(w.id, `${w.id}.1`, 0);
   await settle();
   w.h.handlers['lc:talk']!(w.overlay, false, false);
-  assert.deepEqual([w.page.voice.cancels, w.records()[0]!.requests[0]!['spoken']], [1, 'interrupted']);
-  // Only a voice that reports exactly true said its piece to the end.
+  assert.deepEqual([w.page.voice.cancels, w.records()[0]!.requests[0]!['spoken']], [1, 'attempted']);
+  // Only a voice that reports exactly true said its piece to the end; a reading that failed is not taken up in the
+  // middle, and a new one starts only from its first piece.
   w = await driven();
-  const vague = w.say(w.id, `${w.id}.1`, 0);
+  const one = w.say(w.id, `${w.id}.1`, 0);
   await settle();
-  w.page.voice.spoken[0]!.end('yes' as never);
-  assert.deepEqual([await vague, w.records()[0]!.requests[0]!['spoken'], await w.say(w.id, `${w.id}.1`, 1)], [NO, 'interrupted', NO]);
+  w.page.voice.spoken[0]!.end();
+  assert.deepEqual(await one, { spoken: true });
+  const vague = w.say(w.id, `${w.id}.1`, 1);
+  await settle();
+  w.page.voice.spoken[1]!.end('yes' as never);
+  assert.deepEqual([await vague, w.records()[0]!.requests[0]!['spoken'], w.records()[0]!.requests[0]!['spoken_pieces'], w.page.voice.cancels, await w.say(w.id, `${w.id}.1`, 1), await w.say(w.id, `${w.id}.1`, 2), w.page.voice.spoken.length], [NO, 'interrupted', { said: 1, of: 3 }, 1, NO, NO, 2]);
+  void w.say(w.id, `${w.id}.1`, 0);
+  await settle();
+  assert.deepEqual(w.page.voice.spoken.map((u) => u.text), ['One.', 'Two.', 'One.']);
+  // An answer once read to its end stays recorded as that, whatever a later reading of it comes to.
+  w = await driven('Only one.');
+  const whole = w.say(w.id, `${w.id}.1`, 0);
+  await settle();
+  w.page.voice.spoken[0]!.end();
+  assert.deepEqual([await whole, w.records()[0]!.requests[0]!['spoken']], [{ spoken: true }, 'finished']);
+  void w.say(w.id, `${w.id}.1`, 0);
+  await settle();
+  w.h.handlers['lc:hush']!(w.overlay);
+  assert.deepEqual([w.page.voice.spoken.length, w.page.voice.cancels, w.records()[0]!.requests[0]!['spoken'], w.records()[0]!.requests[0]!['spoken_pieces']], [2, 1, 'finished', { said: 1, of: 1 }]);
   // The card closed (or replaced).
   w = await driven();
   void w.say(w.id, `${w.id}.1`, 0);
   await settle();
   w.h.handlers['lc:ask-closed']!(w.overlay);
-  assert.deepEqual([w.page.voice.cancels, w.records()[0]!.requests[0]!['spoken']], [1, 'interrupted']);
-  // A new question about the same selection.
+  assert.deepEqual([w.page.voice.cancels, w.records()[0]!.requests[0]!['spoken']], [1, 'attempted']);
+  // A follow-up about the same selection.
   w = await driven();
   void w.say(w.id, `${w.id}.1`, 0);
   await settle();
-  assert.equal((plain(await w.h.handlers['lc:ask-submit']!(w.overlay, w.id, 'And then?', 'hint')) as { ok: boolean }).ok, true);
-  assert.deepEqual([w.page.voice.cancels, w.records()[0]!.requests[0]!['spoken']], [1, 'interrupted']);
-  // While that question is out, and after it was cancelled, nothing of the response before is read.
+  await w.followUp();
+  assert.deepEqual([w.page.voice.cancels, w.records()[0]!.requests[0]!['spoken']], [1, 'attempted']);
+  // While that request is out, and after it was cancelled, nothing of the response before is read.
   assert.deepEqual([await w.say(w.id, `${w.id}.1`, 0), await w.say(w.id, `${w.id}.2`, 0)], [NO, NO]);
   w.h.handlers['lc:ask-cancel']!(w.overlay, w.id);
   await until('cancelled', () => w.records()[0]!.requests[1]!['outcome'] !== null);

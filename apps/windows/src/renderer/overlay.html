@@ -22,19 +22,19 @@
     <button type="button" id="placement" aria-label="Placement of new ink">▣</button>
   </span>
   <button type="button" id="cancel" class="text" hidden>Cancel</button>
+  <span id="talkControls" class="tools talk" role="group" aria-label="Reading responses aloud" hidden>
+    <button type="button" id="talk" class="text" aria-pressed="false">Talk</button>
+    <button type="button" id="mute" class="text" aria-pressed="false" hidden>Mute</button>
+    <button type="button" id="slower" class="text" aria-label="Read more slowly" hidden>−</button>
+    <span id="rate" hidden></span>
+    <button type="button" id="faster" class="text" aria-label="Read faster" hidden>+</button>
+    <button type="button" id="interrupt" class="text" hidden>Stop reading</button>
+  </span>
   <span id="hint" class="hint"></span>
 </div>
 <section id="card" class="card" role="region" aria-label="Selection and response" hidden>
   <div class="cardBar">
     <button type="button" id="cardHandle" class="handle" aria-label="Move this card: drag, or use the arrow keys; Home puts it back">⠿</button>
-    <span id="talkControls" class="talk" role="group" aria-label="Reading responses aloud" hidden>
-      <button type="button" id="talk" aria-pressed="false">Talk</button>
-      <button type="button" id="mute" aria-pressed="false" hidden>Mute</button>
-      <button type="button" id="slower" aria-label="Read more slowly" hidden>−</button>
-      <span id="rate" hidden></span>
-      <button type="button" id="faster" aria-label="Read faster" hidden>+</button>
-      <button type="button" id="interrupt" hidden>Stop reading</button>
-    </span>
     <button type="button" id="close" class="close" aria-label="Close">×</button>
   </div>
   <p id="talkStatus" class="text" role="status" hidden></p>
@@ -42,22 +42,22 @@
   <img id="crop" alt="The selected region with your ink, from the captured frame">
   <p id="cardText" class="text"></p>
   <div id="askForm" class="ask" hidden>
-    <label for="question">Your question about this selection</label>
-    <textarea id="question" rows="3" maxlength="4000"></textarea>
+    <label for="question">A follow-up in your own words (optional; typed: speaking to the AI is not connected in this version)</label>
+    <textarea id="question" rows="2" maxlength="4000" placeholder="Ask more about this, or about the screen as it is now"></textarea>
     <div class="assist" role="radiogroup" aria-label="How much help you want">
       <label><input type="radio" name="assistance" value="hint" checked> A hint</label>
       <label><input type="radio" name="assistance" value="explain"> Explain it</label>
       <label><input type="radio" name="assistance" value="full_solution"> Full solution</label>
     </div>
     <div class="actions">
-      <button type="button" id="askSubmit">Ask ChatGPT</button>
+      <button type="button" id="askSubmit">Send to ChatGPT</button>
       <button type="button" id="askCancel" hidden>Cancel</button>
     </div>
   </div>
   <p id="askStatus" class="text" role="status" hidden></p>
   <button type="button" id="askSave" hidden>Save this outcome on this device</button>
   <div id="answerBox" class="answer" hidden>
-    <p class="badge">Answer from ChatGPT · generated text, apart from your selection</p>
+    <p class="badge">From ChatGPT · generated text, apart from your screen and ink</p>
     <p id="answer" class="text"></p>
   </div>
 </section>

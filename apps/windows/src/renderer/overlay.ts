@@ -34,7 +34,7 @@ import { speechPieces } from '../shared/voice.ts';
 import { alignmentOf, DETAIL_DELTA, detailChange, detailGrid, fingerprintFromBase64, fingerprintToBase64, lumaChange, luminance, sampleState, toFramePixels, type Alignment, type Detail, type DisplaySample, type InkMarks } from '../shared/samples.ts';
 
 type Api = {
-  ready(): Promise<{ source_id: string; display: DesktopDisplay; doc: DesktopInk; address_sha256: string; retention_policy?: RetentionPolicy; development?: boolean; subscription?: boolean; work_area?: Rect; places?: DisplayPlaces; speech_rate?: number; voice?: { audible: boolean } | null } | null>;
+  ready(): Promise<{ source_id: string; display: DesktopDisplay; doc: DesktopInk; address_sha256: string; retention_policy?: RetentionPolicy; development?: boolean; subscription?: boolean; work_area?: Rect; places?: DisplayPlaces; speech_rate?: number; voice?: { audible: boolean } | null; live?: Live } | null>;
   place(surface: Surface, place: Place): Promise<Saved>;
   speechRate(rate: number): Promise<Saved>;
   onWorkArea(fn: (area: Rect) => void): void;
@@ -54,17 +54,33 @@ type Api = {
   stopped(unsaved: string | null): void;
   onLoadDoc(fn: (doc: DesktopInk) => void): void;
   onStop(fn: (reason: string) => void): void;
-  askSelection(facts: unknown, png: Uint8Array, ink: Uint8Array): Promise<{ ok: true; selection_id: string } | { ok: false; reason: string }>;
-  askSubmit(selectionId: string, question: string, assistance: string): Promise<{ ok: true; request_id: string; model: string | null } | { ok: false; reason: string }>;
+  /** A circle: the WHOLE composed frame, the circle's rectangle among its facts, and the ink drawn into it. Kept; and, with the AI running, a small hint is asked for at once. */
+  askSelection(facts: unknown, png: Uint8Array, ink: Uint8Array): Promise<{ ok: true; selection_id: string; request: Submitted } | { ok: false; reason: string }>;
+  /** A follow-up in the user's words, with a fresh whole frame. */
+  askSubmit(selectionId: string, question: string, assistance: string, facts: unknown, png: Uint8Array, ink: Uint8Array): Promise<Submitted>;
+  onLive(fn: (live: Live) => void): void;
   askCancel(selectionId: string): void;
   askClosed(): void;
   askPresented(selectionId: string, requestId: string, shown: boolean): Promise<Saved>;
   askSave(selectionId: string): Promise<Saved>;
   onAskResult(fn: (selectionId: string, requestId: string, outcome: AskOutcome, record: Saved) => void): void;
 };
-/** Whether the selection's record (the question and how it ended) is written on this device; if not, why. */
-type Saved = { saved: boolean; reason: string | null };
-/** How a question to ChatGPT ended, as the main process says it (an answer only for the request that was sent). */
+/** Whether a request went to the AI (its id and the session's model), or why not. */
+type Submitted = { ok: true; request_id: string; model: string; about: About } | { ok: false; reason: string };
+/** What a request is about: when its whole frame was taken, and where the card's circle is in relation to that frame. */
+type About = { captured_at: string | null; focus: 'on_this_frame' | 'on_an_earlier_frame' | 'none' };
+/**
+ * The AI's session as the main process says it: none configured; not started (why); starting; running, with its own
+ * bounds (requests and time: the user's, never ChatGPT's quota) and what it last looked at; or ended (why).
+ */
+type Live =
+  | { state: 'none' }
+  | { state: 'off'; reason: string | null }
+  | { state: 'starting' }
+  | { state: 'on' | 'used_up' | 'ended'; model: string; max_submissions: number; used: number; reserve: number; expires_at: string; paused: string | null; missed: string | null; ended: string | null; seen: { at: string; frame_seq: number } | null; frames: number; out: number; unwritten: number };
+/** Whether the selection's record (each request and how it ended) is written on this device; if not, why. `speak`: this response may be read aloud. */
+type Saved = { saved: boolean; reason: string | null; speak?: boolean };
+/** How a request to ChatGPT ended, as the main process says it (a response only for the turn that was sent). */
 type AskOutcome =
   | { status: 'answered'; answer: { text: string; model: string; latency_ms: number } }
   | { status: 'refused'; reason: string }
@@ -90,19 +106,22 @@ const display = info.display;
  */
 const development = info.development === true;
 /**
- * The managed ChatGPT subscription is configured: an ASK selection can be sent, with the user's question, when the
- * user presses Ask on its card. Nothing else is ever sent to an AI, and no AI watches the screen.
+ * The managed ChatGPT subscription is configured. Whether an AI observes this display is its session's state (`live`):
+ * started by the user's own Start in the control window, within the bounds chosen there, and said in the toolbar.
  */
 const subscription = info.subscription === true;
-/** The card's selection, as the main process retained it for a question (only with the subscription configured). */
+let live: Live = info.live ?? { state: 'none' };
+/** The card's selection, as the main process retained it (only with the subscription configured). */
 let asked: {
   card: number;
   selection: string | null;
   request: string | null;
   submitting: boolean;
   cancelling: boolean;
-  /** How the question ended, said by the main process before its submit was acknowledged here. */
-  early: { request: string; outcome: AskOutcome; record: Saved } | null;
+  /** How a request ended, said by the main process before its selection or its submit was acknowledged here. */
+  early: { selection: string; request: string; outcome: AskOutcome; record: Saved } | null;
+  /** What the request that is out is about (said with its response). */
+  about: About | null;
   /** Why how a question of this card ended is not written on this device yet (the main process said so), or null. */
   unsaved: string | null;
   /** The status last said with that, and what it is about: said again with the answer to Save. */
@@ -273,24 +292,29 @@ function speak(selection: string, request: string, text: string): void {
 }
 function renderTalk(): void {
   $('talkControls').hidden = !subscription;
+  // A voice that only synthesizes (a test's) plays nothing: said wherever reading aloud is said.
+  const test = voice?.audible === false ? 'TEST VOICE, nothing is played: ' : '';
   $('talk').setAttribute('aria-pressed', String(talk));
   $('talk').setAttribute('aria-label',
     !voice ? (talk ? `Talk is on, but ${NO_VOICE}. Press to turn it off.` : `Talk is off: responses are shown as text only. Turning it on reads nothing aloud: ${NO_VOICE}.`)
-    : !talk ? 'Talk is off: responses are shown as text only. Press to have them read aloud.'
-    : muted ? 'Talk is on, muted: responses are shown as text and not read aloud. Press to turn Talk off.'
-    : 'Talk is on: responses are read aloud. Press to turn it off.');
+    : !talk ? `${test}Talk is off: responses are shown as text only. Press to have them read aloud.`
+    : muted ? `${test}Talk is on, muted: responses are shown as text and not read aloud. Press to turn Talk off.`
+    : `${test}Talk is on: responses are read aloud. Press to turn it off.`);
   $('mute').setAttribute('aria-pressed', String(muted));
   $('mute').setAttribute('aria-label', muted ? 'Muted: responses are not read aloud. Press to unmute.' : 'Mute: stop reading aloud, keep the text.');
   for (const id of ['mute', 'slower', 'rate', 'faster']) $(id).hidden = !talk || !voice; // (nothing to mute or pace without a voice)
   $('rate').textContent = `${rate.toFixed(1)}×`;
   $('interrupt').hidden = speaking === null;
   const status = speaking
-    ? `${voice?.audible === false ? 'TEST VOICE, nothing is played: ' : ''}Reading the response aloud at ${speaking.rate.toFixed(1)}× (part ${speaking.at + 1} of ${speaking.pieces.length}). The text below is what is read.`
+    ? `${test}Reading the response aloud at ${speaking.rate.toFixed(1)}× (part ${speaking.at + 1} of ${speaking.pieces.length}). The text below is what is read.`
     : !talk ? ''
     : !voice ? `Talk is on, but ${NO_VOICE}. Speaking to the AI is not connected either: type your question.`
     : muted ? 'Talk is on, muted: responses are shown as text and not read aloud.'
-    : `Talk is on: the response to your next question is read aloud at ${rate.toFixed(1)}× and shown as text. Speaking to the AI is not connected in this build: type your question.`;
+    : `${test}Talk is on: the response to your next request is read aloud at ${rate.toFixed(1)}× and shown as text. Speaking to the AI is not connected in this build: type your question.`;
   const said = [talkNote, status].filter((t) => t !== '').join(' ');
+  // The start of a reading, its end and what is said of Talk are announced; the parts in between are not (a screen
+  // reader would speak over the voice at every part).
+  $('talkStatus').setAttribute('aria-live', speaking && speaking.at > 0 ? 'off' : 'polite');
   $('talkStatus').textContent = said;
   $('talkStatus').hidden = !subscription || said === '';
 }
@@ -304,12 +328,14 @@ $('talk').addEventListener('click', () => {
   }
   lc.talk(talk, muted);
   renderTalk();
+  renderToolbar();
 });
 $('mute').addEventListener('click', () => {
   muted = !muted;
   if (muted) interrupt();
   lc.talk(talk, muted);
   renderTalk();
+  renderToolbar();
 });
 $('interrupt').addEventListener('click', () => interrupt());
 for (const [id, by] of [['slower', -RATE_STEP], ['faster', RATE_STEP]] as const) {
@@ -954,12 +980,11 @@ const dashedNote = (m: InkMarks): string => {
   const n = m.changed + m.unknown + m.following_content;
   return n > 0 ? `\n${n} of your strokes are drawn dashed, as on screen: their alignment with what is under them is not verified.` : '';
 };
-const DEFAULT_QUESTION = 'Explain what is selected.';
 function askStatus(text: string | null): void {
   $('askStatus').hidden = text === null;
   $('askStatus').textContent = text ?? '';
 }
-/** The card's question form: shown for a retained selection; Ask is off while a question is out. */
+/** The card's follow-up form: shown for a retained selection; Send is off while a request is out. */
 function askForm(state: 'hidden' | 'ready' | 'asking'): void {
   $('askForm').hidden = state === 'hidden';
   $<HTMLButtonElement>('askSubmit').disabled = state !== 'ready';
@@ -972,7 +997,7 @@ function resetAsk(): void {
   interrupt(); // a response is read aloud only while its card shows it
   talkNote = ''; // (what was said of that response's reading goes with it)
   renderTalk();
-  if (asked) lc.askClosed(); // the main process cancels what is out for it; its answer is never shown
+  if (asked) lc.askClosed(); // the main process interrupts what is out for it; its response is never shown
   asked = null;
   for (const el of document.querySelectorAll<HTMLInputElement>('input[name="assistance"]')) el.checked = el.value === 'hint'; // the help is chosen per selection
   askForm('hidden');
@@ -980,53 +1005,68 @@ function resetAsk(): void {
   $('askSave').hidden = true;
   $('answerBox').hidden = true;
   $('answer').textContent = '';
-  $('badge').textContent = subscription ? 'Selection · not sent to any AI' : 'Selection · no AI connected';
+  $('badge').textContent = subscription ? 'Your focus on the screen' : 'Selection · no AI connected';
+  $<HTMLTextAreaElement>('question').value = '';
+}
+/** What an error says of itself (its message, when it has one). */
+const why = (error: unknown): string => (typeof (error as { message?: unknown } | null)?.message === 'string' ? (error as { message: string }).message : String(error));
+/** The whole frame held now, composed with the ink as it is, with the facts of exactly those: what the AI is given. */
+function wholeFrame(): { canvas: OffscreenCanvas; facts: { frame_seq: number; frame_captured_at: string; frame_width: number; frame_height: number; ink_session: string; ink_revision: number; visible_strokes: number }; ink: Uint8Array } | null {
+  const held = ended ? null : raw;
+  if (!held) return null;
+  const inkDoc = doc;
+  // Composed and labelled now, before anything is awaited: the sampler may replace this frame meanwhile and close its
+  // bitmap, and a later save may put another ink document in the place of this one.
+  return {
+    canvas: compose(held.bitmap, inkDoc.ink),
+    facts: { frame_seq: held.seq, frame_captured_at: held.at, frame_width: held.bitmap.width, frame_height: held.bitmap.height, ink_session: inkDoc.id, ink_revision: inkDoc.ink.revision, visible_strokes: inkDoc.ink.visible.length },
+    ink: new TextEncoder().encode(JSON.stringify(inkDoc)),
+  };
 }
 async function finishAsk(points: ReadonlyArray<InkPoint>): Promise<void> {
   const epoch = mode.askEpoch;
   const region = regionOf(points);
-  // The selection is composed now from the frame held and the ink as it is, and labelled with exactly those.
+  // The whole frame is composed now from the frame held and the ink as it is, and labelled with exactly those.
   const held = ended ? null : raw;
   const inkDoc = doc;
   const r = held ? toFramePixels(region, display.bounds, held.bitmap) : null;
+  const whole = held && r ? wholeFrame() : null;
   let image: string | null = null;
   let png: Uint8Array | null = null;
-  // The exact ink document drawn into the selection, taken now, before anything is awaited (a later save may put
-  // another document in its place without changing what is visible).
-  const inkBytes = subscription && held && r ? new TextEncoder().encode(JSON.stringify(inkDoc)) : null;
-  // The facts of the frame and the ink, taken now too. The sampler may replace this frame while the picture is being
-  // encoded and close its bitmap, whose size then reads as 0; the picture below is drawn from it before that.
+  let failed: string | null = null;
   const x0 = Math.max(0, region.x);
   const y0 = Math.max(0, region.y);
-  const facts = held && r && {
-    region_dip: { x: x0, y: y0, width: Math.min(display.bounds.width, region.x + region.width) - x0, height: Math.min(display.bounds.height, region.y + region.height) - y0 },
-    frame_seq: held.seq,
-    frame_captured_at: held.at,
-    frame_width: held.bitmap.width,
-    frame_height: held.bitmap.height,
-    ink_session: inkDoc.id,
-    ink_revision: inkDoc.ink.revision,
-    visible_strokes: inkDoc.ink.visible.length,
-  };
+  const facts = whole && { ...whole.facts, region_dip: { x: x0, y: y0, width: Math.min(display.bounds.width, region.x + region.width) - x0, height: Math.min(display.bounds.height, region.y + region.height) - y0 } };
   let message: string;
-  if (!held || !r) {
+  if (!held || !r || !whole) {
     message = held ? 'The circled region is outside the captured display, so nothing was selected.' : 'No frame of the display is available (a gap in the capture), so nothing was selected.';
   } else {
     // The picture and how its strokes are drawn are fixed together, before anything is awaited.
     const marks = inkMarks(inkDoc.ink);
+    // The card's own small picture is the circled part; what is kept, and what the AI is given, is the WHOLE frame.
     const out = new OffscreenCanvas(r.width, r.height);
-    out.getContext('2d')!.drawImage(compose(held.bitmap, inkDoc.ink), r.x, r.y, r.width, r.height, 0, 0, r.width, r.height);
-    const blob = await out.convertToBlob({ type: 'image/png' });
-    if (subscription) png = new Uint8Array(await blob.arrayBuffer());
-    image = await new Promise<string>((ok) => {
-      const fr = new FileReader();
-      fr.onload = () => ok(String(fr.result));
-      fr.readAsDataURL(blob);
-    });
+    out.getContext('2d')!.drawImage(whole.canvas, r.x, r.y, r.width, r.height, 0, 0, r.width, r.height);
+    try {
+      const blob = await out.convertToBlob({ type: 'image/png' });
+      if (subscription) png = await pngBytes(whole.canvas);
+      image = await new Promise<string>((ok, failed) => {
+        const fr = new FileReader();
+        fr.onload = () => ok(String(fr.result));
+        fr.onerror = () => failed(new Error('the picture could not be read back'));
+        fr.readAsDataURL(blob);
+      });
+    } catch (error) {
+      // The picture could not be made: said on the card, with nothing kept and nothing sent. The ink and the mode
+      // before are as they were.
+      png = null;
+      image = null;
+      failed = `The picture of the display could not be made (${why(error)}), so this selection was not kept and nothing was sent to any AI.\n`;
+    }
     const service = development ? ' (Development mode: a local test capture service on this device may also store the whole-display frames kept here, only while it is connected and answering; the control window shows whether it is storing now.)' : '';
     message =
-      (subscription
-        ? `This selection is sent to ChatGPT, with your question, only when you press Ask below; nothing else of the screen is sent to any AI, and no AI watches it.${service}\n`
+      (failed !== null ? failed
+        : subscription
+        ? `Your focus: this part of the screen. With the AI running, ChatGPT is given the whole display as it was then, with this part marked, and asked for a small hint; nothing more than a hint is asked for by a circle alone.${service}\n`
         : development
           ? `No AI is connected: this selection was not sent to any AI.${service}\n`
           : `No AI is connected: this selection was not sent anywhere.\n`) +
@@ -1042,23 +1082,36 @@ async function finishAsk(points: ReadonlyArray<InkPoint>): Promise<void> {
   const card = ++cardSeq;
   $('card').hidden = false;
   setMode(reduceMode(mode, { type: 'ask_finished', askEpoch: epoch }).state); // the mode before returns at once; the card stays
-  if (!subscription || !facts || !png || !inkBytes) return;
-  // Retained by the main process as the exact picture, the facts of its frame and the ink drawn into it. Nothing is
-  // sent to any AI by this; only the Ask button below does that.
-  asked = { card, selection: null, request: null, submitting: false, cancelling: false, early: null, unsaved: null, said: null };
-  askStatus('Keeping this selection on this device…');
+  if (!subscription || !facts || !png || !whole) return;
+  // Kept by the main process as the exact whole picture, the facts of its frame, the circle and the ink drawn into
+  // it; with the AI's session running, a small hint about the circled part is asked for at once.
+  const a: NonNullable<typeof asked> = { card, selection: null, request: null, submitting: true, cancelling: false, early: null, about: null, unsaved: null, said: null };
+  asked = a;
+  askStatus('Keeping this on this device…');
   let kept: Awaited<ReturnType<Api['askSelection']>>;
   try {
-    kept = await lc.askSelection(facts, png, inkBytes);
+    kept = await lc.askSelection(facts, png, whole.ink);
   } catch {
     kept = { ok: false, reason: 'the app did not answer' };
   }
-  if (asked?.card !== card) return; // closed, or another selection since
-  if (!kept.ok) return askStatus(`This selection cannot be asked about: ${kept.reason}. It was not sent to any AI.`);
-  asked.selection = kept.selection_id;
-  $<HTMLTextAreaElement>('question').value = DEFAULT_QUESTION;
-  askStatus(ended ? 'The capture ended: nothing is asked.' : null);
-  askForm(ended ? 'hidden' : 'ready');
+  a.submitting = false;
+  if (asked !== a) return; // closed, or another selection since
+  if (!kept.ok) return askStatus(`This selection could not be kept, so nothing was asked: ${kept.reason}. It was not sent to any AI.`);
+  a.selection = kept.selection_id;
+  if (!kept.request.ok) {
+    // Kept, not asked: said with why. A follow-up can still be sent from this card once the AI runs.
+    askStatus(ended ? 'The capture ended: nothing is asked.' : `Kept on this device. The AI was not asked: ${kept.request.reason}.`);
+    return askForm(ended ? 'hidden' : 'ready');
+  }
+  a.request = kept.request.request_id;
+  a.about = kept.request.about;
+  askForm('asking');
+  $('badge').textContent = 'Your focus · a hint is being asked for';
+  // How it ended may have been said before this acknowledgement came: it is this request's only if it names it.
+  const early = takeEarly(a);
+  if (early && early.selection === a.selection && early.request === a.request) return showOutcome(a, early.outcome, early.record);
+  if (a.cancelling) return void lc.askCancel(a.selection); // cancelled before its selection was known here: said to the main process now
+  askStatus(`Asked at ${new Date().toLocaleTimeString()} (${kept.request.model}): the whole display with this part as your focus, for a small hint. Waiting for the response…`);
 }
 /** The outcome said before the submit's acknowledgement, if any (it is taken once). */
 function takeEarly(a: NonNullable<typeof asked>): NonNullable<typeof asked>['early'] {
@@ -1066,11 +1119,11 @@ function takeEarly(a: NonNullable<typeof asked>): NonNullable<typeof asked>['ear
   a.early = null;
   return early;
 }
-/** The user pressed Ask: this selection's picture and the question go to ChatGPT, once. */
+/** The user pressed Send: the follow-up's words go to ChatGPT, once, with the whole display as it is now. */
 async function submitAsk(): Promise<void> {
   const a = asked;
   if (ended || !a || !a.selection || a.request || a.submitting) return;
-  interrupt(); // a new question: the response before is no longer read
+  interrupt(); // a new request: the response before is no longer read
   talkNote = '';
   renderTalk();
   a.submitting = true;
@@ -1082,47 +1135,64 @@ async function submitAsk(): Promise<void> {
   const assistance = document.querySelector<HTMLInputElement>('input[name="assistance"]:checked')?.value ?? 'hint';
   askForm('asking');
   $('answerBox').hidden = true;
-  askStatus('Sending this picture and your question to ChatGPT…');
-  let sent: Awaited<ReturnType<Api['askSubmit']>>;
+  askStatus('Sending the whole display as it is now and your question to ChatGPT…');
+  // Nothing was sent: the card is as it was, the response before and what is still not saved of it included.
+  const notSent = (reason: string): void => {
+    a.submitting = false;
+    if (asked !== a) return;
+    askForm(ended ? 'hidden' : 'ready');
+    $('answerBox').hidden = !answerShown;
+    saved(a, `Not sent: ${reason}.`, { saved: a.unsaved === null, reason: a.unsaved }, 'How the request before ended');
+  };
+  const whole = wholeFrame();
+  if (!whole) return notSent('no frame of the display is available (a gap in the capture)');
+  let png: Uint8Array;
   try {
-    sent = await lc.askSubmit(a.selection, question, assistance);
+    png = await pngBytes(whole.canvas);
+  } catch (error) {
+    return notSent(`the picture of the display could not be made (${why(error)})`);
+  }
+  let sent: Submitted;
+  try {
+    sent = await lc.askSubmit(a.selection, question, assistance, whole.facts, png, whole.ink);
   } catch {
     sent = { ok: false, reason: 'the app did not answer' };
   }
+  if (!sent.ok) return notSent(sent.reason);
   a.submitting = false;
   if (asked !== a) return;
-  if (!sent.ok) {
-    // Nothing was asked: the card is as it was, the answer before and what is still not saved of it included.
-    askForm(ended ? 'hidden' : 'ready');
-    $('answerBox').hidden = !answerShown;
-    return saved(a, `Not sent: ${sent.reason}.`, { saved: a.unsaved === null, reason: a.unsaved }, 'How the question before ended');
-  }
   a.request = sent.request_id;
-  // Handed to the connector: whether ChatGPT took it is known only when an answer, or a refusal, comes.
-  $('badge').textContent = 'Selection · asked: being sent to ChatGPT';
+  a.about = sent.about;
+  $<HTMLTextAreaElement>('question').value = '';
+  // Handed to the connector: whether ChatGPT took it is known only when a response, or a refusal, comes.
+  $('badge').textContent = 'Your focus · asked: being sent to ChatGPT';
   // How it ended may have been said before this acknowledgement came: it is this request's only if it names it.
   const early = takeEarly(a);
   if (early && early.request === sent.request_id) return showOutcome(a, early.outcome, early.record);
   if (a.cancelling) return; // cancelled while it was being sent: the status already says so
-  askStatus(`Asked at ${new Date().toLocaleTimeString()}${sent.model ? ` (${sent.model})` : ''}: this picture and your question are being sent to ChatGPT. Waiting for the answer…`);
+  askStatus(`Asked at ${new Date().toLocaleTimeString()} (${sent.model}): the whole display and your question are being sent to ChatGPT. Waiting for the response…`);
 }
-/** Cancel, or the card closed, while a question is out: its answer is not shown. */
+/** Cancel, or the card closed, while a request is out: its response is not shown. */
 function cancelAsk(): void {
   const a = asked;
-  if (!a?.selection || (!a.request && !a.submitting)) return;
+  if (!a || (!a.request && !a.submitting)) return;
   interrupt();
   a.cancelling = true;
-  lc.askCancel(a.selection); // by selection: the main process cancels the question that is out for it
+  if (a.selection) lc.askCancel(a.selection); // by selection: the main process interrupts the request that is out for it
   $('askCancel').hidden = true;
-  askStatus('Cancelling: an answer that still arrives is not shown.');
+  askStatus('Cancelling: a response that still arrives is not shown.');
 }
+lc.onLive((next) => {
+  live = next;
+  render();
+});
 lc.onAskResult((selectionId, requestId, outcome, record) => {
   const a = asked;
-  if (!a || a.selection !== selectionId) return; // not this card's selection: never shown
-  // Said before the submit was acknowledged here (the main process answers both): kept until the acknowledgement
-  // names its request. Nothing is shown for a request this card did not make.
-  if (a.submitting && a.request === null) return void (a.early = { request: requestId, outcome, record });
-  if (a.request !== requestId) return;
+  if (!a) return;
+  // Said before the selection or the submit was acknowledged here (the main process answers both): kept until the
+  // acknowledgement names its selection and request. Nothing is shown for a request this card did not make.
+  if (a.submitting && a.request === null && (a.selection === null || a.selection === selectionId)) return void (a.early = { selection: selectionId, request: requestId, outcome, record });
+  if (a.selection !== selectionId || a.request !== requestId) return; // not this card's request: never shown
   showOutcome(a, outcome, record);
 });
 /** How this card's question ended. An answer is shown as text; what was not written on this device is said. */
@@ -1139,10 +1209,14 @@ function showOutcome(a: NonNullable<typeof asked>, outcome: AskOutcome, record: 
     // Text only, apart from the selection above; never markup.
     $('answer').textContent = out.answer.text;
     $('answerBox').hidden = false;
-    $('badge').textContent = 'Selection · answered by ChatGPT below';
-    text = `Answered by ChatGPT (${out.answer.model}) in ${(out.answer.latency_ms / 1000).toFixed(1)} s, about the picture above and your question only.`;
+    $('badge').textContent = 'Your focus · ChatGPT\'s response is below';
+    // A response is about the picture it was asked with, never about the newest screen: its time is said, and where
+    // the circle is in relation to that picture.
+    const when = a.about?.captured_at ? ` at ${new Date(a.about.captured_at).toLocaleTimeString()}` : ' when this was asked';
+    const circle = a.about?.focus === 'on_an_earlier_frame' ? ' The screen had changed since your circle: ChatGPT was told where the circle was, without its pixels.' : a.about?.focus === 'none' ? ' Your circle was not part of this request.' : '';
+    text = `From ChatGPT (${out.answer.model}) in ${(out.answer.latency_ms / 1000).toFixed(1)} s, about the whole display as it was${when}.${circle}`;
   } else {
-    $('badge').textContent = 'Selection · asked: no answer shown';
+    $('badge').textContent = 'Your focus · asked: no response shown';
     text = out.status === 'cancelled'
       ? `Cancelled: no answer is shown.${out.uncertain ? ' Whether ChatGPT stopped working on it is not confirmed; it may still have counted against your usage.' : ''}`
       : out.status === 'refused' ? `No answer: ${out.reason}. It was not sent again.` : `No answer: ${out.reason}. It is not sent again automatically.`;
@@ -1152,8 +1226,9 @@ function showOutcome(a: NonNullable<typeof asked>, outcome: AskOutcome, record: 
   (out.status === 'answered' ? $('answerBox') : $('askStatus')).scrollIntoView({ block: out.status === 'answered' ? 'start' : 'nearest' });
   // The main process is told what was done with an answer (shown, or not after all); its record follows that.
   if (outcome.status === 'answered' && a.selection) void lc.askPresented(a.selection, request, !suppressed).then((r) => saved(a, text, r), () => undefined);
-  // Read aloud only with Talk on, and only what is shown here (said to the main process after "shown", in that order).
-  if (out.status === 'answered' && a.selection) speak(a.selection, request, out.answer.text);
+  // Read aloud only when this response was asked for with Talk on (the main process says so), and only what is shown
+  // here (asked of the main process after "shown", in that order; it checks again before every piece).
+  if (out.status === 'answered' && a.selection && record.speak === true) speak(a.selection, request, out.answer.text);
 }
 /** Says when how a question ended is not written on this device, and offers to write it again. */
 function saved(a: NonNullable<typeof asked>, text: string, record: Saved, what = 'This'): void {
@@ -1311,6 +1386,19 @@ $('close').addEventListener('click', () => {
   if (mode.mode === 'NAV') setInteractive(false);
 });
 
+/** The AI's session, as it is said in the toolbar: whether ChatGPT observes this display, within which of the user's own bounds, and what it last saw. */
+function liveText(): string {
+  if (live.state === 'none') return 'No AI is connected.';
+  if (live.state === 'starting') return 'Starting the AI…';
+  if (live.state === 'off') return `No AI observes this display${live.reason ? `: ${live.reason}` : ' (the AI was not started with this capture)'}.`;
+  if (live.state === 'ended') return `ChatGPT no longer observes this display: ${live.ended}. Start the AI again in the control window.`;
+  if (live.state === 'used_up') return `ChatGPT no longer looks or answers: all ${live.max_submissions} requests of this session are used (its own bound, not ChatGPT's quota). Start the AI again in the control window.`;
+  const left = Math.max(0, live.max_submissions - live.used);
+  const minutes = Math.max(0, Math.ceil((Date.parse(live.expires_at) - Date.now()) / 60_000));
+  const seen = live.seen ? `it last looked at ${new Date(live.seen.at).toLocaleTimeString()}` : 'it has not looked yet';
+  return (live.paused !== null ? `ChatGPT now looks only when you circle or ask (${live.paused})` : 'ChatGPT observes this whole display as it changes') +
+    `: ${left} of ${live.max_submissions} requests and about ${minutes} min left in this session (its own bounds, not ChatGPT's quota); ${seen}${live.missed ? `; the newest look was not made (${live.missed})` : ''}.`;
+}
 function captureText(): string {
   if (ended) return `Capture ended: ${endReason}. Nothing is being observed now, and this overlay takes no new input.`;
   const s = samples.at(-1);
@@ -1343,7 +1431,9 @@ function renderToolbar(): void {
     following > 0 ? `${following} stroke(s) set to follow content, dashed: following content is not established, they stay where written.` : '',
   ];
   const modeText = mode.mode === 'NAV' ? 'Clicks go to your apps.' : mode.mode === 'ASK' ? 'Circle a region. Esc or Cancel returns.' : `${mouseWrites ? 'Pen and mouse write' : 'Pen writes; mouse writing off'}; ${placement === 'screen' ? 'new ink fixed on the screen' : 'following content is not established here: ink stays where written'}.`;
-  $('hint').textContent = [transientHint || modeText, captureText(), subscription ? 'No AI watches this screen: ChatGPT gets only a selection you send with Ask.' : 'No AI is connected.', saveText, ...marks].filter(Boolean).join(' ');
+  // (what Talk does is said here too: its controls are in the toolbar, and the card that shows a reading's status may be closed)
+  const talkText = !talk || !subscription ? '' : !voice ? `Talk is on, but ${NO_VOICE}.` : muted ? 'Talk is on, muted.' : 'Talk is on: the responses you ask for from now are read aloud.';
+  $('hint').textContent = [transientHint || modeText, captureText(), liveText(), talkText, saveText, ...marks].filter(Boolean).join(' ');
 }
 
 // ---- whole-display retention ------------------------------------------------------------------------------

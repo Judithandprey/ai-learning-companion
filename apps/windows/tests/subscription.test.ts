@@ -1,16 +1,17 @@
-// The managed ChatGPT subscription from this app's side (src/main/subscription.ts, src/shared/subscription-ask.ts):
-// the trusted configuration, the envelope's lines, the sign-in, one question at a time, cancellation, a stopped
-// session, and the child's lifetime. SYNTHETIC: the connector is a stand-in (tests/subscription-fakes.ts, and a small
-// real child process for the pipes); no Codex, no ChatGPT, no sign-in and no network are involved. Every test here
-// is synthetic: an "answer" is text the test wrote.
+// The managed ChatGPT subscription from this app's side (src/main/subscription.ts, src/shared/live.ts): the trusted
+// configuration, the envelope's lines (lc-subscription-live/1), the sign-in, the AI session and its turns, an
+// interruption, a stopped session, and the child's lifetime. SYNTHETIC: the connector is a stand-in
+// (tests/subscription-fakes.ts, and a small real child process for the pipes); no Codex, no ChatGPT, no sign-in and no
+// network are involved. Every test here is synthetic: an "answer" is text the test wrote. (The envelope's pure rules
+// - a turn, a focus, the account as read, an answer's binding - are in tests/live.test.ts.)
 import { after, test } from 'node:test';
 import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { EventEmitter } from 'node:events';
 import * as path from 'node:path';
-import { CONNECTOR_END_MS, readConnectorConfig, Subscription, type AskOutcome, type ConnectorConfig, type SubscriptionStatus } from '../src/main/subscription.ts';
-import { ANSWER_MAX, contextProblem, officialLoginUrl, provenanceOf, questionOf, questionProblem, readAccount, readAnswer, type AskRequest } from '../src/shared/subscription-ask.ts';
-import { ACCOUNT, fakeConnectors, LOGIN_URL, type FakeConnector } from './subscription-fakes.ts';
+import { CONNECTOR_END_MS, readConnectorConfig, Subscription, type ConnectorConfig, type SessionStart, type SubscriptionStatus, type TurnOutcome } from '../src/main/subscription.ts';
+import { focusOf, LINE_TO_CONNECTOR_MAX, LIVE_ERROR_TEXT, LIVE_LINE_FROM_CONNECTOR_MAX, LIVE_VERSION, officialLoginUrl, provenanceOf, readLiveResult, RESULT_TEXT_MAX, turnProblem, userTextOf, userTextProblem, wholeRegions, type Policy, type Start, type Turn } from '../src/shared/live.ts';
+import { ACCOUNT, bucket, fakeConnectors, LOGIN_URL, type FakeConnector } from './subscription-fakes.ts';
 
 const made: Subscription[] = [];
 after(async () => void (await Promise.all(made.map((s) => s.quit()))));
@@ -32,57 +33,99 @@ function subscription(config: ConnectorConfig = WSL, extra: object = {}, configu
   const now = () => s.status() as Extract<SubscriptionStatus, { mode: 'managed' }>;
   return { s, fakes, said, opened, now };
 }
-const request = (o: Partial<AskRequest> = {}): AskRequest => ({
-  request_id: 'ask-0123456789abcdef.1',
-  question: 'What is this?',
-  assistance: 'hint',
-  image: { png_base64: 'iVBORw0KGgo=', sha256: 'a'.repeat(64), width: 40, height: 20 },
+
+// ---- an AI session and its turns, as the app makes them ----------------------------------------------------------
+const SESSION = 'live-0123456789abcdef';
+const OTHER_SESSION = 'live-fedcba9876543210';
+const CAPTURE = '0123456789abcdef';
+/** A session's own bounds, as the user chose them before Start (never the provider's quota). */
+const POLICY: Policy = { max_submissions: 12, max_session_ms: 300_000, min_observation_interval_ms: 30_000 };
+/** What the app writes for that Start, and what the stand-in connector answers it by itself. */
+const START: Start = { session_id: SESSION, capture_session_id: CAPTURE, epoch: 1, model: 'vision-model', policy: POLICY, permissions: { screen: true, microphone: false, system_audio: false } };
+const STARTED = { session_id: SESSION, epoch: 1, remaining_submissions: 12, expires_in_ms: 300_000 };
+const BOUNDS = { x: -1280, y: 0, width: 1280, height: 800 };
+const FRAME = { width: 2560, height: 1600 };
+/**
+ * A turn as the app builds one (the shape of tests/live.test.ts): the WHOLE display as the picture and the context (a
+ * 2560x1600 frame of a 1280x800 display at a negative desktop origin), and, unless said otherwise, a circle's focus
+ * asking for a small hint. The picture's bytes are a stand-in: the transport never reads them.
+ */
+const turn = (o: Partial<Turn> = {}): Turn => ({
+  request_id: `${SESSION}.7.focus`,
+  session_id: SESSION,
+  epoch: 1,
+  permission_revision: 1,
+  trigger: 'focus',
+  allowed_assistance: 'hint',
+  presentation: 'silent',
+  user_text: null,
+  audio_source: null,
+  image: { png_base64: 'iVBORw0KGgo=', sha256: 'a'.repeat(64), ...FRAME },
   context: {
-    capture_session_id: '0123456789abcdef', frame_seq: 7, frame_captured_at: '2026-10-01T05:00:00.000Z', frame_width: 2560, frame_height: 1600,
-    display: { id: '1', bounds: { x: -1280, y: 0, width: 1280, height: 800 }, scale_factor: 2 },
-    region_dip: { x: 10, y: 10, width: 20, height: 10 }, region_px: { x: 20, y: 20, width: 40, height: 20 },
+    capture_session_id: CAPTURE, frame_seq: 7, frame_captured_at: '2026-10-01T05:00:00.000Z', frame_width: FRAME.width, frame_height: FRAME.height,
+    display: { id: '1', bounds: BOUNDS, scale_factor: 2 },
+    ...wholeRegions(FRAME, BOUNDS),
     ink_revision: 3, ink_sha256: 'b'.repeat(64), source_url: null, source_version: null, media_position: null,
   },
+  focus: focusOf({ x: 10, y: 10, width: 20, height: 10 }, { ...FRAME, seq: 7 }, BOUNDS),
+  history: [],
+  gaps: [],
   ...o,
 });
+/** The user's follow-up in their own words, and an unattended look (it asks for no answer), about the same frame. */
+const followup = (o: Partial<Turn> = {}): Turn => turn({ request_id: `${SESSION}.7.text_followup`, trigger: 'text_followup', allowed_assistance: 'explain', user_text: 'Why is that?', ...o });
+const look = (o: Partial<Turn> = {}): Turn => turn({ request_id: `${SESSION}.7.observation`, trigger: 'observation', allowed_assistance: 'none', presentation: 'none', focus: null, ...o });
+/** The user's Start of the AI session (the account must have been checked, and be signed in, before it). */
+const begin = (s: Subscription, o: { session_id?: string; policy?: Policy } = {}): Promise<SessionStart> => s.startSession({ session_id: SESSION, capture_session_id: CAPTURE, policy: POLICY, ...o });
+/** A subscription that was checked (signed in, a model that takes pictures) and whose AI session SESSION is running. */
+async function started(config: ConnectorConfig = WSL, extra: object = {}, configure?: Parameters<typeof fakeConnectors>[0]) {
+  const w = subscription(config, extra, configure);
+  await w.s.check();
+  const r = await begin(w.s);
+  assert.equal(r.ok, true, `the AI session is running (${JSON.stringify(r)})`);
+  return { ...w, c: w.fakes.last() };
+}
+/** Sends `t` and waits until the stand-in connector has it (it holds every turn until the test answers it): how it ends, and its id on the wire. */
+async function out(w: { s: Subscription; fakes: { last(): FakeConnector } }, t: Turn = turn()): Promise<{ done: Promise<TurnOutcome>; id: string }> {
+  const c = w.fakes.last();
+  const n = c.turns().length;
+  const done = w.s.turn(t);
+  await until(`the turn ${t.request_id} is written`, () => c.turns().length === n + 1);
+  return { done, id: c.turns().at(-1)!.id };
+}
+/** A turn that is not the running session's (stopped, lost with its connector, never started): refused here, and never written. */
+const NOT_RUNNING: TurnOutcome = { status: 'refused', code: 'session_stopped', reason: 'the AI session has stopped; start it again to go on', submission: 'not_submitted' };
+type Line = Record<string, unknown>;
+/** Every line this app writes to a stand-in connector, as it was written (the stand-in itself keeps only the id, the method and the params). */
+function wire(c: FakeConnector): Line[] {
+  const lines: Line[] = [];
+  let rest = '';
+  c.stdin.on('data', (b: Buffer) => {
+    rest += b.toString('utf8');
+    for (let nl = rest.indexOf('\n'); nl >= 0; nl = rest.indexOf('\n')) {
+      lines.push(JSON.parse(rest.slice(0, nl)) as Line);
+      rest = rest.slice(nl + 1);
+    }
+  });
+  return lines;
+}
+const SIGNED_OUT = { auth: { state: 'signed_out', mode: null, plan: null }, quota: { available: false, ordinary_usage_allowed: null, windows: [] }, models: [] };
+/** Over the bound on one line from the connector (1 MiB in this version), with no line end: the connector is fenced. */
+const OVER = 'x'.repeat(LIVE_LINE_FROM_CONNECTOR_MAX + 1);
+const UNAVAILABLE = 'the ChatGPT connection is not available';
+const local = (reason: string): SessionStart => ({ ok: false, code: 'local', reason });
 
 // ---- the pure rules ---------------------------------------------------------------------------------------------
-test('the question is trimmed; an empty or over-long one is refused', () => {
-  assert.equal(questionOf('  why?  '), 'why?');
-  for (const bad of ['', '   ', 'x'.repeat(4001), 7, null]) assert.equal(questionOf(bad), null);
-  assert.equal(questionOf('x'.repeat(4000))?.length, 4000);
-});
-
-test('a question holding half of a surrogate pair is refused, whichever half and wherever; every valid text is kept as it is', () => {
+test('the user\'s words holding half of a surrogate pair are refused, whichever half and wherever; every valid text is kept as it is', () => {
   const DAMAGED = 'the question holds a damaged character (half of a pair), so it cannot be sent as it is; type that part again';
   for (const bad of ['What is \ud83d this?', 'What is \ude00 this?', '\ud83d', 'end \ud83d', '\ude00 start', 'swapped \ude00\ud83d pair', 'two \ud83d\ud83d\ude00 highs']) {
-    assert.equal(questionOf(bad), null, JSON.stringify(bad));
-    assert.equal(questionProblem(bad), DAMAGED);
+    assert.equal(userTextOf(bad), null, JSON.stringify(bad));
+    assert.equal(userTextProblem(bad), DAMAGED);
   }
   // Valid Unicode stays: astral characters, combining marks, other scripts, a pair at either end.
-  for (const good of ['What is 😀 this?', '😀', '这道题怎么做？', 'e\u0301 and \u{1F9EE} and \u{10FFFF}', '😀 start and end 😀', 'x'.repeat(3998) + '😀']) assert.equal(questionOf(`  ${good}  `), good);
-  for (const other of ['', '   ', 'x'.repeat(4001), 7]) assert.equal(questionProblem(other), 'the question is empty or too long');
-  assert.equal(questionProblem('  \ud83d  '), DAMAGED, 'as it is sent: trimmed first');
-});
-
-test('a selection\'s rectangles must be finite, positive and inside the display and the frame; the picture is the region\'s size', () => {
-  const c = request().context;
-  const image = { width: 40, height: 20 };
-  assert.equal(contextProblem(c, image), null, 'a display at a negative desktop origin is fine: the region is display-local');
-  assert.match(contextProblem({ ...c, region_dip: { x: 1270, y: 10, width: 20, height: 10 } }, image)!, /not inside the display/);
-  assert.match(contextProblem({ ...c, region_dip: { x: 10, y: 10, width: 0, height: 10 } }, image)!, /not inside the display/);
-  assert.match(contextProblem({ ...c, region_px: { x: 2540, y: 20, width: 40, height: 20 } }, image)!, /not inside the frame/);
-  assert.match(contextProblem({ ...c, region_px: { x: 20.5, y: 20, width: 40, height: 20 } }, image)!, /not inside the frame/);
-  assert.match(contextProblem({ ...c, region_dip: { x: NaN, y: 10, width: 20, height: 10 } }, image)!, /not inside the display/);
-  assert.match(contextProblem(c, { width: 41, height: 20 })!, /not the size of the selected region/);
-  assert.match(contextProblem({ ...c, frame_width: 8000, frame_height: 4000, region_px: { x: 0, y: 0, width: 8000, height: 4000 } }, { width: 8000, height: 4000 })!, /more than 16000000 pixels/);
-});
-
-test('the account as read: only the managed ChatGPT mode is signed in; a missing picture capability is not assumed; another shape is nothing', () => {
-  assert.deepEqual(readAccount(ACCOUNT), { state: 'signed_in', plan: 'Pro', rate_limits: [{ label: '5 h', used_percent: 12.4, resets_at: '2026-10-01T10:00:00Z' }], models: [{ id: 'text-only-model', label: 'Text only', image_input: false, default: true }, { id: 'vision-model', label: 'Vision', image_input: true, default: false }] });
-  assert.equal(readAccount({ ...ACCOUNT, auth: { state: 'signed_in', mode: 'api_key', plan: null } })?.state, 'signed_out', 'an API key is not this subscription');
-  assert.deepEqual(readAccount({ auth: { state: 'signed_in', mode: 'chatgpt', plan: null, email: 'someone@example.com', token: 'secret' }, rate_limits: null, models: [{ id: 'm', label: 'M' }] }), { state: 'signed_in', plan: null, rate_limits: null, models: [{ id: 'm', label: 'M', image_input: false, default: false }] }, 'nothing else of the answer is kept');
-  for (const bad of [null, {}, { auth: { state: 'yes' }, models: [] }, { auth: { state: 'signed_in', mode: 'chatgpt' }, models: [{ label: 'no id' }] }, { auth: { state: 'signed_in', mode: 'chatgpt' }, models: [], rate_limits: [{ label: 'x' }] }]) assert.equal(readAccount(bad), null);
+  for (const good of ['What is 😀 this?', '😀', '这道题怎么做？', 'e\u0301 and \u{1F9EE} and \u{10FFFF}', '😀 start and end 😀', 'x'.repeat(3998) + '😀']) assert.equal(userTextOf(`  ${good}  `), good);
+  for (const other of ['', '   ', 'x'.repeat(4001), 7]) assert.equal(userTextProblem(other), 'the question is empty or too long');
+  assert.equal(userTextProblem('  \ud83d  '), DAMAGED, 'as it is sent: trimmed first');
 });
 
 test('a sign-in address is opened only if it is https on openai.com or chatgpt.com (or a subdomain), with no user, password or port', () => {
@@ -90,44 +133,6 @@ test('a sign-in address is opened only if it is https on openai.com or chatgpt.c
   for (const bad of ['http://auth.openai.com/x', 'https://auth.openai.com.evil.example/x', 'https://evilopenai.com/x', 'https://user:pw@auth.openai.com/x', 'https://auth.openai.com:8443/x', 'https://localhost/x', 'file:///c:/x', 'javascript:alert(1)', 'not a url', '', 7, `https://auth.openai.com/${'x'.repeat(5000)}`]) {
     assert.equal(officialLoginUrl(bad), null, String(bad).slice(0, 60));
   }
-});
-
-test('an answer is read only if its whole provenance is the request that was sent', () => {
-  const sent = request();
-  const good = { request_id: sent.request_id, text: 'It is a triangle.', provenance: provenanceOf(sent), model: 'vision-model', auth_mode: 'chatgpt', latency_ms: 900, thread_id: 't1', turn_id: 'u1' };
-  assert.deepEqual(readAnswer(good, sent), { request_id: sent.request_id, text: 'It is a triangle.', model: 'vision-model', latency_ms: 900, thread_id: 't1', turn_id: 'u1' });
-  // The same provenance in another member order is the same.
-  assert.equal(typeof readAnswer({ ...good, provenance: JSON.parse(JSON.stringify(Object.fromEntries(Object.entries(provenanceOf(sent)).reverse()))) }, sent), 'object');
-  const p = (change: (v: ReturnType<typeof provenanceOf> & { context: Record<string, unknown>; image: Record<string, unknown> }) => void) => {
-    const v = JSON.parse(JSON.stringify(provenanceOf(sent)));
-    change(v);
-    return { ...good, provenance: v };
-  };
-  for (const [what, v] of [
-    ['another request', { ...good, request_id: 'ask-other.1' }],
-    ['another picture', p((x) => void (x.image['sha256'] = 'c'.repeat(64)))],
-    ['another question', p((x) => void ((x as Record<string, unknown>)['question'] = 'What else?'))],
-    ['more help than asked', p((x) => void ((x as Record<string, unknown>)['assistance'] = 'full_solution'))],
-    ['another ink document', p((x) => void (x.context['ink_sha256'] = 'd'.repeat(64)))],
-    ['another ink revision', p((x) => void (x.context['ink_revision'] = 4))],
-    ['another frame', p((x) => void (x.context['frame_seq'] = 8))],
-    ['another session', p((x) => void (x.context['capture_session_id'] = 'fedcba9876543210'))],
-    ['a missing fact', p((x) => void delete x.context['media_position'])],
-    ['an added fact', p((x) => void (x.context['extra'] = 1))],
-    ...Object.keys(sent.context).map((k) => [`context.${k} changed`, p((x) => void (x.context[k] = typeof x.context[k] === 'number' ? (x.context[k] as number) + 1 : typeof x.context[k] === 'string' ? `${x.context[k] as string}x` : x.context[k] === null ? 0 : { changed: true }))] as const),
-    ...['x', 'y', 'width', 'height'].flatMap((k) => (['region_dip', 'region_px'] as const).map((r) => [`${r}.${k} changed`, p((x) => void ((x.context[r] as Record<string, number>)[k]! += 1))] as const)),
-    ['display.bounds changed', p((x) => void ((x.context['display'] as { bounds: { x: number } }).bounds.x += 1))],
-    ['display.id changed', p((x) => void ((x.context['display'] as { id: string }).id = '2'))],
-    ['display.scale_factor changed', p((x) => void ((x.context['display'] as { scale_factor: number }).scale_factor = 1))],
-    ['image.width changed', p((x) => void (x.image['width'] = 41))],
-    ['image.height changed', p((x) => void (x.image['height'] = 21))],
-    ['no provenance', { ...good, provenance: null }],
-    ['another auth mode', { ...good, auth_mode: 'api_key' }],
-    ['no text', { ...good, text: '   ' }],
-    ['too much text', { ...good, text: 'x'.repeat(ANSWER_MAX + 1) }],
-    ['no model', { ...good, model: '' }],
-    ['no turn', { ...good, turn_id: undefined }],
-  ] as const) assert.equal(typeof readAnswer(v, sent), 'string', what);
 });
 
 test('the connector configuration: off unless named; launch facts and two trusted settings only', () => {
@@ -148,7 +153,7 @@ test('nothing is started until the user checks; the launch is exact, and only th
   Object.assign(process.env, { LC_SUBSCRIPTION_CONNECTOR: '/secret/config.json', LC_DEV_CAPTURE_HOST: '/x', LC_SUBSCRIPTION_STATE_DIR: '/inherited/not/trusted', WSLENV: 'SOMETHING/u', PGPASSWORD: 'x' });
   try {
     const { s, fakes, now } = subscription({ ...WSL, state_dir: '/product/state', codex_bin: '/opt/codex' });
-    assert.deepEqual([now().state, fakes.made.length], ['not_checked', 0], 'no child before the user asks for one');
+    assert.deepEqual([now().state, now().quota, fakes.made.length], ['not_checked', null, 0], 'no child before the user asks for one, and no quota is said before it was read');
     await s.check();
     assert.equal(fakes.made.length, 1);
     const l = fakes.launches[0]!;
@@ -157,7 +162,8 @@ test('nothing is started until the user checks; the launch is exact, and only th
     assert.deepEqual(Object.keys(l.env).filter((k) => /^(LC_|PG|PYTHON)/i.test(k)).sort(), ['LC_SUBSCRIPTION_CODEX_BIN', 'LC_SUBSCRIPTION_STATE_DIR', 'PYTHONDONTWRITEBYTECODE'], 'only the two trusted settings, from the configuration and not from this process\'s own environment');
     assert.deepEqual((l.options as { stdio: unknown }).stdio, ['pipe', 'pipe', 'ignore'], 'its error output is not read');
     assert.deepEqual(fakes.last().calls.map((c) => [c.method, c.params]), [['connection/read', {}]]);
-    assert.deepEqual([now().state, now().plan, now().model, now().rate_limits?.length], ['signed_in', 'Pro', 'vision-model', 1], 'the model chosen is one that takes pictures, not the text-only default');
+    assert.deepEqual([now().state, now().plan, now().model], ['signed_in', 'Pro', 'vision-model'], 'the model chosen is one that takes pictures, not the text-only default');
+    assert.deepEqual(now().quota, { available: true, ordinary_usage_allowed: true, windows: [bucket()] }, 'the quota as the server states it, bucket by bucket');
     // Without the two settings nothing is carried into WSL (an inherited WSLENV is dropped).
     const plain = subscription();
     await plain.s.check();
@@ -199,157 +205,659 @@ test('the sign-in: its page is opened only on the user\'s press and only at an o
   assert.deepEqual([opened.length, now().login, fakes.last().calls.at(-1)?.method], [before, 'refused_address', 'connection/login/cancel']);
 });
 
-test('one question: sent once in the envelope with the chosen model; its bound answer is returned; a second meanwhile is not sent', async () => {
-  const { s, fakes, now } = subscription();
+test('every request is one line of lc-subscription-live/1: its version, an id of its own, its method and its params, and nothing else', async () => {
+  let lines: Line[] = [];
+  const { s, fakes } = subscription(WSL, {}, (k) => void (lines = wire(k)));
   await s.check();
-  const sent = request();
-  const done = s.ask(sent);
-  await until('sent', () => fakes.last().asks().length === 1);
-  assert.equal(now().asking, true);
-  assert.deepEqual(fakes.last().asks()[0]!.params, { request: sent, model: 'vision-model' });
-  const second = await s.ask(request({ request_id: 'ask-other.1' }));
-  assert.deepEqual(second, { status: 'refused', code: 'local', reason: 'another question is still being answered' });
-  assert.equal(fakes.last().asks().length, 1, 'the second was not sent');
-  fakes.last().answer('It is a right triangle.');
-  assert.deepEqual(await done, { status: 'answered', answer: { request_id: sent.request_id, text: 'It is a right triangle.', model: 'vision-model', latency_ms: 1234, thread_id: 'thread-synthetic-1', turn_id: 'turn-synthetic-1' } });
-  assert.equal(now().asking, false);
+  await s.login();
+  await s.cancelLogin();
+  assert.equal((await begin(s)).ok, true);
+  const c = fakes.last();
+  const sent = turn();
+  const done = s.turn(sent);
+  await until('sent', () => c.turns().length === 1);
+  s.interrupt(sent.request_id);
+  await done;
+  s.stopSession(SESSION);
+  await until('the Stop is told', () => c.count('companion/stop') === 1);
+  assert.equal(LIVE_VERSION, 'lc-subscription-live/1');
+  const version = 'lc-subscription-live/1';
+  assert.deepEqual(lines.map(({ id: _id, ...line }) => line), [
+    { version, method: 'connection/read', params: {} },
+    { version, method: 'connection/login/start', params: {} },
+    { version, method: 'connection/login/cancel', params: { login_id: 'login-1' } },
+    { version, method: 'companion/start', params: START },
+    { version, method: 'companion/turn', params: sent }, // the turn itself, whole: nothing wrapped around it
+    { version, method: 'companion/interrupt', params: { session_id: SESSION, epoch: 1, request_id: sent.request_id } },
+    { version, method: 'companion/stop', params: { session_id: SESSION, epoch: 1 } },
+  ]);
+  const ids = lines.map((l) => l['id']);
+  assert.equal(ids.every((id) => typeof id === 'string' && id.length > 0) && new Set(ids).size === ids.length, true, 'each request has an id of its own');
+  assert.deepEqual(c.calls.map((x) => x.id), ids, 'and the stand-in took every one of them as this version\'s');
 });
 
-test('an answer not bound to what was sent is not returned; the connector\'s errors are fixed texts, never its message; nothing is sent again', async () => {
-  const { s, fakes } = subscription();
+// ---- the AI session (synthetic) ---------------------------------------------------------------------------------
+test('Start of the AI session: written once, exactly, with epoch 1, the chosen model and the screen alone; what the connector counts is what is returned', async () => {
+  let lines: Line[] = [];
+  const { s, fakes, now } = subscription(WSL, {}, (k) => void ((lines = wire(k)), (k.account = { ...ACCOUNT, models: [...ACCOUNT.models, { id: 'vision-model-2', label: 'Vision 2', image_input: true, default: false }] })));
   await s.check();
-  let done = s.ask(request());
-  await until('sent', () => fakes.last().asks().length === 1);
-  fakes.last().answer('An answer about another picture.', (r) => void ((r['provenance'] as { image: { sha256: string } }).image.sha256 = 'c'.repeat(64)));
-  assert.deepEqual(await done, { status: 'refused', code: 'unbound', reason: 'the answer is not bound to the request that was sent; it is not shown' });
-  for (const [code, reason] of [['quota', 'the subscription\'s usage limit was reached'], ['unsupported_model', 'the chosen model does not take pictures'], ['failed', 'ChatGPT did not complete an answer'], ['some_new_code', 'ChatGPT did not complete an answer']] as const) {
-    const n = fakes.last().asks().length;
-    done = s.ask(request({ request_id: `ask-x.${n}` }));
-    await until('sent', () => fakes.last().asks().length === n + 1);
-    fakes.last().fail(fakes.last().asks().at(-1)!.id, code);
-    const outcome = await done;
-    assert.deepEqual(outcome, { status: 'refused', code: code === 'some_new_code' ? 'failed' : code, reason });
-    assert.equal(JSON.stringify(outcome).includes('raw message'), false);
-    assert.equal(fakes.last().asks().length, n + 1, 'not sent again');
-  }
-  // Not signed in any more: said, and the state follows.
-  const n = fakes.last().asks().length;
-  done = s.ask(request({ request_id: 'ask-y.1' }));
-  await until('sent', () => fakes.last().asks().length === n + 1);
-  fakes.last().fail(fakes.last().asks().at(-1)!.id, 'unauthenticated');
-  assert.equal((await done).status, 'refused');
-  assert.equal((s.status() as { state: string }).state, 'signed_out');
-  assert.deepEqual(await s.ask(request({ request_id: 'ask-z.1' })), { status: 'refused', code: 'local', reason: 'ChatGPT is not signed in (sign in from the control window)' });
-  assert.equal(fakes.last().asks().length, n + 1, 'nothing is sent while signed out');
+  const c = fakes.last();
+  assert.deepEqual([now().model, s.notStartable(), s.sessionLive(SESSION)], ['vision-model', null, false]);
+  // The user's choice of model: only one of the catalog's that takes pictures.
+  assert.deepEqual([s.chooseModel('text-only-model'), s.chooseModel('no-such-model'), s.chooseModel(7), now().model], [false, false, false, 'vision-model']);
+  assert.deepEqual([s.chooseModel('vision-model-2'), now().model], [true, 'vision-model-2']);
+  // The connector counts the session's own bounds: what it says is left is what is returned, never worked out here.
+  c.onStart = (r) => void ((r['remaining_submissions'] = 11), (r['expires_in_ms'] = 299_990));
+  const start = { ...START, model: 'vision-model-2' };
+  assert.deepEqual(await begin(s), { ok: true, start, remaining_submissions: 11, expires_in_ms: 299_990 });
+  assert.deepEqual(lines.at(-1), { version: 'lc-subscription-live/1', id: c.calls.at(-1)!.id, method: 'companion/start', params: { session_id: SESSION, capture_session_id: CAPTURE, epoch: 1, model: 'vision-model-2', policy: { max_submissions: 12, max_session_ms: 300_000, min_observation_interval_ms: 30_000 }, permissions: { screen: true, microphone: false, system_audio: false } } });
+  assert.deepEqual([c.count('companion/start'), s.sessionLive(SESSION), s.sessionLive(OTHER_SESSION), s.sessionLive(''), fakes.made.length], [1, true, false, false, 1], 'one Start, to the connector whose account was read; only this session is running');
+  // The session keeps the model it was started with: a later choice is for the next Start, and an answer from
+  // another model than the session's is not this session's.
+  assert.equal(s.chooseModel('vision-model'), true);
+  const w = { s, fakes };
+  const first = await out(w);
+  c.answer('From the session\'s model.');
+  const answered = await first.done;
+  assert.deepEqual([answered.status, answered.status === 'answered' && answered.answer.model], ['answered', 'vision-model-2']);
+  const second = await out(w, turn({ request_id: `${SESSION}.7.again` }));
+  c.answer('From the model chosen since.', (r) => void (r['model'] = 'vision-model'));
+  assert.deepEqual(await second.done, { status: 'refused', code: 'unbound', reason: 'the answer came from another model than the session\'s; it is not shown', submission: 'submitted' });
+  // A session whose bounds are already used up as the connector counts them is still that session (zero is a count).
+  const used = subscription(WSL, {}, (k) => void (k.onStart = (r) => void ((r['remaining_submissions'] = 0), (r['expires_in_ms'] = 0))));
+  await used.s.check();
+  assert.deepEqual(await begin(used.s), { ok: true, start: START, remaining_submissions: 0, expires_in_ms: 0 });
 });
 
-test('cancel: the turn is interrupted and its answer never returned, whatever arrives; whether it stopped is what the cancel was answered', async () => {
-  for (const [mode, uncertain] of [['confirmed', false], ['unconfirmed', true]] as const) {
-    const { s, fakes } = subscription();
-    await s.check();
-    fakes.last().onCancel = mode;
-    const sent = request();
-    const done = s.ask(sent);
-    await until('sent', () => fakes.last().asks().length === 1);
-    s.cancel(sent.request_id);
-    // As the released connector answers: the question as `cancelled`; the uncertainty in the cancel's own answer.
-    assert.deepEqual(await done, { status: 'cancelled', uncertain });
-    assert.deepEqual(fakes.last().calls.at(-1), { id: fakes.last().calls.at(-1)!.id, method: 'ask/cancel', params: { request_id: sent.request_id } });
-  }
-  // The answer arrives although it was cancelled (the interruption raced it): it is not returned.
-  const { s, fakes } = subscription();
-  await s.check();
-  fakes.last().onCancel = 'silent';
-  const sent = request();
-  const done = s.ask(sent);
-  await until('sent', () => fakes.last().asks().length === 1);
-  s.cancel(sent.request_id);
-  fakes.last().answer('A late answer.');
-  const outcome = await done;
-  assert.deepEqual(outcome, { status: 'cancelled', uncertain: true });
-  assert.equal(JSON.stringify(outcome).includes('late answer'), false);
-  // A cancel that gets no answer at all (the connector hangs) is not a confirmed stop either.
-  const hung = subscription();
-  await hung.s.check();
-  const asked = hung.s.ask(request());
-  await until('sent', () => hung.fakes.last().asks().length === 1);
-  hung.fakes.last().stdin.removeAllListeners('data'); // it reads nothing more
-  hung.s.cancel(request().request_id);
-  assert.deepEqual(await asked, { status: 'cancelled', uncertain: true });
-});
-
-test('a stopped capture session can never ask again: its question out is cancelled, the connector is told, and nothing of it is sent later', async () => {
-  const { s, fakes } = subscription();
-  await s.check();
-  const sent = request();
-  const done = s.ask(sent);
-  await until('sent', () => fakes.last().asks().length === 1);
-  fakes.last().onCancel = 'unconfirmed';
-  s.stopSession(sent.context.capture_session_id);
-  await until('told', () => fakes.last().count('session/stop') === 1);
-  assert.deepEqual(fakes.last().calls.at(-1), { id: fakes.last().calls.at(-1)!.id, method: 'session/stop', params: { capture_session_id: sent.context.capture_session_id } });
-  fakes.last().answer('An answer after the Stop.');
-  assert.deepEqual(await done, { status: 'cancelled', uncertain: true }, 'not shown; the Stop\'s interruption was not confirmed, and that is said');
-  assert.deepEqual(await s.ask(request({ request_id: 'ask-after.1' })), { status: 'refused', code: 'local', reason: 'this capture session was stopped' });
-  assert.equal(fakes.last().asks().length, 1);
-  // Another session, an explicit new Start, can ask.
-  const other = request({ request_id: 'ask-new.1', context: { ...sent.context, capture_session_id: 'fedcba9876543210' } });
-  const next = s.ask(other);
-  await until('sent', () => fakes.last().asks().length === 2);
-  fakes.last().answer('For the new session.');
-  assert.equal((await next).status, 'answered');
-  // A session stopped before any child ran starts none.
+test('the AI session is not started, and nothing is written, while the account is not checked, being checked, not signed in, not known or not available, with no model that takes pictures, or with a session already running', async () => {
+  // Not checked: no connector is started for a Start either (only the user's own Check starts one).
   const idle = subscription();
-  idle.s.stopSession('0123456789abcdef');
+  assert.equal(idle.s.notStartable(), 'the ChatGPT subscription has not been checked yet (use the control window)');
+  assert.deepEqual(await begin(idle.s), local('the ChatGPT subscription has not been checked yet (use the control window)'));
+  assert.equal(idle.fakes.made.length, 0);
+  // While the account is being read.
+  const reading = subscription(WSL, {}, (k) => void (k.account = null));
+  const read = reading.s.check();
+  await until('read', () => reading.fakes.made.length === 1 && reading.fakes.last().count('connection/read') === 1);
+  assert.deepEqual(await begin(reading.s), local('the ChatGPT subscription is being checked'));
+  reading.fakes.last().reply(reading.fakes.last().calls[0]!.id, ACCOUNT);
+  await read;
+  assert.deepEqual([reading.s.notStartable(), reading.fakes.last().count('companion/start')], [null, 0], 'once it is read, the user may start it');
+  // As the account reads.
+  for (const [account, state, reason] of [
+    [SIGNED_OUT, 'signed_out', 'ChatGPT is not signed in (sign in from the control window)'],
+    [{ ...ACCOUNT, auth: { state: 'signed_in', mode: 'api_key', plan: null } }, 'signed_out', 'ChatGPT is not signed in (sign in from the control window)'], // an API key is not this subscription
+    [{ ...ACCOUNT, auth: { state: 'unknown', mode: null, plan: null } }, 'unknown', 'the sign-in state of the ChatGPT subscription is not known (check it in the control window)'],
+    [{ something: 'else' }, 'unavailable', UNAVAILABLE],
+    [{ ...ACCOUNT, models: [ACCOUNT.models[0]] }, 'signed_in', 'no model that takes pictures is available'],
+    [{ ...ACCOUNT, models: [] }, 'signed_in', 'no model that takes pictures is available'],
+  ] as const) {
+    const w = subscription(WSL, {}, (k) => void (k.account = account));
+    await w.s.check();
+    assert.deepEqual([w.now().state, await begin(w.s)], [state, local(reason)], reason);
+    assert.deepEqual([w.fakes.last().calls.map((x) => x.method), w.s.sessionLive(SESSION), w.fakes.made.length], [['connection/read'], false, 1], 'nothing but the read was written');
+    assert.deepEqual(await w.s.turn(turn()), NOT_RUNNING, 'and no turn either');
+    assert.equal(w.fakes.last().turns().length, 0);
+  }
+  // One session at a time: a second Start (another id, or the same) is not written while one runs, or while one's Start is out.
+  const w = await started();
+  for (const id of [OTHER_SESSION, SESSION]) assert.deepEqual(await begin(w.s, { session_id: id }), local('an AI session is already running'));
+  assert.deepEqual([w.c.count('companion/start'), w.s.sessionLive(SESSION), w.s.sessionLive(OTHER_SESSION)], [1, true, false]);
+  const slow = subscription(WSL, {}, (k) => void k.manual.add('companion/start'));
+  await slow.s.check();
+  const starting = begin(slow.s);
+  await until('its Start is out', () => slow.fakes.last().count('companion/start') === 1);
+  assert.equal(slow.s.sessionLive(SESSION), false, 'not running before the connector said so');
+  assert.deepEqual(await begin(slow.s, { session_id: OTHER_SESSION }), local('an AI session is already running'));
+  assert.deepEqual(await slow.s.turn(turn()), NOT_RUNNING, 'a turn of a session whose Start is still out is not written');
+  slow.fakes.last().reply(slow.fakes.last().calls.at(-1)!.id, STARTED);
+  assert.deepEqual([(await starting).ok, slow.fakes.last().count('companion/start'), slow.fakes.last().turns().length, slow.s.sessionLive(SESSION)], [true, 1, 0, true]);
+});
+
+test('a Start the connector refuses is said in fixed words, never its message; that session is not running, nothing is written for it, and nothing starts it again but the user', async () => {
+  for (const [code, known, reason] of [
+    ['busy', 'busy', 'the connector is busy (a sign-in is pending in it, or an earlier request is still being ended), so the AI was not started; try again in a moment'], // a Start's own words, not a turn's
+    ['unsupported_model', 'unsupported_model', 'the chosen model is not available for pictures'],
+    ['invalid_request', 'invalid_request', 'the connector refused the request as malformed'],
+    ['unavailable', 'unavailable', UNAVAILABLE],
+    ['allowance_exhausted', 'allowance_exhausted', 'ChatGPT says the account\'s allowance is used up'],
+    ['failed', 'failed', 'the request failed'],
+    ['quota', 'failed', 'the request failed'], // the earlier envelope's code is not one of this version's
+    ['toString', 'failed', 'the request failed'],
+  ] as const) {
+    const w = subscription(WSL, {}, (k) => void k.manual.add('companion/start'));
+    await w.s.check();
+    const c = w.fakes.last();
+    const starting = begin(w.s);
+    await until('its Start is out', () => c.count('companion/start') === 1);
+    c.fail(c.calls.at(-1)!.id, code);
+    const r = await starting;
+    assert.deepEqual(r, { ok: false, code: known, reason }, code);
+    assert.equal(JSON.stringify(r).includes('raw message'), false);
+    assert.deepEqual([w.s.sessionLive(SESSION), await w.s.turn(turn()), c.turns().length], [false, NOT_RUNNING, 0], 'a session that did not start has no turns');
+    await new Promise((r2) => setTimeout(r2, 20));
+    assert.deepEqual([c.count('companion/start'), c.count('companion/stop'), w.fakes.made.length, w.now().state, c.exited], [1, 0, 1, 'signed_in', false], 'not started again by itself; the connector said it has no such session, so there is none to stop');
+    // The user's own Start again is a new request (here the connector takes it).
+    c.manual.delete('companion/start');
+    assert.deepEqual([(await begin(w.s, { session_id: OTHER_SESSION })).ok, c.count('companion/start'), w.s.sessionLive(OTHER_SESSION), w.s.sessionLive(SESSION)], [true, 2, true, false]);
+  }
+  // Refused as not signed in: said as that, and the state follows; the next Start is then refused here, unwritten.
+  const signedOut = subscription(WSL, {}, (k) => void k.manual.add('companion/start'));
+  await signedOut.s.check();
+  const starting = begin(signedOut.s);
+  await until('its Start is out', () => signedOut.fakes.last().count('companion/start') === 1);
+  signedOut.fakes.last().fail(signedOut.fakes.last().calls.at(-1)!.id, 'unauthenticated');
+  assert.deepEqual(await starting, { ok: false, code: 'unauthenticated', reason: 'ChatGPT is not signed in' });
+  assert.equal(signedOut.now().state, 'signed_out');
+  assert.deepEqual(await begin(signedOut.s), local('ChatGPT is not signed in (sign in from the control window)'));
+  assert.equal(signedOut.fakes.last().count('companion/start'), 1);
+});
+
+test('a Start answered in a form this app does not read, or not answered at all: that session is not used, and that connector (no other) is told to stop it', async () => {
+  const world = async () => {
+    const w = subscription(WSL, {}, (k) => void k.manual.add('companion/start'));
+    await w.s.check();
+    const c = w.fakes.last();
+    const starting = begin(w.s);
+    await until('its Start is out', () => c.count('companion/start') === 1);
+    return { ...w, c, starting, id: c.calls.at(-1)!.id };
+  };
+  const unused = async (w: Awaited<ReturnType<typeof world>>, what: string): Promise<void> => {
+    await until(`the connector is told to stop it (${what})`, () => w.c.count('companion/stop') === 1);
+    assert.deepEqual(w.c.calls.at(-1), { id: w.c.calls.at(-1)!.id, method: 'companion/stop', params: { session_id: SESSION, epoch: 1 } }, what);
+    assert.deepEqual([w.s.sessionLive(SESSION), await w.s.turn(turn()), w.c.turns().length], [false, NOT_RUNNING, 0], what);
+    await new Promise((r) => setTimeout(r, 20));
+    assert.deepEqual([w.c.count('companion/start'), w.c.count('companion/stop'), w.fakes.made.length, w.c.exited, w.now().state], [1, 1, 1, false, 'signed_in'], `${what}: said once, to the connector that was asked; not started again, and the connector goes on`);
+  };
+  for (const result of [
+    null, {}, 'started', [STARTED],
+    { ...STARTED, session_id: OTHER_SESSION }, // another session's
+    { ...STARTED, epoch: 2 },
+    { ...STARTED, remaining_submissions: 13 }, // more than the user allowed
+    { ...STARTED, expires_in_ms: 300_001 },
+    { ...STARTED, remaining_submissions: -1 },
+    { ...STARTED, remaining_submissions: 1.5 },
+    { ...STARTED, remaining_submissions: '12' },
+    { ...STARTED, expires_in_ms: null },
+    { ...STARTED, more: true },
+    { session_id: SESSION, epoch: 1, remaining_submissions: 12 },
+  ]) {
+    const w = await world();
+    w.c.reply(w.id, result);
+    assert.deepEqual(await w.starting, { ok: false, code: 'failed', reason: 'the connector answered the start in a form this app does not read, so that session is not used' }, JSON.stringify(result));
+    await unused(w, JSON.stringify(result));
+  }
+  // No answer within its time: whether the connector started it is not known, so it is stopped there and never used.
+  const silent = await world();
+  assert.deepEqual(await silent.starting, { ok: false, code: 'unavailable', reason: 'the connector did not answer the start, so that session is not used' });
+  await unused(silent, 'no answer');
+  // Its answer arriving after all changes nothing: that session stays unused.
+  silent.c.reply(silent.id, STARTED);
+  await new Promise((r) => setTimeout(r, 20));
+  assert.deepEqual([silent.s.sessionLive(SESSION), await silent.s.turn(turn()), silent.c.turns().length], [false, NOT_RUNNING, 0]);
+  // Positive control: the same world answered as the connector answers is that session, running, and nothing is stopped.
+  const fine = await world();
+  fine.c.reply(fine.id, STARTED);
+  assert.deepEqual(await fine.starting, { ok: true, start: START, remaining_submissions: 12, expires_in_ms: 300_000 });
+  assert.deepEqual([fine.s.sessionLive(SESSION), fine.c.count('companion/stop')], [true, 0]);
+});
+
+test('the connector lost, fenced or ended by the quit while the AI is being started: that session is not used, whatever was answered, and no other connector is started', async () => {
+  const LOST: SessionStart = { ok: false, code: 'unavailable', reason: 'the connector was lost while the AI was being started' };
+  const world = async (configure: (k: FakeConnector) => void = () => undefined) => {
+    const w = subscription(WSL, {}, (k) => void (k.manual.add('companion/start'), configure(k)));
+    await w.s.check();
+    const c = w.fakes.last();
+    const starting = begin(w.s);
+    await until('its Start is out', () => c.count('companion/start') === 1);
+    return { ...w, c, starting, id: c.calls.at(-1)!.id };
+  };
+  const unused = async (w: Awaited<ReturnType<typeof world>>, what: string): Promise<void> => {
+    assert.deepEqual([w.s.sessionLive(SESSION), w.s.running(), w.now().state, await w.s.turn(turn()), await begin(w.s)], [false, false, 'unavailable', NOT_RUNNING, local(UNAVAILABLE)], what);
+    await new Promise((r) => setTimeout(r, 30));
+    assert.deepEqual([w.fakes.made.length, w.c.count('companion/start'), w.c.turns().length], [1, 1, 0], `${what}: no other connector, no second Start, no turn`);
+  };
+  // It ends while the Start is out.
+  const gone = await world();
+  gone.c.exit(1);
+  assert.deepEqual(await gone.starting, LOST);
+  await unused(gone, 'ended');
+  // It answers the Start as it should, and is fenced in the same chunk (a line that is not the envelope's).
+  const fenced = await world();
+  fenced.c.stdout.write(`${JSON.stringify({ id: fenced.id, result: STARTED })}\n${OVER}`);
+  assert.deepEqual(await fenced.starting, LOST, 'what it answered is not taken as a running session');
+  await unused(fenced, 'fenced');
+  // It refuses the Start as not signed in, and is fenced in the same chunk: not said as signed out.
+  const refused = await world();
+  const from = refused.said.length;
+  refused.c.stdout.write(`${JSON.stringify({ id: refused.id, error: { code: 'unauthenticated', submission: 'not_submitted', message: 'raw' } })}\n${OVER}`);
+  assert.deepEqual(await refused.starting, LOST);
+  assert.equal(refused.said.slice(from).some((x) => x.mode === 'managed' && x.state === 'signed_out'), false);
+  await unused(refused, 'refused and fenced');
+  // The app quits while the Start is out, and the connector still answers it before it ends.
+  const q = await world((k) => void (k.endDelayMs = 80));
+  const quit = q.s.quit();
+  await new Promise((r) => setTimeout(r, 10));
+  assert.equal(q.c.exited, false, 'still ending');
+  q.c.stdout.write(`${JSON.stringify({ id: q.id, result: STARTED })}\n`);
+  assert.deepEqual(await q.starting, LOST);
+  await quit;
+  assert.equal(q.c.exited, true);
+  await unused(q, 'quit');
+  // Only the user's own Check starts a connector again, and only the user's own Start a session in it.
+  await gone.s.check();
+  assert.deepEqual([gone.fakes.made.length, gone.now().state, gone.s.sessionLive(SESSION), gone.fakes.last().calls.map((x) => x.method)], [2, 'signed_in', false, ['connection/read']]);
+  gone.fakes.last().manual.delete('companion/start'); // this one answers its Start by itself
+  assert.deepEqual([(await begin(gone.s)).ok, gone.s.sessionLive(SESSION), gone.fakes.last().count('companion/start'), gone.c.count('companion/start')], [true, true, 1, 1]);
+});
+
+// ---- the session's turns (synthetic) ----------------------------------------------------------------------------
+test('one turn: sent once in the envelope as the turn itself; its bound answer is returned, as submitted; an unattended look\'s answer is an observation', async () => {
+  const w = await started();
+  const { s, c, now, said } = w;
+  const sent = turn();
+  assert.equal(turnProblem(sent, Buffer.from(sent.image.png_base64, 'base64').length), null, 'a turn as the app builds one');
+  const from = said.length;
+  const done = s.turn(sent);
+  await until('sent', () => c.turns().length === 1);
+  assert.equal(now().asking, true);
+  assert.deepEqual(c.turns()[0]!.params, sent, 'the whole turn is the request\'s params: the whole display\'s picture, its context, the focus, and the model nowhere (it is the session\'s)');
+  c.answer('It is a right triangle.');
+  assert.deepEqual(await done, { status: 'answered', answer: { request_id: sent.request_id, text: 'It is a right triangle.', model: 'vision-model', latency_ms: 1234, thread_id: 'thread-synthetic-1', turn_id: 'turn-synthetic-1', kind: 'generated_assistance' }, submission: 'submitted' });
+  assert.deepEqual([now().asking, c.turns().length], [false, 1]);
+  assert.deepEqual(said.slice(from).map((x) => x.mode === 'managed' && x.asking), [true, false], 'the windows are told that a turn is out, and that it is over');
+  // An unattended look asks for no answer to show: what comes back is an observation, and is said as one.
+  const seen = look();
+  assert.equal(turnProblem(seen, 8), null);
+  const looking = await out(w, seen);
+  assert.deepEqual(c.looks().map((x) => x.params), [seen]);
+  c.see('A page with a triangle and two marked sides.');
+  assert.deepEqual(await looking.done, { status: 'answered', answer: { request_id: seen.request_id, text: 'A page with a triangle and two marked sides.', model: 'vision-model', latency_ms: 1234, thread_id: 'thread-synthetic-1', turn_id: 'turn-synthetic-1', kind: 'observation' }, submission: 'submitted' });
+  // An answer of the other kind is not what was asked for: generated help for a look, or an observation for the user's own request.
+  const again = await out(w, look({ request_id: `${SESSION}.7.observation.2` }));
+  c.see('Here is a hint for you.');
+  assert.equal((await again.done).status, 'answered', '(the control: a look answered as a look)');
+  const helped = await out(w, look({ request_id: `${SESSION}.7.observation.3` }));
+  c.answer('Here is a hint for you.', (r) => void (r['kind'] = 'generated_assistance'), c.looks().at(-1)!);
+  assert.deepEqual(await helped.done, { status: 'refused', code: 'unbound', reason: 'the answer is not of the kind that was asked for; it is not shown', submission: 'submitted' });
+  assert.equal(c.turns().length, 4, 'each was sent once');
+});
+
+test('several turns may be out at once (this app no longer holds one back; the connector says busy): each is written once and ends as its own answer says', async () => {
+  const w = await started();
+  const { s, c, now } = w;
+  const [a, b, d] = [turn(), followup(), look()];
+  assert.deepEqual([a, b, d].map((t) => turnProblem(t, 8)), [null, null, null]);
+  const outs = [await out(w, a), await out(w, b), await out(w, d)] as const;
+  assert.deepEqual([c.turns().map((t) => t.params['request_id']), now().asking], [[a.request_id, b.request_id, d.request_id], true], 'all three were written, in the order they were sent');
+  // The connector's own word on the second, as it refuses one while another is in flight; the others are still out.
+  c.fail(outs[1].id, 'busy');
+  assert.deepEqual(await outs[1].done, { status: 'refused', code: 'busy', reason: 'another request of yours is still waiting, so this one was not taken', submission: 'not_submitted' });
+  assert.equal(now().asking, true);
+  // Answered out of order: each answer is its own turn's.
+  c.see('A page with a triangle.');
+  assert.deepEqual(await outs[2].done, { status: 'answered', answer: { request_id: d.request_id, text: 'A page with a triangle.', model: 'vision-model', latency_ms: 1234, thread_id: 'thread-synthetic-1', turn_id: 'turn-synthetic-1', kind: 'observation' }, submission: 'submitted' });
+  assert.equal(now().asking, true, 'the first is still out');
+  c.answer('Look at the longest side.', undefined, c.turns()[0]!);
+  const first = await outs[0].done;
+  assert.deepEqual([first.status, first.status === 'answered' && first.answer.request_id, first.status === 'answered' && first.answer.text], ['answered', a.request_id, 'Look at the longest side.']);
+  assert.deepEqual([now().asking, c.turns().length, c.count('companion/interrupt')], [false, 3, 0], 'nothing was sent again, and nothing was interrupted to make room');
+  // An answer made for one turn and written under another's id is not that other's; the one it was made for still waits.
+  const [e, f] = [turn({ request_id: `${SESSION}.9.focus` }), followup({ request_id: `${SESSION}.9.text_followup` })];
+  const [one, two] = [await out(w, e), await out(w, f)];
+  c.answer('For the follow-up.', undefined, { ...c.turns().at(-1)!, id: one.id });
+  assert.deepEqual(await one.done, { status: 'refused', code: 'unbound', reason: 'the answer is for another request; it is not shown', submission: 'submitted' });
+  assert.equal(now().asking, true);
+  c.answer('For the follow-up.');
+  assert.equal((await two.done).status, 'answered');
+  assert.deepEqual([now().asking, c.turns().length], [false, 5]);
+});
+
+test('an answer not bound to what was sent is not returned; the connector\'s errors are fixed texts and its own word on whether ChatGPT was reached, never its message; nothing is sent again', async () => {
+  const w = await started();
+  const { s, c, now } = w;
+  let o = await out(w);
+  c.answer('An answer about another picture.', (r) => void ((r['provenance'] as { image: { sha256: string } }).image.sha256 = 'c'.repeat(64)));
+  assert.deepEqual(await o.done, { status: 'refused', code: 'unbound', reason: 'the answer is not bound to the request that was sent; it is not shown', submission: 'submitted' });
+  // Every code of this version that refuses a turn (the two that say it was cancelled, and the sign-in's, are below).
+  const SAID: Record<string, string> = {
+    allowance_exhausted: 'ChatGPT says the account\'s allowance is used up',
+    rate_limited: 'ChatGPT says requests are coming too fast for now (a rate limit, not a used-up allowance)',
+    allowance_unknown: 'ChatGPT refused the request, and what is left of the allowance is not known',
+    workspace_limit: 'ChatGPT says a workspace limit was reached',
+    ordinary_usage_not_allowed: 'ChatGPT says included usage is not allowed for this request now',
+    unsupported_model: 'the chosen model is not available for pictures',
+    budget_reached: 'this session\'s own bound (requests or time) was reached',
+    failed: 'the request failed',
+    quota: 'the request failed', // the earlier envelope's code is not one of this version's: not known, so only "failed"
+    some_new_code: 'the request failed',
+  };
+  const codes = [...Object.keys(LIVE_ERROR_TEXT).filter((k) => !['cancelled', 'interrupt_unconfirmed', 'unauthenticated'].includes(k)), 'quota', 'some_new_code'];
+  assert.equal(Object.keys(SAID).every((k) => codes.includes(k)), true);
+  for (const [i, code] of codes.entries()) {
+    const submission = (['not_submitted', 'submitted', 'unknown'] as const)[i % 3]!;
+    const n = c.turns().length;
+    o = await out(w, turn({ request_id: `${SESSION}.x.${n}` }));
+    c.fail(o.id, code, submission);
+    const known = Object.hasOwn(LIVE_ERROR_TEXT, code) ? code : 'failed';
+    const outcome = await o.done;
+    assert.deepEqual(outcome, { status: 'refused', code: known, reason: SAID[code] ?? LIVE_ERROR_TEXT[code], submission }, code);
+    assert.equal(typeof (outcome as { reason?: unknown }).reason === 'string' && !JSON.stringify(outcome).includes('raw message'), true, code);
+    assert.equal(c.turns().length, n + 1, 'not sent again');
+  }
+  assert.deepEqual([now().state, s.sessionLive(SESSION), c.count('companion/stop'), c.count('companion/interrupt')], ['signed_in', true, 0, 0], 'the transport only says how each ended: whether the session goes on after a failure is the main process\'s to decide');
+  // Not signed in any more: said, and the state follows; a Start is then refused here.
+  const n = c.turns().length;
+  o = await out(w, turn({ request_id: `${SESSION}.y.1` }));
+  c.fail(o.id, 'unauthenticated');
+  assert.deepEqual(await o.done, { status: 'refused', code: 'unauthenticated', reason: 'ChatGPT is not signed in', submission: 'not_submitted' });
+  assert.equal(now().state, 'signed_out');
+  assert.deepEqual(await begin(s, { session_id: OTHER_SESSION }), local('ChatGPT is not signed in (sign in from the control window)'));
+  // The session that was refused so is ended by the app (a failure that is not simply "not taken"): nothing of it is sent then.
+  s.stopSession(SESSION);
+  assert.deepEqual(await s.turn(turn({ request_id: `${SESSION}.z.1` })), NOT_RUNNING);
+  assert.deepEqual([c.turns().length, c.count('companion/start')], [n + 1, 1], 'nothing is sent while signed out');
+});
+
+test('whether a turn reached ChatGPT is said with every outcome: the connector\'s own word when it gave one, "unknown" when it gave none this app knows, and "not_submitted" for what was never written', async () => {
+  const w = await started();
+  const { s, c, now } = w;
+  // The connector's word, read strictly: another word, or none, is "unknown" (which counts like "submitted").
+  for (const [error, submission] of [
+    [{ code: 'rate_limited', submission: 'submitted', message: 'raw' }, 'submitted'],
+    [{ code: 'rate_limited', submission: 'not_submitted' }, 'not_submitted'],
+    [{ code: 'rate_limited', submission: 'unknown' }, 'unknown'],
+    [{ code: 'rate_limited' }, 'unknown'],
+    [{ code: 'rate_limited', submission: 'maybe' }, 'unknown'],
+    [{ code: 'rate_limited', submission: false }, 'unknown'],
+    [{ code: 'rate_limited', submission: ['not_submitted'] }, 'unknown'],
+    [{ code: 'rate_limited', submission: 'constructor' }, 'unknown'],
+  ] as const) {
+    const o = await out(w, turn({ request_id: `${SESSION}.s.${c.turns().length}` }));
+    c.stdout.write(`${JSON.stringify({ id: o.id, error })}\n`);
+    assert.deepEqual(await o.done, { status: 'refused', code: 'rate_limited', reason: 'ChatGPT says requests are coming too fast for now (a rate limit, not a used-up allowance)', submission }, JSON.stringify(error));
+  }
+  // An interrupted turn: the connector's word too (one it had not sent on yet was not submitted).
+  c.onCancel = 'silent'; // the test ends the turn by hand
+  const queued = turn({ request_id: `${SESSION}.s.queued` });
+  let o = await out(w, queued);
+  s.interrupt(queued.request_id);
+  c.fail(o.id, 'cancelled', 'not_submitted');
+  assert.deepEqual(await o.done, { status: 'cancelled', uncertain: false, submission: 'not_submitted' });
+  // Never written, so never submitted: a turn too large for one line to the connector ...
+  const written = c.turns().length;
+  const large = turn({ request_id: `${SESSION}.s.large`, image: { ...turn().image, png_base64: 'A'.repeat(LINE_TO_CONNECTOR_MAX) } });
+  assert.deepEqual(await s.turn(large), { status: 'refused', code: 'context_limit', reason: 'the request or its answer is too large', submission: 'not_submitted' });
+  assert.deepEqual([c.turns().length, now().asking, s.sessionLive(SESSION)], [written, false, true], 'nothing of it was written, and the session goes on');
+  // ... a turn of another session than the running one, or of one that was never started ...
+  assert.deepEqual(await s.turn(turn({ session_id: OTHER_SESSION })), NOT_RUNNING);
+  const never = subscription();
+  assert.deepEqual([await never.s.turn(turn()), never.fakes.made.length], [NOT_RUNNING, 0], 'no connector is started for a turn');
+  // ... and one the connector's input did not take.
+  c.stdin.destroy();
+  assert.deepEqual(await s.turn(turn({ request_id: `${SESSION}.s.pipe` })), { status: 'refused', code: 'unavailable', reason: 'the connector could not be reached, so nothing was sent', submission: 'not_submitted' });
+  assert.deepEqual([c.turns().length, now().asking, w.fakes.made.length], [written, false, 1]);
+});
+
+test('interrupt: the turn is interrupted and its answer never returned, whatever arrives; whether it stopped is what the interrupt was answered', async () => {
+  for (const [mode, uncertain] of [['confirmed', false], ['unconfirmed', true]] as const) {
+    const w = await started();
+    w.c.onCancel = mode;
+    const sent = turn();
+    const { done } = await out(w, sent);
+    w.s.interrupt(sent.request_id);
+    // As the released connector answers: the turn as `cancelled`; the uncertainty in the interrupt's own answer.
+    assert.deepEqual(await done, { status: 'cancelled', uncertain, submission: 'submitted' });
+    assert.deepEqual(w.c.calls.at(-1), { id: w.c.calls.at(-1)!.id, method: 'companion/interrupt', params: { session_id: SESSION, epoch: 1, request_id: sent.request_id } });
+    assert.deepEqual([w.s.sessionLive(SESSION), w.now().asking], [true, false], 'the session itself goes on');
+  }
+  // The answer arrives although it was interrupted (the interruption raced it): it is not returned.
+  const w = await started();
+  w.c.onCancel = 'silent';
+  const sent = turn();
+  const { done } = await out(w, sent);
+  w.s.interrupt(sent.request_id);
+  w.c.answer('A late answer.');
+  const outcome = await done;
+  assert.deepEqual(outcome, { status: 'cancelled', uncertain: true, submission: 'submitted' });
+  assert.equal(JSON.stringify(outcome).includes('late answer'), false);
+  // An interrupt that gets no answer at all (the connector hangs) is not a confirmed stop either.
+  const hung = await started();
+  const asked = await out(hung);
+  hung.c.stdin.removeAllListeners('data'); // it reads nothing more
+  hung.s.interrupt(turn().request_id);
+  assert.deepEqual(await asked.done, { status: 'cancelled', uncertain: true, submission: 'unknown' });
+});
+
+test('an interrupt names its own turn: only that one is interrupted; the others go on and are answered; one that is not out, or already interrupted, writes nothing', async () => {
+  const w = await started();
+  const { s, c, now } = w;
+  const [a, b, d] = [turn(), followup(), look()];
+  const outs = [await out(w, a), await out(w, b), await out(w, d)] as const;
+  const interrupts = () => c.calls.filter((x) => x.method === 'companion/interrupt').map((x) => x.params);
+  s.interrupt(b.request_id);
+  assert.deepEqual(await outs[1].done, { status: 'cancelled', uncertain: false, submission: 'submitted' });
+  assert.deepEqual(interrupts(), [{ session_id: SESSION, epoch: 1, request_id: b.request_id }], 'by its request id, in its session and epoch: never "whatever is current"');
+  assert.equal(now().asking, true, 'the other two are still out');
+  // Not out (never sent, another session's, already over): nothing is written.
+  for (const id of [b.request_id, 'live-0123456789abcdef.99.focus', '', OTHER_SESSION]) s.interrupt(id);
+  await new Promise((r) => setTimeout(r, 30));
+  assert.equal(interrupts().length, 1);
+  c.see('A page with a triangle.');
+  c.answer('Look at the longest side.', undefined, c.turns()[0]!);
+  assert.deepEqual([(await outs[0].done).status, (await outs[2].done).status], ['answered', 'answered'], 'the others were not touched by it');
+  s.interrupt(a.request_id); // over already
+  await new Promise((r) => setTimeout(r, 30));
+  assert.deepEqual([interrupts().length, c.turns().length, s.sessionLive(SESSION)], [1, 3, true]);
+  // Pressed twice while it is still out: told once.
+  c.onCancel = 'silent';
+  const held = turn({ request_id: `${SESSION}.9.focus` });
+  const last = await out(w, held);
+  s.interrupt(held.request_id);
+  s.interrupt(held.request_id);
+  await new Promise((r) => setTimeout(r, 30));
+  assert.deepEqual(interrupts().slice(1), [{ session_id: SESSION, epoch: 1, request_id: held.request_id }]);
+  c.fail(last.id, 'cancelled', 'submitted');
+  assert.deepEqual(await last.done, { status: 'cancelled', uncertain: false, submission: 'submitted' });
+  // With no session at all, and no connector: nothing is started for an interrupt.
+  const idle = subscription();
+  idle.s.interrupt(a.request_id);
+  assert.equal(idle.fakes.made.length, 0);
+});
+
+test('a stopped AI session can never send again: the connector is told once, every turn of it that is out is interrupted and none returned, and only the user\'s new Start goes on', async () => {
+  const w = await started();
+  const { s, c, now } = w;
+  const outs = [await out(w, turn()), await out(w, followup()), await out(w, look())] as const;
+  const stops = () => c.calls.filter((x) => x.method === 'companion/stop').map((x) => x.params);
+  // Another session's Stop is not this one's.
+  s.stopSession(OTHER_SESSION);
+  await new Promise((r) => setTimeout(r, 20));
+  assert.deepEqual([stops(), s.sessionLive(SESSION), now().asking], [[], true, true]);
+  s.stopSession(SESSION);
+  assert.equal(s.sessionLive(SESSION), false, 'from this moment, before the connector answered');
+  // As the released connector ends them: each turn as `session_stopped`; the Stop's own receipt says they were interrupted.
+  for (const o of outs) assert.deepEqual(await o.done, { status: 'cancelled', uncertain: false, submission: 'submitted' });
+  assert.deepEqual([stops(), c.count('companion/interrupt'), now().asking], [[{ session_id: SESSION, epoch: 1 }], 0, false], 'the Stop itself interrupts them: no interrupt of each is written');
+  // Told once; and nothing of that session is written afterwards.
+  s.stopSession(SESSION);
+  s.interrupt(turn().request_id);
+  assert.deepEqual(await s.turn(turn({ request_id: `${SESSION}.9.after` })), NOT_RUNNING);
+  await new Promise((r) => setTimeout(r, 30));
+  assert.deepEqual([stops().length, c.count('companion/interrupt'), c.turns().length, now().state, c.exited], [1, 0, 3, 'signed_in', false], 'the connector and the sign-in are as they were');
+  // Another session, the user's explicit new Start, can send; the stopped one still cannot.
+  assert.deepEqual(await begin(s, { session_id: OTHER_SESSION }), { ok: true, start: { ...START, session_id: OTHER_SESSION }, remaining_submissions: 12, expires_in_ms: 300_000 });
+  const next = await out(w, turn({ request_id: `${OTHER_SESSION}.1.focus`, session_id: OTHER_SESSION }));
+  c.answer('For the new session.');
+  assert.equal((await next.done).status, 'answered');
+  assert.deepEqual([await s.turn(turn({ request_id: `${SESSION}.9.again` })), c.turns().length, s.sessionLive(SESSION), s.sessionLive(OTHER_SESSION)], [NOT_RUNNING, 4, false, true]);
+  s.stopSession(SESSION); // the stopped one's Stop again does not stop the new one
+  assert.deepEqual([s.sessionLive(OTHER_SESSION), stops().length], [true, 1]);
+  // An answer that arrives after the Stop is not returned, and a Stop that was not confirmed is said as that.
+  const late = await started();
+  late.c.onCancel = 'silent';
+  late.c.stopReceipt = { result: { cancelled: true, uncertain: true } };
+  const sent = await out(late);
+  late.s.stopSession(SESSION);
+  await until('told', () => late.c.count('companion/stop') === 1);
+  assert.deepEqual(late.c.calls.at(-1), { id: late.c.calls.at(-1)!.id, method: 'companion/stop', params: { session_id: SESSION, epoch: 1 } });
+  late.c.answer('An answer after the Stop.');
+  const outcome = await sent.done;
+  assert.deepEqual(outcome, { status: 'cancelled', uncertain: true, submission: 'submitted' }, 'not shown; the Stop\'s interruption was not confirmed, and that is said');
+  assert.equal(JSON.stringify(outcome).includes('after the Stop'), false);
+  // A turn that never ends after the Stop: given up at its own bound, not said as stopped for certain, and no
+  // interrupt of it is written to a session that was stopped (the Stop told the connector already).
+  const never = await started();
+  never.c.onCancel = 'silent';
+  const unanswered = await out(never);
+  never.s.stopSession(SESSION);
+  assert.deepEqual(await unanswered.done, { status: 'cancelled', uncertain: true, submission: 'unknown' });
+  await new Promise((r) => setTimeout(r, 30));
+  assert.deepEqual([never.c.count('companion/stop'), never.c.count('companion/interrupt')], [1, 0]);
+  // A session with nothing out is told as well; one stopped before any child ran starts none.
+  const quiet = await started();
+  quiet.s.stopSession(SESSION);
+  await until('told', () => quiet.c.count('companion/stop') === 1);
+  assert.deepEqual([quiet.s.sessionLive(SESSION), await quiet.s.turn(turn()), quiet.c.turns().length], [false, NOT_RUNNING, 0]);
+  const idle = subscription();
+  idle.s.stopSession(SESSION);
   assert.equal(idle.fakes.made.length, 0);
 });
 
 test('no answer in time, or the connector lost: said as not known, the turn interrupted, and never sent again', async () => {
-  const { s, fakes, now } = subscription();
-  await s.check();
-  fakes.last().onCancel = 'silent';
-  const done = s.ask(request());
-  await until('sent', () => fakes.last().asks().length === 1);
-  assert.deepEqual(await done, { status: 'uncertain', reason: 'no answer came; whether ChatGPT worked on the question is not known' });
-  assert.deepEqual([fakes.last().asks().length, fakes.last().calls.at(-1)?.method], [1, 'ask/cancel']);
-  // The connector ends while a question is out.
-  const lost = s.ask(request({ request_id: 'ask-lost.1' }));
-  await until('sent', () => fakes.last().asks().length === 2);
-  fakes.last().exit(1);
-  assert.equal((await lost).status, 'uncertain');
-  assert.equal(now().state, 'unavailable');
-  assert.deepEqual(await s.ask(request({ request_id: 'ask-next.1' })), { status: 'refused', code: 'local', reason: 'the connector, or the official Codex app server it runs, is not available' });
+  const w = await started();
+  const { s, fakes, now, c } = w;
+  c.onCancel = 'silent';
+  const sent = turn();
+  const done = s.turn(sent);
+  await until('sent', () => c.turns().length === 1);
+  assert.deepEqual(await done, { status: 'uncertain', reason: 'no answer came; whether ChatGPT worked on it is not known', submission: 'unknown' });
+  assert.deepEqual([c.turns().length, c.calls.at(-1)], [1, { id: c.calls.at(-1)!.id, method: 'companion/interrupt', params: { session_id: SESSION, epoch: 1, request_id: sent.request_id } }]);
+  // Its answer arriving after it was given up is not anyone's: dropped.
+  c.answer('Too late.');
+  await new Promise((r) => setTimeout(r, 20));
+  assert.equal(now().asking, false);
+  // The connector ends while a turn is out.
+  const lost = await out(w, turn({ request_id: `${SESSION}.8.lost` }));
+  c.exit(1);
+  assert.deepEqual(await lost.done, { status: 'uncertain', reason: 'no answer came; whether ChatGPT worked on it is not known', submission: 'unknown' });
+  assert.deepEqual([now().state, s.sessionLive(SESSION), s.running()], ['unavailable', false, false], 'its session went with it');
+  assert.deepEqual(await s.turn(turn({ request_id: `${SESSION}.8.next` })), NOT_RUNNING);
+  assert.deepEqual(await begin(s, { session_id: OTHER_SESSION }), local(UNAVAILABLE));
   await new Promise((r) => setTimeout(r, 50));
-  assert.equal(fakes.made.length, 1, 'no new connector is started by the app itself (not even to cancel what the lost one had)');
-  // Only the user's own Check starts one again.
+  assert.equal(fakes.made.length, 1, 'no new connector is started by the app itself (not even to interrupt what the lost one had)');
+  // Only the user's own Check starts one again; the lost connector's session is not a session of the new one.
   await s.check();
-  assert.deepEqual([fakes.made.length, now().state], [2, 'signed_in']);
-  // A question given up while its connector had already gone: the same, no new child.
-  const gone = subscription();
-  await gone.s.check();
-  const asked = gone.s.ask(request());
-  await until('sent', () => gone.fakes.last().asks().length === 1);
-  gone.fakes.last().exit(1);
-  await asked;
-  gone.s.cancel(request().request_id);
-  gone.s.stopSession(request().context.capture_session_id);
+  assert.deepEqual([fakes.made.length, now().state, s.sessionLive(SESSION)], [2, 'signed_in', false]);
+  assert.deepEqual(await s.turn(turn({ request_id: `${SESSION}.8.new-connector` })), NOT_RUNNING);
+  s.interrupt(sent.request_id);
+  s.stopSession(SESSION); // the app ends what it had (the connection was lost): told to the connector that had it, which is gone
+  await new Promise((r) => setTimeout(r, 30));
+  assert.deepEqual(fakes.last().calls.map((x) => x.method), ['connection/read'], 'nothing of the old session is written to the new connector: no turn, no interrupt, no Stop');
+  // The user's own Start there is a new session.
+  assert.deepEqual([(await begin(s, { session_id: OTHER_SESSION })).ok, s.sessionLive(OTHER_SESSION), fakes.last().count('companion/start'), c.count('companion/start')], [true, true, 1, 1]);
+  s.stopSession(SESSION);
+  await new Promise((r) => setTimeout(r, 30));
+  assert.deepEqual([fakes.last().count('companion/stop'), s.sessionLive(OTHER_SESSION)], [0, true], 'the lost session\'s Stop is not the new one\'s');
+  // A session lost with its connector does not count as running: without any Stop of it, the user's Start in the next connector is taken.
+  const next = await started();
+  next.c.exit(1);
+  await next.s.check();
+  assert.deepEqual([next.fakes.made.length, next.s.notStartable(), (await begin(next.s, { session_id: OTHER_SESSION })).ok, next.s.sessionLive(SESSION), next.s.sessionLive(OTHER_SESSION)], [2, null, true, false, true]);
+  // A turn given up while its connector had already gone: the same, no new child.
+  const gone = await started();
+  const asked = await out(gone);
+  gone.c.exit(1);
+  await asked.done;
+  gone.s.interrupt(turn().request_id);
+  gone.s.stopSession(SESSION);
   await new Promise((r) => setTimeout(r, 50));
-  assert.equal(gone.fakes.made.length, 1);
+  assert.deepEqual([gone.fakes.made.length, gone.c.count('companion/interrupt'), gone.c.count('companion/stop')], [1, 0, 0]);
 });
 
-test('a connector that cannot be started, answers in another form, or writes an over-long line is said as not available', async () => {
+test('the quit: the turns that are out are never returned and not said as stopped for certain, the session can never send again, and the connector is ended by the end of its input', async () => {
+  const w = await started(WSL, {}, (k) => void (k.endDelayMs = 80));
+  const { s, c, now, fakes } = w;
+  let kills = 0;
+  const kill = c.kill.bind(c);
+  c.kill = () => (kills++, kill());
+  const outs = [await out(w, turn()), await out(w, look())] as const;
+  const quitting = s.quit();
+  assert.deepEqual([s.sessionLive(SESSION), s.running(), now().detail], [false, false, 'the app is closing: the connector is being ended']);
+  // The connector still answers one of them before it ends (the released one closes its own child first): not read.
+  await new Promise((r) => setTimeout(r, 10));
+  assert.equal(c.exited, false, 'still ending');
+  c.answer('An answer while the app quits.');
+  for (const o of outs) {
+    const outcome = await o.done;
+    assert.deepEqual(outcome, { status: 'cancelled', uncertain: true, submission: 'unknown' }, 'no receipt of an interruption was read, and whether ChatGPT worked on it is not known');
+    assert.equal(JSON.stringify(outcome).includes('while the app quits'), false);
+  }
+  await quitting;
+  assert.deepEqual([c.exited, kills, now().asking, now().state, now().detail], [true, 0, false, 'unavailable', null], 'ended by itself at the end of its input');
+  // After the quit nothing is sent or started.
+  assert.deepEqual([await s.turn(turn({ request_id: `${SESSION}.9.after` })), await begin(s, { session_id: OTHER_SESSION }), s.sessionLive(SESSION)], [NOT_RUNNING, local(UNAVAILABLE), false]);
+  s.interrupt(turn().request_id);
+  s.stopSession(SESSION);
+  await new Promise((r) => setTimeout(r, 30));
+  assert.deepEqual([fakes.made.length, c.turns().length], [1, 2]);
+  // A quit with a session running and nothing out, and a quit before anything was started: both simply end.
+  const quiet = await started();
+  await quiet.s.quit();
+  assert.deepEqual([quiet.c.exited, quiet.s.sessionLive(SESSION), quiet.now().detail], [true, false, null]);
+  const idle = subscription();
+  await idle.s.quit();
+  assert.deepEqual([idle.fakes.made.length, idle.now().state, idle.now().detail], [0, 'not_checked', null]);
+});
+
+test('a connector that cannot be started, answers in another form, or writes a line over the bound is said as not available; a line of exactly the bound (1 MiB) is read', async () => {
   const none = subscription(WSL, { spawn: (() => spawn(path.join('/nonexistent', `lc-no-connector-${process.pid}`), [], { stdio: ['pipe', 'pipe', 'ignore'] })) as never });
   await none.s.check();
   assert.deepEqual([none.now().state, none.now().detail], ['unavailable', 'the connector could not be started']);
   const odd = subscription(WSL, {}, (c) => void (c.account = { something: 'else' }));
   await odd.s.check();
   assert.deepEqual([odd.now().state, odd.now().detail], ['unavailable', 'the connector answered in a form this app does not read']);
-  // A line over the bound: the child is ended; nothing of the line is kept.
-  const long = subscription();
-  await long.s.check();
-  long.fakes.last().stdout.write(`{"method":"x","params":"${'y'.repeat(300 * 1024)}"}\n`);
+  // The earlier envelope's account (rate_limits, no quota) is another form too: nothing is guessed from it.
+  const earlier = subscription(WSL, {}, (c) => void (c.account = { auth: ACCOUNT.auth, rate_limits: null, models: ACCOUNT.models }));
+  await earlier.s.check();
+  assert.deepEqual([earlier.now().state, earlier.now().detail, earlier.now().quota, earlier.now().model], ['unavailable', 'the connector answered in a form this app does not read', null, null]);
+  // One line from the connector may be up to 1 MiB in this version: an account read of exactly that many bytes is read
+  // (what it holds besides the account is not kept), and the connector goes on.
+  assert.equal(LIVE_LINE_FROM_CONNECTOR_MAX, 1024 * 1024);
+  const read = (id: string, bytes: number): string => {
+    const line = (pad: string): string => JSON.stringify({ id, result: { ...ACCOUNT, pad } });
+    return line('y'.repeat(bytes - Buffer.byteLength(line(''))));
+  };
+  const full = subscription(WSL, {}, (c) => void (c.account = null)); // this test answers by hand
+  const reading = full.s.check();
+  await until('asked', () => full.fakes.made.length === 1 && full.fakes.last().count('connection/read') === 1);
+  const exact = read(full.fakes.last().calls[0]!.id, LIVE_LINE_FROM_CONNECTOR_MAX);
+  assert.equal(Buffer.byteLength(exact), 1024 * 1024);
+  full.fakes.last().stdout.write(`${exact}\n`);
+  await reading;
+  assert.deepEqual([full.now().state, full.now().plan, full.s.running(), full.fakes.last().exited, JSON.stringify(full.now()).includes('yyyy')], ['signed_in', 'Pro', true, false, false]);
+  // The same when the line's end comes in a later chunk: a line that is whole so far, at exactly the bound, is still one line.
+  const rereading = full.s.check();
+  await until('asked again', () => full.fakes.last().count('connection/read') === 2);
+  full.fakes.last().stdout.write(read(full.fakes.last().calls[1]!.id, LIVE_LINE_FROM_CONNECTOR_MAX).replace('"Pro"', '"Max"'));
+  await new Promise((r) => setTimeout(r, 20));
+  assert.deepEqual([full.now().state, full.s.running()], ['checking', true], 'not ended, and not read before its end');
+  full.fakes.last().stdout.write('\n');
+  await rereading;
+  assert.deepEqual([full.now().state, full.now().plan, full.s.running()], ['signed_in', 'Max', true]);
+  // A line of one byte more: the child is ended; nothing of the line is kept, though it is an account read's answer.
+  const long = subscription(WSL, {}, (c) => void (c.account = null));
+  const over = long.s.check();
+  await until('asked', () => long.fakes.made.length === 1 && long.fakes.last().count('connection/read') === 1);
+  long.fakes.last().stdout.write(`${read(long.fakes.last().calls[0]!.id, LIVE_LINE_FROM_CONNECTOR_MAX + 1)}\n`);
+  await over;
   await until('ended', () => long.fakes.last().exited);
-  assert.equal(long.now().state, 'unavailable');
+  assert.deepEqual([long.now().state, long.now().plan, long.now().models, long.s.running()], ['unavailable', null, [], false]);
+  // The same for a line that has not ended yet, in a connector with a session running: its session goes with it.
+  const live = await started();
+  live.c.stdout.write(`{"method":"x","params":"${'y'.repeat(LIVE_LINE_FROM_CONNECTOR_MAX)}`);
+  await until('ended', () => live.c.exited);
+  assert.deepEqual([live.now().state, live.s.sessionLive(SESSION), await live.s.turn(turn()), live.c.turns().length], ['unavailable', false, NOT_RUNNING, 0]);
 });
 
 test('lines are read whole whatever the chunks: split inside a character, several in one chunk, an answer for nothing, and not JSON', async () => {
@@ -377,24 +885,35 @@ test('a sign-in that completes in the same chunk as its start\'s answer is taken
 });
 
 test('what the connector cannot make this app do: an error code named like a built-in, a stand-in for a missing fact, a child without pipes', async () => {
-  const { s, fakes } = subscription();
-  await s.check();
-  const sent = request();
-  let done = s.ask(sent);
-  await until('sent', () => fakes.last().asks().length === 1);
-  fakes.last().fail(fakes.last().asks()[0]!.id, 'toString');
-  assert.deepEqual(await done, { status: 'refused', code: 'failed', reason: 'ChatGPT did not complete an answer' });
-  // A provenance with a fact missing and "__proto__" in its place is not the request's.
-  done = s.ask(request({ request_id: 'ask-proto.1' }));
-  await until('sent', () => fakes.last().asks().length === 2);
-  const call = fakes.last().asks()[1]!;
-  const r = call.params['request'] as AskRequest;
-  const context = JSON.stringify(r.context).replace('"media_position":null', '"__proto__":{}');
-  fakes.last().stdout.write(`{"id":${JSON.stringify(call.id)},"result":{"request_id":"ask-proto.1","text":"x","provenance":{"request_id":"ask-proto.1","question":${JSON.stringify(r.question)},"assistance":"hint","image":{"sha256":"${r.image.sha256}","width":40,"height":20},"context":${context}},"model":"vision-model","auth_mode":"chatgpt","latency_ms":1,"thread_id":"t","turn_id":"u"}}\n`);
-  assert.deepEqual(await done, { status: 'refused', code: 'unbound', reason: 'the answer is not bound to the request that was sent; it is not shown' });
+  const w = await started();
+  const { c } = w;
+  const sent = turn();
+  let o = await out(w, sent);
+  c.fail(o.id, 'toString');
+  assert.deepEqual(await o.done, { status: 'refused', code: 'failed', reason: 'the request failed', submission: 'not_submitted' });
+  // The same for what it says of the request's fate: a word named like a built-in is not one of the three.
+  o = await out(w, turn({ request_id: `${SESSION}.7.built-in` }));
+  c.fail(o.id, '__proto__', 'hasOwnProperty');
+  assert.deepEqual(await o.done, { status: 'refused', code: 'failed', reason: 'the request failed', submission: 'unknown' });
+  // A provenance with a fact missing and "__proto__" in its place is not the turn's.
+  const answered = (t: Turn, id: string, provenance: string): string => `{"id":${JSON.stringify(id)},"result":{"request_id":${JSON.stringify(t.request_id)},"text":"x","provenance":${provenance},"model":"vision-model","auth_mode":"chatgpt","latency_ms":1,"thread_id":"t","turn_id":"u","kind":"generated_assistance"}}\n`;
+  const proto = turn({ request_id: `${SESSION}.7.proto` });
+  o = await out(w, proto);
+  const whole = JSON.stringify(provenanceOf(c.turns().at(-1)!.params as unknown as Turn));
+  const swapped = whole.replace('"media_position":null', '"__proto__":{}');
+  assert.notEqual(swapped, whole);
+  c.stdout.write(answered(proto, o.id, swapped));
+  assert.deepEqual(await o.done, { status: 'refused', code: 'unbound', reason: 'the answer is not bound to the request that was sent; it is not shown', submission: 'submitted' });
+  // Positive control: the same line with the provenance as it was sent is that turn's answer.
+  const plain = turn({ request_id: `${SESSION}.7.plain` });
+  o = await out(w, plain);
+  c.stdout.write(answered(plain, o.id, JSON.stringify(provenanceOf(plain))));
+  assert.deepEqual(await o.done, { status: 'answered', answer: { request_id: plain.request_id, text: 'x', model: 'vision-model', latency_ms: 1, thread_id: 't', turn_id: 'u', kind: 'generated_assistance' }, submission: 'submitted' });
   // An answer of 32,000 characters that are each two UTF-16 units is within the bound, as the connector counts it.
-  assert.equal(typeof readAnswer({ request_id: sent.request_id, text: '𝑥'.repeat(ANSWER_MAX), provenance: provenanceOf(sent), model: 'vendor/model 1', auth_mode: 'chatgpt', latency_ms: 2.5, thread_id: 't', turn_id: 'u' }, sent), 'object');
-  assert.equal(typeof readAnswer({ request_id: sent.request_id, text: '𝑥'.repeat(ANSWER_MAX + 1), provenance: provenanceOf(sent), model: 'm', auth_mode: 'chatgpt', latency_ms: 1, thread_id: 't', turn_id: 'u' }, sent), 'string');
+  const result = (text: string): unknown => ({ request_id: sent.request_id, text, provenance: provenanceOf(sent), model: 'vendor/model 1', auth_mode: 'chatgpt', latency_ms: 2.5, thread_id: 't', turn_id: 'u', kind: 'generated_assistance' });
+  assert.equal(RESULT_TEXT_MAX, 32_000);
+  assert.equal(typeof readLiveResult(result('𝑥'.repeat(RESULT_TEXT_MAX)), sent, 'vendor/model 1'), 'object');
+  assert.equal(readLiveResult(result('𝑥'.repeat(RESULT_TEXT_MAX + 1)), sent, 'vendor/model 1'), 'the answer is too long to show');
   // A child that could not be given its pipes is not started; nothing is thrown.
   const none = subscription(WSL, { spawn: (() => Object.assign(new (await_emitter())(), { pid: undefined, stdin: null, stdout: null, kill: () => true })) as never });
   await none.s.check();
@@ -402,7 +921,6 @@ test('what the connector cannot make this app do: an error code named like a bui
 });
 
 test('a change, or a completed sign-in, said while the account is being read is read once more: the newer state stands, and nothing but reads is sent', async () => {
-  const SIGNED_OUT = { auth: { state: 'signed_out', mode: null, plan: null }, rate_limits: null, models: [] };
   // The sign-in completes while a read that already saw "signed out" is still out (the released connector's order).
   const { s, fakes, now, opened } = subscription();
   await s.login();
@@ -419,22 +937,22 @@ test('a change, or a completed sign-in, said while the account is being read is 
   c.reply(read.id, SIGNED_OUT); // the older state
   await checking;
   assert.deepEqual([now().state, c.count('connection/read')], ['signed_in', 2], 'read once more, and the newer state is what is said');
-  assert.deepEqual(c.calls.map((x) => x.method), ['connection/login/start', 'connection/read', 'connection/read'], 'no sign-in and no question was started by it');
+  assert.deepEqual(c.calls.map((x) => x.method), ['connection/login/start', 'connection/read', 'connection/read'], 'no sign-in, no AI session and no turn was started by it');
   assert.equal(opened.length, 1, 'only the page the user\'s own press opened');
   // A change during a read after a plain Check: the same, whichever way it changed.
-  const out = subscription();
-  await out.s.check();
-  assert.equal(out.now().state, 'signed_in');
-  out.fakes.last().account = null;
-  const again = out.s.check();
-  const first = out.fakes.last().calls.at(-1)!;
-  out.fakes.last().event('connection/changed', {});
-  out.fakes.last().event('connection/changed', {});
+  const changed = subscription();
+  await changed.s.check();
+  assert.equal(changed.now().state, 'signed_in');
+  changed.fakes.last().account = null;
+  const again = changed.s.check();
+  const first = changed.fakes.last().calls.at(-1)!;
+  changed.fakes.last().event('connection/changed', {});
+  changed.fakes.last().event('connection/changed', {});
   await new Promise((r) => setTimeout(r, 20));
-  out.fakes.last().account = SIGNED_OUT;
-  out.fakes.last().reply(first.id, ACCOUNT);
+  changed.fakes.last().account = SIGNED_OUT;
+  changed.fakes.last().reply(first.id, ACCOUNT);
   await again;
-  assert.deepEqual([out.now().state, out.fakes.last().count('connection/read')], ['signed_out', 3], 'two changes during one read are one more read');
+  assert.deepEqual([changed.now().state, changed.fakes.last().count('connection/read')], ['signed_out', 3], 'two changes during one read are one more read');
   // A read that fails is not repeated; and a connector that says "changed" at every read is read a bounded number of times.
   const lost = subscription(WSL, {}, (k) => void (k.account = null));
   const failing = lost.s.check();
@@ -449,11 +967,11 @@ test('a change, or a completed sign-in, said while the account is being read is 
   assert.deepEqual([noisy.now().state, noisy.now().detail, noisy.fakes.last().count('connection/read')], ['unknown', 'the account may have changed since it was last read, and it is not read again by itself; check again', 4], 'a change it did not read: the state is not said as known');
   await new Promise((r) => setTimeout(r, 30));
   assert.equal(noisy.fakes.last().count('connection/read'), 4, 'and it stops there until the user checks again');
-  assert.deepEqual(await noisy.s.ask(request()), { status: 'refused', code: 'local', reason: 'the sign-in state of the ChatGPT subscription is not known (check it in the control window)' });
+  assert.deepEqual(await begin(noisy.s), local('the sign-in state of the ChatGPT subscription is not known (check it in the control window)'));
   noisy.fakes.last().onCall = () => undefined;
   await noisy.s.check();
-  assert.deepEqual([noisy.now().state, noisy.now().detail, noisy.fakes.last().count('connection/read'), noisy.fakes.last().asks().length], ['signed_in', null, 5, 0]);
-  assert.deepEqual([out.now().state, out.now().detail], ['signed_out', null], 'a change that was read leaves nothing to say');
+  assert.deepEqual([noisy.now().state, noisy.now().detail, noisy.fakes.last().count('connection/read'), noisy.fakes.last().count('companion/start'), noisy.fakes.last().turns().length], ['signed_in', null, 5, 0, 0]);
+  assert.deepEqual([changed.now().state, changed.now().detail], ['signed_out', null], 'a change that was read leaves nothing to say');
   // Before the user's first Check a change reads nothing (nothing is started for it).
   const idle = subscription();
   await idle.s.login();
@@ -464,7 +982,6 @@ test('a change, or a completed sign-in, said while the account is being read is 
 
 test('an account read belongs to the connector it went to: once that one is fenced, lost or ended, nothing it said is published, nothing is read again, and no other connector is started', async () => {
   const line = (v: unknown): string => `${JSON.stringify(v)}\n`;
-  const OVER = 'x'.repeat(256 * 1024 + 1); // over the bound, with no line end: the connector is fenced
   const CHANGED = line({ method: 'connection/changed', params: {} });
   const world = () => subscription(WSL, {}, (c) => void (c.account = null)); // every read is answered by hand
   const LOST = 'the connector was lost while the account was being read';
@@ -477,10 +994,10 @@ test('an account read belongs to the connector it went to: once that one is fenc
   await checking;
   await new Promise((r) => setTimeout(r, 30));
   assert.deepEqual([a.fakes.made.length, c.count('connection/read'), a.now().state, a.now().detail], [1, 1, 'unavailable', LOST], 'no second connector, no second read, and not said as signed in');
-  assert.deepEqual([a.now().plan, a.now().models, a.now().model], [null, [], null], 'nothing of the answer is published');
+  assert.deepEqual([a.now().plan, a.now().quota, a.now().models, a.now().model], [null, null, [], null], 'nothing of the answer is published');
   assert.deepEqual(a.said.filter((x) => x.mode === 'managed' && (x.state === 'signed_in' || x.state === 'signed_out' || x.state === 'unknown')), [], 'at no moment');
-  assert.deepEqual(await a.s.ask(request()), { status: 'refused', code: 'local', reason: 'the connector, or the official Codex app server it runs, is not available' });
-  assert.equal(a.fakes.made.length, 1, 'a question starts none either');
+  assert.deepEqual([await begin(a.s), await a.s.turn(turn())], [local(UNAVAILABLE), NOT_RUNNING]);
+  assert.equal(a.fakes.made.length, 1, 'a Start of the AI, or a turn, starts none either');
   // Only the user's own Check starts one again.
   const again = a.s.check();
   await until('a new connector, by the press', () => a.fakes.made.length === 2 && a.fakes.last().count('connection/read') === 1);
@@ -537,7 +1054,7 @@ test('an account read belongs to the connector it went to: once that one is fenc
   const ok = world();
   const fine = ok.s.check();
   await until('read', () => ok.fakes.made.length === 1 && ok.fakes.last().count('connection/read') === 1);
-  ok.fakes.last().stdout.write(CHANGED + line({ id: ok.fakes.last().calls[0]!.id, result: { auth: { state: 'signed_out', mode: null, plan: null }, rate_limits: null, models: [] } }));
+  ok.fakes.last().stdout.write(CHANGED + line({ id: ok.fakes.last().calls[0]!.id, result: SIGNED_OUT }));
   await until('read again, by the same connector', () => ok.fakes.last().count('connection/read') === 2);
   ok.fakes.last().reply(ok.fakes.last().calls[1]!.id, ACCOUNT);
   await fine;
@@ -553,7 +1070,7 @@ test('a sign-in whose start was answered by a connector that is then fenced in t
   c.stdin.on('data', (b: Buffer) => void (id = (JSON.parse(b.toString('utf8')) as { id: string }).id));
   const signing = s.login();
   await until('asked', () => id !== '');
-  c.stdout.write(`${JSON.stringify({ id, result: { login_id: 'login-1', auth_url: LOGIN_URL } })}\n${'x'.repeat(256 * 1024 + 1)}`);
+  c.stdout.write(`${JSON.stringify({ id, result: { login_id: 'login-1', auth_url: LOGIN_URL } })}\n${OVER}`);
   await signing;
   await new Promise((r) => setTimeout(r, 30));
   assert.deepEqual([opened, now().login, now().state, now().detail, fakes.made.length], [[], 'failed', 'unavailable', 'the connector was ended here before the sign-in completed', 1]);
@@ -601,43 +1118,43 @@ test('a sign-in whose start was answered by a connector that is then fenced in t
   await nob.s.login();
   const NO_BROWSER = 'the browser could not be opened for the sign-in page; the sign-in is still pending: cancel it, then sign in again';
   assert.deepEqual([nob.now().state, nob.now().login, nob.now().detail], ['signed_in', 'waiting', NO_BROWSER], 'nothing says to finish it in the browser');
-  // A read does not wipe it, and a question is refused in words that fit.
+  // A read does not wipe it, and a Start of the AI is refused in words that fit.
   await nob.s.check();
   assert.deepEqual([nob.now().login, nob.now().detail], ['waiting', NO_BROWSER]);
-  assert.deepEqual(await nob.s.ask(request()), { status: 'refused', code: 'local', reason: 'a sign-in is still pending, though its page could not be opened: cancel it in the control window' });
+  assert.deepEqual(await begin(nob.s), local('a sign-in is still pending, though its page could not be opened: cancel it in the control window'));
+  assert.equal(nob.fakes.last().count('companion/start'), 0);
   await nob.s.cancelLogin();
   assert.deepEqual([nob.now().login, nob.now().detail], ['cancelled', null]);
 });
 
-test('a question refused as not signed in by a connector that is fenced in the same chunk is not said as signed out: the connector is not available', async () => {
-  const { s, fakes, now, said } = subscription();
-  await s.check();
-  const c = fakes.last();
-  const done = s.ask(request());
-  await until('sent', () => c.asks().length === 1);
+test('a turn refused as not signed in by a connector that is fenced in the same chunk is not said as signed out: the connector is not available', async () => {
+  const w = await started();
+  const { fakes, now, said, c } = w;
+  const o = await out(w);
   const from = said.length;
-  c.stdout.write(`${JSON.stringify({ id: c.asks()[0]!.id, error: { code: 'unauthenticated', message: 'raw' } })}\n${'x'.repeat(256 * 1024 + 1)}`);
-  assert.deepEqual(await done, { status: 'refused', code: 'unauthenticated', reason: 'ChatGPT is not signed in (sign in from the control window)' });
-  assert.deepEqual([now().state, fakes.made.length], ['unavailable', 1]);
+  c.stdout.write(`${JSON.stringify({ id: o.id, error: { code: 'unauthenticated', submission: 'not_submitted', message: 'raw' } })}\n${OVER}`);
+  assert.deepEqual(await o.done, { status: 'refused', code: 'unauthenticated', reason: 'ChatGPT is not signed in', submission: 'not_submitted' });
+  assert.deepEqual([now().state, fakes.made.length, w.s.sessionLive(SESSION)], ['unavailable', 1, false]);
   assert.equal(said.slice(from).some((x) => x.mode === 'managed' && x.state === 'signed_out'), false);
   // Positive control: the same refusal from a connector that goes on running is said as signed out.
-  const live = subscription();
-  await live.s.check();
-  const asked = live.s.ask(request());
-  await until('sent', () => live.fakes.last().asks().length === 1);
-  live.fakes.last().fail(live.fakes.last().asks()[0]!.id, 'unauthenticated');
-  await asked;
+  const live = await started();
+  const asked = await out(live);
+  live.c.fail(asked.id, 'unauthenticated');
+  await asked.done;
   assert.equal(live.now().state, 'signed_out');
 });
 
-test('a failed account read and a failed sign-in start are said in their own words, never as a question that was not answered', async () => {
+test('a failed account read and a failed sign-in start are said in their own words, never as a turn that was not answered', async () => {
   const READ: Record<string, string> = {
     failed: 'the account could not be read',
     quota: 'the account could not be read',
+    allowance_exhausted: 'the account could not be read',
+    rate_limited: 'the account could not be read',
+    session_stopped: 'the account could not be read',
     invalid_request: 'the account could not be read',
     busy: 'the connector is busy, so the account was not read; check again',
     unauthenticated: 'the account could not be read: the connector says ChatGPT is not signed in',
-    unavailable: 'the connector, or the official Codex app server it runs, is not available',
+    unavailable: UNAVAILABLE,
     'a code this app does not know': 'the account could not be read',
   };
   for (const [code, said] of Object.entries(READ)) {
@@ -645,24 +1162,67 @@ test('a failed account read and a failed sign-in start are said in their own wor
     await s.check();
     assert.deepEqual([now().state, now().detail, fakes.made.length], ['unavailable', said, 1], code);
   }
-  const START: Record<string, string> = {
+  const START_SAID: Record<string, string> = {
     failed: 'the sign-in could not be started',
     quota: 'the sign-in could not be started',
+    allowance_exhausted: 'the sign-in could not be started',
     unauthenticated: 'the sign-in could not be started',
-    busy: 'a sign-in or a question is already pending in the connector, so no sign-in was started',
-    unavailable: 'the connector, or the official Codex app server it runs, is not available',
+    busy: 'a sign-in is already pending in the connector, or the AI session is running, so no sign-in was started',
+    unavailable: UNAVAILABLE,
   };
-  for (const [code, said] of Object.entries(START)) {
+  for (const [code, said] of Object.entries(START_SAID)) {
     const { s, opened, now } = subscription(WSL, {}, (c) => void (c.manual.add('connection/login/start'), (c.onCall = (call) => (call.method === 'connection/login/start' ? c.fail(call.id, code) : undefined))));
     await s.check();
     await s.login();
     assert.deepEqual([now().login, now().detail, opened], ['failed', said, []], code);
   }
-  // None of them speaks of an answer; only the sign-in's `busy` names a question, as the thing that is pending.
-  for (const said of [...Object.values(READ), ...Object.values(START)]) assert.equal(/answer|did not complete|still being answered/.test(said), false, said);
+  // None of them speaks of a request, a question or an answer, and none is a turn's own text for that code (but for
+  // "not available", which is the connection's); only the sign-in's `busy` names the AI session, as what is running.
+  for (const [code, said] of [...Object.entries(READ), ...Object.entries(START_SAID)]) {
+    assert.equal(/answer|request|question|did not complete|was not taken/.test(said), false, said);
+    if (code !== 'unavailable') assert.notEqual(said, LIVE_ERROR_TEXT[code], code);
+  }
 });
 
-test('a pending sign-in is not forgotten when the account reads as signed in: it stays pending with its Cancel, no question is sent meanwhile, and its completion is still taken', async () => {
+test('a connector that ends while a sign-in is being started is said as ended, not as "did not answer"; only its output closing, while it runs, ends it here and leaves what was out not known (QA-SUB-12, QA-SUB-13)', async () => {
+  const w = subscription(WSL, {}, (k) => void k.manual.add('connection/login/start'));
+  await w.s.check();
+  const signing = w.s.login();
+  await until('its start is out', () => w.fakes.last().count('connection/login/start') === 1);
+  w.fakes.last().exit(1);
+  await signing;
+  assert.deepEqual([w.now().login, w.now().detail, w.now().state, w.opened], ['failed', 'the connector ended before the sign-in completed', 'unavailable', []]);
+  // No answer within the bound, from a connector that is still running, is "did not answer".
+  const slow = subscription(WSL, { request_ms: 60 }, (k) => void k.manual.add('connection/login/start'));
+  await slow.s.check();
+  await slow.s.login();
+  assert.deepEqual([slow.now().login, slow.now().detail, slow.fakes.last().exited], ['failed', 'the connector did not answer', false]);
+  // Only the output closes; the process goes on. Its exit is given a moment, then it is ended here: a turn that is
+  // out ends as not known (never sent again), the account is not available, and only the user's Check starts one again.
+  const mute = subscription(WSL, { ask_ms: 5000 }); // (the turn's own bound is far: what ends it here is the closed output)
+  await mute.s.check();
+  assert.equal((await begin(mute.s)).ok, true);
+  const out = mute.s.turn(turn());
+  await until('sent', () => mute.fakes.last().turns().length === 1);
+  const first = mute.fakes.last();
+  first.stdout.end();
+  assert.equal(first.exited, false);
+  assert.deepEqual(await out, { status: 'uncertain', reason: 'no answer came; whether ChatGPT worked on it is not known', submission: 'unknown' });
+  assert.deepEqual([mute.now().state, mute.s.sessionLive(SESSION), mute.s.running()], ['unavailable', false, false]);
+  await until('ended by the end of its input', () => first.exited);
+  assert.equal(mute.fakes.made.length, 1, 'nothing is started in its place');
+  await mute.s.check();
+  assert.deepEqual([mute.fakes.made.length, mute.now().state, mute.fakes.last().turns().length], [2, 'signed_in', 0], 'the user\'s Check starts one again; the turn is not sent again');
+  // A connector that simply ends closes its output too: said as its own end, and it is not ended a second time.
+  const plain = subscription();
+  await plain.s.check();
+  plain.fakes.last().stdout.end();
+  plain.fakes.last().exit(0);
+  await new Promise((r) => setTimeout(r, 700));
+  assert.deepEqual([plain.now().state, plain.s.ending(), plain.now().detail], ['unavailable', false, null]);
+});
+
+test('a pending sign-in is not forgotten when the account reads as signed in: it stays pending with its Cancel, no AI session is started meanwhile, and its completion is still taken', async () => {
   const { s, fakes, now, opened } = subscription();
   const c = () => fakes.last();
   // An earlier attempt that failed is no longer said once the account reads as signed in.
@@ -679,16 +1239,16 @@ test('a pending sign-in is not forgotten when the account reads as signed in: it
   await s.check();
   assert.deepEqual([now().state, now().login, now().detail], ['signed_in', 'waiting', 'a sign-in started here is still pending: finish it in your browser, or cancel it']);
   assert.deepEqual(c().calls.slice(calls).map((x) => x.method), ['connection/read'], 'it was not cancelled behind the user\'s back, and not forgotten');
-  // The connector would refuse a question as busy while it holds that sign-in: said here, and nothing is sent.
-  assert.deepEqual(await s.ask(request()), { status: 'refused', code: 'local', reason: 'a sign-in is still pending: finish it in your browser, or cancel it in the control window' });
-  assert.equal(c().asks().length, 0);
-  // Its completion is still this app's: taken, read again, and then a question can be sent.
+  // The connector would refuse a session while it holds that sign-in: said here, and nothing is sent.
+  assert.deepEqual(await begin(s), local('a sign-in is still pending: finish it in your browser, or cancel it in the control window'));
+  assert.deepEqual([c().count('companion/start'), s.sessionLive(SESSION)], [0, false]);
+  // Its completion is still this app's: taken, read again, and then the AI can be started and a turn sent.
   c().event('connection/login/completed', { login_id: 'login-1', success: true, error: null });
   await until('completed and read again', () => now().login === 'none' && now().state === 'signed_in' && now().detail === null);
-  const asked = s.ask(request());
-  await until('sent', () => c().asks().length === 1);
+  assert.equal((await begin(s)).ok, true);
+  const asked = await out({ s, fakes });
   c().answer('An answer.');
-  assert.equal((await asked).status, 'answered');
+  assert.equal((await asked.done).status, 'answered');
   assert.equal(opened.length, 2, 'one page for each of the user\'s two presses');
   // The same while a sign-in is still starting.
   const starting = subscription(WSL, {}, (k) => void k.manual.add('connection/login/start'));
@@ -698,8 +1258,8 @@ test('a pending sign-in is not forgotten when the account reads as signed in: it
   // A read that says signed in does not forget it either; nothing is said of a browser or a Cancel yet.
   await starting.s.check();
   assert.deepEqual([starting.now().state, starting.now().login, starting.now().detail], ['signed_in', 'starting', null]);
-  assert.deepEqual(await starting.s.ask(request()), { status: 'refused', code: 'local', reason: 'a sign-in is being started: no question can be sent until that sign-in is over' });
-  assert.equal(starting.fakes.last().asks().length, 0);
+  assert.deepEqual(await begin(starting.s), local('a sign-in is being started: the AI cannot be started until that sign-in is over'));
+  assert.equal(starting.fakes.last().count('companion/start'), 0);
   const start = starting.fakes.last().calls.find((x) => x.method === 'connection/login/start')!;
   starting.fakes.last().reply(start.id, { login_id: 'login-1', auth_url: LOGIN_URL });
   await until('waiting', () => starting.now().login === 'waiting');
@@ -729,13 +1289,14 @@ test('a sign-in is said as cancelled only when the connector acknowledged the ca
   a.c().reply(a.cancelId(), {});
   await cancelling;
   assert.deepEqual([a.now().login, a.now().detail], ['cancelled', null]);
-  // Refused, another shape, or no answer at all: not said as cancelled; it can be cancelled again.
-  for (const answer of [(w: Awaited<ReturnType<typeof waiting>>) => w.c().fail(w.cancelId(), 'failed'), (w: Awaited<ReturnType<typeof waiting>>) => w.c().reply(w.cancelId(), { cancelled: true }), (w: Awaited<ReturnType<typeof waiting>>) => w.c().reply(w.cancelId(), null), () => undefined]) {
+  // Refused (whatever the code: in this version "no such sign-in" is not told apart from "not available"), another
+  // shape, or no answer at all: not said as cancelled; it can be cancelled again.
+  for (const answer of [(w: Awaited<ReturnType<typeof waiting>>) => w.c().fail(w.cancelId(), 'failed'), (w: Awaited<ReturnType<typeof waiting>>) => w.c().fail(w.cancelId(), 'invalid_request'), (w: Awaited<ReturnType<typeof waiting>>) => w.c().fail(w.cancelId(), 'unavailable'), (w: Awaited<ReturnType<typeof waiting>>) => w.c().reply(w.cancelId(), { cancelled: true }), (w: Awaited<ReturnType<typeof waiting>>) => w.c().reply(w.cancelId(), null), () => undefined]) {
     const w = await waiting();
-    const out = w.s.cancelLogin();
+    const cancel = w.s.cancelLogin();
     await until('told', () => w.c().count('connection/login/cancel') === 1);
     answer(w);
-    await out; // (unanswered: the request's own bound)
+    await cancel; // (unanswered: the request's own bound)
     assert.deepEqual([w.now().login, w.now().detail], ['waiting', NOT_CONFIRMED]);
     const again = w.s.cancelLogin();
     await until('told again', () => w.c().count('connection/login/cancel') === 2);
@@ -783,20 +1344,28 @@ test('a sign-in is said as cancelled only when the connector acknowledged the ca
   assert.deepEqual([said.now().login, said.now().detail], ['cancelled', null]);
   // The connector is lost while the cancel is out: said as the loss, not as cancelled.
   const lost = await waiting();
-  const out = lost.s.cancelLogin();
+  const losing = lost.s.cancelLogin();
   await until('told', () => lost.c().count('connection/login/cancel') === 1);
   lost.c().exit(1);
-  await out;
+  await losing;
   assert.deepEqual([lost.now().login, lost.now().detail, lost.now().state], ['failed', 'the connector ended before the sign-in completed', 'unavailable']);
-  // The connector says it holds no such sign-in (its answer to a cancel of one that is over there): not pending, and
-  // not said as cancelled, since no completion of it reached this app.
+  // After a cancel that was not confirmed this app does not know whether the connector still holds that sign-in: a
+  // Start of the AI is then left to the connector, which does know. While it holds it, it refuses (and that is said);
+  // once it does not, the session starts. The sign-in itself is still said as pending here until its Cancel is confirmed.
   const over = await waiting();
   const press2 = over.s.cancelLogin();
   await until('told', () => over.c().count('connection/login/cancel') === 1);
   over.c().fail(over.cancelId(), 'invalid_request');
   await press2;
-  assert.deepEqual([over.now().login, over.now().detail], ['failed', 'the connector no longer holds that sign-in; whether it completed is not known (check the connection)']);
-  assert.equal((await over.s.ask(request({ request_id: 'ask-after-cancel.1' }))).status === 'refused', false, 'a question can be asked again');
+  assert.deepEqual([over.now().login, over.now().detail, over.s.notStartable()], ['waiting', NOT_CONFIRMED, null]);
+  over.c().manual.add('companion/start');
+  const refused = begin(over.s);
+  await until('the connector is asked', () => over.c().count('companion/start') === 1);
+  over.c().fail(over.c().calls.at(-1)!.id, 'busy');
+  assert.deepEqual(await refused, { ok: false, code: 'busy', reason: 'the connector is busy (a sign-in is pending in it, or an earlier request is still being ended), so the AI was not started; try again in a moment' });
+  assert.deepEqual([over.s.sessionLive(SESSION), over.now().login, over.now().detail], [false, 'waiting', NOT_CONFIRMED]);
+  over.c().manual.delete('companion/start');
+  assert.deepEqual([(await begin(over.s)).ok, over.c().count('companion/start'), over.s.sessionLive(SESSION), over.now().login], [true, 2, true, 'waiting']);
   // An address that is not opened: its cancel's answer is read too.
   const NOT_OPENED = 'the sign-in address the connector gave is not an official ChatGPT address, so it was not opened';
   for (const answer of ['acknowledged', 'not held', 'refused', 'another shape'] as const) {
@@ -805,39 +1374,45 @@ test('a sign-in is said as cancelled only when the connector acknowledged the ca
     w.c().loginUrl = 'https://auth.openai.com.evil.example/authorize';
     const starting = w.s.login();
     await until('its cancel is told', () => w.c().count('connection/login/cancel') === 1);
-    assert.equal(w.now().login, 'starting');
+    assert.deepEqual([w.now().login, w.now().detail], ['refused_address', NOT_OPENED], 'refused from the moment the address is, whatever its cancel comes to');
     if (answer === 'acknowledged') w.c().reply(w.cancelId(), {});
     else if (answer === 'not held') w.c().fail(w.cancelId(), 'invalid_request');
     else if (answer === 'refused') w.c().fail(w.cancelId(), 'failed');
     else w.c().reply(w.cancelId(), { cancelled: true });
     await starting;
-    if (answer === 'acknowledged' || answer === 'not held') {
+    if (answer === 'acknowledged') {
       // That sign-in is over in the connector: said as not started, and the connector goes on.
       assert.deepEqual([w.opened, w.now().login, w.now().detail, w.now().state, w.c().exited], [[], 'refused_address', NOT_OPENED, 'signed_in', false], answer);
       continue;
     }
-    // The connector did not let go of a sign-in this app refused: it is ended, so nothing stays pending in it.
+    // The connector did not let go of a sign-in this app refused (any error, "no such sign-in" included: it is not
+    // told apart in this version): it is ended, so nothing stays pending in it.
     await until('ended', () => w.c().exited);
     assert.deepEqual([w.opened, w.now().login, w.now().state, w.fakes.made.length], [[], 'refused_address', 'unavailable', 1], answer);
     assert.equal(w.now().detail, `${NOT_OPENED}; the connector did not confirm that it let that sign-in go, so that connector is no longer used and is being ended (check the connection to start one again)`);
+    // Never said as a sign-in that failed because "the connector was ended here": this app ended it, for the refusal (QA-SUB-14).
+    assert.deepEqual(w.said.filter((x) => x.mode === 'managed' && x.login === 'failed'), [], answer);
     await new Promise((r) => setTimeout(r, 30));
     assert.equal(w.fakes.made.length, 1, 'none is started by the app itself');
     await w.s.check(); // only the user's own Check starts one again
     assert.deepEqual([w.fakes.made.length, w.now().state, w.now().login], [2, 'signed_in', 'none']);
   }
-  // The connector is lost while that cancel is out: said as the loss; nothing is opened and nothing stays pending.
+  // The connector is lost while that cancel is out: both are said, the refusal of the address and that the connector
+  // ended before it confirmed the cancel (QA-SUB-15); nothing is opened and nothing stays pending.
   const gone = world();
   await gone.s.check();
   gone.c().loginUrl = 'https://auth.openai.com.evil.example/authorize';
-  const refused = gone.s.login();
+  const refusedAddress = gone.s.login();
   await until('its cancel is told', () => gone.c().count('connection/login/cancel') === 1);
   gone.c().exit(1);
-  await refused;
-  assert.deepEqual([gone.opened, gone.now().login, gone.now().state, gone.now().detail, gone.fakes.made.length], [[], 'failed', 'unavailable', 'the connector ended before the sign-in completed', 1]);
+  await refusedAddress;
+  assert.deepEqual([gone.opened, gone.now().login, gone.now().state, gone.now().detail, gone.fakes.made.length], [[], 'refused_address', 'unavailable', `${NOT_OPENED}; the connector ended before it confirmed that it let that sign-in go`, 1]);
+  assert.deepEqual(gone.said.filter((x) => x.mode === 'managed' && x.login === 'failed'), []);
 });
 
 test('"the account changed" is read a bounded number of times between the user\'s own Checks, also when it is said after each read; sparse changes are each read', async () => {
   const CHECK_AGAIN = 'the account may have changed since it was last read, and it is not read again by itself; check again';
+  const NOT_KNOWN = local('the sign-in state of the ChatGPT subscription is not known (check it in the control window)');
   // A connector that says "changed" just after every answer (the bound inside one read does not see these).
   const { s, fakes, now, said } = subscription(WSL, {}, (c) => void (c.onCall = (call) => (call.method === 'connection/read' ? void setImmediate(() => c.event('connection/changed', {})) : undefined)));
   await s.check();
@@ -848,7 +1423,7 @@ test('"the account changed" is read a bounded number of times between the user\'
   for (let i = 0; i < 20; i += 1) fakes.last().event('connection/changed', {});
   await new Promise((r) => setTimeout(r, 40));
   assert.deepEqual([fakes.last().count('connection/read'), said.length], [4, notices], 'further changes read nothing and say nothing');
-  assert.deepEqual(await s.ask(request()), { status: 'refused', code: 'local', reason: 'the sign-in state of the ChatGPT subscription is not known (check it in the control window)' });
+  assert.deepEqual(await begin(s), NOT_KNOWN);
   // The user's own Check reads again, with the same bound.
   await s.check();
   await until('not known again', () => now().state === 'unknown' && fakes.last().count('connection/read') === 8);
@@ -914,142 +1489,138 @@ test('"the account changed" is read a bounded number of times between the user\'
   await until('not known again', () => slow.now().state === 'unknown' && slow.fakes.last().count('connection/read') === 130, 8000);
   await new Promise((r) => setTimeout(r, 60));
   assert.deepEqual([slow.fakes.last().count('connection/read'), slow.fakes.made.length], [130, 1], 'the user\'s Check: its read and another 64');
-  // A question refused as not signed in while a read is out does not end that read's turn: it is read once more.
-  const mid = subscription();
-  await mid.s.check();
-  const asked = mid.s.ask(request());
-  await until('sent', () => mid.fakes.last().asks().length === 1);
-  mid.fakes.last().account = null;
-  mid.fakes.last().event('connection/changed', {});
-  await until('a read is out', () => mid.fakes.last().count('connection/read') === 2 && mid.now().state === 'checking');
-  mid.fakes.last().fail(mid.fakes.last().asks()[0]!.id, 'unauthenticated');
-  assert.equal((await asked).status, 'refused');
-  assert.equal(mid.now().state, 'checking', 'the read that is out says how it is, not the question');
-  const SIGNED_OUT = { auth: { state: 'signed_out', mode: null, plan: null }, rate_limits: null, models: [] };
-  mid.fakes.last().account = SIGNED_OUT;
-  mid.fakes.last().reply(mid.fakes.last().calls.filter((x) => x.method === 'connection/read')[1]!.id, ACCOUNT); // the older answer
-  await until('read once more', () => mid.fakes.last().count('connection/read') === 3 && mid.now().state === 'signed_out');
+  // A turn refused as not signed in while a read is out does not end that read's turn: it is read once more.
+  const mid = await started();
+  const asked = await out(mid);
+  mid.c.account = null;
+  mid.c.event('connection/changed', {});
+  await until('a read is out', () => mid.c.count('connection/read') === 2 && mid.now().state === 'checking');
+  mid.c.fail(asked.id, 'unauthenticated');
+  assert.equal((await asked.done).status, 'refused');
+  assert.equal(mid.now().state, 'checking', 'the read that is out says how it is, not the turn');
+  mid.c.account = SIGNED_OUT;
+  mid.c.reply(mid.c.calls.filter((x) => x.method === 'connection/read')[1]!.id, ACCOUNT); // the older answer
+  await until('read once more', () => mid.c.count('connection/read') === 3 && mid.now().state === 'signed_out');
   assert.equal(mid.now().detail, null);
   // The same refusal after a read failed: said as not signed in, without the failed read's reason beside it.
-  const failed = subscription();
-  await failed.s.check();
-  const out = failed.s.ask(request());
-  await until('sent', () => failed.fakes.last().asks().length === 1);
-  failed.fakes.last().account = null;
-  failed.fakes.last().event('connection/changed', {});
-  await until('a read is out', () => failed.fakes.last().count('connection/read') === 2);
-  failed.fakes.last().fail(failed.fakes.last().calls.filter((x) => x.method === 'connection/read')[1]!.id, 'busy');
+  const failed = await started();
+  const pending = await out(failed);
+  failed.c.account = null;
+  failed.c.event('connection/changed', {});
+  await until('a read is out', () => failed.c.count('connection/read') === 2);
+  failed.c.fail(failed.c.calls.filter((x) => x.method === 'connection/read')[1]!.id, 'busy');
   await until('the read failed', () => failed.now().state === 'unavailable');
   assert.equal(failed.now().detail, 'the connector is busy, so the account was not read; check again');
-  failed.fakes.last().fail(failed.fakes.last().asks()[0]!.id, 'unauthenticated');
-  await out;
+  failed.c.fail(pending.id, 'unauthenticated');
+  await pending.done;
   assert.deepEqual([failed.now().state, failed.now().detail], ['signed_out', null]);
-  // The same refusal once changes are no longer read: the state stays "not known" with its notice (the question's
-  // own card says it was refused); only the user's Check says how the account is.
-  const latched = subscription();
-  await latched.s.check();
-  const held = latched.s.ask(request());
-  await until('sent', () => latched.fakes.last().asks().length === 1);
+  // The same refusal once changes are no longer read: the state stays "not known" with its notice (the turn's own
+  // card says it was refused); only the user's Check says how the account is.
+  const latched = await started();
+  const held = await out(latched);
   for (let i = 0; i < 4; i += 1) {
-    latched.fakes.last().event('connection/changed', {});
-    await until('read, or not', () => latched.now().state !== 'checking' && latched.fakes.last().count('connection/read') === Math.min(2 + i, 4));
+    latched.c.event('connection/changed', {});
+    await until('read, or not', () => latched.now().state !== 'checking' && latched.c.count('connection/read') === Math.min(2 + i, 4));
   }
   assert.deepEqual([latched.now().state, latched.now().detail], ['unknown', CHECK_AGAIN]);
-  latched.fakes.last().fail(latched.fakes.last().asks()[0]!.id, 'unauthenticated');
-  assert.deepEqual(await held, { status: 'refused', code: 'unauthenticated', reason: 'ChatGPT is not signed in (sign in from the control window)' });
-  assert.deepEqual([latched.now().state, latched.now().detail], ['unknown', CHECK_AGAIN], 'not said as signed out from the question alone');
+  latched.c.fail(held.id, 'unauthenticated');
+  assert.deepEqual(await held.done, { status: 'refused', code: 'unauthenticated', reason: 'ChatGPT is not signed in', submission: 'not_submitted' });
+  assert.deepEqual([latched.now().state, latched.now().detail], ['unknown', CHECK_AGAIN], 'not said as signed out from the turn alone');
   await latched.s.check();
   assert.deepEqual([latched.now().state, latched.now().detail], ['signed_in', null]);
 });
 
-test('a cancel or a Stop is a confirmed interruption only by its own exact receipt; anything else, cancelled:false included, stays not confirmed', async () => {
-  const outcomeOf = async (set: (c: FakeConnector) => void, by: 'cancel' | 'stop'): Promise<AskOutcome> => {
-    const { s, fakes } = subscription();
-    await s.check();
-    set(fakes.last());
-    const sent = request();
-    const done = s.ask(sent);
-    await until('sent', () => fakes.last().asks().length === 1);
-    if (by === 'cancel') s.cancel(sent.request_id);
-    else s.stopSession(sent.context.capture_session_id);
-    return done; // the question itself ends as `cancelled`, as the released connector ends it
+test('an interrupt or a Stop is a confirmed interruption only by its own exact receipt and the turn itself ending as interrupted; anything else, cancelled:false included, stays not confirmed', async () => {
+  const outcomeOf = async (set: (c: FakeConnector) => void, by: 'interrupt' | 'stop', end: (c: FakeConnector, id: string) => void = () => undefined): Promise<TurnOutcome> => {
+    const w = await started();
+    set(w.c);
+    const sent = turn();
+    const o = await out(w, sent);
+    if (by === 'interrupt') w.s.interrupt(sent.request_id);
+    else w.s.stopSession(SESSION);
+    end(w.c, o.id);
+    return o.done; // the turn itself ends as `cancelled` (or `session_stopped`), as the released connector ends it
   };
-  for (const result of [{}, null, [], 'cancelled', { uncertain: 'unknown' }, { cancelled: true, uncertain: 'unknown' }, { cancelled: true }, { uncertain: false }, { cancelled: 'true', uncertain: false }, { cancelled: true, uncertain: false, more: 1 }, { cancelled: false, uncertain: false }, { cancelled: true, uncertain: true }]) {
-    assert.deepEqual(await outcomeOf((c) => void (c.cancelReceipt = { result }), 'cancel'), { status: 'cancelled', uncertain: true }, `ask/cancel answered ${JSON.stringify(result)}`);
+  // In this version a Stop's receipt has the interrupt's shape: {} (the earlier envelope's acknowledgement of a Stop) confirms nothing.
+  const NOT = [{}, null, [], 'cancelled', true, { uncertain: 'unknown' }, { cancelled: true, uncertain: 'unknown' }, { cancelled: true }, { uncertain: false }, { cancelled: 'true', uncertain: false }, { cancelled: 1, uncertain: 0 }, { cancelled: true, uncertain: null }, { cancelled: true, uncertain: false, more: 1 }, { cancelled: false, uncertain: false }, { cancelled: true, uncertain: true }, { stopped: true }, { ok: true }];
+  for (const by of ['interrupt', 'stop'] as const) {
+    const receipt = by === 'interrupt' ? 'cancelReceipt' : 'stopReceipt';
+    for (const result of NOT) assert.deepEqual(await outcomeOf((c) => void (c[receipt] = { result }), by), { status: 'cancelled', uncertain: true, submission: 'submitted' }, `companion/${by} answered ${JSON.stringify(result)}`);
+    assert.deepEqual(await outcomeOf((c) => void (c[receipt] = { result: { cancelled: true, uncertain: false } }), by), { status: 'cancelled', uncertain: false, submission: 'submitted' }, by);
+    // Refused by the connector, or not answered at all (the request's own bound), while the turn does end as interrupted.
+    assert.deepEqual(await outcomeOf((c) => void (c.manual.add(`companion/${by}`), (c.onCall = (call) => (call.method === `companion/${by}` ? c.fail(call.id, 'failed') : undefined))), by, (c, id) => c.fail(id, by === 'interrupt' ? 'cancelled' : 'session_stopped', 'submitted')), { status: 'cancelled', uncertain: true, submission: 'submitted' }, `companion/${by} refused`);
+    assert.deepEqual(await outcomeOf((c) => void c.manual.add(`companion/${by}`), by, (c, id) => c.fail(id, by === 'interrupt' ? 'cancelled' : 'session_stopped', 'submitted')), { status: 'cancelled', uncertain: true, submission: 'submitted' }, `companion/${by} not answered`);
+    // The exact receipt, and the turn ending in another way: its answer arrives, it fails otherwise, or it never ends.
+    // Nothing of it is returned, and it is not said as stopped for certain.
+    const silent = (c: FakeConnector): void => void (c.onCancel = 'silent'); // the receipt is exact; the turn is ended by the test
+    assert.deepEqual(await outcomeOf(silent, by, (c) => c.answer('An answer that raced it.')), { status: 'cancelled', uncertain: true, submission: 'submitted' }, `${by}: answered after all`);
+    assert.deepEqual(await outcomeOf(silent, by, (c, id) => c.fail(id, 'failed', 'unknown')), { status: 'cancelled', uncertain: true, submission: 'unknown' }, `${by}: failed otherwise`);
+    assert.deepEqual(await outcomeOf(silent, by), { status: 'cancelled', uncertain: true, submission: 'unknown' }, `${by}: never ended`);
+    // Positive control for those three: the same exact receipt and the turn ending as the connector ends an interrupted one.
+    assert.deepEqual(await outcomeOf(silent, by, (c, id) => c.fail(id, by === 'interrupt' ? 'cancelled' : 'session_stopped', 'submitted')), { status: 'cancelled', uncertain: false, submission: 'submitted' }, `${by}: ended as interrupted`);
   }
-  assert.deepEqual(await outcomeOf((c) => void (c.cancelReceipt = { result: { cancelled: true, uncertain: false } }), 'cancel'), { status: 'cancelled', uncertain: false });
-  // session/stop has its own acknowledgement: exactly {}. A cancel's receipt is not a Stop's, nor the reverse.
-  for (const result of [null, [], 'stopped', { stopped: true }, { cancelled: true, uncertain: false }]) {
-    assert.deepEqual(await outcomeOf((c) => void (c.stopReceipt = { result }), 'stop'), { status: 'cancelled', uncertain: true }, `session/stop answered ${JSON.stringify(result)}`);
+  // Both were said (the interrupt, then the Stop): confirmed only if each was.
+  for (const [stopReceipt, uncertain] of [[{ ok: true }, true], [{ cancelled: true, uncertain: false }, false]] as const) {
+    const both = await started();
+    both.c.onCancel = 'silent';
+    both.c.stopReceipt = { result: stopReceipt };
+    const sent = turn();
+    const o = await out(both, sent);
+    both.s.interrupt(sent.request_id);
+    both.s.stopSession(SESSION);
+    await until('both told', () => both.c.count('companion/interrupt') === 1 && both.c.count('companion/stop') === 1);
+    both.c.fail(o.id, 'cancelled', 'submitted');
+    assert.deepEqual(await o.done, { status: 'cancelled', uncertain, submission: 'submitted' }, JSON.stringify(stopReceipt));
   }
-  assert.deepEqual(await outcomeOf((c) => void (c.stopReceipt = { result: {} }), 'stop'), { status: 'cancelled', uncertain: false });
-  // Both were said (Cancel, then Stop): confirmed only if each was.
-  const both = subscription();
-  await both.s.check();
-  both.fakes.last().onCancel = 'silent';
-  both.fakes.last().stopReceipt = { result: { ok: true } };
-  const sent = request();
-  const done = both.s.ask(sent);
-  await until('sent', () => both.fakes.last().asks().length === 1);
-  both.s.cancel(sent.request_id);
-  both.s.stopSession(sent.context.capture_session_id);
-  await until('both told', () => both.fakes.last().count('session/stop') === 1);
-  both.fakes.last().fail(both.fakes.last().asks()[0]!.id, 'cancelled');
-  assert.deepEqual(await done, { status: 'cancelled', uncertain: true });
 });
 
 const SHIM_ENDED = 'a connector that was ended here did not end by itself in time; its wsl.exe shim was ended, which does not show that the connector, or the Codex app server it runs, ended in WSL';
 const SHIM_NOT_ENDED = 'a connector that was ended here did not end by itself in time; its wsl.exe shim did not end either, so it is not known that the connector, or the Codex app server it runs, ended in WSL';
 
-test('a question the connector ends as cancelled, when this app asked for no cancel and no Stop, is not said as a confirmed stop; nothing is sent again and no connector is started', async () => {
-  const { s, fakes, now } = subscription();
-  await s.check();
-  const c = fakes.last();
-  const done = s.ask(request());
-  await until('sent', () => c.asks().length === 1);
-  c.fail(c.asks()[0]!.id, 'cancelled'); // as the released connector does at its request-history limit
-  assert.deepEqual(await done, { status: 'cancelled', uncertain: true });
+test('a turn the connector ends as cancelled, when this app asked for no interrupt and no Stop, is not said as a confirmed stop; nothing is sent again and no connector is started', async () => {
+  const w = await started();
+  const { fakes, now, c } = w;
+  const o = await out(w);
+  c.fail(o.id, 'cancelled', 'submitted'); // as the released connector does at its request-history limit
+  assert.deepEqual(await o.done, { status: 'cancelled', uncertain: true, submission: 'submitted' });
   await new Promise((r) => setTimeout(r, 30));
-  assert.deepEqual([c.count('ask/cancel'), c.count('session/stop'), c.asks().length, fakes.made.length, now().state, now().asking], [0, 0, 1, 1, 'signed_in', false], 'no cancel or Stop of this app, one send, one connector');
-  // The same reply after this app's own confirmed cancel, or its confirmed Stop, is the confirmed stop it was.
-  for (const by of ['cancel', 'stop'] as const) {
-    const own = subscription();
-    await own.s.check();
-    const sent = request();
-    const asked = own.s.ask(sent);
-    await until('sent', () => own.fakes.last().asks().length === 1);
-    if (by === 'cancel') own.s.cancel(sent.request_id);
-    else own.s.stopSession(sent.context.capture_session_id);
-    assert.deepEqual(await asked, { status: 'cancelled', uncertain: false }, by);
+  assert.deepEqual([c.count('companion/interrupt'), c.count('companion/stop'), c.turns().length, fakes.made.length, now().state, now().asking, w.s.sessionLive(SESSION)], [0, 0, 1, 1, 'signed_in', false, true], 'no interrupt or Stop of this app, one send, one connector');
+  // The same reply after this app's own confirmed interrupt, or its confirmed Stop, is the confirmed stop it was.
+  for (const by of ['interrupt', 'stop'] as const) {
+    const own = await started();
+    const sent = turn();
+    const asked = await out(own, sent);
+    if (by === 'interrupt') own.s.interrupt(sent.request_id);
+    else own.s.stopSession(SESSION);
+    assert.deepEqual(await asked.done, { status: 'cancelled', uncertain: false, submission: 'submitted' }, by);
   }
   // interrupt_unconfirmed stays what it says.
-  const un = subscription();
-  await un.s.check();
-  const held = un.s.ask(request());
-  await until('sent', () => un.fakes.last().asks().length === 1);
-  un.fakes.last().fail(un.fakes.last().asks()[0]!.id, 'interrupt_unconfirmed');
-  assert.deepEqual(await held, { status: 'cancelled', uncertain: true });
+  const un = await started();
+  const held = await out(un);
+  un.c.fail(held.id, 'interrupt_unconfirmed', 'submitted');
+  assert.deepEqual(await held.done, { status: 'cancelled', uncertain: true, submission: 'submitted' });
 });
 
 test('a connector that does not end by itself within its time: its shim is ended, that its own end was not seen is said and kept, and nothing is started in its place', async () => {
   // Fenced for a line that is not the envelope's, while it ignores the end of its input.
   const { s, fakes, now, said } = subscription(WSL, { end_ms: 80 }, (c) => void (c.endDelayMs = 60_000));
   await s.check();
+  assert.equal((await begin(s)).ok, true);
   const c = fakes.last();
   let kills = 0;
   const kill = c.kill.bind(c);
   c.kill = () => (kills++, kill());
-  c.stdout.write('x'.repeat(256 * 1024 + 1));
+  c.stdout.write(OVER);
   await until('fenced', () => now().state === 'unavailable');
-  assert.deepEqual([now().detail, kills, c.exited], [null, 0, false], 'still within its time: nothing is said yet, and it is not killed');
+  assert.deepEqual([now().detail, kills, c.exited, s.sessionLive(SESSION)], [null, 0, false, false], 'still within its time: nothing is said yet, and it is not killed; its AI session is over from the fence on');
   await until('its shim was ended', () => c.exited);
   await until('said', () => now().detail === SHIM_ENDED);
   assert.deepEqual([now().state, kills, fakes.made.length], ['unavailable', 1, 1]);
   assert.equal((said.at(-1) as { detail?: string | null }).detail, SHIM_ENDED, 'the windows are told');
-  // Nothing is started or sent by the app itself, and a question is refused without starting one.
+  // Nothing is started or sent by the app itself, and a Start of the AI, or a turn, is refused without starting one.
   await new Promise((r) => setTimeout(r, 60));
-  assert.deepEqual(await s.ask(request()), { status: 'refused', code: 'local', reason: 'the connector, or the official Codex app server it runs, is not available' });
-  assert.equal(fakes.made.length, 1);
+  assert.deepEqual([await begin(s, { session_id: OTHER_SESSION }), await s.turn(turn())], [local(UNAVAILABLE), NOT_RUNNING]);
+  assert.deepEqual([fakes.made.length, c.turns().length, c.count('companion/stop')], [1, 0, 0]);
   // The user's own Check starts another; what was not seen of the first stays said (nothing later shows it ended).
   await s.check();
   const second = fakes.last();
@@ -1065,7 +1636,7 @@ test('a connector that does not end by itself within its time: its shim is ended
   await stuck.s.check();
   const k = stuck.fakes.last();
   k.kill = () => true; // the kill is taken and nothing ends
-  k.stdout.write('x'.repeat(256 * 1024 + 1));
+  k.stdout.write(OVER);
   await until('said (its own bound, then two seconds more for the ended shim)', () => stuck.now().detail === SHIM_NOT_ENDED, 5000);
   assert.deepEqual([k.exited, stuck.now().state, stuck.fakes.made.length], [false, 'unavailable', 1]);
   await stuck.s.check();
@@ -1080,7 +1651,7 @@ test('a connector that does not end by itself within its time: its shim is ended
   const signing = subscription(WSL, { end_ms: 60 }, (c2) => void (c2.endDelayMs = 60_000));
   await signing.s.check();
   await signing.s.login();
-  signing.fakes.last().stdout.write('x'.repeat(256 * 1024 + 1));
+  signing.fakes.last().stdout.write(OVER);
   await until('said', () => (signing.now().detail ?? '').includes('did not end by itself'));
   assert.deepEqual([signing.now().login, signing.now().detail], ['failed', `the connector was ended here before the sign-in completed; ${SHIM_ENDED}`]);
 });
@@ -1133,7 +1704,7 @@ test('an end that was not seen is handed over to be written, with its time and w
   await late.s.check();
   const stuck = late.fakes.last();
   stuck.kill = () => true;
-  late.fakes.last().stdout.write('x'.repeat(256 * 1024 + 1));
+  late.fakes.last().stdout.write(OVER);
   await until('not written', () => late.s.endsUnsaved() === 'EIO: injected', 5000);
   fail = null;
   stuck.exit(0);
@@ -1180,7 +1751,7 @@ test('a connector ended here for a line that is not the envelope\'s: its real en
   let kills = 0;
   const kill = c.kill.bind(c);
   c.kill = () => (kills++, kill());
-  c.stdout.write('x'.repeat(256 * 1024 + 1)); // over the bound, with no line end
+  c.stdout.write(OVER); // over the bound, with no line end
   await until('ended at the end of its input', () => c.exited);
   assert.equal(now().state, 'unavailable');
   await new Promise((r) => setTimeout(r, 300)); // past the bound on its end
@@ -1196,7 +1767,7 @@ test('a connector ended here for a line that is not the envelope\'s: its real en
   let killed = 0;
   const end = k.kill.bind(k);
   k.kill = () => (killed++, end());
-  k.stdout.write('x'.repeat(256 * 1024 + 1));
+  k.stdout.write(OVER);
   await until('fenced', () => slow.now().state === 'unavailable');
   assert.equal(k.exited, false);
   await slow.s.quit();
@@ -1207,27 +1778,34 @@ test('a connector ended here for a line that is not the envelope\'s: its real en
   await two.s.check();
   const first = two.fakes.last();
   first.endDelayMs = 60_000;
-  first.stdout.write('x'.repeat(256 * 1024 + 1));
+  first.stdout.write(OVER);
   await until('the first is fenced', () => two.now().state === 'unavailable');
   await two.s.check(); // the user's own Check starts another
   const second = two.fakes.last();
   assert.notEqual(second, first);
-  second.stdout.write('x'.repeat(256 * 1024 + 1));
+  second.stdout.write(OVER);
   await until('the second ended', () => second.exited);
   assert.equal(first.exited, false);
   await two.s.quit();
   assert.deepEqual([first.exited, second.exited], [true, true]);
 });
 
-test('a real child process over real pipes: lines both ways, and the end of its input ends it', async () => {
+test('a real child process over real pipes: lines both ways, a session and its turns, and the end of its input ends it', async () => {
   const script = path.join(import.meta.dirname, 'fake-connector.mjs');
   let child: ReturnType<typeof spawn> | null = null;
   const { s, now } = subscription(WSL, { spawn: (() => (child = spawn(process.execPath, [script], { stdio: ['pipe', 'pipe', 'ignore'], env: { ...process.env, ELECTRON_RUN_AS_NODE: '1' } }))) as never, request_ms: 10_000, ask_ms: 10_000, end_ms: 5_000 });
-  await s.check();
-  assert.deepEqual([now().state, now().model], ['signed_in', 'vision-model']);
-  const sent = request();
-  const outcome: AskOutcome = await s.ask(sent);
-  assert.equal(outcome.status === 'answered' && outcome.answer.text, 'SYNTHETIC answer from the test connector: 40x20 px, hint');
+  await s.check(); // (the stand-in child refuses a line of another version than lc-subscription-live/1, so this read is one of it)
+  assert.deepEqual([now().state, now().model, now().quota], ['signed_in', 'vision-model', { available: false, ordinary_usage_allowed: null, windows: [] }]);
+  assert.deepEqual(await begin(s), { ok: true, start: START, remaining_submissions: 12, expires_in_ms: 300_000 });
+  const outcome: TurnOutcome = await s.turn(turn());
+  assert.deepEqual(outcome, { status: 'answered', answer: { request_id: turn().request_id, text: 'SYNTHETIC answer from the test connector: 2560x1600 px, 8 bytes, focus, hint', model: 'vision-model', latency_ms: 1, thread_id: 'thread-synthetic', turn_id: 'turn-synthetic', kind: 'generated_assistance' }, submission: 'submitted' });
+  // A picture of some megabytes: one line of many chunks into the pipe, read whole at the other end; and a look's answer is an observation.
+  const bytes = 3 * 1024 * 1024;
+  const big = await s.turn(look({ image: { ...turn().image, png_base64: Buffer.alloc(bytes, 7).toString('base64') }, history: [{ kind: 'assistant', text: 'A hint · 提示 😀', at: '2026-10-01T05:00:05.000Z', frame_seq: 6, request_id: turn().request_id, audio_source: null, presentation: 'shown' }] }));
+  assert.deepEqual([big.status, big.status === 'answered' && big.answer.text, big.status === 'answered' && big.answer.kind], ['answered', `SYNTHETIC answer from the test connector: 2560x1600 px, ${bytes} bytes, observation, none`, 'observation']);
+  // The Stop reaches it: a turn written to it afterwards would be refused there; here it is not even written.
+  s.stopSession(SESSION);
+  assert.deepEqual([s.sessionLive(SESSION), await s.turn(turn({ request_id: `${SESSION}.9.after` }))], [false, NOT_RUNNING]);
   const exited = new Promise<number | null>((r) => child!.once('exit', (code) => r(code)));
   await s.quit();
   assert.equal(await exited, 0, 'ended by the end of its input, not killed');

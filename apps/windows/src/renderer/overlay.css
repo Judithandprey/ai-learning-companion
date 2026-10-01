@@ -21,6 +21,9 @@ canvas#ink { position: fixed; inset: 0; width: 100vw; height: 100vh; touch-actio
 .toolbar button.text { font-size: 12px; padding: 0 8px; }
 .toolbar button:focus-visible { outline: 2px solid #64d2ff; }
 .tools { display: flex; gap: 4px; padding-left: 6px; border-left: 1px solid rgba(255,255,255,.3); }
+/* Talk is in the toolbar, in reach before any card: a response is read aloud only if Talk was on when it was asked for. */
+.talk { align-items: center; }
+.talk #rate { min-width: 30px; text-align: center; }
 .hint { max-width: 300px; padding: 0 4px; }
 [hidden] { display: none !important; }
 .card { --fx: 1; --fy: 1; box-sizing: border-box; width: min(360px, var(--aw)); max-height: min(80vh, var(--ah)); overflow: auto; padding: 0 12px 10px;
@@ -37,11 +40,8 @@ canvas#ink { position: fixed; inset: 0; width: 100vw; height: 100vh; touch-actio
 .card .answer { margin-top: 8px; padding-top: 6px; border-top: 1px solid #ccc; scroll-margin-top: 44px; } /* brought into view under the bar */
 .card #askStatus { scroll-margin-top: 44px; }
 .card .answer .badge { color: #0a5f2a; }
-/* The bar stays at the top of the card while its content scrolls: the handle, the talk controls and Close stay in reach. */
+/* The bar stays at the top of the card while its content scrolls: the handle and Close stay in reach. */
 .card .cardBar { position: sticky; top: 0; z-index: 1; display: flex; align-items: center; gap: 6px; margin: 0 -6px 4px; padding-top: 6px; background: #fff; }
 .card .cardBar .handle { height: 28px; color: #555; }
-.card .talk { display: flex; flex-wrap: wrap; align-items: center; gap: 4px; }
-.card .talk button { font: inherit; font-size: 12px; padding: 2px 8px; }
-.card .talk button[aria-pressed="true"] { background: #0a84ff; color: #fff; }
 .card .close { all: unset; margin-left: auto; padding: 0 6px; cursor: pointer; font-size: 18px; color: #555; }
 .card .close:focus-visible { outline: 2px solid #0a84ff; }

@@ -15,6 +15,18 @@
   <h2 id="choose-title">Display to share</h2>
   <p class="hint">Choose the display you learn on, then press Start. Only that display is captured, and only until you press Stop.</p>
   <ul id="displays" class="displays"></ul>
+  <fieldset id="aiSession" class="aiSession" hidden>
+    <legend>AI observation of this display</legend>
+    <label><input type="checkbox" id="aiOn" disabled> Start also lets ChatGPT observe this whole display, continuously, within these bounds</label>
+    <p class="hint">These are this session's own bounds, not ChatGPT's quota: the AI stops by itself when either is reached, and the app never starts it again by itself. The last fifth of the requests is kept for your own circles and questions. One session lasts an hour and 100 requests at most in this version. The AI is given pictures of the display and what you type: speaking to it, and the sound of the lesson, are not connected in this version.</p>
+    <p class="bounds">
+      <label for="aiRequests">Requests, at most</label> <input type="number" id="aiRequests" min="1" max="100" step="1" value="60">
+      <label for="aiMinutes">Minutes, at most</label> <input type="number" id="aiMinutes" min="1" max="60" step="1" value="30">
+      <label for="aiInterval">Seconds between two unattended looks, at least</label> <input type="number" id="aiInterval" min="1" max="60" step="1" value="30">
+    </p>
+    <p id="aiWhy" class="status"></p>
+    <p id="aiNote" class="status ended" role="status"></p>
+  </fieldset>
   <div class="actions">
     <button id="start" type="button">Start</button>
     <button id="stop" type="button" disabled>Stop</button>
@@ -23,6 +35,11 @@
 <section aria-labelledby="status-title">
   <h2 id="status-title">Capture</h2>
   <p id="session" class="status">Not capturing.</p>
+  <p id="live" class="status" role="status" hidden></p>
+  <div id="liveActions" class="actions" hidden>
+    <button id="liveStart" type="button" hidden>Start the AI</button>
+    <button id="liveStop" type="button" class="plain" hidden>Stop the AI (keep capturing)</button>
+  </div>
   <p id="sample" class="status"></p>
   <p id="counts" class="status"></p>
   <p id="retention" class="status"></p>
@@ -30,7 +47,7 @@
 </section>
 <section id="subscription" aria-labelledby="sub-title" hidden>
   <h2 id="sub-title">ChatGPT subscription</h2>
-  <p class="hint">Your own ChatGPT subscription, through the official Codex app server, which keeps the sign-in: this app never reads your password, tokens or cookies. No AI watches the screen. Only a selection you send with Ask on its card is sent, with your question.</p>
+  <p class="hint">Your own ChatGPT subscription, through the official Codex app server, which keeps the sign-in: this app never reads your password, tokens or cookies. ChatGPT is given pictures of a display only while the AI's session runs: your own Start, within the bounds set beside it.</p>
   <p id="subState" class="status"></p>
   <p id="subQuota" class="status" hidden></p>
   <div class="actions">
@@ -38,7 +55,7 @@
     <button id="subLogin" type="button" hidden>Sign in with ChatGPT</button>
     <button id="subLoginCancel" type="button" class="plain" hidden>Cancel sign-in</button>
   </div>
-  <p id="subModelRow" class="status" hidden><label for="subModel">Model for questions </label><select id="subModel"></select></p>
+  <p id="subModelRow" class="status" hidden><label for="subModel">Model for the AI </label><select id="subModel"></select></p>
 </section>
 <section id="kept" class="kept" aria-labelledby="kept-title" hidden>
   <h2 id="kept-title">Ink that could not be saved</h2>
