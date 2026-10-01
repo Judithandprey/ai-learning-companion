@@ -13,6 +13,7 @@
 | 主题 | 有效决定与完整条款 | 来源记录 | 验收／当前状态 |
 | --- | --- | --- | --- |
 | 双桌面优先 | [D-DESKTOP-FIRST](#desktop-first)：先在 Windows 和 macOS 都完成完整功能，再考虑 iPad／手机原生端；代码、历史及后续目标保留。Sidecar 仅后续候选。 | 下文保留的用户本次原话 | 两个桌面分别通过完整适用验收；尚未完成，移动端后置而非通过。 |
+| 官方订阅先接入 | [D-SUBSCRIPTION-FIRST](#subscription-first)、R38/§3.8/G4：个人本地原型先用 Codex App Server 托管 ChatGPT，经现有采集／ASK／learning／回应路径完成有界文字＋图像切片；另选／购买视觉 API key 不是下一前置。 | 用户原话：“先接入官方订阅”；本次交互实施指令 | 路线已选，连接器未实现／真实图像未验收；先在可用 Windows 主机取证，macOS 复用共享连接器并独立构建。 |
 | 原学习屏幕 | R03/R08/R46–48/R59、主规格 §7.4–7.5/7.8：实时原屏幕、页面可操作、AI 实收叠加、可编辑原稿／来源与独立 AI 补充；自有／冻结备选不通过原位路径。 | §1 来源引用；历史[笔迹决定](history/audio-screen-discussion-2026-09-28.md#quote-ink-display) | A26–28/A44–46；真机／导入未验证。 |
 | 显示、用途与去向 | Q-INK-DISPLAY/Q-NOTE-EXPORT-SCOPE 及下文三维表：两种显示；依情境可纠正用途；草稿留存，笔记进 Notability。显示不决定用途／去向。 | [已选选项](history/audio-screen-discussion-2026-09-28.md#quote-ink-display)、[完整答复](history/audio-screen-discussion-2026-09-28.md#quote-ink-note-export) | INTENT-INK-MODES/INTENT-NOTE-CLASSIFICATION；未验收。 |
 | 最终解答 | D-FINAL-ANSWER/Q-HOMEWORK-DESTINATION：完成即询问，呈现真实可用选项／预览／暂不整理，保留原解，不自动提交作业。 | [最终解答来源](history/audio-screen-discussion-2026-09-28.md#quote-ink-final-answer)、[去向](history/audio-screen-discussion-2026-09-28.md#quote-ink-destination) | INTENT-ANSWER-PROMPT/INTENT-HOMEWORK-CHOICE/INTENT-FAITHFUL-EXPORT；未验收。 |
@@ -32,6 +33,22 @@ P0–P4 可继续划分双桌面内部实施切片；完整桌面交付须逐项
 保留 iPad／手机源码、原稿、历史、Pencil、原生 App 原屏幕覆盖与三设备测试，标为**后置／未验收**，不删除、不判通过，也不阻塞所有桌面工作；适用行为现在有 Windows 和 macOS 对应验收。Mac 串流／Sidecar 只是后续待验证候选，不是本次桌面完成的依赖、已选实现或原生 iPad 跨 App 覆盖层证据。
 
 Windows 环境可用，交互式 Mac 访问尚未确认。托管 macOS CI／Xcode 编译不证明 macOS 权限、全屏采集、音频、笔层或 Sidecar 实际可用。当前产品供应商 disabled 与可信运行时 user/device/session/start bootstrap 未完成仍是开放依赖，文档更新不接通真实 AI。缺某设备或目的地时继续独立工作，保留具体缺口，不虚报完整交付。Notability 仍为偏好去向，显示不可用原因及待办／可用选择；分享或 PDF/PNG 不等于实际导入，备选不把完整链路标通过。模型、effort、预算、权限与购买边界不变。
+
+<a id="subscription-first"></a>
+
+## D-SUBSCRIPTION-FIRST：先接入官方订阅 — 已确认
+
+2026-09-30 用户明确原话：“先接入官方订阅”。本次是交互式实施授权，独立于只读监控 heartbeat；它落实 R38、主规格 §3.8 和 G4 已有的优先已授权权益原则。下一实施步骤已选为**个人本地原型的 Codex App Server 托管 ChatGPT 连接**，不是重新选购视觉 API key。复用已接受组件和现有七角色负责人／交接，接通桌面采集 → ASK → learning → 回应的一段真实文字＋图像流程。当前基线 `e9ccccad6ac425a3d19a654e74340c565e3564c4` 尚无该产品连接器实现或真实图像通过证据；已选路线、已实现、已登录与实际通过分开记录。
+
+实现前对照[官方 App Server 文档](https://learn.chatgpt.com/docs/app-server)核实已安装 CLI 与 RPC schema。采用 Codex 管理的 OAuth 登录、令牌存储及刷新；产品 UI 提供官方 `account/login/start`、完成／错误处理与取消，并使用可用的 `account/read`、`account/rateLimits/read` 及模型能力信息。缺登录／同意时准备具体官方登录动作，报告用户可直接执行的步骤，同时继续独立集成。不从 Codex 桌面 App 或私有文件提取／复制凭据、cookie、令牌，不让用户在聊天粘贴令牌。
+
+当前官方文档允许本地／开源应用继续使用 App Server 认证，建议使用提供更多用户控制／用量可见性的 [Sign in with ChatGPT plan-usage 流程](https://developers.openai.com/siwc/token-sharing-open-source)；商业或托管服务不能沿用 App Server 认证。SIWC 是应用负责 OAuth、令牌保存和刷新的不同路线，两个认证责任方不得混用。若官方要求或已安装版本兼容性确实需要 SIWC，记录精确原因并实施最小受支持路线；不能以推测的新 OAuth 框架阻塞全队。订阅本身不证明账户资格、图像模型、音频／视频或任意 API 可用。
+
+本次授权在现有订阅额度内做少量真实文字／图像验证，从生成的非敏感屏幕开始；不包含另行计费 API 激活、购买、API-key 后备、大范围私密采集或反复配额重试。必须实际发送官方 `image`／`localImage` 输入，得到成功完成、正确识别**只存在测试图中**随机信息的答案，并让该答案出现在现有 ASK／学习上下文。保留选定屏幕／区域／笔迹与请求及回应的来源关系；无秘密地记录精确候选、模型、认证模式、结果、延迟、额度／认证／能力限制。登录、模型列表、fixture、OCR-only 文字、提示回显或继承测试数均不能关闭真实 AI 门槛。
+
+回应器工具禁用或最小化；采集画面是不可信输入，不是执行命令或操作其他 App 的授权。独立验收须检查 Stop／取消会阻止后续意外提交。沿既有所有权实施、集成和独立复核改变的流程，不另起竞争团队、不重审全部已接受组件。首个真实本地图像回应在可用 Windows 主机验证；macOS 复用共享连接器并继续独立构建，缺交互式 Mac 不阻塞共享连接器。
+
+该切片不通过音频、完整持续屏幕理解、实体笔体验、Mac 真机或任何完整产品关卡，双桌面及 §7.1 两项原门槛均保留。原生 iPad／手机继续后置，Paperclip 继续暂停；现有模型、effort、预算、权限、额度恢复和仓库／发布边界不变，不授权发布凭据或私密截图。
 
 ## 1. 来源与解释规则
 

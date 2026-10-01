@@ -78,7 +78,7 @@
 - R35：允许用户选择同时共享 iPad、手机、电脑的屏幕，例如 iPad 播课程、手机查资料、电脑工作。所有启用的设备应属于同一会话，AI 能把跨屏活动联系起来。当前先在 Windows 与 macOS 验证跨桌面来源及独立启停，原 iPad／手机／电脑三设备场景后置保留。
 - R36：每台设备的屏幕共享必须可分别启停，不能因其中一台加入就默认采集其他设备。当前首批完整客户端是 Windows 和 macOS；iPad／iPhone 原生端及原三设备组合后置保留。具体 OS 版本与能力由客户端检测；跨桌面成功不证明移动端通过。
 - R37：用户愿意在确有必要时购买性能更强的服务器；这不是当前购买指令。先验证与测量资源需求，不以购买硬件代替解决客户端能力限制。
-- R38：用户自述已有 OpenAI 的“20X”订阅、Claude Max、Gemini Pro。优先利用官方允许使用的已购权益；不足时可走 API。未实际核实账户方案、权益、使用量或余额。
+- R38：用户自述已有 OpenAI 的“20X”订阅、Claude Max、Gemini Pro。优先利用官方允许使用的已购权益；不足时可走已授权 API。用户已明确“先接入官方订阅”：当前个人本地文字＋图像切片选择 Codex App Server 托管 ChatGPT 连接，另选／购买视觉 API key 不是下一前置；本切片不启用单独计费 API 或 API-key 后备。账户资格、输入能力、使用量及余额仍须实际核实，选择路线不等于已接通；详见 §3.8 与 [D-SUBSCRIPTION-FIRST](requirements/intent-and-decisions.md#subscription-first)。
 - R39：用户接受每月额外约人民币 1,000 元 API 费用；可进一步考虑升级订阅，但未授权现在购买。初始设计把 1,000 元设为 API 月度预算上限，后续升级需用户明确选择。服务器、短信等其他费用单列，不暗中侵占或扩大预算。
 - R40：用户没有确定每日用量，可能长时间保持陪伴。设计必须区分“会话在线”和“持续调用昂贵模型”，通过内容变化、查询与实际需要触发处理。
 - R41：用户允许 AI 反对临时放弃、追问拖延原因并独立提出更合适的行动。明确停止、暂停提醒和撤回授权仍应生效；不能把“为了用户好”解释为无限扩大控制范围。
@@ -192,11 +192,15 @@ LiveKit 可作为传输候选，但默认 AgentSession 通常绑定单个参与�
 
 ### 3.8 订阅连接器与正式 API
 
-把官方 Agent 连接器和原生模型 API 作为不同后端，分别记录能力、额度、认证状态、成本与支持的输入。官方 Agent 后端不应被假装成无差别的通用 API。首选连接器候选为 Codex App Server、未经修改的官方 Claude Code／获支持的 Agent SDK 路径、Gemini CLI；实现时复核版本和账号可用性。
+把官方 Agent 连接器和原生模型 API 作为不同后端，分别记录能力、额度、认证状态、成本与支持的输入。官方 Agent 后端不应被假装成无差别的通用 API。按已确认的 [D-SUBSCRIPTION-FIRST](requirements/intent-and-decisions.md#subscription-first)，先复用现有桌面采集 → ASK → learning → 回应路径，接入个人本地 Codex App Server 托管 ChatGPT 文字＋图像切片。实现前用官方文档核对已安装 CLI 版本和生成的 RPC schema；Claude Code／获支持的 Agent SDK 与 Gemini CLI 保留后续候选，不重复分派新团队。
 
-Codex App Server 官方支持产品集成与由 Codex 管理的 ChatGPT 登录／刷新；Claude 当前帮助页说明 SDK 和非交互使用仍消耗订阅额度，并有官方登录与托管条件；Gemini CLI 支持 Google 账号认证。不得提取会话凭据、仿造私有请求或绕过官方配额来实现“订阅复用”。
+认证归 Codex 管理：由其执行 OAuth、保存并刷新令牌；产品连接 UI 暴露官方 `account/login/start`，处理 `account/login/completed` 的成功／错误，用 `account/login/cancel` 取消待完成登录，并使用 `account/read`、`account/rateLimits/read` 和实际可用模型能力信息。缺登录／同意时提供可操作的官方登录入口及准确用户步骤，独立集成工作继续；不让用户在聊天粘贴令牌，不读取或复制 Codex 桌面 App 的私有凭据、cookie 或令牌。
 
-个人自用的已登录 Agent 与将来向其他用户发行的服务要区分。直接 API 采用正式密钥与计费；供应商自身的聊天／编码客户端权益不意味着所有实时音频、视觉、生成图片等接口都由订阅覆盖。
+2026-09-30 核对的[官方 App Server 文档](https://learn.chatgpt.com/docs/app-server)允许本地／开源应用继续使用该认证，建议迁往更清楚展示用户控制与用量的 [Sign in with ChatGPT plan-usage 流程](https://developers.openai.com/siwc/token-sharing-open-source)，并排除商业或托管服务使用 App Server 认证。SIWC 的 OAuth、令牌存储／刷新由应用负责，是不同认证路线；不能与 Codex 托管模式混用。若当前官方要求或已安装兼容性确需改走 SIWC，记录精确原因并实施最小受支持路径，不把推测的新 OAuth 框架变成全队前置。
+
+本切片允许少量使用现有订阅额度的真实文字／图像验证，从生成的非敏感屏幕内容开始；不授权另行计费 API 激活、购买、API-key 后备、大范围私密内容采集或反复配额重试。G4 的本切片证据必须含官方 `image`／`localImage` 输入、成功完成且正确识别仅存在图中的随机信息的回应，并在既有 ASK／学习上下文显示；保留选定屏幕／区域／笔迹与回应的来源关系，记录候选、模型、认证模式、结果、延迟及额度／认证／能力限制，不含秘密。登录、模型列表、fixture、OCR 文字、提示回显及继承测试数均不算真实图像推理通过。回应器工具禁用或最小化，屏幕内容是不可信输入，不授权命令或跨 App 动作；验证 Stop／取消后不会继续意外提交。
+
+个人本地原型与将来发行／托管的服务分别核实支持范围；订阅不证明账户资格、任何图像模型、音频／视频或任意 API 可用。Claude 当前帮助页说明 SDK 和非交互使用仍消耗订阅额度，并有官方登录与托管条件；Gemini CLI 支持 Google 账号认证。不得提取会话凭据、仿造私有请求或绕过配额。本切片不改变预算、模型／effort、权限或已有额度恢复机制，也不通过音频、持续全屏理解、完整笔体验、Mac 真机或完整产品关卡。
 
 ### 3.9 提醒决策与退出
 
@@ -238,7 +242,7 @@ Codex App Server 官方支持产品集成与由 Codex 管理的 ChatGPT 登录�
 | Letta | 官方 v1 文档说明消息被移出上下文后仍可检索；它是较完整的有状态 Agent 方案。文档属于 legacy 路径，不能不核对版本直接照搬。 |
 | Mem0、Hindsight | 已纳入候选对照。重点测试抽取是否漏掉低频细节、同一记录更新是否覆盖旧记录、原始内容能否回取；不凭营销准确率决定选型。 |
 | LiveKit 多屏与 iPad | 可传多参与者、多媒体轨；三屏理解需额外编排。当前 Swift 文档区分 iOS 27+ ScreenCaptureKit 与较早系统 ReplayKit 路径，不能固定写“所有 iPad 都必须广播扩展”。 |
-| Codex App Server 与子 Agent | 官方支持自有产品集成、订阅登录和模型／推理强度分配。具体账户 Ultra 可用性和额度需运行时查询。 |
+| Codex App Server 与子 Agent | 本地／开源应用托管 ChatGPT 认证及 SIWC 的不同适用边界见 §3.8。具体账户、输入、模型／推理强度与额度需运行时验证；当前选定连接路线不证明实际推理成功。 |
 | Claude Max／Agent SDK | 2026-06-16 官方更新说原计费变更暂停，SDK、claude -p 等仍消耗订阅额度。官方二进制集成及认证有条件，不采用自行代理 Claude.ai 凭据的方案。 |
 | Gemini CLI | 可使用 Google 账号官方认证作为个人 Agent 入口；不等同于任意 API 免费调用。API 预算和可能适用的开发者权益需单独核实。 |
 | Canvas OAuth | 支持刷新授权；学校启用、撤销、重新验证等仍影响连接。不能承诺一次登录终身有效。 |
@@ -259,6 +263,7 @@ Codex App Server 官方支持产品集成与由 Codex 管理的 ChatGPT 登录�
 - Mem0 迁移说明：https://docs.mem0.ai/migration/oss-v2-to-v3
 - Hindsight retain：https://hindsight.vectorize.io/developer/api/retain
 - Codex App Server：https://learn.chatgpt.com/docs/app-server
+- Sign in with ChatGPT plan usage：https://developers.openai.com/siwc/token-sharing-open-source
 - Codex 认证：https://learn.chatgpt.com/docs/auth
 - Codex 子 Agent 与模型设置：https://learn.chatgpt.com/docs/agent-configuration/subagents
 - Claude 订阅与 SDK 当前更新：https://support.claude.com/en/articles/15036540-use-the-claude-agent-sdk-with-your-claude-plan
@@ -479,7 +484,7 @@ Codex 首个可运行成果应是小型能力验证应用及结果表，不是�
 | G1 原页面输入 | Windows 与 macOS 各自真实课程网页／视频 iframe／全屏／字幕上的图标、支持笔圈选／笔记与正常鼠标／触控导航；后续保留 Safari Pencil／手指变体 | 受支持页面启用原位；其他页面用明确旁边助手／冻结备选，不要求手动截图保存上传；备选不通过原屏幕关卡 |
 | G2 原生跨 App | Windows 与 macOS 分别在原课程／笔记 App 上验证全显示区域、公开许可的跨应用圈选／笔层、实际叠加送达 AI；iPad Canvas／Notability 变体后置 | 保留可用的原屏观察／语音；受限路径明确画布／并排备选，不把它计作全局原屏幕覆盖通过 |
 | G3 音画与多设备 | 双桌面分别的课程／系统音轨、授权麦克风／环境声、耳机／路线切换、板书分辨率、跨桌面时间对齐；原三设备变体后置、启停权限、旧帧失效 | 音轨不可得时用已授权字幕；无字幕标缺失。不能把不可访问声音编成历史。禁用不可用媒体源，不阻塞其他源 |
-| G4 账号连接 | Calendar／Canvas 真实授权刷新；订阅 Agent 的官方认证、额度和请求输入 | 支持已可用连接；失效请求重连；缺少权限明确标 `needs_auth/unsupported`；正式 API 作为已授权后备 |
+| G4 账号连接 | Calendar／Canvas 真实授权刷新；优先已授权订阅 Agent，验证官方认证、额度和真实请求输入；当前文字＋图像切片按 §3.8/D-SUBSCRIPTION-FIRST 证明图中随机信息的正确回应进入 ASK／学习上下文 | 支持已可用连接；缺登录提供官方入口并处理完成／错误；缺权限或输入能力标 `needs_auth/unsupported`。本切片不以购买视觉 API key 为前置、不启用 API-key 后备；其他正式 API 后备仍须对应授权。登录／模型列表成功不通过推理验收 |
 | G5 外部笔记 | Notability 实际导入操作；OneNote 真实页面创建／读取回执 | Notability 保持分享导入；OneNote 未连接时本地保存＋待同步，不丢原稿 |
 | G6 长期检索 | 本地混合检索与 Graphiti 候选在 30 组模糊回忆／历史更正样例上的质量与成本 | 保留源档案；选择实测较可靠方案并写 ADR。不得为接框架而跳过召回验收 |
 | G7 做题过程、原屏幕笔记与克制提示 | 按入口测网页选择／输入／canvas、外部视觉、自有操作日志和同题关联；分网页、Windows 与 macOS 验证本产品原屏幕实时标注及 AI 叠加可见；iPad/iPhone 变体后置；检查完整性、诊断、全渠道提示、语言及到 Notability 流程 | 不要求所有外部 App 通过；各路径标明支持／未验证／不支持。P1 在双桌面各自完成支持路径单题闭环，冻结／画布／并排仅作明确备选，不能计为 R59/A44 通过；A46 还需原稿／来源／AI层和真实导入证据 |
