@@ -9,10 +9,16 @@ TWO of them with the pen, selects the whole grid with ASK and asks for the circl
 its shape and the shape's color. Naming exactly the two circled numbers needs the pixels (the numbers are nowhere else)
 and the ink (twelve cards are shown; an ink-blind reader names the right pair with probability 1 in 66).
 
+A matcher pass is necessary, never sufficient: the mere occurrence of the right numbers does not show that the answer
+asserts them. An answer that negates, refuses or hedges ("are NOT 4271 or 8830", "I cannot see the image. Perhaps ...")
+is `held`, never a pass, and every matcher pass still needs a person to read the full answer, which is kept verbatim.
+
 Outcomes, most to least:
-  identified          both circled numbers and no other card's number; each card's shape and color right        PASS
-  numbers_identified  both circled numbers and no other; a shape or color is not stated (none is stated wrong)   PASS on the
-                      image-only criterion, reported with "shape/color not confirmed"
+  identified          both circled numbers and no other card's number; each card's shape and color right        matcher PASS
+  numbers_identified  both circled numbers and no other; a shape or color is not stated (none is stated wrong)   matcher PASS on
+                      the image-only criterion, reported with "shape/color not confirmed"
+  held                the numbers match, but the answer holds a negation, refusal or uncertainty marker          not a pass;
+                      the full answer goes to semantic review
   contradicted        both circled numbers and no other, but a stated shape or color of a circled card is wrong   not a pass
   several_cards       both circled numbers are named, together with other cards' numbers                          not a pass
   wrong_cards         numbers of the surface are named, but not both circled ones                                 fail
@@ -28,6 +34,19 @@ import sys
 
 SHAPE_WORDS = {"square": ["square"], "triangle": ["triangle"], "star": ["star"], "heart": ["heart"], "diamond": ["diamond", "rhombus"]}
 COLOR_WORDS = {"red": ["red"], "blue": ["blue", "navy"], "green": ["green"], "orange": ["orange"]}
+# Conservative on purpose: any of these anywhere in the answer holds a matcher pass (a false hold costs a human reading; a
+# false pass would accept a guess, a refusal or a denial). Not a language model, only a tripwire.
+HOLD = [
+    ("negation", r"\bnot\b|n['\u2019]t\b|\bcannot\b|\bneither\b|\bnor\b|\bnever\b|\bnone\b|\bwithout\b"),
+    ("refusal", r"\bunable\b|\bsorry\b|\bno (?:image|picture|screenshot|attachment|circle|circles|ink|mark|marks)\b|\brefuse|\bdecline"),
+    ("uncertainty", r"\bperhaps\b|\bmaybe\b|\bmight\b|\bpossibl[ey]\b|\bprobabl[ey]\b|\blikely\b|\bguess\w*|\bunsure\b|\buncertain\w*|\bunclear\b|\bassum\w*"
+                    r"|\bappears?\b|\bseems?\b|\bi think\b|\bi believe\b|\bhard to\b|\bdifficult to\b|\bapproximately\b|\bif\b|\bcould be\b|\bor\b|\?"),
+]
+
+
+def hold_markers(answer):
+    low = answer.lower()
+    return [[kind, m.group(0)] for kind, pattern in HOLD for m in re.finditer(pattern, low)]
 
 
 def number_spans(text):
@@ -101,7 +120,12 @@ def judge(truth, circled, answer):
     rank = lambda r: (sum(v == "right" for v in r.values()), -sum(v == "wrong" for v in r.values()))
     best = max(readings, key=rank)
     outcome = "identified" if all(v == "right" for v in best.values()) else "contradicted" if "wrong" in best.values() else "numbers_identified"
-    return {"outcome": outcome, "pass": outcome in ("identified", "numbers_identified"), "shape_and_color": best, **result}
+    held = hold_markers(answer) if outcome != "contradicted" else []
+    if held:
+        return {"outcome": "held", "pass": False, "matcher_alone": outcome, "hold_markers": held, "shape_and_color": best, **result,
+                "semantic_review": "required: the answer negates, refuses or hedges; it is not a pass unless a person reads it as a plain assertion"}
+    return {"outcome": outcome, "pass": outcome in ("identified", "numbers_identified"), "shape_and_color": best, **result,
+            **({"semantic_review": "required: a matcher pass is not the acceptance; read the full answer"} if outcome != "contradicted" else {})}
 
 
 def leaks(truth, texts):
@@ -140,7 +164,18 @@ def self_test():
         ("identified", A, "The card inside your first circle shows 4271, with a blue star next to it.\nThe second circled card shows 8830; its shape is a heart, and it is red."),
         ("identified", A, "Card 4271: the shape is a star. It sits to the left of the digits on a pale card with a thin grey border, inside your pen mark, and its color is navy.\nCard 8830: a red heart."),
         ("identified", [2, 8], "1946 has a green diamond (rhombus); 2087 has an orange diamond."),
+        ("identified", A, "You circled 4271 (blue star) and 8830 (red heart). No other card is circled."),
         ("numbers_identified", A, "The two circled cards show the numbers 4271 and 8830."),
+        # the lead's two cases, and their kin: the right numbers occur, but the answer does not assert them
+        ("held", A, "The circled cards are NOT 4271 or 8830. I cannot identify them."),
+        ("held", A, "I cannot see the image. Perhaps 4271 and 8830?"),
+        ("held", A, "Maybe 4271 - blue - star\n8830 - red - heart"),
+        ("held", A, "I'm guessing: 4271 (blue star) and 8830 (red heart)."),
+        ("held", A, "Sorry, I am unable to view images. 4271 and 8830."),
+        ("held", A, "It isn\u2019t clear, but it appears to be 4271 with a blue star and 8830 with a red heart."),
+        ("held", A, "If I read the ink correctly, the cards are 4271 (blue star) and 8830 (red heart)."),
+        ("held", A, "There are no circles in the picture. The first two cards are 4271 and 8830."),
+        ("held", A, "4271 - blue - star\n8830 - red - heart\nIs that what you circled?"),
         ("numbers_identified", A, "4271 - star\n8830 - red heart"),                       # one color not stated
         ("contradicted", A, "4271 - red - star\n8830 - red - heart"),                       # wrong color
         ("contradicted", A, "4271 - blue - heart\n8830 - red - heart"),                     # wrong shape

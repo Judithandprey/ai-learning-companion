@@ -14,7 +14,8 @@
   and isolation review.
 - **What exists now** (in [tests/e2e/windows/](../../../tests/e2e/windows/)):
   - `surface.html`: the generated test surface.
-  - `judge_surface_answer.py`: the judging rule, fixed before any call, with its self-test.
+  - `judge_surface_answer.py`: the judging rule, fixed before any call, with its self-test. After the lead's review it
+    also holds negated, refused or hedged answers.
   - scenario `surfacecheck`: a dry check of the surface, the ink and the ASK selection with no link and no provider.
   - Runner steps for it: a full-screen Edge start, a full-screen request through DevTools, a pointer check and a
     raise without maximizing. They are untested until the display is given.
@@ -71,12 +72,24 @@ level does not forbid stating what is visible. The exact text sent is recorded f
 
 ### Judging rule (fixed now, before any call)
 
-`judge_surface_answer.py` decides (21 self-test cases); nobody reads the answer first and then chooses a rule.
+`judge_surface_answer.py` applies the rule (31 self-test cases); nobody reads the answer first and then chooses a rule.
+
+**A matcher pass is necessary, never sufficient.** The right numbers merely occurring in the text do not show that the
+answer asserts them. So:
+
+- an answer with a negation, refusal or uncertainty marker ("are NOT 4271 or 8830", "I cannot see the image. Perhaps
+  …", "maybe", "I guess", a question mark) is `held`: not a pass;
+- every matcher pass still needs QA and the lead to read the full answer and confirm that it plainly states the
+  identification. The full answer is kept verbatim in the evidence for that reading;
+- a contradicted or guessed answer never passes.
+
+The hold is a deliberately broad tripwire, not language understanding. A false hold costs one human reading.
 
 | Outcome | Rule | Counts as |
 | --- | --- | --- |
-| `identified` | Names both circled cards' numbers and no other card's number; for each, its shape and no other shape, with its color as the color said nearest to the shape | **pass** |
-| `numbers_identified` | Both circled numbers and no other; a shape or a color is not stated, and none is stated wrong | **pass on the image-only criterion**, reported as "shape/color not confirmed" |
+| `identified` | Names both circled cards' numbers and no other card's number; for each, its shape and no other shape, with its color as the color said nearest to the shape | **matcher pass**, then the semantic reading |
+| `numbers_identified` | Both circled numbers and no other; a shape or a color is not stated, and none is stated wrong | **matcher pass on the image-only criterion**, reported as "shape/color not confirmed", then the semantic reading |
+| `held` | The numbers match, but the answer holds a negation, refusal or uncertainty marker | **not a pass**; the full answer goes to semantic review |
 | `contradicted` | Both circled numbers and no other, but a stated shape or color of a circled card is wrong | not a pass |
 | `several_cards` | Both circled numbers are named together with other cards' numbers | not a pass; reported in full |
 | `wrong_cards` | Numbers of the surface are named, but not both circled ones | fail |
