@@ -1135,6 +1135,21 @@ test('[synthetic connector] a connector that ends by itself as the app closes le
   await until('the app quit', () => again.h.quits.n === 1, 5000);
   const kept = JSON.parse(fs.readFileSync(again.file, 'utf8')) as { ends: Array<{ at: string; shim: string }>; older: number };
   assert.deepEqual([kept.ends.length, kept.older, kept.ends[0]!.at, kept.ends[48]!.shim, kept.ends[49]!.shim], [50, 3, old[1]!.at, 'not_ended', 'ended']);
+  // An end that was written and has since moved out of the listed fifty is counted once: its shim's late exit, said
+  // again, adds nothing.
+  const packed = await launched({ check: false });
+  const future = Array.from({ length: 50 }, (_, i) => ({ at: new Date(Date.UTC(2099, 0, 1, 0, 0, i)).toISOString(), shim: 'ended' }));
+  fs.writeFileSync(packed.file, `${JSON.stringify({ format: 'lc-windows-connector-ends/v1', ends: future, older: 0 })}\n`);
+  const counted = await launched({ slow: true, userData: packed.h.userData });
+  const stuck = counted.fakes.last();
+  stuck.kill = () => true; // its shim is not seen to end
+  stuck.stdout.write('x'.repeat(256 * 1024 + 1));
+  const stored = (): { ends: Array<{ at: string; shim: string }>; older: number } => JSON.parse(fs.readFileSync(counted.file, 'utf8')) as never;
+  await until('written: older than every listed one, so only counted', () => stored().older === 1, 6000);
+  assert.deepEqual(stored().ends, future);
+  stuck.exit(0); // its exit, late: the same end again
+  await until('taken', () => /shim was ended/.test(counted.sub().detail ?? ''));
+  assert.deepEqual([stored().older, stored().ends], [1, future], '51 ends in all, not 52');
   // Not readable as this format: said, left as it is, and a new end is not written over it.
   for (const bad of ['not json', '{"format":"another/v1","ends":[],"older":0}', `{"format":"lc-windows-connector-ends/v1","ends":[{"at":"2026-01-01T00:00:00.000Z","shim":"ended","path":"C:\\\\Users\\\\x"}],"older":0}`, '{"format":"lc-windows-connector-ends/v1","ends":[{"at":"yesterday","shim":"ended"}],"older":0}']) {
     const seed = await launched({ check: false });

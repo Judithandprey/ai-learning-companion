@@ -1088,8 +1088,9 @@ test('a connector that does not end by itself within its time: its shim is ended
 test('an end that was not seen is handed over to be written, with its time and whether the shim\'s exit was seen; a failed write is said and tried once more at quit; earlier records are said as past', async () => {
   const written: Array<{ at: string; shim: string }> = [];
   let fail: string | null = null;
-  const recordEnd = (end: { at: string; shim: string }): string | null => {
-    if (fail === null) written.push({ ...end });
+  const agains: boolean[] = [];
+  const recordEnd = (end: { at: string; shim: string }, again: boolean): string | null => {
+    if (fail === null) (written.push({ ...end }), agains.push(again));
     return fail;
   };
   // The shim ends when it is ended: one record.
@@ -1112,6 +1113,7 @@ test('an end that was not seen is handed over to be written, with its time and w
   k.exit(0);
   await until('its late exit is recorded', () => written.length === 2);
   assert.deepEqual([written[1]!.shim, written[1]!.at, b.now().detail], ['ended', written[0]!.at, SHIM_ENDED]);
+  assert.deepEqual(agains.slice(-2), [false, true], 'the second is the same end, said again');
   // It cannot be written: said, not taken as saved; tried once more at the next quit.
   written.length = 0;
   fail = 'EIO: injected';
@@ -1122,6 +1124,21 @@ test('an end that was not seen is handed over to be written, with its time and w
   fail = null;
   await f.s.quit();
   assert.deepEqual([written.length, f.s.endsUnsaved(), f.now().detail, f.fakes.made.length], [1, null, SHIM_ENDED, 1]);
+  assert.equal(agains.at(-1), false, 'never written before: a first write');
+  // An end whose first write failed, then its shim's late exit: that is its first write, not the same end again.
+  written.length = 0;
+  agains.length = 0;
+  fail = 'EIO: injected';
+  const late = subscription(WSL, { end_ms: 60, recordEnd }, (c) => void (c.endDelayMs = 60_000));
+  await late.s.check();
+  const stuck = late.fakes.last();
+  stuck.kill = () => true;
+  late.fakes.last().stdout.write('x'.repeat(256 * 1024 + 1));
+  await until('not written', () => late.s.endsUnsaved() === 'EIO: injected', 5000);
+  fail = null;
+  stuck.exit(0);
+  await until('written at its late exit', () => written.length === 1);
+  assert.deepEqual([written[0]!.shim, agains, late.s.endsUnsaved()], ['ended', [false], null]);
   // A connector that ends by itself records nothing.
   written.length = 0;
   const clean = subscription(WSL, { end_ms: 60, recordEnd });

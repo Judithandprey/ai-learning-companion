@@ -99,10 +99,10 @@ export type SubscriptionOptions = {
   /** The span in which at most CHANGE_READS_MAX reads are made because the connector said the account changed. */
   readonly change_window_ms?: number;
   /**
-   * Writes one unconfirmed end to this device (the same `at` again when its shim's exit was seen since). Null, or
-   * why it was not written.
+   * Writes one unconfirmed end to this device. `again`: this end was written before, and is written again because
+   * its shim's exit was seen since (it is the same end, never one more). Null, or why it was not written.
    */
-  readonly recordEnd?: (end: ConnectorEnd) => string | null;
+  readonly recordEnd?: (end: ConnectorEnd, again: boolean) => string | null;
   /** What earlier runs of this app recorded so: the kept ones, how many older ones are no longer listed, and whether the record could not be read. */
   readonly earlier?: { readonly ends: ReadonlyArray<ConnectorEnd>; readonly older: number; readonly unreadable: boolean };
 };
@@ -286,7 +286,9 @@ export class Subscription {
   }
   /** Keeps an end that was not seen, writes it to this device (when a place for it was given), and says it. */
   private noteEnd(child: Child, end: ConnectorEnd): void {
-    this.unconfirmedEnds.set(child, { ...end, unsaved: this.o.recordEnd?.(end) ?? null });
+    const before = this.unconfirmedEnds.get(child);
+    const again = before !== undefined && before.unsaved === null; // written before: the same end, said again
+    this.unconfirmedEnds.set(child, { ...end, unsaved: this.o.recordEnd?.(end, again) ?? null });
     this.say();
   }
   private line(text: string): void {
@@ -643,7 +645,7 @@ export class Subscription {
     else if (this.quitting) this.say();
     await this.closing;
     this.quitting = false;
-    for (const [child, e] of this.unconfirmedEnds) if (e.unsaved !== null) this.unconfirmedEnds.set(child, { at: e.at, shim: e.shim, unsaved: this.o.recordEnd?.({ at: e.at, shim: e.shim }) ?? null });
+    for (const [child, e] of this.unconfirmedEnds) if (e.unsaved !== null) this.unconfirmedEnds.set(child, { at: e.at, shim: e.shim, unsaved: this.o.recordEnd?.({ at: e.at, shim: e.shim }, false) ?? null });
     this.say();
   }
 }

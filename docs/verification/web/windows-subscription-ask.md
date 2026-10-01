@@ -517,6 +517,13 @@ and still ending (reported twice); presses accepted while the close waits (twice
 sentence, which a later retry could make false (twice); a re-written line moving to the end of the note; and the
 record not said with an unusable configuration.
 
+**Correction after the lead's review of `4ef42cc` (P3, the count).** An end written before, then moved out of the
+listed fifty, was counted a second time when its shim's late exit was written again (51 ends said as 52). The
+write now says whether it is the same end again; one that is no longer listed is already counted and changes
+nothing. An end whose first write failed is still a first write at its late exit. Regressions: 50 later-dated
+lines, one end that is only counted, its late exit (`older` stays 1, the lines unchanged); the first-write case.
+Three mutants killed. The two files: 73 tests, 73 pass (`evidence/windows-subscription-ask/linux-end-note-count.txt`).
+
 ## Launch steps, element ids and evidence paths (for the first real check, on the released candidate)
 
 **Configuration**, ready to use on this machine (a file anywhere on Windows, for example

@@ -1368,9 +1368,13 @@ function readConnectorEnds(): ConnectorEnds | 'unreadable' | null {
 }
 /** What this run writes on (the lines found at launch, plus its own); null when what is there cannot be read. */
 let connectorEnds: ConnectorEnds | null = { ends: [], older: 0 };
-/** Writes one end (or the same one again, by its time). Null, or why it was not written. */
-function recordConnectorEnd(end: ConnectorEnd): string | null {
+/**
+ * Writes one end, or the same one again (`again`: by its time). Null, or why it was not written. An end written
+ * before that is no longer among the listed ones is already counted with the older ones: it is not counted twice.
+ */
+function recordConnectorEnd(end: ConnectorEnd, again = false): string | null {
   if (!connectorEnds) return 'the record of connector ends on this device is not readable, so it is left untouched';
+  if (again && !connectorEnds.ends.some((e) => e.at === end.at)) return null;
   // The lines stay in the order of their times: the same end again (its shim's exit seen since) keeps its place, and
   // one written late (its first write failed) goes where its time is.
   const ends = [...connectorEnds.ends.filter((e) => e.at !== end.at), { at: end.at, shim: end.shim }].sort((a, b) => (a.at < b.at ? -1 : a.at > b.at ? 1 : 0));
