@@ -85,3 +85,10 @@ audio, physical pen and Notability remain distinct open gates. User preview,
 Existing CI at `d9c7334` passed both Python 3.12/3.14 jobs in
 [run 36821816955](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36821816955).
 It predates `9884c60` and does not validate that later correction.
+
+Exact pushed connector release `871aabd974a8b1c11d18072da7200b0a2413ae73`
+was sent to Windows and Native through accepted native receipts in dispatch.json;
+these are dependency deliveries, not claims those owners already read that SHA.
+Support has one accepted bounded preparation task for a hosted macOS metadata-only
+compatibility probe, with explicit root-workflow delegation. It neither blocks
+Windows login nor changes production admission before actual reviewed evidence.
