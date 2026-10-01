@@ -23,8 +23,26 @@
   },
   "shell_syntax": "passed",
   "git_diff_check": "passed",
-  "hosted_macos": "not_run_yet",
+  "hosted_macos": {
+    "run": 36902046846,
+    "source": "fe0156cfbf6c9813480e774b1407135b89e501ed",
+    "scope": "macos-only",
+    "dispatch": "accepted",
+    "result": "success",
+    "job": 110503326733,
+    "xctests": 100,
+    "ask_requests": 4,
+    "ask_checks": 72,
+    "evidence": "../native-build/verification.json"
+  },
   "interactive_mac": false,
   "provider_called": false,
-  "next": "Exact-source macOS-only existing build; then Native consumes released live/quota interface after compile/test corrections."
+  "next": {
+    "owner": "Native / existing P0-03/11 -> P1-02",
+    "baseline": "fe0156cfbf6c9813480e774b1407135b89e501ed",
+    "handoff": "handoff_0f6c7eb731ba62d9ea3ed600c84b10ca",
+    "receipt": "accepted, initially unread / execution_started:false",
+    "scope": "Existing live/quota consumer; begin pure wire/connection/quota while hosted run queues; actual native build defects take safe-boundary priority. No provider/device lease.",
+    "observed_adoption": "Native branch normal merge5d8d121 includes exact fe0156c; no feature completion inferred"
+  }
 }

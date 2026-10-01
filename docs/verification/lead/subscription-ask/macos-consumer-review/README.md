@@ -1,4 +1,4 @@
-# macOS selected-image consumer: source approved, native build next
+# macOS selected-image consumer: reviewed and native build verified
 
 ## Retirement fix accepted — 2026-10-01
 
@@ -13,11 +13,17 @@ The three reviewed leaves integrate as `fc2af15` / `b373f2a` / `ccbfd9a`;
 the complete native tree equals `c9e8e0b`. Main's three focused CI orchestration
 tests/five subtests pass in 3.28 seconds. Existing desktop CI now receives the
 Swift-generated ASK fixture, runs the released Python validator over the actual
-ImageIO PNG, and retains it in checksums/artifacts. Hosted macOS execution is the
-next check; no compiled/native/provider success is inferred here. The component
+ImageIO PNG, and retains it in checksums/artifacts. [Actual macOS run36902046846](native-build/README.md) now passes full App
+compile/package, 100 XCTest methods and 72 checks over four ImageIO-generated
+ASK requests. Lead verifies 117 artifact hashes and 3290 exact Git source blobs.
+No interactive-device or provider success is inferred. The component
 still uses selected-image v1, not the current full-screen/live product flow.
-After actual compile/test corrections, Native's existing next assignment adopts
-`lc-subscription-live/1` and complete quota facts. No new mobile task.
+The existing next assignment adopts `lc-subscription-live/1` and complete quota
+facts: accepted `handoff_0f6c7eb731ba62d9ea3ed600c84b10ca` releases exact pushed
+`fe0156c` for the pure live/connection/quota work. Read-only observation of
+Native merge `5d8d121` confirms actual baseline adoption. The macOS-only run
+`36902046846` has no compile/test correction to return. No account/device lease,
+new mobile task or feature-completion claim follows.
 
 
 ## Previous correction review — retained history

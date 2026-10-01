@@ -1,0 +1,25 @@
+{
+  "source": "fe0156cfbf6c9813480e774b1407135b89e501ed",
+  "approved_native": "c9e8e0bcca67970adef9dd5bc21ecc0f1d0ee4a1",
+  "run_id": 36902046846,
+  "scope": "Hosted macOS compile/package/XCTest + Swift ImageIO fixtures to real local validator; no interactive Mac or provider",
+  "artifact_hashes": 117,
+  "source_blobs": 3290,
+  "native_tree_equal": true,
+  "xctests_pass": 100,
+  "xctests_fail": 0,
+  "ask_requests": 4,
+  "ask_checks": 72,
+  "app_sha256": "774ca029c08758d03f8568716408cb38e3c34610f8503bb34f9adb3a7a888fa0",
+  "hosted_result": {
+    "platform": "macos",
+    "state": "checks-completed",
+    "last_phase": "complete",
+    "exit_code": 0,
+    "interactive_runtime_verified": false,
+    "provider_verified": false,
+    "project_signing_performed": false
+  },
+  "raw_checksums_sha256": "bce1161b34d3f2da654a7153a899cd7722830ee73cd0ddb55fcc63c3ad22838d",
+  "verdict": "pass"
+}
