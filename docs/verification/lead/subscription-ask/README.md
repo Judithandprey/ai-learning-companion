@@ -18,11 +18,21 @@ Support delivery `324fb11` is reviewed and integrated as `b459e96`. The installe
 CLI is 0.158.0; its saved 314 stable/440 experimental schemas reproduce exactly
 under the integrated offline audit. See the [version-specific report](../../support/codex-app-server-0.158.0-compatibility.md).
 This establishes RPC shapes, not account eligibility, image inference or runtime
-tool isolation. A single bounded installed-binary/fake-loopback follow-up checks
-the actual tool exposure; it uses no official auth/model request or quota.
+tool isolation. The actual installed-binary/fake-loopback follow-up `a1aa530` integrates as
+`23074b7`: only `request_user_input` was advertised, the contaminated product-home
+AGENTS witness was detected, and the clean-state HTTP 503 path made one POST with
+selected-provider retries disabled. Saved receipt fields/probe SHA match. Lead
+first used a newer completion key against the earlier receipt (KeyError), then
+checked the actual earlier terminal/cleanup fields; no probe was repeated. These
+are synthetic configuration findings, not managed provider or cross-OS proof.
+[Exact limits and measured configuration](../../support/codex-app-server-isolation-followup.md).
 
-No product login, account RPC or inference has been executed by Lead in this
-milestone. The [initial request budget](request-budget.json) permits at most
+Lead now ran the actual installed App Server connection read through the staged
+connector: **signed_out**, image modalities listed, no quota facts available,
+258 ms reported. [Sanitized result](connection-status.json). The private child
+closed normally; no login was started and no inference occurred. Catalog entries
+are not verified account entitlement. The next user action is official managed
+ChatGPT login through the product connection UI when the desktop release is ready. The [initial request budget](request-budget.json) permits at most
 three real submission attempts in total once reviewed code and isolation are
 released; no owner has an active allocation yet. No API fallback, purchases,
 private-content batch, quota retries or credential extraction are authorized.
@@ -39,7 +49,21 @@ No semantic teaching quality, model image understanding or lifecycle authority
 is inferred from this pure seam. The first independent probe's missing Node PATH
 is preserved in its report and corrected with the pinned executable.
 
-Next: integrate the actual connector/Learning/desktop deliveries, run focused
+Backend `18fe478` has a [bounded source review](backend-review.md) and is staged
+with its real-inference gate still hard-disabled. A reproduced effective sandbox-policy gap
+(`networkAccess:true` accepted) and a login-cancel status mismatch are returned to
+Backend, together with the measured launch configuration and minimal sanitized
+per-turn receipt needed for independent verification. Inference remains gated. Main connector tests pass 127/127 in 2.65s under
+normal exact-command approval for its synthetic pipe tests; the reproduced
+policy/cancel defects remain open despite these existing tests.
+QA preparation `d2de2ba` and correction `4c63a2e` integrate as `ec9f5a7`/`fad98c7`.
+Lead reproduced two negated/uncertain answer false positives in the first judge;
+the correction holds such output and requires semantic review for every match.
+All 31 integrated judge cases and changed JS syntax checks pass. This is harness
+validation, not image inference or desktop execution.
+No display or real request is allocated from these preparations.
+
+Next: integrate the corrected connector and actual desktop deliveries, run focused
 changed-path checks and independent review, then release the exact Windows
 candidate/display/budget to QA. Acceptance requires the real image-bearing turn
 and randomized image-only answer visibly bound to the retained ASK context.

@@ -1,0 +1,59 @@
+{
+  "candidate": "18fe4788e9cba52d7f336c273047432e00525499",
+  "main_baseline": "e7c696f",
+  "archive_root": "/tmp/subscription-backend-18fe478-b1_ss5r0",
+  "outcome": "hold_inference_release_pending_effective_policy_fix; default gate remains closed",
+  "checks": [
+    {
+      "name": "memory_rpc_completed_control",
+      "passed": true,
+      "turn_submissions": 1
+    },
+    {
+      "name": "effective_sandbox_network_expansion",
+      "passed": false,
+      "observed": "completed answer accepted",
+      "turn_submissions": 1,
+      "expected": "reject changed effective sandbox before turn/start"
+    },
+    {
+      "name": "cancel_after_thread_before_turn",
+      "passed": true,
+      "error": "cancelled",
+      "turn_submissions": 0
+    },
+    {
+      "name": "auth_revoked_during_preflight",
+      "passed": true,
+      "error": "unauthenticated",
+      "turn_submissions": 0
+    },
+    {
+      "name": "combined_login_cancel_label",
+      "passed": false,
+      "observed": {
+        "method": "connection/login/completed",
+        "params": {
+          "login_id": "owned-login",
+          "success": false,
+          "error": "login_failed"
+        }
+      }
+    }
+  ],
+  "provider_calls": 0,
+  "real_codex_children": 0,
+  "auth_access": false,
+  "display_access": false,
+  "author_checks": {
+    "normal_sandbox_passed": 126,
+    "normal_sandbox_failed": 1,
+    "failure": "private-pipe EOF timeout matching documented asyncio sandbox wake restriction",
+    "exact_failed_test_approved_retry": "passed in 0.30s"
+  },
+  "source_hashes": {
+    "chatgpt_launch.py": "ccb12e3dd915b35eecdcbf733f2d3c9917f3eee5b77eb4fb518c8052c064ca9c",
+    "chatgpt_local.py": "0cd02b7be9fb52125a7e4faeb96f7aace1d1ac3623a28b310dfd418849858f50",
+    "chatgpt_rpc.py": "48402605d2cae644d3eeb635b9abf25c856bb6287d339d55ab75e94b023611e2"
+  }
+}

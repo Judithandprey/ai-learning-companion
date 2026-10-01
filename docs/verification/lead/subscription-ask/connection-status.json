@@ -1,0 +1,25 @@
+{
+  "candidate": "9d17a605a9472fe0c150ffd1d1597962d3a6eead",
+  "operation": "actual installed App Server initialize/account/read/model/list via product connector",
+  "auth": {
+    "state": "signed_out",
+    "mode": null,
+    "plan": null
+  },
+  "model_catalog_image_inputs": [
+    "gpt-6-astra",
+    "gpt-6-sol",
+    "gpt-6-luna",
+    "gpt-5.6-sol",
+    "gpt-5.6-terra",
+    "gpt-5.6-luna",
+    "gpt-5.5"
+  ],
+  "rate_limits": null,
+  "reported_elapsed_ms": 258,
+  "login_started": false,
+  "inference_calls": 0,
+  "state_scope": "dedicated product default; no development auth read/copied",
+  "owned_child_closed": true,
+  "limit": "Catalog is not entitlement/inference. Needs user official login via ready product entry."
+}

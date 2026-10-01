@@ -7,16 +7,27 @@
       "owner": "support",
       "accepted_assignment": "handoff_fbe401de52ae85b625c76f3b0e9314fc",
       "actual_start_reply": null,
-      "state": "schema_evidence_integrated_isolation_followup_assigned",
+      "state": "schema_and_isolation_evidence_reviewed_integrated",
       "actual_delivery": "handoff_18949b99a24930d71b290113330387d9",
       "delivery_commit": "324fb11cdee5ce14dec64a0da78a1a0ab49e3086",
-      "integrated_commit": "b459e9676c331c2df98ec7a05047313ceba44b0b"
+      "integrated_commit": "b459e9676c331c2df98ec7a05047313ceba44b0b",
+      "isolation_delivery": "handoff_5bf42073372d31ff44ca466497371548",
+      "isolation_commit": "a1aa5305c0e9099c89a472844e2eef13220314eb",
+      "isolation_integrated_commit": "23074b7f602aa480a63b0e529029fd1e38aa30db"
     },
     {
       "owner": "backend",
       "accepted_assignment": "handoff_ba8e541a6a2a89041ee20b35b1c3173d",
       "actual_start_reply": "handoff_7ff3eca55ab7ef971c8836f7a887a664",
-      "state": "actual_start_reported"
+      "state": "disabled_base_integrated_correction_pending",
+      "actual_delivery": "handoff_b69b31940669698bc7b3a8368aba2b4a",
+      "delivery_commit": "18fe4788e9cba52d7f336c273047432e00525499",
+      "launch_followup": "handoff_9aa9afa6f12bdfa0279320454611d396",
+      "sanitized_receipt_followup": "handoff_dc6670aef8be6b88e933047b657a4ae9",
+      "review_correction": "handoff_e4b1fdd2e262874de12d827e9c492abf",
+      "integrated_base": "9d17a605a9472fe0c150ffd1d1597962d3a6eead",
+      "launch_actual_reply": "handoff_acf8b619db632ceba0ee3f753569e72b",
+      "managed_alias_decision": "handoff_64887507ba152d34e2c14cf1b93a6443"
     },
     {
       "owner": "learning",
@@ -45,7 +56,15 @@
       "owner": "qa",
       "accepted_assignment": "handoff_de323dc5105b08860c398a13b7206dbd",
       "actual_start_reply": "handoff_bc59ff1b65e150182c353cf2bffd6142",
-      "state": "preparing_conditional_qa"
+      "state": "corrected_preparation_integrated_no_runtime_allocation",
+      "preparation_delivery": "handoff_19c92201b264e2d89e0e90c4e7a8e9e6",
+      "preparation_commit": "d2de2bae70fdd58266fdaf21e6b5906f1fed5839",
+      "judge_correction": "handoff_7cff18da7f7c5a0424aa27acd5aeb66a",
+      "judge_delivery": "handoff_9eeba3cbc0b94324bfb178fb41079ab3",
+      "judge_commit": "4c63a2e6040c31985eefba86ebf0746060bff451",
+      "preparation_integration": "ec9f5a7",
+      "judge_integration": "fad98c7",
+      "judge_main_cases": 31
     }
   ],
   "isolated_support_followup": "handoff_a18e73172e84d36e9ae952c877a8c90b",
