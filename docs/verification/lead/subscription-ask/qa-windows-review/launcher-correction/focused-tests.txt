@@ -1,0 +1,29 @@
+✔ nothing of the check is running: exit confirmed, the folder it made is removed, nothing is ended (1.84568ms)
+✔ the app ends by itself during the first wait: no close request, no force (0.404687ms)
+✔ the app stays: it is asked to close, ends, and only then is the folder removed (0.556337ms)
+✔ the app ignores the close request: it is ended by force, owned PIDs only (0.758335ms)
+✔ the app survives even force: still running is said, and the folder is kept (0.783383ms)
+✔ the look fails at once: nothing is ended, nothing is removed, the exit is unknown (1.068089ms)
+✔ the look fails after the close request: no force follows, the folder is kept (0.228619ms)
+✔ the look fails in the middle of a wait: nothing is ended on the earlier answer (0.211456ms)
+✔ the look fails after force: the exit is unknown and the folder is kept (0.314854ms)
+✔ a folder this check did not make is never removed, even when the exit is confirmed (0.228649ms)
+✔ a process on the port that is not owned is never ended, and keeps the folder (0.161089ms)
+✔ an owned process and a not-owned one on the port together: only the owned one is asked and ended (0.227797ms)
+✔ a process that ended by itself is not sent a close request later (0.179194ms)
+✔ a close request that throws is recorded and force still follows (0.584591ms)
+✔ an end call that throws is recorded, and the record is still returned (0.745861ms)
+✔ a folder that cannot be removed is said, not hidden (0.173473ms)
+✔ the waits are wall time: slow looks do not stretch them (0.126813ms)
+✔ an app that needs time to quit after the close request is waited for, not forced (0.289064ms)
+✔ the same with a not-owned process on the port: the wait still runs, nothing is forced, the folder is kept (0.177901ms)
+✔ a process that needs time to end after force is waited for before the exit is said (0.226764ms)
+✔ nothing owned: one look is enough, no waiting (0.085824ms)
+ℹ tests 21
+ℹ suites 0
+ℹ pass 21
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 25.258777

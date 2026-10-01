@@ -1,0 +1,9 @@
+✔ /tmp/qa-signin-cleanup-review-9vw26e04/signin_cleanup.test.mjs (52.737234ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 1
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 58.974397

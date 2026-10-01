@@ -1,0 +1,35 @@
+{
+  "observations": 3,
+  "all_reproduced": true,
+  "results": [
+    {
+      "case": "PID reused after ownership query before action",
+      "actions": [
+        {
+          "pid": 741,
+          "current": "unrelated replacement PID",
+          "action": "PID-only taskkill"
+        }
+      ],
+      "exit": "confirmed",
+      "folder_removed": true,
+      "proves": "act receives stale numeric PID without a new identity check"
+    },
+    {
+      "case": "previously owned process becomes unreadable/no listener, classified foreign by caller",
+      "originalStillAlive": true,
+      "exit": "confirmed",
+      "folder_removed": true,
+      "actions": []
+    },
+    {
+      "case": "unrelated executable/script and longer marker value match exact caller Contains predicate",
+      "needles": [
+        "--remote-debugging-port=43000 ",
+        "--qa-check-port=43000"
+      ],
+      "unrelated_command": "\"C:\\OtherApp\\electron.exe\" \"C:\\OtherApp\\check.js\" --qa-check-port=430009",
+      "classified_owned": true
+    }
+  ]
+}

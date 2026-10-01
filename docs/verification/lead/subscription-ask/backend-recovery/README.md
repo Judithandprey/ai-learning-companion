@@ -57,3 +57,9 @@ combined candidate after Lead release. Its single real image allocation remains
 unused and held for the Windows correction plus user-operated official login.
 The existing user sign-in entry is preserved; no staged app or user preview is
 replaced by this source integration. Full per-OS screen/audio/ink gates stay open.
+
+Existing hosted P0 checks subsequently passed on exact pushed `6a567b890cd8515b709145c6d863032a56ecb37a`
+([run36852537901](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36852537901)).
+The earlier `cd9b0ef` run36852442890 was cancelled, not passed. These existing CI
+results were read without rerunning a campaign and do not establish real image or
+desktop acceptance.

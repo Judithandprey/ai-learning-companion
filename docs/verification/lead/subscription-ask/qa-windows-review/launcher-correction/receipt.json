@@ -1,0 +1,14 @@
+{
+  "received_message": "handoff_79bca0d3984b2239ef4f0e17031851eb",
+  "source_leaf": "85d79e629068da017604386bcbf41a444e9c3149",
+  "report_leaf": "a926e91a2f4dcc883e3061fdd9730099619e2557",
+  "base_main": "6a567b8",
+  "source_integrated": false,
+  "decision": "hold_for_process_identity_boundary",
+  "correction_message": "handoff_2fc6c7fcc2e12158ad337f3b3ca05273",
+  "accepted": true,
+  "state_at_send": "unread",
+  "execution_started_at_send": false,
+  "actual_windows_actions": 0,
+  "provider_calls": 0
+}
