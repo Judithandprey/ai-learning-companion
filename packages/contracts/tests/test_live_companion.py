@@ -225,3 +225,16 @@ def test_current_state_includes_full_retained_provenance_not_only_request_id():
     del state['provenance']['image']['sha256']
     with pytest.raises(ValidationError):
         validate('CurrentState',state)
+
+
+@pytest.mark.parametrize('field', ['request_id','timestamp','source_url'])
+def test_trailing_newline_ids_times_and_blank_source_are_rejected(field):
+    r = deepcopy(REQUEST)
+    if field == 'request_id':
+        r['id'] = 'request\n'
+    elif field == 'timestamp':
+        r['params']['context']['frame_captured_at'] += '\n'
+    else:
+        r['params']['context']['source_url'] = '   '
+    with pytest.raises(ValidationError):
+        validate_request(r)

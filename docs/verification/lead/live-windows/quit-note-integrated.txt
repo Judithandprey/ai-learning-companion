@@ -1,0 +1,46 @@
+TAP version 13
+# Subtest: [synthetic connector] a connector that does not end by itself as the app closes: the fact and its time are written before the app goes, and the next launch says it as a past record that a clean connection does not erase
+ok 1 - [synthetic connector] a connector that does not end by itself as the app closes: the fact and its time are written before the app goes, and the next launch says it as a past record that a clean connection does not erase
+  ---
+  duration_ms: 117.84972
+  type: 'test'
+  ...
+# Subtest: [synthetic connector] the note of an unseen end that cannot be written is not taken as saved: the window stays once and says so; it is tried again as the app quits
+ok 2 - [synthetic connector] the note of an unseen end that cannot be written is not taken as saved: the window stays once and says so; it is tried again as the app quits
+  ---
+  duration_ms: 194.123759
+  type: 'test'
+  ...
+# Subtest: [synthetic connector] a connector that ends by itself as the app closes leaves no note; one ended while the app runs is written at once; the note is bounded and an unreadable one is left untouched
+ok 3 - [synthetic connector] a connector that ends by itself as the app closes leaves no note; one ended while the app runs is written at once; the note is bounded and an unreadable one is left untouched
+  ---
+  duration_ms: 579.569873
+  type: 'test'
+  ...
+# Subtest: [synthetic connector] the close also waits for a connector that was ended earlier and is still ending; nothing is started while it waits; the lines of the note stay in the order of their times
+ok 4 - [synthetic connector] the close also waits for a connector that was ended earlier and is still ending; nothing is started while it waits; the lines of the note stay in the order of their times
+  ---
+  duration_ms: 185.431837
+  type: 'test'
+  ...
+# Subtest: [synthetic connector] a line of the note that is written again keeps its place; a launch whose connector configuration cannot be used still says the past record
+ok 5 - [synthetic connector] a line of the note that is written again keeps its place; a launch whose connector configuration cannot be used still says the past record
+  ---
+  duration_ms: 2192.162305
+  type: 'test'
+  ...
+# Subtest: an end that was not seen is handed over to be written, with its time and whether the shim's exit was seen; a failed write is said and tried once more at quit; earlier records are said as past
+ok 6 - an end that was not seen is handed over to be written, with its time and whether the shim's exit was seen; a failed write is said and tried once more at quit; earlier records are said as past
+  ---
+  duration_ms: 2194.586839
+  type: 'test'
+  ...
+1..6
+# tests 6
+# suites 0
+# pass 6
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 5725.28886

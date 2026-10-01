@@ -115,6 +115,11 @@ write. Stop/permission loss fences queued input and output immediately, clears
 pending observations, interrupts the active request and cancels old speech/captions.
 EOF/child failures keep existing bounded shutdown and uncertainty semantics. No
 reconnect, percentage reset or quota notification resumes a stopped session.
+An auth, quota, transient rate-limit or uncertain-submission failure suspends
+automatic inference and fences its pending queue; it must not become a request
+every sampling interval. Show the actual reason and distinguish any still-local
+capture from AI observation. A later explicit user check/Start is required; do
+not replay the failed frame or refund a potentially submitted budget slot.
 The user is actively using an older package: preparing this implementation does
 not authorize touching their current display, microphone, app, files or auth state.
 

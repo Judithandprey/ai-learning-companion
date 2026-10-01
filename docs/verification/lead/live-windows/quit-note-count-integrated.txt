@@ -1,0 +1,22 @@
+TAP version 13
+# Subtest: [synthetic connector] a connector that ends by itself as the app closes leaves no note; one ended while the app runs is written at once; the note is bounded and an unreadable one is left untouched
+ok 1 - [synthetic connector] a connector that ends by itself as the app closes leaves no note; one ended while the app runs is written at once; the note is bounded and an unreadable one is left untouched
+  ---
+  duration_ms: 2690.543056
+  type: 'test'
+  ...
+# Subtest: an end that was not seen is handed over to be written, with its time and whether the shim's exit was seen; a failed write is said and tried once more at quit; earlier records are said as past
+ok 2 - an end that was not seen is handed over to be written, with its time and whether the shim's exit was seen; a failed write is said and tried once more at quit; earlier records are said as past
+  ---
+  duration_ms: 4261.835869
+  type: 'test'
+  ...
+1..2
+# tests 2
+# suites 0
+# pass 2
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 7168.676053

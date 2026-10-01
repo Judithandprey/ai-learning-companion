@@ -1,0 +1,8 @@
+copied src/preload/control.cjs
+copied src/preload/overlay.cjs
+copied src/renderer/control.css
+copied src/renderer/control.html
+copied src/renderer/overlay.css
+copied src/renderer/overlay.html
+copied src/renderer/probe.css
+copied src/renderer/probe.html

@@ -17,10 +17,10 @@ def integer(low=0, high=MAX_SAFE_INTEGER):
     return {"type": "integer", "minimum": low, "maximum": high}
 
 def text(limit=128):
-    return {"type": "string", "minLength": 1, "maxLength": limit}
+    return {"type": "string", "minLength": 1, "maxLength": limit, "pattern": r"\S"}
 
-ID = {**text(), "pattern": r"^(?=.*\S)[^\u0000-\u001f\u007f-\u009f]+$"}
-UTC = {"type": "string", "format": "date-time", "pattern": "Z$"}
+ID = {**text(), "pattern": r"^(?=.*\S)[^\u0000-\u001f\u007f-\u009f]+(?![\s\S])"}
+UTC = {"type": "string", "format": "date-time", "pattern": r"Z(?![\s\S])"}
 HASH = {"type": "string", "pattern": "^[0-9a-f]{64}$", "minLength": 64, "maxLength": 64}
 NUMBER = {"type": "number", "minimum": -MAX_SAFE_INTEGER, "maximum": MAX_SAFE_INTEGER}
 POSITIVE = {"type": "number", "exclusiveMinimum": 0, "maximum": MAX_SAFE_INTEGER}
