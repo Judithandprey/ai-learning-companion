@@ -55,8 +55,12 @@ the named immutable commits and use the pinned Node path to reproduce them.
 
 ## Next owner and limits
 
-The [existing conditional QA retest](qa-release.md) is ready for the exact pushed
-release: actual Windows close, clean same-profile relaunch, and failure UI.
+The [existing conditional QA retest](qa-release.md) is released at exact pushed
+`86d240550803022e02dbbb5ae2323793fbfdebfa`: actual Windows close, clean
+same-profile relaunch, and failure UI. [Native receipts](release.json) confirm
+QA handoff `handoff_329704328c01862a3ca3d25032c0f620` and the Web integration/
+display-boundary notice. Both initially report unread/execution_started:false;
+acceptance of mail is not execution evidence.
 Independent QA-WIN-03/04 closure remains pending that execution. Preserve the
 original c4c84a5 13/15 result and its passing source/ink/readback evidence.
 The author explicitly released the display at 01:32:33.512 UTC and kept it

@@ -1,0 +1,42 @@
+{
+  "release": "86d240550803022e02dbbb5ae2323793fbfdebfa",
+  "source": "9974fdd3c9a81bf48e12137fe9e32217aab996ec",
+  "push": {
+    "status": "success",
+    "remote": "origin",
+    "branch": "main",
+    "observed_remote_sha": "86d240550803022e02dbbb5ae2323793fbfdebfa"
+  },
+  "qa": {
+    "ok": true,
+    "route_id": "route_6fd5946d12ac46e98ef15d2140c7261f",
+    "action": "instruction",
+    "accepted": true,
+    "mode": "async_route_v1",
+    "delivery_mode": "mailbox",
+    "message_id": "handoff_329704328c01862a3ca3d25032c0f620",
+    "duplicate": false,
+    "state": "unread",
+    "execution_started": false
+  },
+  "web": {
+    "ok": true,
+    "route_id": "route_8608e3d1ee5a44f7bddfe1fa43c2a202",
+    "action": "instruction",
+    "accepted": true,
+    "mode": "async_route_v1",
+    "delivery_mode": "mailbox",
+    "message_id": "handoff_3cef05f51ae5624a2370bae4b57e59c3",
+    "duplicate": false,
+    "state": "unread",
+    "execution_started": false
+  },
+  "limits": "Accepted receipts initially report unread/execution_started:false, not proof of execution or independent acceptance.",
+  "ci_observation": {
+    "run_id": 36802642186,
+    "name": "P0 checks",
+    "head": "86d240550803022e02dbbb5ae2323793fbfdebfa",
+    "status": "in_progress",
+    "conclusion": ""
+  }
+}
