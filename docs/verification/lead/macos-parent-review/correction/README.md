@@ -78,3 +78,8 @@ no answer or purchase is assumed. Native owns any concrete platform repair and
 QA keeps independent acceptance. Windows QA already adopted release `86d2405` through
 `b64669f` and has owned runner edits (read-only observation); no Windows test
 result is inferred, and that role is not reassigned to a duplicate Mac campaign.
+
+The native owner received the substantive result through accepted message
+`handoff_d3f626e463b3222cc96dd01deefc0447` at exact evidence baseline `b3eb4c5`.
+[Receipt](result-handoff.json) initially reports unread/execution_started:false;
+no read or new execution is inferred, and no acknowledgement is requested.

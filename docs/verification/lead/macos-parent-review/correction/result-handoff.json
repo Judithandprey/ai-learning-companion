@@ -1,0 +1,18 @@
+{
+  "baseline": "b3eb4c59c7f79c7f3be875b2674db3c9515b7d12",
+  "native_tested_source": "1a5dc062f0e781aec4bc0b79e91a2769fe1dd42c",
+  "reply_to": "handoff_cffbe3c0eeeec20ae95d45b441f5e4d4",
+  "receipt": {
+    "ok": true,
+    "route_id": "route_dade7cb2bf0f4756aed8f816e92b88dd",
+    "action": "instruction",
+    "accepted": true,
+    "mode": "async_route_v1",
+    "delivery_mode": "mailbox",
+    "message_id": "handoff_d3f626e463b3222cc96dd01deefc0447",
+    "duplicate": false,
+    "state": "unread",
+    "execution_started": false
+  },
+  "scope": "Native integration and actual CI result; no new implementation or acknowledgment requested. Interactive Mac availability remains pending."
+}
