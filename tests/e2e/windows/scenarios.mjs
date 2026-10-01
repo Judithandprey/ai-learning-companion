@@ -304,10 +304,16 @@ const cardReadyToAsk = (question, assistance, as) => overlay(`(() => { const g =
 // second; this candidate refuses a selection as "the selection facts are malformed" when a frame is taken between the
 // pen-up and its own request: QA-SUB-01, measured by the `subselect` probe, which keeps the plain gesture. Here the
 // pen-up is timed so that a run is not stopped by that defect; if no new frame comes in 5 s the pen lifts anyway.)
-const selectSurface = [click('[data-mode=ASK]'), pen(SURFACE_ASK.slice(0, -2), { release: false }), overlay('(window.__qaFrame = __lcOverlay.state().frame, true)'),
-  { waitEval: '__lcOverlay.state().frame !== null && __lcOverlay.state().frame !== window.__qaFrame', target: 'overlay', timeoutMs: 5000, required: false },
+const selectSurface = [click('[data-mode=ASK]'), pen(SURFACE_ASK.slice(0, -2), { release: false }),
+  overlay(`(async () => { const first = __lcOverlay.state().frame, end = Date.now() + 5000;
+    while (Date.now() < end && (__lcOverlay.state().frame === null || __lcOverlay.state().frame === first)) await new Promise((r) => setTimeout(r, 25));
+    return JSON.stringify({ a_new_frame_came: __lcOverlay.state().frame !== first }); })()`),
   pen(SURFACE_ASK.slice(-3), { continue: true }), cardShown];
-const QUESTION_FOCUS = "(() => { const q = document.getElementById('question'); return JSON.stringify({ value: q.value, active: document.activeElement === q, has_focus: document.hasFocus(), disabled: q.disabled }); })()";
+const QUESTION_FOCUS = "(() => { const q = document.getElementById('question'); return JSON.stringify({ value: q.value, active: document.activeElement === q, has_focus: document.hasFocus(), disabled: q.disabled, selection: [q.selectionStart, q.selectionEnd], inputs: window.__qaInputs || null }); })()";
+// What the question box is told while keys arrive (the kind of each change and its text, and whether an input method composes).
+const QUESTION_INPUT_LOG = overlay(`(() => { const q = document.getElementById('question'); window.__qaInputs = [];
+  for (const type of ['beforeinput', 'compositionstart', 'compositionend']) q.addEventListener(type, (e) => window.__qaInputs.push({ type, input: e.inputType ?? null, data: e.data ?? null, selection: [q.selectionStart, q.selectionEnd] }));
+  return true; })()`);
 // Start on the surface with the two circles drawn solid, then the ASK selection and its ready form.
 // ... and it must really be what is on the screen: under the centre of every card and the corners of the ASK region the
 // top window is QA's Edge window (a page that says "full screen" can be covered by another app's window).
@@ -770,7 +776,7 @@ export const scenarios = {
     // this app's), then OS keystrokes, sent only if the overlay then is the foreground window (synthetic OS input, not a
     // physical mouse or keyboard; digits and spaces only, which an input method passes through). Then a diagnostic that is
     // not a user path: QA raises the overlay itself and types again.
-    { osClick: '#question', target: 'overlay', window: 'overlay', required: false }, { sleep: 400 },
+    QUESTION_INPUT_LOG, { osClick: '#question', target: 'overlay', window: 'overlay', required: false }, { sleep: 400 },
     overlay(QUESTION_FOCUS, 'r_focus_after_click'),
     { keys: '4207 1935', window: 'overlay', required: false }, { sleep: 600 },
     overlay(QUESTION_FOCUS, 'r_typed'),

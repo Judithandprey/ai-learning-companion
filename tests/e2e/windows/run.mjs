@@ -136,9 +136,9 @@ if (sub) {
     // wsl.exe --exec starts the connector without a login shell: `codex` is then not on PATH on this machine, so the
     // trusted configuration names the official binary (the connector admits it only by its pinned sha256).
     const python = process.env.QA_SUB_PYTHON || PY, codexBin = process.env.QA_SUB_CODEX_BIN || null;
-    if (!codexBin || !codexBin.startsWith('/')) throw new Error('set QA_SUB_CODEX_BIN to the absolute path of the official codex binary (the lead\'s trusted configuration)');
+    if (!codexBin || !codexBin.startsWith('/') || !existsSync(codexBin)) throw new Error('set QA_SUB_CODEX_BIN to the absolute path of the official codex binary (the lead\'s trusted configuration)');
     writeFileSync(join(linkDir, 'sub-real.json'), config({ cd: backend, python }, subState, codexBin));
-    subInfo = { kind: 'real', python, state_dir: subState ?? 'the connector\'s default product state (state_dir null)', codex_bin: codexBin ?? 'codex on PATH (codex_bin null)', backend_copy: backend, source,
+    subInfo = { kind: 'real', python, state_dir: subState ?? 'the connector\'s default product state (state_dir null)', codex_bin: codexBin, backend_copy: backend, source,
                 connector_files_sha256: connector, files_are_the_source_commits: Boolean(source), model: process.env.QA_SUB_MODEL || null, assistance, real_turn_allowed: scenario === 'subask', wsl };
     if (scenario === 'subask') {
       // The allocation's ledger: one file per allocation id, outside every run folder.

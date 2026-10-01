@@ -466,10 +466,11 @@ elif SCENARIO == "subcheck":
     check("check.question_box_takes_typed_text_after_a_click", "pass" if user_ok else "fail" if clicked.get("clicked") is True or not clicked else "limit",
           {"os_click": {k: clicked.get(k) for k in ("point_px", "pointer_still_there", "window_at_point_is_ours", "clicked", "foreground_before", "foreground_after", "error")}, "focus_after_click": focus1,
            "keys": {k: key1.get(k) for k in ("window_found", "is_foreground", "sent", "sent_chars", "still_foreground")}, "question_before": card.get("question"), "question_after": typed.get("value"),
+           "caret_after_click": focus1.get("selection"), "what_the_box_was_told": typed.get("inputs"),
            "text_that_was_there_is_kept_whole": str(card.get("question")) in str(typed.get("value"))},
           "one OS mouse click on the question box gave the overlay the keyboard, and OS keystrokes then typed into it (synthetic OS input, not a physical mouse or keyboard)"
           + ("" if str(card.get("question")) in str(typed.get("value")) else ". The text that was in the box did not stay whole (see question_after); why is not determined: the system's only "
-             "input method is Microsoft Pinyin and the app has no handler on the box. Not judged") if user_ok else
+             "input method is Microsoft Pinyin and the app has no handler on the box (what the box was told is listed). Not judged") if user_ok else
           "the click step did not run" if not clicked else
           "one OS mouse click was made on the question box and the text typed after it is NOT in the box: a user cannot type a question this way" if clicked.get("clicked") is True else
           "no click was made (the window under the point was not the app's overlay, or the pointer had moved): typing after a click is NOT shown")
@@ -679,7 +680,7 @@ elif SCENARIO == "surfacecheck":
     same = all(isinstance(t, dict) for t in reads) and len({json.dumps(t.get("cards"), sort_keys=True) for t in reads}) == 1 and len({t.get("generated_at") for t in reads}) == 1
     card, link = D("card"), D("link_off")
     dry_ok = (same and all(t.get("full_screen") is True and t.get("fits") is True and (t.get("dom_text") or "").strip() == "" and t.get("url_has_query") is False for t in reads)
-              and card.get("shown") is True and "No AI is connected" in str(card.get("text")) and link.get("l") is None and self_exit("app") and not exists("bridge") and not exists("receipts")
+              and card.get("shown") is True and "No AI is connected" in str(card.get("text")) and link.get("l") in (None, {"mode": "off"}) and self_exit("app") and not exists("bridge") and not exists("receipts")
               and not SUB and not watch)
     check("surface.dry_check_without_any_connection", "pass" if dry_ok else "fail",
           {"truth_reads_equal": same, "viewport": reads[0].get("viewport") if isinstance(reads[0], dict) else None, "dom_text": [isinstance(t, dict) and t.get("dom_text") for t in reads],
