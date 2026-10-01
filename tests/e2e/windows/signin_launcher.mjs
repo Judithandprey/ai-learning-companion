@@ -26,7 +26,7 @@ import { chmodSync, existsSync, mkdirSync, readFileSync, readlinkSync, readdirSy
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { askPathCheck, compareCopy, makeCopy } from './sub_copy.mjs';
-import { releaseOwned } from './signin_cleanup.mjs';
+import { argv, lookCommand, readLook, releaseOwned, signalCommand } from './signin_cleanup.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const [action, commit] = process.argv.slice(2);
@@ -84,35 +84,34 @@ if (action === 'prepare') {
   try { copy = checkedCopy(); } catch (error) { refuse(String(error?.message ?? error).slice(0, 400)); }
   const connectorsInCopy = () => readdirSync('/proc').filter((n) => /^\d+$/.test(n)).filter((n) => { try { const cwd = readlinkSync(`/proc/${n}/cwd`); return cwd === source || cwd.startsWith(`${source}/`); } catch { return false; } }).map(Number);
   if (connectorsInCopy().length) refuse('a connector is running from the copy (the product is open?): the check does not run beside it');
-  // What this check owns on Windows is known by its own port: the app's main process (started through the start file
-  // with --remote-debugging-port=<port>) and the checker (--qa-check-port=<port>). Nothing else is ever ended.
+  // What this check owns on Windows is an exact launch identity (signin_cleanup.mjs): the staged runtime, exactly the
+  // arguments this check launches with its own port, created after the check began, and remembered by PID and creation
+  // time. Nothing else is ever signalled, and a PID alone is never trusted.
   const port = 43000 + randomInt(2000);
+  const checkName = `${launcherName}-check-${port}`;
+  const checkDir = join(temp, checkName);
   const ps = (command) => execFileSync('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', command], { cwd: '/mnt/c', encoding: 'utf8', timeout: 30000 });
-  // owned: electron.exe main processes with one of this check's two markers. others: whatever else listens on the port.
-  // foreign: every other electron.exe main process (also one whose command line cannot be read). Throws if it cannot look.
+  // Every electron.exe process that is not plainly a child of some Electron app (a readable command line with --type=),
+  // with its facts, and the PIDs listening on the port. It only reads. Throws if it cannot look.
   const look = async () => {
-    const out = JSON.parse(ps(`$ErrorActionPreference = 'Stop'; `
-      + `$main = @(Get-CimInstance Win32_Process -Filter "Name='electron.exe'" | Where-Object { -not $_.CommandLine -or -not $_.CommandLine.Contains('--type=') }); `
-      + `$mine = @($main | Where-Object { $_.CommandLine -and ($_.CommandLine.Contains('--remote-debugging-port=${port} ') -or $_.CommandLine.Contains('--qa-check-port=${port}')) } | ForEach-Object { [int]$_.ProcessId }); `
-      + `$foreign = @($main | ForEach-Object { [int]$_.ProcessId } | Where-Object { $mine -notcontains $_ }); `
-      + `$ev = $null; $listen = @(Get-NetTCPConnection -LocalPort ${port} -State Listen -ErrorAction SilentlyContinue -ErrorVariable ev | ForEach-Object { [int]$_.OwningProcess } | Sort-Object -Unique); `
-      + `if (@($ev | Where-Object { $_.CategoryInfo.Category -ne 'ObjectNotFound' }).Count -gt 0) { throw 'the listeners could not be read' }; `
-      + `ConvertTo-Json -Compress @{ mine = $mine; listen = $listen; foreign = $foreign }`).trim().split(/\r?\n/).at(-1));
-    const pids = (v) => [].concat(v ?? []).map(Number);
-    const owned = pids(out.mine), listening = pids(out.listen), foreign = pids(out.foreign);
-    if (![...owned, ...listening, ...foreign].every((n) => Number.isInteger(n) && n > 0)) throw new Error('unreadable process list');
-    return { owned, others: listening.filter((pid) => !owned.includes(pid)), foreign };
+    const seen = readLook(ps(lookCommand(port)));
+    return { ...seen, processes: seen.processes.filter((p) => !(p.command_line && argv(p.command_line).slice(1).some((a) => a.startsWith('--type=')))) };
   };
-  // By PID only, and without the process tree: a tree is read from recorded parent PIDs, which Windows reuses. The app's
-  // own children and its wsl.exe child are expected to end when its main process ends (the force path is not yet shown
-  // on a display run; a failure would show as FOLDER LEFT or CONNECTOR STILL RUNNING).
-  const taskkill = (pid, force) => { if (!Number.isInteger(pid) || pid <= 0) throw new Error('not a PID'); execFileSync('taskkill.exe', ['/PID', String(pid), ...(force ? ['/F'] : [])], { cwd: '/mnt/c', encoding: 'utf8', timeout: 20000, stdio: 'pipe' }); };
+  // One exact identity, validated again by the command itself while it holds the process (signalCommand).
+  const ANSWERS = ['signalled', 'no_window', 'gone', 'stale', 'unverified'];
+  const signal = async (identity, how) => {
+    const answer = ps(signalCommand(identity, how)).trim().split(/\r?\n/).at(-1);
+    if (!ANSWERS.includes(answer)) throw new Error(`unreadable answer: ${String(answer).slice(0, 80)}`);
+    return answer;
+  };
   // Before anything is made or started: the look must work, nothing may hold this port, and no other Electron app may
-  // be open (it could be the product with the user signing in: the check does not run beside it and ends nothing).
+  // be open (it could be the product with the user signing in: the check does not run beside it and signals nothing).
   let before;
   try { before = await look(); } catch (error) { refuse(`the processes could not be looked at (${String(error?.message ?? error).slice(0, 200)})`); }
-  if (before.owned.length || before.others.length) refuse('the port chosen for this check is in use: run the check again');
-  if (before.foreign.length) refuse('an Electron app is open (perhaps the product, with the user signing in): the check does not run beside it');
+  if (before.listen.length) refuse('the port chosen for this check is in use: run the check again');
+  if (before.processes.length) refuse('an Electron app is open (perhaps the product, with the user signing in): the check does not run beside it');
+  const expected = { exe: `${winTemp}\\${ELECTRON}\\electron.exe`, app: [`${winTemp}\\${stageName}`, `--remote-debugging-port=${port}`, '--remote-debugging-address=127.0.0.1'],
+    checker: [`${winTemp}\\${checkName}\\qa-check.js`, `--qa-check-port=${port}`], markers: [`--remote-debugging-port=${port}`, `--qa-check-port=${port}`], notBefore: before.now };
   // The checker, run on Windows by the staged Electron as plain Node: it starts the app through the start file (with a
   // DevTools port for this check only), presses Check connection, reads, and asks the app's window to close. It gives
   // up by itself after 120 s and writes one result line however it ends.
@@ -177,8 +176,6 @@ setTimeout(() => { if (finishing) return; out.error = 'the check gave up after 1
   // The check runs in a folder of its own, with byte-identical copies of the user's start file and configuration: the
   // start file's "%~dp0profile" is then this folder's, never the user's. The folder is removed only once everything the
   // check started is confirmed gone.
-  const checkName = `${launcherName}-check-${port}`;
-  const checkDir = join(temp, checkName);
   let made = false, r = null, cleanup = null, connectors = [], failure = null, foreignAtEnd = [];
   const copied = {};
   try {
@@ -200,10 +197,11 @@ setTimeout(() => { if (finishing) return; out.error = 'the check gave up after 1
     // started are let go of here, and its folder is removed only once they are confirmed gone. If the folder could not
     // even be made, this run started nothing and lets go of nothing.
     cleanup = made
-      ? await releaseOwned({ look: async () => { const seen = await look(); foreignAtEnd = seen.foreign; return seen; }, askToClose: async (pid) => taskkill(pid, false), endByForce: async (pid) => taskkill(pid, true),
-          sleep: (ms) => new Promise((ok) => setTimeout(ok, ms)), ownsFolder: true,
+      ? await releaseOwned({ look, signal, expected, sleep: (ms) => new Promise((ok) => setTimeout(ok, ms)), ownsFolder: true,
           removeFolder: async () => { const there = existsSync(checkDir); rmSync(checkDir, { recursive: true, force: true, maxRetries: 10, retryDelay: 300 }); return there; } })
-      : { owned_seen: [], asked_to_close: [], ended_by_force: [], errors: [], exit: 'nothing_started', left_running: [], not_owned_on_the_port: [], folder: 'kept', folder_reason: 'this run could not make its folder and started nothing' };
+      : { owned_seen: [], asked_to_close: [], ended_by_force: [], signals: [], errors: [], exit: 'nothing_started', left_running: [], not_revalidated: [], unresolved: [], not_owned_on_the_port: [], foreign: [],
+          folder: 'kept', folder_reason: 'this run could not make its folder and started nothing' };
+    foreignAtEnd = cleanup.foreign;
     // The connector in WSL ends within its own bound (8 s) after the app; it is only looked at, never ended here.
     connectors = connectorsInCopy();
     for (let i = 0; i < 24 && connectors.length; i++) { await new Promise((ok) => setTimeout(ok, 500)); connectors = connectorsInCopy(); }
@@ -217,9 +215,11 @@ setTimeout(() => { if (finishing) return; out.error = 'the check gave up after 1
   if (foreignAtEnd.length) console.error(`NOTE: an Electron app that is not this check's was open at the end (PIDs ${JSON.stringify(foreignAtEnd)}). It was not touched. If it is the product, the two shared the connector's state and one of them may have been refused: that app then says the connector is not available (state "unavailable").`);
   if (cleanup.exit === 'nothing_started') { console.error(`NOT RUN: ${failure}. Nothing was started; the folder %TEMP%\\${checkName} is not this run's and was left alone.`); process.exitCode = 2; }
   else if (cleanup.exit !== 'confirmed') {
-    const what = cleanup.exit === 'unknown' ? 'whether what this check started is gone is NOT KNOWN (the look failed)'
-      : cleanup.left_running.length ? `what this check started is still running (PIDs ${JSON.stringify(cleanup.left_running)})`
-      : `a process that is not this check's holds its port (PIDs ${JSON.stringify(cleanup.not_owned_on_the_port)}); it was not ended`;
+    const what = cleanup.exit === 'still_running' && cleanup.left_running.length ? `what this check started is still running (${JSON.stringify(cleanup.left_running)})`
+      : cleanup.exit === 'still_running' ? `a process that is not this check's holds its port (PIDs ${JSON.stringify(cleanup.not_owned_on_the_port)}); it was not signalled`
+      : cleanup.not_revalidated.length ? `a process this check started is still there but can no longer be shown to be the same launch (${JSON.stringify(cleanup.not_revalidated)}); it was not signalled`
+      : cleanup.unresolved.length ? `a process cannot be told apart from this check's (${JSON.stringify(cleanup.unresolved)}); it was not signalled`
+      : 'whether what this check started is gone is NOT KNOWN (a look or a validation failed)';
     console.error(`NOT RELEASED: ${what}. Seen as this check's: ${JSON.stringify(cleanup.owned_seen)}. Its folder %TEMP%\\${checkName} is kept as it is.`);
     process.exitCode = 3;
   } else if (cleanup.folder === 'kept') { console.error(`FOLDER LEFT: %TEMP%\\${checkName}: ${cleanup.folder_reason}. It is this check's own folder, not the user's.`); process.exitCode = 3; }
