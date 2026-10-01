@@ -29,7 +29,7 @@ of an uncertain inference and no automatically resumed prompt.
   response binding. No separate archive, provider, network or credential access.
 - Web: `apps/windows/**` connection UI, exact-source ASK bridge, locally retained
   request/response evidence and lifecycle. No public server or preview replacement.
-- Native: later reuse the same bridge in `apps/macos/**`; independent native build,
+- Native: reuse the same bridge in `apps/macos/**`; independent native build,
   without implying an interactive Mac or starting mobile work.
 - Support: installed official RPC/tool-isolation compatibility evidence only.
 - QA: one exact integrated Windows image-bearing behavior pass and scoped
@@ -63,6 +63,26 @@ use a minimal environment for the Codex child. Support verifies the exact suppor
 child configuration before inference. Changing only this product child does not
 change the seven AgentsDock runtimes, permissions or auth. A fresh managed login
 in that product state may be required.
+
+The reviewed launch at `9884c60` admits the measured Linux x86_64/WSL Codex
+0.158.0 binary only. Native Windows/macOS binaries remain unverified; a compiled
+client does not extend that admission. Official effective config, requirements,
+disabled skill inventory and thread policy are checked before submission.
+
+The fixed `lc_managed_chatgpt` provider name is a configuration alias for the same
+managed ChatGPT route: `requires_openai_auth=true`, forced ChatGPT login, no
+endpoint/key/token/auth-command override, no provider fallback, and request/stream
+retry settings zero. Installed 0.158.0 rejects overrides of the reserved built-in
+`openai` ID. This alias implements the existing user choice, not a new supplier or
+an API-key alternative. Codex still owns login/token refresh. See the
+[exact configuration evidence](../verification/backend/p0-04-managed-subscription-launch.md).
+
+Minimal sanitized operational receipts are written under the product state's
+`receipts/<launch>/<sha256(request_id)>.json`. They bind actual input types/hashes,
+transport counters, model/binary and terminal/local outcomes; they contain no
+prompt/image content or credentials. Prepared, uncertain, written and acknowledged
+are distinct states. QA must correlate the receipt with retained desktop pixels
+and the visible response. A receipt alone does not establish image understanding.
 
 Exact successful result/event shapes (optional information uses explicit null):
 

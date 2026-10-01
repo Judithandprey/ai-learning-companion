@@ -1,0 +1,74 @@
+{
+  "candidate": "7dc5e4fd093c5baa57c39ff29e401d738914773e",
+  "main_baseline": "d9c7334",
+  "archive_root": "/tmp/subscription-backend-7dc5e4-kmyqok7y",
+  "outcome": "B-SUB-01 and B-SUB-02 closed; source boundary accepted for pinned WSL gate",
+  "checks": [
+    {
+      "name": "memory_rpc_completed_control",
+      "passed": true,
+      "turn_submissions": 1
+    },
+    {
+      "name": "effective_sandbox_network_expansion",
+      "passed": true,
+      "error": "isolation_unverified",
+      "turn_submissions": 0
+    },
+    {
+      "name": "cancel_after_thread_before_turn",
+      "passed": true,
+      "error": "cancelled",
+      "turn_submissions": 0
+    },
+    {
+      "name": "auth_revoked_during_preflight",
+      "passed": true,
+      "error": "unauthenticated",
+      "turn_submissions": 0
+    },
+    {
+      "name": "combined_login_cancel_label",
+      "passed": true,
+      "observed": {
+        "method": "connection/login/completed",
+        "params": {
+          "login_id": "owned-login",
+          "success": false,
+          "error": "login_cancelled"
+        }
+      }
+    }
+  ],
+  "provider_calls": 0,
+  "real_codex_children": 0,
+  "auth_access": false,
+  "display_access": false,
+  "metadata_evidence": {
+    "owner_receipt_reviewed_without_replay": true,
+    "template_hash_matches": true,
+    "template_sha256": "1b46d22496a546a83030745743718649f0bf0c221eb30c949c760a741418d9f5",
+    "binary_and_version_match": true,
+    "owner_metadata_checker_replayed": false
+  },
+  "focused_tests": {
+    "launch_config": {
+      "passed": 101,
+      "deselected": 22,
+      "seconds": 0.23
+    },
+    "rpc": {
+      "passed": 39,
+      "deselected": 47,
+      "seconds": 2.09
+    },
+    "bridge_timeout": {
+      "passed": 4
+    }
+  },
+  "source_hashes": {
+    "chatgpt_launch.py": "02a4f1da659405a4f34828a41d1ac5d322bac38d91a172f384999eada41b5f35",
+    "chatgpt_local.py": "515be8599afce7dce8cd78409786eb3def53ceec1cd422f1fb9066565c65669e",
+    "chatgpt_rpc.py": "7f0801be526e44be3773446c8a186dbaad2a8df978331308a088423aeb2c049f"
+  }
+}

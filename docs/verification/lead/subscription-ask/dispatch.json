@@ -19,7 +19,7 @@
       "owner": "backend",
       "accepted_assignment": "handoff_ba8e541a6a2a89041ee20b35b1c3173d",
       "actual_start_reply": "handoff_7ff3eca55ab7ef971c8836f7a887a664",
-      "state": "disabled_base_integrated_correction_pending",
+      "state": "corrected_connector_reviewed_integrated_waiting_desktop_join",
       "actual_delivery": "handoff_b69b31940669698bc7b3a8368aba2b4a",
       "delivery_commit": "18fe4788e9cba52d7f336c273047432e00525499",
       "launch_followup": "handoff_9aa9afa6f12bdfa0279320454611d396",
@@ -27,7 +27,13 @@
       "review_correction": "handoff_e4b1fdd2e262874de12d827e9c492abf",
       "integrated_base": "9d17a605a9472fe0c150ffd1d1597962d3a6eead",
       "launch_actual_reply": "handoff_acf8b619db632ceba0ee3f753569e72b",
-      "managed_alias_decision": "handoff_64887507ba152d34e2c14cf1b93a6443"
+      "managed_alias_decision": "handoff_64887507ba152d34e2c14cf1b93a6443",
+      "correction_delivery": "handoff_2f090657849de2db3d53e5a7f25eb69d",
+      "correction_commit": "7dc5e4fd093c5baa57c39ff29e401d738914773e",
+      "correction_integration": "9884c601d03b2fc626a69a269fcec093d05f2357",
+      "main_focused_tests": 313,
+      "real_connection_state": "signed_out",
+      "inference_calls": 0
     },
     {
       "owner": "learning",

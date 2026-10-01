@@ -49,13 +49,24 @@ No semantic teaching quality, model image understanding or lifecycle authority
 is inferred from this pure seam. The first independent probe's missing Node PATH
 is preserved in its report and corrected with the pinned executable.
 
-Backend `18fe478` has a [bounded source review](backend-review.md) and is staged
-with its real-inference gate still hard-disabled. A reproduced effective sandbox-policy gap
-(`networkAccess:true` accepted) and a login-cancel status mismatch are returned to
-Backend, together with the measured launch configuration and minimal sanitized
-per-turn receipt needed for independent verification. Inference remains gated. Main connector tests pass 127/127 in 2.65s under
-normal exact-command approval for its synthetic pipe tests; the reproduced
-policy/cancel defects remain open despite these existing tests.
+Backend first leaf `18fe478` had a [bounded review](backend-review.md) with two
+findings and a hard-disabled gate. Correction `7dc5e4` integrates as
+`9884c601d03b2fc626a69a269fcec093d05f2357`; the
+[correction review](backend-correction-review.md) closes B-SUB-01/02. Its 144
+focused review checks/five independent controls pass. Lead separately reviewed
+the complete receipt writer/call sites and ran its 41 exact-candidate tests
+(0.10s); atomic send-state and terminal/local-outcome distinctions are retained.
+The saved actual settings-template hash matches the exact candidate. Integrated
+main connector tests pass **313/313 in 6.99s**, using only synthetic children.
+
+Lead then ran the corrected production launch/connection read on the existing
+product-owned state: exact config/skills verification succeeds, the managed alias
+is active, and official auth remains **signed_out**; catalog image capabilities
+are listed. The child is reaped. [Actual result](corrected-connection-status.json)
+records 360ms and zero inference/login starts. The gate now admits only the pinned
+Linux/WSL binary/configuration; native Mac/Windows binary admission and account
+entitlement remain open. No real request budget has been allocated or spent.
+
 QA preparation `d2de2ba` and correction `4c63a2e` integrate as `ec9f5a7`/`fad98c7`.
 Lead reproduced two negated/uncertain answer false positives in the first judge;
 the correction holds such output and requires semantic review for every match.
@@ -63,10 +74,14 @@ All 31 integrated judge cases and changed JS syntax checks pass. This is harness
 validation, not image inference or desktop execution.
 No display or real request is allocated from these preparations.
 
-Next: integrate the corrected connector and actual desktop deliveries, run focused
+Next: integrate the actual desktop deliveries against `9884c60`, run focused
 changed-path checks and independent review, then release the exact Windows
 candidate/display/budget to QA. Acceptance requires the real image-bearing turn
 and randomized image-only answer visibly bound to the retained ASK context.
 Mac build evidence, actual interactive Mac access, continuous whole-screen AI,
 audio, physical pen and Notability remain distinct open gates. User preview,
 `lc_desktop_preview`, ports 4173/8174 and Paperclip remain untouched.
+
+Existing CI at `d9c7334` passed both Python 3.12/3.14 jobs in
+[run 36821816955](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36821816955).
+It predates `9884c60` and does not validate that later correction.
