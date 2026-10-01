@@ -115,7 +115,7 @@ export function harness(options: { env?: Record<string, string>; /** The app dat
   const handlers: Record<string, (...a: unknown[]) => unknown> = {};
   const permission: Record<string, (...a: unknown[]) => unknown> = {};
   /** on: every write fails; reads: context pictures cannot be read; partialAppend: the next append writes N bytes, then fails; truncate: truncating fails. */
-  /** `only`: when set, writes of files whose path contains it fail (the others go on). */
+  /** `only`: when set, writes of files whose path contains it fail (the others go on), and a partial append is of such a file only. */
   const failWrites = { on: false, only: null as string | null, reads: false, partialAppend: 0, truncate: false };
   const timers: Array<{ f: () => void; ms: number }> = [];
   // The work area: the display without a taskbar of 40 DIP at the bottom (a test may change it).
@@ -166,7 +166,7 @@ export function harness(options: { env?: Record<string, string>; /** The app dat
     ...retention,
     appendFileSync: (...a: Parameters<typeof fs.appendFileSync>) => {
       if (failWrites.on && String(a[0]).startsWith(userData)) throw new Error('EIO: i/o error (injected)');
-      if (failWrites.partialAppend > 0) {
+      if (failWrites.partialAppend > 0 && (failWrites.only === null || String(a[0]).includes(failWrites.only))) {
         const n = failWrites.partialAppend;
         failWrites.partialAppend = 0;
         fs.appendFileSync(a[0], String(a[1]).slice(0, n));

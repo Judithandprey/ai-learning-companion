@@ -67,6 +67,8 @@ export type SubscriptionStatus =
       readonly plan: string | null;
       /** The quota as the server states it, bucket by bucket; null until it was read. Never this app's own session bounds. */
       readonly quota: Quota | null;
+      /** When that was read (this device's clock): it is what the account was then, never said as how it is now. */
+      readonly quota_read_at: string | null;
       readonly models: Model[];
       /** The model a question is sent to (one that takes pictures), or null. */
       readonly model: string | null;
@@ -84,8 +86,13 @@ export type TurnOutcome =
   | { readonly status: 'answered'; readonly answer: LiveAnswer; readonly submission: 'submitted' }
   /** Known not answered: the connector's own refusal, or this app's (nothing is sent again). */
   | { readonly status: 'refused'; readonly code: string; readonly reason: string; readonly submission: Submission }
-  /** Interrupted here: nothing of it is returned. `uncertain`: whether ChatGPT stopped working on it is not confirmed. */
-  | { readonly status: 'cancelled'; readonly uncertain: boolean; readonly submission: Submission }
+  /**
+   * Interrupted here: nothing of it is returned. `uncertain`: whether ChatGPT stopped working on it is not confirmed.
+   * `unsettled`: the interruption itself was not confirmed by the connector (it said so, or did not answer), or the
+   * turn's fate is not known: the connector stops its session then, and so must the app. (A turn that was answered
+   * just before its interrupt is uncertain, not unsettled: the session goes on.)
+   */
+  | { readonly status: 'cancelled'; readonly uncertain: boolean; readonly unsettled: boolean; readonly submission: Submission }
   /** No answer came: whether ChatGPT worked on it (and used quota) is not known. */
   | { readonly status: 'uncertain'; readonly reason: string; readonly submission: 'unknown' };
 /** What a Start of the AI session came to: its bounds as the connector counts them, or why it did not start. */
@@ -118,7 +125,7 @@ export type SubscriptionOptions = {
 type Reply = { ok: true; result: unknown } | { ok: false; code: string; submission: Submission } | { ok: false; lost: 'not_sent' | 'no_answer' };
 type Child = { proc: ChildProcess; exited: Promise<HostExit>; gone: boolean };
 /** A turn that is out. `interrupts`: what its interrupt or its session's Stop was answered (each bounded). */
-type Asking = { readonly id: string; readonly session: string; cancelled: boolean; interrupts: Array<Promise<boolean>> };
+type Asking = { readonly id: string; readonly session: string; cancelled: boolean; interrupts: Array<Promise<Reply>> };
 /** The AI session the connector has: started by the user's Start in that connector, until it is stopped. */
 type Session = { readonly start: Start; readonly child: Child; stopped: boolean };
 /**
@@ -181,6 +188,7 @@ export class Subscription {
   private state: Extract<SubscriptionStatus, { mode: 'managed' }>['state'] = 'not_checked';
   private plan: string | null = null;
   private quota: Quota | null = null;
+  private quotaReadAt: string | null = null;
   private models: Model[] = [];
   private model: string | null = null;
   private loginState: Extract<SubscriptionStatus, { mode: 'managed' }>['login'] = 'none';
@@ -217,7 +225,7 @@ export class Subscription {
         : this.unopened === this.loginId ? 'the browser could not be opened for the sign-in page; the sign-in is still pending: cancel it, then sign in again'
         : this.state === 'signed_in' ? 'a sign-in started here is still pending: finish it in your browser, or cancel it' : null,
     ].filter((n) => n !== null);
-    return { mode: 'managed', state: this.state, plan: this.plan, quota: this.quota, models: this.models, model: this.model, login: this.loginState, detail: notes.join('; ') || null, asking: this.turns.size > 0 };
+    return { mode: 'managed', state: this.state, plan: this.plan, quota: this.quota, quota_read_at: this.quotaReadAt, models: this.models, model: this.model, login: this.loginState, detail: notes.join('; ') || null, asking: this.turns.size > 0 };
   }
   private say(): void {
     this.o.notify(this.status());
@@ -441,6 +449,7 @@ export class Subscription {
     this.state = changedSince ? 'unknown' : account.state; // not said as signed in (or out) from a read older than the change
     this.plan = account.plan;
     this.quota = account.quota;
+    this.quotaReadAt = new Date().toISOString();
     this.models = account.models;
     // The chosen model is kept if it is still there and takes pictures; else the catalog's default that does.
     const usable = account.models.filter((m) => m.image_input);
@@ -576,7 +585,8 @@ export class Subscription {
     if (this.loginState === 'starting') return 'a sign-in is being started: the AI cannot be started until that sign-in is over';
     if (this.loginState === 'waiting' && this.unconfirmedCancel !== this.loginId) return this.unopened === this.loginId ? 'a sign-in is still pending, though its page could not be opened: cancel it in the control window' : 'a sign-in is still pending: finish it in your browser, or cancel it in the control window';
     if (!this.model) return 'no model that takes pictures is available';
-    if (this.starting || (this.session && !this.session.stopped && this.live(this.session.child))) return 'an AI session is already running';
+    if (this.starting) return 'an earlier Start of the AI was not answered yet, so this one was not sent; start the AI again in a moment';
+    if (this.session && !this.session.stopped && this.live(this.session.child)) return 'an AI session is already running';
     return null;
   }
   /**
@@ -639,7 +649,12 @@ export class Subscription {
     if (a.cancelled || s.stopped) {
       const interrupted = await Promise.all(a.interrupts);
       const ended = !r.ok && 'code' in r && (r.code === 'cancelled' || r.code === 'session_stopped');
-      outcome = { status: 'cancelled', uncertain: !(ended && interrupted.length > 0 && interrupted.every(Boolean)), submission: r.ok ? 'submitted' : 'code' in r ? r.submission : r.lost === 'not_sent' ? 'not_submitted' : 'unknown' };
+      const uncertain = !(ended && interrupted.length > 0 && interrupted.every(cancelConfirmed));
+      // Unsettled: the turn was not answered, and its interruption was not confirmed (the connector said so, or an
+      // interrupt got no acknowledgement at all), or the turn itself ended as an unconfirmed interruption or with
+      // no answer at all.
+      const unsettled = !r.ok && (('code' in r && r.code === 'interrupt_unconfirmed') || ('lost' in r && r.lost === 'no_answer') || interrupted.some((i) => !i.ok || !isObject(i.result) || i.result['uncertain'] !== false));
+      outcome = { status: 'cancelled', uncertain, unsettled, submission: r.ok ? 'submitted' : 'code' in r ? r.submission : r.lost === 'not_sent' ? 'not_submitted' : 'unknown' };
     }
     this.turns.delete(a.id);
     this.say();
@@ -651,7 +666,10 @@ export class Subscription {
     if ('lost' in r) return r.lost === 'not_sent' ? { status: 'refused', code: 'unavailable', reason: 'the connector could not be reached, so nothing was sent', submission: 'not_submitted' } : { status: 'uncertain', reason: 'no answer came; whether ChatGPT worked on it is not known', submission: 'unknown' };
     // Ended as cancelled by the connector, not asked for here (no interrupt and no Stop of this app, so no
     // acknowledgement of an interruption either): whether ChatGPT stopped working on it is not known.
-    if (r.code === 'cancelled' || r.code === 'interrupt_unconfirmed') return { status: 'cancelled', uncertain: true, submission: r.submission };
+    // (unsettled when the turn's fate is not known. The connector's own "an interruption was not confirmed", for a
+    // turn this app did not interrupt, is its refusal: it has stopped its session, and that is said as it is, never
+    // as a request the user cancelled.)
+    if (r.code === 'cancelled') return { status: 'cancelled', uncertain: true, unsettled: r.submission === 'unknown', submission: r.submission };
     this.signedOut(r.code, s.child);
     return { status: 'refused', code: r.code, reason: LIVE_ERROR_TEXT[r.code]!, submission: r.submission };
   }
@@ -666,7 +684,7 @@ export class Subscription {
     if (!a || a.cancelled || !s) return;
     a.cancelled = true;
     this.say();
-    a.interrupts.push(this.tell('companion/interrupt', { session_id: s.start.session_id, epoch: s.start.epoch, request_id: requestId }, s).then(cancelConfirmed));
+    a.interrupts.push(this.tell('companion/interrupt', { session_id: s.start.session_id, epoch: s.start.epoch, request_id: requestId }, s));
   }
   /** The session ended (Stop, the capture's end, a failure): it can never send again, and its turns that are out are interrupted. */
   stopSession(sessionId: string): void {
@@ -678,7 +696,7 @@ export class Subscription {
     for (const a of this.turns.values()) {
       if (a.session !== sessionId) continue;
       a.cancelled = true;
-      a.interrupts.push(told.then(cancelConfirmed));
+      a.interrupts.push(told);
     }
     this.say();
   }

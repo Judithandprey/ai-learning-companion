@@ -327,6 +327,7 @@ test('[synthetic connector] no voice is connected in this build: a response is s
   assert.deepEqual(page.talkState(), { controls: true, talk: true, muted: false, mute: false, interrupt: false, rate: null, status: 'Talk is on, but no voice is connected in this build, so responses are not read aloud; they are shown as text. Speaking to the AI is not connected either: type your question.' });
   await w.ask('Shown as text, with Talk on.');
   assert.deepEqual([page.voice.spoken.length, page.ask().answer, page.talkState().interrupt, w.records()[0]!.requests.map((r) => 'spoken' in r)], [0, 'Shown as text, with Talk on.', false, [false, false]]);
+  assert.deepEqual([w.fakes.last().asks()[1]!.params['presentation'], w.records()[0]!.requests[1]!['asked_as']], ['silent', 'silent'], 'no voice: asked for as silent text though Talk is on');
   // Without the subscription there is nothing to read, and no talk controls.
   const off = await app({ subscription: false });
   await off.select();
@@ -426,6 +427,7 @@ test('[synthetic connector, stand-in voice] the voice stops at once, with everyt
   assert.deepEqual([plain(await w.h.handlers['lc:say']!({ sender: w.s.overlay.webContents }, muted, `${muted}.1`, 0)), w.page.voice.spoken.length], [{ spoken: false }, 1], 'the main process was told of the mute: it says nothing, whoever asks');
   await w.ask('Muted answer.');
   assert.equal(w.page.voice.spoken.length, 1);
+  assert.deepEqual([w.fakes.last().asks()[1]!.params['presentation'], w.records()[0]!.requests[1]!['asked_as']], ['silent', 'silent'], 'asked for while muted: as silent text');
   w.page.click('mute');
   await w.ask('Read again.');
   assert.deepEqual([w.page.voice.spoken.length, w.page.voice.spoken[1]!.text], [2, 'Read again.']);
@@ -926,4 +928,38 @@ test('[synthetic connector, stand-in voice] the main process itself keeps the or
   w.h.handlers['lc:ask-cancel']!(w.overlay, w.id);
   await until('cancelled', () => w.records()[0]!.requests[1]!['outcome'] !== null);
   assert.deepEqual([await w.say(w.id, `${w.id}.1`, 0), await w.say(w.id, `${w.id}.2`, 0), w.page.voice.spoken.length], [NO, NO, 1]);
+});
+
+test('[synthetic connector, stand-in voice] a response is read only if it was asked for with Talk on: Talk turned on while a silent request is out, or after it, reads nothing and says nothing of a failure; the AI session ending stops a reading and nothing of it is read after', async () => {
+  const w = await app({ voice: true });
+  const { page } = w;
+  const overlay = { sender: w.s.overlay.webContents };
+  await w.select(); // asked for with Talk off: silent
+  page.click('talk'); // turned on while that request is out
+  await w.ask('Asked for as silent text.');
+  await settle();
+  assert.deepEqual([page.voice.spoken.length, page.talkState().interrupt, page.talkState().status, w.records()[0]!.requests[0]!['asked_as'], 'spoken' in w.records()[0]!.requests[0]!], [0, false, 'Talk is on: the response to your next request is read aloud at 1.3× and shown as text. Speaking to the AI is not connected in this build: type your question.', 'silent', false], 'not read, and not said as a voice that stopped');
+  // The main process itself refuses to read it, whoever asks, though Talk is on there now.
+  const id = (w.records()[0] as unknown as { selection_id: string }).selection_id;
+  assert.deepEqual([plain(await w.h.handlers['lc:say']!(overlay, id, `${id}.1`, 0)), page.voice.spoken.length], [{ spoken: false }, 0]);
+  // The next request is asked for as spoken, and read. The user stops the AI while it is being read: the voice is
+  // stopped by the main process, and no piece of that response is said afterwards.
+  await w.ask('Read aloud. Until the AI is stopped.');
+  assert.deepEqual([page.voice.spoken.length, w.records()[0]!.requests[1]!['asked_as']], [1, 'spoken']);
+  w.h.handlers['lc:live-stop']!({ sender: w.control.webContents });
+  assert.deepEqual([page.voice.cancels, w.live().state], [1, 'ended']);
+  page.voice.spoken[0]!.end();
+  await settle();
+  assert.deepEqual([plain(await w.h.handlers['lc:say']!(overlay, id, `${id}.2`, 0)), plain(await w.h.handlers['lc:say']!(overlay, id, `${id}.2`, 1)), page.voice.spoken.length, page.ask().answer], [{ spoken: false }, { spoken: false }, 1, 'Read aloud. Until the AI is stopped.'], 'the text stays on the card; nothing more of it is read');
+  // Cancel pressed before the card knows its request (its acknowledgement is still on the way): the request is
+  // interrupted as soon as it is known, and its response is never shown.
+  const c = await app();
+  const release = c.page.holdSubmitAck();
+  c.circle();
+  await until('sent', () => c.fakes.last().asks().length === 1);
+  c.page.click('askCancel');
+  release();
+  await until('interrupted', () => c.fakes.last().count('companion/interrupt') === 1);
+  await until('said as cancelled', () => /^Cancelled/.test(c.page.ask().status ?? ''));
+  assert.deepEqual([c.page.ask().answer, c.records()[0]!.requests[0]!['shown']], [null, false]);
 });

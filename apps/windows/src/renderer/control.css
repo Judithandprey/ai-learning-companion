@@ -25,3 +25,5 @@ button.plain { background: #fff; color: #0a84ff; }
 .aiSession legend { font-weight: 600; padding: 0 4px; }
 .aiSession .bounds { display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: center; margin: 4px 0; }
 .aiSession input[type="number"] { width: 5em; font: inherit; }
+/* `hidden` is the last word, also on an element whose class sets its display (the AI's buttons). */
+[hidden] { display: none !important; }

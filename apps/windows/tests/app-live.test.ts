@@ -26,7 +26,7 @@ type Live = { state: string; reason?: string | null; model?: string; max_submiss
  * The app with the subscription configured; by default checked (signed in) and the capture started with the AI's
  * session within `policy`. `ai: false`: the capture alone. `check: false`: not checked before Start.
  */
-async function app(o: { policy?: Policy; ai?: boolean; check?: boolean; configure?: (c: FakeConnector) => void } = {}) {
+async function app(o: { policy?: Policy; ai?: boolean; check?: boolean; configure?: (c: FakeConnector) => void; /** the capture keeps at most this many whole-display frames */ max_frames?: number } = {}) {
   const fakes = fakeConnectors(o.configure);
   const h = harness({ env: { LC_SUBSCRIPTION_CONNECTOR: connectorConfig() }, subscription: { spawn: fakes.spawn, request_ms: 500, ask_ms: 20_000, end_ms: 500 } });
   await started();
@@ -41,7 +41,7 @@ async function app(o: { policy?: Policy; ai?: boolean; check?: boolean; configur
   const s = await running(h, o.ai === false ? null : { policy });
   if (o.ai !== false && o.check !== false) await until('the AI is on', () => live().state === 'on', 3000);
   else await settle();
-  const page = await overlayPage(h, s, { ...DEFAULT_RETENTION_POLICY, min_interval_ms: 0 });
+  const page = await overlayPage(h, s, { ...DEFAULT_RETENTION_POLICY, min_interval_ms: 0, ...(o.max_frames ? { max_frames: o.max_frames } : {}) });
   page.scene.exactPng = true;
   const folder = (): string => path.join(h.userData, 'captures', fs.readdirSync(path.join(h.userData, 'captures'))[0]!);
   /** What the session wrote of itself, line by line. */
@@ -178,6 +178,117 @@ test('[synthetic connector] a frame still waiting for a look when the user circl
   assert.equal(w.looks()[2]!.context.frame_seq, 5);
 });
 
+test('[synthetic connector] a circle that cannot be asked, and a follow-up that cannot be written, are frames the AI was not given: each a gap, named in the next request; later gaps are never said about an earlier frame', async () => {
+  const w = await app({ policy: { max_submissions: 10, max_session_ms: 600_000, min_observation_interval_ms: 500 } });
+  // Eight looks use the requests open to them (the last two are the user's).
+  for (let i = 1; i <= 8; i += 1) {
+    await w.change(20 + i * 20);
+    w.h.fire(500);
+    await until(`look ${i}`, () => w.looks().length === i);
+    w.c().see(`Noted ${i}.`);
+    await until(`seen ${i}`, () => w.live().used === i);
+  }
+  await w.select(); // frame 9: the circle's own request
+  const circle = w.c().asks()[0]!.params as unknown as Turn;
+  w.c().answer('A hint.');
+  await until('shown', () => w.page.ask().answer === 'A hint.');
+  // The screen changes: the frame is taken, not looked at (the reserve), so it is a later gap. A follow-up with the
+  // circle's own picture back on the screen and nothing newer SENT is still the circle's frame: it says nothing of
+  // the later gap.
+  await w.change(250);
+  w.h.fire(500);
+  await settle();
+  assert.deepEqual([w.looks().length, w.live().frames, w.live().paused !== null], [8, 10, true]);
+  w.page.scene.shade = 180; // back to what the circle saw (no sample is kept of it)
+  w.page.review.frame({ bitmap: { width: 1280, height: 800, shade: 180, close() {} } as never, seq: 99, at: '2026-09-30T12:00:09.000Z', presented: 99, presentedAt: performance.now() });
+  w.page.question('And why?');
+  w.page.click('askSubmit');
+  await until('sent', () => w.c().asks().length === 2);
+  const same = w.c().asks()[1]!.params as unknown as Turn;
+  assert.deepEqual([same.context.frame_seq, same.focus, same.gaps.every((g) => g.to_frame_seq <= same.context.frame_seq)], [circle.context.frame_seq, circle.focus, true]);
+  w.c().answer('Because.');
+  await until('shown', () => w.page.ask().answer === 'Because.');
+  assert.deepEqual([w.live().state, w.live().used], ['used_up', 10]);
+  // Every request is used: a new circle is kept, not asked, and its frame is a gap of the session.
+  await w.select(600, 120);
+  assert.match(w.page.ask().status ?? '', /^Kept on this device\. The AI was not asked: all of this AI session's requests are used; start the AI again in the control window\.$/);
+  assert.deepEqual([w.c().asks().length, w.live().frames, w.lines().filter((l) => l['kind'] === 'gap').map((l) => [l['frame_seq'], l['reason']])], [2, 11, [[10, 'budget'], [11, 'not_observed']]]);
+});
+
+test('[synthetic connector] a follow-up is about the circle\'s own frame only when it is that very picture and nothing newer was sent; a follow-up that cannot be written passes nothing and is a gap; the conversation that no longer fits is said as left out', async () => {
+  // Nothing newer was sent, but the picture is another one: a later frame.
+  let w = await app();
+  await w.change(90);
+  await until('a look', () => w.looks().length === 1); // stays out: the frames after it wait
+  await w.select();
+  const circle = w.c().asks()[0]!.params as unknown as Turn;
+  w.c().answer('A hint.');
+  await until('shown', () => w.page.ask().answer === 'A hint.');
+  await w.change(140); // waits behind the look that is out: taken, not sent
+  w.page.question('And now?');
+  w.page.click('askSubmit');
+  await until('sent', () => w.c().asks().length === 2);
+  const other = w.c().asks()[1]!.params as unknown as Turn;
+  assert.deepEqual([other.focus, other.context.frame_seq > circle.context.frame_seq, other.image.sha256 !== circle.image.sha256, other.gaps.at(-1)], [null, true, true, { from_frame_seq: 3, to_frame_seq: 3, reason: 'coalesced' }]);
+  // The circle's own picture is back on the screen, but a newer frame was sent meanwhile: a later frame too.
+  w = await app({ policy: { ...POLICY, min_observation_interval_ms: 500 } });
+  await w.select();
+  const first = w.c().asks()[0]!.params as unknown as Turn;
+  w.c().answer('A hint.');
+  await until('shown', () => w.page.ask().answer === 'A hint.');
+  await w.change(90);
+  await until('a look of the changed screen', () => w.looks().length === 1);
+  w.c().see('Changed.');
+  await until('seen', () => w.live().seen !== null);
+  await w.change(20); // as it was when the circle was made
+  w.h.fire(500);
+  await until('a look of the screen as before', () => w.looks().length === 2);
+  w.c().see('As before.');
+  await until('seen', () => w.live().used === 3);
+  w.page.question('And now?');
+  w.page.click('askSubmit');
+  await until('sent', () => w.c().asks().length === 2);
+  const back = w.c().asks()[1]!.params as unknown as Turn;
+  assert.deepEqual([back.image.sha256 === first.image.sha256, back.focus, back.context.frame_seq > w.looks()[1]!.context.frame_seq, JSON.parse(back.history.at(-1)!.text).kind], [true, null, true, 'historical_focus_reference'], 'the same pixels, but not the circle\'s frame: never an older frame after a newer one');
+  w.c().answer('Still a slope.');
+  await until('shown', () => w.page.ask().answer === 'Still a slope.');
+  // A follow-up whose record cannot be written: its picture is kept, nothing is sent, and that frame is a gap named in the next request.
+  w.page.pointer('pointerdown', 1, 200, 300);
+  w.page.pointer('pointermove', 1, 260, 300);
+  w.page.pointer('pointerup', 1, 260, 300); // other ink, the same pixels: another frame whose picture is on this device already
+  await w.page.review.pending();
+  const frames = w.live().frames!;
+  w.h.failWrites.only = `${path.sep}asks${path.sep}`;
+  w.page.question('Not written.');
+  w.page.click('askSubmit');
+  await until('not sent', () => /^Not sent: the request could not be written to this device/.test(w.page.ask().status ?? ''));
+  w.h.failWrites.only = null;
+  assert.deepEqual([w.c().asks().length, w.live().frames, w.lines().at(-1)!['kind'], w.lines().at(-1)!['reason'], w.lines().at(-1)!['frame_seq']], [2, frames + 1, 'gap', 'not_observed', frames + 1]);
+  w.page.click('askSubmit');
+  await until('sent', () => w.c().asks().length === 3);
+  const next = w.c().asks()[2]!.params as unknown as Turn;
+  assert.deepEqual([next.context.frame_seq, next.gaps.at(-1)], [frames + 2, { from_frame_seq: frames + 1, to_frame_seq: frames + 1, reason: 'not_observed' }]);
+  // After a request of the user's own ends, a frame that waited behind it is looked at.
+  w = await app();
+  await w.select();
+  await w.change(90); // waits: the circle's request is out
+  assert.equal(w.looks().length, 0);
+  w.c().answer('A hint.');
+  await until('the waiting frame is looked at', () => w.looks().length === 1);
+  // More was said and seen than a request can carry: the newest whole entries go, and what was left out is said as a gap.
+  w = await app({ policy: { max_submissions: 100, max_session_ms: 3_600_000, min_observation_interval_ms: 500 } });
+  for (let i = 1; i <= 30; i += 1) {
+    await w.change(10 + i * 7);
+    w.h.fire(500);
+    await until(`look ${i}`, () => w.looks().length === i);
+    w.c().see(`Noted ${i}.`);
+    await until(`seen ${i}`, () => w.live().used === i);
+  }
+  await w.select();
+  const full = w.c().asks()[0]!.params as unknown as Turn;
+  assert.deepEqual([full.history.length, full.history[0]!.text, full.history.at(-1)!.text, full.gaps], [23, 'Noted 8.', 'Noted 30.', [{ from_frame_seq: 1, to_frame_seq: 7, reason: 'budget' }]]);
+});
+
 test('[synthetic connector] unattended looks never use the requests kept for the user\'s own circles and questions; the user\'s own requests still go; when all are used the session ends, and nothing renews it', async () => {
   const w = await app({ policy: { max_submissions: 5, max_session_ms: 600_000, min_observation_interval_ms: 500 } });
   assert.equal(w.live().reserve, 1);
@@ -283,10 +394,25 @@ test('[synthetic connector] the session ends at its own time, when the user stop
   w = await app();
   await w.change(90);
   await until('a look', () => w.looks().length === 1);
+  await w.change(140); // waits behind the look that is out
+  w.h.fire(30_000); // its time has come, but one request at a time: it still waits
+  await settle();
+  assert.deepEqual([w.looks().length, w.live().frames], [1, 2]);
   w.press('lc:live-stop');
   await until('ended', () => w.live().state === 'ended' && w.live().out === 0);
   assert.deepEqual([w.live().ended, w.c().count('companion/stop'), w.h.current() !== null, w.live().seen], ['stopped by you', 1, true, null]);
-  assert.deepEqual(w.lines().map((l) => l['kind']), ['started', 'look', 'ended', 'gap', 'not_looked']);
+  // The frame that was waiting is a gap (never looked at); the look that was out was not made.
+  assert.deepEqual(w.lines().map((l) => [l['kind'], l['frame_seq'] ?? null, l['reason'] ?? null]), [['started', null, null], ['look', 1, null], ['gap', 2, 'not_observed'], ['ended', null, 'stopped by you'], ['settled', null, null], ['gap', 1, 'not_observed'], ['not_looked', 1, null]]);
+  // The end's own line says a request was still out; how that one settled, and the count as it then is, is a line of its own.
+  const lines = w.lines();
+  assert.deepEqual([lines[3]!['used'], lines[3]!['out'], lines[4]!['request_id'], lines[4]!['status'], lines[4]!['submission'], lines[4]!['used'], lines[4]!['out']], [0, 1, w.looks()[0]!.request_id, 'cancelled', 'submitted', 1, 0]);
+  // After its end no frame is taken for it, at any time; and its end is said once, whatever ends after it.
+  await w.change(200);
+  w.h.fire(30_000);
+  assert.deepEqual([w.live().frames, w.looks().length], [2, 1]);
+  w.press('lc:live-stop');
+  w.h.fire(1_800_000); // its own time comes after it was stopped: it is not ended a second time
+  assert.deepEqual([w.lines().filter((l) => l['kind'] === 'ended').length, w.live().ended, w.c().count('companion/stop')], [1, 'stopped by you', 1]);
   w.h.handlers['lc:live-stop']!({ sender: w.s.overlay.webContents }); // only the control window stops or starts it
   // The connector is lost.
   w = await app();
@@ -303,7 +429,7 @@ test('[synthetic connector] the session ends at its own time, when the user stop
   w.h.end('stopped by the test');
   await until('ended', () => w.h.current() === null, 5000);
   assert.deepEqual(w.c().calls.filter((x) => x.method === 'companion/stop').map((x) => x.params), [{ session_id: session, epoch: 1 }]);
-  assert.deepEqual(w.lines().map((l) => [l['kind'], l['reason'] ?? null]), [['started', null], ['ended', 'the capture was stopped']]);
+  assert.deepEqual(w.lines().map((l) => [l['kind'], l['reason'] ?? null]), [['started', null], ['ended', 'the capture was stopped'], ['settled', null]], 'the circle\'s request that was out settles after the end, as a line of its own');
   assert.equal(w.page.ask().answer, null);
   // A Start whose answer is refused by the connector: not started, with the connector's fixed reason, and said.
   const refused = await app({ check: true, ai: false });
@@ -377,6 +503,209 @@ test('[synthetic connector] only the connector\'s output closes while it stays r
   assert.deepEqual([w.fakes.made.length, w.c().count('companion/start'), w.live().state], [2, 0, 'ended']);
   assert.deepEqual(plain(await w.press('lc:live-start', POLICY)), { ok: true });
   assert.deepEqual([w.c().count('companion/start'), w.c().count('companion/turn'), w.live().state], [1, 0, 'on'], 'a new session; the look that was lost is not sent again');
+});
+
+test('[synthetic connector] when the capture keeps no further frame, the AI is given none by itself: that is said as the looks having stopped, with why, in the session that runs and in one started afterwards; the user\'s own requests still go while a picture can be kept', async () => {
+  const w = await app({ policy: { ...POLICY, min_observation_interval_ms: 500 }, max_frames: 2 });
+  for (let i = 1; i <= 2; i += 1) {
+    await w.change(40 + i * 40);
+    w.h.fire(500);
+    await until(`look ${i}`, () => w.looks().length === i);
+    w.c().see(`Noted ${i}.`);
+    await until(`seen ${i}`, () => w.live().used === i);
+  }
+  assert.deepEqual([w.live().state, w.live().paused], ['on', null]);
+  await w.change(200); // the third frame is over the capture's cap: not kept, so not looked at
+  w.h.fire(500);
+  await settle();
+  const WHY = 'no further frame of this capture is kept on this device (the retention limit of 2 frames for this session is reached), and only a kept frame is given to ChatGPT by itself';
+  assert.deepEqual([w.looks().length, w.live().state, w.live().paused, w.lines().at(-1)!['kind'], w.lines().at(-1)!['reason']], [2, 'on', WHY, 'looks_stopped', WHY]);
+  assert.match(w.page.hint() ?? '', /ChatGPT now looks only when you circle or ask \(no further frame of this capture is kept on this device /);
+  // The user's own circle still goes (its picture is kept with the selection, not as a frame of the capture).
+  await w.select();
+  assert.equal(w.c().asks().length, 1);
+  w.c().answer('A hint.');
+  await until('shown', () => w.page.ask().answer === 'A hint.');
+  // A session started afterwards in this capture says it from its start.
+  w.press('lc:live-stop');
+  assert.deepEqual(plain(await w.press('lc:live-start', POLICY)), { ok: true });
+  assert.deepEqual([w.live().state, w.live().paused, w.live().used], ['on', WHY, 0]);
+});
+
+test('[synthetic connector] an interruption the connector does not confirm ends the session, with that said; the connector\'s own bound for looks stops them and the frame that waited is not sent either; a frame taken before the AI was started is not looked at', async () => {
+  // The user cancels a circle's request; the connector cannot confirm that ChatGPT stopped: it stops its session, and so does the app.
+  let w = await app({ configure: (c) => void (c.onCancel = 'unconfirmed') });
+  await w.select();
+  w.page.click('askCancel');
+  await until('ended', () => w.live().state === 'ended');
+  assert.deepEqual([w.live().ended, w.live().used, w.c().count('companion/interrupt')], ['a request was interrupted, and whether ChatGPT stopped working on it is not confirmed; nothing more is sent by itself', 1, 1]);
+  await until('said on the card', () => /^Cancelled: no answer is shown\. Whether ChatGPT stopped working on it is not confirmed/.test(w.page.ask().status ?? ''));
+  await w.change(90);
+  assert.equal(w.c().count('companion/turn'), 1, 'nothing is sent by itself after that');
+  // A circle while a look is out, and the connector cannot confirm that it interrupted the look: it stops its
+  // session and refuses the circle's request before it reached ChatGPT. Said as that (the user cancelled nothing),
+  // and the session is over at once: nothing is sent on the next frame.
+  w = await app();
+  await w.change(90);
+  await until('a look', () => w.looks().length === 1);
+  await w.select();
+  w.c().fail(w.c().asks()[0]!.id, 'interrupt_unconfirmed', 'not_submitted');
+  w.c().fail(w.c().looks()[0]!.id, 'stale_context', 'submitted');
+  await until('ended', () => w.live().state === 'ended' && w.live().out === 0);
+  assert.deepEqual([w.live().ended, w.live().used, w.page.ask().status], ['an interruption was not confirmed by ChatGPT, so the AI session was stopped; nothing more is sent by itself', 1, 'No answer: an interruption was not confirmed by ChatGPT, so the AI session was stopped. It did not reach ChatGPT; it is not sent again.']);
+  await w.change(170);
+  assert.deepEqual([w.c().count('companion/turn'), w.c().count('companion/stop')], [2, 1]);
+  assert.deepEqual(plain(await w.press('lc:live-start', POLICY)), { ok: true }, 'the user can start the AI again');
+  // An interruption that IS confirmed leaves the session as it was.
+  w = await app();
+  await w.select();
+  w.page.click('askCancel');
+  await until('said on the card', () => w.page.ask().status === 'Cancelled: no answer is shown.');
+  assert.deepEqual([w.live().state, w.live().ended], ['on', null]);
+  // The connector says the session's own bound for unattended looks is reached while another frame waits: the
+  // looks stop there, and the waiting frame is not sent after it either.
+  w = await app({ policy: { ...POLICY, min_observation_interval_ms: 500 } });
+  await w.change(90);
+  await until('a look', () => w.looks().length === 1);
+  await w.change(140); // waits behind it
+  w.c().fail(w.c().looks()[0]!.id, 'budget_reached');
+  await until('paused', () => w.live().paused !== null);
+  w.h.fire(500);
+  await settle();
+  assert.deepEqual([w.looks().length, w.live().state, w.lines().filter((l) => l['kind'] === 'gap').map((l) => [l['frame_seq'], l['reason']])], [1, 'on', [[1, 'budget'], [2, 'budget']]]);
+  // A frame taken before the user started the AI (its picture still being made then) is not this session's to look at.
+  w = await app({ ai: false });
+  let release = (): void => undefined;
+  w.page.encoding.gate = new Promise<void>((r) => (release = r));
+  w.page.scene.shade = 90;
+  await w.page.review.sample(); // taken now; its picture is held back
+  await settle();
+  assert.deepEqual(plain(await w.press('lc:live-start', POLICY)), { ok: true });
+  w.page.encoding.gate = null;
+  release();
+  await w.page.review.pending();
+  await settle();
+  assert.deepEqual([w.looks().length, w.live().frames, w.live().state], [0, 0, 'on'], 'kept on this device, not given to the AI, and not a frame of its session');
+  await w.change(150); // taken after the start
+  await until('a look', () => w.looks().length === 1);
+});
+
+test('[synthetic connector] the session\'s own record: a line cut short by a failed write is cut back before the next one, the lines that could not be written are counted and said (after the capture\'s end too), and nothing is sent again for them', async () => {
+  const w = await app({ policy: { ...POLICY, min_observation_interval_ms: 500 } });
+  w.h.failWrites.only = 'live.jsonl';
+  w.h.failWrites.partialAppend = 25; // the session's next line is cut short: 25 bytes of it reach the file
+  await w.change(90);
+  await until('a look', () => w.looks().length === 1);
+  const file = path.join(w.h.userData, 'captures', w.looks()[0]!.context.capture_session_id, 'live.jsonl');
+  assert.equal(fs.readFileSync(file, 'utf8').split('\n').at(-1)!.length, 25, 'the torn line is on the device for now');
+  assert.deepEqual([w.live().unwritten, w.live().state], [1, 'on']);
+  w.c().see('Noted.');
+  await until('seen', () => w.live().seen !== null);
+  // The next line is whole, and every line reads back: the torn part was cut away first.
+  assert.deepEqual(w.lines().map((l) => l['kind']), ['started', 'looked']);
+  assert.equal(w.c().count('companion/turn'), 1, 'the look itself was sent once, whatever became of its line');
+  // The end's own line cannot be written: said where the capture's end is said.
+  w.h.failWrites.partialAppend = 10;
+  w.h.end('stopped by the test');
+  await until('ended', () => w.h.current() === null, 5000);
+  const state = plain(w.press('lc:session-state')) as { running: boolean; live_unwritten?: number };
+  assert.deepEqual([state.running, state.live_unwritten], [false, 2]);
+  assert.deepEqual(fs.readFileSync(file, 'utf8').trimEnd().split('\n').slice(0, 2).map((l) => (JSON.parse(l) as { kind: string }).kind), ['started', 'looked']);
+});
+
+test('[synthetic connector] Start the AI on a used-up session that is then refused says the refusal, not a new session; a request of the user\'s own that was sent and not taken is a frame the AI was not given, until it is answered', async () => {
+  let w = await app({ policy: { max_submissions: 1, max_session_ms: 600_000, min_observation_interval_ms: 500 } });
+  await w.select();
+  w.c().answer('The only request.');
+  await until('shown', () => w.page.ask().answer === 'The only request.');
+  assert.equal(w.live().state, 'used_up');
+  w.c().manual.add('companion/start');
+  const starting = w.press('lc:live-start', POLICY) as Promise<unknown>;
+  await until('asked', () => w.c().count('companion/start') === 2);
+  w.c().fail(w.c().calls.at(-1)!.id, 'busy');
+  assert.deepEqual(plain(await starting), { ok: false, reason: 'the connector is busy (a sign-in is pending in it, or an earlier request is still being ended), so the AI was not started; try again in a moment' });
+  assert.deepEqual([w.live().state, w.live().reason], ['off', 'the connector is busy (a sign-in is pending in it, or an earlier request is still being ended), so the AI was not started; try again in a moment'], 'said as not started, with why: never as a new session');
+  assert.deepEqual(w.lines().slice(-2).map((l) => [l['kind'], l['reason']]), [['ended', 'all of its requests were used, and you started the AI again'], ['not_started', 'the connector is busy (a sign-in is pending in it, or an earlier request is still being ended), so the AI was not started; try again in a moment']]);
+  // A circle's own request that the connector does not take (busy): its frame was not given to the AI. The next
+  // request says so; once a request about that very frame is answered, it is no gap any more.
+  w = await app();
+  await w.select();
+  const circle = w.c().asks()[0]!.params as unknown as Turn;
+  w.c().fail(w.c().asks()[0]!.id, 'busy');
+  await until('refused', () => /^No answer/.test(w.page.ask().status ?? ''));
+  assert.deepEqual(w.lines().filter((l) => l['kind'] === 'gap').map((l) => [l['frame_seq'], l['reason']]), [[circle.context.frame_seq, 'backpressure']]);
+  w.page.question('Then tell me in words.');
+  w.page.click('askSubmit');
+  await until('sent', () => w.c().asks().length === 2);
+  const again = w.c().asks()[1]!.params as unknown as Turn;
+  // (the same picture, the circle's own frame: it is this request's frame, so it is not said as a gap of itself)
+  assert.deepEqual([again.context.frame_seq, again.focus, again.gaps], [circle.context.frame_seq, circle.focus, []]);
+  w.c().answer('In words.');
+  await until('shown', () => w.page.ask().answer === 'In words.');
+  await w.change(90);
+  await until('a look', () => w.looks().length === 1);
+  assert.deepEqual(w.looks()[0]!.gaps, [], 'answered since: the AI was given that frame');
+});
+
+test('[synthetic connector] Cancel pressed while a follow-up\'s picture is still being made: nothing leaves the window, and it is said; a refusal says whether the request had reached ChatGPT; while the earlier response stays shown, which picture it is about stays said', async () => {
+  const w = await app();
+  await w.select();
+  w.c().answer('A hint.');
+  await until('shown', () => w.page.ask().answer === 'A hint.');
+  const about = w.page.ask().status!;
+  assert.match(about, /^From ChatGPT \(vision-model\) in 1\.2 s, about the whole display as it was at /);
+  let release = (): void => undefined;
+  w.page.encoding.gate = new Promise<void>((r) => (release = r)); // the follow-up's picture is held
+  w.page.question('And why?');
+  w.page.click('askSubmit');
+  await settle();
+  assert.equal(w.page.ask().cancel, true, 'Cancel is offered while it is being made');
+  w.page.click('askCancel');
+  w.page.encoding.gate = null;
+  release();
+  await until('not sent', () => /^Not sent: you cancelled it before it was sent\./.test(w.page.ask().status ?? ''));
+  await settle();
+  assert.deepEqual([w.c().asks().length, w.c().count('companion/interrupt'), w.page.ask().answer, w.page.ask().submit], [1, 0, 'A hint.', true], 'never sent, so nothing to interrupt');
+  assert.equal(w.page.ask().status, `Not sent: you cancelled it before it was sent. The response still shown is the one before: ${about}`);
+  // A refusal says whether the request had reached ChatGPT, in the connector's own word.
+  for (const [submission, said] of [['not_submitted', 'It did not reach ChatGPT'], ['submitted', 'It had reached ChatGPT'], ['unknown', 'Whether it reached ChatGPT is not known']] as const) {
+    const x = await app();
+    await x.select();
+    x.c().fail(x.c().asks()[0]!.id, submission === 'unknown' ? 'failed' : 'busy', submission);
+    await until('refused', () => /^No answer/.test(x.page.ask().status ?? ''));
+    assert.match(x.page.ask().status ?? '', new RegExp(`^No answer: .*\\. ${said}; it is not sent again\\.$`), submission);
+  }
+});
+
+test('[synthetic connector] a long session: every look has a request id of its own, a request never carries more gaps than the envelope takes (the newest), and a capture that ends while the AI is being started never uses that session', async () => {
+  const w = await app({ policy: { max_submissions: 100, max_session_ms: 3_600_000, min_observation_interval_ms: 500 } });
+  await w.change(13);
+  await until('look 1', () => w.looks().length === 1);
+  for (let i = 2; i <= 70; i += 1) {
+    await w.change((i * 53) % 256); // waits behind the look that is out
+    await w.change((i * 53 + 97) % 256); // replaces it: the frame before is a gap of its own
+    w.c().see(`Noted ${i - 1}.`, w.c().looks()[i - 2]!);
+    await until(`seen ${i - 1}`, () => w.live().used === i - 1);
+    w.h.fire(500);
+    await until(`look ${i}`, () => w.looks().length === i);
+  }
+  assert.equal(w.lines().filter((l) => l['kind'] === 'gap').length, 69);
+  const last = w.looks().at(-1)!;
+  assert.deepEqual([last.gaps.length <= 64, last.gaps.at(-1)!.to_frame_seq < last.context.frame_seq, last.gaps.every((g) => g.to_frame_seq < last.context.frame_seq), w.live().missed], [true, true, true, null]);
+  assert.equal(last.gaps.filter((g) => g.reason === 'coalesced').at(-1)!.from_frame_seq, last.context.frame_seq - 1, 'the newest gaps are the ones carried');
+  assert.equal(new Set(w.looks().map((l) => l.request_id)).size, 70, 'each look is a request of its own');
+  // The capture is stopped while the AI's Start is still out: when the Start is answered, that session is stopped and never used.
+  const x = await app({ ai: false });
+  x.c().manual.add('companion/start');
+  const starting = x.press('lc:live-start', POLICY) as Promise<unknown>;
+  await until('asked', () => x.c().count('companion/start') === 1);
+  x.h.end('stopped by the test');
+  await until('ended', () => x.h.current() === null, 5000);
+  const start = x.c().calls.find((c) => c.method === 'companion/start')!;
+  x.c().reply(start.id, { session_id: start.params['session_id'], epoch: 1, remaining_submissions: 60, expires_in_ms: 1_800_000 });
+  await starting;
+  await until('that session is stopped', () => x.c().count('companion/stop') === 1);
+  assert.deepEqual([x.c().calls.at(-1)!.params, x.c().count('companion/turn')], [{ session_id: start.params['session_id'], epoch: 1 }, 0]);
 });
 
 // ---- the released contract and Learning's own preparation, in Python (when a Backend checkout is given) --------------

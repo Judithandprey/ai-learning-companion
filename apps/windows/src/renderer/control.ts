@@ -22,13 +22,13 @@ type ContextItem = {
   picture_state: string;
 };
 type Result = { ok: true } | { ok: false; reason: string };
-type SessionInfo = { running: true; starting: boolean; ending: boolean; display: { label: string; bounds: { width: number; height: number }; scale_factor: number }; session_id: string; live: Live } | { running: false; starting: boolean; ended: string | null };
+type SessionInfo = { running: true; starting: boolean; ending: boolean; display: { label: string; bounds: { width: number; height: number }; scale_factor: number }; session_id: string; live: Live } | { running: false; starting: boolean; ended: string | null; live_unwritten?: number };
 /** The session's own bounds, chosen here before Start (never ChatGPT's quota). */
 type Policy = { max_submissions: number; max_session_ms: number; min_observation_interval_ms: number };
 /** The AI's session of the running capture, as the main process says it (main.ts, liveInfo). */
 type Live =
   | { state: 'none' }
-  | { state: 'off'; reason: string | null }
+  | { state: 'off'; reason: string | null; unwritten?: number }
   | { state: 'starting' }
   | { state: 'on' | 'used_up' | 'ended'; model: string; max_submissions: number; used: number; reserve: number; expires_at: string; min_observation_interval_ms: number; paused: string | null; missed: string | null; ended: string | null; seen: { at: string; frame_seq: number } | null; frames: number; out: number; unwritten: number };
 /** The quota as ChatGPT states it (shared/live.ts): buckets apart; null and unavailable are not known, never zero. */
@@ -48,6 +48,7 @@ type SubStatus =
       state: 'not_checked' | 'checking' | 'signed_in' | 'signed_out' | 'unknown' | 'unavailable';
       plan: string | null;
       quota: Quota | null;
+      quota_read_at: string | null;
       models: Array<{ id: string; label: string; image_input: boolean; default: boolean }>;
       model: string | null;
       login: 'none' | 'starting' | 'waiting' | 'failed' | 'cancelled' | 'refused_address';
@@ -263,7 +264,8 @@ function showSession(s: SessionInfo): void {
       ? 'Starting: opening the overlay…'
       : `Capturing ${s.display.label} (${s.display.bounds.width}×${s.display.bounds.height} at ${s.display.scale_factor}×). The overlay is on that display: ✋ passes clicks to your apps, ✎ writes, ? selects.`;
   } else {
-    $('session').textContent = starting ? 'Starting: listing the displays and opening the overlay…' : s.ended ? `Not capturing: ${s.ended.replace(/\.$/, '')}.` : 'Not capturing.';
+    const record = (s.live_unwritten ?? 0) > 0 ? ` ${s.live_unwritten} line(s) of the AI session's record (live.jsonl) could not be written on this device.` : '';
+    $('session').textContent = starting ? 'Starting: listing the displays and opening the overlay…' : s.ended ? `Not capturing: ${s.ended.replace(/\.$/, '')}.${record}` : 'Not capturing.';
     if (lastSample) lastSample = { ...lastSample, state: 'ended' };
     showSample();
   }
@@ -279,6 +281,7 @@ lc.onSample((s) => {
 });
 setInterval(() => {
   if (running) showSample();
+  if (shownLive) showLive(shownLive);
 }, 1000);
 lc.onInkSaved(() => void showInk());
 lc.onRecoveries(showKept);
@@ -297,39 +300,16 @@ lc.onCloseHeld(() => {
   $('kept').scrollIntoView();
 });
 void lc.recoveries().then(showKept);
-/** The bounds as they are set beside Start, or what is wrong with them (they are never changed for the user). */
-function policyNow(): Policy | string {
-  const [requests, minutes, seconds] = ['aiRequests', 'aiMinutes', 'aiInterval'].map((id) => Number(($(id) as HTMLInputElement).value));
-  return policyOf(requests!, minutes!, seconds!);
-}
-/** The AI's session of the running capture: said below the capture, with Start again / Stop for the AI alone. */
-function showLive(l: Live | null): void {
-  const el = $('live');
-  el.hidden = l === null || l.state === 'none';
-  if (l === null || l.state === 'none') return void ($('liveActions').hidden = true);
-  el.textContent = liveLine(l, Date.now());
-  $('liveActions').hidden = false;
-  $('liveStart').hidden = !(l.state === 'off' || l.state === 'ended' || l.state === 'used_up');
-  $('liveStop').hidden = !(l.state === 'on' || l.state === 'used_up');
-}
-$('liveStart').addEventListener('click', async () => {
-  const policy = policyNow();
-  if (typeof policy === 'string') return void ($('aiNote').textContent = policy);
-  $('aiNote').textContent = '';
-  const r = await lc.liveStart(policy);
-  if (!r.ok) $('aiNote').textContent = `The AI was not started: ${r.reason}.`;
-});
+$('liveStart').addEventListener('click', () => void startLiveAgain());
 $('liveStop').addEventListener('click', () => lc.liveStop());
 $('aiOn').addEventListener('change', () => void ($('start').textContent = startLabel(($('aiOn') as HTMLInputElement).checked)));
 $('start').addEventListener('click', async () => {
   if (!chosen) return;
-  // With the box ticked, Start also starts the AI's observation, within the bounds shown; else the capture only.
-  const withAi = !$('aiSession').hidden && ($('aiOn') as HTMLInputElement).checked;
-  const policy = withAi ? policyNow() : null;
-  if (typeof policy === 'string') return void ($('aiNote').textContent = policy);
+  const asked = startRequest();
+  if ('problem' in asked) return void ($('aiNote').textContent = asked.problem);
   $('aiNote').textContent = '';
   ($('start') as HTMLButtonElement).disabled = true;
-  const r = await lc.start(chosen, policy ? { policy } : null);
+  const r = await lc.start(chosen, asked.ai);
   if (!r.ok) {
     $('session').textContent = `Could not start: ${r.reason}.`;
     ($('start') as HTMLButtonElement).disabled = false;
@@ -345,6 +325,46 @@ const AI_DEFAULT = 'No AI is connected: captured frames and ink stay on this dev
 // set beside it), and that is said instead.
 const NO_AI = 'No AI is connected; nothing is sent to any AI.';
 const ASK_ONLY = 'ChatGPT (your subscription) observes a display only while its AI session runs: started by your own Start, within the bounds you set beside it, and said under Capture. Without that session nothing is sent to any AI.';
+/** The bounds as they are set beside Start, or what is wrong with them (they are never changed for the user). */
+function policyNow(): Policy | string {
+  const [requests, minutes, seconds] = ['aiRequests', 'aiMinutes', 'aiInterval'].map((id) => Number(($(id) as HTMLInputElement).value));
+  return policyOf(requests!, minutes!, seconds!);
+}
+/**
+ * What a press on Start asks for: the capture alone (`ai` null), or with the AI's observation within the bounds
+ * shown: only with the box offered and ticked. Bounds that are not this version's are a problem that is said, and
+ * nothing is started.
+ */
+function startRequest(): { ai: { policy: Policy } | null } | { problem: string } {
+  const box = $('aiOn') as HTMLInputElement;
+  if ($('aiSession').hidden || box.disabled || !box.checked) return { ai: null };
+  const policy = policyNow();
+  return typeof policy === 'string' ? { problem: policy } : { ai: { policy } };
+}
+/** The AI's session as last said: its time left is said anew every second (nothing else tells this window that time passes). */
+let shownLive: Live | null = null;
+/** The AI's session of the running capture: said below the capture, with Start again / Stop for the AI alone. */
+function showLive(l: Live | null): void {
+  shownLive = l;
+  const el = $('live');
+  el.hidden = l === null || l.state === 'none';
+  if (l === null || l.state === 'none') {
+    for (const id of ['liveActions', 'liveStart', 'liveStop']) $(id).hidden = true;
+    return;
+  }
+  el.textContent = liveLine(l, Date.now());
+  $('liveActions').hidden = false;
+  $('liveStart').hidden = !(l.state === 'off' || l.state === 'ended' || l.state === 'used_up');
+  $('liveStop').hidden = !(l.state === 'on' || l.state === 'used_up');
+}
+/** The user's press on Start the AI: a new session within the bounds shown, or why not. */
+async function startLiveAgain(): Promise<void> {
+  const policy = policyNow();
+  if (typeof policy === 'string') return void ($('aiNote').textContent = policy);
+  $('aiNote').textContent = '';
+  const r = await lc.liveStart(policy);
+  if (!r.ok) $('aiNote').textContent = `The AI was not started: ${r.reason}.`;
+}
 /** What Start does, on the button itself. */
 const startLabel = (withAi: boolean): string => (withAi ? 'Start: capture, and let ChatGPT observe this display' : 'Start: capture only (no AI)');
 /** The envelope's bounds on a session (an implementation boundary of this version, not a product decision), in the units shown. */
@@ -361,10 +381,10 @@ function policyOf(requests: number, minutes: number, seconds: number): Policy | 
 function liveLine(l: Live, nowMs: number): string {
   if (l.state === 'none') return '';
   if (l.state === 'starting') return 'AI: starting…';
-  if (l.state === 'off') return `AI: not observing this display${l.reason ? `: ${l.reason}` : ' (it was not started with this capture)'}. Frames and ink stay on this device.`;
+  const record = (l.unwritten ?? 0) > 0 ? ` ${l.unwritten} line(s) of the AI session's record (live.jsonl) could not be written on this device.` : '';
+  if (l.state === 'off') return `AI: not observing this display${l.reason ? `: ${l.reason}` : ' (it was not started with this capture)'}. Frames and ink stay on this device.${record}`;
   const left = Math.max(0, l.max_submissions - l.used);
   const bounds = `${l.used} of ${l.max_submissions} requests used (${left} left; the last ${l.reserve} are kept for your own circles and questions)`;
-  const record = l.unwritten > 0 ? ` ${l.unwritten} line(s) of this session's record could not be written on this device.` : '';
   if (l.state === 'ended') return `AI: stopped observing this display: ${l.ended}. ${bounds[0]!.toUpperCase()}${bounds.slice(1)}. Nothing is sent to ChatGPT now; Start the AI starts a new session.${record}`;
   if (l.state === 'used_up') return `AI: all ${l.max_submissions} requests of this session are used (its own bound, not ChatGPT's quota). Nothing more is sent to ChatGPT in it; Start the AI ends it and starts a new session.${record}`;
   const minutes = Math.max(0, Math.ceil((Date.parse(l.expires_at) - nowMs) / 60_000));
@@ -373,10 +393,12 @@ function liveLine(l: Live, nowMs: number): string {
     `${bounds[0]!.toUpperCase()}${bounds.slice(1)}; about ${minutes} min left. These are this session's own bounds, not ChatGPT's quota. ${seen}${l.missed ? `; the newest look was not made (${l.missed})` : ''}${l.out > 0 ? '; a request is out' : ''}.${record}`;
 }
 /** The quota as ChatGPT states it, bucket by bucket: what is not reported is said as not known, never as zero; credits are ChatGPT's own figure, never an amount of money. */
-function quotaText(q: Quota | null): string {
+function quotaText(q: Quota | null, readAt: string | null = null): string {
   if (q === null) return 'Usage: not read.';
-  if (!q.available) return 'Usage as ChatGPT reports it: not available now (not known; this is not zero).';
-  const included = q.ordinary_usage_allowed === null ? 'whether included usage is allowed now is not reported' : q.ordinary_usage_allowed ? 'included usage is allowed now' : 'included usage is NOT allowed now (this alone says nothing about credits)';
+  // What the account was when it was read, never how it is now: nothing reads it again by itself (Check connection does).
+  const at = readAt ? ` at ${new Date(readAt).toLocaleTimeString()}` : '';
+  if (!q.available) return `Usage as ChatGPT reported it${at}: not available then (not known; this is not zero).`;
+  const included = q.ordinary_usage_allowed === null ? 'whether included usage was allowed was not reported' : q.ordinary_usage_allowed ? 'included usage was allowed then' : 'included usage was NOT allowed then (this alone says nothing about credits)';
   const span = (mins: number): string => (mins % 1440 === 0 ? `${mins / 1440}-day` : mins % 60 === 0 ? `${mins / 60}-hour` : `${mins}-minute`);
   const win = (name: string, w: QuotaWindow): string | null => (w === null ? null : `${name} window ${w.used_percent}% used${w.window_duration_mins !== null ? ` (${span(w.window_duration_mins)})` : ''}${w.resets_at ? `, resets ${new Date(w.resets_at).toLocaleString()}` : ''}`);
   const reached: Record<string, string> = {
@@ -395,17 +417,21 @@ function quotaText(q: Quota | null): string {
     ].filter((x) => x !== null);
     return `${w.limit_id ?? 'a bucket without a name'}${w.normal_model_slug ? ` (${w.normal_model_slug})` : ''}: ${parts.join('; ')}`;
   });
-  return `Usage as ChatGPT reports it (the account's, not this app's session bounds): ${included}. ${buckets.length > 0 ? buckets.join(' · ') : 'No bucket reported'}.`;
+  return `Usage as ChatGPT reported it${at} (the account's, not this app's session bounds; Check connection reads it again): ${included}. ${buckets.length > 0 ? buckets.join(' · ') : 'No bucket reported'}.`;
 }
 let lastLink: LinkStatus = { mode: 'off' };
 let lastSub: SubStatus = { mode: 'off' };
+/** Whether Start should also start the AI when it can: yes until the user unticks the box; then as the user left it. */
+let aiWanted = true;
+/** The box was offered (could be changed) when the subscription was last shown: only then is its tick the user's own. */
+let aiOffered = false;
 /** What the development capture link does, and what the subscription can be sent; the header says both. */
 function showLink(l: LinkStatus): void {
   lastLink = l;
   const managed = lastSub.mode === 'managed';
   const ai = managed ? ASK_ONLY : NO_AI;
   const el = $('link');
-  if (l.mode !== 'development') $('ai').textContent = managed ? `Captured frames and ink stay on this device. ${ASK_ONLY}` : AI_DEFAULT;
+  if (l.mode !== 'development') $('ai').textContent = managed ? `Captured frames and ink are kept on this device. ${ASK_ONLY}` : AI_DEFAULT;
   if (l.mode === 'off') {
     el.hidden = true;
     return;
@@ -446,7 +472,7 @@ function showLink(l: LinkStatus): void {
     l.not_sent > 0 ? `${l.not_sent} not sent (kept on this device)` : '',
     l.earlier_unknown > 0 ? `${l.earlier_unknown} earlier stream(s) whose end is not known` : '',
   ].filter(Boolean);
-  el.textContent = `Capture storage (development): ${states[l.state] ?? l.state}. ${parts.join('; ')}.${l.detail ? ` ${l.detail}.` : ''} ${managed ? 'These stored frames are not sent to any AI.' : 'AI: not connected.'}`;
+  el.textContent = `Capture storage (development): ${states[l.state] ?? l.state}. ${parts.join('; ')}.${l.detail ? ` ${l.detail}.` : ''} ${managed ? 'This local service sends nothing to any AI; what ChatGPT is given is said under Capture.' : 'AI: not connected.'}`;
 }
 
 /** The managed ChatGPT subscription: its sign-in state, plan, usage limits and models, and what the user can press. */
@@ -483,7 +509,7 @@ function showSubscription(s: SubStatus): void {
   $('subState').textContent = `${states[s.state] ?? s.state}${logins[s.login] ?? ''}${s.detail ? ` ${s.detail[0]!.toUpperCase()}${s.detail.slice(1)}.` : ''}${s.asking ? ' A request is out.' : ''}`;
   const known = s.state === 'signed_in' || s.state === 'signed_out' || s.state === 'unknown';
   show('subQuota', s.state === 'signed_in');
-  $('subQuota').textContent = quotaText(s.quota);
+  $('subQuota').textContent = quotaText(s.quota, s.quota_read_at);
   show('subCheck', true);
   ($('subCheck') as HTMLButtonElement).disabled = s.state === 'checking';
   show('subLogin', known && s.state !== 'signed_in' && s.login !== 'waiting' && s.login !== 'starting');
@@ -493,9 +519,12 @@ function showSubscription(s: SubStatus): void {
   const usable = s.models.filter((m) => m.image_input);
   const can = s.state === 'signed_in' && usable.length > 0 && s.login !== 'starting' && s.login !== 'waiting';
   const box = $('aiOn') as HTMLInputElement;
-  if (can && box.disabled) box.checked = true; // (it became available: ticked; the user's own untick after that stays)
-  if (!can) box.checked = false;
+  // The user's own choice is read only while the box could be changed (a forced untick is never taken as theirs),
+  // and it stays through every later read of the account: a Check, a sign-in, "the account changed".
+  if (aiOffered) aiWanted = box.checked;
+  box.checked = can && aiWanted;
   box.disabled = !can;
+  aiOffered = can;
   $('aiSession').hidden = false;
   $('start').textContent = startLabel(box.checked);
   $('aiWhy').textContent = can ? '' : `Not available now: ${s.state === 'signed_in' ? (usable.length === 0 ? 'no model that takes pictures is listed' : 'a sign-in is pending') : 'check the connection and sign in below'}. Start then captures only; nothing is sent to any AI.`;

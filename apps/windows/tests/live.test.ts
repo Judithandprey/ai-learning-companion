@@ -98,24 +98,30 @@ test('a turn is the whole display plus what the trigger allows: what the contrac
 
 test('the conversation sent is the newest whole entries that fit; what is left out is said as a gap, and nothing is cut or deleted', () => {
   const few = [row({ text: 'first', frame_seq: 1 }), row({ kind: 'user', text: 'second', frame_seq: 2, presentation: null }), row({ kind: 'observation', text: 'third', frame_seq: 3, presentation: 'not_presented' })];
-  assert.deepEqual(boundedHistory(few, 3), { history: few, omitted: null });
+  assert.deepEqual(boundedHistory(few, 3), { history: few, omitted: [] });
   // More than fit: the newest, in order; the frames of the ones left out as one gap.
   const many = Array.from({ length: 30 }, (_, i) => row({ text: `entry ${i}`, frame_seq: i + 1, request_id: `r${i}` }));
   const cut = boundedHistory(many, 40);
-  assert.deepEqual([cut.history.length, cut.history[0]!.text, cut.history.at(-1)!.text, cut.omitted], [HISTORY_MAX, 'entry 6', 'entry 29', { from_frame_seq: 1, to_frame_seq: 6, reason: 'budget' }]);
+  assert.deepEqual([cut.history.length, cut.history[0]!.text, cut.history.at(-1)!.text, cut.omitted], [HISTORY_MAX, 'entry 6', 'entry 29', [{ from_frame_seq: 1, to_frame_seq: 6, reason: 'budget' }]]);
   assert.equal(many.length, 30, 'the originals are as they were');
   // Over the total: whole entries only, never a part of one.
   const long = Array.from({ length: 10 }, (_, i) => row({ text: String(i).repeat(HISTORY_TEXT_MAX), frame_seq: i + 1 }));
   const total = boundedHistory(long, 20);
-  assert.deepEqual([total.history.length, total.history.every((h) => h.text.length === HISTORY_TEXT_MAX), total.history.reduce((n, h) => n + h.text.length, 0) <= HISTORY_TOTAL_MAX, total.omitted], [8, true, true, { from_frame_seq: 1, to_frame_seq: 2, reason: 'budget' }]);
+  assert.deepEqual([total.history.length, total.history.every((h) => h.text.length === HISTORY_TEXT_MAX), total.history.reduce((n, h) => n + h.text.length, 0) <= HISTORY_TOTAL_MAX, total.omitted], [8, true, true, [{ from_frame_seq: 1, to_frame_seq: 2, reason: 'budget' }]]);
   // An entry too long for one place is left out (and said), and the ones around it are still taken.
   const over = [row({ text: 'old', frame_seq: 1 }), row({ text: 'x'.repeat(HISTORY_TEXT_MAX + 1), frame_seq: 2 }), row({ text: 'new', frame_seq: 3 })];
-  assert.deepEqual([boundedHistory(over, 3).history.map((h) => h.text), boundedHistory(over, 3).omitted], [['old', 'new'], { from_frame_seq: 2, to_frame_seq: 2, reason: 'budget' }]);
+  assert.deepEqual([boundedHistory(over, 3).history.map((h) => h.text), boundedHistory(over, 3).omitted], [['old', 'new'], [{ from_frame_seq: 2, to_frame_seq: 2, reason: 'budget' }]]);
   // Room kept for one more entry (the reference to an earlier focus).
   assert.equal(boundedHistory(many, 40, 1).history.length, HISTORY_MAX - 1);
   // Nothing from a frame later than the turn's.
   assert.deepEqual(boundedHistory([row({ text: 'now', frame_seq: 2 }), row({ text: 'later', frame_seq: 9 })], 2).history.map((h) => h.text), ['now']);
-  assert.deepEqual(boundedHistory([], 1), { history: [], omitted: null });
+  assert.deepEqual(boundedHistory([], 1), { history: [], omitted: [] });
+  // What is left out is given as runs of frames that never pass over a frame of which an entry IS sent, and never
+  // names a frame that has a sent entry of its own: a gap says frames whose part of the conversation is missing.
+  const mixed = [row({ text: 'a', frame_seq: 1 }), row({ text: 'x'.repeat(HISTORY_TEXT_MAX + 1), frame_seq: 2 }), row({ text: 'b', frame_seq: 3 }), row({ text: 'y'.repeat(HISTORY_TEXT_MAX + 1), frame_seq: 4 }), row({ text: 'z'.repeat(HISTORY_TEXT_MAX + 1), frame_seq: 5 }), row({ kind: 'user', text: 'c', frame_seq: 5, presentation: null }), row({ text: 'd', frame_seq: 7 })];
+  assert.deepEqual([boundedHistory(mixed, 9).history.map((h) => h.text), boundedHistory(mixed, 9).omitted], [['a', 'b', 'c', 'd'], [{ from_frame_seq: 2, to_frame_seq: 2, reason: 'budget' }, { from_frame_seq: 4, to_frame_seq: 4, reason: 'budget' }]]);
+  const run = [row({ text: 'x'.repeat(HISTORY_TEXT_MAX + 1), frame_seq: 2 }), row({ text: 'y'.repeat(HISTORY_TEXT_MAX + 1), frame_seq: 4 }), row({ text: 'kept', frame_seq: 6 })];
+  assert.deepEqual(boundedHistory(run, 9).omitted, [{ from_frame_seq: 2, to_frame_seq: 4, reason: 'budget' }], 'frames left out with nothing sent between them are one run');
 });
 
 test('a follow-up keeps an earlier focus only on the same unchanged frame; on a later frame the focus stays null and the conversation says where it was, without its pixels', () => {
@@ -185,6 +191,10 @@ test('an answer is taken only when it is bound to the turn that was sent: its wh
     { ...provenanceOf(sent), image: sent.image }, // the picture's bytes are not part of it
     { ...provenanceOf(sent), trigger: 'text_followup' },
   ]) not({ provenance: changed }, /not bound to the request that was sent/);
+  // A provenance that lacks a member is not the turn's, however little is missing (and none at all is not one).
+  const less = (v: object, k: string): Record<string, unknown> => Object.fromEntries(Object.entries(v).filter(([x]) => x !== k));
+  const whole = provenanceOf(sent);
+  for (const missing of [{}, null, ...Object.keys(whole).map((k) => less(whole, k)), { ...whole, context: less(whole.context, 'media_position') }, { ...whole, image: less(whole.image, 'sha256') }, { ...whole, focus: less(whole.focus!, 'region_px') }, { ...whole, history: [less(whole.history[0]!, 'presentation')] }, { ...whole, context: { ...whole.context, display: less(whole.context.display, 'scale_factor') } }]) not({ provenance: missing }, /not bound to the request that was sent/);
   for (const v of [null, 'text', [], {}]) assert.equal(readLiveResult(v, sent, 'vision-model'), 'the answer is malformed');
   // An observation's answer is an observation: never generated help.
   const seen = turn(4);
@@ -215,6 +225,8 @@ test('the account is read as the server states it: buckets apart, credits as exa
   assert.deepEqual(readLiveAccount(account({ available: false, ordinary_usage_allowed: null, windows: [] }))?.quota, { available: false, ordinary_usage_allowed: null, windows: [] });
   assert.deepEqual(readLiveAccount(account({ available: true, ordinary_usage_allowed: null, windows: [bucket({ credits: { has_credits: false, unlimited: false, balance: null } })] }))?.quota.windows[0]!.credits, { has_credits: false, unlimited: false, balance: null });
   assert.deepEqual(readLiveAccount(account({ available: true, ordinary_usage_allowed: true, windows: [bucket({ credits: { has_credits: false, unlimited: false, balance: '0' } })] }))?.quota.windows[0]!.credits, { has_credits: false, unlimited: false, balance: '0' });
+  // A model that does not say it takes pictures is not assumed to; what else an account answers with is not read.
+  assert.deepEqual(readLiveAccount({ auth: { state: 'signed_in', mode: 'chatgpt', plan: null, email: 'someone@example.com', token: 'secret' }, quota: { available: false, ordinary_usage_allowed: null, windows: [] }, models: [{ id: 'm', label: 'M' }] }), { state: 'signed_in', plan: null, quota: { available: false, ordinary_usage_allowed: null, windows: [] }, models: [{ id: 'm', label: 'M', image_input: false, default: false }] });
   // Another sign-in mode is not this subscription.
   assert.equal(readLiveAccount(account({ available: false, ordinary_usage_allowed: null, windows: [] }, { state: 'signed_in', mode: null, plan: null }))?.state, 'signed_out');
   // Any other shape: nothing is read from it.

@@ -83,7 +83,7 @@ type Saved = { saved: boolean; reason: string | null; speak?: boolean };
 /** How a request to ChatGPT ended, as the main process says it (a response only for the turn that was sent). */
 type AskOutcome =
   | { status: 'answered'; answer: { text: string; model: string; latency_ms: number } }
-  | { status: 'refused'; reason: string }
+  | { status: 'refused'; reason: string; submission?: 'not_submitted' | 'submitted' | 'unknown' }
   | { status: 'cancelled'; uncertain: boolean }
   | { status: 'uncertain'; reason: string };
 const lc = (globalThis as unknown as { lc: Api }).lc;
@@ -122,6 +122,8 @@ let asked: {
   early: { selection: string; request: string; outcome: AskOutcome; record: Saved } | null;
   /** What the request that is out is about (said with its response). */
   about: About | null;
+  /** What was said of the response this card shows (its model, its picture's time, where the circle was): said again whenever it is still the one shown. */
+  shown: string | null;
   /** Why how a question of this card ended is not written on this device yet (the main process said so), or null. */
   unsaved: string | null;
   /** The status last said with that, and what it is about: said again with the answer to Save. */
@@ -1085,7 +1087,7 @@ async function finishAsk(points: ReadonlyArray<InkPoint>): Promise<void> {
   if (!subscription || !facts || !png || !whole) return;
   // Kept by the main process as the exact whole picture, the facts of its frame, the circle and the ink drawn into
   // it; with the AI's session running, a small hint about the circled part is asked for at once.
-  const a: NonNullable<typeof asked> = { card, selection: null, request: null, submitting: true, cancelling: false, early: null, about: null, unsaved: null, said: null };
+  const a: NonNullable<typeof asked> = { card, selection: null, request: null, submitting: true, cancelling: false, early: null, about: null, shown: null, unsaved: null, said: null };
   asked = a;
   askStatus('Keeping this on this device…');
   let kept: Awaited<ReturnType<Api['askSelection']>>;
@@ -1142,7 +1144,8 @@ async function submitAsk(): Promise<void> {
     if (asked !== a) return;
     askForm(ended ? 'hidden' : 'ready');
     $('answerBox').hidden = !answerShown;
-    saved(a, `Not sent: ${reason}.`, { saved: a.unsaved === null, reason: a.unsaved }, 'How the request before ended');
+    // (the response still shown is the one before: which picture it is about stays said)
+    saved(a, `Not sent: ${reason}.${answerShown && a.shown ? ` The response still shown is the one before: ${a.shown}` : ''}`, { saved: a.unsaved === null, reason: a.unsaved }, 'How the request before ended');
   };
   const whole = wholeFrame();
   if (!whole) return notSent('no frame of the display is available (a gap in the capture)');
@@ -1151,6 +1154,11 @@ async function submitAsk(): Promise<void> {
     png = await pngBytes(whole.canvas);
   } catch (error) {
     return notSent(`the picture of the display could not be made (${why(error)})`);
+  }
+  // Cancelled (or the capture ended) while the picture was being made: nothing has left this window, and nothing is sent.
+  if (a.cancelling || ended) {
+    a.cancelling = false;
+    return notSent(ended ? 'the capture ended before it was sent' : 'you cancelled it before it was sent');
   }
   let sent: Submitted;
   try {
@@ -1170,7 +1178,8 @@ async function submitAsk(): Promise<void> {
   const early = takeEarly(a);
   if (early && early.request === sent.request_id) return showOutcome(a, early.outcome, early.record);
   if (a.cancelling) return; // cancelled while it was being sent: the status already says so
-  askStatus(`Asked at ${new Date().toLocaleTimeString()} (${sent.model}): the whole display and your question are being sent to ChatGPT. Waiting for the response…`);
+  const circle = sent.about.focus === 'on_an_earlier_frame' ? ' The screen has changed since your circle: ChatGPT is told where the circle was, without its pixels.' : sent.about.focus === 'none' ? ' Your circle is not part of this request.' : '';
+  askStatus(`Asked at ${new Date().toLocaleTimeString()} (${sent.model}): the whole display and your question are being sent to ChatGPT.${circle} Waiting for the response…`);
 }
 /** Cancel, or the card closed, while a request is out: its response is not shown. */
 function cancelAsk(): void {
@@ -1219,8 +1228,9 @@ function showOutcome(a: NonNullable<typeof asked>, outcome: AskOutcome, record: 
     $('badge').textContent = 'Your focus · asked: no response shown';
     text = out.status === 'cancelled'
       ? `Cancelled: no answer is shown.${out.uncertain ? ' Whether ChatGPT stopped working on it is not confirmed; it may still have counted against your usage.' : ''}`
-      : out.status === 'refused' ? `No answer: ${out.reason}. It was not sent again.` : `No answer: ${out.reason}. It is not sent again automatically.`;
+      : out.status === 'refused' ? `No answer: ${out.reason}. ${out.submission === 'not_submitted' ? 'It did not reach ChatGPT' : out.submission === 'submitted' ? 'It had reached ChatGPT' : 'Whether it reached ChatGPT is not known'}; it is not sent again.` : `No answer: ${out.reason}. It is not sent again automatically.`;
   }
+  a.shown = out.status === 'answered' ? text : a.shown;
   saved(a, text, record);
   // What came is brought into view: the card may be scrolled to its form, with the response below what is visible.
   (out.status === 'answered' ? $('answerBox') : $('askStatus')).scrollIntoView({ block: out.status === 'answered' ? 'start' : 'nearest' });

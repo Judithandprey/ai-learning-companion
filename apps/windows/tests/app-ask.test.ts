@@ -61,7 +61,9 @@ const CIRCLE_NOT_SENT = ' Your circle was not part of this request.';
 const CANCELLED = 'Cancelled: no answer is shown.';
 const UNCONFIRMED = `${CANCELLED} Whether ChatGPT stopped working on it is not confirmed; it may still have counted against your usage.`;
 /** A request merely not taken (the connector's `busy`): said, and the AI's session goes on. */
-const NOT_TAKEN = 'No answer: another request of yours is still waiting, so this one was not taken. It was not sent again.';
+const NOT_TAKEN = 'No answer: another request of yours is still waiting, so this one was not taken. It did not reach ChatGPT; it is not sent again.';
+/** Said with a "Not sent" while an earlier response is still the one on the card: which picture that response is about stays said. */
+const STILL = ` The response still shown is the one before: ${ANSWERED}`;
 const NOT_STARTED = 'the AI is not started; start it in the control window';
 
 /**
@@ -157,7 +159,7 @@ test('without the subscription configured nothing changes: no follow-up form, no
 test('[synthetic connector] not checked: capturing, writing, erasing and selecting send nothing to any AI; a Start that asks for the AI starts none and says why; no connector is even started until the user presses', async () => {
   const NOT_CHECKED = 'the ChatGPT subscription has not been checked yet (use the control window)';
   const w = await app({ check: false, ai: true });
-  assert.deepEqual([w.sub().state, w.fakes.made.length, w.live()], ['not_checked', 0, { state: 'off', reason: NOT_CHECKED }]);
+  assert.deepEqual([w.sub().state, w.fakes.made.length, w.live()], ['not_checked', 0, { state: 'off', reason: NOT_CHECKED, unwritten: 0 }]);
   // Frames are sampled and retained, a stroke is written and erased, undone and redone.
   await w.page.review.sample();
   w.page.pointer('pointerdown', 1, 100, 200);
@@ -433,7 +435,7 @@ test('[synthetic connector] Stop while a request is out: the capture is fenced, 
   assert.equal(w.page.ask().answer, null);
   const entry = w.record(id).requests[0]!;
   assert.deepEqual([entry.outcome, entry.shown, JSON.stringify(w.records()).includes('after the Stop')], [{ status: 'cancelled', uncertain: true }, false, false]);
-  assert.deepEqual(fs.readFileSync(path.join(folder, 'live.jsonl'), 'utf8').trim().split('\n').map((l) => [(JSON.parse(l) as { kind: string }).kind, (JSON.parse(l) as { reason?: string }).reason ?? null]), [['started', null], ['ended', 'the capture was stopped']]);
+  assert.deepEqual(fs.readFileSync(path.join(folder, 'live.jsonl'), 'utf8').trim().split('\n').map((l) => [(JSON.parse(l) as { kind: string }).kind, (JSON.parse(l) as { reason?: string }).reason ?? null]), [['started', null], ['ended', 'the capture was stopped'], ['settled', null]]); // (the request that was out settles after the end, as a line of its own)
   // The same session never asks again.
   assert.deepEqual(plain(await w.h.handlers['lc:ask-submit']!({ sender: w.s.overlay.webContents }, id, 'again?', 'hint')), { ok: false, reason: 'refused' });
   assert.deepEqual([w.asks().length, w.c().count('companion/turn'), w.c().count('companion/start'), w.c().count('companion/stop')], [1, 1, 1, 1]);
@@ -459,17 +461,18 @@ test('[synthetic connector] the user stops the AI while a circle\'s request is o
   const two = await w.select(600, 120);
   assert.deepEqual([w.page.ask().status, w.page.ask().form, w.page.ask().submit, w.page.ask().cancel, w.record(two).requests], [`Kept on this device. The AI was not asked: ${ENDED}.`, true, true, false, []]);
   assert.deepEqual([w.asks().length, w.c().count('companion/turn'), w.c().count('companion/start')], [1, 1, 1], 'nothing was sent, and nothing started the AI again');
-  // The user starts the AI again: a new session. This card's follow-up is then about the display as it is now alone
-  // (its circle was never sent to an AI, so no focus is carried into the new session).
+  // The user starts the AI again: a new session. The picture and the ink are still the ones this card's circle was
+  // made on, and the circle never went out in this session: it is worked out anew on this frame and is the
+  // follow-up's focus (the user circled exactly these pixels).
   assert.deepEqual(plain(await w.press('lc:live-start', POLICY)), { ok: true });
   await w.followUp('What is this?');
   await until('sent', () => w.asks().length === 2);
   const next = w.asks()[1]!;
-  assert.deepEqual([next.session_id !== session, next.trigger, next.user_text, next.allowed_assistance, next.focus, next.history, next.context.region_px, next.request_id], [true, 'text_followup', 'What is this?', 'hint', null, [], WHOLE, `${two}.1`]);
-  assert.deepEqual([w.record(two).requests[0]!.frame.focus, w.record(two).requests[0]!.live_session_id], ['none', next.session_id]);
+  assert.deepEqual([next.session_id !== session, next.trigger, next.user_text, next.allowed_assistance, next.focus, next.history, next.context.region_px, next.request_id], [true, 'text_followup', 'What is this?', 'hint', { frame_seq: next.context.frame_seq, region_dip: w.record(two).focus.region_dip, region_px: w.record(two).focus.region_px }, [], WHOLE, `${two}.1`]);
+  assert.deepEqual([w.record(two).requests[0]!.frame.focus, w.record(two).requests[0]!.live_session_id], ['on_this_frame', next.session_id]);
   w.c().answer('About the whole display.');
   await until('answered', () => w.page.ask().answer === 'About the whole display.');
-  assert.equal(w.page.ask().status, answered(next.context.frame_captured_at, CIRCLE_NOT_SENT), 'and the card says so with the response');
+  assert.equal(w.page.ask().status, answered(next.context.frame_captured_at), 'the circle was part of this request');
 });
 
 test('[synthetic connector] the app\'s own fence, whatever the connector layer does: a response for a replaced selection, or after Stop, is not shown and its text not kept', async () => {
@@ -496,6 +499,25 @@ test('[synthetic connector] the app\'s own fence, whatever the connector layer d
   assert.equal(w.c().count('companion/stop'), 0, '(the fault: the connector was never told)');
 });
 
+test('[synthetic connector] the app\'s own fence, whatever the connector layer does: a response that comes after its AI session ended (stopped by the user, or its time over), the capture going on, is not shown and its text not kept', async () => {
+  // The subscription layer here forgets every interrupt and Stop (a fault), so the response does come back to the app
+  // as an answer: only the app's own check of the session keeps it from the card.
+  for (const [end, reason, text] of [
+    [(w: Awaited<ReturnType<typeof app>>) => void w.press('lc:live-stop'), 'stopped by you', 'An answer AFTER the AI was stopped.'],
+    [(w: Awaited<ReturnType<typeof app>>) => w.h.fire(1_800_000), 'this session\'s time is over', 'An answer AFTER the time was over.'],
+  ] as const) {
+    const w = await app({ leaky: true });
+    const id = await w.select();
+    end(w);
+    assert.deepEqual([w.live().state, w.live().ended, w.h.current() !== null], ['ended', reason, true]);
+    w.c().answer(text);
+    await until('ended', () => w.record(id).requests[0]!.outcome !== null);
+    await new Promise((r) => setTimeout(r, 30));
+    assert.deepEqual([w.page.ask().answer, w.record(id).requests[0]!.outcome, w.record(id).requests[0]!.shown, JSON.stringify(w.records()).includes(text)], [null, { status: 'cancelled', uncertain: true }, false, false], reason);
+    assert.match(w.page.ask().status ?? '', /^Cancelled: no answer is shown\./);
+  }
+});
+
 test('[synthetic connector] refusals and an answer that never comes are said as they are, and never sent again by the app: one merely not taken leaves the AI on; any other ends its session until the user starts it again', async () => {
   const w = await app({ configure: (c) => void (c.onCancel = 'silent'), ask_ms: 400 });
   const id = await w.select();
@@ -508,7 +530,7 @@ test('[synthetic connector] refusals and an answer that never comes are said as 
   await until('sent by the user', () => w.asks().length === 2);
   w.c().fail(w.c().asks()[1]!.id, 'allowance_exhausted', 'submitted');
   await until('refused', () => /^No answer: ChatGPT/.test(w.page.ask().status ?? ''));
-  assert.equal(w.page.ask().status, 'No answer: ChatGPT says the account\'s allowance is used up. It was not sent again.');
+  assert.equal(w.page.ask().status, 'No answer: ChatGPT says the account\'s allowance is used up. It had reached ChatGPT; it is not sent again.');
   assert.equal(w.page.ask().status!.includes('raw message'), false);
   // That ends the AI's session: nothing more is sent, and it is said why.
   const ENDED = 'ChatGPT says the account\'s allowance is used up; nothing more is sent by itself';
@@ -582,7 +604,7 @@ test('[synthetic connector] the control window: check, sign in and model are the
     page.showSubscription(w.sub());
     return [page.nodes['start']!.textContent, page.nodes['aiWhy']!.textContent];
   };
-  assert.equal(shown().header, 'Captured frames and ink stay on this device. ChatGPT (your subscription) observes a display only while its AI session runs: started by your own Start, within the bounds you set beside it, and said under Capture. Without that session nothing is sent to any AI.');
+  assert.equal(shown().header, 'Captured frames and ink are kept on this device. ChatGPT (your subscription) observes a display only while its AI session runs: started by your own Start, within the bounds you set beside it, and said under Capture. Without that session nothing is sent to any AI.');
   assert.match(shown().state, /^Not checked yet\./);
   assert.deepEqual([shown().login, w.h.opened], [false, []]);
   assert.deepEqual(start(), ['Start: capture only (no AI)', 'Not available now: check the connection and sign in below. Start then captures only; nothing is sent to any AI.']);
@@ -598,7 +620,8 @@ test('[synthetic connector] the control window: check, sign in and model are the
   w.fakes.last().account = { auth: { state: 'signed_in', mode: 'chatgpt', plan: 'Pro' }, quota: { available: true, ordinary_usage_allowed: true, windows: [bucket({ primary: { used_percent: 12, window_duration_mins: 300, resets_at: null } })] }, models: [{ id: 'a', label: 'A', image_input: true, default: false }, { id: 'b', label: 'B', image_input: true, default: true }, { id: 't', label: 'T', image_input: false, default: false }] };
   w.fakes.last().event('connection/login/completed', { login_id: 'login-1', success: true, error: null });
   await until('signed in', () => w.sub().state === 'signed_in');
-  assert.deepEqual([w.sub().model, shown().quota, shown().model, shown().login], ['b', 'Usage as ChatGPT reports it (the account\'s, not this app\'s session bounds): included usage is allowed now. codex: first window 12% used (5-hour); credits not reported.', true, false]);
+  // (the account as it was when it was read, with that time: never said as how it is now)
+  assert.deepEqual([w.sub().model, (shown().quota ?? '').replace(/ at [^(]+ \(/, ' at <time> ('), shown().model, shown().login], ['b', 'Usage as ChatGPT reported it at <time> (the account\'s, not this app\'s session bounds; Check connection reads it again): included usage was allowed then. codex: first window 12% used (5-hour); credits not reported.', true, false]);
   assert.equal(shown().state, 'Signed in with ChatGPT (Pro), as the official Codex app server reports. That does not show that a model will answer.');
   assert.deepEqual(start(), ['Start: capture, and let ChatGPT observe this display', ''], 'signed in with a model that takes pictures: Start says what it will do');
   // The model is the user's choice among those that take pictures.
@@ -610,7 +633,7 @@ test('[synthetic connector] the control window: check, sign in and model are the
   w.h.handlers['lc:sub-model']!({ sender: w.s.overlay.webContents }, 'b');
   assert.equal(w.sub().model, 'a');
   // Reading, signing in and choosing a model sent nothing to any AI, and started no AI session.
-  assert.deepEqual([w.fakes.made.length, w.c().count('companion/start'), w.c().count('companion/turn'), w.live()], [1, 0, 0, { state: 'off', reason: null }]);
+  assert.deepEqual([w.fakes.made.length, w.c().count('companion/start'), w.c().count('companion/turn'), w.live()], [1, 0, 0, { state: 'off', reason: null, unwritten: 0 }]);
 });
 
 test('[synthetic connector] quitting with the connector running: the app waits until it has ended, then quits once', async () => {
@@ -650,7 +673,7 @@ test('[synthetic connector] signed in and ready, with no AI session started: cap
   assert.equal(w.page.ask().status, `Not sent: ${NOT_STARTED}.`);
   await new Promise((r) => setTimeout(r, 50));
   assert.deepEqual(w.fakes.made.length === 1 && w.fakes.last().calls.map((c) => c.method), ['connection/read'], 'only the user\'s own Check reached the connector');
-  assert.deepEqual([w.record(id).requests, w.live(), w.lines()], [[], { state: 'off', reason: null }, []]);
+  assert.deepEqual([w.record(id).requests, w.live(), w.lines()], [[], { state: 'off', reason: null, unwritten: 0 }, []]);
   assert.equal(fs.readFileSync(path.join(w.folder(), 'manifest.jsonl'), 'utf8').includes('ask'), false, 'nothing of ASK is in the capture manifest');
 });
 
@@ -733,7 +756,7 @@ test('[synthetic connector] a follow-up holding half of a surrogate pair is not 
   const calls = w.c().calls.length;
   await w.followUp('What is \ud83d this?');
   await until('refused', () => /^Not sent:/.test(w.page.ask().status ?? ''));
-  assert.equal(w.page.ask().status, 'Not sent: the question holds a damaged character (half of a pair), so it cannot be sent as it is; type that part again.');
+  assert.equal(w.page.ask().status, `Not sent: the question holds a damaged character (half of a pair), so it cannot be sent as it is; type that part again.${STILL}`);
   await new Promise((r) => setTimeout(r, 30));
   assert.deepEqual([w.asks().length, w.c().calls.length, w.record(id).requests.length, w.sub().state, w.live().state, w.fakes.made.length, w.fakes.last().exited], [1, calls, 1, 'signed_in', 'on', 1, false]);
   assert.equal(w.page.ask().answer, 'A hint.', 'the response before is still shown');
@@ -815,7 +838,7 @@ test('[synthetic connector] what cannot be written is not asked: a selection tha
   w.h.failWrites.on = true;
   await w.followUp('What is this?');
   await until('refused', () => /^Not sent:/.test(w.page.ask().status ?? ''));
-  assert.match(w.page.ask().status ?? '', /^Not sent: the request could not be written to this device \(.*\), so it was not sent\.$/);
+  assert.match(w.page.ask().status ?? '', /^Not sent: the request could not be written to this device \(.*\), so it was not sent\. The response still shown is the one before: From ChatGPT /);
   assert.equal(w.page.ask().answer, 'A hint.', 'the response before stays on the card');
   // Nothing was asked, so nothing of a question is left unwritten: the session's end does not say there is.
   w.page.click('close');
@@ -907,7 +930,7 @@ test('[synthetic connector] how a request ended, said before the overlay has its
   assert.equal(w.page.ask().status, 'Keeping this on this device…', 'not acknowledged yet');
   release();
   await until('shown', () => /^No answer/.test(w.page.ask().status ?? ''));
-  assert.deepEqual([w.page.ask().status, w.page.ask().badge, w.page.ask().submit, w.page.ask().cancel], ['No answer: ChatGPT is not signed in. It was not sent again.', 'Your focus · asked: no response shown', true, false]);
+  assert.deepEqual([w.page.ask().status, w.page.ask().badge, w.page.ask().submit, w.page.ask().cancel], ['No answer: ChatGPT is not signed in. It did not reach ChatGPT; it is not sent again.', 'Your focus · asked: no response shown', true, false]);
   await new Promise((r) => setTimeout(r, 30));
   assert.equal(/Waiting for the response/.test(w.page.ask().status ?? ''), false, 'never left waiting');
   assert.deepEqual([w.sub().state, w.live().state, w.live().ended], ['signed_out', 'ended', 'ChatGPT is not signed in; nothing more is sent by itself'], 'as the connector said; and the AI\'s session ended with it');
@@ -930,7 +953,7 @@ test('[synthetic connector] how a request ended, said before the overlay has its
   w.c().answer('The answer to the question that was asked.');
   await until('answered', () => w.page.ask().answer !== null);
   assert.equal(w.page.ask().answer, 'The answer to the question that was asked.');
-  assert.equal(w.page.ask().status, answered(FRAME_AT, CIRCLE_NOT_SENT), '(a circle of the AI session that ended is not carried into the new one)');
+  assert.equal(w.page.ask().status, ANSWERED, '(the circle never went out in the new AI session and the picture is unchanged: it is worked out anew, and is this request\'s focus)');
   await until('recorded as shown', () => entries()[1]!.shown);
   assert.deepEqual(entries().map((x) => [x.outcome?.status, x.shown]), [['refused', false], ['answered', true]]);
 });
@@ -1037,14 +1060,14 @@ test('[synthetic connector] an answer whose record cannot be written is said as 
   w.c().fail(w.c().asks()[2]!.id, 'allowance_exhausted', 'submitted');
   await until('said', () => /NOT saved/.test(w.page.ask().status ?? ''));
   w.page.review.endCapture('the capture ended in this test');
-  assert.deepEqual([/^No answer: ChatGPT says the account's allowance is used up\. It was not sent again\. This is NOT saved on this device yet: /.test(w.page.ask().status ?? ''), w.page.ask().save, w.page.ask().form], [true, true, false]);
+  assert.deepEqual([/^No answer: ChatGPT says the account's allowance is used up\. (It had reached ChatGPT|It did not reach ChatGPT); it is not sent again\. This is NOT saved on this device yet: /.test(w.page.ask().status ?? ''), w.page.ask().save, w.page.ask().form], [true, true, false]);
   w.h.failWrites.on = false;
 });
 
 test('[synthetic connector] while an outcome is NOT saved, a follow-up that is refused leaves the card saying so with Save and the answer; a late Save answer never replaces a newer request\'s status', async () => {
   const w = await app();
   const NOT_SAVED = 'NOT saved on this device yet: it could not be written (Error: EIO: i/o error (injected)). It is kept in the app and tried again when this card closes; press Save to try now.';
-  const UNWRITTEN = 'Not sent: the request could not be written to this device (Error: EIO: i/o error (injected)), so it was not sent.';
+  const UNWRITTEN = `Not sent: the request could not be written to this device (Error: EIO: i/o error (injected)), so it was not sent.${STILL}`;
   await w.select();
   w.h.failWrites.on = true;
   w.c().answer('An answer the device has not written.');
@@ -1063,7 +1086,7 @@ test('[synthetic connector] while an outcome is NOT saved, a follow-up that is r
   w.h.failWrites.on = false;
   await w.followUp('   ');
   await until('refused', () => /^Not sent: the question is empty/.test(w.page.ask().status ?? ''));
-  assert.equal(w.page.ask().status, `Not sent: the question is empty or too long. How the request before ended is ${NOT_SAVED}`);
+  assert.equal(w.page.ask().status, `Not sent: the question is empty or too long.${STILL} How the request before ended is ${NOT_SAVED}`);
   assert.deepEqual([w.page.ask().save, w.page.ask().answer, w.records()[0]!.requests[0]!.outcome], [true, 'An answer the device has not written.', null]);
   // Save, and at once a follow-up (its acknowledgement held back): the Save's answer does not replace "Sending…".
   w.page.question('And now?');
@@ -1099,7 +1122,7 @@ test('[synthetic connector] a follow-up refused while the outcome before is unwr
   await until('saved', () => !w.page.ask().save);
   const entry = w.records()[0]!.requests[0]!;
   assert.deepEqual([entry.outcome?.status ?? null, entry.shown, w.records()[0]!.requests.length, w.asks().length], ['answered', true, 1, 1], 'really written, and nothing asked again');
-  assert.equal(w.page.ask().status, 'Not sent: the request could not be written to this device (Error: EIO: i/o error (injected)), so it was not sent.');
+  assert.equal(w.page.ask().status, `Not sent: the request could not be written to this device (Error: EIO: i/o error (injected)), so it was not sent.${STILL}`);
   // Unwritten again; Save (it is written now) and at once a follow-up that is refused: the Save's answer was taken,
   // so nothing is said to be unsaved.
   await w.followUp('And then?');
@@ -1117,7 +1140,7 @@ test('[synthetic connector] a follow-up refused while the outcome before is unwr
   assert.equal(w.page.ask().status, SENDING);
   release();
   await until('refused', () => /^Not sent:/.test(w.page.ask().status ?? ''));
-  assert.deepEqual([w.page.ask().status, w.page.ask().save, w.page.ask().answer], ['Not sent: the question is empty or too long.', false, 'A second answer.']);
+  assert.deepEqual([w.page.ask().status, w.page.ask().save, w.page.ask().answer], [`Not sent: the question is empty or too long.${STILL}`, false, 'A second answer.']);
   assert.deepEqual(w.records()[0]!.requests.map((x) => [x.outcome?.status, x.shown]), [['answered', true], ['answered', true]]);
 });
 

@@ -94,8 +94,13 @@ type Session = {
   liveStarting: boolean;
   /** Why this capture has no AI session, as it is said in the windows; null when one is running or was never asked for. */
   liveOff: string | null;
+  /** Of live.jsonl (it spans every AI session of the capture): the bytes known to hold whole lines, and the lines that could not be written. */
+  liveBytes: number;
+  liveUnwritten: number;
 };
 type Retention = {
+  /** Why no further whole-display frame of this capture is kept (its cap is reached), or null. */
+  closed: string | null;
   readonly id: string;
   readonly startedAt: string;
   readonly policy: RetentionPolicy;
@@ -196,10 +201,11 @@ export async function start(sourceId: string, ai: { policy: Policy } | null = nu
   overlay.setContentProtection(true); // not in any capture, including ours: frames show the user's apps
   overlay.setIgnoreMouseEvents(true, { forward: true });
   const s: Session = { sourceId, display, overlay, doc: newDesktopInk(id, sha256(id), new Date().toISOString(), display), ignoring: true, samples: [], ending: false, capture: 'unused', opening: null, offered: null, shown: false,
-    retention: { id, startedAt: new Date().toISOString(), policy: retentionPolicy, frames: 0, bytes: 0, notRetained: 0, refused: 0, unwritten: 0, headerWritten: false, validBytes: 0, pending: new Map(), answered: new Set(), unfinished: null, endRecorded: false },
-    progress: 0, ask: null, talk: { on: false, muted: false }, reading: null, live: null, liveStarting: false, liveOff: null };
+    retention: { closed: null, id, startedAt: new Date().toISOString(), policy: retentionPolicy, frames: 0, bytes: 0, notRetained: 0, refused: 0, unwritten: 0, headerWritten: false, validBytes: 0, pending: new Map(), answered: new Set(), unfinished: null, endRecorded: false },
+    progress: 0, ask: null, talk: { on: false, muted: false }, reading: null, live: null, liveStarting: false, liveOff: null, liveBytes: 0, liveUnwritten: 0 };
   current = s;
   lastEnd = null;
+  lastEnded = null;
   link?.begin(id, captureDir(id)); // the explicit user Start is the only one that asks for a stream
   notifyControl(); // Stop works while the overlay loads
   // Closing the overlay ends the session the normal way, so its newest ink is saved or kept.
@@ -305,6 +311,7 @@ function recordUnfinished(s: Session): string | null {
 function finish(s: Session, reason: string): void {
   if (current !== s) return;
   current = null;
+  lastEnded = s;
   link?.stopSending(s.retention.id); // however the session ended
   stopAsking(s, 'the capture ended');
   hush(s);
@@ -330,7 +337,7 @@ function finish(s: Session, reason: string): void {
 const sessionInfo = (): unknown =>
   current
     ? { running: true, starting: !current.shown, ending: current.ending, display: current.display, session_id: String(current.overlay.id), live: liveInfo(current) }
-    : { running: false, starting: starting !== null, ended: lastEnd };
+    : { running: false, starting: starting !== null, ended: lastEnd, live_unwritten: lastEnded?.liveUnwritten ?? 0 };
 function notifyControl(): void {
   if (!control || control.isDestroyed()) return;
   control.webContents.send('lc:session', sessionInfo());
@@ -691,8 +698,14 @@ function retainFrame(s: Session, factsValue: unknown, rawValue: unknown, compose
     return refuse(`the stored originals could not be checked (${message(error)})`, { retry: true });
   }
   const adding = toWrite.reduce((a, o) => a + o.data.length, 0);
-  if (r.frames + 1 > r.policy.max_frames) return refuse(`the retention limit of ${r.policy.max_frames} frames for this session is reached`, { limit: true });
-  if (r.bytes + adding > r.policy.max_bytes) return refuse(`the retention limit of ${r.policy.max_bytes} bytes for this session is reached`, { limit: true });
+  const full = r.frames + 1 > r.policy.max_frames ? `the retention limit of ${r.policy.max_frames} frames for this session is reached` : r.bytes + adding > r.policy.max_bytes ? `the retention limit of ${r.policy.max_bytes} bytes for this session is reached` : null;
+  if (full !== null) {
+    // No further frame of this capture is kept, and only a kept frame is given to the AI: its unattended looks stop
+    // here, and that is said (the session is still the user's, for circles and questions, while a frame can be kept).
+    r.closed = full;
+    looksClosed(s);
+    return refuse(full, { limit: true });
+  }
   try {
     for (const o of toWrite) {
       mkdirSync(dirname(o.file), { recursive: true });
@@ -783,6 +796,8 @@ type Live = {
   readonly policy: Policy;
   /** When it ends by its own time bound (this device's clock, from what the connector answered the Start). */
   readonly expiresAt: number;
+  /** The user's press that started it (this device's clock): a frame taken before it is not this session's to look at. */
+  readonly since: number;
   /** Requests that reached ChatGPT, or may have: each uses one of the session's requests, and none is given back. */
   used: number;
   /** This session's own count of whole frames taken for the AI, sent or not (one not sent is a gap). */
@@ -806,29 +821,39 @@ type Live = {
   ended: string | null;
   /** Turns that are out. */
   out: number;
-  /** Lines of live.jsonl that could not be written on this device. */
-  unwritten: number;
 };
 const liveFile = (id: string): string => join(captureDir(id), 'live.jsonl');
-/** One line of what the AI session did. A line that cannot be written is counted and said; nothing is sent again for it. */
-function appendLive(s: Session, live: Live | null, line: Record<string, unknown>): void {
+/**
+ * One line of what the AI session did. A line that cannot be written is counted and said (also after the capture's
+ * end, where the end is said); nothing is sent again for it. What a failed append left behind (part of a line) is cut
+ * back first, so a later line is never glued to it.
+ */
+function appendLive(s: Session, _live: Live | null, line: Record<string, unknown>): void {
+  const file = liveFile(s.retention.id);
   try {
     mkdirSync(captureDir(s.retention.id), { recursive: true });
-    appendFileSync(liveFile(s.retention.id), `${JSON.stringify({ at: new Date().toISOString(), ...line })}\n`);
+    const size = existsSync(file) ? statSync(file).size : 0;
+    if (size > s.liveBytes) truncateSync(file, s.liveBytes); // a torn line: only whole lines are kept
+    const text = `${JSON.stringify({ at: new Date().toISOString(), ...line })}\n`;
+    appendFileSync(file, text);
+    s.liveBytes = Math.min(size, s.liveBytes) + Buffer.byteLength(text);
   } catch {
-    if (live) live.unwritten += 1;
+    s.liveUnwritten += 1;
+    if (current !== s) notifyControl(); // after the capture's end: said where its end is said
   }
 }
+/** The capture that ended last: how many lines of its AI session's record could not be written is said with its end. */
+let lastEnded: Session | null = null;
 /** The AI session as the windows are told: its state, its own bounds and what is left of them, and what it last saw. */
 function liveInfo(s: Session): unknown {
   if (!subscription) return { state: 'none' };
   if (s.liveStarting) return { state: 'starting' };
   const l = s.live;
-  if (!l) return { state: 'off', reason: s.liveOff };
+  if (!l) return { state: 'off', reason: s.liveOff, unwritten: s.liveUnwritten };
   const max = l.policy.max_submissions;
   // used_up: every request of the session is used. It sends nothing more, but it has not ended: its last response is
   // still shown (and read) until its time is over, the user stops it, or the user starts the AI again.
-  return { state: l.ended !== null ? 'ended' : l.used >= max ? 'used_up' : 'on', model: l.model, max_submissions: max, used: l.used, reserve: reserveOf(max), expires_at: new Date(l.expiresAt).toISOString(), min_observation_interval_ms: l.policy.min_observation_interval_ms, paused: l.paused, missed: l.missed, ended: l.ended, seen: l.seen, frames: l.frames, out: l.out, unwritten: l.unwritten };
+  return { state: l.ended !== null ? 'ended' : l.used >= max ? 'used_up' : 'on', model: l.model, max_submissions: max, used: l.used, reserve: reserveOf(max), expires_at: new Date(l.expiresAt).toISOString(), min_observation_interval_ms: l.policy.min_observation_interval_ms, paused: l.paused, missed: l.missed, ended: l.ended, seen: l.seen, frames: l.frames, out: l.out, unwritten: s.liveUnwritten };
 }
 function notifyLive(s: Session): void {
   if (current !== s) return;
@@ -841,7 +866,8 @@ function notifyLive(s: Session): void {
  */
 async function startLive(s: Session, policy: Policy): Promise<void> {
   if (!subscription || s.liveStarting || (s.live && s.live.ended === null && s.live.used < s.live.policy.max_submissions) || s.ending || current !== s) return;
-  if (s.live && s.live.ended === null) endLive(s, s.live, 'all of its requests were used, and a new session was started'); // one session at a time
+  if (s.live && s.live.ended === null) endLive(s, s.live, 'all of its requests were used, and you started the AI again'); // one session at a time (said as what is true whatever the new Start comes to)
+  const since = Date.now();
   s.liveStarting = true;
   s.liveOff = null;
   notifyLive(s);
@@ -854,14 +880,27 @@ async function startLive(s: Session, policy: Policy): Promise<void> {
     return;
   }
   if (!r.ok) {
+    // Not started: said with why. (An earlier session of this capture has ended; its end is in live.jsonl.)
+    s.live = null;
     s.liveOff = r.reason;
     appendLive(s, null, { kind: 'not_started', session_id: id, code: r.code, reason: r.reason });
     return notifyLive(s);
   }
-  const live: Live = { id, model: r.start.model, policy, expiresAt: Date.now() + r.expires_in_ms, used: policy.max_submissions - r.remaining_submissions, frames: 0, latest: null, history: [], gaps: [], waiting: null, cooling: false, seen: null, paused: null, missed: null, ended: null, out: 0, unwritten: 0 };
+  const live: Live = { id, model: r.start.model, policy, expiresAt: Date.now() + r.expires_in_ms, since, used: policy.max_submissions - r.remaining_submissions, frames: 0, latest: null, history: [], gaps: [], waiting: null, cooling: false, seen: null, paused: null, missed: null, ended: null, out: 0 };
   s.live = live;
   setTimeout(() => endLive(s, live, 'this session\'s time is over'), r.expires_in_ms);
   appendLive(s, live, { kind: 'started', session_id: id, model: live.model, policy, remaining_submissions: r.remaining_submissions, expires_in_ms: r.expires_in_ms });
+  looksClosed(s); // (a capture that keeps no further frame gives this session none to look at by itself: said from the start)
+  notifyLive(s);
+}
+/** No further frame of the capture is kept: the running session's unattended looks stop, with why. */
+function looksClosed(s: Session): void {
+  const live = s.live;
+  if (!live || live.ended !== null || s.retention.closed === null || live.paused !== null) return;
+  live.paused = `no further frame of this capture is kept on this device (${s.retention.closed}), and only a kept frame is given to ChatGPT by itself`;
+  if (live.waiting) gap(s, live, live.waiting.context.frame_seq, 'budget');
+  live.waiting = null;
+  appendLive(s, live, { kind: 'looks_stopped', session_id: live.id, reason: live.paused });
   notifyLive(s);
 }
 /** The session ends (Stop, its own bounds, a failure, the connector lost): nothing more is sent, shown or read aloud for it. */
@@ -873,7 +912,7 @@ function endLive(s: Session, live: Live, reason: string): void {
   live.latest = null;
   subscription?.stopSession(live.id); // told to the connector that has it; its turns that are out are interrupted
   if (s.live === live) hush(s);
-  appendLive(s, live, { kind: 'ended', session_id: live.id, reason, used: live.used, frames: live.frames });
+  appendLive(s, live, { kind: 'ended', session_id: live.id, reason, used: live.used, out: live.out, frames: live.frames }); // (`used` is not final while requests are out: each says how it settled, below)
   notifyLive(s);
 }
 /** A frame taken for the AI that it was not given (or did not take): said in the turns to come, and kept as a line. */
@@ -887,8 +926,12 @@ function gap(s: Session, live: Live, seq: number, reason: Gap['reason']): void {
 function turnOf(live: Live, frame: Frame, o: Pick<Turn, 'request_id' | 'trigger' | 'allowed_assistance' | 'presentation' | 'user_text' | 'focus'>, passed: Gap | null = null): Turn {
   const seq = frame.context.frame_seq;
   const { history, omitted } = boundedHistory(live.history, seq, 1); // (room is kept for the one entry that names an earlier focus)
-  // The newest gaps (every gap is in live.jsonl), the frame this very request passes by, and what was left out of the conversation.
-  const gaps = [...live.gaps.filter((g) => g.to_frame_seq <= seq).slice(-(GAPS_MAX - 2)), ...(passed ? [passed] : []), ...(omitted ? [omitted] : [])];
+  // The newest gaps (every gap is in live.jsonl), the frame this very request passes by, and the frames whose part
+  // of the conversation was left out (the newest runs of them; never over the bound).
+  const left = omitted.slice(-(GAPS_MAX >> 1));
+  // (only the frames before this request's own: never a later one, and never its own frame, which it carries)
+  const earlier = live.gaps.flatMap((g) => (g.from_frame_seq >= seq ? [] : [{ ...g, to_frame_seq: Math.min(g.to_frame_seq, seq - 1) }]));
+  const gaps = [...earlier.slice(-(GAPS_MAX - 1 - left.length)), ...(passed ? [passed] : []), ...left];
   return { ...o, session_id: live.id, epoch: 1, permission_revision: 1, audio_source: null, image: { png_base64: Buffer.from(frame.image.data).toString('base64'), sha256: frame.image.sha256, width: frame.image.width, height: frame.image.height }, context: frame.context, history: history.map((h) => ({ ...h })), gaps: gaps.map((g) => ({ ...g })) };
 }
 /**
@@ -903,8 +946,13 @@ async function sendTurn(s: Session, live: Live, t: Turn, frame: Frame): Promise<
   const out = await subscription!.turn(t);
   live.out -= 1;
   if (out.submission !== 'not_submitted') live.used += 1;
-  if (live.ended === null) {
-    const failed = out.status === 'uncertain' ? out.reason : out.status === 'refused' && suspends({ code: out.code, submission: out.submission }) ? out.reason : null;
+  if (live.ended !== null) appendLive(s, live, { kind: 'settled', session_id: live.id, request_id: t.request_id, status: out.status, submission: out.submission, used: live.used, out: live.out });
+  else {
+    // (an interruption the connector did not confirm, or a turn whose fate is not known, ends the session too: the
+    // connector has stopped it)
+    const failed = out.status === 'uncertain' ? out.reason
+      : out.status === 'refused' && suspends({ code: out.code, submission: out.submission }) ? out.reason
+      : out.status === 'cancelled' && out.unsettled ? 'a request was interrupted, and whether ChatGPT stopped working on it is not confirmed' : null;
     if (failed !== null) endLive(s, live, `${failed}; nothing more is sent by itself`);
   }
   notifyLive(s);
@@ -918,6 +966,7 @@ async function sendTurn(s: Session, live: Live, t: Turn, frame: Frame): Promise<
 function lookAt(s: Session, picture: Picture, capturedAt: string, ink: { revision: number | null; sha256: string | null }): void {
   const live = s.live;
   if (!subscription || !live || live.ended !== null || s.ending || current !== s) return;
+  if (Date.parse(capturedAt) < live.since) return; // taken before the user started this session: not its to look at, and not a frame of it
   const seq = (live.frames += 1);
   if (live.paused !== null) return void gap(s, live, seq, 'budget');
   if (live.waiting) gap(s, live, live.waiting.context.frame_seq, 'coalesced');
@@ -926,7 +975,7 @@ function lookAt(s: Session, picture: Picture, capturedAt: string, ink: { revisio
 }
 function flushLook(s: Session, live: Live): void {
   const w = live.waiting;
-  if (!w || live.ended !== null || live.out > 0 || live.cooling) return; // one request at a time from here, and not before its time: the newest frame waits
+  if (!w || live.ended !== null || live.paused !== null || live.out > 0 || live.cooling) return; // one request at a time from here, and not before its time: the newest frame waits
   live.waiting = null;
   if (live.used >= live.policy.max_submissions - reserveOf(live.policy.max_submissions)) {
     live.paused = 'the requests left in this session are kept for your own focus and follow-ups';
@@ -962,10 +1011,15 @@ async function look(s: Session, live: Live, frame: Frame): Promise<void> {
     // Not looked at: a gap in what the AI saw. (Its own bound reached for unattended looks pauses them; a request
     // of the user's own that replaced it, or a busy connector, is just this one frame.)
     const reserved = out.status === 'refused' && out.code === 'budget_reached' && out.submission === 'not_submitted';
-    if (reserved && live.ended === null) live.paused = 'the requests left in this session are kept for your own focus and follow-ups';
+    if (reserved && live.ended === null && live.paused === null) live.paused = 'the requests left in this session are kept for your own focus and follow-ups';
     live.missed = out.status === 'refused' ? out.reason : out.status === 'cancelled' ? 'it was interrupted' : out.reason;
     gap(s, live, seq, reserved ? 'budget' : out.status === 'refused' && (out.code === 'busy' || out.code === 'stale_context') ? 'backpressure' : 'not_observed');
     appendLive(s, live, { kind: 'not_looked', session_id: live.id, request_id: t.request_id, frame_seq: seq, status: out.status, code: out.status === 'refused' ? out.code : null, submission: out.submission });
+    // Unattended looks have stopped: a frame that was waiting is not sent after that either.
+    if (live.paused !== null && live.waiting) {
+      gap(s, live, live.waiting.context.frame_seq, 'budget');
+      live.waiting = null;
+    }
   }
   notifyLive(s);
   flushLook(s, live);
@@ -989,7 +1043,7 @@ function liveContext(s: Session, seq: number, picture: { width: number; height: 
 /** How a request ended, as the overlay and the record are told. Only `answered` carries text. */
 type AskOutcome =
   | { status: 'answered'; answer: { request_id: string; text: string; model: string; latency_ms: number } }
-  | { status: 'refused'; code: string; reason: string }
+  | { status: 'refused'; code: string; reason: string; submission: TurnOutcome['submission'] }
   | { status: 'cancelled'; uncertain: boolean }
   | { status: 'uncertain'; reason: string };
 /**
@@ -1031,8 +1085,13 @@ type Selection = {
   readonly frame: Frame;
   readonly kept: Kept;
   readonly focus: Focus;
-  /** The circle's own turn as it was sent in a running AI session (a follow-up carries its focus from it), or null. */
+  /**
+   * The turn that carried the circle as its focus in a running AI session (the circle's own, or a follow-up on the
+   * unchanged picture that worked the circle out anew), with the frame it went with: a follow-up carries the focus
+   * from it. Null when the circle was never sent.
+   */
   origin: Provenance | null;
+  sent: { frame: Frame; kept: Kept } | null;
   readonly record: { format: 'lc-windows-live-focus/v1'; selection_id: string; selected_at: string; sample_seq: number; image: unknown; context: LiveContext; focus: Focus; ink_original: unknown; requests: AskEntry[] };
   /** The request that is out, or the last one. */
   request: { id: string; state: 'asking' | 'cancelled' | 'done' } | null;
@@ -1117,7 +1176,7 @@ function retainSelection(s: Session, factsValue: unknown, pngValue: unknown, ink
   const problem = storeOriginals(s, read.originals, () => writeAtomic(askFile(s.retention.id, `${id}.json`), `${JSON.stringify(record)}\n`));
   if (problem) return { ok: false, reason: problem.replace(/^it could not/, 'the selection could not') };
   if (live) live.frames += 1; // (a frame of the session: counted once it is kept)
-  const sel: Selection = { id, frame, kept, focus, origin: null, record, request: null, unsaved: null };
+  const sel: Selection = { id, frame, kept, focus, origin: null, sent: null, record, request: null, unsaved: null };
   s.ask = sel;
   s.progress += 1;
   notifyRetention(s);
@@ -1154,17 +1213,29 @@ function submitAsk(s: Session, selectionId: unknown, questionValue: unknown, ass
   if (!isObj(factsValue)) return { ok: false, reason: 'the frame facts are malformed' };
   const read = readFrame(s, factsValue, pngValue, inkValue, live.frames + 1);
   if (typeof read === 'string') return { ok: false, reason: read };
-  const same = live.latest === sel.frame && read.frame.image.sha256 === sel.frame.image.sha256 && read.frame.context.ink_revision === sel.frame.context.ink_revision && read.frame.context.ink_sha256 === sel.frame.context.ink_sha256;
-  if (same) return submitTurn(s, sel, 'text_followup', question, assistanceValue as Assistance, sel.frame, sel.kept);
-  const problem = storeOriginals(s, read.originals);
-  if (problem) return { ok: false, reason: problem.replace(/^it could not/, 'the display\'s picture could not') };
-  live.frames += 1;
-  const sent = submitTurn(s, sel, 'text_followup', question, assistanceValue as Assistance, read.frame, read.kept);
-  if (!sent.ok && live.ended === null) gap(s, live, read.frame.context.frame_seq, 'not_observed'); // kept, and not given to the AI
+  // The picture and the ink are the circle's own, as it was made.
+  const unchanged = read.frame.image.sha256 === sel.frame.image.sha256 && read.frame.context.ink_revision === sel.frame.context.ink_revision && read.frame.context.ink_sha256 === sel.frame.context.ink_sha256;
+  // The frame the circle went out with in this AI session, with nothing newer sent since, and the same picture and ink: it IS that frame.
+  const usable = sel.origin !== null && sel.origin.session_id === live.id && sel.sent !== null;
+  if (usable && unchanged && live.latest === sel.sent!.frame) return submitTurn(s, sel, 'text_followup', question, assistanceValue as Assistance, sel.sent!.frame, sel.sent!.kept);
+  // A later frame. When its picture and ink are still the circle's own but the circle never went out in this AI
+  // session (the AI was not running then, or this is another session), the circle is worked out anew on this frame
+  // and is this request's focus: the user circled exactly these pixels.
+  const anew = unchanged && !usable ? focusOf(sel.focus.region_dip, { width: read.frame.image.width, height: read.frame.image.height, seq: read.frame.context.frame_seq }, s.display.bounds) : null;
+  // Its picture is kept only once the request is known to be one that can be sent (nothing is kept that no record names).
+  let keptNow = false;
+  const sent = submitTurn(s, sel, 'text_followup', question, assistanceValue as Assistance, read.frame, read.kept, anew, () => {
+    const problem = storeOriginals(s, read.originals);
+    if (problem) return problem.replace(/^it could not/, 'the display\'s picture could not');
+    live.frames += 1;
+    keptNow = true;
+    return null;
+  });
+  if (!sent.ok && keptNow && live.ended === null) gap(s, live, read.frame.context.frame_seq, 'not_observed'); // kept, and not given to the AI
   return sent;
 }
 /** One request about the current selection is written, then sent, once: the circle's own hint, or a follow-up. */
-function submitTurn(s: Session, sel: Selection, trigger: 'focus' | 'text_followup', question: string | null, assistance: Assistance, frame: Frame, kept: Kept): Submitted {
+function submitTurn(s: Session, sel: Selection, trigger: 'focus' | 'text_followup', question: string | null, assistance: Assistance, frame: Frame, kept: Kept, anew: Focus | null = null, keep: (() => string | null) | null = null): Submitted {
   const off = notSendable(s);
   if (off) return { ok: false, reason: off };
   const live = s.live!;
@@ -1173,9 +1244,9 @@ function submitTurn(s: Session, sel: Selection, trigger: 'focus' | 'text_followu
   const asked_as = voice !== null && s.talk.on && !s.talk.muted ? 'spoken' : 'silent';
   // An older frame still waiting for a look is passed by the user's own request: a gap, said in this very request.
   const passed = live.waiting && live.waiting.context.frame_seq < frame.context.frame_seq ? live.waiting.context.frame_seq : null;
-  let t = turnOf(live, frame, { request_id, trigger, allowed_assistance: assistance, presentation: asked_as, user_text: question, focus: trigger === 'focus' ? sel.focus : null }, passed === null ? null : { from_frame_seq: passed, to_frame_seq: passed, reason: 'coalesced' });
-  let focus: AskEntry['frame']['focus'] = trigger === 'focus' ? 'on_this_frame' : 'none';
-  if (trigger === 'text_followup' && sel.origin) {
+  let t = turnOf(live, frame, { request_id, trigger, allowed_assistance: assistance, presentation: asked_as, user_text: question, focus: trigger === 'focus' ? sel.focus : anew }, passed === null ? null : { from_frame_seq: passed, to_frame_seq: passed, reason: 'coalesced' });
+  let focus: AskEntry['frame']['focus'] = trigger === 'focus' || anew !== null ? 'on_this_frame' : 'none';
+  if (trigger === 'text_followup' && sel.origin && anew === null) {
     // The circle's focus goes with its follow-up: kept on the same unchanged frame, only named on a later one. (A
     // circle of another AI session is not carried: the follow-up is then about the current frame alone.)
     const carried = carryFocus(t, sel.origin);
@@ -1186,6 +1257,8 @@ function submitTurn(s: Session, sel: Selection, trigger: 'focus' | 'text_followu
   }
   const problem = turnProblem(t, frame.image.data.length);
   if (problem) return { ok: false, reason: problem };
+  const unkept = keep?.() ?? null;
+  if (unkept !== null) return { ok: false, reason: unkept };
   const entry: AskEntry = { request_id, trigger, question, assistance, asked_as, model: live.model, live_session_id: live.id, frame: { frame_seq: frame.context.frame_seq, sample_seq: kept.sample_seq, captured_at: frame.context.frame_captured_at, image: kept.image, ink_original: kept.ink_original, focus }, submitted_at: new Date().toISOString(), ended_at: null, outcome: null, shown: false };
   sel.record.requests.push(entry);
   const before = sel.unsaved;
@@ -1203,9 +1276,18 @@ function submitTurn(s: Session, sel: Selection, trigger: 'focus' | 'text_followu
   const mine = { id: request_id, state: 'asking' as 'asking' | 'cancelled' | 'done' };
   sel.request = mine;
   hush(s); // a new request: the response before is no longer read
-  if (trigger === 'focus') sel.origin = provenanceOf(t);
+  if (t.focus !== null && (trigger === 'focus' || anew !== null)) {
+    sel.origin = provenanceOf(t);
+    sel.sent = { frame, kept };
+  }
   void sendTurn(s, live, t, frame).then((out) => {
     askEnded(s, live, sel, mine, entry, t, out);
+    // A request that was sent and not answered: the AI was not given its frame, unless it saw that frame with
+    // another request (a follow-up on the circle's own frame). Said as a gap in the requests to come. Answered: no gap.
+    const seq = frame.context.frame_seq;
+    const covers = (g: Gap): boolean => g.from_frame_seq <= seq && seq <= g.to_frame_seq;
+    if (out.status === 'answered') live.gaps = live.gaps.flatMap((g) => (!covers(g) ? [g] : [...(g.from_frame_seq < seq ? [{ ...g, to_frame_seq: seq - 1 }] : []), ...(seq < g.to_frame_seq ? [{ ...g, from_frame_seq: seq + 1 }] : [])]));
+    else if (live.ended === null && !live.gaps.some(covers) && !live.history.some((h) => h.frame_seq === seq && h.kind !== 'user')) gap(s, live, seq, out.status === 'refused' && (out.code === 'busy' || out.code === 'stale_context') ? 'backpressure' : 'not_observed');
     flushLook(s, live);
   });
   return { ok: true, request_id, model: live.model, about: { captured_at: frame.context.frame_captured_at, focus } };
@@ -1256,7 +1338,7 @@ function askEnded(s: Session, live: Live, sel: Selection, mine: NonNullable<Sele
   const current_ = current === s && !s.ending && s.live === live && live.ended === null && s.ask === sel && sel.request === mine && mine.state === 'asking';
   const view: AskOutcome = outcome.status === 'answered'
     ? current_ ? { status: 'answered', answer: { request_id: outcome.answer.request_id, text: outcome.answer.text, model: outcome.answer.model, latency_ms: outcome.answer.latency_ms } } : { status: 'cancelled', uncertain: true }
-    : outcome.status === 'refused' ? { status: 'refused', code: outcome.code, reason: outcome.reason }
+    : outcome.status === 'refused' ? { status: 'refused', code: outcome.code, reason: outcome.reason, submission: outcome.submission }
     : outcome.status === 'cancelled' ? { status: 'cancelled', uncertain: outcome.uncertain } : { status: 'uncertain', reason: outcome.reason };
   mine.state = 'done';
   entry.ended_at = new Date().toISOString();

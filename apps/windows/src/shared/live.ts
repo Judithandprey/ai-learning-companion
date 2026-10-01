@@ -160,10 +160,11 @@ export function turnProblem(t: Turn, pngBytes: number): string | null {
 
 /**
  * The newest whole entries that fit a turn (never a cut entry), oldest first; and, when older ones or over-long ones
- * were left out, the frames they belong to as one gap, so that what is sent never passes for the complete memory.
- * The originals stay where they are kept; nothing is deleted.
+ * were left out, the frames they belong to as gaps, so that what is sent never passes for the complete memory. A gap
+ * never covers a frame of which an entry IS sent: the frames left out are given as runs between the kept ones. The
+ * originals stay where they are kept; nothing is deleted.
  */
-export function boundedHistory(all: readonly HistoryEntry[], frameSeq: number, reserve = 0): { history: HistoryEntry[]; omitted: Gap | null } {
+export function boundedHistory(all: readonly HistoryEntry[], frameSeq: number, reserve = 0): { history: HistoryEntry[]; omitted: Gap[] } {
   const kept: HistoryEntry[] = [];
   const left: HistoryEntry[] = [];
   let total = 0;
@@ -179,8 +180,14 @@ export function boundedHistory(all: readonly HistoryEntry[], frameSeq: number, r
       if (h.text.length <= HISTORY_TEXT_MAX) full = true; // nothing older than the first one that did not fit is taken (no holes in the recent past)
     }
   }
-  const seqs = left.map((h) => h.frame_seq).filter((n): n is number => n !== null);
-  return { history: kept.reverse(), omitted: seqs.length > 0 ? { from_frame_seq: Math.min(...seqs), to_frame_seq: Math.max(...seqs), reason: 'budget' } : null };
+  const sent = new Set(kept.map((h) => h.frame_seq));
+  const omitted: Gap[] = [];
+  for (const n of [...new Set(left.map((h) => h.frame_seq).filter((x): x is number => x !== null && !sent.has(x)))].sort((a, b) => a - b)) {
+    const last = omitted.at(-1);
+    if (last && ![...sent].some((k) => k !== null && k > last.to_frame_seq && k < n)) last.to_frame_seq = n;
+    else omitted.push({ from_frame_seq: n, to_frame_seq: n, reason: 'budget' });
+  }
+  return { history: kept.reverse(), omitted };
 }
 
 /**
@@ -346,7 +353,7 @@ export const LIVE_ERROR_TEXT: Readonly<Record<string, string>> = {
   ordinary_usage_not_allowed: 'ChatGPT says included usage is not allowed for this request now',
   context_limit: 'the request or its answer is too large',
   overloaded: 'ChatGPT says it is overloaded for now',
-  interrupt_unconfirmed: 'it was cancelled here; whether ChatGPT stopped working on it is not confirmed',
+  interrupt_unconfirmed: 'an interruption was not confirmed by ChatGPT, so the AI session was stopped',
   failed: 'the request failed',
   budget_reached: 'this session\'s own bound (requests or time) was reached',
   stale_context: 'it was replaced by a newer request, or what it was about is no longer current',

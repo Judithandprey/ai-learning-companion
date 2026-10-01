@@ -76,6 +76,11 @@ const turn = (o: Partial<Turn> = {}): Turn => ({
 const followup = (o: Partial<Turn> = {}): Turn => turn({ request_id: `${SESSION}.7.text_followup`, trigger: 'text_followup', allowed_assistance: 'explain', user_text: 'Why is that?', ...o });
 const look = (o: Partial<Turn> = {}): Turn => turn({ request_id: `${SESSION}.7.observation`, trigger: 'observation', allowed_assistance: 'none', presentation: 'none', focus: null, ...o });
 /** The user's Start of the AI session (the account must have been checked, and be signed in, before it). */
+/** A turn's outcome without `unsettled` (whether its interruption leaves the session unsettled has a test of its own). */
+const interrupted = (o: TurnOutcome): object => {
+  const { unsettled: _unsettled, ...rest } = o as TurnOutcome & { unsettled?: boolean };
+  return rest;
+};
 const begin = (s: Subscription, o: { session_id?: string; policy?: Policy } = {}): Promise<SessionStart> => s.startSession({ session_id: SESSION, capture_session_id: CAPTURE, policy: POLICY, ...o });
 /** A subscription that was checked (signed in, a model that takes pictures) and whose AI session SESSION is running. */
 async function started(config: ConnectorConfig = WSL, extra: object = {}, configure?: Parameters<typeof fakeConnectors>[0]) {
@@ -308,7 +313,7 @@ test('the AI session is not started, and nothing is written, while the account i
   const starting = begin(slow.s);
   await until('its Start is out', () => slow.fakes.last().count('companion/start') === 1);
   assert.equal(slow.s.sessionLive(SESSION), false, 'not running before the connector said so');
-  assert.deepEqual(await begin(slow.s, { session_id: OTHER_SESSION }), local('an AI session is already running'));
+  assert.deepEqual(await begin(slow.s, { session_id: OTHER_SESSION }), local('an earlier Start of the AI was not answered yet, so this one was not sent; start the AI again in a moment'), 'said as a Start that is still out, never as a session that runs');
   assert.deepEqual(await slow.s.turn(turn()), NOT_RUNNING, 'a turn of a session whose Start is still out is not written');
   slow.fakes.last().reply(slow.fakes.last().calls.at(-1)!.id, STARTED);
   assert.deepEqual([(await starting).ok, slow.fakes.last().count('companion/start'), slow.fakes.last().turns().length, slow.s.sessionLive(SESSION)], [true, 1, 0, true]);
@@ -532,7 +537,7 @@ test('an answer not bound to what was sent is not returned; the connector\'s err
     quota: 'the request failed', // the earlier envelope's code is not one of this version's: not known, so only "failed"
     some_new_code: 'the request failed',
   };
-  const codes = [...Object.keys(LIVE_ERROR_TEXT).filter((k) => !['cancelled', 'interrupt_unconfirmed', 'unauthenticated'].includes(k)), 'quota', 'some_new_code'];
+  const codes = [...Object.keys(LIVE_ERROR_TEXT).filter((k) => !['cancelled', 'unauthenticated'].includes(k)), 'quota', 'some_new_code'];
   assert.equal(Object.keys(SAID).every((k) => codes.includes(k)), true);
   for (const [i, code] of codes.entries()) {
     const submission = (['not_submitted', 'submitted', 'unknown'] as const)[i % 3]!;
@@ -583,7 +588,7 @@ test('whether a turn reached ChatGPT is said with every outcome: the connector\'
   let o = await out(w, queued);
   s.interrupt(queued.request_id);
   c.fail(o.id, 'cancelled', 'not_submitted');
-  assert.deepEqual(await o.done, { status: 'cancelled', uncertain: false, submission: 'not_submitted' });
+  assert.deepEqual(interrupted(await o.done), { status: 'cancelled', uncertain: false, submission: 'not_submitted' });
   // Never written, so never submitted: a turn too large for one line to the connector ...
   const written = c.turns().length;
   const large = turn({ request_id: `${SESSION}.s.large`, image: { ...turn().image, png_base64: 'A'.repeat(LINE_TO_CONNECTOR_MAX) } });
@@ -607,7 +612,7 @@ test('interrupt: the turn is interrupted and its answer never returned, whatever
     const { done } = await out(w, sent);
     w.s.interrupt(sent.request_id);
     // As the released connector answers: the turn as `cancelled`; the uncertainty in the interrupt's own answer.
-    assert.deepEqual(await done, { status: 'cancelled', uncertain, submission: 'submitted' });
+    assert.deepEqual(interrupted(await done), { status: 'cancelled', uncertain, submission: 'submitted' });
     assert.deepEqual(w.c.calls.at(-1), { id: w.c.calls.at(-1)!.id, method: 'companion/interrupt', params: { session_id: SESSION, epoch: 1, request_id: sent.request_id } });
     assert.deepEqual([w.s.sessionLive(SESSION), w.now().asking], [true, false], 'the session itself goes on');
   }
@@ -619,14 +624,14 @@ test('interrupt: the turn is interrupted and its answer never returned, whatever
   w.s.interrupt(sent.request_id);
   w.c.answer('A late answer.');
   const outcome = await done;
-  assert.deepEqual(outcome, { status: 'cancelled', uncertain: true, submission: 'submitted' });
+  assert.deepEqual(interrupted(outcome), { status: 'cancelled', uncertain: true, submission: 'submitted' });
   assert.equal(JSON.stringify(outcome).includes('late answer'), false);
   // An interrupt that gets no answer at all (the connector hangs) is not a confirmed stop either.
   const hung = await started();
   const asked = await out(hung);
   hung.c.stdin.removeAllListeners('data'); // it reads nothing more
   hung.s.interrupt(turn().request_id);
-  assert.deepEqual(await asked.done, { status: 'cancelled', uncertain: true, submission: 'unknown' });
+  assert.deepEqual(interrupted(await asked.done), { status: 'cancelled', uncertain: true, submission: 'unknown' });
 });
 
 test('an interrupt names its own turn: only that one is interrupted; the others go on and are answered; one that is not out, or already interrupted, writes nothing', async () => {
@@ -636,7 +641,7 @@ test('an interrupt names its own turn: only that one is interrupted; the others 
   const outs = [await out(w, a), await out(w, b), await out(w, d)] as const;
   const interrupts = () => c.calls.filter((x) => x.method === 'companion/interrupt').map((x) => x.params);
   s.interrupt(b.request_id);
-  assert.deepEqual(await outs[1].done, { status: 'cancelled', uncertain: false, submission: 'submitted' });
+  assert.deepEqual(interrupted(await outs[1].done), { status: 'cancelled', uncertain: false, submission: 'submitted' });
   assert.deepEqual(interrupts(), [{ session_id: SESSION, epoch: 1, request_id: b.request_id }], 'by its request id, in its session and epoch: never "whatever is current"');
   assert.equal(now().asking, true, 'the other two are still out');
   // Not out (never sent, another session's, already over): nothing is written.
@@ -658,7 +663,7 @@ test('an interrupt names its own turn: only that one is interrupted; the others 
   await new Promise((r) => setTimeout(r, 30));
   assert.deepEqual(interrupts().slice(1), [{ session_id: SESSION, epoch: 1, request_id: held.request_id }]);
   c.fail(last.id, 'cancelled', 'submitted');
-  assert.deepEqual(await last.done, { status: 'cancelled', uncertain: false, submission: 'submitted' });
+  assert.deepEqual(interrupted(await last.done), { status: 'cancelled', uncertain: false, submission: 'submitted' });
   // With no session at all, and no connector: nothing is started for an interrupt.
   const idle = subscription();
   idle.s.interrupt(a.request_id);
@@ -677,7 +682,7 @@ test('a stopped AI session can never send again: the connector is told once, eve
   s.stopSession(SESSION);
   assert.equal(s.sessionLive(SESSION), false, 'from this moment, before the connector answered');
   // As the released connector ends them: each turn as `session_stopped`; the Stop's own receipt says they were interrupted.
-  for (const o of outs) assert.deepEqual(await o.done, { status: 'cancelled', uncertain: false, submission: 'submitted' });
+  for (const o of outs) assert.deepEqual(interrupted(await o.done), { status: 'cancelled', uncertain: false, submission: 'submitted' });
   assert.deepEqual([stops(), c.count('companion/interrupt'), now().asking], [[{ session_id: SESSION, epoch: 1 }], 0, false], 'the Stop itself interrupts them: no interrupt of each is written');
   // Told once; and nothing of that session is written afterwards.
   s.stopSession(SESSION);
@@ -703,7 +708,7 @@ test('a stopped AI session can never send again: the connector is told once, eve
   assert.deepEqual(late.c.calls.at(-1), { id: late.c.calls.at(-1)!.id, method: 'companion/stop', params: { session_id: SESSION, epoch: 1 } });
   late.c.answer('An answer after the Stop.');
   const outcome = await sent.done;
-  assert.deepEqual(outcome, { status: 'cancelled', uncertain: true, submission: 'submitted' }, 'not shown; the Stop\'s interruption was not confirmed, and that is said');
+  assert.deepEqual(interrupted(outcome), { status: 'cancelled', uncertain: true, submission: 'submitted' }, 'not shown; the Stop\'s interruption was not confirmed, and that is said');
   assert.equal(JSON.stringify(outcome).includes('after the Stop'), false);
   // A turn that never ends after the Stop: given up at its own bound, not said as stopped for certain, and no
   // interrupt of it is written to a session that was stopped (the Stop told the connector already).
@@ -711,7 +716,7 @@ test('a stopped AI session can never send again: the connector is told once, eve
   never.c.onCancel = 'silent';
   const unanswered = await out(never);
   never.s.stopSession(SESSION);
-  assert.deepEqual(await unanswered.done, { status: 'cancelled', uncertain: true, submission: 'unknown' });
+  assert.deepEqual(interrupted(await unanswered.done), { status: 'cancelled', uncertain: true, submission: 'unknown' });
   await new Promise((r) => setTimeout(r, 30));
   assert.deepEqual([never.c.count('companion/stop'), never.c.count('companion/interrupt')], [1, 0]);
   // A session with nothing out is told as well; one stopped before any child ran starts none.
@@ -790,7 +795,7 @@ test('the quit: the turns that are out are never returned and not said as stoppe
   c.answer('An answer while the app quits.');
   for (const o of outs) {
     const outcome = await o.done;
-    assert.deepEqual(outcome, { status: 'cancelled', uncertain: true, submission: 'unknown' }, 'no receipt of an interruption was read, and whether ChatGPT worked on it is not known');
+    assert.deepEqual(interrupted(outcome), { status: 'cancelled', uncertain: true, submission: 'unknown' }, 'no receipt of an interruption was read, and whether ChatGPT worked on it is not known');
     assert.equal(JSON.stringify(outcome).includes('while the app quits'), false);
   }
   await quitting;
@@ -1545,19 +1550,19 @@ test('an interrupt or a Stop is a confirmed interruption only by its own exact r
   const NOT = [{}, null, [], 'cancelled', true, { uncertain: 'unknown' }, { cancelled: true, uncertain: 'unknown' }, { cancelled: true }, { uncertain: false }, { cancelled: 'true', uncertain: false }, { cancelled: 1, uncertain: 0 }, { cancelled: true, uncertain: null }, { cancelled: true, uncertain: false, more: 1 }, { cancelled: false, uncertain: false }, { cancelled: true, uncertain: true }, { stopped: true }, { ok: true }];
   for (const by of ['interrupt', 'stop'] as const) {
     const receipt = by === 'interrupt' ? 'cancelReceipt' : 'stopReceipt';
-    for (const result of NOT) assert.deepEqual(await outcomeOf((c) => void (c[receipt] = { result }), by), { status: 'cancelled', uncertain: true, submission: 'submitted' }, `companion/${by} answered ${JSON.stringify(result)}`);
-    assert.deepEqual(await outcomeOf((c) => void (c[receipt] = { result: { cancelled: true, uncertain: false } }), by), { status: 'cancelled', uncertain: false, submission: 'submitted' }, by);
+    for (const result of NOT) assert.deepEqual(interrupted(await outcomeOf((c) => void (c[receipt] = { result }), by)), { status: 'cancelled', uncertain: true, submission: 'submitted' }, `companion/${by} answered ${JSON.stringify(result)}`);
+    assert.deepEqual(interrupted(await outcomeOf((c) => void (c[receipt] = { result: { cancelled: true, uncertain: false } }), by)), { status: 'cancelled', uncertain: false, submission: 'submitted' }, by);
     // Refused by the connector, or not answered at all (the request's own bound), while the turn does end as interrupted.
-    assert.deepEqual(await outcomeOf((c) => void (c.manual.add(`companion/${by}`), (c.onCall = (call) => (call.method === `companion/${by}` ? c.fail(call.id, 'failed') : undefined))), by, (c, id) => c.fail(id, by === 'interrupt' ? 'cancelled' : 'session_stopped', 'submitted')), { status: 'cancelled', uncertain: true, submission: 'submitted' }, `companion/${by} refused`);
-    assert.deepEqual(await outcomeOf((c) => void c.manual.add(`companion/${by}`), by, (c, id) => c.fail(id, by === 'interrupt' ? 'cancelled' : 'session_stopped', 'submitted')), { status: 'cancelled', uncertain: true, submission: 'submitted' }, `companion/${by} not answered`);
+    assert.deepEqual(interrupted(await outcomeOf((c) => void (c.manual.add(`companion/${by}`), (c.onCall = (call) => (call.method === `companion/${by}` ? c.fail(call.id, 'failed') : undefined))), by, (c, id) => c.fail(id, by === 'interrupt' ? 'cancelled' : 'session_stopped', 'submitted'))), { status: 'cancelled', uncertain: true, submission: 'submitted' }, `companion/${by} refused`);
+    assert.deepEqual(interrupted(await outcomeOf((c) => void c.manual.add(`companion/${by}`), by, (c, id) => c.fail(id, by === 'interrupt' ? 'cancelled' : 'session_stopped', 'submitted'))), { status: 'cancelled', uncertain: true, submission: 'submitted' }, `companion/${by} not answered`);
     // The exact receipt, and the turn ending in another way: its answer arrives, it fails otherwise, or it never ends.
     // Nothing of it is returned, and it is not said as stopped for certain.
     const silent = (c: FakeConnector): void => void (c.onCancel = 'silent'); // the receipt is exact; the turn is ended by the test
-    assert.deepEqual(await outcomeOf(silent, by, (c) => c.answer('An answer that raced it.')), { status: 'cancelled', uncertain: true, submission: 'submitted' }, `${by}: answered after all`);
-    assert.deepEqual(await outcomeOf(silent, by, (c, id) => c.fail(id, 'failed', 'unknown')), { status: 'cancelled', uncertain: true, submission: 'unknown' }, `${by}: failed otherwise`);
-    assert.deepEqual(await outcomeOf(silent, by), { status: 'cancelled', uncertain: true, submission: 'unknown' }, `${by}: never ended`);
+    assert.deepEqual(interrupted(await outcomeOf(silent, by, (c) => c.answer('An answer that raced it.'))), { status: 'cancelled', uncertain: true, submission: 'submitted' }, `${by}: answered after all`);
+    assert.deepEqual(interrupted(await outcomeOf(silent, by, (c, id) => c.fail(id, 'failed', 'unknown'))), { status: 'cancelled', uncertain: true, submission: 'unknown' }, `${by}: failed otherwise`);
+    assert.deepEqual(interrupted(await outcomeOf(silent, by)), { status: 'cancelled', uncertain: true, submission: 'unknown' }, `${by}: never ended`);
     // Positive control for those three: the same exact receipt and the turn ending as the connector ends an interrupted one.
-    assert.deepEqual(await outcomeOf(silent, by, (c, id) => c.fail(id, by === 'interrupt' ? 'cancelled' : 'session_stopped', 'submitted')), { status: 'cancelled', uncertain: false, submission: 'submitted' }, `${by}: ended as interrupted`);
+    assert.deepEqual(interrupted(await outcomeOf(silent, by, (c, id) => c.fail(id, by === 'interrupt' ? 'cancelled' : 'session_stopped', 'submitted'))), { status: 'cancelled', uncertain: false, submission: 'submitted' }, `${by}: ended as interrupted`);
   }
   // Both were said (the interrupt, then the Stop): confirmed only if each was.
   for (const [stopReceipt, uncertain] of [[{ ok: true }, true], [{ cancelled: true, uncertain: false }, false]] as const) {
@@ -1570,19 +1575,60 @@ test('an interrupt or a Stop is a confirmed interruption only by its own exact r
     both.s.stopSession(SESSION);
     await until('both told', () => both.c.count('companion/interrupt') === 1 && both.c.count('companion/stop') === 1);
     both.c.fail(o.id, 'cancelled', 'submitted');
-    assert.deepEqual(await o.done, { status: 'cancelled', uncertain, submission: 'submitted' }, JSON.stringify(stopReceipt));
+    assert.deepEqual(interrupted(await o.done), { status: 'cancelled', uncertain, submission: 'submitted' }, JSON.stringify(stopReceipt));
   }
 });
 
 const SHIM_ENDED = 'a connector that was ended here did not end by itself in time; its wsl.exe shim was ended, which does not show that the connector, or the Codex app server it runs, ended in WSL';
 const SHIM_NOT_ENDED = 'a connector that was ended here did not end by itself in time; its wsl.exe shim did not end either, so it is not known that the connector, or the Codex app server it runs, ended in WSL';
 
+test('whether an interrupted turn leaves the session unsettled: only when its interruption was not confirmed by the connector, or its fate is not known; a turn that was answered anyway, or interrupted for certain, does not', async () => {
+  /** A turn out in a started session; `configure` sets the stand-in up, `then` ends the turn (after the interrupt or the Stop was told). */
+  const outcomeOf = async (configure: (c: FakeConnector) => void, by: 'interrupt' | 'stop' | 'none', then?: (c: FakeConnector, id: string) => void): Promise<TurnOutcome> => {
+    const w = subscription(WSL, { request_ms: 150, ask_ms: 2000 }, configure);
+    await w.s.check();
+    assert.equal((await begin(w.s)).ok, true);
+    const t = turn();
+    const done = w.s.turn(t);
+    await until('sent', () => w.fakes.last().turns().length === 1);
+    if (by === 'interrupt') w.s.interrupt(t.request_id);
+    if (by === 'stop') w.s.stopSession(SESSION);
+    if (by !== 'none') await until('told', () => w.fakes.last().count(`companion/${by}`) === 1);
+    then?.(w.fakes.last(), w.fakes.last().turns()[0]!.id);
+    return done;
+  };
+  const unsettled = async (...a: Parameters<typeof outcomeOf>): Promise<boolean | undefined> => ((await outcomeOf(...a)) as { unsettled?: boolean }).unsettled;
+  for (const by of ['interrupt', 'stop'] as const) {
+    const receipt = by === 'interrupt' ? 'cancelReceipt' : 'stopReceipt';
+    // Interrupted for certain: settled.
+    assert.equal(await unsettled(() => undefined, by), false, `${by}: confirmed`);
+    // The connector says the interruption was not confirmed (it stops its session then): unsettled.
+    assert.equal(await unsettled((c) => void (c.onCancel = 'unconfirmed'), by), true, `${by}: the connector's own "uncertain"`);
+    // No acknowledgement at all, an error, or another shape: not confirmed, so unsettled.
+    assert.equal(await unsettled((c) => void c.manual.add(`companion/${by}`), by, (c, id) => c.fail(id, by === 'interrupt' ? 'cancelled' : 'session_stopped', 'submitted')), true, `${by}: not answered`);
+    assert.equal(await unsettled((c) => void (c[receipt] = { result: {} }), by), true, `${by}: another shape`);
+    // The turn was answered just before its interruption (nothing was left to interrupt): the session is as it was.
+    assert.equal(await unsettled((c) => void ((c.onCancel = 'silent'), (c[receipt] = { result: { cancelled: false, uncertain: false } })), by, (c) => c.answer('An answer that raced it.')), false, `${by}: answered after all`);
+    // The turn itself ends as an unconfirmed interruption, or never ends: unsettled.
+    assert.equal(await unsettled((c) => void (c.onCancel = 'silent'), by, (c, id) => c.fail(id, 'interrupt_unconfirmed', 'submitted')), true, `${by}: the turn ended as unconfirmed`);
+    assert.equal(await unsettled((c) => void (c.onCancel = 'silent'), by), true, `${by}: the turn never ended`);
+  }
+  // Ended by the connector itself, with no interrupt and no Stop of this app: unsettled only as an unconfirmed
+  // interruption, or when whether it reached ChatGPT is not known.
+  assert.equal(await unsettled(() => undefined, 'none', (c, id) => c.fail(id, 'cancelled', 'submitted')), false);
+  assert.equal(await unsettled(() => undefined, 'none', (c, id) => c.fail(id, 'cancelled', 'not_submitted')), false);
+  assert.equal(await unsettled(() => undefined, 'none', (c, id) => c.fail(id, 'cancelled', 'unknown')), true);
+  // The connector's own "an interruption was not confirmed" for a turn this app did not interrupt is its refusal
+  // (it has stopped its session): said as that, never as a request that was cancelled here.
+  assert.deepEqual(await outcomeOf(() => undefined, 'none', (c, id) => c.fail(id, 'interrupt_unconfirmed', 'not_submitted')), { status: 'refused', code: 'interrupt_unconfirmed', reason: 'an interruption was not confirmed by ChatGPT, so the AI session was stopped', submission: 'not_submitted' });
+});
+
 test('a turn the connector ends as cancelled, when this app asked for no interrupt and no Stop, is not said as a confirmed stop; nothing is sent again and no connector is started', async () => {
   const w = await started();
   const { fakes, now, c } = w;
   const o = await out(w);
   c.fail(o.id, 'cancelled', 'submitted'); // as the released connector does at its request-history limit
-  assert.deepEqual(await o.done, { status: 'cancelled', uncertain: true, submission: 'submitted' });
+  assert.deepEqual(interrupted(await o.done), { status: 'cancelled', uncertain: true, submission: 'submitted' });
   await new Promise((r) => setTimeout(r, 30));
   assert.deepEqual([c.count('companion/interrupt'), c.count('companion/stop'), c.turns().length, fakes.made.length, now().state, now().asking, w.s.sessionLive(SESSION)], [0, 0, 1, 1, 'signed_in', false, true], 'no interrupt or Stop of this app, one send, one connector');
   // The same reply after this app's own confirmed interrupt, or its confirmed Stop, is the confirmed stop it was.
@@ -1592,13 +1638,13 @@ test('a turn the connector ends as cancelled, when this app asked for no interru
     const asked = await out(own, sent);
     if (by === 'interrupt') own.s.interrupt(sent.request_id);
     else own.s.stopSession(SESSION);
-    assert.deepEqual(await asked.done, { status: 'cancelled', uncertain: false, submission: 'submitted' }, by);
+    assert.deepEqual(interrupted(await asked.done), { status: 'cancelled', uncertain: false, submission: 'submitted' }, by);
   }
-  // interrupt_unconfirmed stays what it says.
+  // interrupt_unconfirmed stays what it says: the connector's own refusal (it stopped its session), not a cancel of this app's.
   const un = await started();
   const held = await out(un);
   un.c.fail(held.id, 'interrupt_unconfirmed', 'submitted');
-  assert.deepEqual(await held.done, { status: 'cancelled', uncertain: true, submission: 'submitted' });
+  assert.deepEqual(await held.done, { status: 'refused', code: 'interrupt_unconfirmed', reason: 'an interruption was not confirmed by ChatGPT, so the AI session was stopped', submission: 'submitted' });
 });
 
 test('a connector that does not end by itself within its time: its shim is ended, that its own end was not seen is said and kept, and nothing is started in its place', async () => {
