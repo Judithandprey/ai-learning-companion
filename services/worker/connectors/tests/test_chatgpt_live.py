@@ -219,23 +219,152 @@ def test_start_checks_current_auth_and_model_capability(damage, expected):
     asyncio.run(run())
 
 
-def test_caller_policy_cannot_expand_hard_limits_or_renew_same_session():
+def test_explicit_long_policy_is_honored_without_automatic_renewal():
     async def run():
         clock = Clock()
         params = start(policy={"max_submissions": 100, "max_session_ms": 3600000, "min_observation_interval_ms": 500})
         async with bridge(start_params=params, clock=clock) as c:
-            assert c.started["result"]["remaining_submissions"] == 12
-            assert c.started["result"]["expires_in_ms"] == 300000
-            assert c.bridge.session.interval == 30
-            for number in range(12):
+            assert c.started["result"]["remaining_submissions"] == 100
+            assert c.started["result"]["expires_in_ms"] == 3600000
+            assert c.bridge.session.interval == .5
+            clock.now += 301
+            for number in range(100):
                 result = await c.receive(await c.send("companion/turn", turn(str(number), number + 3)))
                 assert "result" in result
-            error(await c.receive(await c.send("companion/turn", turn("thirteen", 15))), "budget_reached")
-            assert c.client.turn_writes == c.bridge.session.submissions == 12
-            clock.now += 301
-            error(await c.receive(await c.send("companion/turn", turn("expired", 16))), "budget_reached")
+            error(await c.receive(await c.send("companion/turn", turn("one-hundred-one", 103))), "budget_reached")
+            assert c.client.turn_writes == c.bridge.session.submissions == 100
+            assert not c.bridge.session.stopped
+            clock.now += 3300
+            error(await c.receive(await c.send("companion/turn", turn("expired", 104))), "budget_reached")
+            assert c.bridge.session.stopped
             error(await c.receive(await c.send("companion/start", start(epoch=2))), "session_stopped")
-            assert c.client.turn_writes == 12
+            assert c.client.turn_writes == 100
+
+    asyncio.run(run())
+
+
+@pytest.mark.parametrize("stage", ["before_turn_write", "submitted"])
+def test_new_observation_preserves_active_focus_and_original_response_provenance(stage):
+    async def run():
+        authorizations = []
+
+        def authorize(result, **kwargs):
+            authorizations.append(deepcopy(kwargs))
+            return authorize_live_presentation(result, **kwargs)
+
+        async with bridge(authorize=authorize) as c:
+            original = turn("active")
+            c.client.release.clear()
+            if stage == "before_turn_write":
+                c.client.before_turn.clear()
+            active = await c.send("companion/turn", original)
+            await asyncio.wait_for((c.client.thread_sent if stage == "before_turn_write" else c.client.sent).wait(), 1)
+            observed = turn("newer-observation", 4, "observation")
+            queued = await c.send("companion/turn", observed)
+            assert c.bridge.session.latest == observed
+            c.client.before_turn.set()
+            c.client.release.set()
+            response = (await c.receive(active))["result"]
+            proof = deepcopy(original)
+            del proof["image"]["png_base64"]
+            assert response["request_id"] == "active" and response["provenance"] == proof
+            assert authorizations == [{"current_state": {"active": True, "cancelled": False, "provenance": proof},
+                                       "channel": "text"}]
+            assert (await c.receive(queued))["result"]["kind"] == "observation"
+            assert c.bridge.session.latest == observed
+            assert [row["id"] for row in c.emitted if "result" in row] == [c.start_id, active, queued]
+            assert c.client.max_running == 1 and c.client.turn_writes == 2
+            assert [row["outcome"] for row in c.client.receipts] == ["completed", "completed"]
+
+    asyncio.run(run())
+
+
+def test_new_observation_with_higher_permission_revision_still_fences_active_focus():
+    async def run():
+        async with bridge() as c:
+            c.client.release.clear()
+            active = await c.send("companion/turn", turn("active"))
+            await asyncio.wait_for(c.client.sent.wait(), 1)
+            observed = turn("permission-changed", 4, "observation", permission_revision=2)
+            queued = await c.send("companion/turn", observed)
+            c.client.release.set()
+            error(await c.receive(active), "stale_context", "submitted")
+            response = (await c.receive(queued))["result"]
+            assert response["kind"] == "observation" and response["provenance"]["permission_revision"] == 2
+            assert not any(row.get("result", {}).get("kind") == "generated_assistance" for row in c.emitted)
+            assert c.client.max_running == 1 and c.client.turn_writes == 2
+
+    asyncio.run(run())
+
+
+@pytest.mark.parametrize("limit", [1, 2, 5, 6])
+def test_unattended_observations_preserve_reserved_slots_for_explicit_requests(limit):
+    async def run():
+        clock = Clock()
+        params = start(policy={"max_submissions": limit, "max_session_ms": 60000, "min_observation_interval_ms": 500})
+        reserved = max(1, (limit + 4) // 5)
+        unattended = limit - reserved
+        async with bridge(start_params=params, clock=clock) as c:
+            for number in range(unattended):
+                clock.now += .5
+                result = await c.receive(await c.send("companion/turn", turn(f"observe-{number}", number + 3, "observation")))
+                assert result["result"]["kind"] == "observation"
+            clock.now += .5
+            refused = await c.send("companion/turn", turn("reserved-observation", unattended + 3, "observation"))
+            error(await c.receive(refused), "budget_reached")
+            assert c.client.turn_writes == c.bridge.session.submissions == unattended
+            assert not c.bridge.session.stopped and c.bridge.session.active
+            for number in range(reserved):
+                trigger = "focus" if number == 0 else "text_followup"
+                focused = await c.send("companion/turn", turn(f"explicit-{number}", unattended + number + 4, trigger))
+                assert (await c.receive(focused))["result"]["kind"] == "generated_assistance"
+            error(await c.receive(await c.send("companion/turn", turn("spent", limit + 4))), "budget_reached")
+            assert c.client.turn_writes == c.bridge.session.submissions == limit
+            assert not c.bridge.session.stopped
+            assert [row["request_id"] for row in c.client.receipts] == (
+                [f"observe-{number}" for number in range(unattended)] + [f"explicit-{number}" for number in range(reserved)])
+
+    asyncio.run(run())
+
+
+def test_queued_observation_rechecks_reservation_after_active_explicit_submission():
+    async def run():
+        params = start(policy={"max_submissions": 2, "max_session_ms": 60000, "min_observation_interval_ms": 500})
+        async with bridge(start_params=params) as c:
+            c.client.before_turn.clear()
+            active = await c.send("companion/turn", turn("active"))
+            await asyncio.wait_for(c.client.thread_sent.wait(), 1)
+            assert c.bridge.session.submissions == 0
+            queued = await c.send("companion/turn", turn("queued", 4, "observation"))
+            c.client.before_turn.set()
+            assert (await c.receive(active))["result"]["request_id"] == "active"
+            error(await c.receive(queued), "budget_reached")
+            assert c.client.thread_writes == c.client.turn_writes == c.bridge.session.submissions == 1
+            assert c.client.receipts == [{"request_id": "active", "outcome": "completed"}]
+            assert not c.bridge.session.stopped
+            final = await c.send("companion/turn", turn("explicit-final", 5, "text_followup"))
+            assert (await c.receive(final))["result"]["request_id"] == "explicit-final"
+            assert c.client.turn_writes == c.bridge.session.submissions == 2
+
+    asyncio.run(run())
+
+
+def test_explicit_half_second_observation_interval_is_honored():
+    async def run():
+        clock = Clock()
+        params = start(policy={"max_submissions": 10, "max_session_ms": 60000, "min_observation_interval_ms": 500})
+        async with bridge(start_params=params, clock=clock) as c:
+            first = await c.send("companion/turn", turn("first", 3, "observation"))
+            assert (await c.receive(first))["result"]["kind"] == "observation"
+            clock.now += .25
+            early = await c.send("companion/turn", turn("early", 4, "observation"))
+            await asyncio.sleep(0)
+            assert c.client.turn_writes == 1
+            clock.now += .25
+            due = await c.send("companion/turn", turn("due", 5, "observation"))
+            error(await c.receive(early), "stale_context")
+            assert (await c.receive(due))["result"]["kind"] == "observation"
+            assert c.client.turn_writes == 2
 
     asyncio.run(run())
 
@@ -474,7 +603,7 @@ def test_wrong_session_epoch_or_request_interrupt_cannot_cancel_new_work():
             c.client.release.clear()
             active = await c.send("companion/turn", turn("active"))
             await asyncio.wait_for(c.client.sent.wait(), 1)
-            queued = await c.send("companion/turn", turn("queued", 4))
+            queued = await c.send("companion/turn", turn("queued", 4, "observation"))
             for params in ({"session_id": "old-session", "epoch": 1, "request_id": None},
                            {"session_id": EXAMPLE["session_id"], "epoch": 2, "request_id": None},
                            {"session_id": EXAMPLE["session_id"], "epoch": 1, "request_id": "old-request"}):
@@ -487,7 +616,7 @@ def test_wrong_session_epoch_or_request_interrupt_cannot_cancel_new_work():
             error(await c.receive(queued), "cancelled")
             assert c.client.interrupts == 0 and not c.bridge.active.cancelled.is_set()
             c.client.release.set()
-            error(await c.receive(active), "stale_context", "submitted")
+            assert (await c.receive(active))["result"]["request_id"] == "active"
 
     asyncio.run(run())
 
@@ -575,11 +704,9 @@ def test_invalid_original_never_replaces_current_or_pending_authority(damage, pe
             assert c.bridge.session.latest == current and c.bridge.pending is retained
             assert "corrupt" not in c.bridge.request_ids
             c.client.release.set()
+            assert (await c.receive(active))["result"]["request_id"] == "active"
             if pending:
-                error(await c.receive(active), "stale_context", "submitted")
                 assert (await c.receive(queued))["result"]["request_id"] == "queued"
-            else:
-                assert (await c.receive(active))["result"]["request_id"] == "active"
 
     asyncio.run(run())
 

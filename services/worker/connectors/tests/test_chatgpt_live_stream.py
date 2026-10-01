@@ -269,6 +269,33 @@ def test_actual_live_pipe_full_frame_focus_history_and_stop_use_real_learning(tm
         assert json.loads(report.read_text()) == {"child_reaped": True, "turn_starts": 1}
 
 
+def test_actual_live_pipe_preserves_configured_policy_and_active_focus_during_new_capture(tmp_path, ask_request):
+    focus = live_turn(ask_request)
+    observation = deepcopy(focus)
+    observation.update(request_id="observation-two", trigger="observation", allowed_assistance="none",
+                       presentation="none", user_text=None, focus=None)
+    observation["context"]["frame_seq"] = 2
+    params = start_params()
+    params["policy"].update(max_submissions=60, max_session_ms=1800000, min_observation_interval_ms=500)
+    with foreground(tmp_path, "slow_thread") as (process, send, receive, output, report):
+        send(envelope(local.LIVE_VERSION, method="companion/start", params=params))
+        started = receive()["result"]
+        assert started["remaining_submissions"] == 60
+        assert 1799000 < started["expires_in_ms"] <= 1800000
+        send(envelope(local.LIVE_VERSION, "focus", "companion/turn", focus))
+        send(envelope(local.LIVE_VERSION, "observation", "companion/turn", observation))
+        first, second = receive(), receive()
+        assert first["id"] == "focus" and first["result"]["kind"] == "generated_assistance"
+        assert first["result"]["provenance"]["context"]["frame_seq"] == 1
+        assert first["result"]["provenance"]["focus"] == focus["focus"]
+        assert second["id"] == "observation" and second["result"]["kind"] == "observation"
+        assert second["result"]["provenance"]["context"]["frame_seq"] == 2
+        process.stdin.close()
+        assert output.get(timeout=8) == b"" and process.wait(timeout=8) == 0
+        assert process.stderr.read() == b""
+        assert json.loads(report.read_text()) == {"child_reaped": True, "turn_starts": 2}
+
+
 @pytest.mark.parametrize("scenario,code,submission", [("retry_error", "rate_limited", "submitted"),
                                                     ("start_error", "failed", "submitted"),
                                                     ("failed", "failed", "submitted")])

@@ -62,6 +62,12 @@ class _Session:
     latest: dict | None = None
     timer: asyncio.Task | None = None
 
+    @property
+    def observation_limit(self):
+        # Keep a fixed 20% (rounded up) of the finite allowance available for
+        # explicit focus/follow-ups. This is scheduling, not provider quota.
+        return self.limit - max(1, (self.limit + 4) // 5)
+
 
 @dataclass
 class _Turn:
@@ -81,9 +87,10 @@ class _Turn:
 class LiveSubscriptionBridge(SubscriptionBridge):
     """One provider request, one replaceable pending turn, and no automatic retry.
 
-    Each accepted Turn is the latest trusted caller state. Frame/permission
-    changes without a Turn require the caller's immediate interrupt/Stop; the
-    desktop must also revalidate before actual display or speech.
+    The active Turn remains authorized across unrelated newer observations.
+    Accepted explicit intent and permission changes fence it. Caller changes
+    without an accepted Turn require immediate interrupt/Stop; the desktop
+    must also revalidate the original request before actual display or speech.
     """
 
     def __init__(self, client, *, emit, prepare=_prepare, bind=_bind,
@@ -171,9 +178,8 @@ class LiveSubscriptionBridge(SubscriptionBridge):
         if params["permissions"]["microphone"] or params["permissions"]["system_audio"]:
             raise RPCError("unavailable")
         policy = params["policy"]
-        session = _Session(params, self.clock() + min(policy["max_session_ms"], 300000) / 1000,
-                           min(policy["max_submissions"], 12),
-                           max(policy["min_observation_interval_ms"], 30000) / 1000)
+        session = _Session(params, self.clock() + policy["max_session_ms"] / 1000,
+                           policy["max_submissions"], policy["min_observation_interval_ms"] / 1000)
         self.session_ids.add(params["session_id"])
         self.session = session
         session.timer = self._spawn(self._deadline(session))
@@ -232,7 +238,8 @@ class LiveSubscriptionBridge(SubscriptionBridge):
         withdrawal = turn["trigger"] != "observation" and (turn["allowed_assistance"] == "none" or turn["presentation"] == "none")
         if not withdrawal and self.pending is not None and self.pending.turn["trigger"] != "observation":
             raise RPCError("busy")
-        if not withdrawal and session.submissions >= session.limit:
+        limit = session.observation_limit if turn["trigger"] == "observation" else session.limit
+        if not withdrawal and session.submissions >= limit:
             raise RPCError("budget_reached")
         try:
             prepared = self.prepare(deepcopy(turn))
@@ -246,7 +253,8 @@ class LiveSubscriptionBridge(SubscriptionBridge):
             self._fence_active("stale_context")
             self.error(rpc_id, "cancelled")
             return
-        if previous is not None and turn["permission_revision"] > previous["permission_revision"]:
+        if previous is not None and (turn["permission_revision"] > previous["permission_revision"]
+                                     or turn["trigger"] != "observation"):
             self._fence_active("stale_context")
         self._drop_pending("stale_context")
         self.pending = _Turn(rpc_id, turn, session, prepared)
@@ -288,9 +296,10 @@ class LiveSubscriptionBridge(SubscriptionBridge):
         self._schedule()
 
     def _current_state(self, job):
-        return {"active": not self.closed and job.session is self.session and job.session.active
-                and not job.session.stopped and self.clock() < job.session.deadline,
-                "cancelled": job.cancelled.is_set(), "provenance": _proof(job.session.latest)}
+        return {"active": self.active is job and not self.closed and job.session is self.session
+                and job.session.active and not job.session.stopped and self.clock() < job.session.deadline
+                and job.session.latest["permission_revision"] == job.turn["permission_revision"],
+                "cancelled": job.cancelled.is_set(), "provenance": _proof(job.turn)}
 
     def _guard(self, job, method=None):
         if job.reason:
@@ -298,12 +307,15 @@ class LiveSubscriptionBridge(SubscriptionBridge):
         self._session_current(job.session)
         if job.cancelled.is_set():
             raise RPCError("cancelled")
-        if self.active is not job or _proof(job.turn) != self._current_state(job)["provenance"]:
+        if (self.active is not job
+                or job.session.latest["permission_revision"] != job.turn["permission_revision"]
+                or _proof(job.turn) != job.prepared["provenance"]):
             raise RPCError("stale_context")
-        if method is not None and not job.reserved:
-            if job.session.submissions >= job.session.limit:
+        if not job.reserved:
+            limit = job.session.observation_limit if job.turn["trigger"] == "observation" else job.session.limit
+            if job.session.submissions >= limit:
                 raise RPCError("budget_reached")
-            if (job.turn["trigger"] == "observation" and job.session.last_observation is not None
+            if (method is not None and job.turn["trigger"] == "observation" and job.session.last_observation is not None
                     and self.clock() < job.session.last_observation + job.session.interval):
                 raise RPCError("budget_reached")
         if method == "turn/start" and not job.reserved:
