@@ -1,0 +1,30 @@
+{
+  "scope": "synthetic actual bridge/Learning, no account/model/capture",
+  "candidate_root": "/tmp/backend-live-transport-review-fcg_rmg4",
+  "configured_policy": {
+    "max_submissions": 60,
+    "max_session_ms": 1800000,
+    "min_observation_interval_ms": 30000
+  },
+  "start_result": {
+    "id": "rpc-1",
+    "result": {
+      "session_id": "companion-example",
+      "epoch": 1,
+      "remaining_submissions": 12,
+      "expires_in_ms": 300000
+    }
+  },
+  "configured_bounds_honored": false,
+  "focus_completed_with_newer_observation": false,
+  "focus_reply": {
+    "id": "rpc-2",
+    "error": {
+      "code": "stale_context",
+      "submission": "submitted"
+    }
+  },
+  "observation_completed": true,
+  "turn_writes": 2,
+  "max_running": 1
+}

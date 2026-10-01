@@ -1,0 +1,31 @@
+{
+  "scope": "exact parent adapter with fake child; no native execution",
+  "results": [
+    {
+      "line": "not-json",
+      "escaped": null,
+      "kills": 1,
+      "settled": true,
+      "diagnostics": [
+        {
+          "reason": "malformed_reply"
+        },
+        {
+          "event": "child_closed",
+          "code": null,
+          "signal": "SIGTERM"
+        }
+      ]
+    },
+    {
+      "line": "null",
+      "escaped": {
+        "name": "TypeError",
+        "message": "Cannot read properties of null (reading 'type')"
+      },
+      "kills": 0,
+      "settled": false,
+      "diagnostics": []
+    }
+  ]
+}

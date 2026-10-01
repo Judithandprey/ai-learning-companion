@@ -1,0 +1,52 @@
+{
+  "candidate_root": "/mnt/c/Users/ROG/Documents/Codex/2026-09-27/x-o/work/windows-live-experience-20261001/native-tts-candidate",
+  "source_hashes": {
+    "NativeSpeech.cs": "c4c1f127a85ff1c871ce98895d51584af7936bbf23f3a35c7418002f201cbbfd",
+    "native-voice.mjs": "1a9279891b691de4cb4787eabcb947c0e3d6c47957f6db318c481dca82ec1077",
+    "build.mjs": "6fe8dd3b37fc63ea84443d4abeb2ed66c666c6ff0eb65e5ea15d996d18646a16",
+    "check.mjs": "10a26a8a9aee7034646ff6b3289fab425587f3f5667e58e9f7f25020d03a4e29",
+    "measure-rate.mjs": "01bf0dfc341f30730f0469fb6aae30d13fec7a1d8cf90608433fb4dc9d7b79ad"
+  },
+  "run02_recorded_hashes_match_actual": {
+    "NativeSpeech.cs": true,
+    "native-voice.mjs": true,
+    "check.mjs": true,
+    "build-02/NativeSpeech.exe": true
+  },
+  "run02_executed_snapshots_match": {
+    "native-voice.mjs": true,
+    "NativeSpeech.cs": true,
+    "check.mjs": true
+  },
+  "build_receipt_source_executable_match": true,
+  "build_receipt_compiler_sha256": "46809206887326d2d24db1eff1f3064de972c3451abe766b49111450a5e08e00",
+  "compiler_hash_independently_checked": false,
+  "run02": {
+    "pass": 8,
+    "fail": 0,
+    "node": "v24.19.0",
+    "sink": "memory",
+    "at": "2026-10-01T14:26:07.669Z",
+    "ended_at": "2026-10-01T14:26:09.263Z"
+  },
+  "run01": {
+    "pass": 7,
+    "fail": 1,
+    "failed_names": [
+      "native helper is silent/idle until say and cancels submitted memory synthesis"
+    ]
+  },
+  "duration_ratio_math_checked": [
+    {
+      "culture": "en-US",
+      "measured_ratio": 1.270021358728666
+    },
+    {
+      "culture": "zh-CN",
+      "measured_ratio": 1.2418929874341305
+    }
+  ],
+  "independent_native_execution": false,
+  "probe": "/tmp/native-tts-review-probe.json",
+  "verdict": "HOLD_SMALL_PARENT_PROTOCOL_FIX_BEFORE_PRODUCTION_ADOPTION"
+}

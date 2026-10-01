@@ -6,12 +6,16 @@ explicit floating spoken-response captions and movable controls. The old running
 `3e4b406` package remains untouched: no app restart, user screen/mic capture, account
 operation or profile overwrite occurred in this integration.
 
-Latest bounded continuation: [same-task evidence and remaining actions](continuation-evidence.md).
+Prior bounded continuation: [same-task evidence and remaining actions](continuation-evidence.md).
 The unchanged operator probe remains7 PASS/2 FAIL; the new retained-focus helper
 has123 affected synthetic passes plus independent review and is not yet wired.
 Sustained-session clarification is synchronized. Current native routing returned
 403, so no latest owner notification/adoption is claimed. Existing live transport,
 caption correction and actual audio work retain their owners and open gates.
+The next normal turn restored native list/inbox/read: [current transport/TTS review](transport-review/README.md)
+records actual Backend2833e2d delivery, two reproduced corrections, TTS source/hash
+review and one parser correction, with actual same-owner sends. The prior403 is
+historical; new receipt acceptance still does not establish worker adoption.
 
 ## Actual ownership / current execution
 
