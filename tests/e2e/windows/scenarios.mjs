@@ -199,6 +199,23 @@ const failSettled = (as) => linkUntil("l.state !== 'connecting' && l.state !== '
 const SETTLED5 = "l.state === 'sending' && l.awaiting === false && l.unknown === 0 && l.not_sent === 0";
 const panelHidden = (hidden) => edge(`(document.getElementById('qa-live').hidden = ${hidden}, true)`);
 
+// ---- managed-subscription ASK acceptance (ADR 0003): QA's generated surface, its test ink and the ASK selection -------
+// surface.html draws twelve cards at these fixed SCREEN positions (DIP); the same numbers are in that page.
+const SURFACE = { x: 40, y: 90, cols: 4, rows: 3, w: 190, h: 150, gap: 20 };
+const cardRect = (i) => ({ x: SURFACE.x + (i % SURFACE.cols) * (SURFACE.w + SURFACE.gap), y: SURFACE.y + Math.floor(i / SURFACE.cols) * (SURFACE.h + SURFACE.gap), width: SURFACE.w, height: SURFACE.h });
+// The test ink: one pen ellipse just inside each chosen card (the digits end about 10 DIP inside it). The ASK selection:
+// one ellipse around the whole grid; its region (the stroke's box + 8 DIP) is 17..883 x 72..598 DIP, below the heading.
+const circleCard = (i) => { const r = cardRect(i); return ellipse(r.x + r.width / 2, r.y + r.height / 2, r.width / 2 - 7, r.height / 2 - 9, 48); };
+const SURFACE_ASK = ellipse(SURFACE.x + (SURFACE.cols * (SURFACE.w + SURFACE.gap) - SURFACE.gap) / 2, SURFACE.y + (SURFACE.rows * (SURFACE.h + SURFACE.gap) - SURFACE.gap) / 2, 425, 255, 60);
+const SURFACE_REGION_PX = [17 * 2, 72 * 2, 883 * 2, 598 * 2]; // the ASK region in physical px at scale 2 (checked against the display in the run)
+// The page's own account of what it drew (for the harness only). Refused unless the page is the whole visible display
+// (no title bar or taskbar) at the display's scale, with every card at its planned screen place.
+const surfaceTruth = (as) => edge(`(() => { const t = JSON.parse(window.__qaSurfaceTruth());
+  if (!t.fits || !t.full_screen || t.viewport.dpr !== 2 || t.viewport.screen[0] !== 1280 || t.viewport.screen[1] !== 800) throw new Error('the surface is not the whole 1280x800 display at scale 2: ' + JSON.stringify([t.viewport, t.viewport_offset_dip]));
+  return JSON.stringify(t); })()`, as);
+// Every stroke of the ink is drawn solid (the app draws a stroke dashed while it cannot verify what is under it).
+const inkSolid = { waitEval: "(() => { const a = Object.values(__lcOverlay.state().aligned || {}); return a.length > 0 && a.every((x) => x === 'verified'); })()", target: 'overlay', timeoutMs: 15000 };
+
 export const scenarios = {
   full: (p) => [
     ...setup(p),
@@ -530,6 +547,28 @@ export const scenarios = {
     stopped('s1_stopped'), linkUntil("l.state === 'stopped'", 'p_link_stopped', 50000), linkNow('p_stopped_now'), kidsOf('kids_p_stopped'),
     linkEvents('w_events'), timeline('w_timeline'), coordCopy('coord-stopped'), hashesP('stopped', true),
     { closeApp: true, via: 'wm_close' }, hashesP('final', true),
+  ],
+
+  // Dry check of QA's generated surface on the real display, with NO link and NO provider: the page fills the screen, the
+  // pen circles the chosen card, ASK selects the grid, and the local card shows the composed selection. Run before any
+  // real model call, so that no call is spent on a surface or a stroke that does not work.
+  surfacecheck: (p) => [
+    { edgeStart: p.surfaceUrl, profile: p.edgeProfile, as: 'edge', fullscreen: true },
+    { window: 'edge', show: 'raise' }, { edgeFullscreen: true, required: false }, { sleep: 2000 },
+    { cursorOutside: SURFACE_REGION_PX },
+    waitDisplays,
+    control("(async () => (await window.lc.listDisplays()).map(d => ({ label: d.label, primary: d.primary, bounds: d.bounds, scale_factor: d.scale_factor, source_id: d.source_id })))()", 'displays'),
+    surfaceTruth('surface_truth'), inkHook, linkHook, linkNow('link_off'),
+    mark('before-start'), { desktopShot: 'surface' },
+    ...startSession('s1'), { sleep: 3500 }, surfaceTruth('surface_truth_running'),
+    click('[data-mode=WRITE]'), click('#pen'), pen(circleCard(p.circled[0])), { sleep: 900 }, pen(circleCard(p.circled[1])), ...state('circled'),
+    inkSolid, { cursorOutside: SURFACE_REGION_PX }, surfaceTruth('surface_truth_before_ask'),
+    click('[data-mode=ASK]'), pen(SURFACE_ASK), cardShown,
+    overlay("JSON.stringify({ text: document.getElementById('cardText').textContent, src: document.getElementById('crop').src, revision: __lcOverlay.state().doc.revision })", 'askCard'),
+    cardRead('card'), overlayState('card_open'),
+    click('#close'), overlayState('card_closed'),
+    ...stopSession('stopped'), recoveries('recoveries'), hashes('final', true), timeline('timeline'), listInk('ink'),
+    { closeApp: true },
   ],
 
   smoke: (p) => [

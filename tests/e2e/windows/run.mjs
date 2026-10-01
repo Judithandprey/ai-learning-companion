@@ -7,7 +7,7 @@
 // copies are removed after they are copied to the out dir. Desktop screenshots stay in the out dir only.
 
 import { execFileSync, spawn, spawnSync } from 'node:child_process';
-import { createHash } from 'node:crypto';
+import { createHash, randomInt } from 'node:crypto';
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -17,7 +17,7 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 // copyFile can fail with EPERM on the Windows drive mount; write the bytes instead.
 const copyFileSync = (from, to) => writeFileSync(to, readFileSync(from));
 const [scenario, outArg] = process.argv.slice(2);
-if (!scenarios[scenario] || !outArg) throw new Error('usage: run.mjs <smoke|full|ink|parent|parentquit|parentfix|parentwin05> <out dir>');
+if (!scenarios[scenario] || !outArg) throw new Error('usage: run.mjs <smoke|full|ink|parent|parentquit|parentfix|parentwin05|surfacecheck> <out dir>');
 const out = resolve(outArg);
 const run = (cmd, argv) => execFileSync(cmd, argv, { encoding: 'utf8', cwd: '/mnt/c' }).trim();
 const toWin = (p) => run('wslpath', ['-w', p]);
@@ -38,6 +38,12 @@ rmSync(paths.userData, { recursive: true, force: true }); // the app creates it:
 copyFileSync(join(HERE, 'course.html'), join(paths.content, 'course.html'));
 copyFileSync(join(HERE, 'notes.txt'), join(paths.content, 'notes.txt'));
 copyFileSync(join(HERE, 'qa-electron-runner.ps1'), join(work, 'qa-electron-runner.ps1'));
+// QA's generated test surface (surface.html draws random cards as pixels when it loads). Which two cards the pen circles
+// is chosen here, at random, for each run; it is in the stroke coordinates only, never in a file name or a question.
+copyFileSync(join(HERE, 'surface.html'), join(paths.content, 'surface.html'));
+const surfaceUrl = 'file:///' + toWin(join(paths.content, 'surface.html')).replace(/\\/g, '/');
+const first = randomInt(12);
+const circled = [first, (first + 1 + randomInt(11)) % 12]; // two distinct cards, every pair equally likely
 const courseUrl = 'file:///' + toWin(join(paths.content, 'course.html')).replace(/\\/g, '/');
 
 // Parent mode: the app's development capture link to the local test service (lc_p0_test) through a private
@@ -71,7 +77,7 @@ if (parent) {
   // --control: the runner's hostPause/hostResume requests (this run's out folder on the Windows side), for this run's host only.
   watcher = spawn(PY, [HELPER, 'watch', '--backend', backendCopy, '--out', watchFile, '--stop', stopFile, '--control', paths.winOut], { cwd: '/tmp', stdio: ['ignore', 'ignore', openSync(join(out, 'host-watch.stderr'), 'w')], env: { ...process.env, PYTHONDONTWRITEBYTECODE: '1' } });
 }
-const steps = scenarios[scenario]({ courseUrl, notes: toWin(join(paths.content, 'notes.txt')), edgeProfile: toWin(paths.edgeProfile), userData: toWin(paths.userData), actor });
+const steps = scenarios[scenario]({ courseUrl, surfaceUrl, circled, notes: toWin(join(paths.content, 'notes.txt')), edgeProfile: toWin(paths.edgeProfile), userData: toWin(paths.userData), actor });
 writeFileSync(join(work, 'steps.json'), JSON.stringify(steps, null, 1));
 
 const started = new Date().toISOString();
@@ -139,7 +145,7 @@ try {
   if (existsSync(ink)) cpSync(ink, join(out, 'ink'), { recursive: true });
   for (const [from, to] of [[join(paths.userData, 'qa-aside'), 'qa-aside'], [paths.appTemp, 'apptemp'], [join(paths.userData, 'capture-host'), 'capture-host']]) if (existsSync(from)) cpSync(from, join(out, to), { recursive: true });
   if (parent && existsSync(join(paths.userData, 'captures'))) cpSync(join(paths.userData, 'captures'), join(out, 'captures'), { recursive: true }); // private: whole-display frames
-  writeFileSync(join(out, 'run.json'), JSON.stringify({ scenario, started, ended: new Date().toISOString(), work: toWin(work), steps: steps.length, harness_sha256: harness }, null, 1));
+  writeFileSync(join(out, 'run.json'), JSON.stringify({ scenario, started, ended: new Date().toISOString(), work: toWin(work), steps: steps.length, ...(scenario.startsWith('surface') ? { surface_circled_card: circled } : {}), harness_sha256: harness }, null, 1));
   writeFileSync(join(out, 'steps.json'), JSON.stringify(steps, null, 1));
 } finally {
   if (watcher) {

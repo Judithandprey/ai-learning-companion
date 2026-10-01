@@ -15,6 +15,10 @@
 #     ("continue": true skips the press and continues a held gesture from its first point; "release": false keeps it held)
 #   { "raceStop": [[x,y],...], "pointerType": "pen", "releaseFirst": [x,y] }    Stop click + new stroke, unawaited
 #   { "edgeStart": "file:///...", "profile": "C:\\...", "as": "edge" }          real Edge app window
+#     ("fullscreen": true starts it full screen, so QA's page is the whole visible display)
+#   { "edgeFullscreen": true }              asks Edge (DevTools Browser.setWindowBounds) to make its window full screen
+#   { "cursorOutside": [x0,y0,x1,y1] }      physical px: fails if the user's mouse pointer is inside (it is never moved)
+#   { "window": "edge", "show": "raise" }   bring to the front without maximizing (a full-screen window stays as it is)
 #   { "consoleStart": "C:\\...\\notes.txt", "title": "...", "as": "console" }   real conhost window
 #   { "window": "edge|console|control", "show": "maximize|minimize|restore|front" }
 #   { "desktopShot": "label" }                                                  physical pixels -> OutDir (BMP), cursor read
@@ -326,8 +330,11 @@ try {
       elseif ($null -ne $step.edgeStart) {
         $entry.kind = 'edgeStart'
         $prof = [string]$step.profile
-        $p = Start-Process -FilePath $Edge -ArgumentList @("--user-data-dir=$prof", '--no-first-run', '--no-default-browser-check',
-          '--disable-sync', '--disable-extensions', '--disable-features=Translate,msTranslate,TranslateUI', '--lang=en-US', '--remote-debugging-port=0', "--app=$($step.edgeStart)") -PassThru
+        $edgeArgs = @("--user-data-dir=$prof", '--no-first-run', '--no-default-browser-check',
+          '--disable-sync', '--disable-extensions', '--disable-features=Translate,msTranslate,TranslateUI', '--lang=en-US', '--remote-debugging-port=0')
+        if ($step.fullscreen) { $edgeArgs += '--start-fullscreen' }
+        $edgeArgs += "--app=$($step.edgeStart)"
+        $p = Start-Process -FilePath $Edge -ArgumentList $edgeArgs -PassThru
         $started[[string]$step.as] = $p
         $portFile = Join-Path $prof 'DevToolsActivePort'
         $deadline = (Get-Date).AddSeconds(30)
@@ -351,6 +358,7 @@ try {
         $h = Window-Handle ([string]$step.window)
         if ($h -eq [IntPtr]::Zero) { throw "window $($step.window) not found" }
         switch ([string]$step.show) {
+          'raise'    { [void][QaWin]::BringWindowToTop($h); $entry.foreground = [QaWin]::SetForegroundWindow($h) }
           'maximize' { [void][QaWin]::ShowWindow($h, 3) }
           'minimize' { [void][QaWin]::ShowWindow($h, 6) }
           'restore'  { [void][QaWin]::ShowWindow($h, 9) }
@@ -358,6 +366,29 @@ try {
         }
         Start-Sleep -Milliseconds 200
         $entry.is_foreground = ([QaWin]::GetForegroundWindow() -eq $h)
+      }
+      elseif ($null -ne $step.edgeFullscreen) {
+        # Edge's own window, through its DevTools page socket; the state it then reports is recorded, nothing is assumed.
+        $entry.kind = 'edgeFullscreen'
+        $ws = Get-Socket 'edge'
+        $win = Invoke-Cdp $ws 'Browser.getWindowForTarget' '{}'
+        if ($win.error) { throw ('Browser.getWindowForTarget: ' + $win.error.message) }
+        $entry.before = [string]$win.result.bounds.windowState
+        if ($entry.before -ne 'fullscreen') {
+          if ($entry.before -ne 'normal') { [void](Invoke-Cdp $ws 'Browser.setWindowBounds' ('{"windowId":' + $win.result.windowId + ',"bounds":{"windowState":"normal"}}')) }
+          $set = Invoke-Cdp $ws 'Browser.setWindowBounds' ('{"windowId":' + $win.result.windowId + ',"bounds":{"windowState":"fullscreen"}}')
+          if ($set.error) { throw ('Browser.setWindowBounds: ' + $set.error.message) }
+          Start-Sleep -Milliseconds 800
+        }
+        $entry.after = [string](Invoke-Cdp $ws 'Browser.getWindowForTarget' '{}').result.bounds.windowState
+      }
+      elseif ($null -ne $step.cursorOutside) {
+        # The user's pointer is in every captured frame and is never moved by QA: a test region must be free of it.
+        $entry.kind = 'cursorOutside'
+        $c = [QaWin]::Cursor(); $r = @($step.cursorOutside)
+        $entry.cursor = $c
+        if ($null -eq $c) { throw 'the cursor position could not be read' }
+        if ($c[0] -ge [int]$r[0] -and $c[0] -le [int]$r[2] -and $c[1] -ge [int]$r[1] -and $c[1] -le [int]$r[3]) { throw "the mouse pointer is inside the test region ($($c[0]), $($c[1]) px)" }
       }
       elseif ($null -ne $step.desktopShot) {
         $entry.kind = 'desktopShot'; $entry.label = $step.desktopShot
