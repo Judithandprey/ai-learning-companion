@@ -46,6 +46,54 @@ sanitized, with no credentials, whole RPC dump or private screenshot in logs.
 Use the installed official Codex schema for the inner RPC; this envelope does not
 invent official fields.
 
+Launch: `<python> -m services.worker.connectors.chatgpt_local`, cwd the trusted
+Backend checkout; no startup record or READY line. First `connection/read` is the
+handshake. stdin is a private pipe, stdout only JSONL, stderr never forwarded to
+the UI/log. Incoming lines max 12 MiB, outgoing max 256 KiB; completed answer text
+max 32,000 characters. Identifiers are nonempty strings up to 128 characters,
+without control characters. No arbitrary commands/paths in JSON requests.
+
+The bridge owns a product-specific Codex state directory and empty work directory,
+separate from existing development-agent state. No credential files are copied.
+Trusted launch configuration may supply `LC_SUBSCRIPTION_STATE_DIR` and
+`LC_SUBSCRIPTION_CODEX_BIN`; otherwise use the product-specific local-data default
+and installed `codex` from PATH. These are native/main-only settings, never renderer
+or model inputs. Drop inherited API/auth/provider and development runtime variables;
+use a minimal environment for the Codex child. Support verifies the exact supported
+child configuration before inference. Changing only this product child does not
+change the seven AgentsDock runtimes, permissions or auth. A fresh managed login
+in that product state may be required.
+
+Exact successful result/event shapes (optional information uses explicit null):
+
+```text
+connection/read -> {
+  auth:{state:signed_in|signed_out|unknown, mode:chatgpt|null, plan:string|null},
+  rate_limits:[{label:string,used_percent:number,resets_at:UTC_timestamp|null}]|null,
+  models:[{id:string,label:string,image_input:boolean,default:boolean}]
+}
+connection/login/start -> {login_id:string,auth_url:string}
+connection/login/completed event -> {login_id:string,success:boolean,error:string|null}
+connection/login/cancel -> {}
+session/stop -> {}
+ask/cancel -> {cancelled:boolean,uncertain:boolean}
+```
+
+`signed_in` means managed ChatGPT account reported by Codex, not successful model
+access. Other authentication modes do not become managed ChatGPT. Unknown quota
+or modality stays unavailable; do not infer image support from a missing field.
+The desktop opens `auth_url` only on a user click, after validating HTTPS, no
+userinfo, and exact `openai.com`/`chatgpt.com` host or their dot-delimited subdomains.
+Never log the login URL. Login errors expose fixed sanitized descriptions.
+
+Closed error codes: `busy`, `unauthenticated`, `unsupported_model`,
+`invalid_request`, `session_stopped`, `cancelled`, `interrupt_unconfirmed`,
+`quota`, `failed`, `unavailable`. Clients map codes to fixed text, not raw error
+messages. Invalid images use `invalid_request`; unsuccessful/incomplete turns use
+`failed` unless a more precise listed code applies. `cancelled:true` means local
+submission/presentation is fenced, not proven remote rollback; `uncertain:true`
+records unconfirmed remote interruption.
+
 - `connection/read {}` returns sanitized managed-auth state, plan label when
   available, quota windows and model catalog/capabilities. No email/token needed.
   Catalog availability is not proof of inference entitlement.
@@ -95,6 +143,21 @@ frame and ink are the actual captured facts supplied by the trusted desktop main
 process, not a model assertion. Record PNG SHA-256 and exact context in both
 request and response; keep model text separate from originals. Rectangles must
 be finite/positive and within the corresponding captured display/image bounds.
+`region_dip` is display-local DIP/points (origin 0,0); `display.bounds.x/y` is the
+global desktop origin and may be negative. `region_px` is frame-local pixels:
+clamp to the display, floor the scaled left/top and ceil right/bottom using the
+actual frame width/height versus display size. Crop PNG dimensions equal the
+integer `region_px.width/height`. Do not assume scale_factor alone establishes
+capture dimensions. `frame_captured_at` may be null when unknown; it must not be
+invented from response time. `ink_revision` may be null only with null ink hash;
+null hash with a known revision explicitly records unavailable editable-original
+binding. Both known and unknown facts survive to the card.
+
+Provenance shape is exactly `{request_id,question,assistance,image:{sha256,width,
+height},context}`. `context` echoes every validated field above, including nulls.
+It never includes base64 or credentials. Clients compare the full frozen
+provenance to their retained request before presenting a result; checking only
+the capture session or image hash is insufficient for changed selection/ink.
 
 Learning callable seam:
 `prepare_subscription_ask(request) -> {text, image_bytes, provenance}`; return
