@@ -1,0 +1,31 @@
+{
+  "kind": "bounded_adoption_provenance_not_product_acceptance",
+  "reviewed_baseline": "612ce3a983f46e9661e38ca312492edf0dbf2b3e",
+  "adoption_base": "b6029ae0d57334b8ef142f6cf271f553cd31b21c",
+  "original_sha256": "c764160cde78c74d7dd76a950d593ecab45b390c7d9991b4db8ed5ad7f5dc9e4",
+  "verified_frozen_source_hashes": {
+    "docs/requirements.md": "fe3ab573309253278c0ff91328d6d5dd6050165311982796536c2dd0235d0871",
+    "docs/requirements.en.md": "122245c23c562d4b1efea2b52c3c6b99820949eb30f11ef8bb2bf05a7c062c55",
+    "docs/requirements/intent-and-decisions.md": "6baad9055260b8cb56619381f5cb6ceaa7c0b57a2f478e25c2094e4b5292ae42",
+    "docs/requirements/intent-and-decisions.en.md": "69ec69c4a1c239d837e868a885375218b86ffc374ebca9d8de21148234265f40",
+    "docs/requirements/original-goal-verification.md": "20cbea365337a8a046c443a9fe9536ec9fbec0c42a365c69a9c6ecf7068c5986",
+    "docs/requirements/original-goal-verification.en.md": "d7b589605f4bfbbefbaedf0b9d9bfd214f1722cdf3f6f8ccec8118bf4e79fd62",
+    "docs/requirements/problem-solving-companion.md": "bcb94929cf216094972b945d14b0282fb94c9e45f2a4875333a0ac7658deb4dd",
+    "docs/requirements/problem-solving-companion.en.md": "4b368b4b1118139c10227f8f585bdcea754171ffbd9b3812bf0e280b49bd037a",
+    "docs/requirements/audio-screen-interpretation.md": "1d9a9d231079c000a8609598683533272122cfa356555dbd722f652fc10f9d23",
+    "docs/requirements-traceability.md": "bcb6951d519f922bb0ef1024259ddcbc8ca79f8c36b0b6db184fb299adf17edb",
+    "docs/tasks.md": "1f5f9695c68de941eb391acd12a15457378419a97e9c3d5ab861316111e694c0",
+    "docs/workflow.md": "617528fc9d3fc11a03baff68f0bfc247c3c4dee151c7927f78891babf3aa4d50",
+    "docs/adr/0004-live-desktop-companion.md": "2b93a715fe25af8f56cc2e1f5f5109289e50b5937963f3f1824e3c431f1ff108"
+  },
+  "input_artifact_sha256": {
+    "delivery-reconciliation.md": "596c88677c1a3a5f9313ff6d6e8a8bb137296a3b79483aa9cbee7766250acb50",
+    "baseline.json": "3486133b9fc1761e6f68954192a20f8deda48fe0fdb6f0d3832cffe540ddc4e9",
+    "learning-audit.md": "56773b9223ec7c3592381e1e877fc16a181dbc9011f7dd890ac2ee14b0d43482",
+    "memory-autonomy-audit.md": "343789edf614fe67fa746562a59e1fd74266944eed7365ab4c5663d3a4536a3b",
+    "platform-audit.md": "b4b0937b42d58053f63ae123994978f4d7ec82279c188f197319462cc490a481",
+    "proposed-entrypoint-workflow.patch": "bada8d260de6b4d7ec49b3b5b07fd50ffebfc03b04d5a9cb46d94a4c9e88da0d"
+  },
+  "source_hash_checks_passed": 13,
+  "new_product_tests_or_provider_calls": 0
+}

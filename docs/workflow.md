@@ -22,6 +22,29 @@ unimplemented requirements with their owner, stage and evidence gap.
 
 ## One usable outcome
 
+For each user-facing package, keep a compact delivery record in its existing
+verification location: the promised user journey and source clauses; exact
+integrated build and production entrypoint; actual user actions and observed
+results; supported, unconnected and unverified scope per OS; and the existing
+next owner. A technical probe may be offered with its precise limited purpose,
+but must not be described as the full companion. An honest bounded usable
+release need not wait for every P1-P4 row.
+
+Check the active flow at its real entrypoint, not only a callable library or
+fixture. For the current Windows continuation, the existing changed-flow QA
+covers Start, fresh whole-screen changes/app navigation, automatic circle focus
+without required typing or a second Ask, optional voice/text follow-up, actual
+speech with matching floating captions, interruption, movable controls and Stop.
+Original ink/storage and current assistance obligations remain in force.
+Archive retrieval must be shown reaching the actual model context before
+claiming personal or cross-session continuity. Raw records, semantic learning
+notes, teaching behavior and mastery evidence keep distinct completion states.
+Do not replace the remaining full-product rows with this one flow.
+
+This is an operational requirement-fit check inside the existing integration and
+one independent acceptance pass, not a new approval gate, tracker, read-receipt
+loop or all-project retest.
+
 Use the existing task board, not a second tracker. Each bounded task identifies
 one observable outcome, requirement IDs, exact commit/contract versions, owner,
 write paths, dependencies, relevant acceptance and the next owner/action. Group

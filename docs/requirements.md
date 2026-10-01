@@ -196,7 +196,7 @@ LiveKit 可作为传输候选，但默认 AgentSession 通常绑定单个参与�
 
 认证归 Codex 管理：由其执行 OAuth、保存并刷新令牌；产品连接 UI 暴露官方 `account/login/start`，处理 `account/login/completed` 的成功／错误，用 `account/login/cancel` 取消待完成登录，并使用 `account/read`、`account/rateLimits/read` 和实际可用模型能力信息。缺登录／同意时提供可操作的官方登录入口及准确用户步骤，独立集成工作继续；不让用户在聊天粘贴令牌，不读取或复制 Codex 桌面 App 的私有凭据、cookie 或令牌。
 
-订阅用量窗口、重置时间、已拥有的普通 plan／workspace credits、重置限额所用 credits 与单独计费 API 必须区分。官方服务允许时，可在用户已授权的有界会话内自动使用已有普通 credits；不能只因本地某个窗口显示 100% 就判定所有请求不可用，也不能把未知余额解释为有余额、免费或可无限调用。**本次不得调用 `account/rateLimitResetCredit/consume` 或消费 reset credits**，不购买、不新增 API 计费、不改变认证责任方、不自动重试。保留官方拒绝类型与可观察额度事实；源码中混同 `usageLimitExceeded`／`rateLimitExceeded` 及丢弃 credits 信息的问题已确认，但用户实际额度症状／拒绝或预检的根因仍未知，须由脱敏回执和官方 schema 核实，不能据此猜测账户余额或资格。
+订阅用量窗口、重置时间、已拥有的普通 plan／workspace credits、重置限额所用 credits 与单独计费 API 必须区分。官方服务允许时，可在用户已授权的有界会话内自动使用已有普通 credits；不能只因本地某个窗口显示 100% 就判定所有请求不可用，也不能把未知余额解释为有余额、免费或可无限调用。**本次不得调用 `account/rateLimitResetCredit/consume` 或消费 reset credits**，不购买、不新增 API 计费、不改变认证责任方、不自动重试。保留官方拒绝类型与可观察额度事实。旧源码混同 `usageLimitExceeded`／`rateLimitExceeded`、丢弃 credits 及旧包实际拒绝／预检原因未知保留为历史；新 `lc-subscription-live/1` 已暴露完整 credit 事实，并在 included 周窗口 100% 已用而普通 credits 可用时取得一次[真实生成图像成功](verification/lead/live-windows/actual-credit-vision/README.md)。这不保证后续资格、不解释旧故障，也不能以余额差猜测扣费；旧 Windows consumer 的额度展示仍待接通。
 
 2026-09-30 核对的[官方 App Server 文档](https://learn.chatgpt.com/docs/app-server)允许本地／开源应用继续使用该认证，建议迁往更清楚展示用户控制与用量的 [Sign in with ChatGPT plan-usage 流程](https://developers.openai.com/siwc/token-sharing-open-source)，并排除商业或托管服务使用 App Server 认证。SIWC 的 OAuth、令牌存储／刷新由应用负责，是不同认证路线；不能与 Codex 托管模式混用。若当前官方要求或已安装兼容性确需改走 SIWC，记录精确原因并实施最小受支持路径，不把推测的新 OAuth 框架变成全队前置。
 
@@ -384,7 +384,7 @@ Start 的界面和实际动作必须明确：在已选择并完成系统授权�
 
 同一行为验收继续执行：导航 → 显式 WRITE → 写短草稿 → 仅擦除选定部分 → 撤销／重做正确恢复 → ASK 圈选 → 完成／取消后恢复先前 WRITE → 继续写 → 保存、重开并继续编辑原笔划。工具必须实际可见可用；鼠标试用须有明确启用的鼠标书写模式，未支持时在称为书写试用前说明。两桌面分别验证支持的真实笔输入与普通鼠标／触控导航；鼠标试用不替代笔体验验收。后续 iPad 单独验证真实 Pencil 与手指导航。内容挂靠／屏幕固定是另一个独立维度，两种均测；用途、草稿不自动外送、完成后询问整理、原稿独立和 Notability 实际导入规则不变。书写／擦除不会自行请求讲解或提高答案披露。
 
-QA 在多个真实可见变化上检查采集→真实供应商输入→有像素依据的响应，记录接收内容、来源时间、端到端新鲜度／延迟和覆盖限制。自适应采样是工程实现，不承诺逐帧完整；丢帧、过旧、遮挡和无法观察的区间明确留缺口，不静默丢弃有意义的已观察步骤。停止、暂停、撤权或失联后停止基于该源的实时可见宣称。单帧采集／存储、仅在本地 UI 显示截图、模拟供应商和文档库均只作明确标注的依赖组件，不能通过核心闭环或两个关卡。`d37f7a4` 基线已有订阅连接器和桌面接入源码，不能再概括为“连接器未实现”；真实图像回应和完整持续流程仍未验收，当前额度症状根因未知。真实模型输入／回应、来源权限与初始化及各桌面交互仍须逐项取证，托管 macOS CI／编译不代替这些证据。
+QA 在多个真实可见变化上检查采集→真实供应商输入→有像素依据的响应，记录接收内容、来源时间、端到端新鲜度／延迟和覆盖限制。自适应采样是工程实现，不承诺逐帧完整；丢帧、过旧、遮挡和无法观察的区间明确留缺口，不静默丢弃有意义的已观察步骤。停止、暂停、撤权或失联后停止基于该源的实时可见宣称。单帧采集／存储、仅在本地 UI 显示截图、模拟供应商和文档库均只作明确标注的依赖组件，不能通过核心闭环或两个关卡。2026-10-01 Backend `91e72fe` 经公开 `lc-subscription-live/1` 用普通 credits 成功识别仅存在生成图中的两段测试码及位置，约 6.388 秒完成且 Stop 为 `uncertain:false`；[图像证据](verification/lead/live-windows/actual-credit-vision/README.md)。Windows 布局 `28f0504` 已集成至 `073c96d`，离屏 15/15 与 main 聚焦 30 项通过；[布局证据](verification/lead/live-windows/layout-integration/README.md)。这些分别证明传输与受限渲染，新 GUI 的持续全屏／圈选／语音／系统音频链路仍未接通验收，图像回应尚未在其 live 对话显示。旧 v1 失败和旧包拒绝原因未知属于历史，不能再概括成所有供应商路径不可用。来源权限、实际交互及两个桌面的完整流程仍须逐项取证，托管 macOS CI／编译不代替交互式 Mac 验收。
 
 ### 7.2 输入模式
 

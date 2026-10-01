@@ -1,0 +1,14 @@
+{
+  "kind": "documentation_checks_not_product_acceptance",
+  "base": "b6029ae0d57334b8ef142f6cf271f553cd31b21c",
+  "translation_hashes": 8,
+  "unchanged_R_A_G_lines": {
+    "docs/requirements.md": 117,
+    "docs/requirements.en.md": 117
+  },
+  "unchanged_verification_and_companion_pairs": 4,
+  "unchanged_normative_audio_sections": true,
+  "new_or_changed_link_checks": 69,
+  "git_diff_check": "pass",
+  "application_tests_and_provider_calls": 0
+}

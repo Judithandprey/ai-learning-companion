@@ -1,41 +1,52 @@
 # Windows live companion implementation checkpoint
 
-Starting baseline `d37f7a442a78122fb351a7aab83ffdff8aec1448`. The user's current
-request restores the documented whole-screen/conversation experience and adds
-explicit floating spoken-response captions and movable controls. The old running
-`3e4b406` package remains untouched: no app restart, user screen/mic capture, account
-operation or profile overwrite occurred in this integration.
+Current integrated source: `b6029ae` (2026-10-01). Complete journeys and remaining
+production consumers are navigable in [requirements traceability](../../../requirements-traceability.md#user-journeys).
+This delivery continues implementing the existing full-screen/conversation requirements;
+floating spoken-response captions and movable controls are the user's explicit
+later refinements, not retroactively quoted original wording.
 
-Prior bounded continuation: [same-task evidence and remaining actions](continuation-evidence.md).
-The unchanged operator probe remains7 PASS/2 FAIL; the new retained-focus helper
-has123 affected synthetic passes plus independent review and is not yet wired.
-Sustained-session clarification is synchronized. That earlier turn's native routing returned
-403, so it established no latest owner notification/adoption. Existing live transport,
-caption correction and actual audio work retain their owners and open gates.
-The next normal turn restored native list/inbox/read: [current transport/TTS review](transport-review/README.md)
-records actual Backend2833e2d delivery, two reproduced corrections, TTS source/hash
-review and one parser correction, with actual same-owner sends. The prior403 is
-historical; new receipt acceptance still does not establish worker adoption.
-Backend subsequently delivered actual correction `91e72fe` through
-`handoff_a58c7f02f71525cb3a07ccd6f4d35922`. Its independently approved base/repair
-integrate as `9773688`/`0f3c16e`; 215 resulting-main live/legacy/affected-RPC checks
-and the unchanged scheduling probe pass. [Exact integration](transport-review/integration.md)
-releases the live transport for current Windows consumption. Latest Web/QA/Native
-adoption is still not inferred from their send receipts; actual audio/provider and
-versioned Windows acceptance remain open.
+- Actual Backend `91e72fe` public live/1 generated-image inference on the same
+  included-100% + available-credit account succeeded in 6.388s, with both image-only
+  codes correctly identified and Stop uncertain=false. Source inventory matches
+  integrated `9773688`/`0f3c16e`; 215 focused main checks pass. The new transport
+  exposes complete credit facts. [Sanitized real evidence](actual-credit-vision/README.md).
+- Web `28f0504` is integrated as `073c96d`. Historical offscreen 14/1 became 15/0;
+  main 30 focused checks and TypeScript/static build pass. [Layout evidence](layout-integration/README.md).
+  This does not verify actual speech, OS hit testing or the new live consumer.
+- Windows whole-screen/auto-focus/conversation/TTS production binding continues;
+  new GUI, actual input/system audio and integrated real-provider acceptance remain
+  open. Mac's current Stop correction/reuse and interactive evidence remain separate.
+  Source capture and local editable originals already exist on both clients;
+  content-anchored ink and the full classification/destination flow remain unfinished.
+- User explicitly stopped/exited the old app; the operator's generated-image test
+  cleaned up and released its lock. Preserve old package/profile/auth. Lead alone
+  coordinates subsequent bounded actual-account/display/audio tests on prepared
+  candidates; no worker lease is inferred and no repeated exit request is needed.
+- Support is reusing the input candidate with concrete [pre-live findings](realtime-input-review/README.md).
+  Seven account model entries list text/image and voices are readable; neither is
+  audio entitlement. The selected WebSocket source has an API-key-auth constraint;
+  the separate managed WebRTC route and delegation boundary are in actual Support delivery3167dbf, now under Lead review. No actual audio input acceptance,
+  hidden API billing, new framework or blanket claim that all audio is impossible.
+
+Earlier source baseline `d37f7a4`, package `3e4b406`, native-route403 and public-v1
+7/2 probe are historical evidence, preserved in [continuation](continuation-evidence.md)
+and [transport review](transport-review/README.md). The old package's exact refusal
+cause remains unknown. Current transport success is not proof that the old UI used
+it or that the complete companion is usable. Accepted mail is not owner adoption.
 
 ## Actual ownership / current execution
 
 | Owner | Sent native message | Actual observed status / next action |
 | --- | --- | --- |
-| Backend | `handoff_26afedde82001568fd372636368a02b8` | Start `handoff_63f349b1bac0afb993c7095b9840af7d`; initial quota delivery `6559198` then explicit incomplete/correction notice `handoff_b3da72f89392b6715033774b016973e4`. Actual correction63e9bcb arrived as handoff_525464bd8fdf0e4d2a2bd22bb7f8951a; pair independently approved and integrated as1b92a87/c4a3f43. Next same assignment consumes the already released live seam; public credit visibility remains open. |
+| Backend | `handoff_26afedde82001568fd372636368a02b8` | Start `handoff_63f349b1bac0afb993c7095b9840af7d`; initial quota delivery `6559198` then explicit incomplete/correction notice `handoff_b3da72f89392b6715033774b016973e4`. Actual correction63e9bcb arrived as handoff_525464bd8fdf0e4d2a2bd22bb7f8951a; pair independently approved and integrated as1b92a87/c4a3f43. Subsequent live delivery2833e2d/91e72fe is reviewed/integrated as9773688/0f3c16e; public live credit facts and one real generated-image response pass. Windows credits display remains its consumer dependency. |
 | Learning | `handoff_3c92d9028eb9810a64daec76fc42ae35` | Actual start `handoff_bcf1a8b26d7d55238ceba0332e0e2a6c`, normal merge `23b49b9`; implementation/checkpoint and exact-shape feedback `handoff_43cccaffe25b169f6a1f97694cf51098`. Actual90da1a6/handoff_880284d4851e79a5f2ed947bf0cc5e95 delivered after normal merge2f1be514 of released9b33a76; independent source review plus175 new/legacy ASK checks and seven independent controls pass. Integrated as8683eb7;175 resulting-main checks pass. Provider/runtime acceptance remains open. |
-| Windows | `handoff_0dde292d7bd2b8ae876640770b8a8b22` | Actual safe checkpoint/start `handoff_f1d063aabe44754eb061c92b1b0603c0`: lifecycle `4ef42cc`, then toolbar/caption implementation. Root found one historical-count edge, returned once; actual3023c41/handoff_adbbac83abfb005f9ce45481b23fa066 closes it. Both leaves integrate as a35d250/75c2ac7 with six initial and two changed-case main passes; TypeScript/static build passes. New live UI work continues. |
+| Windows | `handoff_0dde292d7bd2b8ae876640770b8a8b22` | Actual safe checkpoint/start `handoff_f1d063aabe44754eb061c92b1b0603c0`: lifecycle `4ef42cc`, then toolbar/caption implementation. Root found one historical-count edge, returned once; actual3023c41/handoff_adbbac83abfb005f9ce45481b23fa066 closes it. Both leaves integrate as a35d250/75c2ac7 with six initial and two changed-case main passes; TypeScript/static build passes. Layout28f0504 is reviewed/integrated as073c96d; native TTS/full-frame/auto-focus/live UI work continues in the same assignment. |
 | Native/Mac | `handoff_ed8a301873ab085a027e8ada8f54dc76` | Accepted receipt only for this amendment; prior queued/partial-write Stop correction remains its one task, then common seam. No mobile dispatch. |
-| Support | `handoff_cdfa998fe3e79e1b5fa3ccd30e895186` | Actual delivered `0640446` / `handoff_690d0a7146b8703c66242b047cb64113`: Windows generated in-memory speech probe and installed schema evidence. Independently verified source/receipt/schema manifests and four offline launcher tests; integrated as01bc0ab, four main tests pass. Complete/on demand. |
+| Support | `handoff_cdfa998fe3e79e1b5fa3ccd30e895186` | Actual delivered `0640446` / `handoff_690d0a7146b8703c66242b047cb64113`: Windows generated in-memory speech probe and installed schema evidence. Independently verified source/receipt/schema manifests and four offline launcher tests; integrated as01bc0ab, four main tests pass. Actual preparation3167dbf/handoff_84e4a609a4fa94991277a031be1521c7 is delivered and under Lead review; it includes hardened offline candidate and precise managed-route/delegation constraints. No product adapter or actual audio request is claimed. No actual account/device lease. |
 | QA | `handoff_a6d4a4baf7e368565b8de52e935a3d91` | Accepted scoped amendment, not new execution/acceptance. Changed-flow candidate and coordinated generated test display/audio remain dependencies. Preserve prior evidence and unused narrower real-image allocation. |
 
-## Immediate quota diagnosis
+## Historical quota diagnosis and retained v1 limitation
 
 The source collapsed typed transient `rateLimitExceeded` with `usageLimitExceeded`
 and discarded credits/reached facts. Installed Codex0.158.0 schema and the
@@ -52,10 +63,9 @@ package: 2026-10-01 13:29:17 UTC, `not_submitted`, `failed`, null terminal and n
 actual model/error/quota facts. That record cannot establish the actual refusal
 cause or user balance. The final internal fix removes the included-only blanket veto and preserves
 applicable explicit spend/workspace controls and actual server refusals. Independent
-review plus95 focused integrated checks pass. The unchanged external offline probe
+review plus95 focused integrated checks pass. The historical unchanged external offline probe
 retains7 PASS /2 FAIL: the public-v1 projection still cannot distinguish known versus
-unknown credits or their buckets. Those two visibility cases must close in the new
-live interface/client, not be relabeled passed. New package diagnostics must retain
+unknown credits or their buckets. The new live interface exposes those facts and has separate independent evidence; the Windows consumer still must show them. Do not relabel the old-v1 failures passed. New package diagnostics must retain
 typed reasons and actual submission facts safely.
 
 ## Shared executable release
@@ -77,7 +87,7 @@ Canonical main/source English, effective decisions and original-goal cases are
 updated in place; unchanged R/A/G/V/INTENT obligations remain. Manifest binds
 updated derivative hashes to the containing commit and preserves previous source
 provenance. Audio's stale blanket provider status is corrected to source exists,
-real image/audio/continuous acceptance unfinished.
+real image transport now has the evidence above; audio/continuous GUI acceptance remains unfinished.
 
 ## Delivery limits and next owners
 
@@ -87,7 +97,7 @@ captions. Windows source/build, actual Windows interaction, real subscription,
 actual audio and actual Mac remain independently reported. Support has measured
 only in-memory speech; its zh-CN recognizer performed poorly and no English
 recognizer was available. Installed managed schema has audio/localAudio; account,
-model, codec and real source coverage are untested. Do not claim audio unavailable
+model audio capability, codec and real source coverage remain unverified despite readable account/voice metadata. Do not claim audio unavailable
 from SIWC or working from a schema/device list. Support's report informs the next
 bounded existing-owner adapter, not a replacement architecture.
 
@@ -96,7 +106,7 @@ commits and prepares a distinct versioned package. QA then verifies only the cha
 flow on coordinated generated content. Current user app/data/profile are preserved;
 a package build or accepted mail is not a completed usable core experience.
 
-## Actual released baseline and follow-up delivery
+## Historical released baselines and follow-up delivery
 
 Canonical/interface baseline **9b33a7675fe98ab30e5c79952668906ff7ef232a** was
 ordinarily pushed to origin/main. Its substantive existing-task handoffs were
