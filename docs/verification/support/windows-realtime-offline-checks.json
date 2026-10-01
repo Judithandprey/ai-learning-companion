@@ -1,0 +1,52 @@
+{
+  "baseline": "44a576c64354c57a83f84ddaa6e097e555c512e3",
+  "original_harness_sha256": "d5d93dd235e864c533f0a0eeeab8609af18897332eba3b71cfe22b9820d7a09b",
+  "adapted_harness_sha256": "8a61df7977fcce92b1b2a3197dafeb7b7ef14b693d97714c70938f272ecc3b23",
+  "probe_sha256": "a1440ca19511643b3d855633335f1a97f3c843c321b2ab2a5e1fa70c21ce8338",
+  "adaptations": [
+    "load adopted candidate and exact frozen RPC source",
+    "mock only the unconditional live gate within already fake-process context",
+    "supply source-supported requested close reason for success control",
+    "assert new explicit oracle refusal",
+    "write distinct offline-labeled synthetic receipts; preserve originals"
+  ],
+  "status": "offline_checks_passed_live_route_blocked",
+  "checks": [
+    {
+      "kind": "revised_fake_dependency_unittest",
+      "tests": 17,
+      "passed": 17,
+      "seconds": 0.065,
+      "command": "PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests/probes/support -p test_realtime_input_probe.py -v"
+    },
+    {
+      "kind": "native_fixture_wrapper_mock_unittest",
+      "tests": 4,
+      "passed": 4,
+      "seconds": 0.004,
+      "command": "python3 -m unittest discover -s tests/probes/support -p test_windows_realtime_fixture.py -v"
+    },
+    {
+      "kind": "exact_baseline_rpc_in_memory_transport",
+      "tests": 6,
+      "passed": 6,
+      "seconds": 1.65,
+      "command": "PYTHONDONTWRITEBYTECODE=1 PYTEST_DISABLE_PLUGIN_AUTOLOAD=1 /home/agentsdock/Projects/learning-companion/repo/.venv/bin/python -m pytest -q -p no:cacheprovider /tmp/lc-realtime-adoption-rpc-check-20261001/test_adopted.py --tb=short"
+    }
+  ],
+  "test_source_sha256": {
+    "tests/probes/support/test_realtime_input_probe.py": "fabf65c3b8b23bf08afd74600bae925e42112eef6324482aa3aeae0ebc8df609",
+    "tests/probes/support/test_windows_realtime_fixture.py": "16e82c072b736fc5350c31a97cef2e304337f974f1d18fbcea5a29ce0d23d058"
+  },
+  "real_account_calls": 0,
+  "native_audio_in_these_checks": false,
+  "original_failure_receipts_preserved": true,
+  "harness_cache": "/tmp/lc-realtime-adoption-rpc-check-20261001",
+  "limitations": [
+    "not live authentication/entitlement/audio acceptance/transcript/cancellation evidence",
+    "unconditional live gate patched only inside in-memory transport tests",
+    "snapshot includes exact six local Python sources plus contract schema; no real factory or child",
+    "nominal timeout arithmetic is not a measured end-to-end process deadline",
+    "generated native fixture measurement is recorded separately"
+  ]
+}

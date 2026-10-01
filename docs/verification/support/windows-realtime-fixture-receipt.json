@@ -1,0 +1,26 @@
+{
+  "status": "generated_in_memory",
+  "voice": "Microsoft Zira Desktop",
+  "utterance": "The silver lantern is beside seven green triangles.",
+  "oracle_terms": [
+    "silver lantern",
+    "seven green triangles"
+  ],
+  "format": "signed PCM16 little-endian, mono, 24000 Hz, no container header",
+  "sample_rate_hz": 24000,
+  "channels": 1,
+  "bits_per_sample": 16,
+  "pcm_bytes": 181416,
+  "samples_per_channel": 90708,
+  "duration_ms": 3779.5,
+  "pcm_sha256": "d2d080f12e0e6938a4187340588add40772fe57c63dac7669b7d4a19ff33ab3d",
+  "script_sha256": "057c36b5c1c66912e9519b9bb56a4b4994ddf9e3230585aeb904020c560643f1",
+  "generator_sha256": "4d7b8cfe8ad542fe6338a6fcc542b63e9d7f80f08b7780d9b534800dc83178fc",
+  "native_process_exit_code": 0,
+  "microphone": false,
+  "physical_playback": false,
+  "audio_persisted": false,
+  "account_calls": 0,
+  "scope": "Synthetic bytes only; does not establish provider acceptance or transcript quality.",
+  "created_at": "2026-10-01T15:23:38.135419+00:00"
+}
