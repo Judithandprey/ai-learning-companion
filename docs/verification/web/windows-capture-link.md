@@ -38,8 +38,8 @@ statement bounds. The file is read at each host start and passed only in the hos
   3. every frame retained from then on, with its raw and composed PNG and its editable-ink original, is stored in
      the test service, in manifest order;
   4. gaps, frames not retained, refusals and unwritten lines are sent as coverage records.
-- **The control window** shows the link's state (not connected yet, connecting, storing, not storing now: trying
-  again, offline, stopping, stopped, not connected, ended by the service) and the latest capture's counts:
+- **The control window** shows the link's state (not connected yet, connecting, storing, not storing now, offline,
+  stopping, stopped, not connected, ended by the service) and the latest capture's counts:
   - records stored;
   - records not known whether stored;
   - records refused;
@@ -47,13 +47,16 @@ statement bounds. The file is read at each host start and passed only in the hos
   - earlier streams whose end is not known.
 
   It always ends with "AI: not connected".
-  - The header and the overlay's ASK card say what is so now, never what is merely configured. Only while a Start's
-    stream is live on the service do they say frames are also being stored in a local test capture service. At
-    every other time (before Start, connecting, a send not answered, not connected, offline, stopping, stopped,
-    ended by the service) they say the service is not storing frames now, and point to the link line for its state
-    and the latest capture's counts. The ASK card adds that frames are kept on this device and are stored there too
-    only if the service becomes available during this capture: frames retained while connecting are sent once the
-    stream is live, so it promises neither. Both always say no AI is connected.
+  - The header says what is so now, never what is merely configured. Only while a Start's stream is live on the
+    service, with no send unanswered since the last answered one, does it say frames are also being stored in a
+    local test capture service. At every other time (before Start, connecting, a send not stored, not connected,
+    offline, stopping, stopped, ended by the service) it says the service is not storing them now, and points to
+    the link line for its state and the latest capture's counts. It is rewritten at every change.
+  - The overlay's ASK card stays on screen, so it never says whether frames are being stored now. With the link on
+    it says that a local test capture service on this device may also store the whole-display frames kept here,
+    only while it is connected and answering, and that the control window shows whether it is storing now. That
+    stays true whatever the link does after the card is shown.
+  - Both always say no AI is connected.
   - If the link's record cannot be written, the header says further sends have stopped; the counts, and a Stop not
     confirmed, stay shown. Earlier sends are not undone, so the header never then says nothing is sent anywhere.
 - **Stop**, and any other end of the session, stops the stream. The service stopping or withdrawing the stream ends
@@ -138,8 +141,10 @@ statement bounds. The file is read at each host start and passed only in the hos
 - **Sending**:
   - After each successful manifest append, one job at a time: the oldest unsettled job first, then the next lines.
   - A job is written before its first send.
-  - A send that gets no answer (a 503, a lost answer, a missing dependency) leaves the stream live but `stalled`:
-    the status says it is not storing now and that the same record(s) are tried again, until one is answered.
+  - A send that is not stored (no answer, a 503, a lost answer, a missing dependency) leaves the stream live but
+    `stalled`: the status says it is not storing now, until a later send is answered. Only an answered (committed)
+    send says storing again. Nothing left to send (the job set aside as it cannot be sent again), or a new
+    connection after a lost host or an expired bearer, is not an answer; later lines are still sent.
   - Before the first retained frame there is no manifest yet; that is nothing to send, not an error.
   - While the Start is live, a job whose outcome is unknown is sent again with the same key and body. A later
     refusal never makes it known; it is kept as a note.
@@ -184,8 +189,8 @@ statement bounds. The file is read at each host start and passed only in the hos
   never from the Stop's own continuation: with nothing to stop that continuation runs while Electron is still
   delivering `will-quit`, when a quit is ignored, and the prevented quit is then dropped;
 - the control window gets the `lc:link` status and `lc:link-state`;
-- the overlay's ready answer carries `storage` (`storing`, `not_storing`, or null without the link), and every link
-  notification sends it to the overlay again (`lc:storage`), so an ASK card says what is so when it is made.
+- the overlay's ready answer carries `development` (the link is on); nothing about the link is sent to the overlay
+  after that, because its card says nothing that can change.
 
 ## The released host's limits (reported, not worked around)
 
@@ -259,8 +264,10 @@ never the token.
   - READY `pending` with the port never reached is known pending, abandoned at the Stop, and the next Start registers;
   - a manifest not yet written when the link is ready does not leave a lasting fault in the status;
   - sends that get no answer are said as not storing now, the same key throughout, and storing again from the
-    answer on.
-- `capture-link-record.test.ts` (26), without the Backend (a fake host child and fake answers):
+    answer on;
+  - (in the test of a job in doubt whose original is gone) not storing while nothing was answered, then storing
+    again once later lines are answered, the earlier job still not known.
+- `capture-link-record.test.ts` (27), without the Backend (a fake host child and fake answers):
   - a record as this app writes it is used: its live stream is reconciled with a read and one Stop, and its unknown
     job stays unknown;
   - 19 damaged records (a null job, a stream without `final`, unknown ends, statuses or grants, a missing count,
@@ -276,8 +283,10 @@ never the token.
     behind to look like a lost record at the next start;
   - after a fault no host is started again and nothing is registered again;
   - a state answer the record could not read back (revision 0) is not written: the registration stays not known,
-    and the record stays readable.
-- `app-link.test.ts` (12): the real `main.ts` and overlay under the fakes. The fake app quits as Electron does: a
+    and the record stays readable;
+  - a batch not answered, then its original gone, so the job is set aside: nothing is left to send, and the link
+    stays "not storing now" with its outcome not known; the host then lost and connected again never says storing.
+- `app-link.test.ts` (13): the real `main.ts` and overlay under the fakes. The fake app quits as Electron does: a
   quit asked for while `will-quit` is being delivered is ignored, and a prevented quit is dropped.
   - Off: nothing changes.
   - On: exact bytes for an explicit Start.
@@ -293,12 +302,15 @@ never the token.
   - A service that is not available (a fake host that ends as `unavailable`): before Start, while connecting, once
     not connected and after the Stop, the link line, the header and the ASK card never say frames are stored
     (QA-WIN-04).
-  - The texts follow the link as it changes (a fake host and a stand-in service): storing once live, with the
-    overlay told after it opened; not storing while an upload goes unanswered; never storing once the Stop has
-    begun.
-  - A Stop while frames are being stored: its first status already says not storing, and the overlay is told.
-  - After a record-write fault, a new Start's overlay is not told its frames are stored; after the Stop the control
-    window shows the last recorded outcome, with further sends stopped (POSIX: it makes a folder read-only).
+  - The texts follow the link as it changes (a fake host and a stand-in service): storing once live; not storing
+    while an upload goes unanswered; never storing once the Stop has begun. An ASK card made while storing and left
+    open is the same card afterwards (its text and picture), and says nothing of whether frames are being stored.
+  - An ASK card left open while storing is lost and then recovers (the released host, three batch answers lost,
+    then answered): the card is unchanged and true throughout, while the header goes from storing to not storing
+    and back.
+  - A Stop while frames are being stored: its first status already says not storing.
+  - After a record-write fault, a new Start is not said to be storing; after the Stop the control window shows the
+    last recorded outcome, with further sends stopped (POSIX: it makes a folder read-only).
 - `control-link.test.ts` (5): the control line and header in the off, unavailable and development modes. The
   header says frames are also being stored only while they are; in every other state it says the service is not
   storing them now. The idle, stalled and offline lines promise neither a connection nor that frames are never
@@ -431,10 +443,10 @@ the unavailable-service fault passed; two checks failed. Both are repaired in `5
 **QA-WIN-04: while the service was unavailable the ASK card and the header said frames are "also stored".**
 - Cause: both followed "the link is configured", fixed when the overlay opened.
 - Repair: `LinkStatus.storing` is true only while a Start's stream is live on the service, answered and not
-  stopping. The header follows it; the overlay is told at its start and on every change, and an ASK card uses the
-  value when it is made.
+  stopping, and the header follows it. The ASK card first followed it too (`5cd0bec`); since `67a1da5` it says
+  nothing of the present state (below).
 - Regressions: `app-link.test.ts` and `control-link.test.ts` above. Each fails when the texts follow the
-  configuration again, when the overlay is not told of a change, or when the header claims storage.
+  configuration again, or when the header or the card claims storage.
 
 **Review of the repair.** An independent three-lens review (the quit path, truthful copy, the tests and the check
 script), each finding verified by a second reviewer, found no defect in the quit path and confirmed six others; two
@@ -467,11 +479,39 @@ process remained.
   - Start with the service unavailable: the line read "not connected (the frames stay on this device). 0 record(s)
     stored. the host ended without READY (unavailable). AI: not connected."; the header and the ASK card (a real
     region of the captured display, by window-scoped input) said the service is not storing frames now, and that no
-    AI is connected; neither said frames are stored;
+    AI is connected; neither said frames are stored (the card's wording at `5cd0bec`; see below for `67a1da5`);
   - after Stop and close: exited by itself (code 0) in 247 ms.
 - Limits: this is the author's own run, with DevTools input and no pen. It stored nothing (no reachable service), so
   it shows no "storing" text on the real app; those texts are shown by the tests above. The frames it retained were
   in a temporary folder, removed with the run. QA's narrow retest of the changed paths is still to come.
+
+**Lead review of `5cd0bec` (HOLD on two copy/state paths; `docs/verification/lead/windows-parent-review/correction/
+qa-win-03-04/` at `bf2900c`), corrected in `67a1da5`.** The quit repair was approved and is unchanged.
+- **W-COPY-01: an ASK card made while storing kept saying frames "are also being stored" after the link stalled.**
+  The card is no longer told the link's state: it says what the service may do and where its state is shown (above),
+  so it cannot become untrue while it is open. The push to the overlay (`lc:storage`) is removed. Its picture, its
+  region, frame and time line, its ink line and the return to WRITE are unchanged.
+  Regressions: the card left open across a stall (fake service), and across loss and recovery (the released host).
+- **W-COPY-02: after an unanswered upload whose job was then set aside, nothing left to send said "storing" again**
+  (stored 0, 2 not known, no answered send). Now only an answered send says storing again; an emptied queue and a
+  new connection do not. Later lines are still sent.
+  Regressions: the lead's case without a Backend (stays not storing, then a reconnect), and with the released host
+  the positive control (later lines answered: storing again, the earlier job still not known).
+- The check script's success now also needs its driver's own exit 0.
+- An independent two-lens review of this correction, each finding verified, found no defect in the state or the
+  copy. It showed one line of the fix unpinned by a test (the reconnect; now tested), and that the stalled details
+  said "the service did not answer" for a typed "send again later" answer too (now "the last send was not stored").
+- Without a Backend the tests show only "stays not storing"; "storing again once a later send is answered" is
+  shown by the tests on the released host.
+- The real app at `67a1da5`, the unavailable-service case only (`after-67a1da5-failure.json`, 4 of 4): the same
+  link line and header as before; the ASK card read "No AI is connected: this selection was not sent to any AI.
+  (Development mode: a local test capture service on this device may also store the whole-display frames kept here,
+  only while it is connected and answering; the control window shows whether it is storing now.)"; after Stop and
+  close the app exited by itself (code 0) in 241 ms. The exit and reopen cases were not run again.
+
+**Results at `67a1da5`:** the whole `apps/windows` suite on Linux against the released host at main `6ef0faa` (kept
+in-memory store): 234 tests, 229 pass, 5 skipped (the owned flows); without a Backend 190 pass, 44 skipped. `tsc` is
+clean. The owned `lc_p0_test` runs were not rerun.
 
 **Results at `5cd0bec`:** the whole `apps/windows` suite on Linux against the released host at main `05465cc` (kept
 in-memory store): 232 tests, 227 pass, 5 skipped (the owned flows); without a Backend 189 pass, 43 skipped. `tsc` is
