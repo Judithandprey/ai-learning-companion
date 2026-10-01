@@ -216,6 +216,80 @@ const surfaceTruth = (as) => edge(`(() => { const t = JSON.parse(window.__qaSurf
 // Every stroke of the ink is drawn solid (the app draws a stroke dashed while it cannot verify what is under it).
 const inkSolid = { waitEval: "(() => { const a = Object.values(__lcOverlay.state().aligned || {}); return a.length > 0 && a.every((x) => x === 'verified'); })()", target: 'overlay', timeoutMs: 15000 };
 
+// ---- managed-subscription ASK: UI driver (app candidate c977df5 and later) --------------------------------------------
+// The question QA asks about its surface (no value of the surface in it), and the assistance level that may state it.
+export const SURFACE_QUESTION = 'I circled two cards with my pen. Name only those two cards. For each one, write one line: the number written in the card, then the color and the shape next to the number.';
+// The control window's subscription section as the page shows it, with the main process's own status.
+const subHook = control(`(() => { if (!window.__qaSubHooked) { window.__qaSub = [];
+  window.lc.onSub((x) => window.__qaSub.push({ ...x, qa_at: new Date().toISOString() })); window.__qaSubHooked = true; } return true; })()`, 'sub_hooked');
+const subNow = (as) => control(`(async () => { const t = (id) => { const e = document.getElementById(id); return e ? { text: e.textContent, hidden: e.hidden || e.closest('[hidden]') !== null, disabled: e.disabled === true } : null; };
+  const m = document.getElementById('subModel');
+  return JSON.stringify({ at: new Date().toISOString(), s: await window.lc.subState(), section: t('subscription'), state: t('subState'), quota: t('subQuota'), check: t('subCheck'), login: t('subLogin'),
+    login_cancel: t('subLoginCancel'), model_row: t('subModelRow'), options: m ? [...m.options].map((o) => [o.value, o.textContent, o.selected]) : null, ai: document.getElementById('ai').textContent,
+    session: document.getElementById('session').textContent }); })()`, as);
+const subUntil = (cond, as, ms = 40000) => ({ waitEval: `(async () => { const s = await window.lc.subState(); return s && s.mode === 'managed' && (${cond}) && JSON.stringify({ at: new Date().toISOString(), s }); })()`,
+  target: 'control', timeoutMs: ms, as });
+const subEvents = (as) => control('JSON.stringify(window.__qaSub || [])', as);
+const subCheck = control("document.getElementById('subCheck').click(), true");
+// The ASK card. Every change of its badge, status, answer and buttons is logged in the page with its time, so that "the
+// question that was just asked ended" is read from what happened after that press, never from an earlier outcome.
+const askHook = overlay(`(() => { if (window.__qaAskHooked) return true; const g = (id) => document.getElementById(id); window.__qaAsk = [];
+  const snap = () => window.__qaAsk.push({ at: new Date().toISOString(), badge: g('badge').textContent, status: g('askStatus').hidden ? null : g('askStatus').textContent,
+    answer_shown: !g('answerBox').hidden, cancel_shown: !g('askCancel').hidden, save_shown: !g('askSave').hidden, form_shown: !g('askForm').hidden, submit_disabled: g('askSubmit').disabled });
+  new MutationObserver(snap).observe(g('card'), { subtree: true, childList: true, characterData: true, attributes: true, attributeFilter: ['hidden', 'disabled'] });
+  snap(); window.__qaAskHooked = true; return true; })()`);
+// The selection is retained and the form is ready (the app prefills the question only then).
+const formReady = { waitEval: "(() => { const g = (id) => document.getElementById(id); return !g('card').hidden && !g('askForm').hidden && g('question').value.length > 0 && !g('askSubmit').disabled; })()", target: 'overlay', timeoutMs: 15000 };
+const askSet = (question, assistance) => overlay(`(() => { const q = document.getElementById('question'); q.value = ${JSON.stringify(question)};
+  const r = document.querySelector('input[name="assistance"][value="${assistance}"]'); r.checked = true; window.__qaAskMark = window.__qaAsk.length;
+  return JSON.stringify({ question_chars: q.value.length, assistance: document.querySelector('input[name="assistance"]:checked').value }); })()`);
+// ONE press of Ask. Nothing in a scenario presses it again for the same question.
+const askPress = click('#askSubmit');
+// The outcome of the question asked by the last press: after it, the card no longer offers Cancel and shows either the
+// answer, or "no answer shown", or "Not sent".
+const askOutcome = (as, ms) => ({ waitEval: `(() => { const g = (id) => document.getElementById(id); const since = window.__qaAsk.slice(window.__qaAskMark);
+  const st = g('askStatus').hidden ? '' : g('askStatus').textContent;
+  const ended = g('askCancel').hidden && !g('askSubmit').disabled && (!g('answerBox').hidden || /no answer shown/.test(g('badge').textContent) || /^Not sent/.test(st));
+  return since.length > 0 && ended && JSON.stringify({ at: new Date().toISOString(), badge: g('badge').textContent, status: st }); })()`, target: 'overlay', timeoutMs: ms, as, required: false });
+const askWaiting = (as) => ({ waitEval: "(() => { const g = (id) => document.getElementById(id); return !g('askCancel').hidden && JSON.stringify({ at: new Date().toISOString(), badge: g('badge').textContent, status: g('askStatus').textContent }); })()",
+  target: 'overlay', timeoutMs: 10000, as, required: false });
+// The whole card as shown. The picture is hashed in the page from its own bytes (never exported).
+const askRead = (as) => overlay(`(async () => { const g = (id) => document.getElementById(id); const img = g('crop');
+  const bytes = img.src.startsWith('data:image/png;base64,') ? Uint8Array.from(atob(img.src.slice(22)), (c) => c.charCodeAt(0)) : null;
+  const sha = bytes ? [...new Uint8Array(await crypto.subtle.digest('SHA-256', bytes))].map((x) => x.toString(16).padStart(2, '0')).join('') : null;
+  return JSON.stringify({ at: new Date().toISOString(), card_shown: !g('card').hidden, badge: g('badge').textContent, card_text: g('cardText').textContent,
+    status: g('askStatus').hidden ? null : g('askStatus').textContent, answer_shown: !g('answerBox').hidden, answer: g('answerBox').hidden ? null : g('answer').textContent,
+    answer_box_text: g('answerBox').hidden ? null : g('answerBox').textContent, answer_child_elements: g('answer').children.length,
+    form_shown: !g('askForm').hidden, question: g('question').value, assistance: document.querySelector('input[name="assistance"]:checked')?.value ?? null,
+    submit_disabled: g('askSubmit').disabled, cancel_shown: !g('askCancel').hidden, save_shown: !g('askSave').hidden,
+    picture: { png_sha256: sha, png_bytes: bytes ? bytes.length : null, width: img.naturalWidth, height: img.naturalHeight },
+    mode: __lcOverlay.state().mode, revision: __lcOverlay.state().doc.revision, hint: g('hint').textContent, log: window.__qaAsk || [] }); })()`, as);
+const hashesS = (label) => ({ hashTree: ['ink', 'captures'], frames: false, as: `h_${label}` });
+// One more question on the card that is open: set, press once, wait for how it ended, read.
+const askOnCard = (label, ms = 20000, assistance = 'explain') => [askSet(SURFACE_QUESTION, assistance), askPress, askOutcome(`${label}_ended`, ms), askRead(label), hashesS(label)];
+// A question that the stand-in holds: press, see it waiting, press Cancel, wait for how it ended.
+const askThenCancel = (label) => [askSet(SURFACE_QUESTION, 'explain'), askPress, askWaiting(`${label}_waiting`), askRead(`${label}_out`), click('#askCancel'),
+  askOutcome(`${label}_ended`, 20000), { sleep: 1500 }, askRead(label), hashesS(label)];
+// What the stand-in bridge does, launch by launch and question by question, in the order `subcontrols` asks.
+export const FAKE_BRIDGE_SCRIPT = { launches: [
+  { asks: [{ do: 'answer', text: 'SYNTHETIC (QA fake bridge: no model, no ChatGPT). First control answer.' }, { do: 'answer', tamper: 'image_sha256' },
+           { do: 'error', code: 'quota' }, { do: 'error', code: 'busy' }, { do: 'error', code: 'unsupported_model' }, { do: 'error', code: 'invalid_request' },
+           { do: 'error', code: 'failed' }, { do: 'error', code: 'unavailable' },
+           { do: 'hold', on_cancel: 'cancelled' }, { do: 'hold', on_cancel: 'late_answer' }, { do: 'hold', on_cancel: 'unconfirmed' },
+           { do: 'hold', on_stop: 'late_answer' },
+           { do: 'answer', text: 'SYNTHETIC (QA fake bridge: no model, no ChatGPT). Answer in the second capture session.' },
+           { do: 'fault', during_read: true }] },
+  { asks: [{ do: 'answer', text: 'SYNTHETIC (QA fake bridge: no model, no ChatGPT). Answer from the second bridge start.' }, { do: 'error', code: 'unauthenticated' }] },
+] };
+export const FAKE_ASKS = ['k1_answered', 'k2_tampered', 'k3_quota', 'k4_busy', 'k5_unsupported_model', 'k6_invalid_request', 'k7_failed', 'k8_unavailable',
+  'k9_cancel_confirmed', 'k10_cancel_late_answer', 'k11_cancel_unconfirmed', 'k12_stop_in_flight', 'k13_new_session', 'k14_fault', 'k15_after_recheck', 'k16_unauthenticated'];
+const QUESTION_FOCUS = "(() => { const q = document.getElementById('question'); return JSON.stringify({ value: q.value, active: document.activeElement === q, has_focus: document.hasFocus(), disabled: q.disabled }); })()";
+// Start on the surface with the two circles drawn solid, then the ASK selection and its ready form.
+const surfaceOpen = [{ window: 'edge', show: 'raise' }, { edgeFullscreen: true, required: false }, { sleep: 2000 }, { cursorOutside: SURFACE_REGION_PX }];
+const circleAndSelect = (p, label) => [click('[data-mode=WRITE]'), click('#pen'), pen(circleCard(p.circled[0])), { sleep: 900 }, pen(circleCard(p.circled[1])), ...state(label),
+  inkSolid, { cursorOutside: SURFACE_REGION_PX }, surfaceTruth(`surface_truth_${label}`), click('[data-mode=ASK]'), pen(SURFACE_ASK), cardShown, formReady, askHook];
+const selectAgain = [click('[data-mode=ASK]'), pen(SURFACE_ASK), cardShown, formReady];
+
 export const scenarios = {
   full: (p) => [
     ...setup(p),
@@ -569,6 +643,92 @@ export const scenarios = {
     click('#close'), overlayState('card_closed'),
     ...stopSession('stopped'), recoveries('recoveries'), hashes('final', true), timeline('timeline'), listInk('ink'),
     { closeApp: true },
+  ],
+
+  // DETERMINISTIC CONTROLS with QA's stand-in bridge (qa_fake_bridge.py named as the connector's launch.python): no Codex,
+  // no ChatGPT, no sign-in, no browser, no allowance. Every "answer" is text QA wrote and is marked SYNTHETIC. They show
+  // what the app does at its own boundary; they are never evidence of a real model.
+  subcontrols: (p) => [
+    { edgeStart: p.surfaceUrl, profile: p.edgeProfile, as: 'edge', fullscreen: true }, ...surfaceOpen,
+    waitDisplays, surfaceTruth('surface_truth'), subNow('off'), { closeApp: true },
+    { launchApp: true, as: 'app-fake', sub: 'fake' }, waitDisplays, inkHook, subHook, { sleep: 2500 },
+    subNow('f_not_checked'), kidsOf('kids_not_checked'),
+    // Start, write, capture and select with the connection configured but never checked: nothing may start a connector.
+    ...startSession('s0'), { sleep: 2500 }, click('[data-mode=WRITE]'), click('#pen'), pen(circleCard(p.circled[0])), ...state('unchecked'),
+    click('[data-mode=ASK]'), pen(SURFACE_ASK), cardShown, formReady, askHook, askRead('k0_unchecked_card'),
+    ...askOnCard('k0_unchecked_ask', 8000), kidsOf('kids_unchecked'), click('#close'), ...stopSession('s0_stopped'),
+    // The user's press: Check connection. Only now may the bridge start.
+    subCheck, subUntil("s.state !== 'not_checked' && s.state !== 'checking'", 'f_checked'), subNow('f_signed_in'), kidsOf('kids_checked'),
+    ...startSession('s1'), { sleep: 2500 }, ...circleAndSelect(p, 'circled'),
+    askRead('k_selected'), hashesS('selected'), { sleep: 4000 }, askRead('k_selected_later'),   // selected, not asked: nothing is sent
+    ...askOnCard('k1_answered'), ...askOnCard('k2_tampered'), ...askOnCard('k3_quota'), ...askOnCard('k4_busy'), ...askOnCard('k5_unsupported_model'),
+    ...askOnCard('k6_invalid_request'), ...askOnCard('k7_failed'), ...askOnCard('k8_unavailable'),
+    ...askThenCancel('k9_cancel_confirmed'), ...askThenCancel('k10_cancel_late_answer'), ...askThenCancel('k11_cancel_unconfirmed'),
+    // Stop while a question is out: the Stop itself tells the connector; the late answer must not be shown or kept.
+    askSet(SURFACE_QUESTION, 'explain'), askPress, askWaiting('k12_waiting'), askRead('k12_out'),
+    control("document.getElementById('stop').click(), true"), stopped('s1_stopped'), { sleep: 2500 }, subNow('f_after_stop'), hashesS('k12_stop_in_flight'),
+    // A later explicit Start is another capture session: it may ask again.
+    ...startSession('s2'), { sleep: 2500 }, ...selectAgain, askHook,
+    ...askOnCard('k13_new_session'),
+    // A line longer than the envelope allows while the app's own re-read is out: the child is ended and none is started by the app.
+    askSet(SURFACE_QUESTION, 'explain'), askPress, { sleep: 6000 }, subNow('f_after_fault'), kidsOf('kids_after_fault'), { sleep: 6000 }, subNow('f_after_fault_later'),
+    askRead('k14_fault'), hashesS('k14_fault'),
+    // Only the user's own Check starts a connector again.
+    subCheck, subUntil("s.state !== 'checking' && s.state !== 'unavailable'", 'f_rechecked', 30000), subNow('f_rechecked_now'),
+    click('#close'), ...selectAgain, ...askOnCard('k15_after_recheck'), ...askOnCard('k16_unauthenticated'), subNow('f_signed_out'),
+    ...askOnCard('k17_not_signed_in', 8000),
+    click('#close'), ...stopSession('s2_stopped'), subEvents('sub_events'), timeline('timeline'), hashesS('final'),
+    { closeApp: true, via: 'wm_close' },
+  ],
+
+  // The first live step after a release, with the REAL connector and NO question: the user's "Check connection" press and
+  // what the app then says; the ASK card's form on a real selection; and whether the question box takes typed text. It
+  // never presses Sign in and never presses Ask. If the product is not signed in, the run ends there: the sign-in is the
+  // user's own browser step.
+  subcheck: (p) => [
+    { edgeStart: p.surfaceUrl, profile: p.edgeProfile, as: 'edge', fullscreen: true }, ...surfaceOpen,
+    waitDisplays, surfaceTruth('surface_truth'), subNow('off'), { closeApp: true },
+    { launchApp: true, as: 'app-real', sub: 'real' }, waitDisplays, inkHook, subHook, { sleep: 2500 },
+    subNow('r_not_checked'), kidsOf('kids_not_checked'),
+    subCheck, subUntil("s.state !== 'not_checked' && s.state !== 'checking'", 'r_checked', 60000), subNow('r_state'), kidsOf('kids_checked'),
+    ...startSession('s1'), { sleep: 2500 }, ...circleAndSelect(p, 'circled'), askRead('r_card'),
+    // Typed text, as a user does it: ONE OS mouse click on the question box (made only if the window under that point is
+    // this app's), then OS keystrokes, sent only if the overlay then is the foreground window (synthetic OS input, not a
+    // physical mouse or keyboard). Then a diagnostic that is not a user path: QA raises the overlay itself and types again.
+    { osClick: '#question', target: 'overlay', window: 'overlay', required: false }, { sleep: 400 },
+    overlay(QUESTION_FOCUS, 'r_focus_after_click'),
+    { keys: 'QA typed check 42', window: 'overlay', required: false }, { sleep: 600 },
+    overlay(QUESTION_FOCUS, 'r_typed'),
+    { window: 'overlay', show: 'raise', required: false },
+    overlay("(() => { const q = document.getElementById('question'); q.focus(); q.select(); return JSON.stringify({ active: document.activeElement === q, has_focus: document.hasFocus() }); })()", 'r_focus_raised'),
+    { keys: 'QA second 7', window: 'overlay', required: false }, { sleep: 600 },
+    overlay(QUESTION_FOCUS, 'r_typed_raised'),
+    { cursorBack: true, required: false },
+    askRead('r_card_after_typing'), hashesS('r_selected'),
+    click('#close'), ...stopSession('s1_stopped'), subNow('r_final'), subEvents('sub_events'), kidsOf('kids_final'),
+    { closeApp: true, via: 'wm_close' },
+  ],
+
+  // THE ONE REAL IMAGE TURN. run.mjs refuses to build this scenario unless the lead's allocation is acknowledged in the
+  // environment (QA_SUB_ALLOW_REAL_TURN=1). It presses Ask exactly once and never again; it never presses Sign in. If the
+  // product is not signed in with a model that takes pictures, it stops before Start (a required step fails).
+  subask: (p) => [
+    { edgeStart: p.surfaceUrl, profile: p.edgeProfile, as: 'edge', fullscreen: true }, ...surfaceOpen,
+    waitDisplays, surfaceTruth('surface_truth'), { closeApp: true },
+    { launchApp: true, as: 'app-real', sub: 'real' }, waitDisplays, inkHook, subHook, { sleep: 2500 },
+    subNow('a_not_checked'), subCheck,
+    subUntil("s.state === 'signed_in' && typeof s.model === 'string' && s.models.some((m) => m.id === s.model && m.image_input === true)", 'a_signed_in', 60000),
+    ...(p.model ? [control(`(() => { const m = document.getElementById('subModel'); if (![...m.options].some((o) => o.value === ${JSON.stringify(p.model)})) throw new Error('the model is not offered');
+      m.value = ${JSON.stringify(p.model)}; m.dispatchEvent(new Event('change', { bubbles: true })); return true; })()`), subUntil(`s.model === ${JSON.stringify(p.model)}`, 'a_model', 10000)] : []),
+    subNow('a_state'), kidsOf('kids_checked'), mark('before-start'), { desktopShot: 'surface' },
+    ...startSession('s1'), { sleep: 2500 }, ...circleAndSelect(p, 'circled'),
+    askRead('a_card'), hashesS('a_selected'),
+    askSet(SURFACE_QUESTION, 'explain'), askRead('a_ready'), surfaceTruth('surface_truth_at_ask'),
+    askPress,                                                    // <- the one real submission
+    askWaiting('a_waiting'), askOutcome('a_ended', 170000), askRead('a_after'), hashesS('a_after'), subNow('a_after_state'),
+    surfaceTruth('surface_truth_after'), { cursorOutside: SURFACE_REGION_PX, required: false }, { sleep: 2000 }, askRead('a_after_2s'),
+    click('#close'), overlayState('a_closed'), ...stopSession('s1_stopped'), subNow('a_final'), subEvents('sub_events'), timeline('timeline'), hashesS('final'),
+    kidsOf('kids_final'), { closeApp: true, via: 'wm_close' },
   ],
 
   smoke: (p) => [

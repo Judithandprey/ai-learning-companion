@@ -19,6 +19,9 @@
 #   { "edgeFullscreen": true }              asks Edge (DevTools Browser.setWindowBounds) to make its window full screen
 #   { "cursorOutside": [x0,y0,x1,y1] }      physical px: fails if the user's mouse pointer is inside (it is never moved)
 #   { "window": "edge", "show": "raise" }   bring to the front without maximizing (a full-screen window stays as it is)
+#   { "launchApp": true, "as": "x", "sub": "fake" }   ... with LC_SUBSCRIPTION_CONNECTOR=<LinkDir>\sub-fake.json for that process only
+#   { "keys": "text", "window": "overlay" }   OS-level synthetic keystrokes (SendKeys), sent ONLY if that owned window is the
+#     foreground window at that moment (otherwise nothing is typed anywhere and the step says so); letters, digits, spaces
 #   { "consoleStart": "C:\\...\\notes.txt", "title": "...", "as": "console" }   real conhost window
 #   { "window": "edge|console|control", "show": "maximize|minimize|restore|front" }
 #   { "desktopShot": "label" }                                                  physical pixels -> OutDir (BMP), cursor read
@@ -39,6 +42,8 @@
 #      so the app's own close handler runs; "again" posts a second WM_CLOSE to that window right behind the first)
 #   { "hostPause": true, "as": "name" } / { "hostResume": true, "as": "name" }   ask this run's WSL watcher to pause/resume
 #     only this run's own test-service host (a send then gets no answer); the watcher resumes it on its own in any case
+#   { "osClick": "#selector", "target": "overlay", "window": "overlay" }   one OS mouse click on that element, only if the window under the point is this app's
+#   { "cursorBack": true }                     the pointer back to where it was before the first osClick
 # The file steps only touch paths inside this run's user-data folder (or its test-owned temp folder), never elsewhere.
 param(
   [Parameter(Mandatory = $true)][string]$Electron,
@@ -75,7 +80,15 @@ public static class QaWin {
   [DllImport("kernel32.dll")] public static extern uint GetCurrentThreadId();
   [StructLayout(LayoutKind.Sequential)] public struct Pt { public int X; public int Y; }
   [DllImport("user32.dll")] public static extern bool GetCursorPos(out Pt p);
-  // Read-only: where the user's cursor is (physical px). It is never moved; a cursor over a stroke is in the frames.
+  [DllImport("user32.dll")] public static extern bool SetCursorPos(int x, int y);
+  [DllImport("user32.dll")] public static extern IntPtr WindowFromPoint(Pt p);
+  [DllImport("user32.dll")] public static extern IntPtr GetAncestor(IntPtr h, uint flags);
+  [DllImport("user32.dll")] public static extern void mouse_event(uint flags, uint dx, uint dy, uint data, UIntPtr extra);
+  // The process that owns the top-level window under a screen point (physical px); 0 when there is none.
+  public static uint PidAt(int x, int y) { Pt p; p.X = x; p.Y = y; IntPtr h = WindowFromPoint(p); if (h == IntPtr.Zero) return 0;
+    IntPtr root = GetAncestor(h, 2); uint pid; GetWindowThreadProcessId(root == IntPtr.Zero ? h : root, out pid); return pid; }
+  public static void LeftClick() { mouse_event(0x0002, 0, 0, 0, UIntPtr.Zero); System.Threading.Thread.Sleep(60); mouse_event(0x0004, 0, 0, 0, UIntPtr.Zero); }
+  // Read-only: where the user's cursor is (physical px). It is moved only by the osClick step (and put back by cursorBack).
   public static int[] Cursor() { Pt p; return GetCursorPos(out p) ? new int[] { p.X, p.Y } : null; }
   // Brings a window to the front without synthetic input: attach to the foreground thread's input state for
   // the call (the documented foreground-lock rule), then fall back to SwitchToThisWindow.
@@ -159,8 +172,15 @@ $started = @{}      # name -> process (edge, console)
 $sockets = @{}      # target -> @{ ws; id }
 # The app: real Windows process, isolated user data, DevTools on loopback only. With -AppTemp, TMP/TEMP point to a
 # test-owned folder for the app process only (its spare copies of unsaved ink land there, not in the user's %TEMP%).
-function Start-App([string]$key, [string]$link = '') {
+function Start-App([string]$key, [string]$link = '', [string]$sub = '') {
   $linkFile = $null
+  $subFile = $null
+  if ($sub) {
+    # The subscription connector's trusted launch configuration, for this app process only (it names no credential).
+    if ($sub -notmatch '^[a-z0-9-]+$' -or -not $LinkDir) { throw "bad subscription config name $sub" }
+    $subFile = Join-Path $LinkDir "sub-$sub.json"
+    if (-not (Test-Path -LiteralPath $subFile -PathType Leaf)) { throw "no subscription config $sub" }
+  }
   if ($link) {
     # The development capture link, for this app process only (the file names no secret; the app reads the DSN itself).
     if ($link -notmatch '^[a-z0-9-]+$' -or -not $LinkDir) { throw "bad link name $link" }
@@ -172,12 +192,16 @@ function Start-App([string]$key, [string]$link = '') {
   $env:LC_USER_DATA = $UserData
   if ($AppTemp) { New-Item -ItemType Directory -Force -Path $AppTemp | Out-Null; $env:TMP = $AppTemp; $env:TEMP = $AppTemp }
   if ($linkFile) { $env:LC_DEV_CAPTURE_HOST = $linkFile }
+  Remove-Item Env:\LC_SUBSCRIPTION_CONNECTOR -ErrorAction SilentlyContinue   # never inherited: on only when this launch asks for it
+  if ($subFile) { $env:LC_SUBSCRIPTION_CONNECTOR = $subFile }
   try { $script:app = Start-Process -FilePath $Electron -ArgumentList @("`"$Stage`"", "--remote-debugging-port=$($script:appPort)", '--remote-debugging-address=127.0.0.1') -PassThru }
-  finally { Remove-Item Env:\LC_USER_DATA; Remove-Item Env:\LC_DEV_CAPTURE_HOST -ErrorAction SilentlyContinue; $env:TMP = $saved.TMP; $env:TEMP = $saved.TEMP }
+  finally { Remove-Item Env:\LC_USER_DATA; Remove-Item Env:\LC_DEV_CAPTURE_HOST -ErrorAction SilentlyContinue; Remove-Item Env:\LC_SUBSCRIPTION_CONNECTOR -ErrorAction SilentlyContinue; $env:TMP = $saved.TMP; $env:TEMP = $saved.TEMP }
   $script:appKey = $key
   foreach ($t in @('control', 'overlay')) { if ($sockets[$t]) { try { $sockets[$t].ws.Dispose() } catch { }; $sockets.Remove($t) } }
   $results.processes[$key] = [ordered]@{ pid = $script:app.Id; devtools = "127.0.0.1:$($script:appPort)"; started_at = (Get-Date).ToUniversalTime().ToString('o'); link = $link }
   if ($linkFile) { $results.processes[$key].link_config_sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $linkFile).Hash.ToLower() }
+  $results.processes[$key].sub = $sub
+  if ($subFile) { $results.processes[$key].sub_config_sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $subFile).Hash.ToLower() }
   # Every app PID of this run with its start time, on disk at once: if the runner itself is cut short, the owned process
   # can be confirmed (PID and start time) before anyone ends it.
   try { Add-Content -Encoding ASCII -Path (Join-Path $OutDir 'app-pids.txt') -Value "$key $($script:app.Id) $($script:app.StartTime.ToUniversalTime().ToString('o'))" } catch { }
@@ -252,6 +276,7 @@ function Eval([string]$target, [string]$expression) {
 }
 function Window-Handle([string]$name) {
   if ($name -eq 'control') { return [QaWin]::Find(@([uint32]$script:app.Id), 'Learning Companion', $true) }
+  if ($name -eq 'overlay') { return [QaWin]::Find(@([uint32]$script:app.Id), 'Learning Companion overlay', $true) }
   $p = $started[$name]
   if (-not $p) { throw "unknown window $name" }
   $pids = @([uint32]$p.Id) + @(Get-CimInstance Win32_Process -Filter "ParentProcessId=$($p.Id)" | ForEach-Object { [uint32]$_.ProcessId })
@@ -382,6 +407,55 @@ try {
         }
         $entry.after = [string](Invoke-Cdp $ws 'Browser.getWindowForTarget' '{}').result.bounds.windowState
       }
+      elseif ($null -ne $step.keys) {
+        # Synthetic OS keystrokes into an owned window. They go wherever the keyboard focus is, so they are sent only while
+        # that window is the foreground window; otherwise nothing is typed and the step records why.
+        $entry.kind = 'keys'; $entry.window = $step.window
+        $text = [string]$step.keys
+        if ($text -notmatch '^[A-Za-z0-9 ]{1,80}$') { throw 'keys: only letters, digits and spaces' }
+        $h = Window-Handle ([string]$step.window)
+        $entry.window_found = ($h -ne [IntPtr]::Zero)
+        $entry.is_foreground = ($entry.window_found -and [QaWin]::GetForegroundWindow() -eq $h)
+        $entry.sent = $false
+        if ($entry.is_foreground) {
+          Add-Type -AssemblyName System.Windows.Forms
+          [System.Windows.Forms.SendKeys]::SendWait($text)
+          $entry.sent = $true
+          $entry.still_foreground = ([QaWin]::GetForegroundWindow() -eq $h)
+        }
+      }
+      elseif ($null -ne $step.osClick) {
+        # ONE real OS mouse click (synthetic input through the OS, not a physical mouse) on an element of an owned page: what
+        # a user's click does to the window's keyboard focus cannot be seen with DOM clicks. The pointer is moved there
+        # first; the click is made only if the top-level window under that point belongs to this run's app, else nothing
+        # is clicked. The point is the element's centre (page CSS px = DIP) times the display's scale.
+        $entry.kind = 'osClick'; $entry.selector = [string]$step.osClick; $entry.target = [string]$step.target
+        $sel = ConvertTo-Json -InputObject ([string]$step.osClick) -Compress
+        $box = (Eval ([string]$step.target) "(() => { const e = document.querySelector($sel); if (!e) return null; const r = e.getBoundingClientRect(); return JSON.stringify({ x: window.screenX + r.left + r.width / 2, y: window.screenY + r.top + r.height / 2, w: r.width, h: r.height, dpr: devicePixelRatio }); })()") | ConvertFrom-Json
+        if (-not $box -or $box.w -le 0 -or $box.h -le 0) { throw "osClick: $($step.osClick) is not shown" }
+        $x = [int][Math]::Round($box.x * $box.dpr); $y = [int][Math]::Round($box.y * $box.dpr)
+        $entry.point_px = @($x, $y); $entry.cursor_before = [QaWin]::Cursor()
+        if ($null -eq $script:cursorHome) { $script:cursorHome = $entry.cursor_before }
+        $h = Window-Handle ([string]$step.window)
+        $entry.foreground_before = ($h -ne [IntPtr]::Zero -and [QaWin]::GetForegroundWindow() -eq $h)
+        [void][QaWin]::SetCursorPos($x, $y)
+        Start-Sleep -Milliseconds 500
+        $entry.pid_at_point = [int][QaWin]::PidAt($x, $y)
+        $entry.window_at_point_is_ours = ($entry.pid_at_point -eq $script:app.Id)
+        $entry.clicked = $false
+        if ($entry.window_at_point_is_ours) {
+          [QaWin]::LeftClick()
+          $entry.clicked = $true
+          Start-Sleep -Milliseconds 400
+        }
+        $entry.foreground_after = ($h -ne [IntPtr]::Zero -and [QaWin]::GetForegroundWindow() -eq $h)
+      }
+      elseif ($null -ne $step.cursorBack) {
+        # The pointer goes back to where it was before the first osClick of this run.
+        $entry.kind = 'cursorBack'
+        if ($null -ne $script:cursorHome) { [void][QaWin]::SetCursorPos([int]$script:cursorHome[0], [int]$script:cursorHome[1]); Start-Sleep -Milliseconds 300 }
+        $entry.cursor = [QaWin]::Cursor(); $entry.home = $script:cursorHome
+      }
       elseif ($null -ne $step.cursorOutside) {
         # The user's pointer is in every captured frame and is never moved by QA: a test region must be free of it.
         $entry.kind = 'cursorOutside'
@@ -470,7 +544,7 @@ try {
         $prev = $results.processes[$script:appKey]
         $entry.previous = [ordered]@{ key = $script:appKey; pid = $script:app.Id; exit_code = $script:app.ExitCode; killed = [bool]$prev.killed }
         Start-Sleep -Milliseconds 1500
-        Start-App ([string]$step.as) ([string]$step.link)
+        Start-App ([string]$step.as) ([string]$step.link) ([string]$step.sub)
         $entry.pid = $script:app.Id
       }
       elseif ($null -ne $step.seedLinkRecord) {

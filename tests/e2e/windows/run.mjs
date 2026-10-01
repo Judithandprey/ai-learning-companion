@@ -8,16 +8,16 @@
 
 import { execFileSync, spawn, spawnSync } from 'node:child_process';
 import { createHash, randomInt } from 'node:crypto';
-import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { chmodSync, cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { scenarios } from './scenarios.mjs';
+import { FAKE_BRIDGE_SCRIPT, scenarios } from './scenarios.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 // copyFile can fail with EPERM on the Windows drive mount; write the bytes instead.
 const copyFileSync = (from, to) => writeFileSync(to, readFileSync(from));
 const [scenario, outArg] = process.argv.slice(2);
-if (!scenarios[scenario] || !outArg) throw new Error('usage: run.mjs <smoke|full|ink|parent|parentquit|parentfix|parentwin05|surfacecheck> <out dir>');
+if (!scenarios[scenario] || !outArg) throw new Error('usage: run.mjs <smoke|full|ink|parent|parentquit|parentfix|parentwin05|surfacecheck|subcontrols|subcheck|subask> <out dir>');
 const out = resolve(outArg);
 const run = (cmd, argv) => execFileSync(cmd, argv, { encoding: 'utf8', cwd: '/mnt/c' }).trim();
 const toWin = (p) => run('wslpath', ['-w', p]);
@@ -77,13 +77,59 @@ if (parent) {
   // --control: the runner's hostPause/hostResume requests (this run's out folder on the Windows side), for this run's host only.
   watcher = spawn(PY, [HELPER, 'watch', '--backend', backendCopy, '--out', watchFile, '--stop', stopFile, '--control', paths.winOut], { cwd: '/tmp', stdio: ['ignore', 'ignore', openSync(join(out, 'host-watch.stderr'), 'w')], env: { ...process.env, PYTHONDONTWRITEBYTECODE: '1' } });
 }
-const steps = scenarios[scenario]({ courseUrl, surfaceUrl, circled, notes: toWin(join(paths.content, 'notes.txt')), edgeProfile: toWin(paths.edgeProfile), userData: toWin(paths.userData), actor });
+// Subscription mode (ADR 0003): the app's connector, named for one app process by a trusted configuration file.
+//   subcontrols  QA's stand-in bridge only (qa_fake_bridge.py as launch.python in a QA-owned folder). No real configuration
+//                is even written in that run: it cannot reach Codex, ChatGPT, a sign-in or the allowance.
+//   subcheck     the REAL connector, for "Check connection" only. Needs QA_SUB_ALLOW_REAL_CONNECTOR=1 (the lead's release).
+//   subask       the REAL connector and ONE question. Also needs QA_SUB_ALLOW_REAL_TURN=1 (the lead's allocation).
+// QA never signs in, opens no browser and reads no auth file; after a real turn only the authorized receipt of each
+// request this run made is copied (receipts/<launch>/<sha256(request_id)>.json).
+const sub = scenario.startsWith('sub');
+let subInfo = null, subRoot = null, subState = null;
+if (sub) {
+  if (existsSync(out) && readdirSync(out).length) throw new Error('the out dir must be new and empty');
+  mkdirSync(out, { recursive: true });
+  const linkDir = join(work, 'link');
+  mkdirSync(linkDir, { recursive: true });
+  // The distribution and user the app names to wsl.exe are checked against this WSL itself (it is the one this run is in).
+  const { userInfo } = await import('node:os');
+  const distros = spawnSync('wsl.exe', ['-l', '-q'], { cwd: '/mnt/c' }).stdout.toString('utf16le').split(/\r?\n/).map((x) => x.trim()).filter(Boolean);
+  const wsl = { distribution: 'Ubuntu', user: 'agentsdock', distributions_listed: distros, this_user: userInfo().username };
+  if (!distros.includes(wsl.distribution) || wsl.this_user !== wsl.user) throw new Error(`the WSL distribution or user is not the documented one: ${JSON.stringify(wsl)}`);
+  const config = (launch, state_dir, codex_bin) => JSON.stringify({ format: 'lc-windows-subscription-connector/v1', launch: { kind: 'wsl', distribution: wsl.distribution, user: wsl.user, ...launch }, state_dir, codex_bin });
+  if (scenario === 'subcontrols') {
+    subRoot = `/tmp/qa-sub-bridge-${id}`;
+    mkdirSync(subRoot, { recursive: true });
+    copyFileSync(join(HERE, 'qa_fake_bridge.py'), join(subRoot, 'qa-fake-bridge'));
+    chmodSync(join(subRoot, 'qa-fake-bridge'), 0o755);
+    writeFileSync(join(subRoot, 'bridge-script.json'), JSON.stringify(FAKE_BRIDGE_SCRIPT));
+    writeFileSync(join(linkDir, 'sub-fake.json'), config({ cd: subRoot, python: join(subRoot, 'qa-fake-bridge') }, null, null));
+    subInfo = { kind: 'fake', note: 'QA stand-in bridge: no Codex, no ChatGPT, no sign-in, no allowance', wsl };
+  } else {
+    const backend = process.env.QA_SUB_BACKEND;
+    if (process.env.QA_SUB_ALLOW_REAL_CONNECTOR !== '1') throw new Error('the real connector is started only after the lead releases it: set QA_SUB_ALLOW_REAL_CONNECTOR=1');
+    if (scenario === 'subask' && process.env.QA_SUB_ALLOW_REAL_TURN !== '1') throw new Error('a real question is asked only within the lead\'s allocation: set QA_SUB_ALLOW_REAL_TURN=1');
+    if (!backend || !backend.startsWith('/') || !existsSync(join(backend, 'services', 'worker', 'connectors', 'chatgpt_local.py'))) throw new Error('set QA_SUB_BACKEND to the released Backend checkout or private copy');
+    subRoot = backend;
+    subState = process.env.QA_SUB_STATE_DIR || null;
+    writeFileSync(join(linkDir, 'sub-real.json'), config({ cd: backend, python: process.env.QA_SUB_PYTHON || PY }, subState, process.env.QA_SUB_CODEX_BIN || null));
+    subInfo = { kind: 'real', state_dir: subState ? 'set by QA_SUB_STATE_DIR' : 'the connector\'s default product state', codex_bin: process.env.QA_SUB_CODEX_BIN ? 'set by QA_SUB_CODEX_BIN' : 'codex on PATH',
+                model: process.env.QA_SUB_MODEL || null, real_turn_allowed: scenario === 'subask', wsl, source: process.env.QA_SUB_SOURCE || null,
+                python: process.env.QA_SUB_PYTHON ? 'set by QA_SUB_PYTHON' : 'the project virtual environment' };
+  }
+  extraArgs.push('-LinkDir', toWin(linkDir));
+  stopFile = join(out, 'connector-watch.stop');
+  const { openSync } = await import('node:fs');
+  // Read-only: when the connector (or the bridge) and its children appear and exit. It signals nothing.
+  watcher = spawn('python3', [join(HERE, 'qa_sub_watch.py'), '--root', subRoot, '--out', join(out, 'connector-watch.jsonl'), '--stop', stopFile], { cwd: '/tmp', stdio: ['ignore', 'ignore', openSync(join(out, 'connector-watch.stderr'), 'w')] });
+}
+const steps = scenarios[scenario]({ courseUrl, surfaceUrl, circled, model: process.env.QA_SUB_MODEL || null, notes: toWin(join(paths.content, 'notes.txt')), edgeProfile: toWin(paths.edgeProfile), userData: toWin(paths.userData), actor });
 writeFileSync(join(work, 'steps.json'), JSON.stringify(steps, null, 1));
 
 const started = new Date().toISOString();
 const r = spawnSync('powershell.exe', ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', toWin(join(work, 'qa-electron-runner.ps1')),
   '-Electron', electron, '-Stage', toWin(stage), '-UserData', toWin(paths.userData), '-StepsFile', toWin(join(work, 'steps.json')),
-  '-OutDir', toWin(paths.winOut), '-Edge', edge, '-AppTemp', toWin(paths.appTemp), ...extraArgs], { cwd: '/mnt/c', encoding: 'utf8', timeout: scenario === 'parentfix' ? 520000 : 900000 }); // parentfix (about 6 min) must end inside one 10 min foreground call
+  '-OutDir', toWin(paths.winOut), '-Edge', edge, '-AppTemp', toWin(paths.appTemp), ...extraArgs], { cwd: '/mnt/c', encoding: 'utf8', timeout: scenario === 'parentfix' || sub ? 520000 : 900000 }); // parentfix (about 6 min) must end inside one 10 min foreground call
 mkdirSync(out, { recursive: true });
 // The runner was cut short (the time limit): its own cleanup may not have run, so this run's app may still be on the display.
 const cutShort = Boolean(r.error || r.signal);
@@ -145,7 +191,38 @@ try {
   if (existsSync(ink)) cpSync(ink, join(out, 'ink'), { recursive: true });
   for (const [from, to] of [[join(paths.userData, 'qa-aside'), 'qa-aside'], [paths.appTemp, 'apptemp'], [join(paths.userData, 'capture-host'), 'capture-host']]) if (existsSync(from)) cpSync(from, join(out, to), { recursive: true });
   if (parent && existsSync(join(paths.userData, 'captures'))) cpSync(join(paths.userData, 'captures'), join(out, 'captures'), { recursive: true }); // private: whole-display frames
-  writeFileSync(join(out, 'run.json'), JSON.stringify({ scenario, started, ended: new Date().toISOString(), work: toWin(work), steps: steps.length, ...(scenario.startsWith('surface') ? { surface_circled_card: circled } : {}), harness_sha256: harness }, null, 1));
+  if (sub) {
+    // Private: each selection's record and exact picture (asks/), as the app kept them. Only hashes go into evidence.
+    const captures = join(paths.userData, 'captures');
+    const requestIds = [];
+    if (existsSync(captures)) for (const cap of readdirSync(captures)) {
+      const asks = join(captures, cap, 'asks');
+      if (!existsSync(asks)) continue;
+      cpSync(asks, join(out, 'captures', cap, 'asks'), { recursive: true });
+      for (const name of readdirSync(asks).filter((n) => n.endsWith('.json'))) {
+        try { for (const q of JSON.parse(readFileSync(join(asks, name), 'utf8')).requests ?? []) requestIds.push(q.request_id); } catch { /* reported by the analysis */ }
+      }
+    }
+    if (subInfo.kind === 'fake') {
+      mkdirSync(join(out, 'bridge'), { recursive: true });
+      for (const name of ['bridge-log.jsonl', 'bridge-script.json', 'bridge-launches']) if (existsSync(join(subRoot, name))) copyFileSync(join(subRoot, name), join(out, 'bridge', name));
+    } else {
+      // Only the receipts of the requests this run made: receipts/<launch>/<sha256(request_id)>.json. Nothing else in the
+      // product state is listed, opened or copied.
+      const receipts = join(subState ?? join(process.env.HOME, '.local', 'share', 'LearningCompanion', 'managed-chatgpt'), 'receipts');
+      const found = [];
+      if (existsSync(receipts)) for (const launch of readdirSync(receipts)) for (const rid of requestIds) {
+        const name = `${createHash('sha256').update(rid, 'utf8').digest('hex')}.json`;
+        if (existsSync(join(receipts, launch, name))) {
+          mkdirSync(join(out, 'receipts', launch), { recursive: true });
+          copyFileSync(join(receipts, launch, name), join(out, 'receipts', launch, name));
+          found.push({ request_id: rid, launch, file: name });
+        }
+      }
+      writeFileSync(join(out, 'receipts-found.json'), JSON.stringify({ request_ids: requestIds, found }, null, 1));
+    }
+  }
+  writeFileSync(join(out, 'run.json'), JSON.stringify({ scenario, started, ended: new Date().toISOString(), work: toWin(work), steps: steps.length, ...(scenario.startsWith('surface') || sub ? { surface_circled_cards: circled } : {}), ...(sub ? { subscription: subInfo } : {}), harness_sha256: harness }, null, 1));
   writeFileSync(join(out, 'steps.json'), JSON.stringify(steps, null, 1));
 } finally {
   if (watcher) {
