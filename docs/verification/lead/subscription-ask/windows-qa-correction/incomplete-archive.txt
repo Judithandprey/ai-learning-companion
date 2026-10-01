@@ -1,0 +1,140 @@
+✖ tests/app-ask.test.ts (1.285797ms)
+✖ tests/app-link.test.ts (0.078521ms)
+✔ off: nothing is shown and the header still says nothing is sent (1.602143ms)
+✔ unavailable: the reason is shown, and the header still says nothing is sent (storage cannot happen) (0.62038ms)
+✔ development, live: the header says frames are also sent and count as stored only once confirmed; the line says what is confirmed (0.595683ms)
+✔ development, a send out and not yet answered: said as waiting for confirmation, apart from what is confirmed; never as stored, never as not stored (0.617294ms)
+✔ development, no live stream (idle, connecting, not connected, offline, stopping, stopped, ended by the service): the header says the service is not storing now (5.663683ms)
+✔ after a record-write fault the earlier outcomes and the unconfirmed Stop stay shown: further sends stopped, never "nothing is sent anywhere" (0.509658ms)
+✔ Stop while Start is still listing displays cancels it: no session and no overlay (4.307903ms)
+✔ two Starts at once: one session and one overlay; the other is refused before anything is created (3.22806ms)
+✔ a display grant whose display list arrives after Stop is refused (1.245319ms)
+✔ a failing display list is refused exactly once and ends the session with the reason (0.993736ms)
+✔ ink that cannot be written is kept through Stop and app close, exports with its pictures, and Retry writes it (4.193733ms)
+✔ pictures that are not what they claim are not stored, and a missing picture is a gap that never blocks the ink (4.454916ms)
+✔ while writing keeps failing, each picture is received once and kept; Retry writes all of them (2.193839ms)
+✔ kept ink is never replaced or resolved by ink that does not continue it; its older saved version cannot be opened (2.03304ms)
+✔ an export reads what it can: a picture it cannot read is listed as missing, and a failure reaches the user (1.680433ms)
+✔ Stop during Start releases it: another Start is not blocked by the cancelled display listing (0.841994ms)
+✔ Retry of ink kept from an earlier session does not take over the running session (2.14245ms)
+✔ closing the app while Start lists displays cancels it; kept ink still holds the app open (1.659163ms)
+✔ a save receives a bounded batch of pictures and names exactly those; the rest are received by the next saves, none lost (145.772332ms)
+✖ tests/overlay-alignment.test.ts (0.111053ms)
+✔ a capture stream that arrives after Stop is stopped at once and never shown (1.208158ms)
+✔ Stop while the capture is being armed asks for no stream (0.571686ms)
+✔ a stream that is not the whole display, or carries audio, is stopped and ends the capture (0.851333ms)
+✔ the chosen display is shown when the stream arrives while capturing (0.598658ms)
+✔ a sample reports the held image's own frame count and age; frames arriving while it is hashed are stream progress only (1.214459ms)
+✔ an ASK card keeps the uncertainty drawn into its picture, even if alignment changes while the picture is encoded (10.063994ms)
+✔ the overlay sends pictures in bounded batches and lets go only of those named as received or invalid (1.646939ms)
+✔ pictures the main process does not receive stay in the overlay, and the ink stays marked not saved (0.7402ms)
+✖ tests/overlay-stop.test.ts (0.034717ms)
+✔ the question is trimmed; an empty or over-long one is refused (0.231654ms)
+✔ a question holding half of a surrogate pair is refused, whichever half and wherever; every valid text is kept as it is (0.174194ms)
+✔ a selection's rectangles must be finite, positive and inside the display and the frame; the picture is the region's size (0.241053ms)
+✔ the account as read: only the managed ChatGPT mode is signed in; a missing picture capability is not assumed; another shape is nothing (0.315665ms)
+✔ a sign-in address is opened only if it is https on openai.com or chatgpt.com (or a subdomain), with no user, password or port (0.400168ms)
+✔ an answer is read only if its whole provenance is the request that was sent (1.226983ms)
+✔ the connector configuration: off unless named; launch facts and two trusted settings only (0.298894ms)
+✔ nothing is started until the user checks; the launch is exact, and only the two trusted settings reach the child (2.070341ms)
+(node:1496365) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ the sign-in: its page is opened only on the user's press and only at an official address; completion, failure and cancel are said (23.653146ms)
+✔ one question: sent once in the envelope with the chosen model; its bound answer is returned; a second meanwhile is not sent (0.907991ms)
+✔ an answer not bound to what was sent is not returned; the connector's errors are fixed texts, never its message; nothing is sent again (0.885628ms)
+✔ cancel: the turn is interrupted and its answer never returned, whatever arrives; whether it stopped is what the cancel was answered (402.259907ms)
+✔ a stopped capture session can never ask again: its question out is cancelled, the connector is told, and nothing of it is sent later (1.186706ms)
+✔ no answer in time, or the connector lost: said as not known, the turn interrupted, and never sent again (504.224453ms)
+✔ a connector that cannot be started, answers in another form, or writes an over-long line is said as not available (15.132072ms)
+✔ lines are read whole whatever the chunks: split inside a character, several in one chunk, an answer for nothing, and not JSON (1.268583ms)
+✔ a sign-in that completes in the same chunk as its start's answer is taken as this sign-in's; nothing is opened for one already over (11.196499ms)
+✔ what the connector cannot make this app do: an error code named like a built-in, a stand-in for a missing fact, a child without pipes (2.099457ms)
+✔ a change, or a completed sign-in, said while the account is being read is read once more: the newer state stands, and nothing but reads is sent (95.369038ms)
+✔ an account read belongs to the connector it went to: once that one is fenced, lost or ended, nothing it said is published, nothing is read again, and no other connector is started (272.930861ms)
+✔ a sign-in whose start was answered by a connector that is then fenced in the same chunk opens nothing and is said as failed (126.372569ms)
+✔ a question refused as not signed in by a connector that is fenced in the same chunk is not said as signed out: the connector is not available (0.965211ms)
+✔ a failed account read and a failed sign-in start are said in their own words, never as a question that was not answered (1.443469ms)
+✔ a pending sign-in is not forgotten when the account reads as signed in: it stays pending with its Cancel, no question is sent meanwhile, and its completion is still taken (11.810515ms)
+✔ a sign-in is said as cancelled only when the connector acknowledged the cancel; until then it is still pending, and its completion is still taken (827.955075ms)
+✔ "the account changed" is read a bounded number of times between the user's own Checks, also when it is said after each read; sparse changes are each read (1288.334326ms)
+✔ a cancel or a Stop is a confirmed interruption only by its own exact receipt; anything else, cancelled:false included, stays not confirmed (4.246054ms)
+✔ a connector ended here for a line that is not the envelope's: its real end is seen, it is not killed after it ended, and quitting does not wait on it (470.425162ms)
+✔ a real child process over real pipes: lines both ways, and the end of its input ends it (32.193381ms)
+ℹ tests 60
+ℹ suites 0
+ℹ pass 56
+ℹ fail 4
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 4428.457099
+
+✖ failing tests:
+
+test at tests/app-ask.test.ts:1:1
+✖ tests/app-ask.test.ts (1.285797ms)
+  Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/tmp/lc-web-qa-sub-0fae135/apps/safari-extension/src/mode.ts' imported from /tmp/lc-web-qa-sub-0fae135/apps/windows/tests/overlay-page.ts
+      at finalizeResolution (node:internal/modules/esm/resolve:272:11)
+      at moduleResolve (node:internal/modules/esm/resolve:879:10)
+      at defaultResolve (node:internal/modules/esm/resolve:1006:11)
+      at #cachedDefaultResolve (node:internal/modules/esm/loader:705:20)
+      at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:725:38)
+      at ModuleLoader.resolveSync (node:internal/modules/esm/loader:763:56)
+      at #resolve (node:internal/modules/esm/loader:687:17)
+      at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:607:35)
+      at ModuleJob.syncLink (node:internal/modules/esm/module_job:276:33)
+      at ModuleJob.link (node:internal/modules/esm/module_job:381:17) {
+    code: 'ERR_MODULE_NOT_FOUND',
+    url: 'file:///tmp/lc-web-qa-sub-0fae135/apps/safari-extension/src/mode.ts'
+  }
+
+test at tests/app-link.test.ts:1:1
+✖ tests/app-link.test.ts (0.078521ms)
+  Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/tmp/lc-web-qa-sub-0fae135/apps/safari-extension/src/mode.ts' imported from /tmp/lc-web-qa-sub-0fae135/apps/windows/tests/overlay-page.ts
+      at finalizeResolution (node:internal/modules/esm/resolve:272:11)
+      at moduleResolve (node:internal/modules/esm/resolve:879:10)
+      at defaultResolve (node:internal/modules/esm/resolve:1006:11)
+      at #cachedDefaultResolve (node:internal/modules/esm/loader:705:20)
+      at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:725:38)
+      at ModuleLoader.resolveSync (node:internal/modules/esm/loader:763:56)
+      at #resolve (node:internal/modules/esm/loader:687:17)
+      at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:607:35)
+      at ModuleJob.syncLink (node:internal/modules/esm/module_job:276:33)
+      at ModuleJob.link (node:internal/modules/esm/module_job:381:17) {
+    code: 'ERR_MODULE_NOT_FOUND',
+    url: 'file:///tmp/lc-web-qa-sub-0fae135/apps/safari-extension/src/mode.ts'
+  }
+
+test at tests/overlay-alignment.test.ts:1:1
+✖ tests/overlay-alignment.test.ts (0.111053ms)
+  Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/tmp/lc-web-qa-sub-0fae135/apps/safari-extension/src/mode.ts' imported from /tmp/lc-web-qa-sub-0fae135/apps/windows/tests/overlay-page.ts
+      at finalizeResolution (node:internal/modules/esm/resolve:272:11)
+      at moduleResolve (node:internal/modules/esm/resolve:879:10)
+      at defaultResolve (node:internal/modules/esm/resolve:1006:11)
+      at #cachedDefaultResolve (node:internal/modules/esm/loader:705:20)
+      at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:725:38)
+      at ModuleLoader.resolveSync (node:internal/modules/esm/loader:763:56)
+      at #resolve (node:internal/modules/esm/loader:687:17)
+      at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:607:35)
+      at ModuleJob.syncLink (node:internal/modules/esm/module_job:276:33)
+      at ModuleJob.link (node:internal/modules/esm/module_job:381:17) {
+    code: 'ERR_MODULE_NOT_FOUND',
+    url: 'file:///tmp/lc-web-qa-sub-0fae135/apps/safari-extension/src/mode.ts'
+  }
+
+test at tests/overlay-stop.test.ts:1:1
+✖ tests/overlay-stop.test.ts (0.034717ms)
+  Error [ERR_MODULE_NOT_FOUND]: Cannot find module '/tmp/lc-web-qa-sub-0fae135/apps/safari-extension/src/mode.ts' imported from /tmp/lc-web-qa-sub-0fae135/apps/windows/tests/overlay-page.ts
+      at finalizeResolution (node:internal/modules/esm/resolve:272:11)
+      at moduleResolve (node:internal/modules/esm/resolve:879:10)
+      at defaultResolve (node:internal/modules/esm/resolve:1006:11)
+      at #cachedDefaultResolve (node:internal/modules/esm/loader:705:20)
+      at #resolveAndMaybeBlockOnLoaderThread (node:internal/modules/esm/loader:725:38)
+      at ModuleLoader.resolveSync (node:internal/modules/esm/loader:763:56)
+      at #resolve (node:internal/modules/esm/loader:687:17)
+      at ModuleLoader.getOrCreateModuleJob (node:internal/modules/esm/loader:607:35)
+      at ModuleJob.syncLink (node:internal/modules/esm/module_job:276:33)
+      at ModuleJob.link (node:internal/modules/esm/module_job:381:17) {
+    code: 'ERR_MODULE_NOT_FOUND',
+    url: 'file:///tmp/lc-web-qa-sub-0fae135/apps/safari-extension/src/mode.ts'
+  }

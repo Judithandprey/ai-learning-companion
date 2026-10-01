@@ -1,0 +1,38 @@
+{
+  "owner_commit": "0fae1350464de1dcd408f076316192d3840d35cb",
+  "integrated_commit": "44f5fa6fc66b373edd9f6e584f838248b6f77303",
+  "backend_commit": "39620fa07afe164ed2abe0b24f73ea1be9fedf8d",
+  "owner_source_hashes_verified": 63,
+  "owner_log_hash_verified": true,
+  "owner_windows_tree_equals_integrated": true,
+  "focused_checks": {
+    "tests": 113,
+    "pass": 113,
+    "fail": 0,
+    "skip": 0,
+    "duration_ms": 18401.228194,
+    "node": "24.21.0",
+    "platform": "Linux",
+    "actual_backend_fixtures": true,
+    "real_database": false,
+    "real_provider": false,
+    "gui": false
+  },
+  "typescript_static_build": "passed_on_candidate_and_integrated_tree",
+  "checks_run_on": "exact isolated candidate source with current integrated Backend; source equality verified after cherry-pick",
+  "image_attempts_spent": 0,
+  "next": "QA changed-path controls; real image waits for user official login and coordinated display release",
+  "hashes": {
+    "transport-probe.json": "76b044f7bf3b4b084d008bb3ed6036ae0dfd3d53020c340083ddbdcfa994cf79",
+    "frame-focused.tap": "28bf714d9f1cf520e4328ab2f8be97fd948bd6cf88f767831b54d292f5f17b65",
+    "history-probe.py": "afa4399c756a26fdd25413fb7782972b08cbc05066bcaecb056dcacb18bb78f0",
+    "incomplete-archive.txt": "d9351afbff0f0d043cef1b180df226bc8154639ea8493353cdf543ef0166de3e",
+    "transport-probe.ts": "b387057b1dce682166285c09400b708099d6abe78382f8cda35beec15825c9bf",
+    "focused-checks.txt": "58f95ef44f1552efe3b1a8021788e6975d86b204a97510ed697d8c042b710f8c",
+    "transport-review.md": "f6ffa0a5e8a6d055e34e6f3eae9b7c7718f62935878dde7431f5aaf474a9730e",
+    "history-probe.json": "26c39f81542c418a0483626c3c5a4d03ef6e9c47e08c0620e291d4e24419e2ca",
+    "frame-review.json": "b206f48956a5959c39a2d10637d63e616e3eb02e12d9be10a796ff5968ea49ab",
+    "frame-review.md": "e1b17fe84b8f569a739ebe079d8bc782e25cd5498c981d85f2dd88e651152057",
+    "transport-review.json": "ad7cd5d96c5681b8ea2c1f98c13b8489f37d74661ad078a7b574a8576edf6d81"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "candidate": "0fae1350464de1dcd408f076316192d3840d35cb",
+  "synthetic_only": true,
+  "results": [
+    {
+      "case": "latched_budget_pending_cancel_timeout_success",
+      "passed": true,
+      "children": 1,
+      "asks": 0,
+      "read_count": 6,
+      "final_state": "signed_in"
+    },
+    {
+      "case": "disclosed_unsolicited_cancel",
+      "reproduced": true,
+      "cancel_requests": 0,
+      "outcome": {
+        "status": "cancelled",
+        "uncertain": false
+      }
+    },
+    {
+      "case": "prior_same_chunk_fence",
+      "passed": true,
+      "children": 1,
+      "state": "unavailable"
+    }
+  ]
+}

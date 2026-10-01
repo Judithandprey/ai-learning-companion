@@ -1,0 +1,23 @@
+{
+  "integrated_backend": "39620fa",
+  "history_limit": 4096,
+  "emitted": [
+    {
+      "id": "limit-trigger",
+      "error": {
+        "code": "unavailable",
+        "message": "The subscription connection is unavailable."
+      }
+    },
+    {
+      "id": "outer-one",
+      "error": {
+        "code": "cancelled",
+        "message": "The request was cancelled; no answer will be displayed."
+      }
+    }
+  ],
+  "interrupt_calls": 0,
+  "provider_turn_starts": 1,
+  "fake_remote_completed": true
+}

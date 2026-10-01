@@ -1,0 +1,36 @@
+(node:9) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+TAP version 13
+# Subtest: [synthetic connector] a selection is retained as its exact picture, the facts of its frame and the exact ink drawn into it; the mode before returns at once
+ok 1 - [synthetic connector] a selection is retained as its exact picture, the facts of its frame and the exact ink drawn into it; the mode before returns at once
+  ---
+  duration_ms: 40.790206
+  type: 'test'
+  ...
+# Subtest: [synthetic connector] the frame is replaced and its bitmap closed while the selection's picture is encoded: the selection is kept, with the same pixels, frame facts and ink
+ok 2 - [synthetic connector] the frame is replaced and its bitmap closed while the selection's picture is encoded: the selection is kept, with the same pixels, frame facts and ink
+  ---
+  duration_ms: 64.076213
+  type: 'test'
+  ...
+# Subtest: [synthetic connector] a question holding half of a surrogate pair is not sent and not recorded as asked; the connector is untouched; valid text of any script is sent as typed
+ok 3 - [synthetic connector] a question holding half of a surrogate pair is not sent and not recorded as asked; the connector is untouched; valid text of any script is sent as typed
+  ---
+  duration_ms: 57.257222
+  type: 'test'
+  ...
+# Subtest: [synthetic connector] an answer whose overlay is lost before it reports what it did is recorded as presentation unconfirmed: its text is kept, and it is not counted as shown
+ok 4 - [synthetic connector] an answer whose overlay is lost before it reports what it did is recorded as presentation unconfirmed: its text is kept, and it is not counted as shown
+  ---
+  duration_ms: 32.770578
+  type: 'test'
+  ...
+1..4
+# tests 4
+# suites 0
+# pass 4
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 306.399354

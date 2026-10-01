@@ -1,0 +1,62 @@
+{
+  "decision": "approve_scoped_bounded_slice",
+  "candidate": "0fae1350464de1dcd408f076316192d3840d35cb",
+  "parent": "84fc56a99a6e5c9dd98c39fb945cb93b573687ba",
+  "integration_baseline": "868a91d94ef3c94a9b2b032f6014025ead941ba5",
+  "backend": "39620fa07afe164ed2abe0b24f73ea1be9fedf8d",
+  "archive": "/tmp/web-qa-subscription-0fae135-f7laoj0o",
+  "source_sha256": {
+    "apps/windows/src/main/subscription.ts": "7f8b768ae78c71b0bb43cabf972f4dbcd39d390a556f2af54b4cbf2878a46949",
+    "apps/windows/src/shared/subscription-ask.ts": "df03e2a95eaf2d433f1da05165859b1ddfa90809c1a289fa426af8ce674e64b3",
+    "apps/windows/tests/subscription.test.ts": "85dcf56e5bd0236d572072dafbb4daf3948c065dcda800530aa19d5dea3b7022",
+    "apps/windows/tests/subscription-fakes.ts": "239917b46a73e0dac79ed4668ec3b8040fed45a93144ffa70feea1c008452c2a"
+  },
+  "changed_scope": [
+    "QA-SUB-05 fixed operation-specific error text",
+    "QA-SUB-06 pending login and cancellation/completion state",
+    "QA-SUB-07 bounded automatic reads"
+  ],
+  "new_blockers": [],
+  "known_unchanged_findings": [
+    {
+      "id": "W-KNOWN-CANCEL",
+      "priority": 2,
+      "blocks_bounded_first_image_slice": false,
+      "path": "apps/windows/src/main/subscription.ts",
+      "line": 528,
+      "issue": "unsolicited cancelled maps to uncertain:false without remote interruption confirmation",
+      "trigger": "integrated Backend history limit reached while ASK active",
+      "reproduced": true,
+      "evidence": [
+        "/tmp/web-qa-subscription-history-probe.json",
+        "/tmp/web-qa-subscription-transport-probe.json"
+      ],
+      "minimal_fix": "map unsolicited cancelled to uncertain:true; preserve separate confirmed user-interrupt branch",
+      "owner": "Windows/Web"
+    },
+    {
+      "id": "W-KNOWN-END-BUDGET",
+      "priority": 2,
+      "blocks_bounded_first_image_slice": false,
+      "path": "apps/windows/src/main/subscription.ts",
+      "line": 233,
+      "issue": "5-second client grace may kill WSL shim before Backend 8-second cleanup bound; returned termination uncertainty ignored",
+      "evidence": "source inspection only; no claim actual Windows orphan occurred",
+      "minimal_fix": "coordinate grace with Backend cleanup bound and preserve unconfirmed termination status",
+      "owner": "Lead coordinates Windows/Web and Backend"
+    }
+  ],
+  "checks": {
+    "independent_changed_flow_combination": "passed",
+    "prior_same_chunk_fence": "passed",
+    "known_cancel_two_layer_reproduction": "reproduced",
+    "scoped_diff_check": "passed",
+    "author_suites": "read only; Root runs integrated tests"
+  },
+  "repo_edits": false,
+  "real_provider_calls": 0,
+  "real_account_calls": 0,
+  "gui_operations": 0,
+  "real_connector_processes": 0,
+  "report": "/tmp/web-qa-subscription-transport-review.md"
+}
