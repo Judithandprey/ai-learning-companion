@@ -1,0 +1,21 @@
+src/AskLinkTests.swift:939:36: warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 937 |             ending.connection = FakeConnector.connection(state: "signed_out", mode: NSNull())
+ 938 |             // In the first round the exit is reported only after the sign-in start has returned.
+ 939 |             ending.afterLoginStart = round == 0 ? { $0.endChildUnreported() } : { $0.exitChild() }
+     |                                    `- warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 940 |             let endingLink = askLink(ending)
+ 941 |             await endingLink.connect()
+
+Test Suite 'All tests' started at 2026-10-01 10:10:53.124
+Test Suite 'bin.xctest' started at 2026-10-01 10:10:53.126
+Test Suite 'DesktopCaptureTests' started at 2026-10-01 10:10:53.126
+Test Case 'DesktopCaptureTests.testAskCancelNewSelectionAndStopSuppressLaterAnswers' started at 2026-10-01 10:10:53.126
+Test Case 'DesktopCaptureTests.testAskCancelNewSelectionAndStopSuppressLaterAnswers' passed (0.222 seconds)
+Test Case 'DesktopCaptureTests.testAskLateAnswersCloseAndQuitWithAQuestionOnItsWay' started at 2026-10-01 10:10:53.349
+Test Case 'DesktopCaptureTests.testAskLateAnswersCloseAndQuitWithAQuestionOnItsWay' passed (3.621 seconds)
+Test Case 'DesktopCaptureTests.testAskTakesBackARequestThatHasNotReachedTheConnector' started at 2026-10-01 10:10:56.970
+Test Case 'DesktopCaptureTests.testAskTakesBackARequestThatHasNotReachedTheConnector' passed (2.921 seconds)
+Test Case 'DesktopCaptureTests.testAskConnectorLossAndTimeoutAreUnknownAndNeverRetried' started at 2026-10-01 10:10:59.891
+Test Case 'DesktopCaptureTests.testAskConnectorLossAndTimeoutAreUnknownAndNeverRetried' passed (0.978 seconds)
+Test Case 'DesktopCaptureTests.testAskRealChildNeverGetsARequestTakenBackInThePipe' started at 2026-10-01 10:11:00.869
+2026-10-01 10:11:00.870 swift-frontend[4:271cf6c0] *** Could not create wakeup socket pair for CFSocket!!!

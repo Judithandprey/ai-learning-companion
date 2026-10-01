@@ -1,0 +1,13 @@
+{
+  "review.md": "e9ea0c521f57538d50d990965b2937cd8f82ca88c66aba3645d60ad1ef725b3b",
+  "source-provenance.json": "5c0a7f616580749054e252d7521faf5cb36280a9691fd4ee97e28c06d796c8ec",
+  "focused-tests.txt": "4648e6b73c9a86bfb9feb3d772815db466ebd808707639e3c6e2191eebc24fb6",
+  "focused-tests-unrestricted.txt": "5cef4ef3e17873213ed6353a46b0eccc23b5feccc764700e68e7e490cd87c330",
+  "real-quit-probe.txt": "6c3c4d72913b17d876516749d712efa995f3995d96c9fddf2c54a3129cb9c5c9",
+  "harness/run.sh": "7435c56209d187bd7f7eb2780255a71c974f3ab953b691407d5828e6a7a10650",
+  "harness/main.focused.swift": "aef7e5bc2ceb2b4530d158e8fd9202684a9076c511f1924a8deb4c730e089257",
+  "harness/main.real-quit.swift": "6baa6acc9e7e7cb7cbe8c8c6a71cba178711c6507ce9ca960952ad5b77036d8d",
+  "harness/src/ZQuitReview.swift": "60c662c564b415dbe03c1a56d909c43e2b8c49fe59fa6c0cbe10ecd9ca0d9821",
+  "harness/src/ZRealQuitReview.swift": "62366786a01d96e81879569dbcd2440ee90af255bac4392e456060eb5adf95cf",
+  "harness/src/AppleShim.swift": "288e161271773849213f3f7edcf141c0b169a1be9609b9dfdea624aaa380aa6c"
+}

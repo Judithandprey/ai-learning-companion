@@ -1,0 +1,31 @@
+src/AskLinkTests.swift:939:36: warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 937 |             ending.connection = FakeConnector.connection(state: "signed_out", mode: NSNull())
+ 938 |             // In the first round the exit is reported only after the sign-in start has returned.
+ 939 |             ending.afterLoginStart = round == 0 ? { $0.endChildUnreported() } : { $0.exitChild() }
+     |                                    `- warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 940 |             let endingLink = askLink(ending)
+ 941 |             await endingLink.connect()
+
+Test Suite 'All tests' started at 2026-10-01 10:12:58.781
+Test Suite 'bin.xctest' started at 2026-10-01 10:12:58.782
+Test Suite 'DesktopCaptureTests' started at 2026-10-01 10:12:58.782
+Test Case 'DesktopCaptureTests.testReviewQuitWaitsForPartialCancelCleanup' started at 2026-10-01 10:12:58.782
+REVIEW partial-cancel Quit returned in 5.1856040954589844e-05s; completed child ends=0
+src/ZQuitReview.swift:28: error: DesktopCaptureTests.testReviewQuitWaitsForPartialCancelCleanup : XCTAssertEqual failed: ("0") is not equal to ("1") - Quit returned while its retired connector still awaited cleanup
+Test Case 'DesktopCaptureTests.testReviewQuitWaitsForPartialCancelCleanup' failed (1.674 seconds)
+Test Case 'DesktopCaptureTests.testAskCancelNewSelectionAndStopSuppressLaterAnswers' started at 2026-10-01 10:13:00.456
+Test Case 'DesktopCaptureTests.testAskCancelNewSelectionAndStopSuppressLaterAnswers' passed (0.218 seconds)
+Test Case 'DesktopCaptureTests.testAskLateAnswersCloseAndQuitWithAQuestionOnItsWay' started at 2026-10-01 10:13:00.675
+Test Case 'DesktopCaptureTests.testAskLateAnswersCloseAndQuitWithAQuestionOnItsWay' passed (3.617 seconds)
+Test Case 'DesktopCaptureTests.testAskTakesBackARequestThatHasNotReachedTheConnector' started at 2026-10-01 10:13:04.291
+Test Case 'DesktopCaptureTests.testAskTakesBackARequestThatHasNotReachedTheConnector' passed (2.945 seconds)
+Test Case 'DesktopCaptureTests.testAskConnectorLossAndTimeoutAreUnknownAndNeverRetried' started at 2026-10-01 10:13:07.237
+Test Case 'DesktopCaptureTests.testAskConnectorLossAndTimeoutAreUnknownAndNeverRetried' passed (1.078 seconds)
+Test Case 'DesktopCaptureTests.testAskRealChildNeverGetsARequestTakenBackInThePipe' started at 2026-10-01 10:13:08.315
+Test Case 'DesktopCaptureTests.testAskRealChildNeverGetsARequestTakenBackInThePipe' passed (15.277 seconds)
+Test Suite 'DesktopCaptureTests' failed at 2026-10-01 10:13:23.592
+	 Executed 6 tests, with 1 failure (0 unexpected) in 24.809 (24.809) seconds
+Test Suite 'bin.xctest' failed at 2026-10-01 10:13:23.592
+	 Executed 6 tests, with 1 failure (0 unexpected) in 24.809 (24.809) seconds
+Test Suite 'All tests' failed at 2026-10-01 10:13:23.592
+	 Executed 6 tests, with 1 failure (0 unexpected) in 24.809 (24.809) seconds

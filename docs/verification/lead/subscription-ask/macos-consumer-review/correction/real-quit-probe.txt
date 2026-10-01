@@ -1,0 +1,22 @@
+src/AskLinkTests.swift:939:36: warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 937 |             ending.connection = FakeConnector.connection(state: "signed_out", mode: NSNull())
+ 938 |             // In the first round the exit is reported only after the sign-in start has returned.
+ 939 |             ending.afterLoginStart = round == 0 ? { $0.endChildUnreported() } : { $0.exitChild() }
+     |                                    `- warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 940 |             let endingLink = askLink(ending)
+ 941 |             await endingLink.connect()
+
+Test Suite 'All tests' started at 2026-10-01 10:15:25.181
+Test Suite 'bin.xctest' started at 2026-10-01 10:15:25.184
+Test Suite 'DesktopCaptureTests' started at 2026-10-01 10:15:25.184
+Test Case 'DesktopCaptureTests.testReviewRealChildQuitJoinsPartialCancelCleanup' started at 2026-10-01 10:15:25.184
+REVIEW real partial-cancel Quit returned in 4.971027374267578e-05s; child alive=true; partial bytes=65536:False
+REVIEW host-kept-alive cleanup completed=true after 2.159864068031311s
+src/ZRealQuitReview.swift:54: error: DesktopCaptureTests.testReviewRealChildQuitJoinsPartialCancelCleanup : XCTAssertFalse failed - Quit returned while its owned real connector remained alive; app termination loses its pending escalation
+Test Case 'DesktopCaptureTests.testReviewRealChildQuitJoinsPartialCancelCleanup' failed (3.103 seconds)
+Test Suite 'DesktopCaptureTests' failed at 2026-10-01 10:15:28.288
+	 Executed 1 test, with 1 failure (0 unexpected) in 3.103 (3.103) seconds
+Test Suite 'bin.xctest' failed at 2026-10-01 10:15:28.288
+	 Executed 1 test, with 1 failure (0 unexpected) in 3.103 (3.103) seconds
+Test Suite 'All tests' failed at 2026-10-01 10:15:28.288
+	 Executed 1 test, with 1 failure (0 unexpected) in 3.103 (3.103) seconds
