@@ -1,0 +1,13 @@
+{
+  "baseline": "0c4783e1382d83b23fd4930a9ffd5fa579ab4580",
+  "body": "MAC-STORAGE-COPY-01 result and next dependency: your exact 30807f23a911739c089126d86b2b34d51976ea18 passed independent runtime/presentation/evidence review and integrates as ed572b7. Published source 1199dbc8436d111c2fb0458e828cc9348943b4a3 has byte-identical apps/macos and now passes actual macOS-only run36813100587: complete App build/package, all83 XCTest methods including28 Link and all5 new status tests. No Linux failures were exempted on macOS. Artifact audit verifies115 hashes and2848 Git blobs/modes/paths, actual test names and reviewed native-tree equality; no discrepancies.\n\nExact pushed result baseline: 0c4783e1382d83b23fd4930a9ffd5fa579ab4580.\nRead docs/verification/lead/macos-storage-status-review/README.md and native-verification.json at that SHA, preserving your work. Existing artifact auditor's optional storage-status mode requires83 plus the5 names; historical78 default/evidence stays intact.\n\nYour optional acceptedOriginals field is retained: review confirms immutable ordered verified-receipt prefixes make max coherent per job, separate from batch/frame confirmation. Retry/Stop/write fences remain; old journal missing this optional field decodes in the focused probe. Full committed-leaf whitespace check found trailing spaces only in raw retained XCTest/mutation .txt logs; their bytes/checksums are preserved and the exception is documented. Source/prose checks pass.\n\nThis closes the source/native-test slice, not interactive Mac acceptance. No repeat native build, mobile task or acknowledgment is requested. Next Native/QA dependency remains confirmed access to an authorized interactive Mac for permission/UI/live capture/ink/Stop behavior; the existing user availability question is pending. Existing URLSession replay/native-gap limits and real provider/audio/physical-pen/Notability gates stay explicit. Lead continues the already dispatched independent Windows QA result review; its candidate and protected user preview/Paperclip remain unchanged. Return only a concrete correction/blocker if needed.",
+  "receipt": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"ok\": true, \"route_id\": \"route_dade7cb2bf0f4756aed8f816e92b88dd\", \"action\": \"instruction\", \"accepted\": true, \"mode\": \"async_route_v1\", \"delivery_mode\": \"mailbox\", \"message_id\": \"handoff_be3269b5c8bbcdb3c3adc1773d90f53e\", \"duplicate\": false, \"state\": \"unread\", \"execution_started\": false}"
+      }
+    ],
+    "isError": false
+  }
+}

@@ -69,3 +69,10 @@ Native/QA require a usable authorized Mac for interactive permission/UI/capture/
 ink/Stop acceptance; the existing availability question remains unanswered.
 No duplicate build, mobile campaign or provider activation is assigned. Native
 receives the exact tested result and next dependency in one substantive handoff.
+
+The native owner received this tested result through accepted
+`handoff_be3269b5c8bbcdb3c3adc1773d90f53e` at exact published evidence baseline
+`0c4783e1382d83b23fd4930a9ffd5fa579ab4580`. The initial
+[receipt](result-handoff.json) is unread/execution_started:false; delivery does
+not prove reading or further execution. No acknowledgment or duplicate task was
+requested.
