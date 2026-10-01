@@ -222,9 +222,9 @@ export const SURFACE_QUESTION = 'I circled two cards with my pen. Name only thos
 // The control window's subscription section as the page shows it, with the main process's own status.
 const subHook = control(`(() => { if (!window.__qaSubHooked) { window.__qaSub = [];
   window.lc.onSub((x) => window.__qaSub.push({ ...x, qa_at: new Date().toISOString() })); window.__qaSubHooked = true; } return true; })()`, 'sub_hooked');
-const subNow = (as) => control(`(async () => { const t = (id) => { const e = document.getElementById(id); return e ? { text: e.textContent, hidden: e.hidden || e.closest('[hidden]') !== null, disabled: e.disabled === true } : null; };
+const subNow = (as) => control(`(async () => { const t = (id, text = true) => { const e = document.getElementById(id); return e ? { ...(text ? { text: e.textContent } : {}), hidden: e.hidden || e.closest('[hidden]') !== null, disabled: e.disabled === true } : null; };
   const m = document.getElementById('subModel');
-  return JSON.stringify({ at: new Date().toISOString(), s: await window.lc.subState(), section: t('subscription'), state: t('subState'), quota: t('subQuota'), check: t('subCheck'), login: t('subLogin'),
+  return JSON.stringify({ at: new Date().toISOString(), s: await window.lc.subState(), section: t('subscription', false), state: t('subState'), quota: t('subQuota'), check: t('subCheck'), login: t('subLogin'),
     login_cancel: t('subLoginCancel'), model_row: t('subModelRow'), options: m ? [...m.options].map((o) => [o.value, o.textContent, o.selected]) : null, ai: document.getElementById('ai').textContent,
     session: document.getElementById('session').textContent }); })()`, as);
 const subUntil = (cond, as, ms = 40000) => ({ waitEval: `(async () => { const s = await window.lc.subState(); return s && s.mode === 'managed' && (${cond}) && JSON.stringify({ at: new Date().toISOString(), s }); })()`,
@@ -264,6 +264,9 @@ const askRead = (as) => overlay(`(async () => { const g = (id) => document.getEl
     submit_disabled: g('askSubmit').disabled, cancel_shown: !g('askCancel').hidden, save_shown: !g('askSave').hidden,
     picture: { png_sha256: sha, png_bytes: bytes ? bytes.length : null, width: img.naturalWidth, height: img.naturalHeight },
     mode: __lcOverlay.state().mode, revision: __lcOverlay.state().doc.revision, hint: g('hint').textContent, log: window.__qaAsk || [] }); })()`, as);
+// The form must be ready before anything is asked. If it is not, the card as it is shown is read first (so the reason is
+// in the results), and then the run stops there.
+const formReadyOr = (label) => [{ ...formReady, required: false }, askRead(`form_${label}`), { ...formReady, timeoutMs: 1500 }];
 const hashesS = (label) => ({ hashTree: ['ink', 'captures'], frames: false, as: `h_${label}` });
 // One more question on the card that is open: set, press once, wait for how it ended, read.
 const askOnCard = (label, ms = 20000, assistance = 'explain') => [askSet(SURFACE_QUESTION, assistance), askPress, askOutcome(`${label}_ended`, ms), askRead(label), hashesS(label)];
@@ -281,14 +284,70 @@ export const FAKE_BRIDGE_SCRIPT = { launches: [
            { do: 'fault', during_read: true }] },
   { asks: [{ do: 'answer', text: 'SYNTHETIC (QA fake bridge: no model, no ChatGPT). Answer from the second bridge start.' }, { do: 'error', code: 'unauthenticated' }] },
 ] };
+// The rehearsal of the real turn's steps with the stand-in: one held-back SYNTHETIC answer that names no card.
+export const REHEARSAL_BRIDGE_SCRIPT = { launches: [{ asks: [{ do: 'answer', delay_ms: 3000, text: 'SYNTHETIC (QA fake bridge: no model, no ChatGPT). Rehearsal answer: it names no card.' }] }] };
 export const FAKE_ASKS = ['k1_answered', 'k2_tampered', 'k3_quota', 'k4_busy', 'k5_unsupported_model', 'k6_invalid_request', 'k7_failed', 'k8_unavailable',
   'k9_cancel_confirmed', 'k10_cancel_late_answer', 'k11_cancel_unconfirmed', 'k12_stop_in_flight', 'k13_new_session', 'k14_fault', 'k15_after_recheck', 'k16_unauthenticated'];
+// Right before a real question: the app still says signed in, with the chosen model taking pictures, no question out, no
+// sign-in pending and no usage window used up; the card holds exactly QA's question and level and its Ask is enabled.
+const subReadyToAsk = (as) => control(`(async () => { const s = await window.lc.subState(); const full = ((s && s.rate_limits) || []).filter((w) => w.used_percent >= 100).length;
+  if (!s || s.mode !== 'managed' || s.state !== 'signed_in' || s.asking !== false || s.login !== 'none' || typeof s.model !== 'string' || !s.models.some((m) => m.id === s.model && m.image_input === true) || full > 0)
+    throw new Error('not ready to ask: ' + JSON.stringify(s && { state: s.state, asking: s.asking, login: s.login, model: s.model, usage_windows_full: full }));
+  return JSON.stringify({ at: new Date().toISOString(), state: s.state, asking: s.asking, login: s.login, model: s.model, rate_limits: s.rate_limits }); })()`, as);
+const cardReadyToAsk = (question, assistance, as) => overlay(`(() => { const g = (id) => document.getElementById(id);
+  const now = { question_is_qas: g('question').value === ${JSON.stringify(question)}, assistance: document.querySelector('input[name="assistance"]:checked')?.value ?? null, card: !g('card').hidden, form: !g('askForm').hidden,
+    ask_enabled: !g('askSubmit').disabled, cancel_hidden: g('askCancel').hidden, answer_hidden: g('answerBox').hidden, badge: g('badge').textContent };
+  if (!now.question_is_qas || now.assistance !== ${JSON.stringify(assistance)} || !now.card || !now.form || !now.ask_enabled || !now.cancel_hidden || !now.answer_hidden || now.badge !== 'Selection · not sent to any AI')
+    throw new Error('the card is not ready to ask: ' + JSON.stringify(now));
+  return JSON.stringify({ at: new Date().toISOString(), ...now }); })()`, as);
+// The ASK selection around the grid, with the pen lifted just after the app took a frame. (The app samples about once a
+// second; this candidate refuses a selection as "the selection facts are malformed" when a frame is taken between the
+// pen-up and its own request: QA-SUB-01, measured by the `subselect` probe, which keeps the plain gesture. Here the
+// pen-up is timed so that a run is not stopped by that defect; if no new frame comes in 5 s the pen lifts anyway.)
+const selectSurface = [click('[data-mode=ASK]'), pen(SURFACE_ASK.slice(0, -2), { release: false }), overlay('(window.__qaFrame = __lcOverlay.state().frame, true)'),
+  { waitEval: '__lcOverlay.state().frame !== null && __lcOverlay.state().frame !== window.__qaFrame', target: 'overlay', timeoutMs: 5000, required: false },
+  pen(SURFACE_ASK.slice(-3), { continue: true }), cardShown];
 const QUESTION_FOCUS = "(() => { const q = document.getElementById('question'); return JSON.stringify({ value: q.value, active: document.activeElement === q, has_focus: document.hasFocus(), disabled: q.disabled }); })()";
 // Start on the surface with the two circles drawn solid, then the ASK selection and its ready form.
-const surfaceOpen = [{ window: 'edge', show: 'raise' }, { edgeFullscreen: true, required: false }, { sleep: 2000 }, { cursorOutside: SURFACE_REGION_PX }];
+// ... and it must really be what is on the screen: under the centre of every card and the corners of the ASK region the
+// top window is QA's Edge window (a page that says "full screen" can be covered by another app's window).
+const SURFACE_POINTS_PX = [...Array.from({ length: 12 }, (_, i) => { const r = cardRect(i); return [(r.x + r.width / 2) * 2, (r.y + r.height / 2) * 2]; }),
+  [SURFACE_REGION_PX[0] + 8, SURFACE_REGION_PX[1] + 8], [SURFACE_REGION_PX[2] - 8, SURFACE_REGION_PX[1] + 8], [SURFACE_REGION_PX[0] + 8, SURFACE_REGION_PX[3] - 8], [SURFACE_REGION_PX[2] - 8, SURFACE_REGION_PX[3] - 8]];
+const surfaceOnTop = { onTop: 'edge', points: SURFACE_POINTS_PX };
+const surfaceOpen = [{ window: 'edge', show: 'raise' }, { edgeFullscreen: true, required: false }, { sleep: 2000 }, { window: 'edge', show: 'raise' }, { sleep: 500 }, surfaceOnTop, { cursorOutside: SURFACE_REGION_PX }];
+// The picture of the selection (the exact PNG the card shows, which is what an Ask would send) must BE QA's surface, read
+// from its own pixels in the page: its size, every card's grey ground at four points, a coloured shape and dark digits
+// in every card, white between the cards, and the pen's ring around exactly the cards `rings` (their grid indexes: where
+// the harness drew, not a value of the surface). Nothing of the surface's truth is given to the page; which colour each shape has and which cards are ringed is returned for the analysis.
+// (Colours are matched loosely: this display's colour profile moves each channel by up to about 50.)
+// Fails (and stops the run before any Ask) when another window was captured instead.
+const pictureIsSurface = (as, rings) => overlay(`(async () => { const img = document.getElementById('crop'); await img.decode();
+  const W = img.naturalWidth, H = img.naturalHeight, S = 2, OX = ${SURFACE_REGION_PX[0] / 2}, OY = ${SURFACE_REGION_PX[1] / 2};
+  const cv = document.createElement('canvas'); cv.width = W; cv.height = H; const c = cv.getContext('2d', { willReadFrequently: true }); c.drawImage(img, 0, 0);
+  const d = c.getImageData(0, 0, W, H).data;
+  const at = (x, y) => { const i = (Math.round((y - OY) * S) * W + Math.round((x - OX) * S)) * 4; return [d[i], d[i + 1], d[i + 2]]; };
+  const near = (p, q, t) => Math.abs(p[0] - q[0]) <= t && Math.abs(p[1] - q[1]) <= t && Math.abs(p[2] - q[2]) <= t;
+  const count = (x0, y0, x1, y1, test) => { let n = 0; for (let y = Math.round((y0 - OY) * S); y < Math.round((y1 - OY) * S); y++) for (let x = Math.round((x0 - OX) * S); x < Math.round((x1 - OX) * S); x++) { const i = (y * W + x) * 4; if (test([d[i], d[i + 1], d[i + 2]])) n++; } return n; };
+  const PALETTE = { red: [214, 39, 40], blue: [31, 95, 191], green: [30, 142, 62], orange: [242, 140, 0] }, GROUND = [244, 246, 248], INK = [110, 63, 209], G = ${JSON.stringify(SURFACE)};
+  const size_ok = W === ${SURFACE_REGION_PX[2] - SURFACE_REGION_PX[0]} && H === ${SURFACE_REGION_PX[3] - SURFACE_REGION_PX[1]};
+  const cards = [], gaps = [];
+  if (size_ok) for (let i = 0; i < G.cols * G.rows; i++) { const x = G.x + (i % G.cols) * (G.w + G.gap), y = G.y + Math.floor(i / G.cols) * (G.h + G.gap);
+    const ground = [[x + 12, y + 12], [x + G.w - 12, y + 12], [x + 12, y + G.h - 12], [x + G.w - 12, y + G.h - 12]].filter((p) => near(at(p[0], p[1]), GROUND, 10)).length;
+    const shape = Object.fromEntries(Object.entries(PALETTE).map(([name, rgb]) => [name, count(x + 22, y + G.h / 2 - 28, x + 78, y + G.h / 2 + 28, (p) => near(p, rgb, 60))]));
+    const color = Object.entries(shape).sort((a, b) => b[1] - a[1])[0];
+    cards.push({ index: i, ground, shape_color: color[0], shape_px: color[1], digit_px: count(x + 88, y + G.h / 2 - 23, x + 176, y + G.h / 2 + 27, (p) => p[0] < 90 && p[1] < 90 && p[2] < 90),
+      ring_px: count(x, y, x + G.w, y + G.h, (p) => near(p, INK, 40)) });
+    if (i % G.cols < G.cols - 1) gaps.push(near(at(x + G.w + G.gap / 2, y + G.h / 2), [255, 255, 255], 6));
+    if (i < G.cols * (G.rows - 1)) gaps.push(near(at(x + G.w / 2, y + G.h + G.gap / 2), [255, 255, 255], 6)); }
+  const ringed = cards.filter((k) => k.ring_px >= 800).map((k) => k.index);
+  const ok = size_ok && cards.length === 12 && cards.every((k) => k.ground === 4 && k.shape_px >= 1500 && k.digit_px >= 600 && (k.ring_px >= 800 || k.ring_px <= 40)) && gaps.length === 17 && gaps.every(Boolean) && JSON.stringify(ringed) === ${JSON.stringify(JSON.stringify([...rings].sort((a, b) => a - b)))};
+  const out = JSON.stringify({ at: new Date().toISOString(), ok, size: [W, H], size_ok, cards, gaps_white: gaps.filter(Boolean).length, gaps: gaps.length, ringed, rings_wanted: ${JSON.stringify([...rings].sort((a, b) => a - b))} });
+  if (!ok) throw new Error("the selected picture is not QA's surface with its ink: " + out);
+  return out; })()`, as);
+
 const circleAndSelect = (p, label) => [click('[data-mode=WRITE]'), click('#pen'), pen(circleCard(p.circled[0])), { sleep: 900 }, pen(circleCard(p.circled[1])), ...state(label),
-  inkSolid, { cursorOutside: SURFACE_REGION_PX }, surfaceTruth(`surface_truth_${label}`), click('[data-mode=ASK]'), pen(SURFACE_ASK), cardShown, formReady, askHook];
-const selectAgain = [click('[data-mode=ASK]'), pen(SURFACE_ASK), cardShown, formReady];
+  inkSolid, { cursorOutside: SURFACE_REGION_PX }, surfaceTruth(`surface_truth_${label}`), ...selectSurface, askHook, ...formReadyOr(label), pictureIsSurface(`picture_${label}`, p.circled)];
+const selectAgain = (label, rings) => [...selectSurface, askHook, ...formReadyOr(label), pictureIsSurface(`picture_${label}`, rings)];
 
 export const scenarios = {
   full: (p) => [
@@ -628,8 +687,7 @@ export const scenarios = {
   // real model call, so that no call is spent on a surface or a stroke that does not work.
   surfacecheck: (p) => [
     { edgeStart: p.surfaceUrl, profile: p.edgeProfile, as: 'edge', fullscreen: true },
-    { window: 'edge', show: 'raise' }, { edgeFullscreen: true, required: false }, { sleep: 2000 },
-    { cursorOutside: SURFACE_REGION_PX },
+    ...surfaceOpen,
     waitDisplays,
     control("(async () => (await window.lc.listDisplays()).map(d => ({ label: d.label, primary: d.primary, bounds: d.bounds, scale_factor: d.scale_factor, source_id: d.source_id })))()", 'displays'),
     surfaceTruth('surface_truth'), inkHook, linkHook, linkNow('link_off'),
@@ -637,7 +695,7 @@ export const scenarios = {
     ...startSession('s1'), { sleep: 3500 }, surfaceTruth('surface_truth_running'),
     click('[data-mode=WRITE]'), click('#pen'), pen(circleCard(p.circled[0])), { sleep: 900 }, pen(circleCard(p.circled[1])), ...state('circled'),
     inkSolid, { cursorOutside: SURFACE_REGION_PX }, surfaceTruth('surface_truth_before_ask'),
-    click('[data-mode=ASK]'), pen(SURFACE_ASK), cardShown,
+    click('[data-mode=ASK]'), pen(SURFACE_ASK), cardShown, pictureIsSurface('picture', p.circled),
     overlay("JSON.stringify({ text: document.getElementById('cardText').textContent, src: document.getElementById('crop').src, revision: __lcOverlay.state().doc.revision })", 'askCard'),
     cardRead('card'), overlayState('card_open'),
     click('#close'), overlayState('card_closed'),
@@ -655,7 +713,7 @@ export const scenarios = {
     subNow('f_not_checked'), kidsOf('kids_not_checked'),
     // Start, write, capture and select with the connection configured but never checked: nothing may start a connector.
     ...startSession('s0'), { sleep: 2500 }, click('[data-mode=WRITE]'), click('#pen'), pen(circleCard(p.circled[0])), ...state('unchecked'),
-    click('[data-mode=ASK]'), pen(SURFACE_ASK), cardShown, formReady, askHook, askRead('k0_unchecked_card'),
+    ...selectSurface, askHook, ...formReadyOr('unchecked'), pictureIsSurface('picture_unchecked', [p.circled[0]]), askRead('k0_unchecked_card'),
     ...askOnCard('k0_unchecked_ask', 8000), kidsOf('kids_unchecked'), click('#close'), ...stopSession('s0_stopped'),
     // The user's press: Check connection. Only now may the bridge start.
     subCheck, subUntil("s.state !== 'not_checked' && s.state !== 'checking'", 'f_checked'), subNow('f_signed_in'), kidsOf('kids_checked'),
@@ -668,16 +726,32 @@ export const scenarios = {
     askSet(SURFACE_QUESTION, 'explain'), askPress, askWaiting('k12_waiting'), askRead('k12_out'),
     control("document.getElementById('stop').click(), true"), stopped('s1_stopped'), { sleep: 2500 }, subNow('f_after_stop'), hashesS('k12_stop_in_flight'),
     // A later explicit Start is another capture session: it may ask again.
-    ...startSession('s2'), { sleep: 2500 }, ...selectAgain, askHook,
+    ...startSession('s2'), { sleep: 2500 }, ...selectAgain('s2', []),   // a new capture session has new ink: no ring
     ...askOnCard('k13_new_session'),
     // A line longer than the envelope allows while the app's own re-read is out: the child is ended and none is started by the app.
     askSet(SURFACE_QUESTION, 'explain'), askPress, { sleep: 6000 }, subNow('f_after_fault'), kidsOf('kids_after_fault'), { sleep: 6000 }, subNow('f_after_fault_later'),
     askRead('k14_fault'), hashesS('k14_fault'),
     // Only the user's own Check starts a connector again.
-    subCheck, subUntil("s.state !== 'checking' && s.state !== 'unavailable'", 'f_rechecked', 30000), subNow('f_rechecked_now'),
-    click('#close'), ...selectAgain, ...askOnCard('k15_after_recheck'), ...askOnCard('k16_unauthenticated'), subNow('f_signed_out'),
+    subCheck, subUntil("s.state !== 'checking' && s.state !== 'unavailable'", 'f_rechecked', 30000), subNow('f_rechecked_now'), kidsOf('kids_rechecked'),
+    click('#close'), ...selectAgain('s2b', []), ...askOnCard('k15_after_recheck'), ...askOnCard('k16_unauthenticated'), subNow('f_signed_out'),
     ...askOnCard('k17_not_signed_in', 8000),
     click('#close'), ...stopSession('s2_stopped'), subEvents('sub_events'), timeline('timeline'), hashesS('final'),
+    { closeApp: true, via: 'wm_close' },
+  ],
+
+  // PROBE with QA's stand-in bridge, asking nothing: sixteen plain ASK selections of the same region in one capture
+  // session, each closed again (before every second one Check connection is pressed too). For each: whether the question
+  // form became ready, what the card said, and when the app took its frames (QA-SUB-01: a selection is refused as "the
+  // selection facts are malformed" when a frame is taken between the pen-up and the app's own request).
+  subselect: (p) => [
+    { edgeStart: p.surfaceUrl, profile: p.edgeProfile, as: 'edge', fullscreen: true }, ...surfaceOpen,
+    waitDisplays, surfaceTruth('surface_truth'), { closeApp: true },
+    { launchApp: true, as: 'app-fake', sub: 'fake' }, waitDisplays, inkHook, subHook, { sleep: 2500 },
+    subCheck, subUntil("s.state !== 'not_checked' && s.state !== 'checking'", 'f_checked'), subNow('f_signed_in'),
+    ...startSession('s1'), { sleep: 2500 },
+    ...Array.from({ length: 16 }, (_, i) => [...(i % 2 ? [subCheck] : []), click('[data-mode=ASK]'), pen(SURFACE_ASK), cardShown, askHook,
+      { ...formReady, timeoutMs: 6000, required: false, as: `ready_${i}` }, ...(i === 0 ? [pictureIsSurface('picture_0', [])] : []), askRead(`sel_${i}`), subNow(`f_sel_${i}`), click('#close'), { sleep: i % 4 === 3 ? 1200 : 150 }]).flat(),
+    ...stopSession('s1_stopped'), subEvents('sub_events'), timeline('timeline'), hashesS('final'),
     { closeApp: true, via: 'wm_close' },
   ],
 
@@ -694,14 +768,15 @@ export const scenarios = {
     ...startSession('s1'), { sleep: 2500 }, ...circleAndSelect(p, 'circled'), askRead('r_card'),
     // Typed text, as a user does it: ONE OS mouse click on the question box (made only if the window under that point is
     // this app's), then OS keystrokes, sent only if the overlay then is the foreground window (synthetic OS input, not a
-    // physical mouse or keyboard). Then a diagnostic that is not a user path: QA raises the overlay itself and types again.
+    // physical mouse or keyboard; digits and spaces only, which an input method passes through). Then a diagnostic that is
+    // not a user path: QA raises the overlay itself and types again.
     { osClick: '#question', target: 'overlay', window: 'overlay', required: false }, { sleep: 400 },
     overlay(QUESTION_FOCUS, 'r_focus_after_click'),
-    { keys: 'QA typed check 42', window: 'overlay', required: false }, { sleep: 600 },
+    { keys: '4207 1935', window: 'overlay', required: false }, { sleep: 600 },
     overlay(QUESTION_FOCUS, 'r_typed'),
     { window: 'overlay', show: 'raise', required: false },
     overlay("(() => { const q = document.getElementById('question'); q.focus(); q.select(); return JSON.stringify({ active: document.activeElement === q, has_focus: document.hasFocus() }); })()", 'r_focus_raised'),
-    { keys: 'QA second 7', window: 'overlay', required: false }, { sleep: 600 },
+    { keys: '7781 20', window: 'overlay', required: false }, { sleep: 600 },
     overlay(QUESTION_FOCUS, 'r_typed_raised'),
     { cursorBack: true, required: false },
     askRead('r_card_after_typing'), hashesS('r_selected'),
@@ -723,12 +798,19 @@ export const scenarios = {
     subNow('a_state'), kidsOf('kids_checked'), mark('before-start'), { desktopShot: 'surface' },
     ...startSession('s1'), { sleep: 2500 }, ...circleAndSelect(p, 'circled'),
     askRead('a_card'), hashesS('a_selected'),
-    askSet(SURFACE_QUESTION, 'explain'), askRead('a_ready'), surfaceTruth('surface_truth_at_ask'),
+    askSet(SURFACE_QUESTION, p.assistance), askRead('a_ready'), surfaceTruth('surface_truth_at_ask'), { cursorOutside: SURFACE_REGION_PX },
+    // The last gates, at the press: still signed in with that picture model, nothing out, no usage window full; the card
+    // holds QA's question and level and can be asked. Each throws, so the run stops here and nothing is asked.
+    subReadyToAsk('a_ready_state'), cardReadyToAsk(SURFACE_QUESTION, p.assistance, 'a_ready_card'),
     askPress,                                                    // <- the one real submission
-    askWaiting('a_waiting'), askOutcome('a_ended', 170000), askRead('a_after'), hashesS('a_after'), subNow('a_after_state'),
-    surfaceTruth('surface_truth_after'), { cursorOutside: SURFACE_REGION_PX, required: false }, { sleep: 2000 }, askRead('a_after_2s'),
-    click('#close'), overlayState('a_closed'), ...stopSession('s1_stopped'), subNow('a_final'), subEvents('sub_events'), timeline('timeline'), hashesS('final'),
-    kidsOf('kids_final'), { closeApp: true, via: 'wm_close' },
+    // From here nothing may stop the run: every step is optional, so that whatever happened is read and kept. The wait
+    // is the app's own bound for a question (300 s) and for its cancel (30 s): the outcome read is always the app's own,
+    // and QA's later close of the card cannot be what ended the question.
+    ...[askWaiting('a_waiting'), askOutcome('a_ended', 340000), askRead('a_after'), hashesS('a_after'), subNow('a_after_state'),
+      edge('window.__qaSurfaceTruth()', 'surface_truth_after'), { cursorOutside: SURFACE_REGION_PX }, { sleep: 2000 }, askRead('a_after_2s'),
+      click('#close'), overlayState('a_closed'), ...stopSession('s1_stopped'), subNow('a_final'), subEvents('sub_events'), timeline('timeline'), hashesS('final'),
+      kidsOf('kids_final')].map((step) => ({ ...step, required: false })),
+    { closeApp: true, via: 'wm_close', required: false },
   ],
 
   smoke: (p) => [
@@ -749,3 +831,8 @@ export const scenarios = {
     { closeApp: true },
   ],
 };
+
+// REHEARSAL of the one real turn: exactly the `subask` steps, with QA's stand-in bridge instead of the real connector
+// (no Codex, no ChatGPT, no allowance). It shows that the driver's steps, gates and reads work before the allocation is
+// spent; its "answer" is SYNTHETIC text and is never real-model evidence.
+scenarios.subrehearsal = (p) => scenarios.subask(p).map((step) => (step.launchApp ? { ...step, as: 'app-fake', sub: 'fake' } : step));

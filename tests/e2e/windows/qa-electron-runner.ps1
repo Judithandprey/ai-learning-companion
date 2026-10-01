@@ -44,6 +44,7 @@
 #     only this run's own test-service host (a send then gets no answer); the watcher resumes it on its own in any case
 #   { "osClick": "#selector", "target": "overlay", "window": "overlay" }   one OS mouse click on that element, only if the window under the point is this app's
 #   { "cursorBack": true }                     the pointer back to where it was before the first osClick
+#   { "onTop": "edge", "points": [[x,y],...] }   physical px: fails unless the top-level window under every point is that owned window
 # The file steps only touch paths inside this run's user-data folder (or its test-owned temp folder), never elsewhere.
 param(
   [Parameter(Mandatory = $true)][string]$Electron,
@@ -58,6 +59,7 @@ param(
 )
 $ErrorActionPreference = 'Stop'
 Add-Type -AssemblyName System.Drawing
+Add-Type -AssemblyName System.Windows.Forms
 Add-Type @'
 using System;
 using System.Runtime.InteropServices;
@@ -87,6 +89,27 @@ public static class QaWin {
   // The process that owns the top-level window under a screen point (physical px); 0 when there is none.
   public static uint PidAt(int x, int y) { Pt p; p.X = x; p.Y = y; IntPtr h = WindowFromPoint(p); if (h == IntPtr.Zero) return 0;
     IntPtr root = GetAncestor(h, 2); uint pid; GetWindowThreadProcessId(root == IntPtr.Zero ? h : root, out pid); return pid; }
+  [DllImport("user32.dll")] public static extern bool SetWindowPos(IntPtr h, IntPtr after, int x, int y, int cx, int cy, uint flags);
+  // Puts a window above every other normal window WITHOUT changing its size or state (a full-screen window stays full
+  // screen): first the ordinary way; if another app keeps the foreground (the foreground lock), the window is made
+  // topmost and at once not topmost again, which leaves it at the top of the normal windows. Nothing is closed or moved.
+  public static bool Raise(IntPtr h) {
+    IntPtr fg = GetForegroundWindow(); uint ignored;
+    uint fgThread = GetWindowThreadProcessId(fg, out ignored), me = GetCurrentThreadId();
+    bool attached = fgThread != 0 && fgThread != me && AttachThreadInput(me, fgThread, true);
+    BringWindowToTop(h); SetForegroundWindow(h);
+    if (attached) AttachThreadInput(me, fgThread, false);
+    // (a window that is always-on-top already, as the app's overlay is, keeps that state: it is not touched here)
+    if (((long)GetWindowLongPtr(h, -20) & 0x8) == 0) {
+      SetWindowPos(h, new IntPtr(-1), 0, 0, 0, 0, 0x0001 | 0x0002 | 0x0010);
+      SetWindowPos(h, new IntPtr(-2), 0, 0, 0, 0, 0x0001 | 0x0002 | 0x0010);
+    }
+    System.Threading.Thread.Sleep(200);
+    return GetForegroundWindow() == h;
+  }
+  [DllImport("user32.dll", EntryPoint = "GetWindowLongPtrW")] public static extern IntPtr GetWindowLongPtr(IntPtr h, int index);
+  // The top-level window under a screen point (physical px).
+  public static IntPtr RootAt(int x, int y) { Pt p; p.X = x; p.Y = y; IntPtr h = WindowFromPoint(p); if (h == IntPtr.Zero) return h; IntPtr root = GetAncestor(h, 2); return root == IntPtr.Zero ? h : root; }
   public static void LeftClick() { mouse_event(0x0002, 0, 0, 0, UIntPtr.Zero); System.Threading.Thread.Sleep(60); mouse_event(0x0004, 0, 0, 0, UIntPtr.Zero); }
   // Read-only: where the user's cursor is (physical px). It is moved only by the osClick step (and put back by cursorBack).
   public static int[] Cursor() { Pt p; return GetCursorPos(out p) ? new int[] { p.X, p.Y } : null; }
@@ -378,12 +401,12 @@ try {
         $deadline = (Get-Date).AddSeconds(15)
         while ((Window-Handle ([string]$step.as)) -eq [IntPtr]::Zero) { if ((Get-Date) -gt $deadline) { throw 'console window did not appear' }; Start-Sleep -Milliseconds 200 }
       }
-      elseif ($null -ne $step.window) {
+      elseif ($null -ne $step.window -and $null -eq $step.keys -and $null -eq $step.osClick) {
         $entry.kind = 'window'; $entry.window = $step.window; $entry.show = $step.show
         $h = Window-Handle ([string]$step.window)
         if ($h -eq [IntPtr]::Zero) { throw "window $($step.window) not found" }
         switch ([string]$step.show) {
-          'raise'    { [void][QaWin]::BringWindowToTop($h); $entry.foreground = [QaWin]::SetForegroundWindow($h) }
+          'raise'    { $entry.foreground = [QaWin]::Raise($h) }
           'maximize' { [void][QaWin]::ShowWindow($h, 3) }
           'minimize' { [void][QaWin]::ShowWindow($h, 6) }
           'restore'  { [void][QaWin]::ShowWindow($h, 9) }
@@ -416,13 +439,34 @@ try {
         $h = Window-Handle ([string]$step.window)
         $entry.window_found = ($h -ne [IntPtr]::Zero)
         $entry.is_foreground = ($entry.window_found -and [QaWin]::GetForegroundWindow() -eq $h)
-        $entry.sent = $false
+        $entry.sent = $false; $entry.sent_chars = 0
         if ($entry.is_foreground) {
-          Add-Type -AssemblyName System.Windows.Forms
-          [System.Windows.Forms.SendKeys]::SendWait($text)
-          $entry.sent = $true
+          # One character at a time, each only while that window still is the foreground window.
+          foreach ($ch in $text.ToCharArray()) {
+            if ([QaWin]::GetForegroundWindow() -ne $h) { break }
+            [System.Windows.Forms.SendKeys]::SendWait([string]$ch)
+            $entry.sent_chars++
+          }
+          $entry.sent = ($entry.sent_chars -eq $text.Length)
           $entry.still_foreground = ([QaWin]::GetForegroundWindow() -eq $h)
         }
+      }
+      elseif ($null -ne $step.onTop) {
+        # What is really on the screen: the top-level window under each given point (physical px) must be the named owned
+        # window's process. A page that says it is full screen can still be covered by another app's window; then the
+        # app's frames would show that other window. Fails (nothing is started after it) and names only the process.
+        $entry.kind = 'onTop'; $entry.window = [string]$step.onTop
+        $h = Window-Handle ([string]$step.onTop)
+        if ($h -eq [IntPtr]::Zero) { throw "window $($step.onTop) not found" }
+        $owner = [uint32]0; [void][QaWin]::GetWindowThreadProcessId($h, [ref]$owner)
+        $entry.points = @($step.points).Count
+        $other = @()
+        foreach ($pt in @($step.points)) {
+          $at = [QaWin]::PidAt([int]$pt[0], [int]$pt[1])
+          if ($at -ne $owner) { $other += [ordered]@{ point = @([int]$pt[0], [int]$pt[1]); process = $(try { (Get-Process -Id ([int]$at) -ErrorAction Stop).ProcessName } catch { 'unknown' }) } }
+        }
+        $entry.covered = $other
+        if ($other.Count -gt 0) { throw "the $($step.onTop) window is covered at $($other.Count) of $($entry.points) points by: $((@($other | ForEach-Object { $_.process }) | Sort-Object -Unique) -join ', ')" }
       }
       elseif ($null -ne $step.osClick) {
         # ONE real OS mouse click (synthetic input through the OS, not a physical mouse) on an element of an owned page: what
@@ -431,19 +475,25 @@ try {
         # is clicked. The point is the element's centre (page CSS px = DIP) times the display's scale.
         $entry.kind = 'osClick'; $entry.selector = [string]$step.osClick; $entry.target = [string]$step.target
         $sel = ConvertTo-Json -InputObject ([string]$step.osClick) -Compress
-        $box = (Eval ([string]$step.target) "(() => { const e = document.querySelector($sel); if (!e) return null; const r = e.getBoundingClientRect(); return JSON.stringify({ x: window.screenX + r.left + r.width / 2, y: window.screenY + r.top + r.height / 2, w: r.width, h: r.height, dpr: devicePixelRatio }); })()") | ConvertFrom-Json
+        # The element's centre, only if the page itself says that the element (or something inside it) is what is there.
+        $box = (Eval ([string]$step.target) "(() => { const e = document.querySelector($sel); if (!e) return null; const r = e.getBoundingClientRect(); const cx = r.left + r.width / 2, cy = r.top + r.height / 2; const top = document.elementFromPoint(cx, cy); return JSON.stringify({ x: window.screenX + cx, y: window.screenY + cy, w: r.width, h: r.height, dpr: devicePixelRatio, is_there: top === e || (top !== null && e.contains(top)) }); })()") | ConvertFrom-Json
         if (-not $box -or $box.w -le 0 -or $box.h -le 0) { throw "osClick: $($step.osClick) is not shown" }
+        if (-not $box.is_there) { throw "osClick: $($step.osClick) is covered or clipped at its centre" }
         $x = [int][Math]::Round($box.x * $box.dpr); $y = [int][Math]::Round($box.y * $box.dpr)
         $entry.point_px = @($x, $y); $entry.cursor_before = [QaWin]::Cursor()
         if ($null -eq $script:cursorHome) { $script:cursorHome = $entry.cursor_before }
         $h = Window-Handle ([string]$step.window)
-        $entry.foreground_before = ($h -ne [IntPtr]::Zero -and [QaWin]::GetForegroundWindow() -eq $h)
+        if ($h -eq [IntPtr]::Zero) { throw "window $($step.window) not found" }
+        $entry.foreground_before = ([QaWin]::GetForegroundWindow() -eq $h)
         [void][QaWin]::SetCursorPos($x, $y)
         Start-Sleep -Milliseconds 500
-        $entry.pid_at_point = [int][QaWin]::PidAt($x, $y)
-        $entry.window_at_point_is_ours = ($entry.pid_at_point -eq $script:app.Id)
+        # Clicked only if the pointer still is at that point and the top-level window under it is that very window
+        # (the click goes wherever the pointer is).
+        $now = [QaWin]::Cursor()
+        $entry.pointer_still_there = ($null -ne $now -and $now[0] -eq $x -and $now[1] -eq $y)
+        $entry.window_at_point_is_ours = ([QaWin]::RootAt($x, $y) -eq $h)
         $entry.clicked = $false
-        if ($entry.window_at_point_is_ours) {
+        if ($entry.pointer_still_there -and $entry.window_at_point_is_ours) {
           [QaWin]::LeftClick()
           $entry.clicked = $true
           Start-Sleep -Milliseconds 400
@@ -679,6 +729,8 @@ finally {
   $results.processes[$script:appKey].exit_code = $(try { $script:app.ExitCode } catch { $null })
   $results.foreign.end = Foreign-Electron
   $results.wsl_seen = @($script:wslSeen.Keys | ForEach-Object { [ordered]@{ pid = [int]$_; running_at_end = [bool](Get-Process -Id ([int]$_) -ErrorAction SilentlyContinue) } })
+  # The pointer goes back to where it was before the first OS click, also when the steps were cut short.
+  if ($null -ne $script:cursorHome) { try { [void][QaWin]::SetCursorPos([int]$script:cursorHome[0], [int]$script:cursorHome[1]) } catch { } }
   $results.cursor.end = [QaWin]::Cursor()
   $results | ConvertTo-Json -Depth 20 | Set-Content -Encoding UTF8 -Path (Join-Path $OutDir 'results.json')
 }

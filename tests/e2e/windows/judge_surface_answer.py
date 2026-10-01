@@ -16,7 +16,9 @@ is `held`, never a pass, and every matcher pass still needs a person to read the
 Outcomes, most to least:
   identified          both circled numbers and no other card's number; each card's shape and color right        matcher PASS
   numbers_identified  both circled numbers and no other; a shape or color is not stated (none is stated wrong)   matcher PASS on
-                      the image-only criterion, reported with "shape/color not confirmed"
+                      the image-only criterion, reported with "shape/color not confirmed". Only the surface's own
+                      shape and color words are judged: a word outside them ("purple", "circle", "yellow") counts as
+                      not stated, because the pen's ink is a purple circle; the person reading the answer checks it
   held                the numbers match, but the answer holds a negation, refusal or uncertainty marker          not a pass;
                       the full answer goes to semantic review
   contradicted        both circled numbers and no other, but a stated shape or color of a circled card is wrong   not a pass

@@ -8,16 +8,16 @@
 
 import { execFileSync, spawn, spawnSync } from 'node:child_process';
 import { createHash, randomInt } from 'node:crypto';
-import { chmodSync, cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from 'node:fs';
+import { chmodSync, cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, readlinkSync, realpathSync, rmSync, statSync, writeFileSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { FAKE_BRIDGE_SCRIPT, scenarios } from './scenarios.mjs';
+import { FAKE_BRIDGE_SCRIPT, REHEARSAL_BRIDGE_SCRIPT, scenarios } from './scenarios.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 // copyFile can fail with EPERM on the Windows drive mount; write the bytes instead.
 const copyFileSync = (from, to) => writeFileSync(to, readFileSync(from));
 const [scenario, outArg] = process.argv.slice(2);
-if (!scenarios[scenario] || !outArg) throw new Error('usage: run.mjs <smoke|full|ink|parent|parentquit|parentfix|parentwin05|surfacecheck|subcontrols|subcheck|subask> <out dir>');
+if (!scenarios[scenario] || !outArg) throw new Error('usage: run.mjs <smoke|full|ink|parent|parentquit|parentfix|parentwin05|surfacecheck|subcontrols|subselect|subrehearsal|subcheck|subask> <out dir>');
 const out = resolve(outArg);
 const run = (cmd, argv) => execFileSync(cmd, argv, { encoding: 'utf8', cwd: '/mnt/c' }).trim();
 const toWin = (p) => run('wslpath', ['-w', p]);
@@ -81,14 +81,21 @@ if (parent) {
 //   subcontrols  QA's stand-in bridge only (qa_fake_bridge.py as launch.python in a QA-owned folder). No real configuration
 //                is even written in that run: it cannot reach Codex, ChatGPT, a sign-in or the allowance.
 //   subcheck     the REAL connector, for "Check connection" only. Needs QA_SUB_ALLOW_REAL_CONNECTOR=1 (the lead's release).
-//   subask       the REAL connector and ONE question. Also needs QA_SUB_ALLOW_REAL_TURN=1 (the lead's allocation).
+//   subask       the REAL connector and ONE question. Also needs QA_SUB_ALLOW_REAL_TURN=<the id of the lead's allocation>.
+//                An allocation is used ONCE: a ledger file outside the run folders records each run made under it and
+//                whether Ask was pressed. Another run under the same id starts only if every earlier one provably
+//                stopped before the press (the press step never ran and the app recorded no request).
+//   subselect    a probe with the stand-in bridge that asks nothing.
+//   subrehearsal the steps of subask with the stand-in bridge: a rehearsal, no real connector, no allowance.
 // QA never signs in, opens no browser and reads no auth file; after a real turn only the authorized receipt of each
 // request this run made is copied (receipts/<launch>/<sha256(request_id)>.json).
 const sub = scenario.startsWith('sub');
-let subInfo = null, subRoot = null, subState = null;
+let subInfo = null, subRoot = null, subState = null, ledgerFile = null, ledger = null;
+const assistance = process.env.QA_SUB_ASSISTANCE || 'full_solution';
 if (sub) {
   if (existsSync(out) && readdirSync(out).length) throw new Error('the out dir must be new and empty');
-  mkdirSync(out, { recursive: true });
+  mkdirSync(out, { recursive: true, mode: 0o700 });
+  chmodSync(out, 0o700); // private: selection pictures, records and receipts are copied here
   const linkDir = join(work, 'link');
   mkdirSync(linkDir, { recursive: true });
   // The distribution and user the app names to wsl.exe are checked against this WSL itself (it is the one this run is in).
@@ -97,25 +104,54 @@ if (sub) {
   const wsl = { distribution: 'Ubuntu', user: 'agentsdock', distributions_listed: distros, this_user: userInfo().username };
   if (!distros.includes(wsl.distribution) || wsl.this_user !== wsl.user) throw new Error(`the WSL distribution or user is not the documented one: ${JSON.stringify(wsl)}`);
   const config = (launch, state_dir, codex_bin) => JSON.stringify({ format: 'lc-windows-subscription-connector/v1', launch: { kind: 'wsl', distribution: wsl.distribution, user: wsl.user, ...launch }, state_dir, codex_bin });
-  if (scenario === 'subcontrols') {
-    subRoot = `/tmp/qa-sub-bridge-${id}`;
-    mkdirSync(subRoot, { recursive: true });
+  if (['subcontrols', 'subselect', 'subrehearsal'].includes(scenario)) {
+    subRoot = mkdtempSync('/tmp/qa-sub-bridge-'); // new, private (0700), removed after its logs are copied
     copyFileSync(join(HERE, 'qa_fake_bridge.py'), join(subRoot, 'qa-fake-bridge'));
     chmodSync(join(subRoot, 'qa-fake-bridge'), 0o755);
-    writeFileSync(join(subRoot, 'bridge-script.json'), JSON.stringify(FAKE_BRIDGE_SCRIPT));
+    writeFileSync(join(subRoot, 'bridge-script.json'), JSON.stringify(scenario === 'subrehearsal' ? REHEARSAL_BRIDGE_SCRIPT : FAKE_BRIDGE_SCRIPT));
     writeFileSync(join(linkDir, 'sub-fake.json'), config({ cd: subRoot, python: join(subRoot, 'qa-fake-bridge') }, null, null));
-    subInfo = { kind: 'fake', note: 'QA stand-in bridge: no Codex, no ChatGPT, no sign-in, no allowance', wsl };
+    subInfo = { kind: 'fake', note: 'QA stand-in bridge: no Codex, no ChatGPT, no sign-in, no allowance', assistance, wsl };
   } else {
-    const backend = process.env.QA_SUB_BACKEND;
+    const backend = process.env.QA_SUB_BACKEND && existsSync(process.env.QA_SUB_BACKEND) ? realpathSync(process.env.QA_SUB_BACKEND) : null; // as /proc names it
+    const turn = process.env.QA_SUB_ALLOW_REAL_TURN ?? '';
     if (process.env.QA_SUB_ALLOW_REAL_CONNECTOR !== '1') throw new Error('the real connector is started only after the lead releases it: set QA_SUB_ALLOW_REAL_CONNECTOR=1');
-    if (scenario === 'subask' && process.env.QA_SUB_ALLOW_REAL_TURN !== '1') throw new Error('a real question is asked only within the lead\'s allocation: set QA_SUB_ALLOW_REAL_TURN=1');
-    if (!backend || !backend.startsWith('/') || !existsSync(join(backend, 'services', 'worker', 'connectors', 'chatgpt_local.py'))) throw new Error('set QA_SUB_BACKEND to the released Backend checkout or private copy');
+    if (scenario === 'subask' && !/^[A-Za-z0-9_.-]{8,80}$/.test(turn)) throw new Error('a real question is asked only within the lead\'s allocation: set QA_SUB_ALLOW_REAL_TURN=<allocation id>');
+    if (!['hint', 'explain', 'full_solution'].includes(assistance)) throw new Error('QA_SUB_ASSISTANCE must be hint, explain or full_solution');
+    if (!backend || !backend.startsWith('/') || !existsSync(join(backend, 'services', 'worker', 'connectors', 'chatgpt_local.py'))) throw new Error('set QA_SUB_BACKEND to a private exact-source copy of the released Backend');
+    // The process watch counts what runs inside that folder: it must be a private copy in which nothing else runs.
+    const inside = readdirSync('/proc').filter((n) => /^\d+$/.test(n)).filter((n) => { try { const cwd = readlinkSync(`/proc/${n}/cwd`); return cwd === backend || cwd.startsWith(`${backend}/`); } catch { return false; } });
+    if (inside.length) throw new Error(`QA_SUB_BACKEND must be a private copy in which nothing runs; ${inside.length} process(es) have their working folder inside it`);
+    // Which connector this is: the bytes of its files, and (QA_SUB_SOURCE = the released commit) that they are that commit's.
+    const FILES = ['services/worker/connectors/chatgpt_local.py', 'services/worker/connectors/chatgpt_rpc.py', 'services/worker/connectors/chatgpt_launch.py', 'services/worker/connectors/chatgpt_receipts.py', 'services/learning/subscription_ask.py'];
+    const sha = (bytes) => createHash('sha256').update(bytes).digest('hex');
+    const source = process.env.QA_SUB_SOURCE || null;
+    const connector = Object.fromEntries(FILES.map((f) => [f, sha(readFileSync(join(backend, f)))]));
+    if (source) for (const f of FILES) {
+      const committed = sha(execFileSync('git', ['-C', HERE, 'show', `${source}:${f}`], { maxBuffer: 16 * 1024 * 1024 }));
+      if (committed !== connector[f]) throw new Error(`${f} in QA_SUB_BACKEND is not the file of ${source}`);
+    }
+    if (scenario === 'subask' && !source) throw new Error('a real question needs QA_SUB_SOURCE: the released commit the private Backend copy was made from');
     subRoot = backend;
     subState = process.env.QA_SUB_STATE_DIR || null;
-    writeFileSync(join(linkDir, 'sub-real.json'), config({ cd: backend, python: process.env.QA_SUB_PYTHON || PY }, subState, process.env.QA_SUB_CODEX_BIN || null));
-    subInfo = { kind: 'real', state_dir: subState ? 'set by QA_SUB_STATE_DIR' : 'the connector\'s default product state', codex_bin: process.env.QA_SUB_CODEX_BIN ? 'set by QA_SUB_CODEX_BIN' : 'codex on PATH',
-                model: process.env.QA_SUB_MODEL || null, real_turn_allowed: scenario === 'subask', wsl, source: process.env.QA_SUB_SOURCE || null,
-                python: process.env.QA_SUB_PYTHON ? 'set by QA_SUB_PYTHON' : 'the project virtual environment' };
+    // wsl.exe --exec starts the connector without a login shell: `codex` is then not on PATH on this machine, so the
+    // trusted configuration names the official binary (the connector admits it only by its pinned sha256).
+    const python = process.env.QA_SUB_PYTHON || PY, codexBin = process.env.QA_SUB_CODEX_BIN || null;
+    if (!codexBin || !codexBin.startsWith('/')) throw new Error('set QA_SUB_CODEX_BIN to the absolute path of the official codex binary (the lead\'s trusted configuration)');
+    writeFileSync(join(linkDir, 'sub-real.json'), config({ cd: backend, python }, subState, codexBin));
+    subInfo = { kind: 'real', python, state_dir: subState ?? 'the connector\'s default product state (state_dir null)', codex_bin: codexBin ?? 'codex on PATH (codex_bin null)', backend_copy: backend, source,
+                connector_files_sha256: connector, files_are_the_source_commits: Boolean(source), model: process.env.QA_SUB_MODEL || null, assistance, real_turn_allowed: scenario === 'subask', wsl };
+    if (scenario === 'subask') {
+      // The allocation's ledger: one file per allocation id, outside every run folder.
+      const dir = join(process.env.HOME, '.local', 'state', 'lc-qa-subscription');
+      mkdirSync(dir, { recursive: true, mode: 0o700 });
+      ledgerFile = join(dir, `turn-${turn}.json`);
+      ledger = existsSync(ledgerFile) ? JSON.parse(readFileSync(ledgerFile, 'utf8')) : { allocation: turn, runs: [] };
+      const spent = ledger.runs.filter((x) => x.ask_pressed !== false);
+      if (spent.length) throw new Error(`the allocation ${turn} was used, or it is not known whether it was (${spent.map((x) => `${x.out}: ask_pressed ${x.ask_pressed}`).join('; ')}); no second question is asked under it`);
+      ledger.runs.push({ out, started: new Date().toISOString(), ask_pressed: null, note: 'started; not yet known whether Ask was pressed' });
+      writeFileSync(ledgerFile, JSON.stringify(ledger, null, 1), ledger.runs.length === 1 ? { flag: 'wx', mode: 0o600 } : { mode: 0o600 });
+      subInfo.allocation = turn;
+    }
   }
   extraArgs.push('-LinkDir', toWin(linkDir));
   stopFile = join(out, 'connector-watch.stop');
@@ -123,20 +159,67 @@ if (sub) {
   // Read-only: when the connector (or the bridge) and its children appear and exit. It signals nothing.
   watcher = spawn('python3', [join(HERE, 'qa_sub_watch.py'), '--root', subRoot, '--out', join(out, 'connector-watch.jsonl'), '--stop', stopFile], { cwd: '/tmp', stdio: ['ignore', 'ignore', openSync(join(out, 'connector-watch.stderr'), 'w')] });
 }
-const steps = scenarios[scenario]({ courseUrl, surfaceUrl, circled, model: process.env.QA_SUB_MODEL || null, notes: toWin(join(paths.content, 'notes.txt')), edgeProfile: toWin(paths.edgeProfile), userData: toWin(paths.userData), actor });
+const steps = scenarios[scenario]({ courseUrl, surfaceUrl, circled, model: process.env.QA_SUB_MODEL || null, assistance, notes: toWin(join(paths.content, 'notes.txt')), edgeProfile: toWin(paths.edgeProfile), userData: toWin(paths.userData), actor });
 writeFileSync(join(work, 'steps.json'), JSON.stringify(steps, null, 1));
 
 const started = new Date().toISOString();
 const r = spawnSync('powershell.exe', ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', toWin(join(work, 'qa-electron-runner.ps1')),
   '-Electron', electron, '-Stage', toWin(stage), '-UserData', toWin(paths.userData), '-StepsFile', toWin(join(work, 'steps.json')),
-  '-OutDir', toWin(paths.winOut), '-Edge', edge, '-AppTemp', toWin(paths.appTemp), ...extraArgs], { cwd: '/mnt/c', encoding: 'utf8', timeout: scenario === 'parentfix' || sub ? 520000 : 900000 }); // parentfix (about 6 min) must end inside one 10 min foreground call
+  '-OutDir', toWin(paths.winOut), '-Edge', edge, '-AppTemp', toWin(paths.appTemp), ...extraArgs], { cwd: '/mnt/c', encoding: 'utf8', timeout: sub ? 570000 : scenario === 'parentfix' ? 520000 : 900000 }); // parentfix (about 6 min) must end inside one 10 min foreground call
 mkdirSync(out, { recursive: true });
 // The runner was cut short (the time limit): its own cleanup may not have run, so this run's app may still be on the display.
 const cutShort = Boolean(r.error || r.signal);
+let copied = false;
 try {
   writeFileSync(join(out, 'runner-stdio.txt'), `${r.stdout ?? ''}\n--- stderr ---\n${r.stderr ?? ''}\nstatus ${r.status} signal ${r.signal}\n`);
   cpSync(paths.winOut, join(out, 'out'), { recursive: true });
-  // Context pictures and the ASK crop are converted to BMP on Windows (System.Drawing) for pixel analysis.
+  if (sub) { // FIRST: the selection records, exact pictures and receipts must not be lost to a later copy that fails
+    // Private: each selection's record and exact picture (asks/), as the app kept them. Only hashes go into evidence.
+    const captures = join(paths.userData, 'captures');
+    const requestIds = [];
+    if (existsSync(captures)) for (const cap of readdirSync(captures)) {
+      const asks = join(captures, cap, 'asks');
+      if (!existsSync(asks)) continue;
+      cpSync(asks, join(out, 'captures', cap, 'asks'), { recursive: true });
+      for (const name of readdirSync(asks).filter((n) => n.endsWith('.json'))) {
+        try { for (const q of JSON.parse(readFileSync(join(asks, name), 'utf8')).requests ?? []) requestIds.push(q.request_id); } catch { /* reported by the analysis */ }
+      }
+    }
+    if (subInfo.kind === 'fake') {
+      mkdirSync(join(out, 'bridge'), { recursive: true });
+      for (const name of ['bridge-log.jsonl', 'bridge-script.json', 'bridge-launches']) if (existsSync(join(subRoot, name))) copyFileSync(join(subRoot, name), join(out, 'bridge', name));
+      if (/^\/tmp\/qa-sub-bridge-[A-Za-z0-9]{6}$/.test(subRoot)) rmSync(subRoot, { recursive: true, force: true }); // this run's own stand-in folder
+    } else {
+      // Only the receipts of the requests this run made: receipts/<launch>/<sha256(request_id)>.json. The launch folders'
+      // names under receipts/ are listed to find them; nothing else in the product state is listed, opened or copied.
+      const receipts = join(subState ?? join(process.env.HOME, '.local', 'share', 'LearningCompanion', 'managed-chatgpt'), 'receipts');
+      const found = [];
+      if (existsSync(receipts)) for (const launch of readdirSync(receipts)) for (const rid of requestIds) {
+        const name = `${createHash('sha256').update(rid, 'utf8').digest('hex')}.json`;
+        if (existsSync(join(receipts, launch, name))) {
+          mkdirSync(join(out, 'receipts', launch), { recursive: true, mode: 0o700 });
+          copyFileSync(join(receipts, launch, name), join(out, 'receipts', launch, name));
+          found.push({ request_id: rid, launch, file: name });
+        }
+      }
+      writeFileSync(join(out, 'receipts-found.json'), JSON.stringify({ request_ids: requestIds, found }, null, 1));
+    }
+    if (ledger) {
+      // Was Ask pressed? Not pressed only when the runner's results exist, the press step never ran and the app recorded no
+      // request. Anything else counts as pressed or unknown: the allocation is then used.
+      const pressAt = steps.findIndex((x) => typeof x.eval === 'string' && x.eval.includes('#askSubmit') && x.eval.includes('.click()')) + 1;
+      let ran = null;
+      try { ran = JSON.parse(readFileSync(join(paths.winOut, 'results.json'), 'utf8').replace(/^\uFEFF/, '')).steps.map((x) => x.i); } catch { /* unknown */ }
+      const pressed = ran === null ? null : ran.includes(pressAt) || requestIds.length > 0;
+      Object.assign(ledger.runs.at(-1), { ended: new Date().toISOString(), ask_pressed: pressed, press_step: pressAt, last_step_run: ran ? Math.max(0, ...ran) : null, requests_recorded: requestIds.length,
+        note: pressed === false ? 'stopped before the press: no question was asked' : pressed ? 'Ask was pressed: the allocation is used' : 'unknown whether Ask was pressed: the allocation counts as used' });
+      writeFileSync(ledgerFile, JSON.stringify(ledger, null, 1), { mode: 0o600 });
+      subInfo.ask_pressed = pressed;
+      console.error(`ALLOCATION ${ledger.allocation}: Ask pressed = ${pressed === null ? 'UNKNOWN (counts as used)' : pressed}`);
+    }
+  }
+  // Context pictures and the ASK crop are converted to BMP on Windows (System.Drawing) for pixel analysis (not for the
+  // subscription runs: their picture is checked in the page and kept as the app's own PNG).
   const convert = join(work, 'convert');
   mkdirSync(convert, { recursive: true });
   const ctxDir = join(paths.userData, 'ink', 'context');
@@ -185,45 +268,15 @@ try {
     writeFileSync(join(out, 'retained-selection.json'), JSON.stringify(selection, null, 1));
   } catch (error) { console.error('pictures:', error.message); }
   copyFileSync(join(HERE, 'qa-png-to-bmp.ps1'), join(work, 'qa-png-to-bmp.ps1'));
-  spawnSync('powershell.exe', ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', toWin(join(work, 'qa-png-to-bmp.ps1')), '-Folder', toWin(convert)], { cwd: '/mnt/c', encoding: 'utf8', timeout: 300000 });
+  if (!sub) spawnSync('powershell.exe', ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', toWin(join(work, 'qa-png-to-bmp.ps1')), '-Folder', toWin(convert)], { cwd: '/mnt/c', encoding: 'utf8', timeout: 300000 });
   cpSync(convert, join(out, 'pictures'), { recursive: true });
   const ink = join(paths.userData, 'ink'); // only the app's saved ink and context pictures are kept
   if (existsSync(ink)) cpSync(ink, join(out, 'ink'), { recursive: true });
   for (const [from, to] of [[join(paths.userData, 'qa-aside'), 'qa-aside'], [paths.appTemp, 'apptemp'], [join(paths.userData, 'capture-host'), 'capture-host']]) if (existsSync(from)) cpSync(from, join(out, to), { recursive: true });
   if (parent && existsSync(join(paths.userData, 'captures'))) cpSync(join(paths.userData, 'captures'), join(out, 'captures'), { recursive: true }); // private: whole-display frames
-  if (sub) {
-    // Private: each selection's record and exact picture (asks/), as the app kept them. Only hashes go into evidence.
-    const captures = join(paths.userData, 'captures');
-    const requestIds = [];
-    if (existsSync(captures)) for (const cap of readdirSync(captures)) {
-      const asks = join(captures, cap, 'asks');
-      if (!existsSync(asks)) continue;
-      cpSync(asks, join(out, 'captures', cap, 'asks'), { recursive: true });
-      for (const name of readdirSync(asks).filter((n) => n.endsWith('.json'))) {
-        try { for (const q of JSON.parse(readFileSync(join(asks, name), 'utf8')).requests ?? []) requestIds.push(q.request_id); } catch { /* reported by the analysis */ }
-      }
-    }
-    if (subInfo.kind === 'fake') {
-      mkdirSync(join(out, 'bridge'), { recursive: true });
-      for (const name of ['bridge-log.jsonl', 'bridge-script.json', 'bridge-launches']) if (existsSync(join(subRoot, name))) copyFileSync(join(subRoot, name), join(out, 'bridge', name));
-    } else {
-      // Only the receipts of the requests this run made: receipts/<launch>/<sha256(request_id)>.json. Nothing else in the
-      // product state is listed, opened or copied.
-      const receipts = join(subState ?? join(process.env.HOME, '.local', 'share', 'LearningCompanion', 'managed-chatgpt'), 'receipts');
-      const found = [];
-      if (existsSync(receipts)) for (const launch of readdirSync(receipts)) for (const rid of requestIds) {
-        const name = `${createHash('sha256').update(rid, 'utf8').digest('hex')}.json`;
-        if (existsSync(join(receipts, launch, name))) {
-          mkdirSync(join(out, 'receipts', launch), { recursive: true });
-          copyFileSync(join(receipts, launch, name), join(out, 'receipts', launch, name));
-          found.push({ request_id: rid, launch, file: name });
-        }
-      }
-      writeFileSync(join(out, 'receipts-found.json'), JSON.stringify({ request_ids: requestIds, found }, null, 1));
-    }
-  }
   writeFileSync(join(out, 'run.json'), JSON.stringify({ scenario, started, ended: new Date().toISOString(), work: toWin(work), steps: steps.length, ...(scenario.startsWith('surface') || sub ? { surface_circled_cards: circled } : {}), ...(sub ? { subscription: subInfo } : {}), harness_sha256: harness }, null, 1));
   writeFileSync(join(out, 'steps.json'), JSON.stringify(steps, null, 1));
+  copied = true;
 } finally {
   if (watcher) {
     // Hosts end within their own bounds after the app closes; keep watching briefly, then stop this run's watcher only.
@@ -235,7 +288,9 @@ try {
     const pids = join(paths.winOut, 'app-pids.txt');
     console.error(`RUNNER CUT SHORT (${r.error?.code ?? r.signal}): this run's app may still be running; its work folder is kept.\nOwned app PIDs (key pid start):\n${existsSync(pids) ? readFileSync(pids, 'utf8') : '(none recorded)'}`);
     process.exitCode = 4;
-  } else rmSync(work, { recursive: true, force: true }); // fresh per run; nothing stays on the Windows side
+  } else if (copied) rmSync(work, { recursive: true, force: true }); // fresh per run; nothing stays on the Windows side
+  else { console.error(`EVIDENCE COPY FAILED: this run's work folder is kept on the Windows side (${id})`); process.exitCode = 5; }
 }
-console.log(readFileSync(join(out, 'out', 'results.json'), 'utf8').slice(0, 400));
+if (existsSync(join(out, 'out', 'results.json'))) console.log(readFileSync(join(out, 'out', 'results.json'), 'utf8').slice(0, 400));
+else console.error('the runner wrote no results.json');
 
