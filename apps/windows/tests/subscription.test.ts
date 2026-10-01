@@ -8,7 +8,7 @@ import assert from 'node:assert/strict';
 import { spawn } from 'node:child_process';
 import { EventEmitter } from 'node:events';
 import * as path from 'node:path';
-import { readConnectorConfig, Subscription, type AskOutcome, type ConnectorConfig, type SubscriptionStatus } from '../src/main/subscription.ts';
+import { CONNECTOR_END_MS, readConnectorConfig, Subscription, type AskOutcome, type ConnectorConfig, type SubscriptionStatus } from '../src/main/subscription.ts';
 import { ANSWER_MAX, contextProblem, officialLoginUrl, provenanceOf, questionOf, questionProblem, readAccount, readAnswer, type AskRequest } from '../src/shared/subscription-ask.ts';
 import { ACCOUNT, fakeConnectors, LOGIN_URL, type FakeConnector } from './subscription-fakes.ts';
 
@@ -556,7 +556,7 @@ test('a sign-in whose start was answered by a connector that is then fenced in t
   c.stdout.write(`${JSON.stringify({ id, result: { login_id: 'login-1', auth_url: LOGIN_URL } })}\n${'x'.repeat(256 * 1024 + 1)}`);
   await signing;
   await new Promise((r) => setTimeout(r, 30));
-  assert.deepEqual([opened, now().login, now().state, now().detail, fakes.made.length], [[], 'failed', 'unavailable', 'the connector ended before the sign-in completed', 1]);
+  assert.deepEqual([opened, now().login, now().state, now().detail, fakes.made.length], [[], 'failed', 'unavailable', 'the connector was ended here before the sign-in completed', 1]);
   // Positive control: the same answer without the fence opens the official page once and waits.
   const fine = subscription();
   await fine.s.check();
@@ -819,7 +819,7 @@ test('a sign-in is said as cancelled only when the connector acknowledged the ca
     // The connector did not let go of a sign-in this app refused: it is ended, so nothing stays pending in it.
     await until('ended', () => w.c().exited);
     assert.deepEqual([w.opened, w.now().login, w.now().state, w.fakes.made.length], [[], 'refused_address', 'unavailable', 1], answer);
-    assert.equal(w.now().detail, `${NOT_OPENED}; the connector did not confirm that it let that sign-in go, so the connector was ended (check the connection to start it again)`);
+    assert.equal(w.now().detail, `${NOT_OPENED}; the connector did not confirm that it let that sign-in go, so that connector is no longer used and is being ended (check the connection to start one again)`);
     await new Promise((r) => setTimeout(r, 30));
     assert.equal(w.fakes.made.length, 1, 'none is started by the app itself');
     await w.s.check(); // only the user's own Check starts one again
@@ -998,6 +998,108 @@ test('a cancel or a Stop is a confirmed interruption only by its own exact recei
   assert.deepEqual(await done, { status: 'cancelled', uncertain: true });
 });
 
+const SHIM_ENDED = 'a connector that was ended here did not end by itself in time; its wsl.exe shim was ended, which does not show that the connector, or the Codex app server it runs, ended in WSL';
+const SHIM_NOT_ENDED = 'a connector that was ended here did not end by itself in time; its wsl.exe shim did not end either, so it is not known that the connector, or the Codex app server it runs, ended in WSL';
+
+test('a question the connector ends as cancelled, when this app asked for no cancel and no Stop, is not said as a confirmed stop; nothing is sent again and no connector is started', async () => {
+  const { s, fakes, now } = subscription();
+  await s.check();
+  const c = fakes.last();
+  const done = s.ask(request());
+  await until('sent', () => c.asks().length === 1);
+  c.fail(c.asks()[0]!.id, 'cancelled'); // as the released connector does at its request-history limit
+  assert.deepEqual(await done, { status: 'cancelled', uncertain: true });
+  await new Promise((r) => setTimeout(r, 30));
+  assert.deepEqual([c.count('ask/cancel'), c.count('session/stop'), c.asks().length, fakes.made.length, now().state, now().asking], [0, 0, 1, 1, 'signed_in', false], 'no cancel or Stop of this app, one send, one connector');
+  // The same reply after this app's own confirmed cancel, or its confirmed Stop, is the confirmed stop it was.
+  for (const by of ['cancel', 'stop'] as const) {
+    const own = subscription();
+    await own.s.check();
+    const sent = request();
+    const asked = own.s.ask(sent);
+    await until('sent', () => own.fakes.last().asks().length === 1);
+    if (by === 'cancel') own.s.cancel(sent.request_id);
+    else own.s.stopSession(sent.context.capture_session_id);
+    assert.deepEqual(await asked, { status: 'cancelled', uncertain: false }, by);
+  }
+  // interrupt_unconfirmed stays what it says.
+  const un = subscription();
+  await un.s.check();
+  const held = un.s.ask(request());
+  await until('sent', () => un.fakes.last().asks().length === 1);
+  un.fakes.last().fail(un.fakes.last().asks()[0]!.id, 'interrupt_unconfirmed');
+  assert.deepEqual(await held, { status: 'cancelled', uncertain: true });
+});
+
+test('a connector that does not end by itself within its time: its shim is ended, that its own end was not seen is said and kept, and nothing is started in its place', async () => {
+  // Fenced for a line that is not the envelope's, while it ignores the end of its input.
+  const { s, fakes, now, said } = subscription(WSL, { end_ms: 80 }, (c) => void (c.endDelayMs = 60_000));
+  await s.check();
+  const c = fakes.last();
+  let kills = 0;
+  const kill = c.kill.bind(c);
+  c.kill = () => (kills++, kill());
+  c.stdout.write('x'.repeat(256 * 1024 + 1));
+  await until('fenced', () => now().state === 'unavailable');
+  assert.deepEqual([now().detail, kills, c.exited], [null, 0, false], 'still within its time: nothing is said yet, and it is not killed');
+  await until('its shim was ended', () => c.exited);
+  await until('said', () => now().detail === SHIM_ENDED);
+  assert.deepEqual([now().state, kills, fakes.made.length], ['unavailable', 1, 1]);
+  assert.equal((said.at(-1) as { detail?: string | null }).detail, SHIM_ENDED, 'the windows are told');
+  // Nothing is started or sent by the app itself, and a question is refused without starting one.
+  await new Promise((r) => setTimeout(r, 60));
+  assert.deepEqual(await s.ask(request()), { status: 'refused', code: 'local', reason: 'the connector, or the official Codex app server it runs, is not available' });
+  assert.equal(fakes.made.length, 1);
+  // The user's own Check starts another; what was not seen of the first stays said (nothing later shows it ended).
+  await s.check();
+  const second = fakes.last();
+  second.endDelayMs = 0; // this one ends at the end of its input
+  let kills2 = 0;
+  const kill2 = second.kill.bind(second);
+  second.kill = () => (kills2++, kill2());
+  assert.deepEqual([fakes.made.length, now().state, now().detail], [2, 'signed_in', SHIM_ENDED]);
+  await s.quit();
+  assert.deepEqual([second.exited, kills2, now().detail], [true, 0, SHIM_ENDED], 'the second ended by itself: what was not seen of the first is still kept');
+  // A shim that does not end when it is ended either: kept as that, also when a later connector's shim does end.
+  const stuck = subscription(WSL, { end_ms: 60 }, (k) => void (k.endDelayMs = 60_000));
+  await stuck.s.check();
+  const k = stuck.fakes.last();
+  k.kill = () => true; // the kill is taken and nothing ends
+  k.stdout.write('x'.repeat(256 * 1024 + 1));
+  await until('said (its own bound, then two seconds more for the ended shim)', () => stuck.now().detail === SHIM_NOT_ENDED, 5000);
+  assert.deepEqual([k.exited, stuck.now().state, stuck.fakes.made.length], [false, 'unavailable', 1]);
+  await stuck.s.check();
+  const later = stuck.fakes.last();
+  assert.notEqual(later, k);
+  await stuck.s.quit(); // the later one's shim is ended by the kill
+  assert.deepEqual([later.exited, stuck.now().detail], [true, SHIM_NOT_ENDED], 'the first one\'s shim is still not seen to end');
+  // Its exit arriving after all is taken: its shim ended; that is still not the connector's own end.
+  k.exit(0);
+  await until('its late exit is taken, and said', () => (stuck.said.at(-1) as { detail?: string | null }).detail === SHIM_ENDED);
+  // A sign-in pending in a connector that is ended here is not said as "the connector ended".
+  const signing = subscription(WSL, { end_ms: 60 }, (c2) => void (c2.endDelayMs = 60_000));
+  await signing.s.check();
+  await signing.s.login();
+  signing.fakes.last().stdout.write('x'.repeat(256 * 1024 + 1));
+  await until('said', () => (signing.now().detail ?? '').includes('did not end by itself'));
+  assert.deepEqual([signing.now().login, signing.now().detail], ['failed', `the connector was ended here before the sign-in completed; ${SHIM_ENDED}`]);
+});
+
+test('with the time it is given by default, a connector that takes its own full cleanup time (8 s) to end is not killed, and its end is seen', { timeout: 20_000 }, async () => {
+  assert.equal(CONNECTOR_END_MS, 10_000, 'the connector\'s 8 s cleanup bound and a margin');
+  const { s, fakes, now } = subscription(WSL, { end_ms: undefined }, (c) => void (c.endDelayMs = 8_200));
+  await s.check();
+  const c = fakes.last();
+  let kills = 0;
+  const kill = c.kill.bind(c);
+  c.kill = () => (kills++, kill());
+  const from = Date.now();
+  await s.quit();
+  const took = Date.now() - from;
+  assert.deepEqual([c.exited, kills, now().detail], [true, 0, null], 'ended by the end of its input, by itself');
+  assert.equal(took >= 8_000 && took < 9_500, true, `the quit waited for it (${took} ms)`);
+});
+
 test('a connector ended here for a line that is not the envelope\'s: its real end is seen, it is not killed after it ended, and quitting does not wait on it', async () => {
   const { s, fakes, now } = subscription(WSL, { end_ms: 150 });
   await s.check();
@@ -1013,6 +1115,7 @@ test('a connector ended here for a line that is not the envelope\'s: its real en
   const from = Date.now();
   await s.quit();
   assert.equal(Date.now() - from < 100, true, 'nothing is waited for');
+  assert.equal(now().detail, null, 'its own end was seen: nothing is said of it');
   // One that does not end at the end of its input is still waited for by the quit, then killed, once.
   const slow = subscription(WSL, { end_ms: 80 }, (k) => void (k.endDelayMs = 60_000));
   await slow.s.check();
@@ -1024,7 +1127,8 @@ test('a connector ended here for a line that is not the envelope\'s: its real en
   await until('fenced', () => slow.now().state === 'unavailable');
   assert.equal(k.exited, false);
   await slow.s.quit();
-  assert.deepEqual([k.exited, killed], [true, 1], 'the quit returns only once the fenced child has really ended');
+  assert.deepEqual([k.exited, killed], [true, 1], 'the quit returns only once the fenced child\'s shim has ended');
+  assert.equal(slow.now().detail, SHIM_ENDED, 'that its own end was not seen is kept in the status (no window is open at a quit to show it)');
   // Two fenced one after the other, the first still ending: the quit waits for both.
   const two = subscription(WSL, { end_ms: 80 });
   await two.s.check();

@@ -108,6 +108,11 @@ type Asking = { readonly id: string; readonly session: string; cancelled: boolea
  */
 const CHANGE_READS_MAX = 3;
 const CHANGE_READS_TOTAL_MAX = 64;
+/**
+ * How long a connector is given to end at the end of its input: its own cleanup bound (8 s, for the Codex app server
+ * it runs) and a margin for its exit to arrive through wsl.exe. Only then is its shim ended.
+ */
+export const CONNECTOR_END_MS = 10_000;
 const isObject = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
 /** Whether a cancel's answer says the turn was interrupted for certain: exactly {cancelled: true, uncertain: false}. */
 const cancelConfirmed = (r: Reply): boolean => r.ok && isObject(r.result) && Object.keys(r.result).sort().join() === 'cancelled,uncertain' && r.result['cancelled'] === true && r.result['uncertain'] === false;
@@ -133,6 +138,11 @@ export class Subscription {
   private cancelling: string | null = null;
   private unconfirmedCancel: string | null = null;
   private unopened: string | null = null;
+  /**
+   * Connectors ended here whose own end was not seen: their shim was ended, or not even that was seen. Kept for the
+   * app's run: nothing this app sees later shows that what they ran in WSL ended.
+   */
+  private readonly unconfirmedEnds = new Map<Child, 'shim_ended' | 'shim_not_ended'>();
   private readonly pending = new Map<string, (r: Reply) => void>();
   private seq = 0;
   private state: Extract<SubscriptionStatus, { mode: 'managed' }>['state'] = 'not_checked';
@@ -158,6 +168,8 @@ export class Subscription {
     const pending = this.loginState === 'waiting' && this.loginId !== null;
     const notes = [
       this.detail,
+      this.unconfirmedEnds.size === 0 ? null
+        : `a connector that was ended here did not end by itself in time; ${[...this.unconfirmedEnds.values()].includes('shim_not_ended') ? 'its wsl.exe shim did not end either, so it is not known' : 'its wsl.exe shim was ended, which does not show'} that the connector, or the Codex app server it runs, ended in WSL`,
       this.changes.off && this.state === 'unknown' ? 'the account may have changed since it was last read, and it is not read again by itself; check again' : null,
       !pending ? null
         : this.cancelling === this.loginId ? 'the sign-in is being cancelled'
@@ -229,8 +241,21 @@ export class Subscription {
   private fence(child: Child): void {
     if (child.gone) return;
     child.gone = true;
-    this.lost(child);
-    this.closing = Promise.all([this.closing, endChild(child.proc, () => child.proc.stdin?.end(), child.exited, this.o.end_ms ?? 5_000, 'wsl')]); // one before may still be ending
+    this.lost(child, true, false);
+    const ending = endChild(child.proc, () => child.proc.stdin?.end(), child.exited, this.o.end_ms ?? CONNECTOR_END_MS, 'wsl').then((end) => {
+      if (end.ended) return;
+      // It did not end by itself in time. Ending its wsl.exe shim does not show that what it ran in WSL ended: said,
+      // never assumed, and nothing is started in its place by this app.
+      this.unconfirmedEnds.set(child, end.exit ? 'shim_ended' : 'shim_not_ended');
+      this.say();
+      if (end.exit) return;
+      // The shim's own exit may still come after the bound: then that much is said (still not the connector's end).
+      void child.exited.then(() => {
+        this.unconfirmedEnds.set(child, 'shim_ended');
+        this.say();
+      });
+    });
+    this.closing = Promise.all([this.closing, ending]); // one before may still be ending
   }
   private line(text: string): void {
     let v: unknown;
@@ -258,7 +283,7 @@ export class Subscription {
     return child !== null && this.child === child && !child.gone;
   }
   /** The child is gone: what was out gets no answer (or, if it never started, was not sent). */
-  private lost(child: Child, started = true): void {
+  private lost(child: Child, started = true, endSeen = true): void {
     if (this.child !== child) return;
     this.child = null;
     for (const [id, done] of [...this.pending]) {
@@ -268,7 +293,7 @@ export class Subscription {
     if (this.loginState === 'waiting' || this.loginState === 'starting') {
       this.loginState = 'failed';
       this.loginId = null;
-      this.detail = 'the connector ended before the sign-in completed';
+      this.detail = endSeen ? 'the connector ended before the sign-in completed' : 'the connector was ended here before the sign-in completed'; // (ended here: its own end is not claimed)
     }
     if (this.state !== 'not_checked') this.state = 'unavailable';
     this.say();
@@ -407,7 +432,7 @@ export class Subscription {
         // (Only the user's own Check starts one again.)
         this.fence(child!);
         this.loginState = 'refused_address';
-        this.detail = `${NOT_OPENED}; the connector did not confirm that it let that sign-in go, so the connector was ended (check the connection to start it again)`;
+        this.detail = `${NOT_OPENED}; the connector did not confirm that it let that sign-in go, so that connector is no longer used and is being ended (check the connection to start one again)`;
         return this.say();
       }
       this.loginState = 'refused_address';
@@ -525,7 +550,9 @@ export class Subscription {
       return typeof answer === 'string' ? { status: 'refused', code: 'unbound', reason: `${answer}; it is not shown` } : { status: 'answered', answer };
     }
     if ('lost' in r) return r.lost === 'not_sent' ? { status: 'refused', code: 'unavailable', reason: 'the connector could not be reached, so the question was not sent' } : { status: 'uncertain', reason: 'no answer came; whether ChatGPT worked on the question is not known' };
-    if (r.code === 'cancelled') return { status: 'cancelled', uncertain: false };
+    // Cancelled by the connector, not asked for here (no Cancel and no Stop of this app, so no acknowledgement of an
+    // interruption either): whether ChatGPT stopped working on it is not known.
+    if (r.code === 'cancelled') return { status: 'cancelled', uncertain: true };
     if (r.code === 'interrupt_unconfirmed') return { status: 'cancelled', uncertain: true };
     if (r.code === 'unauthenticated' && this.live(child)) {
       // (a connector ended or lost since is said as not available, not as signed out)

@@ -1009,6 +1009,20 @@ test('[synthetic connector] a record held unwritten is tried a last time as the 
   }
 });
 
+test('[synthetic connector] a question the connector ends as cancelled by itself is said and recorded as not confirmed to have stopped, and is not sent again', async () => {
+  const w = await app();
+  await w.select();
+  w.page.click('askSubmit');
+  await until('sent', () => w.fakes.last().asks().length === 1);
+  await until('acknowledged', () => /^Asked at/.test(w.page.ask().status ?? ''));
+  w.fakes.last().fail(w.fakes.last().asks()[0]!.id, 'cancelled'); // the user pressed nothing
+  await until('said', () => /^Cancelled/.test(w.page.ask().status ?? ''));
+  assert.deepEqual([w.page.ask().status, w.page.ask().answer, w.page.ask().submit], ['Cancelled: no answer is shown. Whether ChatGPT stopped working on it is not confirmed; it may still have counted against your usage.', null, true]);
+  assert.deepEqual(w.records()[0]!.requests.map((x) => [x['outcome'], x['shown']]), [[{ status: 'cancelled', uncertain: true }, false]]);
+  await new Promise((r) => setTimeout(r, 40));
+  assert.deepEqual([w.fakes.last().asks().length, w.fakes.last().count('ask/cancel'), w.fakes.made.length, w.sub().state], [1, 0, 1, 'signed_in'], 'one send, no cancel of this app, one connector');
+});
+
 test('[synthetic connector] every new request is taken only from its own window', async () => {
   const w = await app();
   await w.select();

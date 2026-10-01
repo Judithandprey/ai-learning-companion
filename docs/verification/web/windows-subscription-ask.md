@@ -125,9 +125,12 @@ was sent).
   available ("the connector was lost while the account was being read"), no sign-in page is opened, no re-read is
   sent, and no other connector is started.
 - **A sign-in's completion** that the connector writes together with its start's answer is taken as that sign-in's.
-- **End**: the end of its input, a bounded wait, then this child alone is killed. The app's quit waits for it,
-  and for a child that was fenced here and is still ending. A fenced child's own end is seen as its end: it is not
-  killed after it has ended.
+- **End**: the end of its input, a bounded wait (10 s: the connector's own 8 s cleanup bound and a margin), then
+  this child alone, the `wsl.exe` shim, is killed. The app's quit waits for it, and for a child that was fenced
+  here and is still ending. A fenced child's own end is seen as its end: it is not killed after it has ended.
+  A connector that did not end by itself in that time is said so in the status, for the app's run ("a connector
+  that was ended here did not end by itself in time; its wsl.exe shim was ended, which does not show that the
+  connector, or the Codex app server it runs, ended in WSL"); nothing is started in its place by the app.
 
 **`src/main/main.ts`**:
 - `lc:ask-selection` (from the overlay only): the selection is retained under the session's capture folder before
@@ -391,6 +394,58 @@ covered above. The fixes made after the second pass were checked by their tests 
   (`uncertain: false`). Reaching it needs the connector's 4,096-request limit.
 - The app waits 5 s for the connector's end, the connector's own cleanup allows 8 s; what the connector's end was
   is not said in the window.
+
+## Follow-up after the lead's review of `0fae135` (W-KNOWN-CANCEL, W-KNOWN-END-BUDGET)
+
+Lead task `handoff_7e0d37a2` (`0fae135` is integrated as `44f5fa6`, main `8eac9fc`). One commit after `0fae135`, in
+`apps/windows/src/main/subscription.ts`, the two subscription test files and this folder. The lead's review:
+`docs/verification/lead/subscription-ask/windows-qa-correction/transport-review.md` at `8eac9fc`. Synthetic
+connector, offline only.
+
+**W-KNOWN-CANCEL.** A question the connector ends as `cancelled` when this app sent no cancel and no Stop for it
+(the connector does so at its 4,096-request limit) was returned as a confirmed stop. It is now
+`{cancelled, uncertain: true}`: no interruption was acknowledged to this app. The card says "Cancelled: no answer
+is shown. Whether ChatGPT stopped working on it is not confirmed; it may still have counted against your usage."
+The explicit branch is unchanged: this app's own Cancel or Stop is a confirmed stop only by its exact receipt.
+
+**W-KNOWN-END-BUDGET.**
+- The time a connector is given to end at the end of its input is 10 s (`CONNECTOR_END_MS`), not 5 s: the
+  connector's own cleanup bound of 8 s and a margin for its exit to arrive through `wsl.exe`. The quit therefore
+  waits at most 10 s and 2 s more for the ended shim.
+- `endChild`'s result is no longer discarded. When the connector did not end by itself in time, that is kept per
+  connector for the app's run and said in the status: the shim was ended (which does not show that the connector
+  or the Codex app server ended in WSL), or the shim's exit was not seen either. A shim's exit that arrives later
+  is taken. A later connector that ends by itself, or reads the account, does not remove it.
+- Nothing is started in a connector's place by the app, and no question is sent again.
+- A sign-in pending in a connector that is ended here is said as "the connector was ended here before the sign-in
+  completed", not as "the connector ended".
+
+**Limit, not closed: the quit.** The status sentence reaches the control window only for a connector that is
+ended while the app runs (an over-long line, a refused sign-in address whose cancel is not confirmed). At the app's
+quit the windows are already closed, so an unconfirmed end is kept in the status object, shown nowhere and written
+nowhere, and is lost when the process ends. What remains in WSL after a quit is a device control for QA (the
+process watch); this app does not claim it. Reporting it at quit would need the close to be held, or a written
+note; neither is done here.
+
+**Regressions** (`tests/subscription.test.ts` 29 to 32 cases, `tests/app-ask.test.ts` 34 to 35):
+- the unsolicited `cancelled`: uncertain; no cancel or Stop sent, one send, one connector; this app's own
+  confirmed Cancel and Stop still confirmed; on the card and in the record;
+- **clean exit**: a connector that ends at the end of its input is not killed and nothing is said of it;
+- **uncertain timeout**: one that does not end in time has its shim ended once, is said as that to the windows,
+  is refused questions without a restart, and only the user's Check starts another; the sentence stays when that
+  later one ends by itself; a shim that does not end either is said as that, also after a later connector's shim
+  ended, and its late exit is taken;
+- **the default time**: a connector that takes 8.2 s to end is not killed (a real 8 s test; it fails at 5 s and at
+  8 s).
+- 14 mutants, all killed. The two files ran five times in a row without a failure.
+
+**Runs** (focused, as asked; the whole suite was not repeated): the two files, 67 tests, 67 pass
+(`evidence/windows-subscription-ask/linux-known.txt`; receipt `linux-known.json`, whose file hashes are this
+commit's). `tsc` and the build pass. No Windows run, no display.
+
+**Check of this follow-up.** A two-lens check with a second reviewer per finding: 8 findings, all confirmed. Six
+are fixed above (a later connector's end replacing an earlier unconfirmed one, reported twice; a late shim exit;
+the sign-in sentence; a test leg that could not fail, reported twice). Two are the quit limit stated above.
 
 ## Launch steps, element ids and evidence paths (for the first real check, on the released candidate)
 
