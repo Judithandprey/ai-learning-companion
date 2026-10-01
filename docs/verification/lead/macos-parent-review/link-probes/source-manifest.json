@@ -1,0 +1,146 @@
+{
+  "commit": "f625b480e591682be75dd6a7617c08eee4cf7bd6",
+  "adaptations": [
+    "Darwin/Apple imports replaced by existing Linux harness AppleShim",
+    "FoundationNetworking/Glibc imported",
+    "URLSession waitsForConnectivity assignment commented for corelibs; no CaptureLink behavior changed"
+  ],
+  "files": [
+    {
+      "file": "CaptureControl.swift",
+      "candidate_sha256": "92c44e730d398ad30ff213788513ec15cf27b7daa5a28130dfc4d297c2443d37",
+      "linux_normalized_sha256": "031e5b24b551b8775a17c9a790afa85e0ee7f9b66d1f0185bc50428b02108af5",
+      "exact_export_equals_git_commit": true
+    },
+    {
+      "file": "CaptureHost.swift",
+      "candidate_sha256": "fa8507c08f66653d04ac09c54cd15579165066a3f72fc709bac9e6d25fcf5aa7",
+      "linux_normalized_sha256": "5931ef67dab4fe2629e6f88eb4575caf5020d5e0a74ebebc45b461ef9ecbac98",
+      "exact_export_equals_git_commit": true
+    },
+    {
+      "file": "CaptureLink.swift",
+      "candidate_sha256": "f06aec4c64fdc89c3b36f5236c138a6d3129f55800cf98426fb703a85ff1772e",
+      "linux_normalized_sha256": "9d535266335270a144ddd96253825c0280454e4b05ec0532d5ac06b4eb97eaad",
+      "exact_export_equals_git_commit": true
+    },
+    {
+      "file": "CaptureRecorder.swift",
+      "candidate_sha256": "6c04de1c2494f098a5d6b9bde05aa617e3d484303e2a726fee1e532217f339d2",
+      "linux_normalized_sha256": "7c97afafeeb7085b017bbefd154761684ebcdaf56271726d60107113c2bfca4e",
+      "exact_export_equals_git_commit": true
+    },
+    {
+      "file": "CaptureRecords.swift",
+      "candidate_sha256": "7154dff12f83fa6dd996307649da18ad2f6d4c9f52ca50f3c2ca38b2ab3daa72",
+      "linux_normalized_sha256": "36538866915727d23720dc882a8b3b6cfcffd0493c526eb62f30c2352c20d075",
+      "exact_export_equals_git_commit": true
+    },
+    {
+      "file": "CaptureStart.swift",
+      "candidate_sha256": "5253ac128a19bf8e8103800af65bffc7c2b02f581010133b79867234e25b8c33",
+      "linux_normalized_sha256": "70663695538cf7823d5006946aa694bc4d501614aa151f97ffc440cd998b140d",
+      "exact_export_equals_git_commit": true
+    },
+    {
+      "file": "DesktopIngress.swift",
+      "candidate_sha256": "fb6da5ddb5512378ea61ecc11d6304eba2736cddfc4d7e77a12e72bb3c124d34",
+      "linux_normalized_sha256": "d92db873f24935a506c4e6cb4a54c366ff4317402ed48006695a91f9b6602f7a",
+      "exact_export_equals_git_commit": true
+    },
+    {
+      "file": "DesktopJSON.swift",
+      "candidate_sha256": "2936142964f2a601f5f71e54546c4883318b8e30232024341312ce63b901e929",
+      "linux_normalized_sha256": "e031d52cffd58334ce7cccb236b9d7ec5d22d9d23dde93cd5880f75b1e2014d5",
+      "exact_export_equals_git_commit": true
+    },
+    {
+      "file": "FrameFacts.swift",
+      "candidate_sha256": "30e6e0886f13af1d2d77631a77603dff505c825137c0e58b2ab930d7163f6d83",
+      "linux_normalized_sha256": "251f722f64d970f2d22dc2ac3649bd4f5aeb229213320efaa3bace6b440ea20b",
+      "exact_export_equals_git_commit": true
+    },
+    {
+      "file": "FrameStore.swift",
+      "candidate_sha256": "0ba0759dde8d09c8d13cd503b6b8da9ce596a3107b4cbc5f270586a9152a19d8",
+      "linux_normalized_sha256": "4b13ac9d84f2ecc865cc61732c3ab48f848c856ab5681ac45c5e1d7313a47b36",
+      "exact_export_equals_git_commit": true
+    },
+    {
+      "file": "Freshness.swift",
+      "candidate_sha256": "564bf292e82b2de77710db305e198fca540c9df25476fc0f96a223311751c614",
+      "linux_normalized_sha256": "81f3323ba9f8c70dbf2ea6b84b2305ed30f63a145abdaf0dec58d2461f10d3d8",
+      "exact_export_equals_git_commit": true
+    },
+    {
+      "file": "HostClock.swift",
+      "candidate_sha256": "fa23661c0d5649dd52ce066aa864473bc49e5390bed3cf90e5dd6b9d3702b040",
+      "linux_normalized_sha256": "b95210e74bf911d93ce643f5b798e2bf53e790353629df0837c8c657f5e00fa2",
+      "exact_export_equals_git_commit": true
+    },
+    {
+      "file": "Ink.swift",
+      "candidate_sha256": "f10f1acb1c7084a7b10e3123bd5e751dbe77cef3ab5381a6b972d16fc497623d",
+      "linux_normalized_sha256": "694be051bd5af9a7913158ad9903698600490317372428e899e0457f5cac4ddd",
+      "exact_export_equals_git_commit": true
+    },
+    {
+      "file": "InkComposition.swift",
+      "candidate_sha256": "29a5ce8b0205ffe8e9d5861ca99a94c78599e86ab7a4d09c361763c467d5c243",
+      "linux_normalized_sha256": "6cae622eb266f005d339c366499c1f3e7a5f5f588bb06bd1c50c62ea51b9b610",
+      "exact_export_equals_git_commit": true
+    },
+    {
+      "file": "LiveGate.swift",
+      "candidate_sha256": "53c6feabfd3cabbdf922a45c22b4df888b881fea22025c6a0a4ab02b45327be6",
+      "linux_normalized_sha256": "adfb8c8fe1eeb04f8b2eb597ac7d7e7d3fd4897e15087bf4e9076fda6879a3d9",
+      "exact_export_equals_git_commit": true
+    },
+    {
+      "file": "MacIngressBatch.swift",
+      "candidate_sha256": "f1fe46620b773e43eecdeac3572e1b7f01c7f61e48cd4d757662284251852600",
+      "linux_normalized_sha256": "ff6681cfd20bd1295ec1cb02b97fe81924a522af205027825575fa9848c1b373",
+      "exact_export_equals_git_commit": true
+    },
+    {
+      "file": "MacIngressUpload.swift",
+      "candidate_sha256": "1e208be4afd4412786e59810952ed00eeb653027d2fad0b00fdb07a829d9aa52",
+      "linux_normalized_sha256": "1b8d1545d414381a499365fb434edcee24c19f917cbfbba3529588bc3bfc5488",
+      "exact_export_equals_git_commit": true
+    },
+    {
+      "file": "MacRetainedFrames.swift",
+      "candidate_sha256": "b298b9ed9e9fde1e8252477ecf836b9c953f43daa2f78da720a8181d08973430",
+      "linux_normalized_sha256": "4fc22880c66807acc79f48cc87bedbda4664506520d98f87951dd742f26530f2",
+      "exact_export_equals_git_commit": true
+    },
+    {
+      "file": "SelectionCrop.swift",
+      "candidate_sha256": "06b5b90ee42b3a89133139d022161c433a27788b78b02ce6c7b3a8c4897eaa81",
+      "linux_normalized_sha256": "c383e7ac5f6d7a1a2d2d0121b3a065c8f4cdf896a4cdd7b9c8bb0206ac885a40",
+      "exact_export_equals_git_commit": true
+    },
+    {
+      "file": "StopReason.swift",
+      "candidate_sha256": "87c34730de4b93063cd25f595d4e0cf7d024687dd9367c8f5af573daee41df45",
+      "linux_normalized_sha256": "818f448e14e6ad79bdc60961b0fa8dd10de13530d4c859c6b3073f8924d2b00a",
+      "exact_export_equals_git_commit": true
+    }
+  ],
+  "apple_shim_sha256": "288e161271773849213f3f7edcf141c0b169a1be9609b9dfdea624aaa380aa6c",
+  "toolchain": {
+    "path": "/tmp/lc-review-0212/tc/usr/bin/swift-frontend",
+    "version": "Swift 6.3.3 (swift-6.3.3-RELEASE)",
+    "target": "x86_64-unknown-linux-gnu",
+    "sysroot": "/tmp/lc-review-0212/sysroot",
+    "library_path": "/tmp/lc-review-0212/libs",
+    "apple_shim_origin": "/tmp/lc-link-run/src/AppleShim.swift",
+    "native_macos": false
+  },
+  "probe_hashes": {
+    "src/main.swift": "6ee8d30e96e891443efb0530241d88fe3113957eb149e432bdea134eed37e798",
+    "run.sh": "1343c334b49f2ae5e60163dfed32634db9885d9f5ad512cdd52837676e66ef6a",
+    "probe.log": "a0c6cdcb142db808647e5f108c16e6662b8389118afc914bafb1964ba50d324a",
+    "results.json": "91dcab660aee3553963fa38d4433638d1b960e731be28fd76b2646f02053de33"
+  }
+}

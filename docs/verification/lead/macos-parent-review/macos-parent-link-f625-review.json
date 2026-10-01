@@ -1,0 +1,66 @@
+{
+  "verdict": "HOLD",
+  "candidate_commit": "f625b480e591682be75dd6a7617c08eee4cf7bd6",
+  "canonical_commit": "b362c1e74f59faede8c3edc1fb13163c9297461f",
+  "file": "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureLink.swift",
+  "findings": [
+    {
+      "id": "MAC-PARENT-C1",
+      "status": "reproduced",
+      "title": "Sticky journal fault permits subsequent source PUT",
+      "lines": [
+        475,
+        552,
+        555,
+        575,
+        596,
+        600,
+        632,
+        634,
+        934
+      ],
+      "probe": "sticky_save_fault_still_PUTs_source"
+    },
+    {
+      "id": "MAC-PARENT-C2",
+      "status": "reproduced",
+      "title": "Unknown Stop reopening changes key at same revision",
+      "lines": [
+        317,
+        353,
+        358,
+        1095,
+        1098,
+        1099,
+        1103
+      ],
+      "probe": "unknown_Stop_reopen_changes_key_same_revision_body",
+      "qualification": "Changed replay identity proven; no claim of Backend CAS bypass, duplicate committed Stop or capture resurrection."
+    }
+  ],
+  "checks": {
+    "bounded_interpreter_cases": 3,
+    "healthy_control": 1,
+    "bug_reproductions": 2,
+    "probe_exit": 0,
+    "production_source_files_exact": 20,
+    "native_test_execution": "NOT_RUN",
+    "native_compile": "NOT_RUN",
+    "full_campaign_run": false
+  },
+  "evidence": {
+    "report": "/tmp/macos-parent-link-f625-review.md",
+    "probe_directory": "/tmp/macos-parent-link-f625-probes",
+    "source_manifest": "/tmp/macos-parent-link-f625-probes/source-manifest.json",
+    "stdout": "/tmp/macos-parent-link-f625-probes/probe.log",
+    "results": "/tmp/macos-parent-link-f625-probes/results.json",
+    "temp_directory": "/tmp/macos-parent-link-f625-probes/cases-E374994D-AA0F-4F6E-886D-14514AB64187"
+  },
+  "limits": [
+    "Linux interpreter with existing Apple stubs and normalized imports, no macOS compilation",
+    "In-memory launcher/transport, no host child, socket, DB, GUI or provider",
+    "No repository/worktree/source changes",
+    "Missing-journal observation not expanded into a new campaign",
+    "Original records and all product/native gates preserved"
+  ]
+}

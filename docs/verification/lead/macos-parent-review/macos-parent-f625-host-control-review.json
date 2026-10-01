@@ -1,0 +1,111 @@
+{
+  "verdict": "HOLD",
+  "candidate": "f625b480e591682be75dd6a7617c08eee4cf7bd6",
+  "main_read": "493a259ccde705c6a2cbfba547ad3790c8e54886",
+  "finding": {
+    "id": "MAC-CONTROL-01",
+    "severity": "P2",
+    "file": "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureControl.swift",
+    "lines": [
+      179,
+      180
+    ],
+    "summary": "A later typed refusal clears ambiguity from an earlier attempt in the same control call.",
+    "caller_effects": [
+      {
+        "file": "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureLink.swift",
+        "lines": [
+          540,
+          543
+        ],
+        "effect": "Registration UI/detail says not registered despite earlier ambiguous request."
+      },
+      {
+        "file": "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureLink.swift",
+        "lines": [
+          1114,
+          1117
+        ],
+        "effect": "Stop journal writes refused; failed subsequent read does not restore unknown."
+      }
+    ]
+  },
+  "exact_source_sha256": {
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureHost.swift": "fa8507c08f66653d04ac09c54cd15579165066a3f72fc709bac9e6d25fcf5aa7",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureControl.swift": "92c44e730d398ad30ff213788513ec15cf27b7daa5a28130dfc4d297c2443d37",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureLink.swift": "f06aec4c64fdc89c3b36f5236c138a6d3129f55800cf98426fb703a85ff1772e",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/MacIngressUpload.swift": "1e208be4afd4412786e59810952ed00eeb653027d2fad0b00fdb07a829d9aa52",
+    "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/CaptureLinkTests.swift": "d2b36d8bf0f75ccc9f24338cb9abbc37969cce8c3a0154c43ec9880734f8cebe",
+    "docs/verification/platform/macos-app-parent-link.md": "2365a8c085f9d94514ee0f4c6faa0c737a0170352eebfae84c94733109a79d95"
+  },
+  "probe": {
+    "checks": [
+      {
+        "actual": "refused",
+        "attempts": 2,
+        "case": "lost_then_401",
+        "expected": "unknown",
+        "pass": false,
+        "same_request_bytes_headers_url": true
+      },
+      {
+        "actual": "refused",
+        "attempts": 2,
+        "case": "503_then_403",
+        "expected": "unknown",
+        "pass": false,
+        "same_request_bytes_headers_url": true
+      },
+      {
+        "actual": "refused",
+        "attempts": 2,
+        "case": "malformed_200_then_403",
+        "expected": "unknown",
+        "pass": false,
+        "same_request_bytes_headers_url": true
+      },
+      {
+        "actual": "refused",
+        "attempts": 1,
+        "case": "first_refusal",
+        "expected": "refused",
+        "pass": true,
+        "same_request_bytes_headers_url": true
+      },
+      {
+        "actual": "ok",
+        "attempts": 2,
+        "case": "lost_then_exact_success",
+        "expected": "ok",
+        "pass": true,
+        "same_request_bytes_headers_url": true
+      },
+      {
+        "actual": "notSent",
+        "attempts": 0,
+        "case": "stop_before_send",
+        "expected": "notSent",
+        "pass": true,
+        "same_request_bytes_headers_url": true
+      }
+    ],
+    "execution": "Linux Swift exact send function; scripted transport; not native execution"
+  },
+  "executed": "Linux Swift 6.3.3 interpreter with exact extracted send and typed-error functions; scripted transport; no real socket",
+  "source_scope": "CaptureHost/CaptureControl and necessary callers/current desktop_local; no broader Link audit",
+  "limits": [
+    "No Darwin/macOS compilation or process/URLSession execution",
+    "No GUI, real capture, PostgreSQL, listeners, network or providers",
+    "No owner suite replay; declared new/native test counts are not independently run",
+    "Initial extraction/module-cache harness error preserved separately, then corrected; not a product failure"
+  ],
+  "artifacts": {
+    "prepare.py": "4f3533d62ffb056fa2b40f4ebcc3f1d8a0863af2467d0da91061832a502ae3d3",
+    "probe.swift": "cb1836ef4a3bd6797f0f59a1a5f521fab0c357a754d55ea81a8a4d4bc152230b",
+    "probe.json": "ae31643995a0dae1be3c4d5d4ccc266440ddefb29baaadfe62456a1e8849c835",
+    "probe.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "initial-harness-error.stderr": "3b5e802f827cff4c764efe5ae45dd6953c2a3cd4a4487a70cb75f2d4c892b4cf",
+    "run.sh": "d3a26366bb48e3b07cac0ab1782f9e7acdf354224fb4555871eafec72b64e6af",
+    "source.json": "9822652e75dbd3b05db3acd1bc2911b63917e6fa7e2bbd0ec3247637cd4c1309"
+  }
+}

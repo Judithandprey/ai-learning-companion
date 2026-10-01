@@ -1,0 +1,128 @@
+{
+  "candidate": "f625b480e591682be75dd6a7617c08eee4cf7bd6",
+  "test_declarations": {
+    "MacRetainedFramesTests.swift": 2,
+    "MacIngressUploadTests.swift": 8,
+    "InkTests.swift": 10,
+    "InkOriginalTests.swift": 3,
+    "InkCompositionTests.swift": 5,
+    "DesktopIngressTests.swift": 7,
+    "DesktopCaptureTests.swift": 20,
+    "CaptureLinkTests.swift": 15
+  },
+  "total_declared": 70,
+  "native_tests_executed_by_review": 0,
+  "source_identities": {
+    "Sources/CompanionDesktop/CaptureController.swift": {
+      "sha256": "49e0a0c0feb63db7f1a30d8c2f5787c06cb0dc637f7e1e2be5e1980922a12075",
+      "bytes": 24454,
+      "exact_git_blob": true
+    },
+    "Sources/CompanionDesktop/CompanionDesktopApp.swift": {
+      "sha256": "f67459dd9a5210709ca84c0ab4941e452064e8ecf59eb5b79c4eb7cfee54bd1c",
+      "bytes": 4274,
+      "exact_git_blob": true
+    },
+    "Sources/CompanionDesktop/ContentView.swift": {
+      "sha256": "280c67d00fc1cf904b56eaa7ff0baeb25e70ce3113e204ab2a82667b97debe88",
+      "bytes": 10256,
+      "exact_git_blob": true
+    },
+    "Sources/CompanionDesktop/InkController.swift": {
+      "sha256": "91a943b38689d6c553c88fc9d2a4dab07e63d0daefab9b098bd6d2ca07368a93",
+      "bytes": 24694,
+      "exact_git_blob": true
+    },
+    "Sources/CompanionDesktop/CaptureRun.swift": {
+      "sha256": "3c94a81b7b0b678b330647c157b3d69eac48caf9ececab50f03ece94e25587e3",
+      "bytes": 4938,
+      "exact_git_blob": true
+    },
+    "Sources/DesktopCapture/DesktopIngress.swift": {
+      "sha256": "fb6da5ddb5512378ea61ecc11d6304eba2736cddfc4d7e77a12e72bb3c124d34",
+      "bytes": 43453,
+      "exact_git_blob": true
+    },
+    "Sources/DesktopCapture/MacIngressUpload.swift": {
+      "sha256": "1e208be4afd4412786e59810952ed00eeb653027d2fad0b00fdb07a829d9aa52",
+      "bytes": 36639,
+      "exact_git_blob": true
+    },
+    "Package.swift": {
+      "sha256": "645462db5e1394b469d9f59024c1d1e926688806db88a7c2befe6e891b56435e",
+      "bytes": 885,
+      "exact_git_blob": true
+    },
+    "package-app.sh": {
+      "sha256": "88893a052f9d2b4ee319900bd0a97e5e04ea7a30a7bf175072bb26f0c362dec7",
+      "bytes": 1147,
+      "exact_git_blob": true
+    },
+    "Packaging/Info.plist": {
+      "sha256": "acf105059549187dbe5d14f10267fb10d66e67172da3952c199aed412af9b2ed",
+      "bytes": 893,
+      "exact_git_blob": true
+    },
+    "Tests/DesktopCaptureTests/CaptureLinkTests.swift": {
+      "sha256": "d2b36d8bf0f75ccc9f24338cb9abbc37969cce8c3a0154c43ec9880734f8cebe",
+      "bytes": 69119,
+      "exact_git_blob": true
+    }
+  },
+  "owner_checksum_entries": {
+    "linux-all-tests.txt": "e934dc98eed561fffd298e52fecc377f40f375198b1181bfcf31ed75508f9585",
+    "linux-harness-assemble.sh": "412e4cdcf248c3d6619c0a48d270205598225470fd4b900a4fc74fb42e223187",
+    "linux-harness-main.swift": "0b1dd595593157ea2982db79b4a94d5a8a68fa63096bc03d75470746933e0017",
+    "linux-harness-shim-additions.swift": "b2a71f6e3efb7b72c5d3bbad002290d714e7e8ca8cbcd08f49d2457adf6286ef",
+    "linux-host-probes.txt": "498f160911d5b8c9041dec5b1ab5110463a228064fa6d6c1f5885260e8b6438e",
+    "linux-link-tests.txt": "24fd5193fd50064fadca2620997d6ae92a39ae100341d665467fb3652dc5c778",
+    "linux-typecheck.txt": "74a55e7308eb851d1f50bcb2452dfa7923c0bf13f668d145fabeaed10302809c",
+    "linux-upload-tests.txt": "81ef61d4949de298716ab52d4b92371456623d967faecb7cd099e49f12460b4a",
+    "probe-memory-host-python.sh": "3deb2b12ca632c12d7aa80384ac8c1dbabba919afae32fb79ae5115e01cdf948",
+    "probe-memory-host.swift": "39b74defd37a6c24e44e31a1fa4fbb3dadd2274683feca367f8378765c71af4b",
+    "probe-real-host.swift": "3e7d0cb771c4b2f5bbf5c5a13dba6bf8de2253f0dc9969d63b90353990d2041c"
+  },
+  "owner_checksums_match": true,
+  "verdict": "APPROVE bounded app/source/build review; native compilation and runtime pending",
+  "blocking_findings": [],
+  "scope": [
+    "CaptureController, CompanionDesktopApp, ContentView and InkController app wiring",
+    "DesktopIngress selective original read and MacIngressUpload token visibility",
+    "SwiftPM/packager/current desktop-checks/workflow inclusion and owner evidence limits"
+  ],
+  "checks_performed": [
+    "Exact Git blob comparison for 11 source/build/test files",
+    "70 XCTest method declarations in 8 files, including 15 new CaptureLink tests",
+    "All 11 committed owner evidence SHA256SUMS entries match",
+    "Packaging Info.plist parses and local-network ATS key is present",
+    "Full assigned source diff and relevant Start/Stop/Quit/retention call paths read; no Swift/native execution"
+  ],
+  "author_linux_logs": {
+    "link_methods": {
+      "passed": 14,
+      "failed": 1,
+      "failed_method": "testLoopbackTransportOnARealSocket",
+      "assertion_failures": 2
+    },
+    "upload_methods": {
+      "passed": 8,
+      "failed": 0
+    },
+    "all_methods": {
+      "passed": 66,
+      "failed": 4,
+      "assertion_failures": 11,
+      "unexpected_failures": 1
+    },
+    "native_macos_execution": false,
+    "app_target_typechecked": false
+  },
+  "limits": [
+    "No Swift compilation, native test, GUI, permission, ATS or actual Mac host execution by this reviewer",
+    "Owner Linux stubs/corelibs do not establish Darwin redirect behavior or app target compilation",
+    "Host/control and CaptureLink internals are separately reviewed",
+    "Native gap records remain local and are not emitted by this link, as owner documents; no full process-coverage acceptance",
+    "Historical macos-upload artifact audit is fixed at 55 tests/7 files and needs a separate bounded adaptation for the 70/8 milestone"
+  ],
+  "independent_runtime_tests": 0
+}

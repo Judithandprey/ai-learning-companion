@@ -1,0 +1,53 @@
+{
+  "checks" : [
+    {
+      "actual" : "refused",
+      "attempts" : 2,
+      "case" : "lost_then_401",
+      "expected" : "unknown",
+      "pass" : false,
+      "same_request_bytes_headers_url" : true
+    },
+    {
+      "actual" : "refused",
+      "attempts" : 2,
+      "case" : "503_then_403",
+      "expected" : "unknown",
+      "pass" : false,
+      "same_request_bytes_headers_url" : true
+    },
+    {
+      "actual" : "refused",
+      "attempts" : 2,
+      "case" : "malformed_200_then_403",
+      "expected" : "unknown",
+      "pass" : false,
+      "same_request_bytes_headers_url" : true
+    },
+    {
+      "actual" : "refused",
+      "attempts" : 1,
+      "case" : "first_refusal",
+      "expected" : "refused",
+      "pass" : true,
+      "same_request_bytes_headers_url" : true
+    },
+    {
+      "actual" : "ok",
+      "attempts" : 2,
+      "case" : "lost_then_exact_success",
+      "expected" : "ok",
+      "pass" : true,
+      "same_request_bytes_headers_url" : true
+    },
+    {
+      "actual" : "notSent",
+      "attempts" : 0,
+      "case" : "stop_before_send",
+      "expected" : "notSent",
+      "pass" : true,
+      "same_request_bytes_headers_url" : true
+    }
+  ],
+  "execution" : "Linux Swift exact send function; scripted transport; not native execution"
+}

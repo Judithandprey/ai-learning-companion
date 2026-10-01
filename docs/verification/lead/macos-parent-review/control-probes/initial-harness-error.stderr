@@ -1,0 +1,82 @@
+/tmp/macos-parent-f625-host-control-probes/probe.swift:352:8: error: static methods may only be declared on a type
+350 |     }
+351 | }
+352 | static func closed(_ value: Any?, _ keys: Set<String>) -> [String: Any]? {
+    |        `- error: static methods may only be declared on a type
+353 |         guard let object = value as? [String: Any], Set(object.keys) == keys else { return nil }
+354 |         return object
+
+/tmp/macos-parent-f625-host-control-probes/probe.swift:356:8: error: static methods may only be declared on a type
+354 |         return object
+355 |     }
+356 | static func text(_ value: Any?) -> String? {
+    |        `- error: static methods may only be declared on a type
+357 |         value as? String
+358 |     }
+
+/tmp/macos-parent-f625-host-control-probes/probe.swift:359:8: error: static methods may only be declared on a type
+357 |         value as? String
+358 |     }
+359 | static func boolean(_ value: Any?) -> Bool? {
+    |        `- error: static methods may only be declared on a type
+360 |         guard let number = value as? NSNumber, CFGetTypeID(number) == CFBooleanGetTypeID() else { return nil }
+361 |         return number.boolValue
+
+/tmp/macos-parent-f625-host-control-probes/probe.swift:363:8: error: static methods may only be declared on a type
+361 |         return number.boolValue
+362 |     }
+363 | static func same(_ value: Any?, _ expected: String) -> Bool {
+    |        `- error: static methods may only be declared on a type
+364 |         guard let string = value as? String else { return false }
+365 |         return string.utf8.elementsEqual(expected.utf8)
+
+/tmp/macos-parent-f625-host-control-probes/probe.swift:367:8: error: static methods may only be declared on a type
+365 |         return string.utf8.elementsEqual(expected.utf8)
+366 |     }
+367 | static func typedError(status: Int, body: Data?, version: String) -> String? {
+    |        `- error: static methods may only be declared on a type
+368 |         guard let body, body.count <= errorLimit,
+369 |               let error = closed(object(body), ["contract_version", "error", "retryable"]),
+
+/tmp/macos-parent-f625-host-control-probes/probe.swift:377:8: error: static methods may only be declared on a type
+375 |         return code
+376 |     }
+377 | static func unbelieved(_ what: String, status: Int, body: Data?) -> String {
+    |        `- error: static methods may only be declared on a type
+378 |         if (300...399).contains(status) { return "\(what) was answered with redirect \(status), which is not followed" }
+379 |         if body == nil { return "\(what) was answered \(status) with more than the expected reply length" }
+
+/tmp/macos-parent-f625-host-control-probes/probe.swift:384:8: error: static methods may only be declared on a type
+382 |         return "\(what) was answered \(status) with a reply that is not a released error for it"
+383 |     }
+384 | static func errorName(_ error: Error) -> String {
+    |        `- error: static methods may only be declared on a type
+385 |         if let url = error as? URLError { return "URLError \(url.code.rawValue)" }
+386 |         if error is CancellationError { return "cancelled" }
+
+/tmp/macos-parent-f625-host-control-probes/probe.swift:389:1: error: extraneous '}' at top level
+387 |         return "other error"
+388 |     }
+389 | }
+    | `- error: extraneous '}' at top level
+390 | struct ControlHarness {
+391 | let transport: any MacIngressTransport
+
+/tmp/macos-parent-f625-host-control-probes/probe.swift:404:84: error: expected ')' in parameter
+401 |     ]
+402 | 
+403 | func send<Value: Sendable>(_ request: URLRequest, family: Family,
+    |                           `- note: to match this opening '('
+404 |                                        shouldStop: @Sendable () -> Bool = { false }
+    |                                                                                    `- error: expected ')' in parameter
+405 | static func typedError(_ reply: MacHTTPReply, family: Family) -> String? {
+406 |         switch family {
+
+<unknown>:0: error: unable to open output file '/home/agentsdock/.cache/clang/ModuleCache/2KAZ08AX0DUNQ/CoreFoundation-2T6HPRRSET4FA.pcm': 'Read-only file system'
+/tmp/macos-parent-f625-host-control-probes/probe.swift:3:8: error: could not build C module 'CoreFoundation'
+  1 | import Foundation
+  2 | import FoundationNetworking
+  3 | import CoreFoundation
+    |        `- error: could not build C module 'CoreFoundation'
+  4 | 
+  5 | public enum ControlOutcome<Value: Sendable>: Sendable {
