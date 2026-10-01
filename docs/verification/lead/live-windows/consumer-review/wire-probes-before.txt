@@ -1,0 +1,52 @@
+(node:10) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+UNCHANGED_START {"live":{"state":"on","model":"vision-model","max_submissions":12,"used":0,"reserve":3,"expires_at":"2026-10-01T18:48:15.340Z","min_observation_interval_ms":500,"paused":null,"missed":null,"ended":null,"seen":null,"frames":0,"out":0,"unwritten":0},"observations":0,"retained":1}
+✖ review: explicit AI Start on unchanged current screen must deliver a fresh first observation (63.022912ms)
+LATE_PRESENTATION {"live":{"state":"ended","model":"vision-model","max_submissions":12,"used":1,"reserve":3,"expires_at":"2026-10-01T18:48:15.354Z","min_observation_interval_ms":500,"paused":null,"missed":null,"ended":"stopped by you","seen":null,"frames":1,"out":0,"unwritten":0},"card":{"badge":"Your focus · ChatGPT's response is below","form":true,"submit":true,"cancel":false,"status":"From ChatGPT (vision-model) in 1.2 s, about the whole display as it was at 5:00:00 AM.","answer":"BUFFERED_BEFORE_AI_STOP","save":false}}
+✖ review: AI Stop fences an early result buffered until the selection acknowledgement (45.710493ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 0
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 115.183408
+
+✖ failing tests:
+
+test at tests/review-wire-probes.test.ts:29:1
+✖ review: explicit AI Start on unchanged current screen must deliver a fresh first observation (63.022912ms)
+  AssertionError [ERR_ASSERTION]: freshly enabled AI receives the current authorized display even if retention already has identical pixels
+  
+  0 !== 1
+  
+      at TestContext.<anonymous> (file:///tmp/lc-review-wire-9622b51/apps/windows/tests/review-wire-probes.test.ts:39:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/review-wire-probes.test.ts:42:1
+✖ review: AI Stop fences an early result buffered until the selection acknowledgement (45.710493ms)
+  AssertionError [ERR_ASSERTION]: AI-only Stop must fence the queued text as well as provider and voice
+  + actual - expected
+  
+  + 'BUFFERED_BEFORE_AI_STOP'
+  - null
+  
+      at TestContext.<anonymous> (file:///tmp/lc-review-wire-9622b51/apps/windows/tests/review-wire-probes.test.ts:61:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 'BUFFERED_BEFORE_AI_STOP',
+    expected: null,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

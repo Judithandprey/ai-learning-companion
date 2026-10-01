@@ -1,0 +1,27 @@
+(node:10) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ [synthetic connector] Start with the box ticked starts one AI session with exactly the bounds set, screen only; without it, or not signed in, nothing is started or sent, and that is said (105.88623ms)
+✔ [synthetic connector] a kept frame is what the AI looks at: the whole display, as an observation that asks for no answer; one at a time, the newest waits, and what it noted joins the conversation without ever being shown (137.074277ms)
+✔ [synthetic connector] a frame still waiting for a look when the user circles is passed by: that very request names it as a gap, and it is not looked at later (128.01243ms)
+✔ [synthetic connector] a circle that cannot be asked, and a follow-up that cannot be written, are frames the AI was not given: each a gap, named in the next request; later gaps are never said about an earlier frame (264.573119ms)
+✔ [synthetic connector] a follow-up is about the circle's own frame only when it is that very picture and nothing newer was sent; a follow-up that cannot be written passes nothing and is a gap; the conversation that no longer fits is said as left out (984.802389ms)
+✔ [synthetic connector] unattended looks never use the requests kept for the user's own circles and questions; the user's own requests still go; when all are used the session ends, and nothing renews it (207.825375ms)
+✔ [synthetic connector] a failure that is not simply "not taken" ends the session with its own reason and is never retried; a request merely not taken, or the session's own bound, does not (707.34728ms)
+✔ [synthetic connector] the session ends at its own time, when the user stops the AI, when the connector is lost and with the capture: each said, the connector told, and nothing sent after (183.445833ms)
+✔ [synthetic connector] a picture that cannot be made is said on the card: nothing is kept, nothing is sent, the ink and the mode are as they were, and nothing fails silently (38.854976ms)
+✔ [synthetic connector] only the connector's output closes while it stays running: it is ended here, the session is over, what was out is not known and never sent again, and only the user's Check starts a connector again (566.411006ms)
+✔ [synthetic connector] when the capture keeps no further frame, the AI is given none by itself: that is said as the looks having stopped, with why, in the session that runs and in one started afterwards; the user's own requests still go while a picture can be kept (87.809576ms)
+✔ [synthetic connector] an interruption the connector does not confirm ends the session, with that said; the connector's own bound for looks stops them and the frame that waited is not sent either; a frame taken before the AI was started is not looked at (223.580994ms)
+✔ [synthetic connector] the session's own record: a line cut short by a failed write is cut back before the next one, the lines that could not be written are counted and said (after the capture's end too), and nothing is sent again for them (36.034627ms)
+✔ [synthetic connector] Start the AI on a used-up session that is then refused says the refusal, not a new session; a request of the user's own that was sent and not taken is a frame the AI was not given, until it is answered (94.182149ms)
+✔ [synthetic connector] Cancel pressed while a follow-up's picture is still being made: nothing leaves the window, and it is said; a refusal says whether the request had reached ChatGPT; while the earlier response stays shown, which picture it is about stays said (103.55184ms)
+✔ [synthetic connector] a long session: every look has a request id of its own, a request never carries more gaps than the envelope takes (the newest), and a capture that ends while the AI is being started never uses that session (2964.534128ms)
+✔ [synthetic connector] a follow-up on the same unchanged frame keeps the circle as its focus; after the screen changed the circle stays on its own frame and is only named, without its pixels; [released contract, Python] every line the app wrote to the connector is the contract's (114.732682ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 6966.992319

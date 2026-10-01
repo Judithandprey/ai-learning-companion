@@ -1,0 +1,5168 @@
+{
+  "kind": "offscreen Chromium + synthetic media/IPC/voice; NOT OS/device/model acceptance",
+  "started_at": "2026-10-01T18:38:52.717Z",
+  "electron": "44.5.1",
+  "chrome": "152.0.7977.130",
+  "executable_sha256": "49b61a030a520fc36a4b8fa5cce53fb4e935a7bdbbe4b80e9222f598e49cc7fa",
+  "source_manifest": {
+    "source_root": "/tmp/lc-candidate9622-render-review/git-source",
+    "head": "9622b517b74020b2d9e8ffbb03f8d615ff32341d",
+    "snapshot_kind": "exact git archive export, excluding worktree changes",
+    "at": "2026-10-01T18:35:35.704Z",
+    "compiler": "Node 24.21.0 stripTypeScriptTypes",
+    "kind": "type-erasure and relative import extension rewrite only; no product typecheck",
+    "source_stable_during_snapshot": true,
+    "source_sha256": {
+      "apps/windows/src/renderer/overlay.ts": "04304e46edb6a12d2a808bdc6c2a06227045c31716722144251f95f5ea870028",
+      "apps/safari-extension/src/ink.ts": "d02c97ae1a5e00b6544b58f765dd86baa55c61beb0e10ca4776218fec4f324dc",
+      "apps/safari-extension/src/mode.ts": "76503344903e8720796e83e4bd67dea8a1164cb64673bf09506fabf1231cbec8",
+      "apps/windows/src/shared/desktop-ink.ts": "fefd7452f5f1018521087bc7c9afd5650f7ad4c0b9bb8ada5a3d775bfc6ab446",
+      "apps/windows/src/shared/samples.ts": "a9851c58e68b09507649fd7b024c73ad304b80e9f237d53c69da153741605946",
+      "apps/windows/src/shared/retention.ts": "e99392afa223f89dc63a8cb726cd0235d48d09e124cde682eb1bfa4645713ab1",
+      "apps/windows/src/shared/placement.ts": "5f4b32d7f8b9af855b64320735443a756875587c7450c114abf3fbddeb8d7691",
+      "apps/windows/src/shared/voice.ts": "df12ade8a22588c97a019ed51c6e71543fbccbc5044bd17617be33df4d27618d",
+      "apps/windows/src/renderer/overlay.html": "d7b84d4dbd06615f4a598e2b8072a34b92e9c6d0b39d8576fb53ceb421c8516e",
+      "apps/windows/src/renderer/overlay.css": "0af42263f71c0c7b4e95ee68c8624782d876adbb891f4b9bc479fcb0e20bc40c"
+    },
+    "source_after_sha256": {
+      "apps/windows/src/renderer/overlay.ts": "04304e46edb6a12d2a808bdc6c2a06227045c31716722144251f95f5ea870028",
+      "apps/safari-extension/src/ink.ts": "d02c97ae1a5e00b6544b58f765dd86baa55c61beb0e10ca4776218fec4f324dc",
+      "apps/safari-extension/src/mode.ts": "76503344903e8720796e83e4bd67dea8a1164cb64673bf09506fabf1231cbec8",
+      "apps/windows/src/shared/desktop-ink.ts": "fefd7452f5f1018521087bc7c9afd5650f7ad4c0b9bb8ada5a3d775bfc6ab446",
+      "apps/windows/src/shared/samples.ts": "a9851c58e68b09507649fd7b024c73ad304b80e9f237d53c69da153741605946",
+      "apps/windows/src/shared/retention.ts": "e99392afa223f89dc63a8cb726cd0235d48d09e124cde682eb1bfa4645713ab1",
+      "apps/windows/src/shared/placement.ts": "5f4b32d7f8b9af855b64320735443a756875587c7450c114abf3fbddeb8d7691",
+      "apps/windows/src/shared/voice.ts": "df12ade8a22588c97a019ed51c6e71543fbccbc5044bd17617be33df4d27618d",
+      "apps/windows/src/renderer/overlay.html": "d7b84d4dbd06615f4a598e2b8072a34b92e9c6d0b39d8576fb53ceb421c8516e",
+      "apps/windows/src/renderer/overlay.css": "0af42263f71c0c7b4e95ee68c8624782d876adbb891f4b9bc479fcb0e20bc40c"
+    },
+    "emitted_sha256": {
+      "apps/windows/src/renderer/overlay.js": "bc337e5189cc7e511d3e4e784d9191c6bef24d1bbe6ebb4fd691e608fb27fd7f",
+      "apps/safari-extension/src/ink.js": "e5a1867db9e72df7cecb43de48bc10e45d4f0bbc2936dd131075ba218cac7dd9",
+      "apps/safari-extension/src/mode.js": "4f6dcba7bd5fff78442a5b1a0631fc9e44f3e3935f0dd8e8b89b8574a5d6c27e",
+      "apps/windows/src/shared/desktop-ink.js": "48278d040e0fcb21c43523be24be7f741611f26cf8d35e7d5b9962e3d5cdd5f6",
+      "apps/windows/src/shared/samples.js": "4df4654aa44791ead0c1381f42368208a568714e199fbb345d9506fcad44e6fd",
+      "apps/windows/src/shared/retention.js": "5e446c2878bc3686733ce86bf8ae2c5d65089912dc707e657e759a16135bc595",
+      "apps/windows/src/shared/placement.js": "77abad4d2f4b9fb6cb5b141f2a5b0395748f6b20d682b9d384e5b4f9ef89777c",
+      "apps/windows/src/shared/voice.js": "d8f4fba3d661544ba270b3da9346125d9a7683ebade92f0abc4bde4444580b32",
+      "apps/windows/src/renderer/overlay.html": "d7b84d4dbd06615f4a598e2b8072a34b92e9c6d0b39d8576fb53ceb421c8516e",
+      "apps/windows/src/renderer/overlay.css": "0af42263f71c0c7b4e95ee68c8624782d876adbb891f4b9bc479fcb0e20bc40c"
+    },
+    "worktree_status": ""
+  },
+  "checks": [
+    {
+      "id": "restrictions_before_modules",
+      "status": "PASS",
+      "details": {
+        "proof": {
+          "fakeMedia": true,
+          "noRealDevice": true,
+          "noRealVoice": true,
+          "noNetwork": true
+        },
+        "visible": false
+      }
+    },
+    {
+      "id": "01-wide-talk-off_toolbar_inside",
+      "status": "PASS",
+      "details": {
+        "x": 455,
+        "y": 10,
+        "width": 535,
+        "height": 89.96875,
+        "right": 990,
+        "bottom": 99.96875,
+        "hidden": false,
+        "display": "flex",
+        "fx": "1",
+        "fy": "0",
+        "hit": true,
+        "top": "hint",
+        "scrollHeight": 90,
+        "clientHeight": 90,
+        "scrollWidth": 535,
+        "clientWidth": 535
+      }
+    },
+    {
+      "id": "01-wide-talk-off_toolbar_no_overflow",
+      "status": "PASS",
+      "details": {
+        "x": 455,
+        "y": 10,
+        "width": 535,
+        "height": 89.96875,
+        "right": 990,
+        "bottom": 99.96875,
+        "hidden": false,
+        "display": "flex",
+        "fx": "1",
+        "fy": "0",
+        "hit": true,
+        "top": "hint",
+        "scrollHeight": 90,
+        "clientHeight": 90,
+        "scrollWidth": 535,
+        "clientWidth": 535
+      }
+    },
+    {
+      "id": "01-wide-talk-off_toolbarHandle_reachable",
+      "status": "PASS",
+      "details": {
+        "x": 461,
+        "y": 35.984375,
+        "width": 26,
+        "height": 38,
+        "right": 487,
+        "bottom": 73.984375,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": true,
+        "top": "toolbarHandle",
+        "scrollHeight": 38,
+        "clientHeight": 38,
+        "scrollWidth": 26,
+        "clientWidth": 26
+      }
+    },
+    {
+      "id": "01-wide-talk-off_talk_reachable",
+      "status": "PASS",
+      "details": {
+        "x": 632,
+        "y": 35.984375,
+        "width": 38,
+        "height": 38,
+        "right": 670,
+        "bottom": 73.984375,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": true,
+        "top": "talk",
+        "scrollHeight": 38,
+        "clientHeight": 38,
+        "scrollWidth": 38,
+        "clientWidth": 38
+      }
+    },
+    {
+      "id": "02-wide-talk-on-before-response_toolbar_inside",
+      "status": "PASS",
+      "details": {
+        "x": 289.078125,
+        "y": 10,
+        "width": 700.921875,
+        "height": 105.5625,
+        "right": 990,
+        "bottom": 115.5625,
+        "hidden": false,
+        "display": "flex",
+        "fx": "1",
+        "fy": "0",
+        "hit": true,
+        "top": "faster",
+        "scrollHeight": 106,
+        "clientHeight": 106,
+        "scrollWidth": 701,
+        "clientWidth": 701
+      }
+    },
+    {
+      "id": "02-wide-talk-on-before-response_toolbar_no_overflow",
+      "status": "PASS",
+      "details": {
+        "x": 289.078125,
+        "y": 10,
+        "width": 700.921875,
+        "height": 105.5625,
+        "right": 990,
+        "bottom": 115.5625,
+        "hidden": false,
+        "display": "flex",
+        "fx": "1",
+        "fy": "0",
+        "hit": true,
+        "top": "faster",
+        "scrollHeight": 106,
+        "clientHeight": 106,
+        "scrollWidth": 701,
+        "clientWidth": 701
+      }
+    },
+    {
+      "id": "02-wide-talk-on-before-response_toolbarHandle_reachable",
+      "status": "PASS",
+      "details": {
+        "x": 295.078125,
+        "y": 43.78125,
+        "width": 26,
+        "height": 38,
+        "right": 321.078125,
+        "bottom": 81.78125,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": true,
+        "top": "toolbarHandle",
+        "scrollHeight": 38,
+        "clientHeight": 38,
+        "scrollWidth": 26,
+        "clientWidth": 26
+      }
+    },
+    {
+      "id": "02-wide-talk-on-before-response_talk_reachable",
+      "status": "PASS",
+      "details": {
+        "x": 466.078125,
+        "y": 43.78125,
+        "width": 38,
+        "height": 38,
+        "right": 504.078125,
+        "bottom": 81.78125,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": true,
+        "top": "talk",
+        "scrollHeight": 38,
+        "clientHeight": 38,
+        "scrollWidth": 38,
+        "clientWidth": 38
+      }
+    },
+    {
+      "id": "02-wide-talk-on-before-response_mute_reachable",
+      "status": "PASS",
+      "details": {
+        "x": 508.078125,
+        "y": 43.78125,
+        "width": 43.921875,
+        "height": 38,
+        "right": 552,
+        "bottom": 81.78125,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": true,
+        "top": "mute",
+        "scrollHeight": 38,
+        "clientHeight": 38,
+        "scrollWidth": 44,
+        "clientWidth": 44
+      }
+    },
+    {
+      "id": "02-wide-talk-on-before-response_slower_reachable",
+      "status": "PASS",
+      "details": {
+        "x": 556,
+        "y": 43.78125,
+        "width": 38,
+        "height": 38,
+        "right": 594,
+        "bottom": 81.78125,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": true,
+        "top": "slower",
+        "scrollHeight": 38,
+        "clientHeight": 38,
+        "scrollWidth": 38,
+        "clientWidth": 38
+      }
+    },
+    {
+      "id": "02-wide-talk-on-before-response_rate_reachable",
+      "status": "PASS",
+      "details": {
+        "x": 598,
+        "y": 54.984375,
+        "width": 30,
+        "height": 15.59375,
+        "right": 628,
+        "bottom": 70.578125,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": true,
+        "top": "rate",
+        "scrollHeight": 16,
+        "clientHeight": 16,
+        "scrollWidth": 30,
+        "clientWidth": 30
+      }
+    },
+    {
+      "id": "02-wide-talk-on-before-response_faster_reachable",
+      "status": "PASS",
+      "details": {
+        "x": 632,
+        "y": 43.78125,
+        "width": 38,
+        "height": 38,
+        "right": 670,
+        "bottom": 81.78125,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": true,
+        "top": "faster",
+        "scrollHeight": 38,
+        "clientHeight": 38,
+        "scrollWidth": 38,
+        "clientWidth": 38
+      }
+    },
+    {
+      "id": "toolbar_real_drag",
+      "status": "PASS",
+      "details": {
+        "before": {
+          "x": 289.078125,
+          "y": 10,
+          "width": 700.921875,
+          "height": 105.5625,
+          "right": 990,
+          "bottom": 115.5625,
+          "hidden": false,
+          "display": "flex",
+          "fx": "1",
+          "fy": "0",
+          "hit": true,
+          "top": "faster",
+          "scrollHeight": 106,
+          "clientHeight": 106,
+          "scrollWidth": 701,
+          "clientWidth": 701
+        },
+        "after": {
+          "x": 149.07174682617188,
+          "y": 104.99528503417969,
+          "width": 700.921875,
+          "height": 105.5625,
+          "right": 849.9936218261719,
+          "bottom": 210.5577850341797,
+          "hidden": false,
+          "display": "flex",
+          "fx": "0.49834835675494094",
+          "fy": "0.16537917747664976",
+          "hit": true,
+          "top": "faster",
+          "scrollHeight": 106,
+          "clientHeight": 106,
+          "scrollWidth": 701,
+          "clientWidth": 701
+        }
+      }
+    },
+    {
+      "id": "toolbar_drag_no_ink_or_ask",
+      "status": "PASS",
+      "details": {}
+    },
+    {
+      "id": "eraser_button_no_drag_or_ink",
+      "status": "PASS",
+      "details": {}
+    },
+    {
+      "id": "write_drag_no_erase_or_ask",
+      "status": "PASS",
+      "details": {}
+    },
+    {
+      "id": "03-wide-response-speaking_toolbar_inside",
+      "status": "PASS",
+      "details": {
+        "x": 230,
+        "y": 10,
+        "width": 760,
+        "height": 165.15625,
+        "right": 990,
+        "bottom": 175.15625,
+        "hidden": false,
+        "display": "flex",
+        "fx": "1",
+        "fy": "0",
+        "hit": true,
+        "top": "toolbar",
+        "scrollHeight": 165,
+        "clientHeight": 165,
+        "scrollWidth": 760,
+        "clientWidth": 760
+      }
+    },
+    {
+      "id": "03-wide-response-speaking_toolbar_no_overflow",
+      "status": "PASS",
+      "details": {
+        "x": 230,
+        "y": 10,
+        "width": 760,
+        "height": 165.15625,
+        "right": 990,
+        "bottom": 175.15625,
+        "hidden": false,
+        "display": "flex",
+        "fx": "1",
+        "fy": "0",
+        "hit": true,
+        "top": "toolbar",
+        "scrollHeight": 165,
+        "clientHeight": 165,
+        "scrollWidth": 760,
+        "clientWidth": 760
+      }
+    },
+    {
+      "id": "03-wide-response-speaking_toolbarHandle_reachable",
+      "status": "PASS",
+      "details": {
+        "x": 246.296875,
+        "y": 16,
+        "width": 26,
+        "height": 38,
+        "right": 272.296875,
+        "bottom": 54,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": true,
+        "top": "toolbarHandle",
+        "scrollHeight": 38,
+        "clientHeight": 38,
+        "scrollWidth": 26,
+        "clientWidth": 26
+      }
+    },
+    {
+      "id": "03-wide-response-speaking_talk_reachable",
+      "status": "PASS",
+      "details": {
+        "x": 692.265625,
+        "y": 16,
+        "width": 38,
+        "height": 38,
+        "right": 730.265625,
+        "bottom": 54,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": true,
+        "top": "talk",
+        "scrollHeight": 38,
+        "clientHeight": 38,
+        "scrollWidth": 38,
+        "clientWidth": 38
+      }
+    },
+    {
+      "id": "03-wide-response-speaking_mute_reachable",
+      "status": "PASS",
+      "details": {
+        "x": 734.265625,
+        "y": 16,
+        "width": 43.921875,
+        "height": 38,
+        "right": 778.1875,
+        "bottom": 54,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": true,
+        "top": "mute",
+        "scrollHeight": 38,
+        "clientHeight": 38,
+        "scrollWidth": 44,
+        "clientWidth": 44
+      }
+    },
+    {
+      "id": "03-wide-response-speaking_slower_reachable",
+      "status": "PASS",
+      "details": {
+        "x": 782.1875,
+        "y": 16,
+        "width": 38,
+        "height": 38,
+        "right": 820.1875,
+        "bottom": 54,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": true,
+        "top": "slower",
+        "scrollHeight": 38,
+        "clientHeight": 38,
+        "scrollWidth": 38,
+        "clientWidth": 38
+      }
+    },
+    {
+      "id": "03-wide-response-speaking_rate_reachable",
+      "status": "PASS",
+      "details": {
+        "x": 824.1875,
+        "y": 27.203125,
+        "width": 30,
+        "height": 15.59375,
+        "right": 854.1875,
+        "bottom": 42.796875,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": true,
+        "top": "rate",
+        "scrollHeight": 16,
+        "clientHeight": 16,
+        "scrollWidth": 30,
+        "clientWidth": 30
+      }
+    },
+    {
+      "id": "03-wide-response-speaking_faster_reachable",
+      "status": "PASS",
+      "details": {
+        "x": 858.1875,
+        "y": 16,
+        "width": 38,
+        "height": 38,
+        "right": 896.1875,
+        "bottom": 54,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": true,
+        "top": "faster",
+        "scrollHeight": 38,
+        "clientHeight": 38,
+        "scrollWidth": 38,
+        "clientWidth": 38
+      }
+    },
+    {
+      "id": "03-wide-response-speaking_interrupt_reachable",
+      "status": "PASS",
+      "details": {
+        "x": 900.1875,
+        "y": 16,
+        "width": 83.8125,
+        "height": 38,
+        "right": 984,
+        "bottom": 54,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": true,
+        "top": "interrupt",
+        "scrollHeight": 38,
+        "clientHeight": 38,
+        "scrollWidth": 84,
+        "clientWidth": 84
+      }
+    },
+    {
+      "id": "answer_visible_without_manual_scroll",
+      "status": "PASS",
+      "details": {
+        "card": {
+          "x": 630,
+          "y": 130,
+          "width": 360,
+          "height": 560,
+          "right": 990,
+          "bottom": 690,
+          "hidden": false,
+          "display": "block",
+          "fx": "1",
+          "fy": "1",
+          "hit": true,
+          "top": "",
+          "scrollHeight": 669,
+          "clientHeight": 560,
+          "scrollWidth": 345,
+          "clientWidth": 345
+        },
+        "answer": {
+          "x": 642,
+          "y": 634.890625,
+          "width": 321,
+          "height": 33.59375,
+          "right": 963,
+          "bottom": 668.484375,
+          "hidden": false,
+          "display": "block",
+          "fx": "",
+          "fy": "",
+          "hit": true,
+          "top": "answer",
+          "scrollHeight": 34,
+          "clientHeight": 34,
+          "scrollWidth": 321,
+          "clientWidth": 321
+        },
+        "handle": {
+          "x": 636,
+          "y": 136,
+          "width": 26,
+          "height": 28,
+          "right": 662,
+          "bottom": 164,
+          "hidden": false,
+          "display": "block",
+          "fx": "",
+          "fy": "",
+          "hit": true,
+          "top": "cardHandle",
+          "scrollHeight": 28,
+          "clientHeight": 28,
+          "scrollWidth": 26,
+          "clientWidth": 26
+        }
+      }
+    },
+    {
+      "id": "six_talk_controls_visible",
+      "status": "PASS",
+      "details": {
+        "toolbarHandle": {
+          "x": 246.296875,
+          "y": 16,
+          "width": 26,
+          "height": 38,
+          "right": 272.296875,
+          "bottom": 54,
+          "hidden": false,
+          "display": "block",
+          "fx": "",
+          "fy": "",
+          "hit": true,
+          "top": "toolbarHandle",
+          "scrollHeight": 38,
+          "clientHeight": 38,
+          "scrollWidth": 26,
+          "clientWidth": 26
+        },
+        "talk": {
+          "x": 692.265625,
+          "y": 16,
+          "width": 38,
+          "height": 38,
+          "right": 730.265625,
+          "bottom": 54,
+          "hidden": false,
+          "display": "block",
+          "fx": "",
+          "fy": "",
+          "hit": true,
+          "top": "talk",
+          "scrollHeight": 38,
+          "clientHeight": 38,
+          "scrollWidth": 38,
+          "clientWidth": 38
+        },
+        "mute": {
+          "x": 734.265625,
+          "y": 16,
+          "width": 43.921875,
+          "height": 38,
+          "right": 778.1875,
+          "bottom": 54,
+          "hidden": false,
+          "display": "block",
+          "fx": "",
+          "fy": "",
+          "hit": true,
+          "top": "mute",
+          "scrollHeight": 38,
+          "clientHeight": 38,
+          "scrollWidth": 44,
+          "clientWidth": 44
+        },
+        "slower": {
+          "x": 782.1875,
+          "y": 16,
+          "width": 38,
+          "height": 38,
+          "right": 820.1875,
+          "bottom": 54,
+          "hidden": false,
+          "display": "block",
+          "fx": "",
+          "fy": "",
+          "hit": true,
+          "top": "slower",
+          "scrollHeight": 38,
+          "clientHeight": 38,
+          "scrollWidth": 38,
+          "clientWidth": 38
+        },
+        "rate": {
+          "x": 824.1875,
+          "y": 27.203125,
+          "width": 30,
+          "height": 15.59375,
+          "right": 854.1875,
+          "bottom": 42.796875,
+          "hidden": false,
+          "display": "block",
+          "fx": "",
+          "fy": "",
+          "hit": true,
+          "top": "rate",
+          "scrollHeight": 16,
+          "clientHeight": 16,
+          "scrollWidth": 30,
+          "clientWidth": 30
+        },
+        "faster": {
+          "x": 858.1875,
+          "y": 16,
+          "width": 38,
+          "height": 38,
+          "right": 896.1875,
+          "bottom": 54,
+          "hidden": false,
+          "display": "block",
+          "fx": "",
+          "fy": "",
+          "hit": true,
+          "top": "faster",
+          "scrollHeight": 38,
+          "clientHeight": 38,
+          "scrollWidth": 38,
+          "clientWidth": 38
+        },
+        "interrupt": {
+          "x": 900.1875,
+          "y": 16,
+          "width": 83.8125,
+          "height": 38,
+          "right": 984,
+          "bottom": 54,
+          "hidden": false,
+          "display": "block",
+          "fx": "",
+          "fy": "",
+          "hit": true,
+          "top": "interrupt",
+          "scrollHeight": 38,
+          "clientHeight": 38,
+          "scrollWidth": 84,
+          "clientWidth": 84
+        }
+      }
+    },
+    {
+      "id": "voice_only_inert_boundary",
+      "status": "PASS",
+      "details": {
+        "fakeSay": [
+          {
+            "kind": "fakeSay",
+            "args": [
+              "qa-selection-1",
+              "qa-request-1",
+              0
+            ]
+          }
+        ],
+        "scope": "index-only fake boundary, no audio"
+      }
+    },
+    {
+      "id": "card_real_drag",
+      "status": "PASS",
+      "details": {
+        "before": {
+          "x": 630,
+          "y": 130,
+          "width": 360,
+          "height": 560,
+          "right": 990,
+          "bottom": 690,
+          "hidden": false,
+          "display": "block",
+          "fx": "1",
+          "fy": "1",
+          "hit": true,
+          "top": "",
+          "scrollHeight": 669,
+          "clientHeight": 560,
+          "scrollWidth": 345,
+          "clientWidth": 345
+        },
+        "after": {
+          "x": 439.9944763183594,
+          "y": 59.994781494140625,
+          "width": 360.0000305175781,
+          "height": 560,
+          "right": 799.9945068359375,
+          "bottom": 619.9947814941406,
+          "hidden": false,
+          "display": "block",
+          "fx": "0.6935483529590064",
+          "fy": "0.4166666666666667",
+          "hit": true,
+          "top": "",
+          "scrollHeight": 669,
+          "clientHeight": 560,
+          "scrollWidth": 345,
+          "clientWidth": 345
+        }
+      }
+    },
+    {
+      "id": "card_drag_no_ink_or_submit",
+      "status": "PASS",
+      "details": {}
+    },
+    {
+      "id": "card_drag_clamps_inside",
+      "status": "PASS",
+      "details": {
+        "card": {
+          "x": 10,
+          "y": 10,
+          "width": 360,
+          "height": 560,
+          "right": 370,
+          "bottom": 570,
+          "hidden": false,
+          "display": "block",
+          "fx": "0",
+          "fy": "0",
+          "hit": true,
+          "top": "",
+          "scrollHeight": 669,
+          "clientHeight": 560,
+          "scrollWidth": 345,
+          "clientWidth": 345
+        }
+      }
+    },
+    {
+      "id": "clamp_drag_no_ink_or_submit",
+      "status": "PASS",
+      "details": {}
+    },
+    {
+      "id": "04-narrow-response-speaking_toolbar_inside",
+      "status": "PASS",
+      "details": {
+        "x": 10,
+        "y": 10,
+        "width": 420,
+        "height": 253.15625,
+        "right": 430,
+        "bottom": 263.15625,
+        "hidden": false,
+        "display": "flex",
+        "fx": "1",
+        "fy": "0",
+        "hit": false,
+        "top": "card",
+        "scrollHeight": 253,
+        "clientHeight": 253,
+        "scrollWidth": 420,
+        "clientWidth": 420
+      }
+    },
+    {
+      "id": "04-narrow-response-speaking_toolbar_no_overflow",
+      "status": "PASS",
+      "details": {
+        "x": 10,
+        "y": 10,
+        "width": 420,
+        "height": 253.15625,
+        "right": 430,
+        "bottom": 263.15625,
+        "hidden": false,
+        "display": "flex",
+        "fx": "1",
+        "fy": "0",
+        "hit": false,
+        "top": "card",
+        "scrollHeight": 253,
+        "clientHeight": 253,
+        "scrollWidth": 420,
+        "clientWidth": 420
+      }
+    },
+    {
+      "id": "04-narrow-response-speaking_toolbarHandle_reachable",
+      "status": "PASS",
+      "details": {
+        "x": 266,
+        "y": 16,
+        "width": 26,
+        "height": 38,
+        "right": 292,
+        "bottom": 54,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": true,
+        "top": "toolbarHandle",
+        "scrollHeight": 38,
+        "clientHeight": 38,
+        "scrollWidth": 26,
+        "clientWidth": 26
+      }
+    },
+    {
+      "id": "04-narrow-response-speaking_talk_reachable",
+      "status": "FAIL",
+      "details": {
+        "x": 132.265625,
+        "y": 104,
+        "width": 38,
+        "height": 38,
+        "right": 170.265625,
+        "bottom": 142,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": false,
+        "top": "crop",
+        "scrollHeight": 38,
+        "clientHeight": 38,
+        "scrollWidth": 38,
+        "clientWidth": 38
+      }
+    },
+    {
+      "id": "04-narrow-response-speaking_mute_reachable",
+      "status": "FAIL",
+      "details": {
+        "x": 174.265625,
+        "y": 104,
+        "width": 43.921875,
+        "height": 38,
+        "right": 218.1875,
+        "bottom": 142,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": false,
+        "top": "crop",
+        "scrollHeight": 38,
+        "clientHeight": 38,
+        "scrollWidth": 44,
+        "clientWidth": 44
+      }
+    },
+    {
+      "id": "04-narrow-response-speaking_slower_reachable",
+      "status": "FAIL",
+      "details": {
+        "x": 222.1875,
+        "y": 104,
+        "width": 38,
+        "height": 38,
+        "right": 260.1875,
+        "bottom": 142,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": false,
+        "top": "card",
+        "scrollHeight": 38,
+        "clientHeight": 38,
+        "scrollWidth": 38,
+        "clientWidth": 38
+      }
+    },
+    {
+      "id": "04-narrow-response-speaking_rate_reachable",
+      "status": "FAIL",
+      "details": {
+        "x": 264.1875,
+        "y": 115.203125,
+        "width": 30,
+        "height": 15.59375,
+        "right": 294.1875,
+        "bottom": 130.796875,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": false,
+        "top": "card",
+        "scrollHeight": 16,
+        "clientHeight": 16,
+        "scrollWidth": 30,
+        "clientWidth": 30
+      }
+    },
+    {
+      "id": "04-narrow-response-speaking_faster_reachable",
+      "status": "FAIL",
+      "details": {
+        "x": 298.1875,
+        "y": 104,
+        "width": 38,
+        "height": 38,
+        "right": 336.1875,
+        "bottom": 142,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": false,
+        "top": "card",
+        "scrollHeight": 38,
+        "clientHeight": 38,
+        "scrollWidth": 38,
+        "clientWidth": 38
+      }
+    },
+    {
+      "id": "04-narrow-response-speaking_interrupt_reachable",
+      "status": "FAIL",
+      "details": {
+        "x": 340.1875,
+        "y": 104,
+        "width": 83.8125,
+        "height": 38,
+        "right": 424,
+        "bottom": 142,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": false,
+        "top": "card",
+        "scrollHeight": 38,
+        "clientHeight": 38,
+        "scrollWidth": 84,
+        "clientWidth": 84
+      }
+    },
+    {
+      "id": "narrow_card_inside",
+      "status": "PASS",
+      "details": {
+        "x": 70,
+        "y": 54,
+        "width": 360,
+        "height": 256,
+        "right": 430,
+        "bottom": 310,
+        "hidden": false,
+        "display": "block",
+        "fx": "1",
+        "fy": "1",
+        "hit": true,
+        "top": "cardText",
+        "scrollHeight": 669,
+        "clientHeight": 256,
+        "scrollWidth": 345,
+        "clientWidth": 345
+      }
+    },
+    {
+      "id": "narrow_answer_visible",
+      "status": "FAIL",
+      "details": {
+        "answer": {
+          "x": 82,
+          "y": 558.890625,
+          "width": 321,
+          "height": 33.59375,
+          "right": 403,
+          "bottom": 592.484375,
+          "hidden": false,
+          "display": "block",
+          "fx": "",
+          "fy": "",
+          "hit": false,
+          "scrollHeight": 34,
+          "clientHeight": 34,
+          "scrollWidth": 321,
+          "clientWidth": 321
+        },
+        "card": {
+          "x": 70,
+          "y": 54,
+          "width": 360,
+          "height": 256,
+          "right": 430,
+          "bottom": 310,
+          "hidden": false,
+          "display": "block",
+          "fx": "1",
+          "fy": "1",
+          "hit": true,
+          "top": "cardText",
+          "scrollHeight": 669,
+          "clientHeight": 256,
+          "scrollWidth": 345,
+          "clientWidth": 345
+        },
+        "handle": {
+          "x": 76,
+          "y": 60,
+          "width": 26,
+          "height": 28,
+          "right": 102,
+          "bottom": 88,
+          "hidden": false,
+          "display": "block",
+          "fx": "",
+          "fy": "",
+          "hit": true,
+          "top": "cardHandle",
+          "scrollHeight": 28,
+          "clientHeight": 28,
+          "scrollWidth": 26,
+          "clientWidth": 26
+        }
+      }
+    },
+    {
+      "id": "05-narrow-talk-on_toolbar_inside",
+      "status": "PASS",
+      "details": {
+        "x": 10,
+        "y": 10,
+        "width": 420,
+        "height": 253.15625,
+        "right": 430,
+        "bottom": 263.15625,
+        "hidden": false,
+        "display": "flex",
+        "fx": "1",
+        "fy": "0",
+        "hit": true,
+        "top": "talkControls",
+        "scrollHeight": 253,
+        "clientHeight": 253,
+        "scrollWidth": 420,
+        "clientWidth": 420
+      }
+    },
+    {
+      "id": "05-narrow-talk-on_toolbar_no_overflow",
+      "status": "PASS",
+      "details": {
+        "x": 10,
+        "y": 10,
+        "width": 420,
+        "height": 253.15625,
+        "right": 430,
+        "bottom": 263.15625,
+        "hidden": false,
+        "display": "flex",
+        "fx": "1",
+        "fy": "0",
+        "hit": true,
+        "top": "talkControls",
+        "scrollHeight": 253,
+        "clientHeight": 253,
+        "scrollWidth": 420,
+        "clientWidth": 420
+      }
+    },
+    {
+      "id": "05-narrow-talk-on_toolbarHandle_reachable",
+      "status": "PASS",
+      "details": {
+        "x": 266,
+        "y": 16,
+        "width": 26,
+        "height": 38,
+        "right": 292,
+        "bottom": 54,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": true,
+        "top": "toolbarHandle",
+        "scrollHeight": 38,
+        "clientHeight": 38,
+        "scrollWidth": 26,
+        "clientWidth": 26
+      }
+    },
+    {
+      "id": "05-narrow-talk-on_talk_reachable",
+      "status": "PASS",
+      "details": {
+        "x": 220.078125,
+        "y": 104,
+        "width": 38,
+        "height": 38,
+        "right": 258.078125,
+        "bottom": 142,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": true,
+        "top": "talk",
+        "scrollHeight": 38,
+        "clientHeight": 38,
+        "scrollWidth": 38,
+        "clientWidth": 38
+      }
+    },
+    {
+      "id": "05-narrow-talk-on_mute_reachable",
+      "status": "PASS",
+      "details": {
+        "x": 262.078125,
+        "y": 104,
+        "width": 43.921875,
+        "height": 38,
+        "right": 306,
+        "bottom": 142,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": true,
+        "top": "mute",
+        "scrollHeight": 38,
+        "clientHeight": 38,
+        "scrollWidth": 44,
+        "clientWidth": 44
+      }
+    },
+    {
+      "id": "05-narrow-talk-on_slower_reachable",
+      "status": "PASS",
+      "details": {
+        "x": 310,
+        "y": 104,
+        "width": 38,
+        "height": 38,
+        "right": 348,
+        "bottom": 142,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": true,
+        "top": "slower",
+        "scrollHeight": 38,
+        "clientHeight": 38,
+        "scrollWidth": 38,
+        "clientWidth": 38
+      }
+    },
+    {
+      "id": "05-narrow-talk-on_rate_reachable",
+      "status": "PASS",
+      "details": {
+        "x": 352,
+        "y": 115.203125,
+        "width": 30,
+        "height": 15.59375,
+        "right": 382,
+        "bottom": 130.796875,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": true,
+        "top": "rate",
+        "scrollHeight": 16,
+        "clientHeight": 16,
+        "scrollWidth": 30,
+        "clientWidth": 30
+      }
+    },
+    {
+      "id": "05-narrow-talk-on_faster_reachable",
+      "status": "PASS",
+      "details": {
+        "x": 386,
+        "y": 104,
+        "width": 38,
+        "height": 38,
+        "right": 424,
+        "bottom": 142,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": true,
+        "top": "faster",
+        "scrollHeight": 38,
+        "clientHeight": 38,
+        "scrollWidth": 38,
+        "clientWidth": 38
+      }
+    },
+    {
+      "id": "06-narrow-talk-off_toolbar_inside",
+      "status": "PASS",
+      "details": {
+        "x": 10,
+        "y": 10,
+        "width": 420,
+        "height": 193.5625,
+        "right": 430,
+        "bottom": 203.5625,
+        "hidden": false,
+        "display": "flex",
+        "fx": "1",
+        "fy": "0",
+        "hit": true,
+        "top": "hint",
+        "scrollHeight": 194,
+        "clientHeight": 194,
+        "scrollWidth": 420,
+        "clientWidth": 420
+      }
+    },
+    {
+      "id": "06-narrow-talk-off_toolbar_no_overflow",
+      "status": "PASS",
+      "details": {
+        "x": 10,
+        "y": 10,
+        "width": 420,
+        "height": 193.5625,
+        "right": 430,
+        "bottom": 203.5625,
+        "hidden": false,
+        "display": "flex",
+        "fx": "1",
+        "fy": "0",
+        "hit": true,
+        "top": "hint",
+        "scrollHeight": 194,
+        "clientHeight": 194,
+        "scrollWidth": 420,
+        "clientWidth": 420
+      }
+    },
+    {
+      "id": "06-narrow-talk-off_toolbarHandle_reachable",
+      "status": "PASS",
+      "details": {
+        "x": 266,
+        "y": 16,
+        "width": 26,
+        "height": 38,
+        "right": 292,
+        "bottom": 54,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": true,
+        "top": "toolbarHandle",
+        "scrollHeight": 38,
+        "clientHeight": 38,
+        "scrollWidth": 26,
+        "clientWidth": 26
+      }
+    },
+    {
+      "id": "06-narrow-talk-off_talk_reachable",
+      "status": "PASS",
+      "details": {
+        "x": 386,
+        "y": 60,
+        "width": 38,
+        "height": 38,
+        "right": 424,
+        "bottom": 98,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": true,
+        "top": "talk",
+        "scrollHeight": 38,
+        "clientHeight": 38,
+        "scrollWidth": 38,
+        "clientWidth": 38
+      }
+    },
+    {
+      "id": "reload_restores_toolbar_place",
+      "status": "PASS",
+      "details": {
+        "place": {
+          "fx": 1,
+          "fy": 0
+        },
+        "toolbar": {
+          "x": 455,
+          "y": 10,
+          "width": 535,
+          "height": 105.5625,
+          "right": 990,
+          "bottom": 115.5625,
+          "hidden": false,
+          "display": "flex",
+          "fx": "1",
+          "fy": "0",
+          "hit": true,
+          "top": "hint",
+          "scrollHeight": 106,
+          "clientHeight": 106,
+          "scrollWidth": 535,
+          "clientWidth": 535
+        }
+      }
+    },
+    {
+      "id": "reopened_card_restores_place",
+      "status": "PASS",
+      "details": {
+        "place": {
+          "fx": 1,
+          "fy": 1
+        },
+        "card": {
+          "x": 630,
+          "y": 152.6875,
+          "width": 360,
+          "height": 537.3125,
+          "right": 990,
+          "bottom": 690,
+          "hidden": false,
+          "display": "block",
+          "fx": "1",
+          "fy": "1",
+          "hit": true,
+          "top": "cardText",
+          "scrollHeight": 537,
+          "clientHeight": 537,
+          "scrollWidth": 360,
+          "clientWidth": 360
+        }
+      }
+    },
+    {
+      "id": "window_never_shown",
+      "status": "PASS",
+      "details": {}
+    },
+    {
+      "id": "no_network_attempt",
+      "status": "PASS",
+      "details": {}
+    }
+  ],
+  "restrictions": [
+    {
+      "preload_before_modules": true,
+      "at": "2026-10-01T18:38:53.076Z"
+    },
+    {
+      "preload_before_modules": true,
+      "at": "2026-10-01T18:38:57.025Z"
+    }
+  ],
+  "renderer_errors": [],
+  "requests": [],
+  "screenshots": [
+    {
+      "name": "01-wide-talk-off",
+      "scope": "owned offscreen renderer pixels only; not desktop",
+      "paint_wait": "two animation frames and 80ms after the DOM measurements"
+    },
+    {
+      "name": "02-wide-talk-on-before-response",
+      "scope": "owned offscreen renderer pixels only; not desktop",
+      "paint_wait": "two animation frames and 80ms after the DOM measurements"
+    },
+    {
+      "name": "03-wide-response-speaking",
+      "scope": "owned offscreen renderer pixels only; not desktop",
+      "paint_wait": "two animation frames and 80ms after the DOM measurements"
+    },
+    {
+      "name": "04-narrow-response-speaking",
+      "scope": "owned offscreen renderer pixels only; not desktop",
+      "paint_wait": "two animation frames and 80ms after the DOM measurements"
+    },
+    {
+      "name": "05-narrow-talk-on",
+      "scope": "owned offscreen renderer pixels only; not desktop",
+      "paint_wait": "two animation frames and 80ms after the DOM measurements"
+    },
+    {
+      "name": "06-narrow-talk-off",
+      "scope": "owned offscreen renderer pixels only; not desktop",
+      "paint_wait": "two animation frames and 80ms after the DOM measurements"
+    }
+  ],
+  "wip": false,
+  "layouts": {
+    "01-wide-talk-off": {
+      "width": 1000,
+      "height": 700,
+      "toolbar": {
+        "x": 455,
+        "y": 10,
+        "width": 535,
+        "height": 89.96875,
+        "right": 990,
+        "bottom": 99.96875,
+        "hidden": false,
+        "display": "flex",
+        "fx": "1",
+        "fy": "0",
+        "hit": true,
+        "top": "hint",
+        "scrollHeight": 90,
+        "clientHeight": 90,
+        "scrollWidth": 535,
+        "clientWidth": 535
+      },
+      "card": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "right": 0,
+        "bottom": 0,
+        "hidden": true,
+        "display": "none",
+        "fx": "1",
+        "fy": "1",
+        "hit": false,
+        "top": "ink",
+        "scrollHeight": 0,
+        "clientHeight": 0,
+        "scrollWidth": 0,
+        "clientWidth": 0
+      },
+      "answer": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "right": 0,
+        "bottom": 0,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": false,
+        "top": "ink",
+        "scrollHeight": 0,
+        "clientHeight": 0,
+        "scrollWidth": 0,
+        "clientWidth": 0
+      },
+      "cardHandle": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "right": 0,
+        "bottom": 0,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": false,
+        "top": "ink",
+        "scrollHeight": 0,
+        "clientHeight": 0,
+        "scrollWidth": 0,
+        "clientWidth": 0
+      },
+      "controls": {
+        "toolbarHandle": {
+          "x": 461,
+          "y": 35.984375,
+          "width": 26,
+          "height": 38,
+          "right": 487,
+          "bottom": 73.984375,
+          "hidden": false,
+          "display": "block",
+          "fx": "",
+          "fy": "",
+          "hit": true,
+          "top": "toolbarHandle",
+          "scrollHeight": 38,
+          "clientHeight": 38,
+          "scrollWidth": 26,
+          "clientWidth": 26
+        },
+        "talk": {
+          "x": 632,
+          "y": 35.984375,
+          "width": 38,
+          "height": 38,
+          "right": 670,
+          "bottom": 73.984375,
+          "hidden": false,
+          "display": "block",
+          "fx": "",
+          "fy": "",
+          "hit": true,
+          "top": "talk",
+          "scrollHeight": 38,
+          "clientHeight": 38,
+          "scrollWidth": 38,
+          "clientWidth": 38
+        },
+        "mute": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0,
+          "hidden": true,
+          "display": "none",
+          "fx": "",
+          "fy": "",
+          "hit": false,
+          "top": "ink",
+          "scrollHeight": 0,
+          "clientHeight": 0,
+          "scrollWidth": 0,
+          "clientWidth": 0
+        },
+        "slower": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0,
+          "hidden": true,
+          "display": "none",
+          "fx": "",
+          "fy": "",
+          "hit": false,
+          "top": "ink",
+          "scrollHeight": 0,
+          "clientHeight": 0,
+          "scrollWidth": 0,
+          "clientWidth": 0
+        },
+        "rate": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0,
+          "hidden": true,
+          "display": "none",
+          "fx": "",
+          "fy": "",
+          "hit": false,
+          "top": "ink",
+          "scrollHeight": 0,
+          "clientHeight": 0,
+          "scrollWidth": 0,
+          "clientWidth": 0
+        },
+        "faster": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0,
+          "hidden": true,
+          "display": "none",
+          "fx": "",
+          "fy": "",
+          "hit": false,
+          "top": "ink",
+          "scrollHeight": 0,
+          "clientHeight": 0,
+          "scrollWidth": 0,
+          "clientWidth": 0
+        },
+        "interrupt": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0,
+          "hidden": true,
+          "display": "none",
+          "fx": "",
+          "fy": "",
+          "hit": false,
+          "top": "ink",
+          "scrollHeight": 0,
+          "clientHeight": 0,
+          "scrollWidth": 0,
+          "clientWidth": 0
+        }
+      },
+      "state": {
+        "mode": "NAV",
+        "tool": "pen",
+        "placement": "screen",
+        "mouseWrites": false,
+        "interactive": false,
+        "ended": false,
+        "endReason": "",
+        "doc": {
+          "id": "0123456789abcdef",
+          "revision": 0,
+          "visible": [],
+          "history": [],
+          "strokes": 0
+        },
+        "aligned": {},
+        "unsaved": null,
+        "pinned": 0,
+        "retention": {
+          "retained": 1,
+          "refused": 0,
+          "lastRefusal": "",
+          "deferred": 0
+        },
+        "pendingImages": 0,
+        "gesture": null,
+        "frame": 1,
+        "samples": [
+          {
+            "seq": 1,
+            "sampled_at": "2026-10-01T18:38:53.336Z",
+            "monotonic_ms": 335,
+            "state": "fresh",
+            "gap_ms": null,
+            "source": {
+              "kind": "display",
+              "display_id": "qa-generated-display",
+              "source_id": "qa-generated-only",
+              "label": "QA synthetic display",
+              "bounds": {
+                "x": 0,
+                "y": 0,
+                "width": 1000,
+                "height": 700
+              },
+              "scale_factor": 1
+            },
+            "raw": {
+              "width": 1000,
+              "height": 700,
+              "presented_frames": 1,
+              "frame_age_ms": 10,
+              "stream_presented_frames": 1,
+              "taken_at": "2026-10-01T18:38:53.328Z",
+              "pixels_sha256": "c0f34f3871481d81867321fbdf6cd6b8bad783893be73461db6a767c7868d16c",
+              "change": null
+            },
+            "composed": {
+              "ink_session": "0123456789abcdef",
+              "ink_revision": 0,
+              "visible_strokes": 0,
+              "ink_marks": {
+                "verified": 0,
+                "changed": 0,
+                "unknown": 0,
+                "following_content": 0
+              },
+              "transformation": "raw frame 1000×700 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 1.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+              "pixels_sha256": "c0f34f3871481d81867321fbdf6cd6b8bad783893be73461db6a767c7868d16c"
+            }
+          }
+        ],
+        "card": null,
+        "saveText": "Ink is saved on this device at every change.",
+        "hint": "Clicks go to your apps. Capturing this display · frame 1. ChatGPT observes this whole display as it changes: 60 of 60 requests and about 30 min left in this session (its own bounds, not ChatGPT's quota); it has not looked yet. Ink is saved on this device at every change."
+      },
+      "log": [
+        {
+          "kind": "synthetic_canvas_capture"
+        },
+        {
+          "kind": "sample",
+          "args": [
+            {
+              "seq": 1
+            }
+          ]
+        }
+      ],
+      "proof": {
+        "fakeMedia": true,
+        "noRealDevice": true,
+        "noRealVoice": true,
+        "noNetwork": true
+      }
+    },
+    "02-wide-talk-on-before-response": {
+      "width": 1000,
+      "height": 700,
+      "toolbar": {
+        "x": 289.078125,
+        "y": 10,
+        "width": 700.921875,
+        "height": 105.5625,
+        "right": 990,
+        "bottom": 115.5625,
+        "hidden": false,
+        "display": "flex",
+        "fx": "1",
+        "fy": "0",
+        "hit": true,
+        "top": "faster",
+        "scrollHeight": 106,
+        "clientHeight": 106,
+        "scrollWidth": 701,
+        "clientWidth": 701
+      },
+      "card": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "right": 0,
+        "bottom": 0,
+        "hidden": true,
+        "display": "none",
+        "fx": "1",
+        "fy": "1",
+        "hit": false,
+        "top": "ink",
+        "scrollHeight": 0,
+        "clientHeight": 0,
+        "scrollWidth": 0,
+        "clientWidth": 0
+      },
+      "answer": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "right": 0,
+        "bottom": 0,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": false,
+        "top": "ink",
+        "scrollHeight": 0,
+        "clientHeight": 0,
+        "scrollWidth": 0,
+        "clientWidth": 0
+      },
+      "cardHandle": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "right": 0,
+        "bottom": 0,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": false,
+        "top": "ink",
+        "scrollHeight": 0,
+        "clientHeight": 0,
+        "scrollWidth": 0,
+        "clientWidth": 0
+      },
+      "controls": {
+        "toolbarHandle": {
+          "x": 295.078125,
+          "y": 43.78125,
+          "width": 26,
+          "height": 38,
+          "right": 321.078125,
+          "bottom": 81.78125,
+          "hidden": false,
+          "display": "block",
+          "fx": "",
+          "fy": "",
+          "hit": true,
+          "top": "toolbarHandle",
+          "scrollHeight": 38,
+          "clientHeight": 38,
+          "scrollWidth": 26,
+          "clientWidth": 26
+        },
+        "talk": {
+          "x": 466.078125,
+          "y": 43.78125,
+          "width": 38,
+          "height": 38,
+          "right": 504.078125,
+          "bottom": 81.78125,
+          "hidden": false,
+          "display": "block",
+          "fx": "",
+          "fy": "",
+          "hit": true,
+          "top": "talk",
+          "scrollHeight": 38,
+          "clientHeight": 38,
+          "scrollWidth": 38,
+          "clientWidth": 38
+        },
+        "mute": {
+          "x": 508.078125,
+          "y": 43.78125,
+          "width": 43.921875,
+          "height": 38,
+          "right": 552,
+          "bottom": 81.78125,
+          "hidden": false,
+          "display": "block",
+          "fx": "",
+          "fy": "",
+          "hit": true,
+          "top": "mute",
+          "scrollHeight": 38,
+          "clientHeight": 38,
+          "scrollWidth": 44,
+          "clientWidth": 44
+        },
+        "slower": {
+          "x": 556,
+          "y": 43.78125,
+          "width": 38,
+          "height": 38,
+          "right": 594,
+          "bottom": 81.78125,
+          "hidden": false,
+          "display": "block",
+          "fx": "",
+          "fy": "",
+          "hit": true,
+          "top": "slower",
+          "scrollHeight": 38,
+          "clientHeight": 38,
+          "scrollWidth": 38,
+          "clientWidth": 38
+        },
+        "rate": {
+          "x": 598,
+          "y": 54.984375,
+          "width": 30,
+          "height": 15.59375,
+          "right": 628,
+          "bottom": 70.578125,
+          "hidden": false,
+          "display": "block",
+          "fx": "",
+          "fy": "",
+          "hit": true,
+          "top": "rate",
+          "scrollHeight": 16,
+          "clientHeight": 16,
+          "scrollWidth": 30,
+          "clientWidth": 30
+        },
+        "faster": {
+          "x": 632,
+          "y": 43.78125,
+          "width": 38,
+          "height": 38,
+          "right": 670,
+          "bottom": 81.78125,
+          "hidden": false,
+          "display": "block",
+          "fx": "",
+          "fy": "",
+          "hit": true,
+          "top": "faster",
+          "scrollHeight": 38,
+          "clientHeight": 38,
+          "scrollWidth": 38,
+          "clientWidth": 38
+        },
+        "interrupt": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0,
+          "hidden": true,
+          "display": "none",
+          "fx": "",
+          "fy": "",
+          "hit": false,
+          "top": "ink",
+          "scrollHeight": 0,
+          "clientHeight": 0,
+          "scrollWidth": 0,
+          "clientWidth": 0
+        }
+      },
+      "state": {
+        "mode": "NAV",
+        "tool": "pen",
+        "placement": "screen",
+        "mouseWrites": false,
+        "interactive": true,
+        "ended": false,
+        "endReason": "",
+        "doc": {
+          "id": "0123456789abcdef",
+          "revision": 0,
+          "visible": [],
+          "history": [],
+          "strokes": 0
+        },
+        "aligned": {},
+        "unsaved": null,
+        "pinned": 0,
+        "retention": {
+          "retained": 1,
+          "refused": 0,
+          "lastRefusal": "",
+          "deferred": 0
+        },
+        "pendingImages": 0,
+        "gesture": null,
+        "frame": 1,
+        "samples": [
+          {
+            "seq": 1,
+            "sampled_at": "2026-10-01T18:38:53.336Z",
+            "monotonic_ms": 335,
+            "state": "fresh",
+            "gap_ms": null,
+            "source": {
+              "kind": "display",
+              "display_id": "qa-generated-display",
+              "source_id": "qa-generated-only",
+              "label": "QA synthetic display",
+              "bounds": {
+                "x": 0,
+                "y": 0,
+                "width": 1000,
+                "height": 700
+              },
+              "scale_factor": 1
+            },
+            "raw": {
+              "width": 1000,
+              "height": 700,
+              "presented_frames": 1,
+              "frame_age_ms": 10,
+              "stream_presented_frames": 1,
+              "taken_at": "2026-10-01T18:38:53.328Z",
+              "pixels_sha256": "c0f34f3871481d81867321fbdf6cd6b8bad783893be73461db6a767c7868d16c",
+              "change": null
+            },
+            "composed": {
+              "ink_session": "0123456789abcdef",
+              "ink_revision": 0,
+              "visible_strokes": 0,
+              "ink_marks": {
+                "verified": 0,
+                "changed": 0,
+                "unknown": 0,
+                "following_content": 0
+              },
+              "transformation": "raw frame 1000×700 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 1.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+              "pixels_sha256": "c0f34f3871481d81867321fbdf6cd6b8bad783893be73461db6a767c7868d16c"
+            }
+          }
+        ],
+        "card": null,
+        "saveText": "Ink is saved on this device at every change.",
+        "hint": "Clicks go to your apps. Capturing this display · frame 1. ChatGPT observes this whole display as it changes: 60 of 60 requests and about 30 min left in this session (its own bounds, not ChatGPT's quota); it has not looked yet. Talk is on: the responses you ask for from now are read aloud. Ink is saved on this device at every change."
+      },
+      "log": [
+        {
+          "kind": "synthetic_canvas_capture"
+        },
+        {
+          "kind": "sample",
+          "args": [
+            {
+              "seq": 1
+            }
+          ]
+        },
+        {
+          "kind": "interactive",
+          "args": [
+            true
+          ]
+        },
+        {
+          "kind": "talk",
+          "args": [
+            true,
+            false
+          ]
+        }
+      ],
+      "proof": {
+        "fakeMedia": true,
+        "noRealDevice": true,
+        "noRealVoice": true,
+        "noNetwork": true
+      }
+    },
+    "03-wide-response-speaking": {
+      "width": 1000,
+      "height": 700,
+      "toolbar": {
+        "x": 230,
+        "y": 10,
+        "width": 760,
+        "height": 165.15625,
+        "right": 990,
+        "bottom": 175.15625,
+        "hidden": false,
+        "display": "flex",
+        "fx": "1",
+        "fy": "0",
+        "hit": true,
+        "top": "toolbar",
+        "scrollHeight": 165,
+        "clientHeight": 165,
+        "scrollWidth": 760,
+        "clientWidth": 760
+      },
+      "card": {
+        "x": 630,
+        "y": 130,
+        "width": 360,
+        "height": 560,
+        "right": 990,
+        "bottom": 690,
+        "hidden": false,
+        "display": "block",
+        "fx": "1",
+        "fy": "1",
+        "hit": true,
+        "top": "",
+        "scrollHeight": 669,
+        "clientHeight": 560,
+        "scrollWidth": 345,
+        "clientWidth": 345
+      },
+      "answer": {
+        "x": 642,
+        "y": 634.890625,
+        "width": 321,
+        "height": 33.59375,
+        "right": 963,
+        "bottom": 668.484375,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": true,
+        "top": "answer",
+        "scrollHeight": 34,
+        "clientHeight": 34,
+        "scrollWidth": 321,
+        "clientWidth": 321
+      },
+      "cardHandle": {
+        "x": 636,
+        "y": 136,
+        "width": 26,
+        "height": 28,
+        "right": 662,
+        "bottom": 164,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": true,
+        "top": "cardHandle",
+        "scrollHeight": 28,
+        "clientHeight": 28,
+        "scrollWidth": 26,
+        "clientWidth": 26
+      },
+      "controls": {
+        "toolbarHandle": {
+          "x": 246.296875,
+          "y": 16,
+          "width": 26,
+          "height": 38,
+          "right": 272.296875,
+          "bottom": 54,
+          "hidden": false,
+          "display": "block",
+          "fx": "",
+          "fy": "",
+          "hit": true,
+          "top": "toolbarHandle",
+          "scrollHeight": 38,
+          "clientHeight": 38,
+          "scrollWidth": 26,
+          "clientWidth": 26
+        },
+        "talk": {
+          "x": 692.265625,
+          "y": 16,
+          "width": 38,
+          "height": 38,
+          "right": 730.265625,
+          "bottom": 54,
+          "hidden": false,
+          "display": "block",
+          "fx": "",
+          "fy": "",
+          "hit": true,
+          "top": "talk",
+          "scrollHeight": 38,
+          "clientHeight": 38,
+          "scrollWidth": 38,
+          "clientWidth": 38
+        },
+        "mute": {
+          "x": 734.265625,
+          "y": 16,
+          "width": 43.921875,
+          "height": 38,
+          "right": 778.1875,
+          "bottom": 54,
+          "hidden": false,
+          "display": "block",
+          "fx": "",
+          "fy": "",
+          "hit": true,
+          "top": "mute",
+          "scrollHeight": 38,
+          "clientHeight": 38,
+          "scrollWidth": 44,
+          "clientWidth": 44
+        },
+        "slower": {
+          "x": 782.1875,
+          "y": 16,
+          "width": 38,
+          "height": 38,
+          "right": 820.1875,
+          "bottom": 54,
+          "hidden": false,
+          "display": "block",
+          "fx": "",
+          "fy": "",
+          "hit": true,
+          "top": "slower",
+          "scrollHeight": 38,
+          "clientHeight": 38,
+          "scrollWidth": 38,
+          "clientWidth": 38
+        },
+        "rate": {
+          "x": 824.1875,
+          "y": 27.203125,
+          "width": 30,
+          "height": 15.59375,
+          "right": 854.1875,
+          "bottom": 42.796875,
+          "hidden": false,
+          "display": "block",
+          "fx": "",
+          "fy": "",
+          "hit": true,
+          "top": "rate",
+          "scrollHeight": 16,
+          "clientHeight": 16,
+          "scrollWidth": 30,
+          "clientWidth": 30
+        },
+        "faster": {
+          "x": 858.1875,
+          "y": 16,
+          "width": 38,
+          "height": 38,
+          "right": 896.1875,
+          "bottom": 54,
+          "hidden": false,
+          "display": "block",
+          "fx": "",
+          "fy": "",
+          "hit": true,
+          "top": "faster",
+          "scrollHeight": 38,
+          "clientHeight": 38,
+          "scrollWidth": 38,
+          "clientWidth": 38
+        },
+        "interrupt": {
+          "x": 900.1875,
+          "y": 16,
+          "width": 83.8125,
+          "height": 38,
+          "right": 984,
+          "bottom": 54,
+          "hidden": false,
+          "display": "block",
+          "fx": "",
+          "fy": "",
+          "hit": true,
+          "top": "interrupt",
+          "scrollHeight": 38,
+          "clientHeight": 38,
+          "scrollWidth": 84,
+          "clientWidth": 84
+        }
+      },
+      "state": {
+        "mode": "WRITE",
+        "tool": "eraser",
+        "placement": "screen",
+        "mouseWrites": true,
+        "interactive": true,
+        "ended": false,
+        "endReason": "",
+        "doc": {
+          "id": "0123456789abcdef",
+          "revision": 0,
+          "visible": [],
+          "history": [],
+          "strokes": 0
+        },
+        "aligned": {},
+        "unsaved": null,
+        "pinned": 0,
+        "retention": {
+          "retained": 1,
+          "refused": 0,
+          "lastRefusal": "",
+          "deferred": 0
+        },
+        "pendingImages": 0,
+        "gesture": null,
+        "frame": 3,
+        "samples": [
+          {
+            "seq": 1,
+            "sampled_at": "2026-10-01T18:38:53.336Z",
+            "monotonic_ms": 335,
+            "state": "fresh",
+            "gap_ms": null,
+            "source": {
+              "kind": "display",
+              "display_id": "qa-generated-display",
+              "source_id": "qa-generated-only",
+              "label": "QA synthetic display",
+              "bounds": {
+                "x": 0,
+                "y": 0,
+                "width": 1000,
+                "height": 700
+              },
+              "scale_factor": 1
+            },
+            "raw": {
+              "width": 1000,
+              "height": 700,
+              "presented_frames": 1,
+              "frame_age_ms": 10,
+              "stream_presented_frames": 1,
+              "taken_at": "2026-10-01T18:38:53.328Z",
+              "pixels_sha256": "c0f34f3871481d81867321fbdf6cd6b8bad783893be73461db6a767c7868d16c",
+              "change": null
+            },
+            "composed": {
+              "ink_session": "0123456789abcdef",
+              "ink_revision": 0,
+              "visible_strokes": 0,
+              "ink_marks": {
+                "verified": 0,
+                "changed": 0,
+                "unknown": 0,
+                "following_content": 0
+              },
+              "transformation": "raw frame 1000×700 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 1.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+              "pixels_sha256": "c0f34f3871481d81867321fbdf6cd6b8bad783893be73461db6a767c7868d16c"
+            }
+          },
+          {
+            "seq": 2,
+            "sampled_at": "2026-10-01T18:38:54.358Z",
+            "monotonic_ms": 1357,
+            "state": "fresh",
+            "gap_ms": null,
+            "source": {
+              "kind": "display",
+              "display_id": "qa-generated-display",
+              "source_id": "qa-generated-only",
+              "label": "QA synthetic display",
+              "bounds": {
+                "x": 0,
+                "y": 0,
+                "width": 1000,
+                "height": 700
+              },
+              "scale_factor": 1
+            },
+            "raw": {
+              "width": 1000,
+              "height": 700,
+              "presented_frames": 11,
+              "frame_age_ms": 39,
+              "stream_presented_frames": 11,
+              "taken_at": "2026-10-01T18:38:54.352Z",
+              "pixels_sha256": "c0f34f3871481d81867321fbdf6cd6b8bad783893be73461db6a767c7868d16c",
+              "change": 0
+            },
+            "composed": {
+              "ink_session": "0123456789abcdef",
+              "ink_revision": 0,
+              "visible_strokes": 0,
+              "ink_marks": {
+                "verified": 0,
+                "changed": 0,
+                "unknown": 0,
+                "following_content": 0
+              },
+              "transformation": "raw frame 1000×700 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 1.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+              "pixels_sha256": "c0f34f3871481d81867321fbdf6cd6b8bad783893be73461db6a767c7868d16c"
+            }
+          },
+          {
+            "seq": 3,
+            "sampled_at": "2026-10-01T18:38:55.373Z",
+            "monotonic_ms": 2371,
+            "state": "fresh",
+            "gap_ms": null,
+            "source": {
+              "kind": "display",
+              "display_id": "qa-generated-display",
+              "source_id": "qa-generated-only",
+              "label": "QA synthetic display",
+              "bounds": {
+                "x": 0,
+                "y": 0,
+                "width": 1000,
+                "height": 700
+              },
+              "scale_factor": 1
+            },
+            "raw": {
+              "width": 1000,
+              "height": 700,
+              "presented_frames": 21,
+              "frame_age_ms": 54,
+              "stream_presented_frames": 21,
+              "taken_at": "2026-10-01T18:38:55.366Z",
+              "pixels_sha256": "c0f34f3871481d81867321fbdf6cd6b8bad783893be73461db6a767c7868d16c",
+              "change": 0
+            },
+            "composed": {
+              "ink_session": "0123456789abcdef",
+              "ink_revision": 0,
+              "visible_strokes": 0,
+              "ink_marks": {
+                "verified": 0,
+                "changed": 0,
+                "unknown": 0,
+                "following_content": 0
+              },
+              "transformation": "raw frame 1000×700 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 1.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+              "pixels_sha256": "c0f34f3871481d81867321fbdf6cd6b8bad783893be73461db6a767c7868d16c"
+            }
+          }
+        ],
+        "card": {
+          "text": "Your focus: this part of the screen. With the AI running, ChatGPT is given the whole display as it was then, with this part marked, and asked for a small hint; nothing more than a hint is asked for by a circle alone.\nRegion 262,392 126×106 DIP on QA synthetic display = 126×106 px of frame 2 (captured 11:38:54), with your ink revision 0 drawn over it.",
+          "image": true
+        },
+        "saveText": "Ink is saved on this device at every change.",
+        "hint": "Pen and mouse write; new ink fixed on the screen. Capturing this display · frame 3. ChatGPT observes this whole display as it changes: 60 of 60 requests and about 30 min left in this session (its own bounds, not ChatGPT's quota); it has not looked yet. Talk is on: the responses you ask for from now are read aloud. Ink is saved on this device at every change."
+      },
+      "log": [
+        {
+          "kind": "synthetic_canvas_capture"
+        },
+        {
+          "kind": "sample",
+          "args": [
+            {
+              "seq": 1
+            }
+          ]
+        },
+        {
+          "kind": "interactive",
+          "args": [
+            true
+          ]
+        },
+        {
+          "kind": "talk",
+          "args": [
+            true,
+            false
+          ]
+        },
+        {
+          "kind": "place",
+          "args": [
+            "toolbar",
+            {
+              "fx": 0.49834835675494094,
+              "fy": 0.16537917747664976
+            }
+          ]
+        },
+        {
+          "kind": "sample",
+          "args": [
+            {
+              "seq": 2
+            }
+          ]
+        },
+        {
+          "kind": "place",
+          "args": [
+            "toolbar",
+            {
+              "fx": 0.3619556773792614,
+              "fy": 0.233351809481453
+            }
+          ]
+        },
+        {
+          "kind": "place",
+          "args": [
+            "toolbar",
+            {
+              "fx": 1,
+              "fy": 0
+            }
+          ]
+        },
+        {
+          "kind": "askSelection",
+          "args": [
+            "qa-selection-1",
+            "qa-request-1"
+          ]
+        },
+        {
+          "kind": "askPresented",
+          "args": [
+            "qa-selection-1",
+            "qa-request-1",
+            true
+          ]
+        },
+        {
+          "kind": "fakeSay",
+          "args": [
+            "qa-selection-1",
+            "qa-request-1",
+            0
+          ]
+        },
+        {
+          "kind": "sample",
+          "args": [
+            {
+              "seq": 3
+            }
+          ]
+        }
+      ],
+      "proof": {
+        "fakeMedia": true,
+        "noRealDevice": true,
+        "noRealVoice": true,
+        "noNetwork": true
+      }
+    },
+    "04-narrow-response-speaking": {
+      "width": 440,
+      "height": 320,
+      "toolbar": {
+        "x": 10,
+        "y": 10,
+        "width": 420,
+        "height": 253.15625,
+        "right": 430,
+        "bottom": 263.15625,
+        "hidden": false,
+        "display": "flex",
+        "fx": "1",
+        "fy": "0",
+        "hit": false,
+        "top": "card",
+        "scrollHeight": 253,
+        "clientHeight": 253,
+        "scrollWidth": 420,
+        "clientWidth": 420
+      },
+      "card": {
+        "x": 70,
+        "y": 54,
+        "width": 360,
+        "height": 256,
+        "right": 430,
+        "bottom": 310,
+        "hidden": false,
+        "display": "block",
+        "fx": "1",
+        "fy": "1",
+        "hit": true,
+        "top": "cardText",
+        "scrollHeight": 669,
+        "clientHeight": 256,
+        "scrollWidth": 345,
+        "clientWidth": 345
+      },
+      "answer": {
+        "x": 82,
+        "y": 558.890625,
+        "width": 321,
+        "height": 33.59375,
+        "right": 403,
+        "bottom": 592.484375,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": false,
+        "scrollHeight": 34,
+        "clientHeight": 34,
+        "scrollWidth": 321,
+        "clientWidth": 321
+      },
+      "cardHandle": {
+        "x": 76,
+        "y": 60,
+        "width": 26,
+        "height": 28,
+        "right": 102,
+        "bottom": 88,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": true,
+        "top": "cardHandle",
+        "scrollHeight": 28,
+        "clientHeight": 28,
+        "scrollWidth": 26,
+        "clientWidth": 26
+      },
+      "controls": {
+        "toolbarHandle": {
+          "x": 266,
+          "y": 16,
+          "width": 26,
+          "height": 38,
+          "right": 292,
+          "bottom": 54,
+          "hidden": false,
+          "display": "block",
+          "fx": "",
+          "fy": "",
+          "hit": true,
+          "top": "toolbarHandle",
+          "scrollHeight": 38,
+          "clientHeight": 38,
+          "scrollWidth": 26,
+          "clientWidth": 26
+        },
+        "talk": {
+          "x": 132.265625,
+          "y": 104,
+          "width": 38,
+          "height": 38,
+          "right": 170.265625,
+          "bottom": 142,
+          "hidden": false,
+          "display": "block",
+          "fx": "",
+          "fy": "",
+          "hit": false,
+          "top": "crop",
+          "scrollHeight": 38,
+          "clientHeight": 38,
+          "scrollWidth": 38,
+          "clientWidth": 38
+        },
+        "mute": {
+          "x": 174.265625,
+          "y": 104,
+          "width": 43.921875,
+          "height": 38,
+          "right": 218.1875,
+          "bottom": 142,
+          "hidden": false,
+          "display": "block",
+          "fx": "",
+          "fy": "",
+          "hit": false,
+          "top": "crop",
+          "scrollHeight": 38,
+          "clientHeight": 38,
+          "scrollWidth": 44,
+          "clientWidth": 44
+        },
+        "slower": {
+          "x": 222.1875,
+          "y": 104,
+          "width": 38,
+          "height": 38,
+          "right": 260.1875,
+          "bottom": 142,
+          "hidden": false,
+          "display": "block",
+          "fx": "",
+          "fy": "",
+          "hit": false,
+          "top": "card",
+          "scrollHeight": 38,
+          "clientHeight": 38,
+          "scrollWidth": 38,
+          "clientWidth": 38
+        },
+        "rate": {
+          "x": 264.1875,
+          "y": 115.203125,
+          "width": 30,
+          "height": 15.59375,
+          "right": 294.1875,
+          "bottom": 130.796875,
+          "hidden": false,
+          "display": "block",
+          "fx": "",
+          "fy": "",
+          "hit": false,
+          "top": "card",
+          "scrollHeight": 16,
+          "clientHeight": 16,
+          "scrollWidth": 30,
+          "clientWidth": 30
+        },
+        "faster": {
+          "x": 298.1875,
+          "y": 104,
+          "width": 38,
+          "height": 38,
+          "right": 336.1875,
+          "bottom": 142,
+          "hidden": false,
+          "display": "block",
+          "fx": "",
+          "fy": "",
+          "hit": false,
+          "top": "card",
+          "scrollHeight": 38,
+          "clientHeight": 38,
+          "scrollWidth": 38,
+          "clientWidth": 38
+        },
+        "interrupt": {
+          "x": 340.1875,
+          "y": 104,
+          "width": 83.8125,
+          "height": 38,
+          "right": 424,
+          "bottom": 142,
+          "hidden": false,
+          "display": "block",
+          "fx": "",
+          "fy": "",
+          "hit": false,
+          "top": "card",
+          "scrollHeight": 38,
+          "clientHeight": 38,
+          "scrollWidth": 84,
+          "clientWidth": 84
+        }
+      },
+      "state": {
+        "mode": "WRITE",
+        "tool": "eraser",
+        "placement": "screen",
+        "mouseWrites": true,
+        "interactive": true,
+        "ended": false,
+        "endReason": "",
+        "doc": {
+          "id": "0123456789abcdef",
+          "revision": 0,
+          "visible": [],
+          "history": [],
+          "strokes": 0
+        },
+        "aligned": {},
+        "unsaved": null,
+        "pinned": 0,
+        "retention": {
+          "retained": 1,
+          "refused": 0,
+          "lastRefusal": "",
+          "deferred": 0
+        },
+        "pendingImages": 0,
+        "gesture": null,
+        "frame": 3,
+        "samples": [
+          {
+            "seq": 1,
+            "sampled_at": "2026-10-01T18:38:53.336Z",
+            "monotonic_ms": 335,
+            "state": "fresh",
+            "gap_ms": null,
+            "source": {
+              "kind": "display",
+              "display_id": "qa-generated-display",
+              "source_id": "qa-generated-only",
+              "label": "QA synthetic display",
+              "bounds": {
+                "x": 0,
+                "y": 0,
+                "width": 1000,
+                "height": 700
+              },
+              "scale_factor": 1
+            },
+            "raw": {
+              "width": 1000,
+              "height": 700,
+              "presented_frames": 1,
+              "frame_age_ms": 10,
+              "stream_presented_frames": 1,
+              "taken_at": "2026-10-01T18:38:53.328Z",
+              "pixels_sha256": "c0f34f3871481d81867321fbdf6cd6b8bad783893be73461db6a767c7868d16c",
+              "change": null
+            },
+            "composed": {
+              "ink_session": "0123456789abcdef",
+              "ink_revision": 0,
+              "visible_strokes": 0,
+              "ink_marks": {
+                "verified": 0,
+                "changed": 0,
+                "unknown": 0,
+                "following_content": 0
+              },
+              "transformation": "raw frame 1000×700 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 1.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+              "pixels_sha256": "c0f34f3871481d81867321fbdf6cd6b8bad783893be73461db6a767c7868d16c"
+            }
+          },
+          {
+            "seq": 2,
+            "sampled_at": "2026-10-01T18:38:54.358Z",
+            "monotonic_ms": 1357,
+            "state": "fresh",
+            "gap_ms": null,
+            "source": {
+              "kind": "display",
+              "display_id": "qa-generated-display",
+              "source_id": "qa-generated-only",
+              "label": "QA synthetic display",
+              "bounds": {
+                "x": 0,
+                "y": 0,
+                "width": 1000,
+                "height": 700
+              },
+              "scale_factor": 1
+            },
+            "raw": {
+              "width": 1000,
+              "height": 700,
+              "presented_frames": 11,
+              "frame_age_ms": 39,
+              "stream_presented_frames": 11,
+              "taken_at": "2026-10-01T18:38:54.352Z",
+              "pixels_sha256": "c0f34f3871481d81867321fbdf6cd6b8bad783893be73461db6a767c7868d16c",
+              "change": 0
+            },
+            "composed": {
+              "ink_session": "0123456789abcdef",
+              "ink_revision": 0,
+              "visible_strokes": 0,
+              "ink_marks": {
+                "verified": 0,
+                "changed": 0,
+                "unknown": 0,
+                "following_content": 0
+              },
+              "transformation": "raw frame 1000×700 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 1.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+              "pixels_sha256": "c0f34f3871481d81867321fbdf6cd6b8bad783893be73461db6a767c7868d16c"
+            }
+          },
+          {
+            "seq": 3,
+            "sampled_at": "2026-10-01T18:38:55.373Z",
+            "monotonic_ms": 2371,
+            "state": "fresh",
+            "gap_ms": null,
+            "source": {
+              "kind": "display",
+              "display_id": "qa-generated-display",
+              "source_id": "qa-generated-only",
+              "label": "QA synthetic display",
+              "bounds": {
+                "x": 0,
+                "y": 0,
+                "width": 1000,
+                "height": 700
+              },
+              "scale_factor": 1
+            },
+            "raw": {
+              "width": 1000,
+              "height": 700,
+              "presented_frames": 21,
+              "frame_age_ms": 54,
+              "stream_presented_frames": 21,
+              "taken_at": "2026-10-01T18:38:55.366Z",
+              "pixels_sha256": "c0f34f3871481d81867321fbdf6cd6b8bad783893be73461db6a767c7868d16c",
+              "change": 0
+            },
+            "composed": {
+              "ink_session": "0123456789abcdef",
+              "ink_revision": 0,
+              "visible_strokes": 0,
+              "ink_marks": {
+                "verified": 0,
+                "changed": 0,
+                "unknown": 0,
+                "following_content": 0
+              },
+              "transformation": "raw frame 1000×700 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 1.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+              "pixels_sha256": "c0f34f3871481d81867321fbdf6cd6b8bad783893be73461db6a767c7868d16c"
+            }
+          }
+        ],
+        "card": {
+          "text": "Your focus: this part of the screen. With the AI running, ChatGPT is given the whole display as it was then, with this part marked, and asked for a small hint; nothing more than a hint is asked for by a circle alone.\nRegion 262,392 126×106 DIP on QA synthetic display = 126×106 px of frame 2 (captured 11:38:54), with your ink revision 0 drawn over it.",
+          "image": true
+        },
+        "saveText": "Ink is saved on this device at every change.",
+        "hint": "Pen and mouse write; new ink fixed on the screen. Capturing this display · frame 3. ChatGPT observes this whole display as it changes: 60 of 60 requests and about 30 min left in this session (its own bounds, not ChatGPT's quota); it has not looked yet. Talk is on: the responses you ask for from now are read aloud. Ink is saved on this device at every change."
+      },
+      "log": [
+        {
+          "kind": "synthetic_canvas_capture"
+        },
+        {
+          "kind": "sample",
+          "args": [
+            {
+              "seq": 1
+            }
+          ]
+        },
+        {
+          "kind": "interactive",
+          "args": [
+            true
+          ]
+        },
+        {
+          "kind": "talk",
+          "args": [
+            true,
+            false
+          ]
+        },
+        {
+          "kind": "place",
+          "args": [
+            "toolbar",
+            {
+              "fx": 0.49834835675494094,
+              "fy": 0.16537917747664976
+            }
+          ]
+        },
+        {
+          "kind": "sample",
+          "args": [
+            {
+              "seq": 2
+            }
+          ]
+        },
+        {
+          "kind": "place",
+          "args": [
+            "toolbar",
+            {
+              "fx": 0.3619556773792614,
+              "fy": 0.233351809481453
+            }
+          ]
+        },
+        {
+          "kind": "place",
+          "args": [
+            "toolbar",
+            {
+              "fx": 1,
+              "fy": 0
+            }
+          ]
+        },
+        {
+          "kind": "askSelection",
+          "args": [
+            "qa-selection-1",
+            "qa-request-1"
+          ]
+        },
+        {
+          "kind": "askPresented",
+          "args": [
+            "qa-selection-1",
+            "qa-request-1",
+            true
+          ]
+        },
+        {
+          "kind": "fakeSay",
+          "args": [
+            "qa-selection-1",
+            "qa-request-1",
+            0
+          ]
+        },
+        {
+          "kind": "sample",
+          "args": [
+            {
+              "seq": 3
+            }
+          ]
+        },
+        {
+          "kind": "place",
+          "args": [
+            "caption",
+            {
+              "fx": 0.6935483529590064,
+              "fy": 0.4166666666666667
+            }
+          ]
+        },
+        {
+          "kind": "place",
+          "args": [
+            "caption",
+            {
+              "fx": 0,
+              "fy": 0
+            }
+          ]
+        },
+        {
+          "kind": "place",
+          "args": [
+            "caption",
+            {
+              "fx": 1,
+              "fy": 1
+            }
+          ]
+        }
+      ],
+      "proof": {
+        "fakeMedia": true,
+        "noRealDevice": true,
+        "noRealVoice": true,
+        "noNetwork": true
+      }
+    },
+    "05-narrow-talk-on": {
+      "width": 440,
+      "height": 320,
+      "toolbar": {
+        "x": 10,
+        "y": 10,
+        "width": 420,
+        "height": 253.15625,
+        "right": 430,
+        "bottom": 263.15625,
+        "hidden": false,
+        "display": "flex",
+        "fx": "1",
+        "fy": "0",
+        "hit": true,
+        "top": "talkControls",
+        "scrollHeight": 253,
+        "clientHeight": 253,
+        "scrollWidth": 420,
+        "clientWidth": 420
+      },
+      "card": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "right": 0,
+        "bottom": 0,
+        "hidden": true,
+        "display": "none",
+        "fx": "1",
+        "fy": "1",
+        "hit": false,
+        "top": "ink",
+        "scrollHeight": 0,
+        "clientHeight": 0,
+        "scrollWidth": 0,
+        "clientWidth": 0
+      },
+      "answer": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "right": 0,
+        "bottom": 0,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": false,
+        "top": "ink",
+        "scrollHeight": 0,
+        "clientHeight": 0,
+        "scrollWidth": 0,
+        "clientWidth": 0
+      },
+      "cardHandle": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "right": 0,
+        "bottom": 0,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": false,
+        "top": "ink",
+        "scrollHeight": 0,
+        "clientHeight": 0,
+        "scrollWidth": 0,
+        "clientWidth": 0
+      },
+      "controls": {
+        "toolbarHandle": {
+          "x": 266,
+          "y": 16,
+          "width": 26,
+          "height": 38,
+          "right": 292,
+          "bottom": 54,
+          "hidden": false,
+          "display": "block",
+          "fx": "",
+          "fy": "",
+          "hit": true,
+          "top": "toolbarHandle",
+          "scrollHeight": 38,
+          "clientHeight": 38,
+          "scrollWidth": 26,
+          "clientWidth": 26
+        },
+        "talk": {
+          "x": 220.078125,
+          "y": 104,
+          "width": 38,
+          "height": 38,
+          "right": 258.078125,
+          "bottom": 142,
+          "hidden": false,
+          "display": "block",
+          "fx": "",
+          "fy": "",
+          "hit": true,
+          "top": "talk",
+          "scrollHeight": 38,
+          "clientHeight": 38,
+          "scrollWidth": 38,
+          "clientWidth": 38
+        },
+        "mute": {
+          "x": 262.078125,
+          "y": 104,
+          "width": 43.921875,
+          "height": 38,
+          "right": 306,
+          "bottom": 142,
+          "hidden": false,
+          "display": "block",
+          "fx": "",
+          "fy": "",
+          "hit": true,
+          "top": "mute",
+          "scrollHeight": 38,
+          "clientHeight": 38,
+          "scrollWidth": 44,
+          "clientWidth": 44
+        },
+        "slower": {
+          "x": 310,
+          "y": 104,
+          "width": 38,
+          "height": 38,
+          "right": 348,
+          "bottom": 142,
+          "hidden": false,
+          "display": "block",
+          "fx": "",
+          "fy": "",
+          "hit": true,
+          "top": "slower",
+          "scrollHeight": 38,
+          "clientHeight": 38,
+          "scrollWidth": 38,
+          "clientWidth": 38
+        },
+        "rate": {
+          "x": 352,
+          "y": 115.203125,
+          "width": 30,
+          "height": 15.59375,
+          "right": 382,
+          "bottom": 130.796875,
+          "hidden": false,
+          "display": "block",
+          "fx": "",
+          "fy": "",
+          "hit": true,
+          "top": "rate",
+          "scrollHeight": 16,
+          "clientHeight": 16,
+          "scrollWidth": 30,
+          "clientWidth": 30
+        },
+        "faster": {
+          "x": 386,
+          "y": 104,
+          "width": 38,
+          "height": 38,
+          "right": 424,
+          "bottom": 142,
+          "hidden": false,
+          "display": "block",
+          "fx": "",
+          "fy": "",
+          "hit": true,
+          "top": "faster",
+          "scrollHeight": 38,
+          "clientHeight": 38,
+          "scrollWidth": 38,
+          "clientWidth": 38
+        },
+        "interrupt": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0,
+          "hidden": true,
+          "display": "none",
+          "fx": "",
+          "fy": "",
+          "hit": false,
+          "top": "ink",
+          "scrollHeight": 0,
+          "clientHeight": 0,
+          "scrollWidth": 0,
+          "clientWidth": 0
+        }
+      },
+      "state": {
+        "mode": "WRITE",
+        "tool": "eraser",
+        "placement": "screen",
+        "mouseWrites": true,
+        "interactive": true,
+        "ended": false,
+        "endReason": "",
+        "doc": {
+          "id": "0123456789abcdef",
+          "revision": 0,
+          "visible": [],
+          "history": [],
+          "strokes": 0
+        },
+        "aligned": {},
+        "unsaved": null,
+        "pinned": 0,
+        "retention": {
+          "retained": 1,
+          "refused": 0,
+          "lastRefusal": "",
+          "deferred": 0
+        },
+        "pendingImages": 0,
+        "gesture": null,
+        "frame": 4,
+        "samples": [
+          {
+            "seq": 1,
+            "sampled_at": "2026-10-01T18:38:53.336Z",
+            "monotonic_ms": 335,
+            "state": "fresh",
+            "gap_ms": null,
+            "source": {
+              "kind": "display",
+              "display_id": "qa-generated-display",
+              "source_id": "qa-generated-only",
+              "label": "QA synthetic display",
+              "bounds": {
+                "x": 0,
+                "y": 0,
+                "width": 1000,
+                "height": 700
+              },
+              "scale_factor": 1
+            },
+            "raw": {
+              "width": 1000,
+              "height": 700,
+              "presented_frames": 1,
+              "frame_age_ms": 10,
+              "stream_presented_frames": 1,
+              "taken_at": "2026-10-01T18:38:53.328Z",
+              "pixels_sha256": "c0f34f3871481d81867321fbdf6cd6b8bad783893be73461db6a767c7868d16c",
+              "change": null
+            },
+            "composed": {
+              "ink_session": "0123456789abcdef",
+              "ink_revision": 0,
+              "visible_strokes": 0,
+              "ink_marks": {
+                "verified": 0,
+                "changed": 0,
+                "unknown": 0,
+                "following_content": 0
+              },
+              "transformation": "raw frame 1000×700 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 1.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+              "pixels_sha256": "c0f34f3871481d81867321fbdf6cd6b8bad783893be73461db6a767c7868d16c"
+            }
+          },
+          {
+            "seq": 2,
+            "sampled_at": "2026-10-01T18:38:54.358Z",
+            "monotonic_ms": 1357,
+            "state": "fresh",
+            "gap_ms": null,
+            "source": {
+              "kind": "display",
+              "display_id": "qa-generated-display",
+              "source_id": "qa-generated-only",
+              "label": "QA synthetic display",
+              "bounds": {
+                "x": 0,
+                "y": 0,
+                "width": 1000,
+                "height": 700
+              },
+              "scale_factor": 1
+            },
+            "raw": {
+              "width": 1000,
+              "height": 700,
+              "presented_frames": 11,
+              "frame_age_ms": 39,
+              "stream_presented_frames": 11,
+              "taken_at": "2026-10-01T18:38:54.352Z",
+              "pixels_sha256": "c0f34f3871481d81867321fbdf6cd6b8bad783893be73461db6a767c7868d16c",
+              "change": 0
+            },
+            "composed": {
+              "ink_session": "0123456789abcdef",
+              "ink_revision": 0,
+              "visible_strokes": 0,
+              "ink_marks": {
+                "verified": 0,
+                "changed": 0,
+                "unknown": 0,
+                "following_content": 0
+              },
+              "transformation": "raw frame 1000×700 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 1.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+              "pixels_sha256": "c0f34f3871481d81867321fbdf6cd6b8bad783893be73461db6a767c7868d16c"
+            }
+          },
+          {
+            "seq": 3,
+            "sampled_at": "2026-10-01T18:38:55.373Z",
+            "monotonic_ms": 2371,
+            "state": "fresh",
+            "gap_ms": null,
+            "source": {
+              "kind": "display",
+              "display_id": "qa-generated-display",
+              "source_id": "qa-generated-only",
+              "label": "QA synthetic display",
+              "bounds": {
+                "x": 0,
+                "y": 0,
+                "width": 1000,
+                "height": 700
+              },
+              "scale_factor": 1
+            },
+            "raw": {
+              "width": 1000,
+              "height": 700,
+              "presented_frames": 21,
+              "frame_age_ms": 54,
+              "stream_presented_frames": 21,
+              "taken_at": "2026-10-01T18:38:55.366Z",
+              "pixels_sha256": "c0f34f3871481d81867321fbdf6cd6b8bad783893be73461db6a767c7868d16c",
+              "change": 0
+            },
+            "composed": {
+              "ink_session": "0123456789abcdef",
+              "ink_revision": 0,
+              "visible_strokes": 0,
+              "ink_marks": {
+                "verified": 0,
+                "changed": 0,
+                "unknown": 0,
+                "following_content": 0
+              },
+              "transformation": "raw frame 1000×700 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 1.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+              "pixels_sha256": "c0f34f3871481d81867321fbdf6cd6b8bad783893be73461db6a767c7868d16c"
+            }
+          },
+          {
+            "seq": 4,
+            "sampled_at": "2026-10-01T18:38:56.389Z",
+            "monotonic_ms": 3388,
+            "state": "fresh",
+            "gap_ms": null,
+            "source": {
+              "kind": "display",
+              "display_id": "qa-generated-display",
+              "source_id": "qa-generated-only",
+              "label": "QA synthetic display",
+              "bounds": {
+                "x": 0,
+                "y": 0,
+                "width": 1000,
+                "height": 700
+              },
+              "scale_factor": 1
+            },
+            "raw": {
+              "width": 1000,
+              "height": 700,
+              "presented_frames": 31,
+              "frame_age_ms": 70,
+              "stream_presented_frames": 31,
+              "taken_at": "2026-10-01T18:38:56.380Z",
+              "pixels_sha256": "c0f34f3871481d81867321fbdf6cd6b8bad783893be73461db6a767c7868d16c",
+              "change": 0
+            },
+            "composed": {
+              "ink_session": "0123456789abcdef",
+              "ink_revision": 0,
+              "visible_strokes": 0,
+              "ink_marks": {
+                "verified": 0,
+                "changed": 0,
+                "unknown": 0,
+                "following_content": 0
+              },
+              "transformation": "raw frame 1000×700 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 1.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+              "pixels_sha256": "c0f34f3871481d81867321fbdf6cd6b8bad783893be73461db6a767c7868d16c"
+            }
+          }
+        ],
+        "card": null,
+        "saveText": "Ink is saved on this device at every change.",
+        "hint": "Pen and mouse write; new ink fixed on the screen. Capturing this display · frame 4. ChatGPT observes this whole display as it changes: 60 of 60 requests and about 30 min left in this session (its own bounds, not ChatGPT's quota); it has not looked yet. Talk is on: the responses you ask for from now are read aloud. Ink is saved on this device at every change."
+      },
+      "log": [
+        {
+          "kind": "synthetic_canvas_capture"
+        },
+        {
+          "kind": "sample",
+          "args": [
+            {
+              "seq": 1
+            }
+          ]
+        },
+        {
+          "kind": "interactive",
+          "args": [
+            true
+          ]
+        },
+        {
+          "kind": "talk",
+          "args": [
+            true,
+            false
+          ]
+        },
+        {
+          "kind": "place",
+          "args": [
+            "toolbar",
+            {
+              "fx": 0.49834835675494094,
+              "fy": 0.16537917747664976
+            }
+          ]
+        },
+        {
+          "kind": "sample",
+          "args": [
+            {
+              "seq": 2
+            }
+          ]
+        },
+        {
+          "kind": "place",
+          "args": [
+            "toolbar",
+            {
+              "fx": 0.3619556773792614,
+              "fy": 0.233351809481453
+            }
+          ]
+        },
+        {
+          "kind": "place",
+          "args": [
+            "toolbar",
+            {
+              "fx": 1,
+              "fy": 0
+            }
+          ]
+        },
+        {
+          "kind": "askSelection",
+          "args": [
+            "qa-selection-1",
+            "qa-request-1"
+          ]
+        },
+        {
+          "kind": "askPresented",
+          "args": [
+            "qa-selection-1",
+            "qa-request-1",
+            true
+          ]
+        },
+        {
+          "kind": "fakeSay",
+          "args": [
+            "qa-selection-1",
+            "qa-request-1",
+            0
+          ]
+        },
+        {
+          "kind": "sample",
+          "args": [
+            {
+              "seq": 3
+            }
+          ]
+        },
+        {
+          "kind": "place",
+          "args": [
+            "caption",
+            {
+              "fx": 0.6935483529590064,
+              "fy": 0.4166666666666667
+            }
+          ]
+        },
+        {
+          "kind": "place",
+          "args": [
+            "caption",
+            {
+              "fx": 0,
+              "fy": 0
+            }
+          ]
+        },
+        {
+          "kind": "place",
+          "args": [
+            "caption",
+            {
+              "fx": 1,
+              "fy": 1
+            }
+          ]
+        },
+        {
+          "kind": "sample",
+          "args": [
+            {
+              "seq": 4
+            }
+          ]
+        },
+        {
+          "kind": "hush",
+          "args": []
+        },
+        {
+          "kind": "askClosed",
+          "args": []
+        }
+      ],
+      "proof": {
+        "fakeMedia": true,
+        "noRealDevice": true,
+        "noRealVoice": true,
+        "noNetwork": true
+      }
+    },
+    "06-narrow-talk-off": {
+      "width": 440,
+      "height": 320,
+      "toolbar": {
+        "x": 10,
+        "y": 10,
+        "width": 420,
+        "height": 193.5625,
+        "right": 430,
+        "bottom": 203.5625,
+        "hidden": false,
+        "display": "flex",
+        "fx": "1",
+        "fy": "0",
+        "hit": true,
+        "top": "hint",
+        "scrollHeight": 194,
+        "clientHeight": 194,
+        "scrollWidth": 420,
+        "clientWidth": 420
+      },
+      "card": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "right": 0,
+        "bottom": 0,
+        "hidden": true,
+        "display": "none",
+        "fx": "1",
+        "fy": "1",
+        "hit": false,
+        "top": "ink",
+        "scrollHeight": 0,
+        "clientHeight": 0,
+        "scrollWidth": 0,
+        "clientWidth": 0
+      },
+      "answer": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "right": 0,
+        "bottom": 0,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": false,
+        "top": "ink",
+        "scrollHeight": 0,
+        "clientHeight": 0,
+        "scrollWidth": 0,
+        "clientWidth": 0
+      },
+      "cardHandle": {
+        "x": 0,
+        "y": 0,
+        "width": 0,
+        "height": 0,
+        "right": 0,
+        "bottom": 0,
+        "hidden": false,
+        "display": "block",
+        "fx": "",
+        "fy": "",
+        "hit": false,
+        "top": "ink",
+        "scrollHeight": 0,
+        "clientHeight": 0,
+        "scrollWidth": 0,
+        "clientWidth": 0
+      },
+      "controls": {
+        "toolbarHandle": {
+          "x": 266,
+          "y": 16,
+          "width": 26,
+          "height": 38,
+          "right": 292,
+          "bottom": 54,
+          "hidden": false,
+          "display": "block",
+          "fx": "",
+          "fy": "",
+          "hit": true,
+          "top": "toolbarHandle",
+          "scrollHeight": 38,
+          "clientHeight": 38,
+          "scrollWidth": 26,
+          "clientWidth": 26
+        },
+        "talk": {
+          "x": 386,
+          "y": 60,
+          "width": 38,
+          "height": 38,
+          "right": 424,
+          "bottom": 98,
+          "hidden": false,
+          "display": "block",
+          "fx": "",
+          "fy": "",
+          "hit": true,
+          "top": "talk",
+          "scrollHeight": 38,
+          "clientHeight": 38,
+          "scrollWidth": 38,
+          "clientWidth": 38
+        },
+        "mute": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0,
+          "hidden": true,
+          "display": "none",
+          "fx": "",
+          "fy": "",
+          "hit": false,
+          "top": "ink",
+          "scrollHeight": 0,
+          "clientHeight": 0,
+          "scrollWidth": 0,
+          "clientWidth": 0
+        },
+        "slower": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0,
+          "hidden": true,
+          "display": "none",
+          "fx": "",
+          "fy": "",
+          "hit": false,
+          "top": "ink",
+          "scrollHeight": 0,
+          "clientHeight": 0,
+          "scrollWidth": 0,
+          "clientWidth": 0
+        },
+        "rate": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0,
+          "hidden": true,
+          "display": "none",
+          "fx": "",
+          "fy": "",
+          "hit": false,
+          "top": "ink",
+          "scrollHeight": 0,
+          "clientHeight": 0,
+          "scrollWidth": 0,
+          "clientWidth": 0
+        },
+        "faster": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0,
+          "hidden": true,
+          "display": "none",
+          "fx": "",
+          "fy": "",
+          "hit": false,
+          "top": "ink",
+          "scrollHeight": 0,
+          "clientHeight": 0,
+          "scrollWidth": 0,
+          "clientWidth": 0
+        },
+        "interrupt": {
+          "x": 0,
+          "y": 0,
+          "width": 0,
+          "height": 0,
+          "right": 0,
+          "bottom": 0,
+          "hidden": true,
+          "display": "none",
+          "fx": "",
+          "fy": "",
+          "hit": false,
+          "top": "ink",
+          "scrollHeight": 0,
+          "clientHeight": 0,
+          "scrollWidth": 0,
+          "clientWidth": 0
+        }
+      },
+      "state": {
+        "mode": "WRITE",
+        "tool": "eraser",
+        "placement": "screen",
+        "mouseWrites": true,
+        "interactive": true,
+        "ended": false,
+        "endReason": "",
+        "doc": {
+          "id": "0123456789abcdef",
+          "revision": 0,
+          "visible": [],
+          "history": [],
+          "strokes": 0
+        },
+        "aligned": {},
+        "unsaved": null,
+        "pinned": 0,
+        "retention": {
+          "retained": 1,
+          "refused": 0,
+          "lastRefusal": "",
+          "deferred": 0
+        },
+        "pendingImages": 0,
+        "gesture": null,
+        "frame": 4,
+        "samples": [
+          {
+            "seq": 1,
+            "sampled_at": "2026-10-01T18:38:53.336Z",
+            "monotonic_ms": 335,
+            "state": "fresh",
+            "gap_ms": null,
+            "source": {
+              "kind": "display",
+              "display_id": "qa-generated-display",
+              "source_id": "qa-generated-only",
+              "label": "QA synthetic display",
+              "bounds": {
+                "x": 0,
+                "y": 0,
+                "width": 1000,
+                "height": 700
+              },
+              "scale_factor": 1
+            },
+            "raw": {
+              "width": 1000,
+              "height": 700,
+              "presented_frames": 1,
+              "frame_age_ms": 10,
+              "stream_presented_frames": 1,
+              "taken_at": "2026-10-01T18:38:53.328Z",
+              "pixels_sha256": "c0f34f3871481d81867321fbdf6cd6b8bad783893be73461db6a767c7868d16c",
+              "change": null
+            },
+            "composed": {
+              "ink_session": "0123456789abcdef",
+              "ink_revision": 0,
+              "visible_strokes": 0,
+              "ink_marks": {
+                "verified": 0,
+                "changed": 0,
+                "unknown": 0,
+                "following_content": 0
+              },
+              "transformation": "raw frame 1000×700 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 1.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+              "pixels_sha256": "c0f34f3871481d81867321fbdf6cd6b8bad783893be73461db6a767c7868d16c"
+            }
+          },
+          {
+            "seq": 2,
+            "sampled_at": "2026-10-01T18:38:54.358Z",
+            "monotonic_ms": 1357,
+            "state": "fresh",
+            "gap_ms": null,
+            "source": {
+              "kind": "display",
+              "display_id": "qa-generated-display",
+              "source_id": "qa-generated-only",
+              "label": "QA synthetic display",
+              "bounds": {
+                "x": 0,
+                "y": 0,
+                "width": 1000,
+                "height": 700
+              },
+              "scale_factor": 1
+            },
+            "raw": {
+              "width": 1000,
+              "height": 700,
+              "presented_frames": 11,
+              "frame_age_ms": 39,
+              "stream_presented_frames": 11,
+              "taken_at": "2026-10-01T18:38:54.352Z",
+              "pixels_sha256": "c0f34f3871481d81867321fbdf6cd6b8bad783893be73461db6a767c7868d16c",
+              "change": 0
+            },
+            "composed": {
+              "ink_session": "0123456789abcdef",
+              "ink_revision": 0,
+              "visible_strokes": 0,
+              "ink_marks": {
+                "verified": 0,
+                "changed": 0,
+                "unknown": 0,
+                "following_content": 0
+              },
+              "transformation": "raw frame 1000×700 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 1.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+              "pixels_sha256": "c0f34f3871481d81867321fbdf6cd6b8bad783893be73461db6a767c7868d16c"
+            }
+          },
+          {
+            "seq": 3,
+            "sampled_at": "2026-10-01T18:38:55.373Z",
+            "monotonic_ms": 2371,
+            "state": "fresh",
+            "gap_ms": null,
+            "source": {
+              "kind": "display",
+              "display_id": "qa-generated-display",
+              "source_id": "qa-generated-only",
+              "label": "QA synthetic display",
+              "bounds": {
+                "x": 0,
+                "y": 0,
+                "width": 1000,
+                "height": 700
+              },
+              "scale_factor": 1
+            },
+            "raw": {
+              "width": 1000,
+              "height": 700,
+              "presented_frames": 21,
+              "frame_age_ms": 54,
+              "stream_presented_frames": 21,
+              "taken_at": "2026-10-01T18:38:55.366Z",
+              "pixels_sha256": "c0f34f3871481d81867321fbdf6cd6b8bad783893be73461db6a767c7868d16c",
+              "change": 0
+            },
+            "composed": {
+              "ink_session": "0123456789abcdef",
+              "ink_revision": 0,
+              "visible_strokes": 0,
+              "ink_marks": {
+                "verified": 0,
+                "changed": 0,
+                "unknown": 0,
+                "following_content": 0
+              },
+              "transformation": "raw frame 1000×700 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 1.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+              "pixels_sha256": "c0f34f3871481d81867321fbdf6cd6b8bad783893be73461db6a767c7868d16c"
+            }
+          },
+          {
+            "seq": 4,
+            "sampled_at": "2026-10-01T18:38:56.389Z",
+            "monotonic_ms": 3388,
+            "state": "fresh",
+            "gap_ms": null,
+            "source": {
+              "kind": "display",
+              "display_id": "qa-generated-display",
+              "source_id": "qa-generated-only",
+              "label": "QA synthetic display",
+              "bounds": {
+                "x": 0,
+                "y": 0,
+                "width": 1000,
+                "height": 700
+              },
+              "scale_factor": 1
+            },
+            "raw": {
+              "width": 1000,
+              "height": 700,
+              "presented_frames": 31,
+              "frame_age_ms": 70,
+              "stream_presented_frames": 31,
+              "taken_at": "2026-10-01T18:38:56.380Z",
+              "pixels_sha256": "c0f34f3871481d81867321fbdf6cd6b8bad783893be73461db6a767c7868d16c",
+              "change": 0
+            },
+            "composed": {
+              "ink_session": "0123456789abcdef",
+              "ink_revision": 0,
+              "visible_strokes": 0,
+              "ink_marks": {
+                "verified": 0,
+                "changed": 0,
+                "unknown": 0,
+                "following_content": 0
+              },
+              "transformation": "raw frame 1000×700 px with this app's editable ink (revision 0, 0 visible stroke(s)) drawn over it at 1.000 px per DIP, strokes whose alignment is not verified (changed, unknown or following content) dashed as on screen; the overlay itself is excluded from capture, so the ink is added once",
+              "pixels_sha256": "c0f34f3871481d81867321fbdf6cd6b8bad783893be73461db6a767c7868d16c"
+            }
+          }
+        ],
+        "card": null,
+        "saveText": "Ink is saved on this device at every change.",
+        "hint": "Pen and mouse write; new ink fixed on the screen. Capturing this display · frame 4. ChatGPT observes this whole display as it changes: 60 of 60 requests and about 30 min left in this session (its own bounds, not ChatGPT's quota); it has not looked yet. Ink is saved on this device at every change."
+      },
+      "log": [
+        {
+          "kind": "synthetic_canvas_capture"
+        },
+        {
+          "kind": "sample",
+          "args": [
+            {
+              "seq": 1
+            }
+          ]
+        },
+        {
+          "kind": "interactive",
+          "args": [
+            true
+          ]
+        },
+        {
+          "kind": "talk",
+          "args": [
+            true,
+            false
+          ]
+        },
+        {
+          "kind": "place",
+          "args": [
+            "toolbar",
+            {
+              "fx": 0.49834835675494094,
+              "fy": 0.16537917747664976
+            }
+          ]
+        },
+        {
+          "kind": "sample",
+          "args": [
+            {
+              "seq": 2
+            }
+          ]
+        },
+        {
+          "kind": "place",
+          "args": [
+            "toolbar",
+            {
+              "fx": 0.3619556773792614,
+              "fy": 0.233351809481453
+            }
+          ]
+        },
+        {
+          "kind": "place",
+          "args": [
+            "toolbar",
+            {
+              "fx": 1,
+              "fy": 0
+            }
+          ]
+        },
+        {
+          "kind": "askSelection",
+          "args": [
+            "qa-selection-1",
+            "qa-request-1"
+          ]
+        },
+        {
+          "kind": "askPresented",
+          "args": [
+            "qa-selection-1",
+            "qa-request-1",
+            true
+          ]
+        },
+        {
+          "kind": "fakeSay",
+          "args": [
+            "qa-selection-1",
+            "qa-request-1",
+            0
+          ]
+        },
+        {
+          "kind": "sample",
+          "args": [
+            {
+              "seq": 3
+            }
+          ]
+        },
+        {
+          "kind": "place",
+          "args": [
+            "caption",
+            {
+              "fx": 0.6935483529590064,
+              "fy": 0.4166666666666667
+            }
+          ]
+        },
+        {
+          "kind": "place",
+          "args": [
+            "caption",
+            {
+              "fx": 0,
+              "fy": 0
+            }
+          ]
+        },
+        {
+          "kind": "place",
+          "args": [
+            "caption",
+            {
+              "fx": 1,
+              "fy": 1
+            }
+          ]
+        },
+        {
+          "kind": "sample",
+          "args": [
+            {
+              "seq": 4
+            }
+          ]
+        },
+        {
+          "kind": "hush",
+          "args": []
+        },
+        {
+          "kind": "askClosed",
+          "args": []
+        },
+        {
+          "kind": "talk",
+          "args": [
+            false,
+            false
+          ]
+        }
+      ],
+      "proof": {
+        "fakeMedia": true,
+        "noRealDevice": true,
+        "noRealVoice": true,
+        "noNetwork": true
+      }
+    }
+  },
+  "pointer_events": [
+    {
+      "kind": "pointermove",
+      "target": "talk",
+      "buttons": 0,
+      "button": -1,
+      "pointerId": 1,
+      "x": 651,
+      "y": 54.984375
+    },
+    {
+      "kind": "pointerdown",
+      "target": "talk",
+      "buttons": 1,
+      "button": 0,
+      "pointerId": 1,
+      "x": 651,
+      "y": 54.984375
+    },
+    {
+      "kind": "pointerup",
+      "target": "talk",
+      "buttons": 0,
+      "button": 0,
+      "pointerId": 1,
+      "x": 651,
+      "y": 54.984375
+    },
+    {
+      "kind": "pointermove",
+      "target": "toolbarHandle",
+      "buttons": 0,
+      "button": -1,
+      "pointerId": 1,
+      "x": 308.078125,
+      "y": 62.78125
+    },
+    {
+      "kind": "pointerdown",
+      "target": "toolbarHandle",
+      "buttons": 1,
+      "button": 0,
+      "pointerId": 1,
+      "x": 308.078125,
+      "y": 62.78125
+    },
+    {
+      "kind": "gotpointercapture",
+      "target": "toolbarHandle",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": 290.578125,
+      "y": 74.65625
+    },
+    {
+      "kind": "pointermove",
+      "target": "toolbarHandle",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": 290.578125,
+      "y": 74.65625
+    },
+    {
+      "kind": "pointermove",
+      "target": "toolbarHandle",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": 273.078125,
+      "y": 86.53125
+    },
+    {
+      "kind": "pointermove",
+      "target": "toolbarHandle",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": 255.578125,
+      "y": 98.40625
+    },
+    {
+      "kind": "pointermove",
+      "target": "toolbarHandle",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": 238.078125,
+      "y": 110.28125
+    },
+    {
+      "kind": "pointermove",
+      "target": "toolbarHandle",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": 220.578125,
+      "y": 122.15625
+    },
+    {
+      "kind": "pointermove",
+      "target": "toolbarHandle",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": 203.078125,
+      "y": 134.03125
+    },
+    {
+      "kind": "pointermove",
+      "target": "toolbarHandle",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": 185.578125,
+      "y": 145.90625
+    },
+    {
+      "kind": "pointermove",
+      "target": "toolbarHandle",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": 168.078125,
+      "y": 157.78125
+    },
+    {
+      "kind": "pointerup",
+      "target": "toolbarHandle",
+      "buttons": 0,
+      "button": 0,
+      "pointerId": 1,
+      "x": 168.078125,
+      "y": 157.78125
+    },
+    {
+      "kind": "lostpointercapture",
+      "target": "toolbarHandle",
+      "buttons": 0,
+      "button": 0,
+      "pointerId": 1,
+      "x": 168.078125,
+      "y": 157.78125
+    },
+    {
+      "kind": "pointermove",
+      "target": "",
+      "buttons": 0,
+      "button": -1,
+      "pointerId": 1,
+      "x": 294.0717468261719,
+      "y": 157.7765350341797
+    },
+    {
+      "kind": "pointerdown",
+      "target": "",
+      "buttons": 1,
+      "button": 0,
+      "pointerId": 1,
+      "x": 294.0717468261719,
+      "y": 157.7765350341797
+    },
+    {
+      "kind": "pointerup",
+      "target": "",
+      "buttons": 0,
+      "button": 0,
+      "pointerId": 1,
+      "x": 294.0717468261719,
+      "y": 157.7765350341797
+    },
+    {
+      "kind": "pointermove",
+      "target": "mouse",
+      "buttons": 0,
+      "button": -1,
+      "pointerId": 1,
+      "x": 504.7239990234375,
+      "y": 120.13970947265625
+    },
+    {
+      "kind": "pointerdown",
+      "target": "mouse",
+      "buttons": 1,
+      "button": 0,
+      "pointerId": 1,
+      "x": 504.7239990234375,
+      "y": 120.13970947265625
+    },
+    {
+      "kind": "pointerup",
+      "target": "mouse",
+      "buttons": 0,
+      "button": 0,
+      "pointerId": 1,
+      "x": 504.7239990234375,
+      "y": 120.13970947265625
+    },
+    {
+      "kind": "pointermove",
+      "target": "eraser",
+      "buttons": 0,
+      "button": -1,
+      "pointerId": 1,
+      "x": 455.7396240234375,
+      "y": 120.13970947265625
+    },
+    {
+      "kind": "pointerdown",
+      "target": "eraser",
+      "buttons": 1,
+      "button": 0,
+      "pointerId": 1,
+      "x": 455.7396240234375,
+      "y": 120.13970947265625
+    },
+    {
+      "kind": "pointerup",
+      "target": "eraser",
+      "buttons": 0,
+      "button": 0,
+      "pointerId": 1,
+      "x": 455.7396240234375,
+      "y": 120.13970947265625
+    },
+    {
+      "kind": "pointermove",
+      "target": "toolbarHandle",
+      "buttons": 0,
+      "button": -1,
+      "pointerId": 1,
+      "x": 236.7396240234375,
+      "y": 120.13970947265625
+    },
+    {
+      "kind": "pointerdown",
+      "target": "toolbarHandle",
+      "buttons": 1,
+      "button": 0,
+      "pointerId": 1,
+      "x": 236.7396240234375,
+      "y": 120.13970947265625
+    },
+    {
+      "kind": "gotpointercapture",
+      "target": "toolbarHandle",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": 232.9896240234375,
+      "y": 124.51470947265625
+    },
+    {
+      "kind": "pointermove",
+      "target": "toolbarHandle",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": 232.9896240234375,
+      "y": 124.51470947265625
+    },
+    {
+      "kind": "pointermove",
+      "target": "toolbarHandle",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": 229.2396240234375,
+      "y": 128.88970947265625
+    },
+    {
+      "kind": "pointermove",
+      "target": "toolbarHandle",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": 225.4896240234375,
+      "y": 133.26470947265625
+    },
+    {
+      "kind": "pointermove",
+      "target": "toolbarHandle",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": 221.7396240234375,
+      "y": 137.63970947265625
+    },
+    {
+      "kind": "pointermove",
+      "target": "toolbarHandle",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": 217.9896240234375,
+      "y": 142.01470947265625
+    },
+    {
+      "kind": "pointermove",
+      "target": "toolbarHandle",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": 214.2396240234375,
+      "y": 146.38970947265625
+    },
+    {
+      "kind": "pointermove",
+      "target": "toolbarHandle",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": 210.4896240234375,
+      "y": 150.76470947265625
+    },
+    {
+      "kind": "pointermove",
+      "target": "toolbarHandle",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": 206.7396240234375,
+      "y": 155.13970947265625
+    },
+    {
+      "kind": "pointerup",
+      "target": "toolbarHandle",
+      "buttons": 0,
+      "button": 0,
+      "pointerId": 1,
+      "x": 206.7396240234375,
+      "y": 155.13970947265625
+    },
+    {
+      "kind": "lostpointercapture",
+      "target": "toolbarHandle",
+      "buttons": 0,
+      "button": 0,
+      "pointerId": 1,
+      "x": 206.7396240234375,
+      "y": 155.13970947265625
+    },
+    {
+      "kind": "pointermove",
+      "target": "",
+      "buttons": 0,
+      "button": -1,
+      "pointerId": 1,
+      "x": 429.109375,
+      "y": 35
+    },
+    {
+      "kind": "pointerdown",
+      "target": "",
+      "buttons": 1,
+      "button": 0,
+      "pointerId": 1,
+      "x": 429.109375,
+      "y": 35
+    },
+    {
+      "kind": "pointerup",
+      "target": "",
+      "buttons": 0,
+      "button": 0,
+      "pointerId": 1,
+      "x": 429.109375,
+      "y": 35
+    },
+    {
+      "kind": "pointermove",
+      "target": "ink",
+      "buttons": 0,
+      "button": -1,
+      "pointerId": 1,
+      "x": 290,
+      "y": 400
+    },
+    {
+      "kind": "pointerdown",
+      "target": "ink",
+      "buttons": 1,
+      "button": 0,
+      "pointerId": 1,
+      "x": 290,
+      "y": 400
+    },
+    {
+      "kind": "gotpointercapture",
+      "target": "ink",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": 360,
+      "y": 400
+    },
+    {
+      "kind": "pointermove",
+      "target": "ink",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": 360,
+      "y": 400
+    },
+    {
+      "kind": "pointermove",
+      "target": "ink",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": 380,
+      "y": 440
+    },
+    {
+      "kind": "pointermove",
+      "target": "ink",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": 350,
+      "y": 490
+    },
+    {
+      "kind": "pointermove",
+      "target": "ink",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": 285,
+      "y": 480
+    },
+    {
+      "kind": "pointermove",
+      "target": "ink",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": 270,
+      "y": 440
+    },
+    {
+      "kind": "pointermove",
+      "target": "ink",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": 290,
+      "y": 400
+    },
+    {
+      "kind": "pointerup",
+      "target": "ink",
+      "buttons": 0,
+      "button": 0,
+      "pointerId": 1,
+      "x": 290,
+      "y": 400
+    },
+    {
+      "kind": "lostpointercapture",
+      "target": "ink",
+      "buttons": 0,
+      "button": 0,
+      "pointerId": 1,
+      "x": 290,
+      "y": 400
+    },
+    {
+      "kind": "pointermove",
+      "target": "cardHandle",
+      "buttons": 0,
+      "button": -1,
+      "pointerId": 1,
+      "x": 649,
+      "y": 150
+    },
+    {
+      "kind": "pointerdown",
+      "target": "cardHandle",
+      "buttons": 1,
+      "button": 0,
+      "pointerId": 1,
+      "x": 649,
+      "y": 150
+    },
+    {
+      "kind": "gotpointercapture",
+      "target": "cardHandle",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": 625.25,
+      "y": 141.25
+    },
+    {
+      "kind": "pointermove",
+      "target": "cardHandle",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": 625.25,
+      "y": 141.25
+    },
+    {
+      "kind": "pointermove",
+      "target": "cardHandle",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": 601.5,
+      "y": 132.5
+    },
+    {
+      "kind": "pointermove",
+      "target": "cardHandle",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": 577.75,
+      "y": 123.75
+    },
+    {
+      "kind": "pointermove",
+      "target": "cardHandle",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": 554,
+      "y": 115
+    },
+    {
+      "kind": "pointermove",
+      "target": "cardHandle",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": 530.25,
+      "y": 106.25
+    },
+    {
+      "kind": "pointermove",
+      "target": "cardHandle",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": 506.5,
+      "y": 97.5
+    },
+    {
+      "kind": "pointermove",
+      "target": "cardHandle",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": 482.75,
+      "y": 88.75
+    },
+    {
+      "kind": "pointermove",
+      "target": "cardHandle",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": 459,
+      "y": 80
+    },
+    {
+      "kind": "pointerup",
+      "target": "cardHandle",
+      "buttons": 0,
+      "button": 0,
+      "pointerId": 1,
+      "x": 459,
+      "y": 80
+    },
+    {
+      "kind": "lostpointercapture",
+      "target": "cardHandle",
+      "buttons": 0,
+      "button": 0,
+      "pointerId": 1,
+      "x": 459,
+      "y": 80
+    },
+    {
+      "kind": "pointermove",
+      "target": "cardHandle",
+      "buttons": 0,
+      "button": -1,
+      "pointerId": 1,
+      "x": 458.9944763183594,
+      "y": 79.99478149414062
+    },
+    {
+      "kind": "pointerdown",
+      "target": "cardHandle",
+      "buttons": 1,
+      "button": 0,
+      "pointerId": 1,
+      "x": 458.9944763183594,
+      "y": 79.99478149414062
+    },
+    {
+      "kind": "gotpointercapture",
+      "target": "cardHandle",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": 271.4944763183594,
+      "y": -45.005218505859375
+    },
+    {
+      "kind": "pointermove",
+      "target": "cardHandle",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": 271.4944763183594,
+      "y": -45.005218505859375
+    },
+    {
+      "kind": "pointermove",
+      "target": "cardHandle",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": 83.99447631835938,
+      "y": -170.00521850585938
+    },
+    {
+      "kind": "pointermove",
+      "target": "cardHandle",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": -103.50552368164062,
+      "y": -295.0052185058594
+    },
+    {
+      "kind": "pointermove",
+      "target": "cardHandle",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": -291.0055236816406,
+      "y": -420.0052185058594
+    },
+    {
+      "kind": "pointermove",
+      "target": "cardHandle",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": -478.5055236816406,
+      "y": -545.0052490234375
+    },
+    {
+      "kind": "pointermove",
+      "target": "cardHandle",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": -666.0054931640625,
+      "y": -670.0052490234375
+    },
+    {
+      "kind": "pointermove",
+      "target": "cardHandle",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": -853.5054931640625,
+      "y": -795.0052490234375
+    },
+    {
+      "kind": "pointermove",
+      "target": "cardHandle",
+      "buttons": 1,
+      "button": -1,
+      "pointerId": 1,
+      "x": -1041.0054931640625,
+      "y": -920.0052490234375
+    },
+    {
+      "kind": "pointerup",
+      "target": "cardHandle",
+      "buttons": 0,
+      "button": 0,
+      "pointerId": 1,
+      "x": -1041.0054931640625,
+      "y": -920.0052490234375
+    },
+    {
+      "kind": "lostpointercapture",
+      "target": "cardHandle",
+      "buttons": 0,
+      "button": 0,
+      "pointerId": 1,
+      "x": -1041.0054931640625,
+      "y": -920.0052490234375
+    },
+    {
+      "kind": "pointermove",
+      "target": "close",
+      "buttons": 0,
+      "button": -1,
+      "pointerId": 1,
+      "x": 396.8359375,
+      "y": 74
+    },
+    {
+      "kind": "pointerdown",
+      "target": "close",
+      "buttons": 1,
+      "button": 0,
+      "pointerId": 1,
+      "x": 396.8359375,
+      "y": 74
+    },
+    {
+      "kind": "pointerup",
+      "target": "close",
+      "buttons": 0,
+      "button": 0,
+      "pointerId": 1,
+      "x": 396.8359375,
+      "y": 74
+    },
+    {
+      "kind": "pointermove",
+      "target": "talk",
+      "buttons": 0,
+      "button": -1,
+      "pointerId": 1,
+      "x": 239.078125,
+      "y": 123
+    },
+    {
+      "kind": "pointerdown",
+      "target": "talk",
+      "buttons": 1,
+      "button": 0,
+      "pointerId": 1,
+      "x": 239.078125,
+      "y": 123
+    },
+    {
+      "kind": "pointerup",
+      "target": "talk",
+      "buttons": 0,
+      "button": 0,
+      "pointerId": 1,
+      "x": 239.078125,
+      "y": 123
+    }
+  ],
+  "pre_reload_fixture_log": [
+    {
+      "kind": "synthetic_canvas_capture"
+    },
+    {
+      "kind": "sample",
+      "args": [
+        {
+          "seq": 1
+        }
+      ]
+    },
+    {
+      "kind": "interactive",
+      "args": [
+        true
+      ]
+    },
+    {
+      "kind": "talk",
+      "args": [
+        true,
+        false
+      ]
+    },
+    {
+      "kind": "place",
+      "args": [
+        "toolbar",
+        {
+          "fx": 0.49834835675494094,
+          "fy": 0.16537917747664976
+        }
+      ]
+    },
+    {
+      "kind": "sample",
+      "args": [
+        {
+          "seq": 2
+        }
+      ]
+    },
+    {
+      "kind": "place",
+      "args": [
+        "toolbar",
+        {
+          "fx": 0.3619556773792614,
+          "fy": 0.233351809481453
+        }
+      ]
+    },
+    {
+      "kind": "place",
+      "args": [
+        "toolbar",
+        {
+          "fx": 1,
+          "fy": 0
+        }
+      ]
+    },
+    {
+      "kind": "askSelection",
+      "args": [
+        "qa-selection-1",
+        "qa-request-1"
+      ]
+    },
+    {
+      "kind": "askPresented",
+      "args": [
+        "qa-selection-1",
+        "qa-request-1",
+        true
+      ]
+    },
+    {
+      "kind": "fakeSay",
+      "args": [
+        "qa-selection-1",
+        "qa-request-1",
+        0
+      ]
+    },
+    {
+      "kind": "sample",
+      "args": [
+        {
+          "seq": 3
+        }
+      ]
+    },
+    {
+      "kind": "place",
+      "args": [
+        "caption",
+        {
+          "fx": 0.6935483529590064,
+          "fy": 0.4166666666666667
+        }
+      ]
+    },
+    {
+      "kind": "place",
+      "args": [
+        "caption",
+        {
+          "fx": 0,
+          "fy": 0
+        }
+      ]
+    },
+    {
+      "kind": "place",
+      "args": [
+        "caption",
+        {
+          "fx": 1,
+          "fy": 1
+        }
+      ]
+    },
+    {
+      "kind": "sample",
+      "args": [
+        {
+          "seq": 4
+        }
+      ]
+    },
+    {
+      "kind": "hush",
+      "args": []
+    },
+    {
+      "kind": "askClosed",
+      "args": []
+    },
+    {
+      "kind": "talk",
+      "args": [
+        false,
+        false
+      ]
+    }
+  ],
+  "final_fixture_log": [
+    {
+      "kind": "synthetic_canvas_capture"
+    },
+    {
+      "kind": "sample",
+      "args": [
+        {
+          "seq": 1
+        }
+      ]
+    },
+    {
+      "kind": "interactive",
+      "args": [
+        true
+      ]
+    },
+    {
+      "kind": "interactive",
+      "args": [
+        false
+      ]
+    },
+    {
+      "kind": "askSelection",
+      "args": [
+        "qa-selection-1",
+        "qa-request-1"
+      ]
+    }
+  ],
+  "ended_at": "2026-10-01T18:38:57.712Z",
+  "pass": 53,
+  "fail": 7
+}

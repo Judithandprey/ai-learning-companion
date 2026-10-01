@@ -1,0 +1,26 @@
+(node:9) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ the toolbar has a handle: a drag moves the toolbar and nothing else, in every mode; it is kept inside the work area and its place is written for this display (60.559457ms)
+✔ in NAV the pointer passes through to the apps except over a surface, and a surface being moved keeps it until it is let go (4.629579ms)
+✔ Stop while a surface is being moved: the surface is let go and the session ends as it does otherwise (8.640994ms)
+✔ the place is restored at the next Start, per display, and fitted to the work area as it is then: another size, another scale, a taskbar elsewhere (38.83081ms)
+✔ the work area changing while the capture runs keeps the surfaces inside the new one; the keys move a surface too; a place that cannot be written holds for the session and is said (27.665359ms)
+✔ [synthetic connector] the card has a handle too: it moves with its selection, form and response, asks nothing by being moved, and its place is kept beside the toolbar's (87.85788ms)
+✔ [synthetic connector] no voice is connected in this build: a response is silent text, Talk says so, and nothing is read or recorded as read (56.85924ms)
+✔ [synthetic connector, stand-in voice] a response is silent text unless Talk was on when it was asked for; then it is read from the card's own text, a piece at a time, at 1.3×, and what the voice reported is recorded apart from shown (117.730167ms)
+✔ [synthetic connector, stand-in voice] the voice stops at once, with everything not yet spoken: Stop reading, Mute, Talk off, closing the card, a new selection, a new question, Cancel and Stop (291.221438ms)
+✔ [synthetic connector, stand-in voice] the rate is the user's, inside its bounds, kept for the next Start; a piece is handed to the voice only by the main process, for the shown current response, in order, with Talk on (100.143946ms)
+✔ [synthetic connector] the card's handle too moves the card and nothing else, in every mode, and its keys work; a second pointer, a cancelled pointer and a pointer taken away end or leave the drag as they should (25.177667ms)
+✔ [synthetic connector, stand-in voice] an answer that Cancel crossed is not read; a cut piece ending late does not disturb the reading after it; a voice that rejects or throws is said as stopped, and a Stop still completes (209.384263ms)
+✔ [synthetic connector] the Talk control never says it reads aloud when no voice is connected; a preferences file cut short is set aside so places can be kept again, and one of another format is left as it is (151.360207ms)
+✔ [synthetic connector, stand-in voice] each piece is said in its language's voice; the overlay lost, or the app closing, stops and ends the voice; a voice that only synthesizes is said as a test voice and recorded as nothing read (304.160313ms)
+✔ [synthetic connector, stand-in voice] the main process itself keeps the order and stops the voice, whatever the page does: pieces in order only, and a Stop, a closed card and a follow-up each stop it there (183.268763ms)
+✔ [synthetic connector, stand-in voice] a response is read only if it was asked for with Talk on: Talk turned on while a silent request is out, or after it, reads nothing and says nothing of a failure; the AI session ending stops a reading and nothing of it is read after (116.944338ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 1801.061903

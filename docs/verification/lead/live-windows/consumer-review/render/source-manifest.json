@@ -1,0 +1,46 @@
+{
+  "source_root": "/tmp/lc-candidate9622-render-review/git-source",
+  "head": "9622b517b74020b2d9e8ffbb03f8d615ff32341d",
+  "snapshot_kind": "exact git archive export, excluding worktree changes",
+  "at": "2026-10-01T18:35:35.704Z",
+  "compiler": "Node 24.21.0 stripTypeScriptTypes",
+  "kind": "type-erasure and relative import extension rewrite only; no product typecheck",
+  "source_stable_during_snapshot": true,
+  "source_sha256": {
+    "apps/windows/src/renderer/overlay.ts": "04304e46edb6a12d2a808bdc6c2a06227045c31716722144251f95f5ea870028",
+    "apps/safari-extension/src/ink.ts": "d02c97ae1a5e00b6544b58f765dd86baa55c61beb0e10ca4776218fec4f324dc",
+    "apps/safari-extension/src/mode.ts": "76503344903e8720796e83e4bd67dea8a1164cb64673bf09506fabf1231cbec8",
+    "apps/windows/src/shared/desktop-ink.ts": "fefd7452f5f1018521087bc7c9afd5650f7ad4c0b9bb8ada5a3d775bfc6ab446",
+    "apps/windows/src/shared/samples.ts": "a9851c58e68b09507649fd7b024c73ad304b80e9f237d53c69da153741605946",
+    "apps/windows/src/shared/retention.ts": "e99392afa223f89dc63a8cb726cd0235d48d09e124cde682eb1bfa4645713ab1",
+    "apps/windows/src/shared/placement.ts": "5f4b32d7f8b9af855b64320735443a756875587c7450c114abf3fbddeb8d7691",
+    "apps/windows/src/shared/voice.ts": "df12ade8a22588c97a019ed51c6e71543fbccbc5044bd17617be33df4d27618d",
+    "apps/windows/src/renderer/overlay.html": "d7b84d4dbd06615f4a598e2b8072a34b92e9c6d0b39d8576fb53ceb421c8516e",
+    "apps/windows/src/renderer/overlay.css": "0af42263f71c0c7b4e95ee68c8624782d876adbb891f4b9bc479fcb0e20bc40c"
+  },
+  "source_after_sha256": {
+    "apps/windows/src/renderer/overlay.ts": "04304e46edb6a12d2a808bdc6c2a06227045c31716722144251f95f5ea870028",
+    "apps/safari-extension/src/ink.ts": "d02c97ae1a5e00b6544b58f765dd86baa55c61beb0e10ca4776218fec4f324dc",
+    "apps/safari-extension/src/mode.ts": "76503344903e8720796e83e4bd67dea8a1164cb64673bf09506fabf1231cbec8",
+    "apps/windows/src/shared/desktop-ink.ts": "fefd7452f5f1018521087bc7c9afd5650f7ad4c0b9bb8ada5a3d775bfc6ab446",
+    "apps/windows/src/shared/samples.ts": "a9851c58e68b09507649fd7b024c73ad304b80e9f237d53c69da153741605946",
+    "apps/windows/src/shared/retention.ts": "e99392afa223f89dc63a8cb726cd0235d48d09e124cde682eb1bfa4645713ab1",
+    "apps/windows/src/shared/placement.ts": "5f4b32d7f8b9af855b64320735443a756875587c7450c114abf3fbddeb8d7691",
+    "apps/windows/src/shared/voice.ts": "df12ade8a22588c97a019ed51c6e71543fbccbc5044bd17617be33df4d27618d",
+    "apps/windows/src/renderer/overlay.html": "d7b84d4dbd06615f4a598e2b8072a34b92e9c6d0b39d8576fb53ceb421c8516e",
+    "apps/windows/src/renderer/overlay.css": "0af42263f71c0c7b4e95ee68c8624782d876adbb891f4b9bc479fcb0e20bc40c"
+  },
+  "emitted_sha256": {
+    "apps/windows/src/renderer/overlay.js": "bc337e5189cc7e511d3e4e784d9191c6bef24d1bbe6ebb4fd691e608fb27fd7f",
+    "apps/safari-extension/src/ink.js": "e5a1867db9e72df7cecb43de48bc10e45d4f0bbc2936dd131075ba218cac7dd9",
+    "apps/safari-extension/src/mode.js": "4f6dcba7bd5fff78442a5b1a0631fc9e44f3e3935f0dd8e8b89b8574a5d6c27e",
+    "apps/windows/src/shared/desktop-ink.js": "48278d040e0fcb21c43523be24be7f741611f26cf8d35e7d5b9962e3d5cdd5f6",
+    "apps/windows/src/shared/samples.js": "4df4654aa44791ead0c1381f42368208a568714e199fbb345d9506fcad44e6fd",
+    "apps/windows/src/shared/retention.js": "5e446c2878bc3686733ce86bf8ae2c5d65089912dc707e657e759a16135bc595",
+    "apps/windows/src/shared/placement.js": "77abad4d2f4b9fb6cb5b141f2a5b0395748f6b20d682b9d384e5b4f9ef89777c",
+    "apps/windows/src/shared/voice.js": "d8f4fba3d661544ba270b3da9346125d9a7683ebade92f0abc4bde4444580b32",
+    "apps/windows/src/renderer/overlay.html": "d7b84d4dbd06615f4a598e2b8072a34b92e9c6d0b39d8576fb53ceb421c8516e",
+    "apps/windows/src/renderer/overlay.css": "0af42263f71c0c7b4e95ee68c8624782d876adbb891f4b9bc479fcb0e20bc40c"
+  },
+  "worktree_status": ""
+}

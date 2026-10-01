@@ -1,0 +1,12 @@
+✔ whether a turn reached ChatGPT is said with every outcome: the connector's own word when it gave one, "unknown" when it gave none this app knows, and "not_submitted" for what was never written (66.911228ms)
+✔ a connector that ends while a sign-in is being started is said as ended, not as "did not answer"; only its output closing, while it runs, ends it here and leaves what was out not known (QA-SUB-12, QA-SUB-13) (1265.730143ms)
+✔ an interrupt or a Stop is a confirmed interruption only by its own exact receipt and the turn itself ending as interrupted; anything else, cancelled:false included, stays not confirmed (1423.707061ms)
+✔ an end that was not seen is handed over to be written, with its time and whether the shim's exit was seen; a failed write is said and tried once more at quit; earlier records are said as past (4265.626767ms)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7317.498757

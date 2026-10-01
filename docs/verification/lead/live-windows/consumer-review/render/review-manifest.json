@@ -1,0 +1,74 @@
+{
+  "candidate": "9622b517b74020b2d9e8ffbb03f8d615ff32341d",
+  "requirements_commit": "07c9ebd35d412ff4e8b3f5aa2e1b895da9456fe8",
+  "layout_base": "28f0504",
+  "main_layout_integration": "073c96d",
+  "scope": "actual hidden Electron renderer, generated canvas input and inert fake IPC; no actual display/account/mic/audio",
+  "build": "exact git archive + existing Node24 stripTypeScriptTypes and relative import extension rewrite",
+  "harness_provenance": "operator offscreen-controls/run-05 executed-build.mjs, executed-run.cjs and executed-preload.cjs",
+  "adaptations": [
+    "exact commit supplied; shell git archive avoids sandbox Node spawnSync EPERM",
+    "new renderer lc.onLive/lc.talk/lc.say fake bridge",
+    "automatic focus request receipt supplies about metadata and matched answer",
+    "voice audible:false + unresolved inert say exposes six Talk controls, never imports or executes TTS",
+    "wide/narrow real geometry and hit-testing, drag/clamp and state preservation"
+  ],
+  "harness_sha256": {
+    "launch.ps1": "ef89887b3eca4064b588acd3237f2c649c960d3dd0bedd2db386a3f5367aee16",
+    "original-build.mjs": "4883574a073bc76814ebcaa5c3227c5b5bbd2017290bd5815563c596357999e5",
+    "run.cjs": "2d5ebf0793f7e028e25daedacbb9fcdcc8583b25d1fdc710dfbaf001b231c580",
+    "preload.cjs": "6b42e6f5e37e47234f0f3ab20516444fdfca708bca5b08e75250610669725c27",
+    "build.mjs": "a2869d5350074b01ee252e2e41a1e031984292aaa5c88bd2ade3501770d740a5"
+  },
+  "initial_errors": [
+    "sandbox powershell: WSL UtilGetPpid parsing /proc/1/stat; UtilBindVsockAnyPort:309 socket failed 1",
+    "Node spawnSync git EPERM despite stdout returned; succeeded with exact shell git archive read-only export"
+  ],
+  "permissions": "root handles precise Windows foreground launch through normal exact-command escalation",
+  "final_harness_sha256": {
+    "launch.ps1": "ef89887b3eca4064b588acd3237f2c649c960d3dd0bedd2db386a3f5367aee16",
+    "original-build.mjs": "4883574a073bc76814ebcaa5c3227c5b5bbd2017290bd5815563c596357999e5",
+    "run.cjs": "78783d374c0950d7bf7f2e97aa823cdd06240283b4db653e082e69c3e21236cd",
+    "preload.cjs": "6b42e6f5e37e47234f0f3ab20516444fdfca708bca5b08e75250610669725c27",
+    "build.mjs": "a2869d5350074b01ee252e2e41a1e031984292aaa5c88bd2ade3501770d740a5"
+  },
+  "completed_runs": [
+    {
+      "run": "run-01",
+      "pass": 53,
+      "fail": 7,
+      "fatal": null,
+      "started_at": "2026-10-01T18:38:52.717Z",
+      "ended_at": "2026-10-01T18:38:57.712Z"
+    },
+    {
+      "run": "run-02",
+      "pass": 7,
+      "fail": 4,
+      "fatal": null,
+      "started_at": "2026-10-01T18:41:55.413Z",
+      "ended_at": "2026-10-01T18:41:58.086Z"
+    }
+  ],
+  "evidence_sha256": {
+    "run-01/result.json": "2d57e2436befb897f9bf72db056cd2936629e5fc5ae08887fab64a8c1a631c81",
+    "run-01/06-narrow-talk-off.png": "6bae3c26eda43a9e2493b1cc3e429f5796b9f820a79393818069a2f216cea8a7",
+    "run-01/05-narrow-talk-on.png": "d68672ae3014b64177b52a7c36e04b77695a8f2a119aa963ca6a6e2aea5540a5",
+    "run-01/04-narrow-response-speaking.png": "fb40ecc52b4a4744121227ee8c5993d5d5a087f4ac76deda278d737c3ba7e7e0",
+    "run-01/03-wide-response-speaking.png": "d1c1487873c054e4b14b8241b4ed7ef23d3cd72ef4937795261f22578abae1d1",
+    "run-01/places.json": "7e79683af83977bad4406d0c1341ebd7373c8cd7c590820154153be037ff30a5",
+    "run-01/02-wide-talk-on-before-response.png": "f1cf65fb20e82564430638fa96ee2a652fb3ec98587bec2a6bffca92080dc79e",
+    "run-01/01-wide-talk-off.png": "a1bd390721e4496538f314f2ef7b2f3cba07c5c27d4094b39df2ab01d8e52b02",
+    "run-01/executed-build.mjs": "a2869d5350074b01ee252e2e41a1e031984292aaa5c88bd2ade3501770d740a5",
+    "run-01/executed-preload.cjs": "6b42e6f5e37e47234f0f3ab20516444fdfca708bca5b08e75250610669725c27",
+    "run-01/executed-run.cjs": "2d5ebf0793f7e028e25daedacbb9fcdcc8583b25d1fdc710dfbaf001b231c580",
+    "run-02/result.json": "8dc6b82a5ce4ef5a14a555c2e4ae835e7fac6747d9abcf46c890a0df83a3a2df",
+    "run-02/03-narrow-fresh-response.png": "b34d20b01cd37e1e1f0684accf7dbc5b4b0a5e2e8f4d23ab38d5822f93fa4a97",
+    "run-02/02-direct-resize.png": "21897054924832090cb77b4c556942166bf158617f2d3aa414af0d72189d6f40",
+    "run-02/01-wide-fresh-response.png": "b291914ee44eedd12bd01504cc83715750a35ec19658c16ae8c4ea00adfd34ce",
+    "run-02/executed-build.mjs": "a2869d5350074b01ee252e2e41a1e031984292aaa5c88bd2ade3501770d740a5",
+    "run-02/executed-preload.cjs": "6b42e6f5e37e47234f0f3ab20516444fdfca708bca5b08e75250610669725c27",
+    "run-02/executed-run.cjs": "78783d374c0950d7bf7f2e97aa823cdd06240283b4db653e082e69c3e21236cd"
+  },
+  "report_sha256": "47202c5c0ce697e0da7ff4fc9632ffcbcc5ae28d7005cd49b5dd76152ce16cc3"
+}

@@ -1,0 +1,2 @@
+# Preserve raw terminal transcripts, including CRLF and assertion indentation.
+*.txt -text -whitespace
