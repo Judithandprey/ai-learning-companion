@@ -172,3 +172,41 @@ execution_started=false. They amend the current TTS/live handoff, not a second
 task or independent QA campaign. Web fixes and returns exact checks; Lead reviews
 and integrates, then QA executes the existing changed-flow acceptance on the
 versioned actual app. Input-route evidence remains Backend's current dependency.
+
+## Ordinary audio evidence reviewed and integrated
+
+Actual Backend `35d0defce9c42e77ec0d029082e2a9957a96b7a2`, received as
+`handoff_d0d2753648c9c374b1d294ebf014df40`, integrates as `fd199d3`.
+[Owner source boundary](../../../backend/p0-04-ordinary-audio-source-boundary.md)
+and its adjacent JSON retain the full chain and qualifications. Only those two
+documentation files changed; production connectors match assigned `c7ae4e0`.
+
+Lead independently fetched the three decisive pinned public files in memory:
+`core/src/session/turn.rs`, `core/src/context_manager/history.rs` and
+`core/src/context_manager/normalize.rs`. All SHA-256 and Git blobs match the
+delivery. The actual code passes selected model modalities into prompt history
+and strips InputAudio unless Audio is present. All 16 reported blob mappings
+also match the existing non-truncated official tree. Installed stable schema
+hash and both audio variant requirements, saved metadata hash/timestamp and all
+seven text/image-only model declarations match. JSON and diff whitespace pass.
+
+The first local validation helper incorrectly looked for wire-style
+`inputModalities` in the sanitized receipt; reading its structure and using its
+actual `input_modalities` key corrected the helper. Assertions were retained.
+Initial web fetch cache misses and sandbox DNS failure were followed by one
+normally approved read-only fetch of those three pinned files, with no source
+snapshot written. These inspection errors are not product failures.
+
+Decision: accept the evidence and keep this ordinary-audio adapter unimplemented.
+The necessary same-model capability prerequisite is absent in the saved catalog;
+this is not a fresh account refusal, installed-binary acoustic test, or a blanket
+claim that all managed audio is impossible. No provider/account/device/audio
+request occurred. Utilities' malformed/size behavior remains source evidence
+only, since the ordinary callsite was not established. The prior optional cache
+write denial was handled by Backend using read-only memory review; nothing
+remains blocked by that denial and no bypass or user action is needed.
+
+Backend completed this bounded source handoff. The existing Windows TTS/live
+consumer, two TTS corrections and one eventual integrated QA pass continue.
+Lead owns the next input decision; do not run repeated ordinary-audio attempts
+or reopen the same schema-only candidate without new capability evidence.
