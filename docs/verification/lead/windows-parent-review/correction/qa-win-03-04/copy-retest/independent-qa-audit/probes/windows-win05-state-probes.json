@@ -1,0 +1,130 @@
+{
+  "candidate": "10cbae629b6d7330e0da61b5668c43e338d00a97",
+  "code": "d6f4e202c25cbd1297dc20afd7e8b4536c591177",
+  "node": "v24.21.0",
+  "temp": "/tmp/lc-win05-review-9EMPwE",
+  "cases": 3,
+  "results": [
+    {
+      "case": "held_ACK_then_next_pending_Stop",
+      "pass": true,
+      "before": {
+        "mode": "development",
+        "state": "sending",
+        "stored": 0,
+        "unknown": 2,
+        "refused": 0,
+        "not_sent": 0,
+        "detail": null,
+        "earlier_unknown": 0,
+        "sends_stopped": false,
+        "awaiting": true,
+        "storing": false
+      },
+      "confirmed": {
+        "mode": "development",
+        "state": "sending",
+        "stored": 2,
+        "unknown": 0,
+        "refused": 0,
+        "not_sent": 0,
+        "detail": null,
+        "earlier_unknown": 0,
+        "sends_stopped": false,
+        "awaiting": false,
+        "storing": true
+      },
+      "pending": {
+        "mode": "development",
+        "state": "sending",
+        "stored": 2,
+        "unknown": 2,
+        "refused": 0,
+        "not_sent": 0,
+        "detail": null,
+        "earlier_unknown": 0,
+        "sends_stopped": false,
+        "awaiting": true,
+        "storing": false
+      },
+      "stopping": {
+        "mode": "development",
+        "state": "stopping",
+        "stored": 2,
+        "unknown": 2,
+        "refused": 0,
+        "not_sent": 0,
+        "detail": null,
+        "earlier_unknown": 0,
+        "sends_stopped": false,
+        "awaiting": true,
+        "storing": false
+      },
+      "stopped": {
+        "mode": "development",
+        "state": "stopped",
+        "stored": 2,
+        "unknown": 2,
+        "refused": 0,
+        "not_sent": 0,
+        "detail": "stream stopped",
+        "earlier_unknown": 0,
+        "sends_stopped": false,
+        "awaiting": false,
+        "storing": false
+      },
+      "exact_job_key_body": true
+    },
+    {
+      "case": "failed_not_sent_retry_witness_blocks_dispatch",
+      "pass": true,
+      "upload_attempts": 3,
+      "prior_journal_unchanged": true,
+      "direct": {
+        "mode": "development",
+        "state": "not connected",
+        "stored": 0,
+        "unknown": 0,
+        "refused": 0,
+        "not_sent": 2,
+        "detail": "the capture link record could not be written, so further sends to the local test capture service have stopped",
+        "earlier_unknown": 0,
+        "sends_stopped": true,
+        "awaiting": false,
+        "storing": false
+      },
+      "last_notified": {
+        "mode": "development",
+        "state": "not connected",
+        "stored": 0,
+        "unknown": 2,
+        "refused": 0,
+        "not_sent": 0,
+        "detail": "the capture link record could not be written, so further sends to the local test capture service have stopped",
+        "earlier_unknown": 0,
+        "sends_stopped": true,
+        "awaiting": false,
+        "storing": false
+      },
+      "notification_counts_match": false
+    },
+    {
+      "case": "refusal_notified_before_followup_read",
+      "pass": true,
+      "before_read": {
+        "mode": "development",
+        "state": "stalled",
+        "stored": 0,
+        "unknown": 0,
+        "refused": 2,
+        "not_sent": 0,
+        "detail": "the service refused the last send; its state is being read",
+        "earlier_unknown": 0,
+        "sends_stopped": false,
+        "awaiting": false,
+        "storing": false
+      }
+    }
+  ],
+  "scope": "Actual source coordinator/uploader, existing fake child, fake transport and copied fixture; no GUI/child/socket/DB/provider."
+}

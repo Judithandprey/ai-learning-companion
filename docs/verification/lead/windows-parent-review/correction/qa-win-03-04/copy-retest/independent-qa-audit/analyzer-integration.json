@@ -1,0 +1,54 @@
+{
+  "qa_delivery": "6a3611e2567cf97e858ff146a55c8d0fda7d832c",
+  "qa_correction": "72bf9a37a422e2da6152c05abb6d0628151c374c",
+  "integration": {
+    "base": "93645a4",
+    "correction": "f2c883d",
+    "production_changes": false
+  },
+  "incoming_qa": {
+    "message_id": "handoff_b437d180e53180ad9db2c232cc7764f3",
+    "created_at": "2026-10-01T03:24:26Z",
+    "body_sha256": "1511ee13c8d1d972ee23c9401fbde98906c5295c08079ffdf08f0808ec2497a7",
+    "corrected_diff_message_id": "handoff_83e79a7451c6731511784136fa6c8a70"
+  },
+  "validation": {
+    "command": "python3 tests/e2e/windows/replay_analyze_fix.py docs/verification/qa/p0-13-windows-quit-copy-retest-86d2405 --out /tmp/lead-qa-analyzer-f2c883d-replay.json --summary /tmp/lead-qa-analyzer-f2c883d-summary.json",
+    "exit_code": 0,
+    "baseline": {
+      "pass": 24,
+      "limit": 2
+    },
+    "negative_cases": {
+      "total": 121,
+      "fail": 117,
+      "limit": 4,
+      "unexpected": 0
+    },
+    "exact_json_matches_owner": true,
+    "replay_sha256": "2fd2d58657cdeed38fc40acf685bfa0bd64d803a7ac0134ca2a5d4768f0ffd8a",
+    "historical_artifacts_unchanged": 14,
+    "independent_focused_replay_groups": 7,
+    "gui_db_services_provider_runs": 0
+  },
+  "web": {
+    "code": "d6f4e202c25cbd1297dc20afd7e8b4536c591177",
+    "delivery": "10cbae629b6d7330e0da61b5668c43e338d00a97",
+    "incoming_message_id": "handoff_dd97322c29905e4e50c451bb326696e3",
+    "body_sha256": "6c126f811daeb2a7e5ca7cba2e7c5b68f7dc5c52a27aa913832dae840dbcc5cd",
+    "status": "HOLD: failed retry-intent save rolls back not_sent without republishing corrected UI counts; no fourth request or disk change",
+    "correction_body": "Bounded review of d6f4e20/10cbae6: UI/evidence approved (6 render checks,57 hashes); independent state review found ONE narrow notification defect, so hold integration pending this same-card fix. No new campaign.\n\ncapture-link.ts:731–736 sets a not_sent retry to sending, then save() fails and publishes a fault status with unknown=2/not_sent=0. The rollback then restores job.status='not_sent' and returns without notifying. Reproduced with three ECONNREFUSED attempts, then ENOSPC on writing the retry intent: zero fourth upload; disk/originals unchanged; direct status unknown=0/not_sent=2 but the last pushed UI status remains unknown=2/not_sent=0. Data/send fencing works; the visible counts no longer match the known outcome. This is in your changed path.\n\nSmall fix: after restoring not_sent on that save failure, publish the corrected status while retaining the fault/sends_stopped and no additional transmission. Add one bounded regression pinning latest notification vs status and no request after failed persistence. Existing independent held ACK/Stop and refusal-before-read groups pass, so do not broaden or rerun GUI/DB/fullsuite. Preserve body/key, retries, existing baseline and exact old evidence. Independent reproduction artifacts are readable at /tmp/windows-win05-state-probes.mjs and .json (no production writes; generated candidate is in /tmp).\n\nOne nonblocking report correction may be included in the same leaf: docs/verification/web/windows-capture-link.md around155 still describes stalled as \"not storing now\"; current UI intentionally says \"storage not confirmed now\". Keep executed log/hash provenance separate from the later source correction.\n\nReply once with exact correction commit and focused evidence. Lead will review/integrate base+fix and release the actual candidate to QA for only pending-copy behavior; no restart of the earlier quit/capture campaign.",
+    "receipt": {
+      "ok": true,
+      "route_id": "route_8608e3d1ee5a44f7bddfe1fa43c2a202",
+      "action": "instruction",
+      "accepted": true,
+      "mode": "async_route_v1",
+      "delivery_mode": "mailbox",
+      "message_id": "handoff_ba867693ad52537dad8e39c7c88f6e38",
+      "duplicate": false,
+      "state": "unread",
+      "execution_started": false
+    }
+  }
+}

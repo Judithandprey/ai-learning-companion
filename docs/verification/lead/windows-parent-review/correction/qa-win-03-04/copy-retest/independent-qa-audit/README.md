@@ -7,8 +7,10 @@ Main review baseline is `bde0cb1d01dbdfd4d5486d5686d65c73f28a58d4`.
 
 **The actual run supports closing QA-WIN-03 and the reported QA-WIN-04 cases.**
 Its retained 24 pass / two limits are not full product acceptance. The original
-13/15 report at `c4c84a5` remains historical. **Hold integration/reuse of the new
-analyzer pending its bounded correction**; do not repeat the desktop/DB run.
+13/15 report at `c4c84a5` remains historical. **Current: base and corrected analyzer are integrated as93645a4/f2c883d;
+QA-HARNESS-01/02 are closed by focused review and the delivered121-case replay.**
+See [integration and next source correction](analyzer-integration.md). The initial
+HOLD evidence below remains historical; do not repeat the desktop/DB run.
 The report is readable at `git show 6a3611e:docs/verification/qa/p0-13-windows-quit-copy-retest-86d2405.md`.
 
 ## Verified evidence

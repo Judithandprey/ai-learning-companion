@@ -1,0 +1,190 @@
+{
+  "verdict": "APPROVE_SCOPED_CORRECTION",
+  "candidate": "72bf9a37a422e2da6152c05abb6d0628151c374c",
+  "findings_closed": [
+    "QA-HARNESS-01",
+    "QA-HARNESS-02"
+  ],
+  "blockers": [],
+  "scope": "Historical 86d2405 saved-evidence analyzer correction only; not a new GUI/DB acceptance run",
+  "checks_executed": [
+    {
+      "case": "baseline",
+      "counts": {
+        "pass": 24,
+        "limit": 2
+      },
+      "same_all_26_statuses": true
+    },
+    {
+      "case": "resumed_names_no_host",
+      "target": "fault.only_this_runs_host_paused_and_resumed",
+      "actual": "fail",
+      "counts": {
+        "pass": 21,
+        "limit": 2,
+        "fail": 3
+      }
+    },
+    {
+      "case": "resumed_other_pid",
+      "target": "fault.only_this_runs_host_paused_and_resumed",
+      "actual": "fail",
+      "counts": {
+        "pass": 21,
+        "limit": 2,
+        "fail": 3
+      }
+    },
+    {
+      "case": "no_ink_comparisons",
+      "target": "counts.final_counts_equal_the_server_once_each",
+      "actual": "fail",
+      "counts": {
+        "pass": 23,
+        "limit": 2,
+        "fail": 1
+      }
+    },
+    {
+      "case": "one_ink_comparison_missing",
+      "target": "counts.final_counts_equal_the_server_once_each",
+      "actual": "fail",
+      "counts": {
+        "pass": 23,
+        "limit": 2,
+        "fail": 1
+      }
+    },
+    {
+      "case": "forced-kill-control",
+      "target": "quit.after_stop_page_close",
+      "actual": "fail",
+      "counts": {
+        "pass": 21,
+        "fail": 3,
+        "limit": 2
+      }
+    },
+    {
+      "case": "missing-status-control",
+      "target": "copy.header_and_line_follow_the_link_state",
+      "actual": "fail",
+      "counts": {
+        "pass": 22,
+        "limit": 2,
+        "fail": 2
+      }
+    }
+  ],
+  "expected_outcomes_passed": 7,
+  "command": "PYTHONDONTWRITEBYTECODE=1 python3 /tmp/lc-windows-qa-72bf9a3/focused_replay.py > /tmp/lc-windows-qa-72bf9a3/focused.log",
+  "unchanged_historical_evidence": {
+    "build.json": {
+      "unchanged": true,
+      "sha256": "4b837d0c68ebc2fbb243b14d8ecf907a8b3e3b85e12cce12a460d89b272b62a4"
+    },
+    "cleanup.json": {
+      "unchanged": true,
+      "sha256": "9393ca37546645dab63c5405ada0701d08b5ceac656a7e0ff5fbdcb97dfe03f5"
+    },
+    "coordination-final.json": {
+      "unchanged": true,
+      "sha256": "da766f156069ab3c793933a84c73ea38f0c0353668bd520e99a16bebeeabd13b"
+    },
+    "coordination-paused-8s.json": {
+      "unchanged": true,
+      "sha256": "fc3582f844a9e624f44e98bc12ccfe4adc1642a89df992258a0f26d4e37aaa51"
+    },
+    "coordination-stalled.json": {
+      "unchanged": true,
+      "sha256": "d17739d3b2cdfee5725b4f996485d89c6d5c9340c7ae16cffea4090e50f603df"
+    },
+    "database-readback.json": {
+      "unchanged": true,
+      "sha256": "23e0e934c6afcaa3e4aa55fe8cc103feec2a2c7914c6ac2bd20d8e868dd5ffd9"
+    },
+    "hash-checkpoints.json": {
+      "unchanged": true,
+      "sha256": "f272a3122f290b41d5fec0d5b38cd89f3c820e5bfaa26b2ad1d2a5f4c62b14ed"
+    },
+    "host-watch.json": {
+      "unchanged": true,
+      "sha256": "33c991e2d69f82394f1755ac0b3f84d99755d62fdbca6e9b3fe7414d3342d50c"
+    },
+    "manifest-ends.json": {
+      "unchanged": true,
+      "sha256": "8acfb84cc5eca74aca03a582d58750cf92e2c83660cb2cf2b80c7f7b223d6200"
+    },
+    "preflight.json": {
+      "unchanged": true,
+      "sha256": "ddc8c91383e57d636ef14434884117135898e5d346ff094eb44c6fb9bd3df2eb"
+    },
+    "run.json": {
+      "unchanged": true,
+      "sha256": "31bf572f67415d2f0cc1914ebfdf728c25648ff312f5b0e2f1c2ca636aea441b"
+    },
+    "runner-results.json": {
+      "unchanged": true,
+      "sha256": "0d37aed2775be952b2a2b356f1d4d8d9e8a3ea47154947c76814bcba14b84bbe"
+    },
+    "steps.json": {
+      "unchanged": true,
+      "sha256": "aa462d9ecb67ff4cc1c13d47fe9e28e1bf22e9c33c2281f97e848197343ba9f5"
+    },
+    "summary.json": {
+      "unchanged": true,
+      "sha256": "d23587adc05ade12ffd7a7b211c3198c6a0f50f5a56133e6f367b9b31b5c8aee"
+    }
+  },
+  "historical_analyzer_sha256": "ba2b42095a4218e14c947e848dd3a08c8cd264a105596a48fd8420f1a1a28103",
+  "corrected_analyzer_sha256": "17d8598082b34db2c504cec310ac5ca2922bb4e78c4ecf91e4ed7cb69761c641",
+  "declared_replay_receipts_inspected_not_rerun": {
+    "replay-corrected-analyzer.json": {
+      "sha256": "2fd2d58657cdeed38fc40acf685bfa0bd64d803a7ac0134ca2a5d4768f0ffd8a",
+      "cases": 121,
+      "counts": {
+        "pass": 0,
+        "fail": 117,
+        "limit": 4
+      },
+      "baseline": {
+        "pass": 24,
+        "limit": 2
+      }
+    },
+    "replay-executed-analyzer.json": {
+      "sha256": "80d500e2bfc980ded6bd9b84d7253a0677b55d1fcb95afc74aadfd3db7d8260b",
+      "cases": 121,
+      "counts": {
+        "pass": 110,
+        "fail": 9,
+        "limit": 2
+      },
+      "baseline": {
+        "pass": 24,
+        "limit": 2
+      }
+    },
+    "summary-corrected-analyzer.json": {
+      "sha256": "bc04c6881a040820d51b375754e3f0b44f1b14e40fcca2ba4c78603daa670b55",
+      "same_all_26_statuses": true
+    }
+  },
+  "adjacent_guards": "Appropriate recorded-evidence consistency checks; fixture-specific copy/scenario expectations remain pinned to historical 86d2405",
+  "limitations": [
+    "Full 121-case replay not rerun by reviewer",
+    "No GUI, DB, signals, network or native campaign",
+    "Private original capture files not independently accessed",
+    "No repository or worker edits"
+  ],
+  "next_owner_action": "Root integration and one full delivered replay against integrated source",
+  "artifact_sha256": {
+    "/tmp/windows-qa-analyzer-72bf-review.md": "a75c4bb836a84ea50ec2bafffd26e0a94c91533f8096851c4f4ec19a4ac8a1d9",
+    "/tmp/lc-windows-qa-72bf9a3/focused_replay.py": "8484a339c008f20b2d8b5b0d0625d9fddbf3169ac660f4cf826d2d418b6c7e87",
+    "/tmp/lc-windows-qa-72bf9a3/focused-results.json": "a8b4ffeee41cea8c34675a38c515dfd8d2dfce62d8721d425dbadf823539114b",
+    "/tmp/lc-windows-qa-72bf9a3/focused.log": "70d5729cff1b5d269f4651abeac432ae95cb7fa2fe37f816ae9b6f32fa74f4b1",
+    "/tmp/lc-windows-qa-72bf9a3/analyze_fix.py": "17d8598082b34db2c504cec310ac5ca2922bb4e78c4ecf91e4ed7cb69761c641",
+    "/tmp/lc-windows-qa-72bf9a3/replay_analyze_fix.py": "305f546996c5e9768bc4d252cd8ed3b57b48b3ae6797dcf925d3b480a0f82728"
+  }
+}
