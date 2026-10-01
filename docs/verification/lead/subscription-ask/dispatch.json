@@ -28,7 +28,7 @@
       "owner": "backend",
       "accepted_assignment": "handoff_ba8e541a6a2a89041ee20b35b1c3173d",
       "actual_start_reply": "handoff_7ff3eca55ab7ef971c8836f7a887a664",
-      "state": "linux_integrated_mac_pin_followup_accepted",
+      "state": "mac_admission_integrated_waiting_desktop_join",
       "actual_delivery": "handoff_b69b31940669698bc7b3a8368aba2b4a",
       "delivery_commit": "18fe4788e9cba52d7f336c273047432e00525499",
       "launch_followup": "handoff_9aa9afa6f12bdfa0279320454611d396",
@@ -45,7 +45,11 @@
       "inference_calls": 0,
       "mac_admission_assignment": "handoff_9b3310ff500df0caa3adef668de610b2",
       "mac_admission_baseline": "80bcd81e603eed14f0ab1c44dbe5b647e6e4cac9",
-      "mac_admission_start_reply": null
+      "mac_admission_start_reply": null,
+      "mac_admission_delivery": "handoff_295f3dffe095ddbdfa9b610c1bdda1f1",
+      "mac_admission_commit": "28314805a5500ceb6457d9f275372daed7c1eec2",
+      "mac_admission_integrated": "46e1a70f6b26cc2cbd5ff0cce68b1971de6b9505",
+      "mac_admission_main_tests": 129
     },
     {
       "owner": "learning",

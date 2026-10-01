@@ -64,10 +64,14 @@ child configuration before inference. Changing only this product child does not
 change the seven AgentsDock runtimes, permissions or auth. A fresh managed login
 in that product state may be required.
 
-The reviewed launch at `9884c60` admits the measured Linux x86_64/WSL Codex
-0.158.0 binary only. Native Windows/macOS binaries remain unverified; a compiled
-client does not extend that admission. Official effective config, requirements,
-disabled skill inventory and thread policy are checked before submission.
+The reviewed launch at `46e1a70` admits only the measured Linux x86_64/WSL
+and macOS arm64 Codex 0.158.0 binaries, each bound to its exact platform,
+architecture and executable hash. The Mac pin follows hosted metadata run
+`36825904220`; native Windows, Intel Mac and other builds remain unverified.
+A compiled client does not extend admission. Official effective config,
+requirements, disabled skill inventory and thread policy are still checked
+before submission. Mac production-factory/login/inference and interactive
+acceptance remain separate from metadata compatibility.
 
 The fixed `lc_managed_chatgpt` provider name is a configuration alias for the same
 managed ChatGPT route: `requires_openai_auth=true`, forced ChatGPT login, no

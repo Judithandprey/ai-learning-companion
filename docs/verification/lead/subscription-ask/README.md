@@ -63,9 +63,9 @@ Lead then ran the corrected production launch/connection read on the existing
 product-owned state: exact config/skills verification succeeds, the managed alias
 is active, and official auth remains **signed_out**; catalog image capabilities
 are listed. The child is reaped. [Actual result](corrected-connection-status.json)
-records 360ms and zero inference/login starts. The gate now admits only the pinned
-Linux/WSL binary/configuration; native Mac/Windows binary admission and account
-entitlement remain open. No real request budget has been allocated or spent.
+records 360ms and zero inference/login starts. At that historical release the gate admitted only the pinned Linux/WSL
+binary/configuration; the current Mac addition is recorded below, while account
+entitlement remains open. No real request budget has been allocated or spent.
 
 QA preparation `d2de2ba` and correction `4c63a2e` integrate as `ec9f5a7`/`fad98c7`.
 Lead reproduced two negated/uncertain answer false positives in the first judge;
@@ -101,7 +101,7 @@ reproduces two blocking protocol faults and one cleanup defect. W-SUB-T01/T02/T0
 map to handoff W-SUB-03/04/05 respectively; W-SUB-05 is non-blocking cleanup.
 The existing Web owner has one accepted bounded correction, not a new task.
 All probes are synthetic; the real request budget remains unallocated/unspent.
-Support metadata-only macOS workflow/probe `d8a402b` is [independently approved](mac-metadata-review.md), integrated and pushed as `de46212ac6c4800d8e0170c1ee4fe59f716a2de4`. All nine focused tests pass on integrated main (0.165s). The one [hosted metadata run](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36825904220) passed on that exact SHA. Its [actual receipt](mac-metadata-hosted.json) records macOS 26.6.2/arm64, CLI 0.158.0 and matching pinned binary; effective configuration and six disabled skills passed. Lead verified all five source hashes, metadata-only method sequence and child/state cleanup. No account/login/model/turn request occurred. Production binary admission remains Linux-only until a bounded Backend correction is integrated; interactive Mac and inference remain unverified. No new account/device result
+Support metadata-only macOS workflow/probe `d8a402b` is [independently approved](mac-metadata-review.md), integrated and pushed as `de46212ac6c4800d8e0170c1ee4fe59f716a2de4`. All nine focused tests pass on integrated main (0.165s). The one [hosted metadata run](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36825904220) passed on that exact SHA. Its [actual receipt](mac-metadata-hosted.json) records macOS 26.6.2/arm64, CLI 0.158.0 and matching pinned binary; effective configuration and six disabled skills passed. Lead verified all five source hashes, metadata-only method sequence and child/state cleanup. No account/login/model/turn request occurred. Subsequent Backend addition `2831480` integrates as `46e1a70`, admitting only the measured Mac arm64 hash as well as the unchanged Linux pin; interactive Mac and inference remain unverified. No new account/device result
 is inferred from either delivery.
 
 
@@ -114,3 +114,16 @@ Read-only Web worktree inspection observes matching correction edits at owner HE
 for that exact correction before integrating the Windows candidate and releasing
 QA's user-operated official login/real image path. No credentials or private user
 screens have been captured, and no real requests have been allocated or spent.
+
+
+Backend Mac admission delivery `28314805a5500ceb6457d9f275372daed7c1eec2`
+is integrated as `46e1a70f6b26cc2cbd5ff0cce68b1971de6b9505`. Production diff is
+an exact platform/architecture/hash lookup; independent source review approved
+the unchanged Linux gate and all five prior metadata source hashes. No auth, settings, skill, thread,
+receipt or provider fallback change. Main focused launch suite: **129 passed in
+0.22s**. Synthetic platform/hash cases exercise actual file hashing and reject
+unknown/cross-platform candidates. The earlier hosted metadata evidence is reused,
+not rerun. This does not yet establish Mac production-factory execution, login,
+image inference or device acceptance. Next owner: Native consumes this released
+connector in its existing UI/build slice; Windows correction and independent real
+image acceptance retain their separate pending status.
