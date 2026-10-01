@@ -1,0 +1,30 @@
+{
+  "message_id": "handoff_cffbe3c0eeeec20ae95d45b441f5e4d4",
+  "created_at": "2026-10-01T01:51:24Z",
+  "read_at": "2026-10-01T01:51:45Z",
+  "request_id": "lead-mac-parent-correction-20261001-0152",
+  "reply_to": "handoff_2bedf7ee1ad4bca823a2de9f24046f36",
+  "route_id": "route_dade7cb2bf0f4756aed8f816e92b88dd",
+  "body_sha256": "ab8b112c2beb917cac3cfca395489f2853e8235dba88b4b566f994c43429dcaa",
+  "candidate": "fb891d699cc33cde10c2a1fa25928f3c87346b3f",
+  "parent": "f625b480e591682be75dd6a7617c08eee4cf7bd6",
+  "prior_main": "ee30e6889f7d12394020a7eb9123fde38678a742",
+  "source": "Native owner correction delivery. Declared78 tests are not executed Mac evidence.",
+  "owner_reported_linux": {
+    "link_pass": 22,
+    "link_total": 23,
+    "all_pass": 74,
+    "all_total": 78,
+    "limitations": "Corelibs redirect and Darwin stub failures are retained, not marked native passes."
+  },
+  "qa_adoption_observation": {
+    "head": "b64669f8525f8ac5e52c7f9484a5acf0dddbd147",
+    "merged_candidate": "86d240550803022e02dbbb5ae2323793fbfdebfa",
+    "changed_owned_paths": [
+      "tests/e2e/windows/qa-electron-runner.ps1",
+      "tests/e2e/windows/qa_parent_db.py",
+      "tests/e2e/windows/run.mjs"
+    ],
+    "evidence": "Read-only worktree observation; actual baseline adoption/preparation, not completed execution."
+  }
+}

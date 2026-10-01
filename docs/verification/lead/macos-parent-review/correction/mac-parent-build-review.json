@@ -1,0 +1,333 @@
+{
+  "candidate": "fb891d699cc33cde10c2a1fa25928f3c87346b3f",
+  "parent": "f625b480e591682be75dd6a7617c08eee4cf7bd6",
+  "scope": "Source/checksum/count inspection and one separate audit adaptation; no build/test/native/service execution",
+  "changed_files": [
+    {
+      "path": "apps/macos/CompanionDesktop/README.md",
+      "sha256": "062101b9a3fa1a8f3d9348d3b3db0736dcdc030ee636eaadb145dfd15d44b549",
+      "exact_git_blob": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureControl.swift",
+      "sha256": "0e7d90263d3071633dec649a1c0777f35605f0fc473ee058e63974a60260ab37",
+      "exact_git_blob": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureLink.swift",
+      "sha256": "7628c3479160f5f61314838f112d77a7104e8f7875f860650d05278f370b2ae3",
+      "exact_git_blob": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/CaptureLinkTests.swift",
+      "sha256": "d3b505733e57ec64e75184c26e8008349ce58f2b5f4f8a096672111027727921",
+      "exact_git_blob": true
+    },
+    {
+      "path": "docs/verification/platform/README.md",
+      "sha256": "149d1a2386f6232f34baba0cbb2bab2f625cbf36d799dd2e49b2511618fb5f70",
+      "exact_git_blob": true
+    },
+    {
+      "path": "docs/verification/platform/macos-app-parent-link.md",
+      "sha256": "202681dbae81c3ce3f871384a62aabf77cd2f7d3f82c8e73947c5fb50b92bf2b",
+      "exact_git_blob": true
+    },
+    {
+      "path": "docs/verification/platform/macos-app-parent-link/correction/SHA256SUMS",
+      "sha256": "e4bc6a7eda438c60190697af5ac7006e7f3f1fd2ddf665011fd8010763b9540b",
+      "exact_git_blob": true
+    },
+    {
+      "path": "docs/verification/platform/macos-app-parent-link/correction/baseline-f625b48-new-tests.txt",
+      "sha256": "855b662540eed44bc9ec0f25927eaf8c7362793239caf151876037291781e5ce",
+      "exact_git_blob": true
+    },
+    {
+      "path": "docs/verification/platform/macos-app-parent-link/correction/lead-control-probe-prepare.diff",
+      "sha256": "57dbf8a786604a2d983f64f13f9b5966cf5fba8f71ecd1f34c0d7a8ad6604d36",
+      "exact_git_blob": true
+    },
+    {
+      "path": "docs/verification/platform/macos-app-parent-link/correction/lead-control-probe-source.json",
+      "sha256": "b730f1686c630e3bb497e5e64b1fb27a258b8943f9e465ca4c4fdd6fb8d48c96",
+      "exact_git_blob": true
+    },
+    {
+      "path": "docs/verification/platform/macos-app-parent-link/correction/lead-control-probe.json",
+      "sha256": "6d2fbeb67be1e0282ff39906b593ea14c05e9b2ec8f9688373c4785f6b04b675",
+      "exact_git_blob": true
+    },
+    {
+      "path": "docs/verification/platform/macos-app-parent-link/correction/lead-link-probe-main.diff",
+      "sha256": "62294bf8c59192da6b5e95a1db336409b440224509a7b15276f59d8810954009",
+      "exact_git_blob": true
+    },
+    {
+      "path": "docs/verification/platform/macos-app-parent-link/correction/lead-link-probe-main.swift",
+      "sha256": "798af19a454de9993e9a0cb1a85944796bd8456e4d654320cb00d0472002fd1a",
+      "exact_git_blob": true
+    },
+    {
+      "path": "docs/verification/platform/macos-app-parent-link/correction/lead-link-probe-results.json",
+      "sha256": "3f0af081e15dea34dda89091aedef9bc268a9d1f448dc37de6072ab450f64eb1",
+      "exact_git_blob": true
+    },
+    {
+      "path": "docs/verification/platform/macos-app-parent-link/correction/linux-all-tests.txt",
+      "sha256": "718dd90b88bd5456fc692c2f0720f3c7f80e158707bcdfc8ee9c0ca6ecc8472d",
+      "exact_git_blob": true
+    },
+    {
+      "path": "docs/verification/platform/macos-app-parent-link/correction/linux-harness-main.swift",
+      "sha256": "39e861227c06f77f14be9b3f32a3dccc62ccca7da26b9a78d22b76f76c3c665a",
+      "exact_git_blob": true
+    },
+    {
+      "path": "docs/verification/platform/macos-app-parent-link/correction/linux-host-probes.txt",
+      "sha256": "71d91c903988c844e92a30b31da4a2d3a16f7ad8844416c11911e47b198ff06c",
+      "exact_git_blob": true
+    },
+    {
+      "path": "docs/verification/platform/macos-app-parent-link/correction/linux-link-tests.txt",
+      "sha256": "e0f694a28821c2053bb05e57d71291266b067efb895b2914f5bf566cd25b0ac1",
+      "exact_git_blob": true
+    },
+    {
+      "path": "docs/verification/platform/macos-app-parent-link/correction/linux-typecheck.txt",
+      "sha256": "13a538fd0ef27ed2501a0f52fb02e45b1d2a2e788f91fbeffcfef0f5fec89e27",
+      "exact_git_blob": true
+    },
+    {
+      "path": "docs/verification/platform/macos-app-parent-link/correction/linux-upload-tests.txt",
+      "sha256": "bbe0b08bbd64935102b969b6cc97419d106a7af835909ff34d7f3a83b94d97dd",
+      "exact_git_blob": true
+    },
+    {
+      "path": "docs/verification/platform/macos-app-parent-link/correction/mutations.txt",
+      "sha256": "04ffecad23333e8648835160c93ff707b38d1380edd5eb7f0152f618bca24ed4",
+      "exact_git_blob": true
+    }
+  ],
+  "all_changed_files_match_git": true,
+  "unchanged_app_build_storage_upload_paths": {
+    "Sources/CompanionDesktop": true,
+    "Package.swift": true,
+    "package-app.sh": true,
+    "Packaging": true,
+    "Sources/DesktopCapture/FrameStore.swift": true,
+    "Sources/DesktopCapture/MacIngressUpload.swift": true,
+    "Sources/DesktopCapture/DesktopIngress.swift": true,
+    "checks": true
+  },
+  "test_declarations": {
+    "CaptureLinkTests.swift": 23,
+    "DesktopCaptureTests.swift": 20,
+    "DesktopIngressTests.swift": 7,
+    "InkCompositionTests.swift": 5,
+    "InkOriginalTests.swift": 3,
+    "InkTests.swift": 10,
+    "MacIngressUploadTests.swift": 8,
+    "MacRetainedFramesTests.swift": 2
+  },
+  "total_declared": 78,
+  "native_macos_tests_run": false,
+  "owner_checksum_entries": {
+    "baseline-f625b48-new-tests.txt": {
+      "sha256": "855b662540eed44bc9ec0f25927eaf8c7362793239caf151876037291781e5ce",
+      "matches": true
+    },
+    "lead-control-probe-prepare.diff": {
+      "sha256": "57dbf8a786604a2d983f64f13f9b5966cf5fba8f71ecd1f34c0d7a8ad6604d36",
+      "matches": true
+    },
+    "lead-control-probe-source.json": {
+      "sha256": "b730f1686c630e3bb497e5e64b1fb27a258b8943f9e465ca4c4fdd6fb8d48c96",
+      "matches": true
+    },
+    "lead-control-probe.json": {
+      "sha256": "6d2fbeb67be1e0282ff39906b593ea14c05e9b2ec8f9688373c4785f6b04b675",
+      "matches": true
+    },
+    "lead-link-probe-main.diff": {
+      "sha256": "62294bf8c59192da6b5e95a1db336409b440224509a7b15276f59d8810954009",
+      "matches": true
+    },
+    "lead-link-probe-main.swift": {
+      "sha256": "798af19a454de9993e9a0cb1a85944796bd8456e4d654320cb00d0472002fd1a",
+      "matches": true
+    },
+    "lead-link-probe-results.json": {
+      "sha256": "3f0af081e15dea34dda89091aedef9bc268a9d1f448dc37de6072ab450f64eb1",
+      "matches": true
+    },
+    "linux-all-tests.txt": {
+      "sha256": "718dd90b88bd5456fc692c2f0720f3c7f80e158707bcdfc8ee9c0ca6ecc8472d",
+      "matches": true
+    },
+    "linux-harness-main.swift": {
+      "sha256": "39e861227c06f77f14be9b3f32a3dccc62ccca7da26b9a78d22b76f76c3c665a",
+      "matches": true
+    },
+    "linux-host-probes.txt": {
+      "sha256": "71d91c903988c844e92a30b31da4a2d3a16f7ad8844416c11911e47b198ff06c",
+      "matches": true
+    },
+    "linux-link-tests.txt": {
+      "sha256": "e0f694a28821c2053bb05e57d71291266b067efb895b2914f5bf566cd25b0ac1",
+      "matches": true
+    },
+    "linux-typecheck.txt": {
+      "sha256": "13a538fd0ef27ed2501a0f52fb02e45b1d2a2e788f91fbeffcfef0f5fec89e27",
+      "matches": true
+    },
+    "linux-upload-tests.txt": {
+      "sha256": "bbe0b08bbd64935102b969b6cc97419d106a7af835909ff34d7f3a83b94d97dd",
+      "matches": true
+    },
+    "mutations.txt": {
+      "sha256": "04ffecad23333e8648835160c93ff707b38d1380edd5eb7f0152f618bca24ed4",
+      "matches": true
+    }
+  },
+  "owner_checksum_coverage_exact": true,
+  "owner_checksums_match": true,
+  "owner_control_probe_source_receipt_matches": {
+    "CaptureControl.swift": true,
+    "CaptureHost.swift": true,
+    "MacIngressUpload.swift": true
+  },
+  "author_linux_stub_logs": {
+    "linux-link-tests.txt": {
+      "passed_methods": 22,
+      "failed_methods": 1,
+      "failed_names": [
+        "DesktopCaptureTests.testLoopbackTransportOnARealSocket"
+      ],
+      "summaries": [
+        [
+          "23",
+          "2",
+          "0"
+        ],
+        [
+          "23",
+          "2",
+          "0"
+        ],
+        [
+          "23",
+          "2",
+          "0"
+        ]
+      ],
+      "exit_lines": [
+        "exit 1"
+      ]
+    },
+    "linux-upload-tests.txt": {
+      "passed_methods": 8,
+      "failed_methods": 0,
+      "failed_names": [],
+      "summaries": [
+        [
+          "8",
+          "0",
+          "0"
+        ],
+        [
+          "8",
+          "0",
+          "0"
+        ],
+        [
+          "8",
+          "0",
+          "0"
+        ]
+      ],
+      "exit_lines": [
+        "exit 0"
+      ]
+    },
+    "linux-all-tests.txt": {
+      "passed_methods": 74,
+      "failed_methods": 4,
+      "failed_names": [
+        "DesktopCaptureTests.testLoopbackTransportOnARealSocket",
+        "DesktopCaptureTests.testFrameStoreIsTheReviewedScreenObserverCopy",
+        "DesktopCaptureTests.testMapsRetainedFramesToDesktopFrames",
+        "DesktopCaptureTests.testComposedImagesDrawTheInkCommittedWhenThePixelsWereOnScreen"
+      ],
+      "summaries": [
+        [
+          "78",
+          "11",
+          "1"
+        ],
+        [
+          "78",
+          "11",
+          "1"
+        ],
+        [
+          "78",
+          "11",
+          "1"
+        ]
+      ],
+      "exit_lines": [
+        "exit 1"
+      ]
+    },
+    "baseline-f625b48-new-tests.txt": {
+      "passed_methods": 0,
+      "failed_methods": 9,
+      "failed_names": [
+        "DesktopCaptureTests.testDamagedLinkRecordIsKeptAndNeverUsed",
+        "DesktopCaptureTests.testRecordFaultFencesEveryLaterRequest",
+        "DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand",
+        "DesktopCaptureTests.testLaterRefusalKeepsAnEarlierControlDoubt",
+        "DesktopCaptureTests.testLostAnswerThenRefusalStaysUnknownInTheLink",
+        "DesktopCaptureTests.testStopAfterDoubtRenewsTheBearerAndKeepsTheDoubt",
+        "DesktopCaptureTests.testSourceInDoubtThenRefusedEndsTheCaptureWithoutClaimingItWasNotRegistered",
+        "DesktopCaptureTests.testServerEndInARegistrationReplayEndsTheCaptureDespiteARecordFault",
+        "DesktopCaptureTests.testReconnectReplayActsOnABelievedServerEndOrLostPermission"
+      ],
+      "summaries": [
+        [
+          "9",
+          "71",
+          "0"
+        ],
+        [
+          "9",
+          "71",
+          "0"
+        ],
+        [
+          "9",
+          "71",
+          "0"
+        ]
+      ],
+      "exit_lines": []
+    }
+  },
+  "audit": {
+    "path": "/home/agentsdock/Projects/learning-companion/repo/docs/verification/lead/macos-parent-review/correction/audit.py",
+    "sha256": "f660a6b498b8fe774db406ffaf5f61ad3c36483b8531896d445c4eb826b5b947",
+    "syntax_ast_parses": true,
+    "executed_on_artifact": false,
+    "historical_path": "/home/agentsdock/Projects/learning-companion/repo/docs/verification/lead/macos-upload-integration/audit.py",
+    "historical_sha256_before": "935566c9cdf1f4a3a4faa43050e017933a5b87de567dbe08409887923affe6a2",
+    "historical_sha256_after": "935566c9cdf1f4a3a4faa43050e017933a5b87de567dbe08409887923affe6a2",
+    "declared_expected": 78,
+    "files_expected": 8,
+    "link_methods_expected": 23,
+    "upload_checker_expected_pass_lines": 24,
+    "upload_checker_expected_controls": 18
+  },
+  "verdict": "READY for actual hosted verification; no native pass claimed",
+  "blocking_findings": []
+}

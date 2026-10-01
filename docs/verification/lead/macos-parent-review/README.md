@@ -1,5 +1,11 @@
 # Mac app-parent review: three bounded corrections
 
+**Current:** final owner correction `fb891d6` is approved for the three source
+findings and integrated through `295d778`; 20 bounded portable probe groups
+pass. [Correction and native-verification boundary](correction/README.md).
+The original HOLD and failures below remain historical; they are not an active
+instruction to repeat the correction or a claim of native execution.
+
 Exact candidate `f625b480e591682be75dd6a7617c08eee4cf7bd6`, delivered in
 `handoff_272773cc71abc32339799a07d8800bb1` at 2026-09-30 23:49:25 UTC.
 Parent `497e05c` preserves the assigned `923217b` baseline. This continues the

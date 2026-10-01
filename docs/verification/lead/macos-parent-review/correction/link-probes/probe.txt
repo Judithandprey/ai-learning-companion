@@ -1,0 +1,363 @@
+{
+  "candidate" : "fb891d699cc33cde10c2a1fa25928f3c87346b3f",
+  "cases" : 11,
+  "results" : [
+    {
+      "case" : "healthy",
+      "fresh_starts" : [
+        true
+      ],
+      "hosts_ended" : true,
+      "pass" : true,
+      "requests" : [
+        {
+          "body" : "{\"authorization_generation\":1,\"continuity\":{\"kind\":\"initial\"},\"contract_version\":\"0.2.1\",\"device_id\":\"probe-device\",\"membership_revision\":1,\"session_id\":\"probe-session\",\"stream_id\":\"stream-15ade16ae03f629fd4217e7f\"}",
+          "detail" : "",
+          "key" : "stream-15ade16ae03f629fd4217e7f.register",
+          "method" : "POST",
+          "path" : "\/v2\/process\/streams"
+        },
+        {
+          "body" : "",
+          "detail" : "",
+          "key" : "",
+          "method" : "GET",
+          "path" : "\/v2\/process\/streams\/stream-15ade16ae03f629fd4217e7f"
+        },
+        {
+          "body" : "{\"contract_version\":\"0.2.4\",\"project_id\":null,\"source_id\":\"src-86130b1698a1375713eae1e6\",\"source_timezone\":\"America\/Los_Angeles\",\"stream_id\":\"stream-15ade16ae03f629fd4217e7f\"}",
+          "detail" : "",
+          "key" : "",
+          "method" : "PUT",
+          "path" : "\/v2\/process\/display-sources\/src-86130b1698a1375713eae1e6"
+        },
+        {
+          "body" : "{\"action\":{\"kind\":\"stop\",\"pre_stop_sequence\":null},\"contract_version\":\"0.2.1\",\"device_id\":\"probe-device\",\"expected_revision\":1,\"session_id\":\"probe-session\",\"stream_id\":\"stream-15ade16ae03f629fd4217e7f\"}",
+          "detail" : "nothing new is sent",
+          "key" : "stream-15ade16ae03f629fd4217e7f.stop.1",
+          "method" : "POST",
+          "path" : "\/v2\/process\/streams\/stream-15ade16ae03f629fd4217e7f:control"
+        },
+        {
+          "body" : "",
+          "detail" : "nothing new is sent",
+          "key" : "",
+          "method" : "GET",
+          "path" : "\/v2\/process\/streams\/stream-15ade16ae03f629fd4217e7f"
+        }
+      ],
+      "requests_before_reopen" : 5
+    },
+    {
+      "case" : "launch",
+      "fresh_starts" : [
+        true
+      ],
+      "hosts_ended" : true,
+      "pass" : true,
+      "requests" : [
+
+      ],
+      "requests_before_reopen" : 0
+    },
+    {
+      "case" : "registration",
+      "fresh_starts" : [
+        true,
+        false
+      ],
+      "hosts_ended" : true,
+      "pass" : true,
+      "requests" : [
+        {
+          "body" : "{\"authorization_generation\":1,\"continuity\":{\"kind\":\"initial\"},\"contract_version\":\"0.2.1\",\"device_id\":\"probe-device\",\"membership_revision\":1,\"session_id\":\"probe-session\",\"stream_id\":\"stream-1aa5511ef9aa83befa89a5ee\"}",
+          "detail" : "",
+          "key" : "stream-1aa5511ef9aa83befa89a5ee.register",
+          "method" : "POST",
+          "path" : "\/v2\/process\/streams"
+        },
+        {
+          "body" : "",
+          "detail" : "checking earlier streams",
+          "key" : "",
+          "method" : "GET",
+          "path" : "\/v2\/process\/streams\/stream-1aa5511ef9aa83befa89a5ee"
+        },
+        {
+          "body" : "{\"action\":{\"kind\":\"stop\",\"pre_stop_sequence\":null},\"contract_version\":\"0.2.1\",\"device_id\":\"probe-device\",\"expected_revision\":1,\"session_id\":\"probe-session\",\"stream_id\":\"stream-1aa5511ef9aa83befa89a5ee\"}",
+          "detail" : "checking earlier streams",
+          "key" : "stream-1aa5511ef9aa83befa89a5ee.stop.1",
+          "method" : "POST",
+          "path" : "\/v2\/process\/streams\/stream-1aa5511ef9aa83befa89a5ee:control"
+        },
+        {
+          "body" : "",
+          "detail" : "checking earlier streams",
+          "key" : "",
+          "method" : "GET",
+          "path" : "\/v2\/process\/streams\/stream-1aa5511ef9aa83befa89a5ee"
+        }
+      ],
+      "requests_before_reopen" : 1
+    },
+    {
+      "case" : "read",
+      "fresh_starts" : [
+        true,
+        false
+      ],
+      "hosts_ended" : true,
+      "pass" : true,
+      "requests" : [
+        {
+          "body" : "{\"authorization_generation\":1,\"continuity\":{\"kind\":\"initial\"},\"contract_version\":\"0.2.1\",\"device_id\":\"probe-device\",\"membership_revision\":1,\"session_id\":\"probe-session\",\"stream_id\":\"stream-06cede339b716f593eef503c\"}",
+          "detail" : "",
+          "key" : "stream-06cede339b716f593eef503c.register",
+          "method" : "POST",
+          "path" : "\/v2\/process\/streams"
+        },
+        {
+          "body" : "",
+          "detail" : "",
+          "key" : "",
+          "method" : "GET",
+          "path" : "\/v2\/process\/streams\/stream-06cede339b716f593eef503c"
+        },
+        {
+          "body" : "",
+          "detail" : "checking earlier streams",
+          "key" : "",
+          "method" : "GET",
+          "path" : "\/v2\/process\/streams\/stream-06cede339b716f593eef503c"
+        },
+        {
+          "body" : "{\"action\":{\"kind\":\"stop\",\"pre_stop_sequence\":null},\"contract_version\":\"0.2.1\",\"device_id\":\"probe-device\",\"expected_revision\":1,\"session_id\":\"probe-session\",\"stream_id\":\"stream-06cede339b716f593eef503c\"}",
+          "detail" : "checking earlier streams",
+          "key" : "stream-06cede339b716f593eef503c.stop.1",
+          "method" : "POST",
+          "path" : "\/v2\/process\/streams\/stream-06cede339b716f593eef503c:control"
+        },
+        {
+          "body" : "",
+          "detail" : "checking earlier streams",
+          "key" : "",
+          "method" : "GET",
+          "path" : "\/v2\/process\/streams\/stream-06cede339b716f593eef503c"
+        }
+      ],
+      "requests_before_reopen" : 2
+    },
+    {
+      "case" : "server_end",
+      "fresh_starts" : [
+        true
+      ],
+      "hosts_ended" : true,
+      "pass" : true,
+      "requests" : [
+        {
+          "body" : "{\"authorization_generation\":1,\"continuity\":{\"kind\":\"initial\"},\"contract_version\":\"0.2.1\",\"device_id\":\"probe-device\",\"membership_revision\":1,\"session_id\":\"probe-session\",\"stream_id\":\"stream-ebecdb9d73537ff13f610662\"}",
+          "detail" : "",
+          "key" : "stream-ebecdb9d73537ff13f610662.register",
+          "method" : "POST",
+          "path" : "\/v2\/process\/streams"
+        }
+      ],
+      "requests_before_reopen" : 1
+    },
+    {
+      "case" : "unwritten_Stop",
+      "fresh_starts" : [
+        true
+      ],
+      "hosts_ended" : true,
+      "pass" : true,
+      "requests" : [
+        {
+          "body" : "{\"authorization_generation\":1,\"continuity\":{\"kind\":\"initial\"},\"contract_version\":\"0.2.1\",\"device_id\":\"probe-device\",\"membership_revision\":1,\"session_id\":\"probe-session\",\"stream_id\":\"stream-2f3884172f4fb42731a20703\"}",
+          "detail" : "",
+          "key" : "stream-2f3884172f4fb42731a20703.register",
+          "method" : "POST",
+          "path" : "\/v2\/process\/streams"
+        },
+        {
+          "body" : "",
+          "detail" : "",
+          "key" : "",
+          "method" : "GET",
+          "path" : "\/v2\/process\/streams\/stream-2f3884172f4fb42731a20703"
+        },
+        {
+          "body" : "{\"contract_version\":\"0.2.4\",\"project_id\":null,\"source_id\":\"src-7d34b87018e7e7e4d01e55ef\",\"source_timezone\":\"America\/Los_Angeles\",\"stream_id\":\"stream-2f3884172f4fb42731a20703\"}",
+          "detail" : "",
+          "key" : "",
+          "method" : "PUT",
+          "path" : "\/v2\/process\/display-sources\/src-7d34b87018e7e7e4d01e55ef"
+        }
+      ],
+      "requests_before_reopen" : 3
+    },
+    {
+      "case" : "same_revision_unknown",
+      "fresh_starts" : [
+        false
+      ],
+      "outcome" : "stopped",
+      "pass" : true,
+      "requests" : [
+        {
+          "body" : "",
+          "detail" : "checking earlier streams",
+          "key" : "",
+          "method" : "GET",
+          "path" : "\/v2\/process\/streams\/probe-stream"
+        },
+        {
+          "body" : "{\"action\":{\"kind\":\"stop\",\"pre_stop_sequence\":null},\"contract_version\":\"0.2.1\",\"device_id\":\"probe-device\",\"expected_revision\":1,\"session_id\":\"probe-session\",\"stream_id\":\"probe-stream\"}",
+          "detail" : "checking earlier streams",
+          "key" : "probe-stream.stop.1",
+          "method" : "POST",
+          "path" : "\/v2\/process\/streams\/probe-stream:control"
+        },
+        {
+          "body" : "",
+          "detail" : "checking earlier streams",
+          "key" : "",
+          "method" : "GET",
+          "path" : "\/v2\/process\/streams\/probe-stream"
+        }
+      ],
+      "retained_stop_count" : 1
+    },
+    {
+      "case" : "changed_revision",
+      "fresh_starts" : [
+        false
+      ],
+      "outcome" : "stopped",
+      "pass" : true,
+      "requests" : [
+        {
+          "body" : "",
+          "detail" : "checking earlier streams",
+          "key" : "",
+          "method" : "GET",
+          "path" : "\/v2\/process\/streams\/probe-stream"
+        },
+        {
+          "body" : "{\"action\":{\"kind\":\"stop\",\"pre_stop_sequence\":null},\"contract_version\":\"0.2.1\",\"device_id\":\"probe-device\",\"expected_revision\":2,\"session_id\":\"probe-session\",\"stream_id\":\"probe-stream\"}",
+          "detail" : "checking earlier streams",
+          "key" : "probe-stream.stop.2",
+          "method" : "POST",
+          "path" : "\/v2\/process\/streams\/probe-stream:control"
+        },
+        {
+          "body" : "",
+          "detail" : "checking earlier streams",
+          "key" : "",
+          "method" : "GET",
+          "path" : "\/v2\/process\/streams\/probe-stream"
+        }
+      ],
+      "retained_stop_count" : 2
+    },
+    {
+      "case" : "recorded_unknown_then_refused",
+      "fresh_starts" : [
+        false
+      ],
+      "outcome" : "unknown",
+      "pass" : true,
+      "requests" : [
+        {
+          "body" : "",
+          "detail" : "checking earlier streams",
+          "key" : "",
+          "method" : "GET",
+          "path" : "\/v2\/process\/streams\/probe-stream"
+        },
+        {
+          "body" : "{\"action\":{\"kind\":\"stop\",\"pre_stop_sequence\":null},\"contract_version\":\"0.2.1\",\"device_id\":\"probe-device\",\"expected_revision\":1,\"session_id\":\"probe-session\",\"stream_id\":\"probe-stream\"}",
+          "detail" : "checking earlier streams",
+          "key" : "probe-stream.stop.1",
+          "method" : "POST",
+          "path" : "\/v2\/process\/streams\/probe-stream:control"
+        },
+        {
+          "body" : "",
+          "detail" : "checking earlier streams",
+          "key" : "",
+          "method" : "GET",
+          "path" : "\/v2\/process\/streams\/probe-stream"
+        }
+      ],
+      "retained_stop_count" : 1
+    },
+    {
+      "case" : "recorded_written",
+      "fresh_starts" : [
+        false
+      ],
+      "outcome" : "stopped",
+      "pass" : true,
+      "requests" : [
+        {
+          "body" : "",
+          "detail" : "checking earlier streams",
+          "key" : "",
+          "method" : "GET",
+          "path" : "\/v2\/process\/streams\/probe-stream"
+        },
+        {
+          "body" : "{\"action\":{\"kind\":\"stop\",\"pre_stop_sequence\":null},\"contract_version\":\"0.2.1\",\"device_id\":\"probe-device\",\"expected_revision\":1,\"session_id\":\"probe-session\",\"stream_id\":\"probe-stream\"}",
+          "detail" : "checking earlier streams",
+          "key" : "probe-stream.stop.1",
+          "method" : "POST",
+          "path" : "\/v2\/process\/streams\/probe-stream:control"
+        },
+        {
+          "body" : "",
+          "detail" : "checking earlier streams",
+          "key" : "",
+          "method" : "GET",
+          "path" : "\/v2\/process\/streams\/probe-stream"
+        }
+      ],
+      "retained_stop_count" : 1
+    },
+    {
+      "case" : "recorded_refused_then_refused",
+      "fresh_starts" : [
+        false
+      ],
+      "outcome" : "refused",
+      "pass" : true,
+      "requests" : [
+        {
+          "body" : "",
+          "detail" : "checking earlier streams",
+          "key" : "",
+          "method" : "GET",
+          "path" : "\/v2\/process\/streams\/probe-stream"
+        },
+        {
+          "body" : "{\"action\":{\"kind\":\"stop\",\"pre_stop_sequence\":null},\"contract_version\":\"0.2.1\",\"device_id\":\"probe-device\",\"expected_revision\":1,\"session_id\":\"probe-session\",\"stream_id\":\"probe-stream\"}",
+          "detail" : "checking earlier streams",
+          "key" : "probe-stream.stop.1",
+          "method" : "POST",
+          "path" : "\/v2\/process\/streams\/probe-stream:control"
+        },
+        {
+          "body" : "",
+          "detail" : "checking earlier streams",
+          "key" : "",
+          "method" : "GET",
+          "path" : "\/v2\/process\/streams\/probe-stream"
+        }
+      ],
+      "retained_stop_count" : 1
+    }
+  ],
+  "scope" : "Linux exact candidate logic with Apple stubs, fake host\/HTTP; actual chmod failure; no native, socket, DB or GUI",
+  "temporary_directory" : "\/tmp\/mac-parent-fb891-review.probes\/cases-0B3698EB-D579-4923-B320-84DC14A7C250"
+}

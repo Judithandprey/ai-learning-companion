@@ -1,0 +1,145 @@
+{
+  "verdict": "APPROVE",
+  "scope": "MAC-CONTROL-01 only; parent journal/Stop and app review are independent",
+  "candidate": "fb891d699cc33cde10c2a1fa25928f3c87346b3f",
+  "parent": "f625b480e591682be75dd6a7617c08eee4cf7bd6",
+  "canonical_main_at_review": "ee30e6889f7d12394020a7eb9123fde38678a742",
+  "execution": {
+    "cases": 9,
+    "passed": 9,
+    "exit_code": 0,
+    "stderr_empty": true,
+    "command": "bash /tmp/mac-control-fb891-probes/run.sh",
+    "kind": "Linux Swift exact send function; scripted transport; not native execution",
+    "results": [
+      {
+        "actual": "unknown",
+        "attempts": 2,
+        "case": "lost_then_401",
+        "expected": "unknown",
+        "family": "0.2.1",
+        "later_code": "unauthenticated",
+        "later_status": 401,
+        "method": "POST",
+        "pass": true,
+        "same_request_bytes_headers_url": true
+      },
+      {
+        "actual": "unknown",
+        "attempts": 2,
+        "case": "503_then_403",
+        "expected": "unknown",
+        "family": "0.2.1",
+        "later_code": "forbidden",
+        "later_status": 403,
+        "method": "POST",
+        "pass": true,
+        "same_request_bytes_headers_url": true
+      },
+      {
+        "actual": "unknown",
+        "attempts": 2,
+        "case": "malformed_200_then_403",
+        "expected": "unknown",
+        "family": "0.2.1",
+        "later_code": "forbidden",
+        "later_status": 403,
+        "method": "POST",
+        "pass": true,
+        "same_request_bytes_headers_url": true
+      },
+      {
+        "actual": "refused",
+        "attempts": 1,
+        "case": "first_refusal",
+        "expected": "refused",
+        "family": "0.2.1",
+        "later_code": null,
+        "later_status": null,
+        "method": "POST",
+        "pass": true,
+        "same_request_bytes_headers_url": true
+      },
+      {
+        "actual": "ok",
+        "attempts": 2,
+        "case": "lost_then_exact_success",
+        "expected": "ok",
+        "family": "0.2.1",
+        "later_code": null,
+        "later_status": null,
+        "method": "POST",
+        "pass": true,
+        "same_request_bytes_headers_url": true
+      },
+      {
+        "actual": "notSent",
+        "attempts": 0,
+        "case": "stop_before_send",
+        "expected": "notSent",
+        "family": "0.2.1",
+        "later_code": null,
+        "later_status": null,
+        "method": "POST",
+        "pass": true,
+        "same_request_bytes_headers_url": true
+      },
+      {
+        "actual": "unknown",
+        "attempts": 2,
+        "case": "lost_then_404_write",
+        "expected": "unknown",
+        "family": "0.2.1",
+        "later_code": "not_found",
+        "later_status": 404,
+        "method": "POST",
+        "pass": true,
+        "same_request_bytes_headers_url": true
+      },
+      {
+        "actual": "unknown",
+        "attempts": 2,
+        "case": "source_lost_then_404",
+        "expected": "unknown",
+        "family": "0.2.4",
+        "later_code": "not_found",
+        "later_status": 404,
+        "method": "PUT",
+        "pass": true,
+        "same_request_bytes_headers_url": true
+      },
+      {
+        "actual": "refused",
+        "attempts": 2,
+        "case": "read_lost_then_403",
+        "expected": "refused",
+        "family": "0.2.1",
+        "later_code": null,
+        "later_status": null,
+        "method": "GET",
+        "pass": true,
+        "same_request_bytes_headers_url": true
+      }
+    ]
+  },
+  "source_review": {
+    "sender": "CaptureControl.swift:158-205: write attempt doubt persists across a later typed refusal and carries status/code; only accepted 200 settles it. GET intentionally exempt.",
+    "consumers": [
+      "CaptureLink.swift registration unknown/replay handling keeps initial uncertainty and does not relabel already registered replay as not registered; carried403/404 on a known replay ends capture.",
+      "Display-source unknown stays unknown, carried403/404 records doubt then invokes existing permission-loss ending path.",
+      "Stop unknown carries later status/code into journal; carried401 renews bearer with same key/body and retains inDoubt across later refusal.",
+      "No independent native execution of these link consumer paths in this review; source review only."
+    ]
+  },
+  "findings": [],
+  "source_manifest": "/tmp/mac-control-fb891-probes/source-manifest.json",
+  "old_failure_evidence_preserved": "/home/agentsdock/Projects/learning-companion/repo/docs/verification/lead/macos-parent-review/control-probes",
+  "limits": [
+    "Linux Swift interpreter on exact extracted sender/helpers with scripted transport; not the macOS app or whole module build",
+    "Exact-success case uses the prior explicit acceptance callback; it is sender settlement evidence, not native parser/Backend integration evidence",
+    "No socket, URLSession network, subprocess host, GUI, database, provider or native CI",
+    "Owner reports78declared XCTest methods and Linux suites are owner evidence, not independently run here",
+    "Darwin URLSession transparent GET/PUT replay and real dropped-connection behavior remain unverified as owner report records",
+    "No source/repository/worker files modified"
+  ]
+}

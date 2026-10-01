@@ -1,0 +1,88 @@
+{
+  "candidate": "fb891d699cc33cde10c2a1fa25928f3c87346b3f",
+  "canonical_main_at_review": "ee30e6889f7d12394020a7eb9123fde38678a742",
+  "source_files": [
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureControl.swift",
+      "sha256": "0e7d90263d3071633dec649a1c0777f35605f0fc473ee058e63974a60260ab37",
+      "bytes": 15046,
+      "matches_commit": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureLink.swift",
+      "sha256": "7628c3479160f5f61314838f112d77a7104e8f7875f860650d05278f370b2ae3",
+      "bytes": 67772,
+      "matches_commit": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureHost.swift",
+      "sha256": "fa8507c08f66653d04ac09c54cd15579165066a3f72fc709bac9e6d25fcf5aa7",
+      "bytes": 21833,
+      "matches_commit": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/MacIngressUpload.swift",
+      "sha256": "1e208be4afd4412786e59810952ed00eeb653027d2fad0b00fdb07a829d9aa52",
+      "bytes": 36639,
+      "matches_commit": true
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/CaptureLinkTests.swift",
+      "sha256": "d3b505733e57ec64e75184c26e8008349ce58f2b5f4f8a096672111027727921",
+      "bytes": 110011,
+      "matches_commit": true
+    },
+    {
+      "path": "docs/verification/platform/macos-app-parent-link.md",
+      "sha256": "202681dbae81c3ce3f871384a62aabf77cd2f7d3f82c8e73947c5fb50b92bf2b",
+      "bytes": 34019,
+      "matches_commit": true
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "/tmp/mac-control-fb891-probes/prepare.py",
+      "sha256": "97eabb5be6dedca3e40cd722f6e37745b8fd8a91afb15a1d09fbdf143c327d68",
+      "bytes": 6473
+    },
+    {
+      "path": "/tmp/mac-control-fb891-probes/run.sh",
+      "sha256": "5c4d19c0df466be4b24822e721aa085894d276c726c137ba74d6654dfebfa3c1",
+      "bytes": 529
+    },
+    {
+      "path": "/tmp/mac-control-fb891-probes/probe.swift",
+      "sha256": "aac137d714664171e421be9e32ac3b6e9322fcbafcf3fe77fba23330ae06dc98",
+      "bytes": 12099
+    },
+    {
+      "path": "/tmp/mac-control-fb891-probes/source.json",
+      "sha256": "ed86d03911b12bc7f622bab4d2d3b45f716207967d92dcb7753e5210cc459b9d",
+      "bytes": 511
+    },
+    {
+      "path": "/tmp/mac-control-fb891-probes/probe.json",
+      "sha256": "bca29f97b52766ba974611da7687f7e39fea454952d5a74036ef6851a1ce05fa",
+      "bytes": 2869
+    },
+    {
+      "path": "/tmp/mac-control-fb891-probes/probe.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "/home/agentsdock/Projects/learning-companion/repo/docs/verification/lead/macos-parent-review/control-probes/probe.json",
+      "sha256": "ae31643995a0dae1be3c4d5d4ccc266440ddefb29baaadfe62456a1e8849c835",
+      "bytes": 1281
+    },
+    {
+      "path": "/home/agentsdock/Projects/learning-companion/repo/docs/verification/lead/macos-parent-review/control-probes/prepare.py",
+      "sha256": "4f3533d62ffb056fa2b40f4ebcc3f1d8a0863af2467d0da91061832a502ae3d3",
+      "bytes": 5066
+    }
+  ],
+  "toolchain": "/tmp/lc-review-0212/tc/usr/bin/swift-frontend",
+  "sysroot": "/tmp/lc-review-0212/sysroot",
+  "libraries": "/tmp/lc-review-0212/libs",
+  "transform": "Same prior prepare.py extraction: exact ControlOutcome, generic CaptureControl.send/typedError and actual MacIngressUpload JSON/error helpers, private removed from send only. Scripted transport/acceptance callback; FoundationNetworking imported for Linux."
+}

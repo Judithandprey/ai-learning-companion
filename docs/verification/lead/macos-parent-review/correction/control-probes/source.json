@@ -1,0 +1,9 @@
+{
+  "candidate": "fb891d699cc33cde10c2a1fa25928f3c87346b3f",
+  "files": {
+    "CaptureControl.swift": "0e7d90263d3071633dec649a1c0777f35605f0fc473ee058e63974a60260ab37",
+    "CaptureHost.swift": "fa8507c08f66653d04ac09c54cd15579165066a3f72fc709bac9e6d25fcf5aa7",
+    "MacIngressUpload.swift": "1e208be4afd4412786e59810952ed00eeb653027d2fad0b00fdb07a829d9aa52"
+  },
+  "extraction": "CaptureControl.send/typedError and actual helpers; private removed only from send; scripted transport and acceptance callback"
+}

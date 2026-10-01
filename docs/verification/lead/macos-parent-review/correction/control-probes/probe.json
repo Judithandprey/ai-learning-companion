@@ -1,0 +1,113 @@
+{
+  "checks" : [
+    {
+      "actual" : "unknown",
+      "attempts" : 2,
+      "case" : "lost_then_401",
+      "expected" : "unknown",
+      "family" : "0.2.1",
+      "later_code" : "unauthenticated",
+      "later_status" : 401,
+      "method" : "POST",
+      "pass" : true,
+      "same_request_bytes_headers_url" : true
+    },
+    {
+      "actual" : "unknown",
+      "attempts" : 2,
+      "case" : "503_then_403",
+      "expected" : "unknown",
+      "family" : "0.2.1",
+      "later_code" : "forbidden",
+      "later_status" : 403,
+      "method" : "POST",
+      "pass" : true,
+      "same_request_bytes_headers_url" : true
+    },
+    {
+      "actual" : "unknown",
+      "attempts" : 2,
+      "case" : "malformed_200_then_403",
+      "expected" : "unknown",
+      "family" : "0.2.1",
+      "later_code" : "forbidden",
+      "later_status" : 403,
+      "method" : "POST",
+      "pass" : true,
+      "same_request_bytes_headers_url" : true
+    },
+    {
+      "actual" : "refused",
+      "attempts" : 1,
+      "case" : "first_refusal",
+      "expected" : "refused",
+      "family" : "0.2.1",
+      "later_code" : null,
+      "later_status" : null,
+      "method" : "POST",
+      "pass" : true,
+      "same_request_bytes_headers_url" : true
+    },
+    {
+      "actual" : "ok",
+      "attempts" : 2,
+      "case" : "lost_then_exact_success",
+      "expected" : "ok",
+      "family" : "0.2.1",
+      "later_code" : null,
+      "later_status" : null,
+      "method" : "POST",
+      "pass" : true,
+      "same_request_bytes_headers_url" : true
+    },
+    {
+      "actual" : "notSent",
+      "attempts" : 0,
+      "case" : "stop_before_send",
+      "expected" : "notSent",
+      "family" : "0.2.1",
+      "later_code" : null,
+      "later_status" : null,
+      "method" : "POST",
+      "pass" : true,
+      "same_request_bytes_headers_url" : true
+    },
+    {
+      "actual" : "unknown",
+      "attempts" : 2,
+      "case" : "lost_then_404_write",
+      "expected" : "unknown",
+      "family" : "0.2.1",
+      "later_code" : "not_found",
+      "later_status" : 404,
+      "method" : "POST",
+      "pass" : true,
+      "same_request_bytes_headers_url" : true
+    },
+    {
+      "actual" : "unknown",
+      "attempts" : 2,
+      "case" : "source_lost_then_404",
+      "expected" : "unknown",
+      "family" : "0.2.4",
+      "later_code" : "not_found",
+      "later_status" : 404,
+      "method" : "PUT",
+      "pass" : true,
+      "same_request_bytes_headers_url" : true
+    },
+    {
+      "actual" : "refused",
+      "attempts" : 2,
+      "case" : "read_lost_then_403",
+      "expected" : "refused",
+      "family" : "0.2.1",
+      "later_code" : null,
+      "later_status" : null,
+      "method" : "GET",
+      "pass" : true,
+      "same_request_bytes_headers_url" : true
+    }
+  ],
+  "execution" : "Linux Swift exact send function; scripted transport; not native execution"
+}
