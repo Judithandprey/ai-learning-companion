@@ -66,6 +66,19 @@ PNG bytes/hash/dimensions must pass the existing full decoder validation before
 provider submission; schema validation alone does not establish actual pixels.
 Missing source URL/video time/capture UTC remains null, not invented.
 
+`carry_focus_into_followup` in `packages/contracts/live_companion/focus.py`
+provides a wire-compatible metadata path: an unchanged full image/context may
+retain its same-frame focus on either text or voice follow-up. On a later frame,
+the current `focus` remains null and an existing `history` entry retains the old
+image hash, full source/context and rectangle with their original frame identity.
+It explicitly declares that the old pixels are not attached to this request and
+that provider-thread retention is unverified. No guessed content, coordinate
+relabeling or implicit second image is permitted. The caller retains originals in
+existing storage and checks current access; over-bound history is rejected, never
+silently truncated. This helper is implemented and synthetically composed with
+Learning, but runtime caller adoption remains an explicit Backend/Web dependency.
+Full earlier-image recall still needs an actually verified provider-image path.
+
 `history` is at most 24 original entries, 4,000 characters each / 32,000 total.
 Original history remains retained outside this bounded prompt; omitted context is
 explicitly noted, not represented as complete memory. Full prepared prompt remains
@@ -101,13 +114,25 @@ never silently overlap or retry. Both observation and focus requests count again
 the same finite allowance. Each potentially submitted request consumes one local
 budget slot; uncertain outcome is not a refundable slot or a retry opportunity.
 
-Initial engineering defaults: at most 12 submissions / 5 minutes after explicit
-Start, minimum 30 seconds between unattended observations. The UI shows the bounds;
-no automatic renewal. These are implementation defaults, not a new user spending
-budget or permission for QA to consume 12 calls. Existing narrower real-test
-allocations remain authoritative. Show the last actual observation/receipt age and
-coverage; do not call cached/stopped/unobserved content live. Sampling is not
-frame-perfect understanding, and unsupported sources/gaps remain visible.
+The 12-submission / 5-minute session and minimum 30-second interval between
+unattended observations are a bounded engineering/QA preset only, not final
+continuous-study behavior, user-selected defaults or a user spending budget.
+The product must visibly configure sustained-session duration and request allowance,
+show their remaining local bounds separately from official provider quota, and
+leave useful allowance for focus and follow-ups. Throttle/coalesce unattended
+observations so they do not exhaust the allowance before those interactions.
+
+The current `lc-subscription-live/1` validator caps `max_session_ms` at 3,600,000
+(1 hour) and `max_submissions` at 100. These are current implementation boundaries
+awaiting coordinated extension for sustained use, not complete-product acceptance
+or user-chosen limits. This clarification does not change the wire baseline or
+authorize silently chaining sessions. No automatic renewal or restart; existing
+narrower real-test allocations remain authoritative. The preset grants QA no
+additional calls and changes neither spending nor official quota authorization.
+
+Show the last actual observation/receipt age and coverage; do not call
+cached/stopped/unobserved content live. Sampling is not frame-perfect understanding,
+and unsupported sources/gaps remain visible.
 
 Enforce budgets/time with a monotonic clock in the trusted bridge, and reject stale
 or mismatched session/epoch/capture/request state immediately before any provider
@@ -122,6 +147,15 @@ capture from AI observation. A later explicit user check/Start is required; do
 not replay the failed frame or refund a potentially submitted budget slot.
 The user is actively using an older package: preparing this implementation does
 not authorize touching their current display, microphone, app, files or auth state.
+
+`CurrentState.provenance` identifies the still-authorized active response request,
+not each unrelated newer capture observation. Advancing a video alone must not
+make every in-flight response impossible to present. The trusted caller compares
+the retained request plus current session/permission/cancellation state before
+display/playback; copying a returned Result into CurrentState is not that check.
+If a response concerns an earlier frame, keep its timestamp/anchor visible rather
+than present it as an assertion about the newest screen. A new conflicting request,
+Stop, cancellation or revoked disclosure still fences it.
 
 ## Quota facts and refusal reasons
 

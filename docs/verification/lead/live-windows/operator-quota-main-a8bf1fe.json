@@ -1,0 +1,946 @@
+{
+  "created_at": "2026-10-01T14:24:08.113332+00:00",
+  "repo": "/home/agentsdock/Projects/learning-companion/repo",
+  "head": "a8bf1fe8616c336fc19664b207cd104b7e593d1b",
+  "scope": "offline fake child only; no product server, account, model, or microphone",
+  "source_sha256": {
+    "services/worker/connectors/tests/test_chatgpt_rpc.py": "e25a1e03b37a2ae5e4072567988b6c55640867389e494228e97b2ed94c06fd7e",
+    "services/worker/connectors/chatgpt_rpc.py": "14197aea9eb7f6b899881e58c4e3bdb09b64ea283c60ca4338c853ffbe1d9e21",
+    "services/worker/connectors/chatgpt_local.py": "6e819f53a71137e81852b5fb18b41b02dcc5550e0d8ffd3d8cc5bc828b51369b"
+  },
+  "probe_sha256": "41f46f704c0c53ee50012241b6a469fab96c103248dd6315878c9d8539a6f1af",
+  "checks": [
+    {
+      "name": "included allowance does not veto available credits",
+      "status": "PASS",
+      "evidence": {
+        "outcome": "completed",
+        "connector_code": null,
+        "public_code": null,
+        "turn_starts": 1
+      }
+    },
+    {
+      "name": "terminal rate and usage limits stay distinct through public mapping",
+      "status": "PASS",
+      "evidence": {
+        "rate": "failed",
+        "usage": "quota"
+      }
+    },
+    {
+      "name": "notification rate and usage limits stay distinct through public mapping",
+      "status": "PASS",
+      "evidence": {
+        "rate": "failed",
+        "usage": "quota"
+      }
+    },
+    {
+      "name": "unknown credits remain distinguishable from both known states",
+      "status": "FAIL",
+      "evidence": {
+        "null_equals_omitted": true,
+        "null_equals_empty": true,
+        "null_equals_available": true
+      }
+    },
+    {
+      "name": "credit availability stays attached to its bucket",
+      "status": "FAIL",
+      "evidence": {
+        "swapped_bucket_credits_have_same_public_view": true
+      }
+    },
+    {
+      "name": "available credits in the applicable bucket can submit",
+      "status": "PASS",
+      "evidence": {
+        "outcome": "completed",
+        "connector_code": null,
+        "turn_starts": 1
+      }
+    },
+    {
+      "name": "spend_control_with_credits does not bypass explicit spend control",
+      "status": "PASS",
+      "evidence": {
+        "outcome": "refused",
+        "connector_code": "workspace_limit",
+        "turn_starts": 0
+      }
+    },
+    {
+      "name": "spend_control_other_bucket_credits does not bypass explicit spend control",
+      "status": "PASS",
+      "evidence": {
+        "outcome": "refused",
+        "connector_code": "workspace_limit",
+        "turn_starts": 0
+      }
+    },
+    {
+      "name": "one authorized request never retries or performs credit/account mutations",
+      "status": "PASS",
+      "evidence": {
+        "terminal_rate_limit": {
+          "turn_starts": 1,
+          "thread_starts": 1
+        },
+        "terminal_usage_limit": {
+          "turn_starts": 1,
+          "thread_starts": 1
+        },
+        "notification_rate_limit": {
+          "turn_starts": 1,
+          "thread_starts": 1
+        },
+        "notification_usage_limit": {
+          "turn_starts": 1,
+          "thread_starts": 1
+        }
+      }
+    }
+  ],
+  "synthetic_observations": {
+    "included_blocked_credits_available": {
+      "provider_fixture": {
+        "ordinaryUsageAllowed": false,
+        "rateLimits": {
+          "limitId": "codex",
+          "primary": {
+            "usedPercent": 100,
+            "windowDurationMins": 300,
+            "resetsAt": 0
+          },
+          "secondary": null,
+          "spendControlReached": false,
+          "rateLimitReachedType": null,
+          "credits": {
+            "hasCredits": true,
+            "unlimited": false,
+            "balance": "12.5"
+          }
+        }
+      },
+      "synthetic_error": null,
+      "account_view": {
+        "auth": {
+          "state": "signed_in",
+          "mode": "chatgpt",
+          "plan": "plus"
+        },
+        "rate_limits": [
+          {
+            "label": "codex/primary",
+            "used_percent": 100,
+            "resets_at": "1970-01-01T00:00:00Z"
+          }
+        ],
+        "models": [
+          {
+            "id": "test-image-model",
+            "label": "Test image model",
+            "image_input": true,
+            "default": true
+          }
+        ]
+      },
+      "outcome": "completed",
+      "answer": "Completed answer.",
+      "rpc_methods": [
+        "initialize",
+        "initialized",
+        "account/read",
+        "model/list",
+        "account/rateLimits/read",
+        "account/read",
+        "model/list",
+        "account/rateLimits/read",
+        "thread/start",
+        "turn/start"
+      ],
+      "turn_starts": 1,
+      "thread_starts": 1
+    },
+    "unknown_credits": {
+      "provider_fixture": {
+        "ordinaryUsageAllowed": false,
+        "rateLimits": {
+          "limitId": "codex",
+          "primary": {
+            "usedPercent": 100,
+            "windowDurationMins": 300,
+            "resetsAt": 0
+          },
+          "secondary": null,
+          "spendControlReached": false,
+          "rateLimitReachedType": null,
+          "credits": null
+        }
+      },
+      "synthetic_error": null,
+      "account_view": {
+        "auth": {
+          "state": "signed_in",
+          "mode": "chatgpt",
+          "plan": "plus"
+        },
+        "rate_limits": [
+          {
+            "label": "codex/primary",
+            "used_percent": 100,
+            "resets_at": "1970-01-01T00:00:00Z"
+          }
+        ],
+        "models": [
+          {
+            "id": "test-image-model",
+            "label": "Test image model",
+            "image_input": true,
+            "default": true
+          }
+        ]
+      },
+      "rpc_methods": [
+        "initialize",
+        "initialized",
+        "account/read",
+        "model/list",
+        "account/rateLimits/read"
+      ],
+      "turn_starts": 0,
+      "thread_starts": 0
+    },
+    "omitted_credits": {
+      "provider_fixture": {
+        "ordinaryUsageAllowed": false,
+        "rateLimits": {
+          "limitId": "codex",
+          "primary": {
+            "usedPercent": 100,
+            "windowDurationMins": 300,
+            "resetsAt": 0
+          },
+          "secondary": null,
+          "spendControlReached": false,
+          "rateLimitReachedType": null
+        }
+      },
+      "synthetic_error": null,
+      "account_view": {
+        "auth": {
+          "state": "signed_in",
+          "mode": "chatgpt",
+          "plan": "plus"
+        },
+        "rate_limits": [
+          {
+            "label": "codex/primary",
+            "used_percent": 100,
+            "resets_at": "1970-01-01T00:00:00Z"
+          }
+        ],
+        "models": [
+          {
+            "id": "test-image-model",
+            "label": "Test image model",
+            "image_input": true,
+            "default": true
+          }
+        ]
+      },
+      "rpc_methods": [
+        "initialize",
+        "initialized",
+        "account/read",
+        "model/list",
+        "account/rateLimits/read"
+      ],
+      "turn_starts": 0,
+      "thread_starts": 0
+    },
+    "known_empty_credits": {
+      "provider_fixture": {
+        "ordinaryUsageAllowed": false,
+        "rateLimits": {
+          "limitId": "codex",
+          "primary": {
+            "usedPercent": 100,
+            "windowDurationMins": 300,
+            "resetsAt": 0
+          },
+          "secondary": null,
+          "spendControlReached": false,
+          "rateLimitReachedType": null,
+          "credits": {
+            "hasCredits": false,
+            "unlimited": false,
+            "balance": "0"
+          }
+        }
+      },
+      "synthetic_error": null,
+      "account_view": {
+        "auth": {
+          "state": "signed_in",
+          "mode": "chatgpt",
+          "plan": "plus"
+        },
+        "rate_limits": [
+          {
+            "label": "codex/primary",
+            "used_percent": 100,
+            "resets_at": "1970-01-01T00:00:00Z"
+          }
+        ],
+        "models": [
+          {
+            "id": "test-image-model",
+            "label": "Test image model",
+            "image_input": true,
+            "default": true
+          }
+        ]
+      },
+      "rpc_methods": [
+        "initialize",
+        "initialized",
+        "account/read",
+        "model/list",
+        "account/rateLimits/read"
+      ],
+      "turn_starts": 0,
+      "thread_starts": 0
+    },
+    "known_available_credits": {
+      "provider_fixture": {
+        "ordinaryUsageAllowed": false,
+        "rateLimits": {
+          "limitId": "codex",
+          "primary": {
+            "usedPercent": 100,
+            "windowDurationMins": 300,
+            "resetsAt": 0
+          },
+          "secondary": null,
+          "spendControlReached": false,
+          "rateLimitReachedType": null,
+          "credits": {
+            "hasCredits": true,
+            "unlimited": false,
+            "balance": "12.5"
+          }
+        }
+      },
+      "synthetic_error": null,
+      "account_view": {
+        "auth": {
+          "state": "signed_in",
+          "mode": "chatgpt",
+          "plan": "plus"
+        },
+        "rate_limits": [
+          {
+            "label": "codex/primary",
+            "used_percent": 100,
+            "resets_at": "1970-01-01T00:00:00Z"
+          }
+        ],
+        "models": [
+          {
+            "id": "test-image-model",
+            "label": "Test image model",
+            "image_input": true,
+            "default": true
+          }
+        ]
+      },
+      "rpc_methods": [
+        "initialize",
+        "initialized",
+        "account/read",
+        "model/list",
+        "account/rateLimits/read"
+      ],
+      "turn_starts": 0,
+      "thread_starts": 0
+    },
+    "bucket_codex_available": {
+      "provider_fixture": {
+        "ordinaryUsageAllowed": false,
+        "rateLimits": {
+          "limitId": "codex",
+          "primary": {
+            "usedPercent": 100,
+            "windowDurationMins": 300,
+            "resetsAt": 0
+          },
+          "secondary": null,
+          "spendControlReached": false,
+          "rateLimitReachedType": null,
+          "credits": {
+            "hasCredits": true,
+            "unlimited": false,
+            "balance": "12.5"
+          }
+        },
+        "rateLimitsByLimitId": {
+          "codex": {
+            "limitId": "codex",
+            "primary": {
+              "usedPercent": 100,
+              "windowDurationMins": 300,
+              "resetsAt": 0
+            },
+            "secondary": null,
+            "spendControlReached": false,
+            "rateLimitReachedType": null,
+            "credits": {
+              "hasCredits": true,
+              "unlimited": false,
+              "balance": "12.5"
+            }
+          },
+          "other-model-bucket": {
+            "limitId": "other-model-bucket",
+            "primary": {
+              "usedPercent": 100,
+              "windowDurationMins": 300,
+              "resetsAt": 0
+            },
+            "secondary": null,
+            "spendControlReached": false,
+            "rateLimitReachedType": null,
+            "credits": {
+              "hasCredits": false,
+              "unlimited": false,
+              "balance": "0"
+            }
+          }
+        }
+      },
+      "synthetic_error": null,
+      "account_view": {
+        "auth": {
+          "state": "signed_in",
+          "mode": "chatgpt",
+          "plan": "plus"
+        },
+        "rate_limits": [
+          {
+            "label": "codex/primary",
+            "used_percent": 100,
+            "resets_at": "1970-01-01T00:00:00Z"
+          },
+          {
+            "label": "other-model-bucket/primary",
+            "used_percent": 100,
+            "resets_at": "1970-01-01T00:00:00Z"
+          }
+        ],
+        "models": [
+          {
+            "id": "test-image-model",
+            "label": "Test image model",
+            "image_input": true,
+            "default": true
+          }
+        ]
+      },
+      "outcome": "completed",
+      "answer": "Completed answer.",
+      "rpc_methods": [
+        "initialize",
+        "initialized",
+        "account/read",
+        "model/list",
+        "account/rateLimits/read",
+        "account/read",
+        "model/list",
+        "account/rateLimits/read",
+        "thread/start",
+        "turn/start"
+      ],
+      "turn_starts": 1,
+      "thread_starts": 1
+    },
+    "bucket_other_available": {
+      "provider_fixture": {
+        "ordinaryUsageAllowed": false,
+        "rateLimits": {
+          "limitId": "codex",
+          "primary": {
+            "usedPercent": 100,
+            "windowDurationMins": 300,
+            "resetsAt": 0
+          },
+          "secondary": null,
+          "spendControlReached": false,
+          "rateLimitReachedType": null,
+          "credits": {
+            "hasCredits": false,
+            "unlimited": false,
+            "balance": "0"
+          }
+        },
+        "rateLimitsByLimitId": {
+          "codex": {
+            "limitId": "codex",
+            "primary": {
+              "usedPercent": 100,
+              "windowDurationMins": 300,
+              "resetsAt": 0
+            },
+            "secondary": null,
+            "spendControlReached": false,
+            "rateLimitReachedType": null,
+            "credits": {
+              "hasCredits": false,
+              "unlimited": false,
+              "balance": "0"
+            }
+          },
+          "other-model-bucket": {
+            "limitId": "other-model-bucket",
+            "primary": {
+              "usedPercent": 100,
+              "windowDurationMins": 300,
+              "resetsAt": 0
+            },
+            "secondary": null,
+            "spendControlReached": false,
+            "rateLimitReachedType": null,
+            "credits": {
+              "hasCredits": true,
+              "unlimited": false,
+              "balance": "12.5"
+            }
+          }
+        }
+      },
+      "synthetic_error": null,
+      "account_view": {
+        "auth": {
+          "state": "signed_in",
+          "mode": "chatgpt",
+          "plan": "plus"
+        },
+        "rate_limits": [
+          {
+            "label": "codex/primary",
+            "used_percent": 100,
+            "resets_at": "1970-01-01T00:00:00Z"
+          },
+          {
+            "label": "other-model-bucket/primary",
+            "used_percent": 100,
+            "resets_at": "1970-01-01T00:00:00Z"
+          }
+        ],
+        "models": [
+          {
+            "id": "test-image-model",
+            "label": "Test image model",
+            "image_input": true,
+            "default": true
+          }
+        ]
+      },
+      "rpc_methods": [
+        "initialize",
+        "initialized",
+        "account/read",
+        "model/list",
+        "account/rateLimits/read"
+      ],
+      "turn_starts": 0,
+      "thread_starts": 0
+    },
+    "spend_control_with_credits": {
+      "provider_fixture": {
+        "ordinaryUsageAllowed": false,
+        "rateLimits": {
+          "limitId": "codex",
+          "primary": {
+            "usedPercent": 100,
+            "windowDurationMins": 300,
+            "resetsAt": 0
+          },
+          "secondary": null,
+          "spendControlReached": true,
+          "rateLimitReachedType": "workspace_member_usage_limit_reached",
+          "credits": {
+            "hasCredits": true,
+            "unlimited": false,
+            "balance": "12.5"
+          }
+        }
+      },
+      "synthetic_error": null,
+      "account_view": {
+        "auth": {
+          "state": "signed_in",
+          "mode": "chatgpt",
+          "plan": "plus"
+        },
+        "rate_limits": [
+          {
+            "label": "codex/primary",
+            "used_percent": 100,
+            "resets_at": "1970-01-01T00:00:00Z"
+          }
+        ],
+        "models": [
+          {
+            "id": "test-image-model",
+            "label": "Test image model",
+            "image_input": true,
+            "default": true
+          }
+        ]
+      },
+      "outcome": "refused",
+      "connector_code": "workspace_limit",
+      "public_code": "unavailable",
+      "rpc_methods": [
+        "initialize",
+        "initialized",
+        "account/read",
+        "model/list",
+        "account/rateLimits/read",
+        "account/read",
+        "model/list",
+        "account/rateLimits/read"
+      ],
+      "turn_starts": 0,
+      "thread_starts": 0
+    },
+    "spend_control_other_bucket_credits": {
+      "provider_fixture": {
+        "ordinaryUsageAllowed": false,
+        "rateLimits": {
+          "limitId": "codex",
+          "primary": {
+            "usedPercent": 100,
+            "windowDurationMins": 300,
+            "resetsAt": 0
+          },
+          "secondary": null,
+          "spendControlReached": true,
+          "rateLimitReachedType": "workspace_member_usage_limit_reached",
+          "credits": {
+            "hasCredits": false,
+            "unlimited": false,
+            "balance": "0"
+          }
+        },
+        "rateLimitsByLimitId": {
+          "codex": {
+            "limitId": "codex",
+            "primary": {
+              "usedPercent": 100,
+              "windowDurationMins": 300,
+              "resetsAt": 0
+            },
+            "secondary": null,
+            "spendControlReached": true,
+            "rateLimitReachedType": "workspace_member_usage_limit_reached",
+            "credits": {
+              "hasCredits": false,
+              "unlimited": false,
+              "balance": "0"
+            }
+          },
+          "other-model-bucket": {
+            "limitId": "other-model-bucket",
+            "primary": {
+              "usedPercent": 100,
+              "windowDurationMins": 300,
+              "resetsAt": 0
+            },
+            "secondary": null,
+            "spendControlReached": false,
+            "rateLimitReachedType": null,
+            "credits": {
+              "hasCredits": true,
+              "unlimited": false,
+              "balance": "12.5"
+            }
+          }
+        }
+      },
+      "synthetic_error": null,
+      "account_view": {
+        "auth": {
+          "state": "signed_in",
+          "mode": "chatgpt",
+          "plan": "plus"
+        },
+        "rate_limits": [
+          {
+            "label": "codex/primary",
+            "used_percent": 100,
+            "resets_at": "1970-01-01T00:00:00Z"
+          },
+          {
+            "label": "other-model-bucket/primary",
+            "used_percent": 100,
+            "resets_at": "1970-01-01T00:00:00Z"
+          }
+        ],
+        "models": [
+          {
+            "id": "test-image-model",
+            "label": "Test image model",
+            "image_input": true,
+            "default": true
+          }
+        ]
+      },
+      "outcome": "refused",
+      "connector_code": "workspace_limit",
+      "public_code": "unavailable",
+      "rpc_methods": [
+        "initialize",
+        "initialized",
+        "account/read",
+        "model/list",
+        "account/rateLimits/read",
+        "account/read",
+        "model/list",
+        "account/rateLimits/read"
+      ],
+      "turn_starts": 0,
+      "thread_starts": 0
+    },
+    "terminal_rate_limit": {
+      "provider_fixture": {
+        "ordinaryUsageAllowed": true,
+        "rateLimits": {
+          "limitId": "codex",
+          "primary": {
+            "usedPercent": 100,
+            "windowDurationMins": 300,
+            "resetsAt": 0
+          },
+          "secondary": null,
+          "spendControlReached": false,
+          "rateLimitReachedType": null,
+          "credits": null
+        }
+      },
+      "synthetic_error": "rateLimitExceeded",
+      "account_view": {
+        "auth": {
+          "state": "signed_in",
+          "mode": "chatgpt",
+          "plan": "plus"
+        },
+        "rate_limits": [
+          {
+            "label": "codex/primary",
+            "used_percent": 100,
+            "resets_at": "1970-01-01T00:00:00Z"
+          }
+        ],
+        "models": [
+          {
+            "id": "test-image-model",
+            "label": "Test image model",
+            "image_input": true,
+            "default": true
+          }
+        ]
+      },
+      "outcome": "refused",
+      "connector_code": "rate_limited",
+      "public_code": "failed",
+      "rpc_methods": [
+        "initialize",
+        "initialized",
+        "account/read",
+        "model/list",
+        "account/rateLimits/read",
+        "account/read",
+        "model/list",
+        "account/rateLimits/read",
+        "thread/start",
+        "turn/start"
+      ],
+      "turn_starts": 1,
+      "thread_starts": 1
+    },
+    "terminal_usage_limit": {
+      "provider_fixture": {
+        "ordinaryUsageAllowed": true,
+        "rateLimits": {
+          "limitId": "codex",
+          "primary": {
+            "usedPercent": 100,
+            "windowDurationMins": 300,
+            "resetsAt": 0
+          },
+          "secondary": null,
+          "spendControlReached": false,
+          "rateLimitReachedType": null,
+          "credits": null
+        }
+      },
+      "synthetic_error": "usageLimitExceeded",
+      "account_view": {
+        "auth": {
+          "state": "signed_in",
+          "mode": "chatgpt",
+          "plan": "plus"
+        },
+        "rate_limits": [
+          {
+            "label": "codex/primary",
+            "used_percent": 100,
+            "resets_at": "1970-01-01T00:00:00Z"
+          }
+        ],
+        "models": [
+          {
+            "id": "test-image-model",
+            "label": "Test image model",
+            "image_input": true,
+            "default": true
+          }
+        ]
+      },
+      "outcome": "refused",
+      "connector_code": "quota_exhausted",
+      "public_code": "quota",
+      "rpc_methods": [
+        "initialize",
+        "initialized",
+        "account/read",
+        "model/list",
+        "account/rateLimits/read",
+        "account/read",
+        "model/list",
+        "account/rateLimits/read",
+        "thread/start",
+        "turn/start"
+      ],
+      "turn_starts": 1,
+      "thread_starts": 1
+    },
+    "notification_rate_limit": {
+      "provider_fixture": {
+        "ordinaryUsageAllowed": true,
+        "rateLimits": {
+          "limitId": "codex",
+          "primary": {
+            "usedPercent": 100,
+            "windowDurationMins": 300,
+            "resetsAt": 0
+          },
+          "secondary": null,
+          "spendControlReached": false,
+          "rateLimitReachedType": null,
+          "credits": null
+        }
+      },
+      "synthetic_error": "rateLimitExceeded",
+      "account_view": {
+        "auth": {
+          "state": "signed_in",
+          "mode": "chatgpt",
+          "plan": "plus"
+        },
+        "rate_limits": [
+          {
+            "label": "codex/primary",
+            "used_percent": 100,
+            "resets_at": "1970-01-01T00:00:00Z"
+          }
+        ],
+        "models": [
+          {
+            "id": "test-image-model",
+            "label": "Test image model",
+            "image_input": true,
+            "default": true
+          }
+        ]
+      },
+      "outcome": "refused",
+      "connector_code": "rate_limited",
+      "public_code": "failed",
+      "rpc_methods": [
+        "initialize",
+        "initialized",
+        "account/read",
+        "model/list",
+        "account/rateLimits/read",
+        "account/read",
+        "model/list",
+        "account/rateLimits/read",
+        "thread/start",
+        "turn/start"
+      ],
+      "turn_starts": 1,
+      "thread_starts": 1
+    },
+    "notification_usage_limit": {
+      "provider_fixture": {
+        "ordinaryUsageAllowed": true,
+        "rateLimits": {
+          "limitId": "codex",
+          "primary": {
+            "usedPercent": 100,
+            "windowDurationMins": 300,
+            "resetsAt": 0
+          },
+          "secondary": null,
+          "spendControlReached": false,
+          "rateLimitReachedType": null,
+          "credits": null
+        }
+      },
+      "synthetic_error": "usageLimitExceeded",
+      "account_view": {
+        "auth": {
+          "state": "signed_in",
+          "mode": "chatgpt",
+          "plan": "plus"
+        },
+        "rate_limits": [
+          {
+            "label": "codex/primary",
+            "used_percent": 100,
+            "resets_at": "1970-01-01T00:00:00Z"
+          }
+        ],
+        "models": [
+          {
+            "id": "test-image-model",
+            "label": "Test image model",
+            "image_input": true,
+            "default": true
+          }
+        ]
+      },
+      "outcome": "refused",
+      "connector_code": "quota_exhausted",
+      "public_code": "quota",
+      "rpc_methods": [
+        "initialize",
+        "initialized",
+        "account/read",
+        "model/list",
+        "account/rateLimits/read",
+        "account/read",
+        "model/list",
+        "account/rateLimits/read",
+        "thread/start",
+        "turn/start"
+      ],
+      "turn_starts": 1,
+      "thread_starts": 1
+    }
+  }
+}

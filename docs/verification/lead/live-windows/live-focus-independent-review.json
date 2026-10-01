@@ -1,0 +1,41 @@
+{
+  "baseline": "a8bf1fe",
+  "snapshot": "/tmp/live-focus-a8bf1fe-c5jft7ap",
+  "sha256": {
+    "packages/contracts/live_companion/focus.py": "1438a063d12bf50c866d9ce5fe9c947ec247dc2ee7d96e4c98bd47eeedcfab2e",
+    "packages/contracts/tests/test_live_focus.py": "c4330bfa9e7d9588c09b375426438672f15d71714e9189e7499090bd6ab83951"
+  },
+  "verdict": "APPROVE_SCOPED_UNWIRED_HELPER",
+  "new_blockers": [],
+  "owned_tests": {
+    "passed": 15,
+    "seconds": 0.15
+  },
+  "independent_probes": {
+    "synthetic_only": true,
+    "results": [
+      {
+        "case": "current_none_intent_and_detached_output_same",
+        "passed": true
+      },
+      {
+        "case": "current_none_intent_and_detached_output_later",
+        "passed": true
+      },
+      {
+        "case": "history_total_budget_fails_without_mutation",
+        "passed": true
+      },
+      {
+        "case": "same_frame_capture_clock_change_refused",
+        "passed": true
+      }
+    ]
+  },
+  "limits": [
+    "Not wired into Backend/Web",
+    "No real pixels/model/provider-retention validation",
+    "No source-store/presentation authority",
+    "No repository edits or Chats calls"
+  ]
+}

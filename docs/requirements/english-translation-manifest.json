@@ -7,11 +7,11 @@
   "files": [
     {
       "source_path": "docs/requirements.md",
-      "source_sha256": "24d7d8507e6da65ba8579bd0f9ef5caff807f33f2f50a68353061183b31a6c50",
+      "source_sha256": "fe3ab573309253278c0ff91328d6d5dd6050165311982796536c2dd0235d0871",
       "translation_path": "docs/requirements.en.md",
-      "translation_sha256": "0352d659ac40e5b414a92cabfe24a8c68f0356a99282f6169806f63b53893357",
-      "source_revision": "live-windows-workflow-2026-10-01",
-      "source_base_commit": "d37f7a442a78122fb351a7aab83ffdff8aec1448",
+      "translation_sha256": "122245c23c562d4b1efea2b52c3c6b99820949eb30f11ef8bb2bf05a7c062c55",
+      "source_revision": "sustained-session-clarification-2026-10-01",
+      "source_base_commit": "a8bf1fe8616c336fc19664b207cd104b7e593d1b",
       "source_commit_binding": "containing_commit"
     },
     {
@@ -24,11 +24,11 @@
     },
     {
       "source_path": "docs/requirements/intent-and-decisions.md",
-      "source_sha256": "5c135fa3d343b91c7c5092434114011d4ef900d987b2b04cd277e5857707ef07",
+      "source_sha256": "6baad9055260b8cb56619381f5cb6ceaa7c0b57a2f478e25c2094e4b5292ae42",
       "translation_path": "docs/requirements/intent-and-decisions.en.md",
-      "translation_sha256": "8094252e661d54a3c09e5ecacf6eedc1841d0f9ed6a44aeab17fc30d3235c198",
-      "source_revision": "live-windows-workflow-2026-10-01",
-      "source_base_commit": "d37f7a442a78122fb351a7aab83ffdff8aec1448",
+      "translation_sha256": "69ec69c4a1c239d837e868a885375218b86ffc374ebca9d8de21148234265f40",
+      "source_revision": "sustained-session-clarification-2026-10-01",
+      "source_base_commit": "a8bf1fe8616c336fc19664b207cd104b7e593d1b",
       "source_commit_binding": "containing_commit"
     },
     {
@@ -321,10 +321,71 @@
         "revision_binding": "Affected source/English hashes bind the commit containing these exact bytes, identified by source_commit_binding=containing_commit; source_base_commit is the prior baseline, not a claim that new bytes existed there. Unchanged pairs retain their exact source_commit and hashes. Historical provenance remains intact.",
         "source_commit_binding": "containing_commit"
       }
+    },
+    {
+      "revision": "live-windows-workflow-2026-10-01",
+      "snapshot_commit": "a8bf1fe8616c336fc19664b207cd104b7e593d1b",
+      "record": {
+        "schema_version": 1,
+        "kind": "derived_english_working_translations",
+        "created_at": "2026-09-28T10:11:22.507499+00:00",
+        "authority": "Applicable original-language specifications and later explicit user decisions; English copies are derived working translations.",
+        "maintenance": "Compare source content hashes; update affected source and English clauses together. Check docs/requirements/english-working-policy.md.",
+        "files": [
+          {
+            "source_path": "docs/requirements.md",
+            "source_sha256": "24d7d8507e6da65ba8579bd0f9ef5caff807f33f2f50a68353061183b31a6c50",
+            "translation_path": "docs/requirements.en.md",
+            "translation_sha256": "0352d659ac40e5b414a92cabfe24a8c68f0356a99282f6169806f63b53893357",
+            "source_revision": "live-windows-workflow-2026-10-01",
+            "source_base_commit": "d37f7a442a78122fb351a7aab83ffdff8aec1448",
+            "source_commit_binding": "containing_commit"
+          },
+          {
+            "source_path": "docs/requirements/problem-solving-companion.md",
+            "source_sha256": "bcb94929cf216094972b945d14b0282fb94c9e45f2a4875333a0ac7658deb4dd",
+            "translation_path": "docs/requirements/problem-solving-companion.en.md",
+            "translation_sha256": "4b368b4b1118139c10227f8f585bdcea754171ffbd9b3812bf0e280b49bd037a",
+            "source_revision": "desktop-first-2026-09-30",
+            "source_commit": "d2603fd1d3b728a2756d0869d40bbf169cb2de0c"
+          },
+          {
+            "source_path": "docs/requirements/intent-and-decisions.md",
+            "source_sha256": "5c135fa3d343b91c7c5092434114011d4ef900d987b2b04cd277e5857707ef07",
+            "translation_path": "docs/requirements/intent-and-decisions.en.md",
+            "translation_sha256": "8094252e661d54a3c09e5ecacf6eedc1841d0f9ed6a44aeab17fc30d3235c198",
+            "source_revision": "live-windows-workflow-2026-10-01",
+            "source_base_commit": "d37f7a442a78122fb351a7aab83ffdff8aec1448",
+            "source_commit_binding": "containing_commit"
+          },
+          {
+            "source_path": "docs/requirements/original-goal-verification.md",
+            "source_sha256": "20cbea365337a8a046c443a9fe9536ec9fbec0c42a365c69a9c6ecf7068c5986",
+            "translation_path": "docs/requirements/original-goal-verification.en.md",
+            "translation_sha256": "d7b589605f4bfbbefbaedf0b9d9bfd214f1722cdf3f6f8ccec8118bf4e79fd62",
+            "source_revision": "live-windows-workflow-2026-10-01",
+            "source_base_commit": "d37f7a442a78122fb351a7aab83ffdff8aec1448",
+            "source_commit_binding": "containing_commit"
+          }
+        ],
+        "integration_corrections": [
+          {
+            "translation_path": "docs/requirements/problem-solving-companion.en.md",
+            "source_clause": "§7, P1 (source line 204)",
+            "reason": "Preserve source 可提供 (may provide); do not turn an optional fallback into a mandatory action.",
+            "delivered_translation_sha256": "771d5984fd5c4ee263adf3e7686726169cd3cf873a67a30999d0fc5161ee6ea6",
+            "integrated_translation_sha256": "fab592e71b29c97b0ce80ae078456e7408bc0c2ac2d60cc9c36996c75fffb30d"
+          }
+        ],
+        "source_base_commit": "d37f7a442a78122fb351a7aab83ffdff8aec1448",
+        "source_revision": "live-windows-workflow-2026-10-01",
+        "revision_binding": "Affected source/English hashes bind the commit containing these exact bytes, identified by source_commit_binding=containing_commit; source_base_commit is the prior baseline, not a claim that new bytes existed there. Unchanged pairs retain their prior binding and hashes. Historical snapshots preserve their recorded provenance and identify the baseline containing those prior bytes.",
+        "source_commit_binding": "containing_commit"
+      }
     }
   ],
-  "source_base_commit": "d37f7a442a78122fb351a7aab83ffdff8aec1448",
-  "source_revision": "live-windows-workflow-2026-10-01",
+  "source_base_commit": "a8bf1fe8616c336fc19664b207cd104b7e593d1b",
+  "source_revision": "sustained-session-clarification-2026-10-01",
   "revision_binding": "Affected source/English hashes bind the commit containing these exact bytes, identified by source_commit_binding=containing_commit; source_base_commit is the prior baseline, not a claim that new bytes existed there. Unchanged pairs retain their prior binding and hashes. Historical snapshots preserve their recorded provenance and identify the baseline containing those prior bytes.",
   "incremental_provenance": [
     {
@@ -367,6 +428,13 @@
       "source_base_commit": "d37f7a442a78122fb351a7aab83ffdff8aec1448",
       "content_commit_binding": "containing_commit",
       "scope": "Current user-authorized live Windows workflow: explicit Start, continuous full-screen/obtainable ink/conversation, focus-only circle with automatic contextual response, optional follow-up, silent point reading, talk/mute, newly explicit floating spoken-response captions and draggable controls. Ordinary owned credits are distinct from prohibited reset-credit consumption; no purchase, new API billing, auth-owner change or automatic retry. Preserve running 3e4b406 and independent macOS work. Main requirements, decisions and affected existing verification cases synchronized; no new R/A/G/V/INTENT IDs or capability acceptance."
+    },
+    {
+      "revision": "sustained-session-clarification-2026-10-01",
+      "decision": "docs/requirements/intent-and-decisions.md#desktop-first",
+      "source_base_commit": "a8bf1fe8616c336fc19664b207cd104b7e593d1b",
+      "content_commit_binding": "containing_commit",
+      "scope": "Current sustained-session clarification: visible configurable duration/request allowance, local budget separate from official quota, and useful room for focus/follow-ups. ADR 0004 12-submission/5-minute/30-second values are engineering/QA presets only; current 1-hour/100-submission wire caps remain implementation boundaries awaiting coordinated extension. No numeric user defaults, silent renewal/restart, additional real-test or spending authorization, wire-field change, new requirement/acceptance IDs or capability acceptance. Only affected main and decision source/English pairs refreshed; prior provenance preserved. Same-frame optional follow-up focus and historical cross-frame source/ink binding are explicit in the affected main clauses; unavailable earlier pixels cannot be inferred from coordinates. The additive helper does not change existing wire fields or establish runtime/provider adoption."
     }
   ],
   "source_commit_binding": "containing_commit"
