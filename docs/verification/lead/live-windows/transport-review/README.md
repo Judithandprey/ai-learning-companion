@@ -1,10 +1,17 @@
 # Live transport and native TTS adoption checkpoint
 
-Current integrated baseline: `c3afc6dc8b45e2979c0a74a01b03b8972c903e04`.
+Review starting baseline: `c3afc6dc8b45e2979c0a74a01b03b8972c903e04`.
 This is the same authorized Windows live-experience implementation. Requirements,
 owners, old running user app/profile/auth, mobile deferral and real-test allocations
 are unchanged. No user app, screen, microphone, audible output or real account/model
 was accessed. No production source is approved from the review counts alone.
+
+**Current disposition:** Backend correction91e72fe is independently approved and
+the base/repair are integrated as9773688/0f3c16e. Resulting-main156 live/legacy and59
+affected RPC checks pass, and the unchanged scheduling probe now passes both
+original failures. [Correction and release evidence](integration.md). The initial
+HOLD below is preserved as history; the TTS null-parser adoption correction and
+actual Windows/audio/provider acceptance remain open.
 
 ## Native scope actually restored
 
@@ -51,9 +58,9 @@ cancellation during receipt persistence, and fail-closed cleanup/no retry for
 unexpected server user-input/tool activity. Full commands, limitations and direct
 parent9080828 are in the review. These counts do not turn the two HOLDs into passes.
 
-Backend owns the same-delivery correction; original2833e2d is **not integrated**.
-After its exact repair arrives, Lead reruns these unchanged before/after checks
-and focused impacted regressions, then releases the reviewed transport to Web.
+Original2833e2d was held pending its same-delivery correction; it is now integrated
+only together with independently approved91e72fe as documented above. Unchanged
+before/after checks and focused impacted main regressions pass.
 Historical old-v1 quota probe7/2 remains intact; candidate live projection has
 separate synthetic public-pipe evidence and still needs the actual Windows UI.
 

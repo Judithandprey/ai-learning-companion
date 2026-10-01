@@ -1,0 +1,27 @@
+{
+  "scope": "synthetic actual bridge/Learning, no account/model/capture",
+  "candidate_root": "/home/agentsdock/Projects/learning-companion/repo",
+  "configured_policy": {
+    "max_submissions": 60,
+    "max_session_ms": 1800000,
+    "min_observation_interval_ms": 30000
+  },
+  "start_result": {
+    "id": "rpc-1",
+    "result": {
+      "session_id": "companion-example",
+      "epoch": 1,
+      "remaining_submissions": 60,
+      "expires_in_ms": 1800000
+    }
+  },
+  "configured_bounds_honored": true,
+  "focus_completed_with_newer_observation": true,
+  "focus_reply": {
+    "kind": "generated_assistance",
+    "frame_seq": 3
+  },
+  "observation_completed": true,
+  "turn_writes": 2,
+  "max_running": 1
+}

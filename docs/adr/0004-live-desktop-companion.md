@@ -130,6 +130,19 @@ authorize silently chaining sessions. No automatic renewal or restart; existing
 narrower real-test allocations remain authoritative. The preset grants QA no
 additional calls and changes neither spending nor official quota authorization.
 
+The first live transport consumer honors the explicitly supplied valid policy;
+it must not silently clamp every session to the QA preset. Its initial scheduling
+reserve leaves the last `max(1, ceil(max_submissions / 5))` total slots for explicit
+focus/follow-ups. This 20% reserve is a visible engineering rule, not additional
+requests or a user spending decision. An unattended observation reaching that
+tail returns `budget_reached/not_submitted` without stopping still-allowed explicit
+work. The client should suspend unattended submissions and display the remaining
+interactive allowance, not report official quota exhaustion or retry on every
+capture. Exhausting the total allowance or time still ends inference within the
+configured bound; stopped/failed sessions never silently renew. Smaller real-test
+allocations remain separate, including when a configured limit of1 leaves no
+unattended observation slot.
+
 Show the last actual observation/receipt age and coverage; do not call
 cached/stopped/unobserved content live. Sampling is not frame-perfect understanding,
 and unsupported sources/gaps remain visible.

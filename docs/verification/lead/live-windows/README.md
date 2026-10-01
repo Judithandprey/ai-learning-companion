@@ -9,13 +9,20 @@ operation or profile overwrite occurred in this integration.
 Prior bounded continuation: [same-task evidence and remaining actions](continuation-evidence.md).
 The unchanged operator probe remains7 PASS/2 FAIL; the new retained-focus helper
 has123 affected synthetic passes plus independent review and is not yet wired.
-Sustained-session clarification is synchronized. Current native routing returned
-403, so no latest owner notification/adoption is claimed. Existing live transport,
+Sustained-session clarification is synchronized. That earlier turn's native routing returned
+403, so it established no latest owner notification/adoption. Existing live transport,
 caption correction and actual audio work retain their owners and open gates.
 The next normal turn restored native list/inbox/read: [current transport/TTS review](transport-review/README.md)
 records actual Backend2833e2d delivery, two reproduced corrections, TTS source/hash
 review and one parser correction, with actual same-owner sends. The prior403 is
 historical; new receipt acceptance still does not establish worker adoption.
+Backend subsequently delivered actual correction `91e72fe` through
+`handoff_a58c7f02f71525cb3a07ccd6f4d35922`. Its independently approved base/repair
+integrate as `9773688`/`0f3c16e`; 215 resulting-main live/legacy/affected-RPC checks
+and the unchanged scheduling probe pass. [Exact integration](transport-review/integration.md)
+releases the live transport for current Windows consumption. Latest Web/QA/Native
+adoption is still not inferred from their send receipts; actual audio/provider and
+versioned Windows acceptance remain open.
 
 ## Actual ownership / current execution
 
