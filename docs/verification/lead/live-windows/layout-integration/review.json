@@ -1,0 +1,166 @@
+{
+  "candidate": "28f050437b02f92feee8f53749b44a93306c9524",
+  "parent": "3023c41ffb1b0eeb0ff599cf4f952c4b16969c43",
+  "main": "44a576c64354c57a83f84ddaa6e097e555c512e3",
+  "windows_base_trees": {
+    "3023c41ffb1b0eeb0ff599cf4f952c4b16969c43": "29dc80ff9eb9bac48c639f80f33b1062e01e3292",
+    "44a576c64354c57a83f84ddaa6e097e555c512e3": "29dc80ff9eb9bac48c639f80f33b1062e01e3292"
+  },
+  "source": [
+    {
+      "path": "apps/windows/src/renderer/overlay.ts",
+      "sha256": "31a150777fb4da3307b81438304fdc56edd511543a9241c9c8ab64fc1c41b8ba",
+      "git_match": true,
+      "snapshot_match": true,
+      "after_match": true
+    },
+    {
+      "path": "apps/safari-extension/src/ink.ts",
+      "sha256": "d02c97ae1a5e00b6544b58f765dd86baa55c61beb0e10ca4776218fec4f324dc",
+      "git_match": true,
+      "snapshot_match": true,
+      "after_match": true
+    },
+    {
+      "path": "apps/safari-extension/src/mode.ts",
+      "sha256": "76503344903e8720796e83e4bd67dea8a1164cb64673bf09506fabf1231cbec8",
+      "git_match": true,
+      "snapshot_match": true,
+      "after_match": true
+    },
+    {
+      "path": "apps/windows/src/shared/desktop-ink.ts",
+      "sha256": "fefd7452f5f1018521087bc7c9afd5650f7ad4c0b9bb8ada5a3d775bfc6ab446",
+      "git_match": true,
+      "snapshot_match": true,
+      "after_match": true
+    },
+    {
+      "path": "apps/windows/src/shared/samples.ts",
+      "sha256": "a9851c58e68b09507649fd7b024c73ad304b80e9f237d53c69da153741605946",
+      "git_match": true,
+      "snapshot_match": true,
+      "after_match": true
+    },
+    {
+      "path": "apps/windows/src/shared/retention.ts",
+      "sha256": "e99392afa223f89dc63a8cb726cd0235d48d09e124cde682eb1bfa4645713ab1",
+      "git_match": true,
+      "snapshot_match": true,
+      "after_match": true
+    },
+    {
+      "path": "apps/windows/src/shared/placement.ts",
+      "sha256": "5f4b32d7f8b9af855b64320735443a756875587c7450c114abf3fbddeb8d7691",
+      "git_match": true,
+      "snapshot_match": true,
+      "after_match": true
+    },
+    {
+      "path": "apps/windows/src/shared/voice.ts",
+      "sha256": "7b242a86c5845f8bdb8951bb193b906e0e79f2c369d4b3df762769a1f0d27607",
+      "git_match": true,
+      "snapshot_match": true,
+      "after_match": true
+    },
+    {
+      "path": "apps/windows/src/renderer/overlay.html",
+      "sha256": "5557acfacb029127bb0d0802413cf6cd80d2c2b105a0a8d72d2ccb6e827662d7",
+      "git_match": true,
+      "snapshot_match": true,
+      "after_match": true
+    },
+    {
+      "path": "apps/windows/src/renderer/overlay.css",
+      "sha256": "768793caf5e24636f520d61d0301ae9ef0d22b1d11f03ae998386a4af21adb18",
+      "git_match": true,
+      "snapshot_match": true,
+      "after_match": true
+    }
+  ],
+  "emitted": [
+    {
+      "path": "apps/windows/src/renderer/overlay.js",
+      "sha256": "a2968dba7799374b581b5fcd8bbedc29e5cd30ae35dc42c3e766c2040cbb41df",
+      "match": true
+    },
+    {
+      "path": "apps/safari-extension/src/ink.js",
+      "sha256": "e5a1867db9e72df7cecb43de48bc10e45d4f0bbc2936dd131075ba218cac7dd9",
+      "match": true
+    },
+    {
+      "path": "apps/safari-extension/src/mode.js",
+      "sha256": "4f6dcba7bd5fff78442a5b1a0631fc9e44f3e3935f0dd8e8b89b8574a5d6c27e",
+      "match": true
+    },
+    {
+      "path": "apps/windows/src/shared/desktop-ink.js",
+      "sha256": "48278d040e0fcb21c43523be24be7f741611f26cf8d35e7d5b9962e3d5cdd5f6",
+      "match": true
+    },
+    {
+      "path": "apps/windows/src/shared/samples.js",
+      "sha256": "4df4654aa44791ead0c1381f42368208a568714e199fbb345d9506fcad44e6fd",
+      "match": true
+    },
+    {
+      "path": "apps/windows/src/shared/retention.js",
+      "sha256": "5e446c2878bc3686733ce86bf8ae2c5d65089912dc707e657e759a16135bc595",
+      "match": true
+    },
+    {
+      "path": "apps/windows/src/shared/placement.js",
+      "sha256": "77abad4d2f4b9fb6cb5b141f2a5b0395748f6b20d682b9d384e5b4f9ef89777c",
+      "match": true
+    },
+    {
+      "path": "apps/windows/src/shared/voice.js",
+      "sha256": "04e83c2ec7b2040e4972c80e477468edaa2d5e4a23359bad6d0de1fc8417f69e",
+      "match": true
+    },
+    {
+      "path": "apps/windows/src/renderer/overlay.html",
+      "sha256": "5557acfacb029127bb0d0802413cf6cd80d2c2b105a0a8d72d2ccb6e827662d7",
+      "match": true
+    },
+    {
+      "path": "apps/windows/src/renderer/overlay.css",
+      "sha256": "768793caf5e24636f520d61d0301ae9ef0d22b1d11f03ae998386a4af21adb18",
+      "match": true
+    }
+  ],
+  "run05_result_sha256": "6ed56b4ef12b56c158f451808aa83a00f3816f127dba14ab3afaa250098d9ff7",
+  "run05_counts": {
+    "PASS": 15
+  },
+  "run05_actual_kind": "offscreen Chromium + synthetic media/IPC/voice; NOT OS/device/model acceptance",
+  "run05_started_at": "2026-10-01T15:00:03.699Z",
+  "run05_ended_at": "2026-10-01T15:00:08.176Z",
+  "run05_other_fields": {
+    "renderer_errors": []
+  },
+  "focused_tests": {
+    "pass": 17,
+    "fail": 0,
+    "skipped": 0,
+    "duration_ms": 854.616614,
+    "tap": "/tmp/windows-layout-28f0504-focused.tap"
+  },
+  "preference_probe": {
+    "kind": "Linux actual main source with fake Electron; no window/device/connector",
+    "first_backup": "first torn preferences",
+    "after": "second torn preferences",
+    "primary_exists": false
+  },
+  "verdict": "APPROVE bounded layout slice",
+  "findings": [
+    {
+      "severity": "P3",
+      "blocking": false,
+      "path": "apps/windows/src/main/main.ts",
+      "line": 1282,
+      "description": "Second malformed preferences recovery replaces fixed .unreadable backup; confirmed Linux actual-source/fake-Electron only."
+    }
+  ]
+}

@@ -1,0 +1,6 @@
+{
+  "kind": "Linux actual main source with fake Electron; no window/device/connector",
+  "first_backup": "first torn preferences",
+  "after": "second torn preferences",
+  "primary_exists": false
+}

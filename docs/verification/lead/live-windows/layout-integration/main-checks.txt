@@ -1,0 +1,190 @@
+TAP version 13
+# Subtest: a capture stream that arrives after Stop is stopped at once and never shown
+ok 1 - a capture stream that arrives after Stop is stopped at once and never shown
+  ---
+  duration_ms: 2.872259
+  type: 'test'
+  ...
+# Subtest: Stop while the capture is being armed asks for no stream
+ok 2 - Stop while the capture is being armed asks for no stream
+  ---
+  duration_ms: 0.548583
+  type: 'test'
+  ...
+# Subtest: a stream that is not the whole display, or carries audio, is stopped and ends the capture
+ok 3 - a stream that is not the whole display, or carries audio, is stopped and ends the capture
+  ---
+  duration_ms: 1.236051
+  type: 'test'
+  ...
+# Subtest: the chosen display is shown when the stream arrives while capturing
+ok 4 - the chosen display is shown when the stream arrives while capturing
+  ---
+  duration_ms: 0.640789
+  type: 'test'
+  ...
+# Subtest: a sample reports the held image's own frame count and age; frames arriving while it is hashed are stream progress only
+ok 5 - a sample reports the held image's own frame count and age; frames arriving while it is hashed are stream progress only
+  ---
+  duration_ms: 1.237754
+  type: 'test'
+  ...
+# Subtest: an ASK card keeps the uncertainty drawn into its picture, even if alignment changes while the picture is encoded
+ok 6 - an ASK card keeps the uncertainty drawn into its picture, even if alignment changes while the picture is encoded
+  ---
+  duration_ms: 9.758878
+  type: 'test'
+  ...
+# Subtest: the overlay sends pictures in bounded batches and lets go only of those named as received or invalid
+ok 7 - the overlay sends pictures in bounded batches and lets go only of those named as received or invalid
+  ---
+  duration_ms: 1.731671
+  type: 'test'
+  ...
+# Subtest: pictures the main process does not receive stay in the overlay, and the ink stays marked not saved
+ok 8 - pictures the main process does not receive stay in the overlay, and the ink stays marked not saved
+  ---
+  duration_ms: 0.754397
+  type: 'test'
+  ...
+# Subtest: after Stop begins, no new writing is accepted; the stroke written before it is kept and saved before the Stop is confirmed
+ok 9 - after Stop begins, no new writing is accepted; the stroke written before it is kept and saved before the Stop is confirmed
+  ---
+  duration_ms: 23.516056
+  type: 'test'
+  ...
+# Subtest: when the capture ends by itself, new writing is refused at once, before the Stop arrives
+ok 10 - when the capture ends by itself, new writing is refused at once, before the Stop arrives
+  ---
+  duration_ms: 2.696331
+  type: 'test'
+  ...
+# Subtest: a whole-display frame queued for retention when Stop comes is still written, before the Stop is confirmed and the end is recorded
+ok 11 - a whole-display frame queued for retention when Stop comes is still written, before the Stop is confirmed and the end is recorded
+  ---
+  duration_ms: 36.74544
+  type: 'test'
+  ...
+# Subtest: retention on the real overlay: material steps are retained; past the limit each later step is recorded once; nothing stays pinned
+ok 12 - retention on the real overlay: material steps are retained; past the limit each later step is recorded once; nothing stays pinned
+  ---
+  duration_ms: 87.875139
+  type: 'test'
+  ...
+# Subtest: retention on the real overlay: a frame refused because writing failed is retried once writing works, carrying what it stood for
+ok 13 - retention on the real overlay: a frame refused because writing failed is retried once writing works, carrying what it stood for
+  ---
+  duration_ms: 62.195858
+  type: 'test'
+  ...
+# Subtest: the toolbar has a handle: a drag moves the toolbar and nothing else, in every mode; it is kept inside the work area and its place is written for this display
+ok 14 - the toolbar has a handle: a drag moves the toolbar and nothing else, in every mode; it is kept inside the work area and its place is written for this display
+  ---
+  duration_ms: 35.225474
+  type: 'test'
+  ...
+# Subtest: in NAV the pointer passes through to the apps except over a surface, and a surface being moved keeps it until it is let go
+ok 15 - in NAV the pointer passes through to the apps except over a surface, and a surface being moved keeps it until it is let go
+  ---
+  duration_ms: 3.083816
+  type: 'test'
+  ...
+# Subtest: Stop while a surface is being moved: the surface is let go and the session ends as it does otherwise
+ok 16 - Stop while a surface is being moved: the surface is let go and the session ends as it does otherwise
+  ---
+  duration_ms: 6.58292
+  type: 'test'
+  ...
+# Subtest: the place is restored at the next Start, per display, and fitted to the work area as it is then: another size, another scale, a taskbar elsewhere
+ok 17 - the place is restored at the next Start, per display, and fitted to the work area as it is then: another size, another scale, a taskbar elsewhere
+  ---
+  duration_ms: 34.654957
+  type: 'test'
+  ...
+# Subtest: the work area changing while the capture runs keeps the surfaces inside the new one; the keys move a surface too; a place that cannot be written holds for the session and is said
+ok 18 - the work area changing while the capture runs keeps the surfaces inside the new one; the keys move a surface too; a place that cannot be written holds for the session and is said
+  ---
+  duration_ms: 24.268088
+  type: 'test'
+  ...
+# Subtest: [synthetic connector] the card has a handle too: it moves with its selection, form and response, asks nothing by being moved, and its place is kept beside the toolbar's
+ok 19 - [synthetic connector] the card has a handle too: it moves with its selection, form and response, asks nothing by being moved, and its place is kept beside the toolbar's
+  ---
+  duration_ms: 37.642591
+  type: 'test'
+  ...
+# Subtest: [synthetic connector] no voice is connected in this build: a response is silent text, Talk says so, and nothing is read or recorded as read
+ok 20 - [synthetic connector] no voice is connected in this build: a response is silent text, Talk says so, and nothing is read or recorded as read
+  ---
+  duration_ms: 45.054337
+  type: 'test'
+  ...
+# Subtest: [synthetic connector, stand-in voice] a response is silent text unless Talk is on; with Talk on it is read from the card's own text, a piece at a time, at 1.3×, and recorded as read apart from shown
+ok 21 - [synthetic connector, stand-in voice] a response is silent text unless Talk is on; with Talk on it is read from the card's own text, a piece at a time, at 1.3×, and recorded as read apart from shown
+  ---
+  duration_ms: 53.89257
+  type: 'test'
+  ...
+# Subtest: [synthetic connector, stand-in voice] the voice stops at once, with everything not yet spoken: Stop reading, Mute, Talk off, closing the card, a new selection, a new question, Cancel and Stop
+ok 22 - [synthetic connector, stand-in voice] the voice stops at once, with everything not yet spoken: Stop reading, Mute, Talk off, closing the card, a new selection, a new question, Cancel and Stop
+  ---
+  duration_ms: 235.598524
+  type: 'test'
+  ...
+# Subtest: [synthetic connector, stand-in voice] the rate is the user's, inside its bounds, kept for the next Start; what the overlay says of reading is taken only for a shown answer of the current selection
+ok 23 - [synthetic connector, stand-in voice] the rate is the user's, inside its bounds, kept for the next Start; what the overlay says of reading is taken only for a shown answer of the current selection
+  ---
+  duration_ms: 58.211312
+  type: 'test'
+  ...
+# Subtest: [synthetic connector] the card's handle too moves the card and nothing else, in every mode, and its keys work; a second pointer, a cancelled pointer and a pointer taken away end or leave the drag as they should
+ok 24 - [synthetic connector] the card's handle too moves the card and nothing else, in every mode, and its keys work; a second pointer, a cancelled pointer and a pointer taken away end or leave the drag as they should
+  ---
+  duration_ms: 17.580831
+  type: 'test'
+  ...
+# Subtest: [synthetic connector, stand-in voice] an answer that Cancel crossed is not read; a cut piece ending late does not disturb the reading after it; a voice that rejects or throws is said as stopped, and a Stop still completes
+ok 25 - [synthetic connector, stand-in voice] an answer that Cancel crossed is not read; a cut piece ending late does not disturb the reading after it; a voice that rejects or throws is said as stopped, and a Stop still completes
+  ---
+  duration_ms: 129.438392
+  type: 'test'
+  ...
+# Subtest: [synthetic connector] the Talk control never says it reads aloud when no voice is connected; a preferences file cut short is set aside so places can be kept again, and one of another format is left as it is
+ok 26 - [synthetic connector] the Talk control never says it reads aloud when no voice is connected; a preferences file cut short is set aside so places can be kept again, and one of another format is left as it is
+  ---
+  duration_ms: 50.420069
+  type: 'test'
+  ...
+# Subtest: a place puts the surface where it was dragged, and never outside the area: whatever the pointer does, the whole surface stays inside
+ok 27 - a place puts the surface where it was dragged, and never outside the area: whatever the pointer does, the whole surface stays inside
+  ---
+  duration_ms: 0.295286
+  type: 'test'
+  ...
+# Subtest: the same place fits any work area and scale: restored on a smaller, larger or shifted area, the surface is whole and inside it
+ok 28 - the same place fits any work area and scale: restored on a smaller, larger or shifted area, the surface is whole and inside it
+  ---
+  duration_ms: 0.123968
+  type: 'test'
+  ...
+# Subtest: the kept preferences are read only in their exact shape, per display, bounded; the speech rate stays inside its bounds
+ok 29 - the kept preferences are read only in their exact shape, per display, bounded; the speech rate stays inside its bounds
+  ---
+  duration_ms: 1.004076
+  type: 'test'
+  ...
+# Subtest: a response is read in pieces that are its own text, whole and in order: sentences, long ones cut at a space, nothing added or dropped
+ok 30 - a response is read in pieces that are its own text, whole and in order: sentences, long ones cut at a space, nothing added or dropped
+  ---
+  duration_ms: 0.443902
+  type: 'test'
+  ...
+1..30
+# tests 30
+# suites 0
+# pass 30
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 1080.464896
