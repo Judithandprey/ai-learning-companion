@@ -1,0 +1,98 @@
+{
+  "verdict": "APPROVE bounded metadata-only preparation",
+  "candidate": "d8a402b7d6972a5a0d271b526915cacd22b0f0be",
+  "integration_baseline": "a46a00d",
+  "source_receipt_checks": {
+    "tests/probes/support/codex_macos_metadata.py": {
+      "actual_sha256": "9705d1749123261b1f99c5c50df01ab7bed0566bd7d414567d271a7da8940e45",
+      "recorded_sha256": "9705d1749123261b1f99c5c50df01ab7bed0566bd7d414567d271a7da8940e45",
+      "matches": true
+    },
+    "tests/probes/support/test_codex_macos_metadata.py": {
+      "actual_sha256": "44a74e86b3d33ba3b97390858103221aa9e340839851e6deb492d7f471fa5620",
+      "recorded_sha256": "44a74e86b3d33ba3b97390858103221aa9e340839851e6deb492d7f471fa5620",
+      "matches": true
+    },
+    ".github/workflows/subscription-compatibility.yml": {
+      "actual_sha256": "9a04d5e88025d62f8f06a4de487fe6d1f6adb55805279a2a28e73901d888bcfb",
+      "recorded_sha256": "9a04d5e88025d62f8f06a4de487fe6d1f6adb55805279a2a28e73901d888bcfb",
+      "matches": true
+    }
+  },
+  "reused_connector_checks": {
+    "chatgpt_launch.py": {
+      "sha256": "02a4f1da659405a4f34828a41d1ac5d322bac38d91a172f384999eada41b5f35",
+      "matches_author_baseline": true
+    },
+    "chatgpt_rpc.py": {
+      "sha256": "7f0801be526e44be3773446c8a186dbaad2a8df978331308a088423aeb2c049f",
+      "matches_author_baseline": true
+    },
+    "chatgpt_receipts.py": {
+      "sha256": "cf3ec73ce51f83056d147b6a0997a5c3c245c9a7b2deae295f29ee9165a17cae",
+      "matches_author_baseline": true
+    }
+  },
+  "production_delta": false,
+  "allowed_outbound_sequence": [
+    "initialize",
+    "initialized",
+    "config/read",
+    "configRequirements/read",
+    "skills/list"
+  ],
+  "child_environment_keys": [
+    "CODEX_HOME",
+    "HOME",
+    "LANG",
+    "PATH",
+    "TMPDIR"
+  ],
+  "archive_sha256": "341c4a08f9ce1935b3007376dc2a3d50a0a89112930e9a474ae61367218f6e8a",
+  "executable_sha256": "788a818fbb9596869c7a487554507cb8bdca17584b8671112b23f9e225ba35c8",
+  "archive_and_binary_redownloaded_or_rehashed_by_reviewer": false,
+  "offline_tests": {
+    "run": 9,
+    "passed": 9,
+    "failed": 0,
+    "reported_seconds": 0.16,
+    "command": "/home/agentsdock/Projects/learning-companion/repo/.venv/bin/python /tmp/subscription-mac-metadata-run-offline.py",
+    "log": "/tmp/subscription-mac-metadata-offline.txt",
+    "log_sha256": "809b33e2e22e36979a4138604cc021aa9c9883fb37919d8295e5485e2c3aa828",
+    "root_relocation": "Only module.probe.ROOT points to main for the deliberately invalid source-SHA test; exact exported production/test bytes unchanged",
+    "real_cli_or_macos_execution": false,
+    "success_case_verifier": "mocked; separate actual-verifier rejection passes"
+  },
+  "workflow": {
+    "manual_only": true,
+    "main_only": true,
+    "source_sha_exact_full_head_check": true,
+    "tracked_dirt_rejected": true,
+    "contents_permission": "read",
+    "persist_credentials": false,
+    "actions_same_pins_as_desktop_workflow": true,
+    "runner": "macos-26",
+    "step_timeout_minutes": 4,
+    "job_timeout_minutes": 8,
+    "failure_artifact": "always; missing receipt errors",
+    "cancel_in_progress": false
+  },
+  "process_bounds": {
+    "curl_max_seconds": 90,
+    "curl_subprocess_seconds": 95,
+    "version_communicate_seconds": 5,
+    "version_reap_seconds": 5,
+    "metadata_start_seconds": 50,
+    "individual_rpc_seconds": 10,
+    "shutdown_terminate_seconds": 3,
+    "shutdown_kill_seconds": 3,
+    "workflow_outer_bounds": true
+  },
+  "findings": [],
+  "limits": [
+    "Official artifact digest origins are author evidence and fixed source pins; reviewer did not download or execute it",
+    "Nine Linux offline tests use synthetic local child processes; no Mac compatibility result",
+    "Hosted success is metadata compatibility only, not production binary admission/authentication/image inference/interactive Mac/full product acceptance",
+    "No workflow dispatch, network/provider/database/display/native operation performed by reviewer"
+  ]
+}

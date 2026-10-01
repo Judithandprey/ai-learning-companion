@@ -1,0 +1,16 @@
+test_child_environment_never_inherits_credentials_or_real_home (test_codex_macos_metadata.Guards.test_child_environment_never_inherits_credentials_or_real_home) ... ok
+test_corrupt_archive_is_refused_before_extraction (test_codex_macos_metadata.Guards.test_corrupt_archive_is_refused_before_extraction) ... ok
+test_non_metadata_messages_never_reach_transport (test_codex_macos_metadata.Guards.test_non_metadata_messages_never_reach_transport) ... ok
+test_unavailable_official_archive_reports_http_status_without_fallback (test_codex_macos_metadata.Guards.test_unavailable_official_archive_reports_http_status_without_fallback) ... ok
+test_wrong_source_sha_produces_sanitized_failure_receipt (test_codex_macos_metadata.Guards.test_wrong_source_sha_produces_sanitized_failure_receipt) ... ok
+test_actual_verifier_rejects_fixture_and_reaps_child (test_codex_macos_metadata.Lifecycle.test_actual_verifier_rejects_fixture_and_reaps_child) ... ok
+test_synthetic_success_uses_metadata_only_and_reaps_child (test_codex_macos_metadata.Lifecycle.test_synthetic_success_uses_metadata_only_and_reaps_child) ... ok
+test_timeout_reaps_silent_foreground_child (test_codex_macos_metadata.Lifecycle.test_timeout_reaps_silent_foreground_child) ... ok
+test_wrong_version_never_starts_app_server (test_codex_macos_metadata.Lifecycle.test_wrong_version_never_starts_app_server) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.165s
+
+OK
+{"status": "failed", "stage": "official_artifact", "effective_configuration_passed": false}
+{"status": "failed", "stage": "source", "effective_configuration_passed": false}

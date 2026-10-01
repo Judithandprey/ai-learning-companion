@@ -101,6 +101,5 @@ reproduces two blocking protocol faults and one cleanup defect. W-SUB-T01/T02/T0
 map to handoff W-SUB-03/04/05 respectively; W-SUB-05 is non-blocking cleanup.
 The existing Web owner has one accepted bounded correction, not a new task.
 All probes are synthetic; the real request budget remains unallocated/unspent.
-Support has delivered its metadata-only macOS workflow/probe as `d8a402b`; Lead
-is reviewing it before an exact-source hosted run. No new account/device result
+Support metadata-only macOS workflow/probe `d8a402b` is [independently approved](mac-metadata-review.md), integrated and pushed as `de46212ac6c4800d8e0170c1ee4fe59f716a2de4`. All nine focused tests pass on integrated main (0.165s). The one [hosted metadata run](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36825904220) passed on that exact SHA. Its [actual receipt](mac-metadata-hosted.json) records macOS 26.6.2/arm64, CLI 0.158.0 and matching pinned binary; effective configuration and six disabled skills passed. Lead verified all five source hashes, metadata-only method sequence and child/state cleanup. No account/login/model/turn request occurred. Production binary admission remains Linux-only until a bounded Backend correction is integrated; interactive Mac and inference remain unverified. No new account/device result
 is inferred from either delivery.

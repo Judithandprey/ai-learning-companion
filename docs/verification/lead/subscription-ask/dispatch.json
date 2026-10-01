@@ -7,7 +7,7 @@
       "owner": "support",
       "accepted_assignment": "handoff_fbe401de52ae85b625c76f3b0e9314fc",
       "actual_start_reply": null,
-      "state": "mac_metadata_candidate_delivered_reviewing",
+      "state": "mac_metadata_hosted_pass_complete_idle",
       "actual_delivery": "handoff_18949b99a24930d71b290113330387d9",
       "delivery_commit": "324fb11cdee5ce14dec64a0da78a1a0ab49e3086",
       "integrated_commit": "b459e9676c331c2df98ec7a05047313ceba44b0b",
@@ -17,7 +17,12 @@
       "mac_metadata_assignment": "handoff_4a375c7b93c178b1fbb2432e4e5f432f",
       "mac_metadata_start_reply": null,
       "mac_metadata_delivery": "handoff_3ee74d082d969d2c9efa23340298b1ee",
-      "mac_metadata_commit": "d8a402b7d6972a5a0d271b526915cacd22b0f0be"
+      "mac_metadata_commit": "d8a402b7d6972a5a0d271b526915cacd22b0f0be",
+      "mac_metadata_integration": "de46212ac6c4800d8e0170c1ee4fe59f716a2de4",
+      "mac_metadata_main_tests": 9,
+      "mac_metadata_workflow": 36825904220,
+      "mac_metadata_hosted": "passed",
+      "mac_metadata_source_hashes_verified": 5
     },
     {
       "owner": "backend",

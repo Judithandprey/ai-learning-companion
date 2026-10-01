@@ -1,0 +1,55 @@
+{
+  "checked_at": "2026-10-01T06:39:20.656007+00:00",
+  "scope": "macOS candidate metadata only; production binary admission unchanged",
+  "expected_source_sha": "de46212ac6c4800d8e0170c1ee4fe59f716a2de4",
+  "assigned_baseline": "871aabd974a8b1c11d18072da7200b0a2413ae73",
+  "platform": "darwin",
+  "architecture": "arm64",
+  "macos_version": "26.6.2",
+  "python_version": "3.12.10",
+  "official_archive_url": "https://github.com/openai/codex/releases/download/rust-v0.158.0/codex-aarch64-apple-darwin.tar.gz",
+  "official_asset_id": 594554175,
+  "expected_archive_sha256": "341c4a08f9ce1935b3007376dc2a3d50a0a89112930e9a474ae61367218f6e8a",
+  "expected_executable_sha256": "788a818fbb9596869c7a487554507cb8bdca17584b8671112b23f9e225ba35c8",
+  "effective_configuration_passed": true,
+  "status": "passed",
+  "stage": "complete",
+  "source_sha": "de46212ac6c4800d8e0170c1ee4fe59f716a2de4",
+  "source_file_sha256": {
+    "services/worker/connectors/chatgpt_launch.py": "02a4f1da659405a4f34828a41d1ac5d322bac38d91a172f384999eada41b5f35",
+    "services/worker/connectors/chatgpt_rpc.py": "7f0801be526e44be3773446c8a186dbaad2a8df978331308a088423aeb2c049f",
+    "services/worker/connectors/chatgpt_receipts.py": "cf3ec73ce51f83056d147b6a0997a5c3c245c9a7b2deae295f29ee9165a17cae",
+    "tests/probes/support/codex_macos_metadata.py": "9705d1749123261b1f99c5c50df01ab7bed0566bd7d414567d271a7da8940e45",
+    ".github/workflows/subscription-compatibility.yml": "9a04d5e88025d62f8f06a4de487fe6d1f6adb55805279a2a28e73901d888bcfb"
+  },
+  "download_http_status": "200",
+  "archive_sha256": "341c4a08f9ce1935b3007376dc2a3d50a0a89112930e9a474ae61367218f6e8a",
+  "executable_sha256": "788a818fbb9596869c7a487554507cb8bdca17584b8671112b23f9e225ba35c8",
+  "executable_architecture": "Mach-O 64-bit arm64",
+  "child_environment_keys": [
+    "CODEX_HOME",
+    "HOME",
+    "LANG",
+    "PATH",
+    "TMPDIR"
+  ],
+  "empty_cwd_before_start": true,
+  "settings_template_sha256": "1b46d22496a546a83030745743718649f0bf0c221eb30c949c760a741418d9f5",
+  "version": "codex-cli 0.158.0",
+  "version_child_reaped": true,
+  "outbound_methods": [
+    "initialize",
+    "initialized",
+    "config/read",
+    "configRequirements/read",
+    "skills/list"
+  ],
+  "metadata_step": "configuration_verifier",
+  "configuration_verifier_entered": true,
+  "system_skills": {
+    "count": 6,
+    "all_disabled": true
+  },
+  "app_server_child_reaped": true,
+  "temporary_state_removed": true
+}
