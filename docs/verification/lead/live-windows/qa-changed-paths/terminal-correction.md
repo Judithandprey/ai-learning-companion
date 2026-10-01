@@ -57,3 +57,18 @@ Lead integrates their actual commits and prepares a uniquely versioned package;
 QA uses the one changed-flow pass, retaining earlier frozen-source evidence.
 The five-request reservation is still held, not an account/device lease; no raw
 audio test or repeated quota attempt follows. Full GUI/voice/Mac gates remain open.
+
+## Actual release handoffs
+
+Reviewed code/evidence baseline `fca2a2580c2fc2260cb39c122ae78dd678d4705e`
+was normally pushed to origin/main before dispatch. Native async sends:
+
+- Windows `handoff_d9ffd7962ebfde70a89f4af0fd0ae147`: consume exact live1
+  cause/submission and retirement behavior within the current live/TTS work.
+- Native `handoff_d462ea44d3c91e9e92015ba300f79393`: fold frozen-v1 EOF/uncertainty
+  and scoped Stop/retirement into its existing queued-write correction.
+
+Both receipts are accepted, initially unread with execution_started=false. They
+are safe-boundary dependency updates, not duplicate tasks, observed adoption or
+new device/test leases. Existing dirty changes remain preserved. QA's actual
+package/lease prerequisite and held five-action allocation are unchanged.
