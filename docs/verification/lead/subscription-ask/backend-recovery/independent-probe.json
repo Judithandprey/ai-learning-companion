@@ -1,0 +1,56 @@
+{
+  "candidate": "1b27a918f265349929d6344f0bbe163c6a854b99",
+  "synthetic_only": true,
+  "passed": 4,
+  "results": [
+    {
+      "control": null,
+      "outcomes": [
+        "uncertain"
+      ],
+      "emitted_ids": [],
+      "turn_starts": 1,
+      "closed_without_parent_eof": true,
+      "user_cancel_flag": false,
+      "elapsed_ms_with_20ms_test_grace": 20.5,
+      "late_answer_bound": false
+    },
+    {
+      "control": "cancel",
+      "outcomes": [
+        "cancelled"
+      ],
+      "emitted_ids": [
+        "control"
+      ],
+      "turn_starts": 1,
+      "closed_without_parent_eof": true,
+      "user_cancel_flag": true,
+      "elapsed_ms_with_20ms_test_grace": 20.57,
+      "late_answer_bound": false
+    },
+    {
+      "control": "stop",
+      "outcomes": [
+        "cancelled"
+      ],
+      "emitted_ids": [
+        "control"
+      ],
+      "turn_starts": 1,
+      "closed_without_parent_eof": true,
+      "user_cancel_flag": true,
+      "elapsed_ms_with_20ms_test_grace": 20.36,
+      "late_answer_bound": false
+    },
+    {
+      "control": "reserved_not_run",
+      "outcomes": [
+        "not_submitted"
+      ],
+      "user_cancel_flag": false,
+      "provider_calls": 0
+    }
+  ],
+  "pending_tasks_after": 0
+}

@@ -1,0 +1,42 @@
+{
+  "decision": "approve_scoped_lifecycle",
+  "candidate": "1b27a918f265349929d6344f0bbe163c6a854b99",
+  "parent": "28314805a5500ceb6457d9f275372daed7c1eec2",
+  "windows_baseline": "db8d3d4eb899575ca2c355ee68f0f45d3dd099ba",
+  "archive": "/tmp/backend-subscription-1b27a91-y9i71opk",
+  "source_sha256": {
+    "services/worker/connectors/chatgpt_local.py": "eee3f784687111971f6859a071cfef7a397b6b29c818d2bede92a57ac9a12e29",
+    "services/worker/connectors/chatgpt_rpc.py": "242e64888cd2c9fd6cd5479e2952218c7db7029f6ee6763803a5da1304bfa94a",
+    "services/worker/connectors/tests/test_chatgpt_local.py": "6e0ca6dec767e02adde87c0cf28bf0630ebfc8bd747c58525b1055cf39302b34"
+  },
+  "windows_subscription_sha256": "98574346019811c8cd208867ddc93666c96f57b32c90651498931642b96dbad5",
+  "scope": [
+    "QA-SUB-02 terminal lifecycle",
+    "uncertain and reserved receipts",
+    "no replay",
+    "Stop/cancel races",
+    "Windows child-exit interoperability"
+  ],
+  "delegated_elsewhere": [
+    "streaming accounting",
+    "integrated targeted suites"
+  ],
+  "findings": [],
+  "checks": {
+    "independent_inprocess_probes": {
+      "passed": 4,
+      "total": 4,
+      "evidence": "/tmp/backend-subscription-recovery-probe.json"
+    },
+    "scoped_diff_check": "passed",
+    "actual_backend_private_pipe": "author evidence reviewed; not rerun",
+    "windows_exit_behavior": "source review at exact baseline"
+  },
+  "repository_edits": false,
+  "real_codex_processes": 0,
+  "real_account_calls": 0,
+  "real_provider_calls": 0,
+  "gui_operations": 0,
+  "product_state_access": false,
+  "report": "/tmp/backend-subscription-recovery-review.md"
+}

@@ -54,8 +54,8 @@ writes its result in `/tmp`. It never runs an app or provider. The archived
 | Finding | Current action |
 | --- | --- |
 | QA-SUB-01 | Web: freeze the selected frame's dimensions before asynchronous encoding can race sampler bitmap closure; preserve the actual image/frame/ink binding. |
-| QA-SUB-02 | Backend: recover from a fatal inner client on an explicit user action, with owned-child cleanup and no inference retry; coordinate any necessary desktop change. |
-| QA-SUB-03 | Backend: replace the misleading streamed-notification budget with meaningful bounded accounting; retain memory/time/tool defenses. Fix before the real attempt. |
+| QA-SUB-02 | Source correction `39620fa` now passes independent lifecycle review and main checks; changed-path GUI recovery remains pending. [Integration](../backend-recovery/README.md). |
+| QA-SUB-03 | Source correction `39620fa` separates streaming-byte and lifecycle budgets, retaining time/tool defenses; main189 tests pass. No real-provider fragmentation claim. |
 | QA-SUB-04/05/06 | Web: invalid Unicode preflight, connection-specific errors and pending-login/cancellation lifecycle. |
 | QA-SUB-07/08 | Web: bounded assessment of refresh storms and lost-overlay presentation. Unknown presentation is not proof of unseen text or of displayed help; do not infer learner mastery. |
 | QA-LAUNCHER-CLEANUP | QA: the automated launcher checker can leave its owned app alive after failure and delete its profile too early. Fix owned cleanup/error reporting before reusing `check`; the successful historical check and prepared user entry remain valid. |

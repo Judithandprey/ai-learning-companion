@@ -1,0 +1,24 @@
+{
+  "owner_commit": "1b27a918f265349929d6344f0bbe163c6a854b99",
+  "main_integration": "39620fa07afe164ed2abe0b24f73ea1be9fedf8d",
+  "actual_delivery": "handoff_6fe4e44e81ad80dbe0541d88c9766c62",
+  "checks": {
+    "command": ".venv/bin/python -m pytest -q services/worker/connectors/tests/test_chatgpt_rpc.py services/worker/connectors/tests/test_chatgpt_local.py --tb=short",
+    "exit_code": 0,
+    "passed": 189,
+    "duration_seconds": 10.64,
+    "environment": "normal exact-command approval for established sandbox self-pipe restriction; synthetic owned children only",
+    "diff_check": true,
+    "delivered_paths_equal_integrated": true
+  },
+  "sha256": {
+    "services/worker/connectors/chatgpt_local.py": "eee3f784687111971f6859a071cfef7a397b6b29c818d2bede92a57ac9a12e29",
+    "services/worker/connectors/chatgpt_rpc.py": "242e64888cd2c9fd6cd5479e2952218c7db7029f6ee6763803a5da1304bfa94a",
+    "services/worker/connectors/tests/test_chatgpt_local.py": "6e0ca6dec767e02adde87c0cf28bf0630ebfc8bd747c58525b1055cf39302b34",
+    "services/worker/connectors/tests/test_chatgpt_rpc.py": "a4386c591c587f1d77a1a680125565e95f3732bfd574e9f3e3eeb53afe701922"
+  },
+  "real_provider_calls": 0,
+  "subscription_attempts_spent": 0,
+  "windows_gui_retest": false,
+  "qa_02_03_status": "source_and_synthetic_correction_pass; changed-path independent GUI still pending"
+}
