@@ -158,7 +158,7 @@ export type LinkStatus =
   | { readonly mode: 'unavailable'; readonly reason: string }
   | {
       readonly mode: 'development';
-      /** What this app's capture link is doing now. `stalled`: live, but the last send got no answer (it is tried again). */
+      /** What this app's capture link is doing now. `stalled`: live, but not storing now (the detail says why). */
       readonly state: 'idle' | 'connecting' | 'sending' | 'stalled' | 'offline' | 'stopping' | 'stopped' | 'not connected' | 'ended by the service' | 'reconciling';
       readonly stored: number;
       readonly unknown: number;
@@ -170,8 +170,9 @@ export type LinkStatus =
       /** The record could not be written: nothing further is sent in this run (the detail says so); the counts stay. */
       readonly sends_stopped: boolean;
       /**
-       * Retained frames are being stored now: a Start's stream is live on the service, not stopping, and its last send
-       * was answered. What the app says about storage follows this, never the mere configuration.
+       * Retained frames are being stored now: a Start's stream is live on the service, not stopping, and no send has
+       * gone unanswered since the last one that was answered (a queue with nothing left to send is not an answer).
+       * What the app says about storage follows this, never the mere configuration.
        */
       readonly storing: boolean;
     };
@@ -215,6 +216,8 @@ type Active = {
   stopped: Promise<void> | null;
   /** Whether a startup record ever reached a host for this stream (a grant may exist from then on). */
   asked: boolean;
+  /** A send got no answer, and none has been answered since: storing is not said again until one is. */
+  unanswered: boolean;
 };
 
 const CONTROL = { contract_version: '0.2.1' } as const;
@@ -518,7 +521,7 @@ export class CaptureLink {
     try {
       const before = this.active;
       if (this.broken || this.fault || (before && !before.stopping)) return void this.o.notify(this.status());
-      const a: Active = { capture_session: captureSession, capture_dir: captureDir, rec: null, host: null, hostEnded: false, authority: null, live: false, stopping: false, validBytes: 0, runner: null, again: false, controller: new AbortController(), reconnects: 0, state: 'connecting', detail: null, connecting: null, stopped: null, asked: false };
+      const a: Active = { capture_session: captureSession, capture_dir: captureDir, rec: null, host: null, hostEnded: false, authority: null, live: false, stopping: false, validBytes: 0, runner: null, again: false, controller: new AbortController(), reconnects: 0, state: 'connecting', detail: null, connecting: null, stopped: null, asked: false, unanswered: false };
       this.active = a;
       this.last = null;
       this.o.notify(this.status());
@@ -609,7 +612,7 @@ export class CaptureLink {
     a.authority = { ...got.authority, owner: rec.source };
     if (a.stopping) return;
     a.live = true;
-    this.say(a, 'sending', null);
+    this.rest(a);
     this.kick(a);
   }
   /** Takes a started host as this stream's, watching for its loss. */
@@ -653,6 +656,14 @@ export class CaptureLink {
       }
     })();
   }
+  /**
+   * Nothing to send now, or connected again. Neither is an answered send: after a send that was not stored (its job
+   * then set aside, say), the stream stays "not storing now" until a later send is answered.
+   */
+  private rest(a: Active): void {
+    if (a.unanswered) this.say(a, 'stalled', 'the last send was not stored; storing is said again once a later send is answered');
+    else this.say(a, 'sending', null);
+  }
   private facts(rec: StreamRecord): StreamFacts {
     return { device_id: rec.registration.device_id, session_id: rec.registration.session_id, stream_id: rec.stream_id, source: rec.source!, capture_session: rec.capture_session };
   }
@@ -669,7 +680,7 @@ export class CaptureLink {
         }
         continue;
       }
-      if (a.validBytes === 0) return this.say(a, 'sending', null); // nothing retained yet (the manifest is made with its first line)
+      if (a.validBytes === 0) return this.rest(a); // nothing retained yet (the manifest is made with its first line)
       let text: string;
       try {
         text = readFileSync(join(rec.capture_dir, 'manifest.jsonl')).subarray(0, a.validBytes).toString('utf8');
@@ -684,7 +695,7 @@ export class CaptureLink {
         this.note(rec, 'the retention manifest is not of this stream\'s capture session; sending stopped');
         return this.say(a, 'not connected', 'the retention manifest is not of this stream\'s capture session');
       }
-      if (planned.kind === 'none' || planned.kind === 'ended') return this.say(a, 'sending', null);
+      if (planned.kind === 'none' || planned.kind === 'ended') return this.rest(a);
       if (planned.kind === 'unsendable') {
         rec.jobs.push({ key: `unsendable-${planned.line}`, from: planned.line, through: planned.line, records: 1, status: 'unsendable', originals: [], reason: planned.reason });
         rec.planned_through = planned.line;
@@ -715,7 +726,8 @@ export class CaptureLink {
       delete job.body;
       delete job.in_doubt;
       this.save();
-      if (a.state === 'stalled' && a.live && !a.stopping) this.say(a, 'sending', null); // answered again
+      a.unanswered = false; // answered: only this says the stream is storing again
+      if (a.live && !a.stopping) this.say(a, 'sending', null);
       else this.o.notify(this.status());
       return true;
     }
@@ -757,7 +769,8 @@ export class CaptureLink {
     if (result.status === 'unknown' && result.error === 'dependency_missing') job.reason = result.reason;
     this.save();
     // Live, but this send was not answered: nothing is being stored until one is (the same record(s) are tried again).
-    if (a.live && !a.stopping && !this.fault) this.say(a, 'stalled', 'the service did not answer; the same record(s) are tried again');
+    a.unanswered = true;
+    if (a.live && !a.stopping && !this.fault) this.say(a, 'stalled', 'the last send was not stored (no answer, or the service said to send it again later); the same record(s) are tried again');
     else this.o.notify(this.status());
     return false;
   }

@@ -110,7 +110,7 @@ async function orchestrate() {
   if (whole.error) console.log(`error: ${whole.error}`);
   console.log(displayLine);
   remove();
-  process.exitCode = whole.checks.length > 0 && whole.checks.every((c) => c.pass) && !whole.error && !stillRunning ? 0 : 1;
+  process.exitCode = result.status === 0 && whole.checks.length > 0 && whole.checks.every((c) => c.pass) && !whole.error && !stillRunning ? 0 : 1;
 }
 
 // ---- Windows: start the real app, drive it over DevTools, time its exit ---------------------------------------------
@@ -290,10 +290,10 @@ async function driver() {
       await until('the session to end', () => control.value(`document.getElementById('session').textContent`), (t) => /^Not capturing/.test(t), 30_000);
       const closed = await closeAndWait(app, control, 30_000);
       observed.failure = { before_start: idle, service_unavailable: failed, ask_card: card.text.split('\n')[0], after_stop: stopped, close: closed };
-      const claims = /also (being )?stored in a local test capture service/;
+      const claims = /(are|is) (also )?(being )?stored|also (being )?stored in a local test capture service/;
       check('failure.link_line_truthful', /not connected \(the frames stay on this device\)\. 0 record\(s\) stored\. the host ended without READY \(unavailable\)\. AI: not connected\.$/.test(failed.link), failed.link);
       check('failure.header_does_not_claim_storage', !claims.test(failed.header) && !claims.test(idle.header) && !claims.test(stopped.header) && /No AI is connected/.test(failed.header), failed.header);
-      check('failure.ask_card_does_not_claim_storage', !claims.test(card.text) && /No AI is connected: this selection was not sent to any AI\. \(Development mode: the local test capture service is not storing frames now\./.test(card.text), card.text.split('\n')[0]);
+      check('failure.ask_card_does_not_claim_storage', !claims.test(card.text) && /^No AI is connected: this selection was not sent to any AI\. \(Development mode: a local test capture service on this device may also store the whole-display frames kept here, only while it is connected and answering; the control window shows whether it is storing now\.\)/.test(card.text), card.text.split('\n')[0]);
       check('failure.linked_app_exits_after_stop', closed.exited_by_itself && closed.exit_code === 0, `after Start and Stop with the service unavailable the app ${closed.exited_by_itself ? `exited by itself (code ${closed.exit_code}) ${closed.ms} ms after its window closed` : `had not exited ${closed.ms} ms after its window closed, and was ended by its PID`}`);
     }
   } catch (e) {

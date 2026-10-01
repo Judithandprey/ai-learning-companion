@@ -94,7 +94,7 @@ export type SeedRecord = ReturnType<typeof seedRecord>;
  * read from the coordination record `file` as the app wrote it; `own` answers first where it returns one. Uploads
  * (originals, batches) are answered 503 unless `own` answers them. Every request but the port probe is in `requests`.
  */
-export function fakeService(file: string, own?: (method: string, path: string) => { status: number; text: string } | null) {
+export function fakeService(file: string, own?: (method: string, path: string, body: string | null) => { status: number; text: string } | null) {
   const requests: string[] = [];
   let stopped = false;
   const transport: Transport = async (r) => {
@@ -103,7 +103,7 @@ export function fakeService(file: string, own?: (method: string, path: string) =
     requests.push(`${r.method} ${p}`);
     const record = JSON.parse(fs.readFileSync(file, 'utf8')) as { actor: { user_id: string }; streams: Array<{ stream_id: string }> };
     const state = (revision: number, s: string) => ({ status: 200, text: JSON.stringify({ contract_version: '0.2.1', stream_id: record.streams.at(-1)!.stream_id, revision, state: s, pre_stop_sequence: null }) });
-    const mine = own?.(r.method, p);
+    const mine = own?.(r.method, p, r.body);
     if (mine) return mine;
     if (r.method === 'POST' && p === '/v2/process/streams') return state(1, 'live');
     if (r.method === 'PUT' && p.startsWith('/v2/process/display-sources/')) return { status: 200, text: JSON.stringify({ contract_version: '0.2.4', source_id: p.split('/').at(-1), user_id: record.actor.user_id, source_version: 1 }) };

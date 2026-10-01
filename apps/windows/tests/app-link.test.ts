@@ -32,8 +32,8 @@ type Said = { mode: string; state?: string; stored?: number; unknown?: number; s
 test('without the development configuration the link is off: no status, and the overlay is told nothing is stored', async () => {
   const h = harness();
   const s = await running(h);
-  const ready = plain(await h.handlers['lc:overlay-ready']!({ sender: s.overlay.webContents })) as { storage: string | null };
-  assert.equal(ready.storage, null);
+  const ready = plain(await h.handlers['lc:overlay-ready']!({ sender: s.overlay.webContents })) as { development: boolean };
+  assert.equal(ready.development, false);
   assert.deepEqual(plain(await h.handlers['lc:link-state']!({ sender: (h.control() as unknown as FakeWindow).webContents })), { mode: 'off' });
   assert.equal((h.control() as unknown as FakeWindow).sent.some((m) => m[0] === 'lc:link'), false);
 });
@@ -48,9 +48,8 @@ real('with it: an explicit Start stores each retained frame and its ink original
   const h = harness({ env: { LC_DEV_CAPTURE_HOST: configFile } });
   const s = await running(h);
   const said = (): Said | undefined => plain((h.control() as unknown as FakeWindow).sent.filter((m) => m[0] === 'lc:link').at(-1)?.[1]) as Said | undefined;
-  const ready = plain(await h.handlers['lc:overlay-ready']!({ sender: s.overlay.webContents })) as { storage: string | null };
-  assert.notEqual(ready.storage, null, 'the overlay is told of the link, and whether it is storing now');
-  const told = (): unknown => s.overlay.sent.filter((m) => m[0] === 'lc:storage').at(-1)?.[1];
+  const ready = plain(await h.handlers['lc:overlay-ready']!({ sender: s.overlay.webContents })) as { development: boolean };
+  assert.equal(ready.development, true, 'the overlay is told the development link is on (never whether it is storing: that changes)');
   const page = await overlayPage(h, s, { ...DEFAULT_RETENTION_POLICY, min_interval_ms: 0 });
   const step = async (shade: number): Promise<void> => {
     page.scene.shade = shade;
@@ -64,15 +63,8 @@ real('with it: an explicit Start stores each retained frame and its ink original
   await page.review.pending();
   await step(60); // a changed frame, drawn with that ink: its ink original is retained with it
   await until('two records stored', () => (said()?.stored ?? 0) >= 2, 30_000);
-  assert.deepEqual([said()?.storing, told()], [true, 'storing'], 'storing now, and the overlay was told so');
-  // The ASK card says what is so now (the overlay opened while the link was still connecting).
-  page.review.mode('ASK');
-  page.pointer('pointerdown', 2, 190, 95);
-  for (const [x, y] of [[400, 95], [400, 125], [190, 125]] as const) page.pointer('pointermove', 2, x, y);
-  page.pointer('pointerup', 2, 192, 97);
-  await until('the ASK card', () => page.review.card() !== null);
-  assert.match(page.review.card()!.text, /this selection was not sent to any AI\. \(Development mode: the whole-display frames kept on this device are also being stored in a local test capture service/);
-  page.click('close');
+  assert.equal(said()?.storing, true, 'storing now');
+  assert.match(await askCard(page), CARD_DEVELOPMENT);
   const captures = path.join(h.userData, 'captures');
   const capture = path.join(captures, fs.readdirSync(captures)[0]!);
   const coordination = JSON.parse(fs.readFileSync(path.join(h.userData, 'capture-host', 'coordination.json'), 'utf8'));
@@ -115,8 +107,11 @@ real('with it: an explicit Start stores each retained frame and its ink original
   }
 });
 
-/** The app with its link on (the released host's own code, kept in-memory store), every request of its link recorded. */
-function app() {
+/**
+ * The app with its link on (the released host's own code, kept in-memory store), every request of its link recorded.
+ * `lose`: whether the answer to a request is lost after the host answered it.
+ */
+function app(lose: (r: { method: string; path: string }) => boolean = () => false) {
   const root = privateBackend();
   const storeDir = temp('lc-store-');
   const dsnFile = path.join(temp('lc-dsn-'), 'test-database.dsn');
@@ -127,7 +122,9 @@ function app() {
   const transport: Transport = async (r) => {
     const u = new URL(r.url);
     if (u.pathname !== '/openapi.json') requests.push({ method: r.method, path: u.pathname, key: r.headers['Idempotency-Key'], auth: r.headers['Authorization'], origin: u.origin });
-    return loopbackTransport(r);
+    const answer = await loopbackTransport(r);
+    if (lose({ method: r.method, path: u.pathname })) throw Object.assign(new Error('socket hang up'), { code: 'ECONNRESET' });
+    return answer;
   };
   const h = harness({ env: { LC_DEV_CAPTURE_HOST: configFile }, link: { transport, retry_ms: 50, stop_wait_ms: 2000 } });
   const said = (): Said | undefined => plain((h.control() as unknown as FakeWindow).sent.filter((m) => m[0] === 'lc:link').at(-1)?.[1]) as Said | undefined;
@@ -224,6 +221,41 @@ real('a link that cannot write its record does not break the app\'s Start: the c
   }
 });
 
+real('an ASK card left open while storing is lost and then recovers is never untrue: it does not say whether frames are being stored; the control window does', { timeout: 120_000 }, async () => {
+  let lost = 0;
+  let losing = false;
+  // One whole upload (its three tries of the batch) loses its answers; the next is answered.
+  const w = app((r) => losing && r.method === 'POST' && r.path.endsWith(':batch') && lost++ < 3);
+  const s = await running(w.h);
+  const { page, step } = await frames(w.h, s);
+  const header = (): string => {
+    const p = controlPage();
+    p.showLink(w.said());
+    return p.nodes['ai']!.textContent;
+  };
+  await step(20);
+  await until('storing', () => w.said()?.storing === true && (w.said()?.stored ?? 0) >= 1, 30_000);
+  assert.match(header(), /are also being stored/);
+  const card = await askCard(page, true); // left open
+  assert.match(card, CARD_DEVELOPMENT);
+  assert.doesNotMatch(card, CLAIMS_STORAGE);
+  // Loss: the next upload gets no answer.
+  losing = true;
+  const before = w.said()?.stored ?? 0;
+  await step(60);
+  await until('not storing now', () => w.said()?.state === 'stalled', 30_000);
+  assert.equal(w.said()?.storing, false);
+  assert.doesNotMatch(header(), CLAIMS_STORAGE);
+  assert.deepEqual(plain(page.review.card()), { text: card, image: true }, 'the open card is unchanged, and still true');
+  // Recovery: the same job is answered.
+  await until('storing again', () => w.said()?.storing === true && (w.said()?.stored ?? 0) > before, 30_000);
+  assert.match(header(), /are also being stored/);
+  assert.deepEqual(plain(page.review.card()), { text: card, image: true }, 'unchanged again, and still true');
+  page.click('close');
+  w.h.end('stopped by the test');
+  await until('the link stopped', () => w.said()?.state === 'stopped', 30_000);
+});
+
 const fakeChildren: FakeChild[] = [];
 /**
  * The app with its link on and a fake host child (no process, no port), made by `child`. Its requests are answered
@@ -261,17 +293,20 @@ function appWithFakeHost(child: () => FakeChild, service?: { own?: Parameters<ty
   return { h, children, said, shown, requests: fake?.requests ?? [] };
 }
 /** An ASK circle on the overlay page; the card's text (the card is then closed). */
-async function askCard(page: Awaited<ReturnType<typeof frames>>['page']): Promise<string> {
+async function askCard(page: Awaited<ReturnType<typeof frames>>['page'], leaveOpen = false): Promise<string> {
   page.review.mode('ASK');
   page.pointer('pointerdown', 2, 190, 95);
   for (const [x, y] of [[400, 95], [400, 125], [190, 125]] as const) page.pointer('pointermove', 2, x, y);
   page.pointer('pointerup', 2, 192, 97);
   await until('the ASK card', () => page.review.card() !== null);
   const text = page.review.card()!.text;
-  page.click('close');
+  if (!leaveOpen) page.click('close');
   return text;
 }
-const CLAIMS_STORAGE = /also (being )?stored in a local test capture service/;
+/** Any text saying frames are stored (as a fact, now): what must not be said while they are not. */
+const CLAIMS_STORAGE = /(are|is) (also )?(being )?stored|also (being )?stored in a local test capture service/;
+/** The ASK card with the link on: what the service may do, and where its state is; nothing that can change after. */
+const CARD_DEVELOPMENT = /^No AI is connected: this selection was not sent to any AI\. \(Development mode: a local test capture service on this device may also store the whole-display frames kept here, only while it is connected and answering; the control window shows whether it is storing now\.\)\n/;
 
 // QA-WIN-03. The harness's app.quit() behaves as Electron's: a quit asked for while will-quit is being delivered is
 // ignored, and a prevented quit is dropped.
@@ -316,7 +351,7 @@ test('a service that is not available: the link line, the header and the ASK car
   assert.deepEqual([said()?.state, said()?.storing], ['connecting', false]);
   const early = await askCard(page);
   assert.doesNotMatch(early, CLAIMS_STORAGE, 'while connecting');
-  assert.match(early, /Frames are kept on this device; they are stored there too only if the service becomes available during this capture/, 'nothing is promised either way while a connection may still be made');
+  assert.match(early, CARD_DEVELOPMENT, 'nothing is promised either way while a connection may still be made');
   // The host ends without READY, as with a service that is not available.
   children[0]!.stderr.write('{"format":"lc-desktop-capture-host-error-v1","error":"unavailable"}\n');
   await settle();
@@ -324,7 +359,7 @@ test('a service that is not available: the link line, the header and the ASK car
   await until('not connected', () => said()?.state === 'not connected', 5000);
   assert.deepEqual([said()?.storing, said()?.stored, said()?.detail], [false, 0, 'the host ended without READY (unavailable)']);
   const card = await askCard(page);
-  assert.match(card, /No AI is connected: this selection was not sent to any AI\. \(Development mode: the local test capture service is not storing frames now\./);
+  assert.match(card, CARD_DEVELOPMENT);
   assert.doesNotMatch(card, CLAIMS_STORAGE);
   assert.doesNotMatch(shown(), CLAIMS_STORAGE);
   assert.match(shown(), /A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below[\s\S]*not connected \(the frames stay on this device\)\. 0 record\(s\) stored/);
@@ -333,25 +368,29 @@ test('a service that is not available: the link line, the header and the ASK car
   assert.doesNotMatch(shown(), CLAIMS_STORAGE, 'nor after the Stop');
 });
 
-test('the texts follow the link as it changes: storing only while the stream is live and answered, not while a send goes unanswered, nor once the Stop has begun', { timeout: 30_000 }, async () => {
+test('the texts follow the link as it changes: storing only while the stream is live and answered, not while a send goes unanswered, nor once the Stop has begun; an ASK card left open is never made untrue', { timeout: 30_000 }, async () => {
   // A host that says READY, and a service that registers the stream and its source and then answers no upload.
   const { h, said, shown } = appWithFakeHost(() => new FakeChild({ ready: readyFor }), {});
   const s = await running(h);
-  const told = (): unknown => s.overlay.sent.filter((m) => m[0] === 'lc:storage').at(-1)?.[1];
   const { page, step } = await frames(h, s);
-  assert.equal(plain(await h.handlers['lc:overlay-ready']!({ sender: s.overlay.webContents })) !== null, true);
   // Live, nothing retained yet: storing, with no false error about a manifest not yet made.
   await until('live', () => said()?.state === 'sending', 5000);
-  assert.deepEqual([said()?.storing, said()?.detail, told()], [true, null, 'storing']);
+  assert.deepEqual([said()?.storing, said()?.detail], [true, null]);
   assert.match(shown(), /are also being stored in a local test capture service on it; the counts are below[\s\S]*Capture storage \(development\): storing\. 0 record\(s\) stored\. AI: not connected\.$/);
-  assert.match(await askCard(page), /are also being stored in a local test capture service; the control window shows the counts/, 'the overlay opened before the link was live, and was told since');
-  // A frame is retained; its upload is not answered (503): not storing now, and that is said everywhere.
+  // An ASK card made now, and left open (W-COPY-01): it says nothing of whether frames are being stored.
+  const card = await askCard(page, true);
+  assert.match(card, CARD_DEVELOPMENT);
+  assert.doesNotMatch(card, CLAIMS_STORAGE);
+  // A frame is retained; its upload is not answered (503): not storing now, and that is said in the control window.
   await step(20);
   await until('a send not answered', () => said()?.state === 'stalled', 10_000);
-  assert.deepEqual([said()?.storing, said()?.stored, told()], [false, 0, 'not_storing']);
+  assert.deepEqual([said()?.storing, said()?.stored], [false, 0]);
   assert.doesNotMatch(shown(), CLAIMS_STORAGE);
-  assert.match(shown(), /Capture storage \(development\): not storing now: trying again \(the frames are kept on this device\)\. 0 record\(s\) stored;[\s\S]*the service did not answer; the same record\(s\) are tried again\. AI: not connected\.$/);
-  assert.doesNotMatch(await askCard(page), CLAIMS_STORAGE);
+  assert.match(shown(), /Capture storage \(development\): not storing now \(the frames are kept on this device\)\. 0 record\(s\) stored;[\s\S]*the last send was not stored \(no answer, or the service said to send it again later\); the same record\(s\) are tried again\. AI: not connected\.$/);
+  // The card still open is the same card (its picture, region, frame, time and ink line), and still true.
+  assert.deepEqual(plain(page.review.card()), { text: card, image: true });
+  page.click('close');
+  assert.match(await askCard(page), CARD_DEVELOPMENT, 'and a card made now says the same');
   // The Stop: from its first moment nothing says frames are being stored.
   const states: Array<[string | undefined, boolean | undefined]> = [];
   const control = h.control() as unknown as FakeWindow;
@@ -365,20 +404,18 @@ test('the texts follow the link as it changes: storing only while the stream is 
 
 test('a Stop while frames are being stored: from its first moment nothing says they are', { timeout: 30_000 }, async () => {
   const { h, said } = appWithFakeHost(() => new FakeChild({ ready: readyFor }), {});
-  const s = await running(h);
+  await running(h);
   await until('live', () => said()?.storing === true, 5000);
   const control = h.control() as unknown as FakeWindow;
   const from = control.sent.length;
-  const told = s.overlay.sent.length;
   h.end('stopped by the test');
   await until('stopped', () => said()?.state === 'stopped', 10_000);
   const after = control.sent.slice(from).filter((m) => m[0] === 'lc:link').map((m) => [(m[1] as Said).state, (m[1] as Said).storing]);
   assert.deepEqual(after[0], ['stopping', false]);
   assert.equal(after.every(([, storing]) => storing === false), true);
-  assert.deepEqual([...new Set(s.overlay.sent.slice(told).filter((m) => m[0] === 'lc:storage').map((m) => m[1]))], ['not_storing'], 'and the overlay is told');
 });
 
-(process.platform === 'win32' ? test.skip : test)('after a record-write fault, a new Start\'s overlay is not told its frames are stored; the control window then keeps the earlier outcome', { timeout: 30_000 }, async () => {
+(process.platform === 'win32' ? test.skip : test)('after a record-write fault, a new Start is not said to be storing; the control window then keeps the earlier outcome', { timeout: 30_000 }, async () => {
   const configFile = path.join(temp('lc-config-'), 'dev-capture-host.json');
   fs.writeFileSync(configFile, JSON.stringify({ format: 'lc-windows-dev-capture-host/v1', launch: { kind: 'wsl', distribution: 'test-only', user: 'test-only', cd: '/', python: '/unused' }, dsn_file: '/not-read' }));
   const h = harness({ env: { LC_DEV_CAPTURE_HOST: configFile }, link: { readDsn: () => 'host=/nonexistent-socket dbname=lc_p0_test' } });
@@ -390,12 +427,13 @@ test('a Stop while frames are being stored: from its first moment nothing says t
   fs.writeFileSync(path.join(dir, 'coordination.json'), JSON.stringify(doc));
   fs.chmodSync(dir, 0o500); // its record can no longer be written
   try {
-    const s = await running(h);
+    await running(h);
     const said = (): Record<string, unknown> | undefined => plain((h.control() as unknown as FakeWindow).sent.filter((m) => m[0] === 'lc:link').at(-1)?.[1]) as Record<string, unknown> | undefined;
     await until('the fault is said', () => said()?.['sends_stopped'] === true, 5000);
-    const ready = plain(await h.handlers['lc:overlay-ready']!({ sender: s.overlay.webContents })) as { storage: string | null };
-    assert.equal(ready.storage, 'not_storing', 'nothing of this Start is stored');
-    assert.deepEqual([said()?.['mode'], said()?.['stored'], said()?.['unknown']], ['development', 0, 0], 'this Start\'s own counts: nothing');
+    assert.deepEqual([said()?.['mode'], said()?.['storing'], said()?.['stored'], said()?.['unknown']], ['development', false, 0, 0], 'not storing; this Start\'s own counts: nothing');
+    const p = controlPage();
+    p.showLink(said());
+    assert.doesNotMatch(p.nodes['ai']!.textContent, CLAIMS_STORAGE);
     h.end('stopped by the test');
     await until('stopped', () => said()?.['state'] === 'stopped', 5000);
     assert.deepEqual([said()?.['mode'], said()?.['stored'], said()?.['unknown'], said()?.['sends_stopped']], ['development', 2, 1, true], 'then the last recorded outcome, as before the fault');

@@ -137,7 +137,7 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
   };
   const buttons = ['NAV', 'ASK', 'WRITE'].map((m) => Object.assign(new FakeNode(), { dataset: { mode: m } }));
   const lc = {
-    ready: async () => ({ display: s.doc.display, doc: plain(s.doc), source_id: 'screen:1:0', address_sha256: crypto.createHash('sha256').update(s.doc.id).digest('hex'), retention_policy: policy, storage: (plain(await h.handlers['lc:overlay-ready']!({ sender: s.overlay.webContents })) as { storage: string | null }).storage }),
+    ready: async () => ({ display: s.doc.display, doc: plain(s.doc), source_id: 'screen:1:0', address_sha256: crypto.createHash('sha256').update(s.doc.id).digest('hex'), retention_policy: policy, development: (plain(await h.handlers['lc:overlay-ready']!({ sender: s.overlay.webContents })) as { development: boolean }).development }),
     interactive() {},
     armCapture: async () => true,
     saveInk: async (d: desktopInk.DesktopInk, p: unknown[]) => {
@@ -156,7 +156,6 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
     },
     onStop: (f: (...a: unknown[]) => void) => events.set('stop', f),
     onLoadDoc: (f: (...a: unknown[]) => void) => events.set('load', f),
-    onStorage: (f: (...a: unknown[]) => void) => events.set('storage', f),
     loadResult() {},
   };
   const frame = { width: 1280, height: 800, close() {} };
@@ -201,12 +200,11 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
   const review = (sandbox as unknown as { review: Review }).review;
   review.frame({ bitmap: frame, seq: 1, at: '2026-09-30T12:00:00.000Z', presented: 1, presentedAt: performance.now() });
   review.mode('WRITE');
-  // lc:stop and lc:storage from the main process reach the overlay's handlers, as over IPC.
+  // lc:stop from the main process reaches the overlay's Stop handler, as over IPC.
   const send = s.overlay.webContents.send;
   s.overlay.webContents.send = (...args: unknown[]) => {
     send(...args);
     if (args[0] === 'lc:stop') queueMicrotask(() => events.get('stop')!(...args.slice(1)));
-    if (args[0] === 'lc:storage') queueMicrotask(() => events.get('storage')!(...args.slice(1)));
   };
   let t = 0;
   const pointer = (name: string, id = 1, x = 10, y = 10): void => node('ink').handlers.get(name)!({ pointerId: id, isPrimary: true, pointerType: 'pen', button: 0, buttons: 1, clientX: x, clientY: y, timeStamp: (t += 10), pressure: 0.5 });

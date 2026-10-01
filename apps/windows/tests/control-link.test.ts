@@ -42,7 +42,7 @@ test('development, not storing now (idle, connecting, a send not answered, not c
     return p.nodes['link']!.textContent;
   };
   assert.equal(line('idle'), 'Capture storage (development): not connected yet (a connection is tried when you press Start). 0 record(s) stored. AI: not connected.');
-  assert.equal(line('stalled'), 'Capture storage (development): not storing now: trying again (the frames are kept on this device). 0 record(s) stored. AI: not connected.');
+  assert.equal(line('stalled'), 'Capture storage (development): not storing now (the frames are kept on this device). 0 record(s) stored. AI: not connected.');
   assert.equal(line('offline'), 'Capture storage (development): offline (the frames are kept on this device). 0 record(s) stored. AI: not connected.');
 });
 

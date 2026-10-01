@@ -16,5 +16,4 @@ contextBridge.exposeInMainWorld('lc', {
   stopped: (unsaved) => ipcRenderer.send('lc:stopped', unsaved == null ? null : String(unsaved)),
   onLoadDoc: (fn) => ipcRenderer.on('lc:load-doc', (_e, doc) => fn(doc)),
   onStop: (fn) => ipcRenderer.on('lc:stop', (_e, reason) => fn(reason)),
-  onStorage: (fn) => ipcRenderer.on('lc:storage', (_e, storage) => fn(storage === 'storing' || storage === 'not_storing' ? storage : null)),
 });

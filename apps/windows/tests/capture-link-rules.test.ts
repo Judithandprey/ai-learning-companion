@@ -199,9 +199,16 @@ real('a job in doubt whose original is gone from this device is set aside once (
   const first = JSON.parse(MANIFEST[1]!);
   fs.rmSync(path.join(w.capture, 'frames', `${first.raw.sha256}.png`)); // before any resend can be answered
   await until('set aside', () => w.record().streams[0]?.jobs[0]?.stuck === true);
+  // Nothing is left to send, and nothing was answered: that is not storing (W-COPY-02).
+  await quiet(200);
+  const idle = link.status();
+  assert.deepEqual(idle.mode === 'development' && [idle.state, idle.storing, idle.stored], ['stalled', false, 0]);
+  // Later lines are still sent; once one is answered the stream is storing again.
   drop = false;
   w.append(link, 2);
   await until('the next lines stored', () => stored(link) === 2);
+  const later = link.status();
+  assert.deepEqual(later.mode === 'development' && [later.state, later.storing, later.unknown], ['sending', true, 2], 'an answered send; the earlier job stays not known');
   const job = w.record().streams[0].jobs[0];
   assert.deepEqual([job.status, job.stuck, (job.later ?? []).length], ['unknown', true, 1], 'said once');
   assert.match((link.status() as { detail: string }).detail, /in doubt cannot be sent again from this device/);

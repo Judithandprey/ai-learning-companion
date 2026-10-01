@@ -300,7 +300,7 @@ function showLink(l: LinkStatus): void {
     idle: 'not connected yet (a connection is tried when you press Start)',
     connecting: 'connecting',
     sending: 'storing',
-    stalled: 'not storing now: trying again (the frames are kept on this device)',
+    stalled: 'not storing now (the frames are kept on this device)',
     offline: 'offline (the frames are kept on this device)',
     stopping: 'stopping: nothing new is sent',
     stopped: 'stopped',

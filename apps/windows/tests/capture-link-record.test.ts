@@ -14,6 +14,7 @@ import { CaptureLink, type LinkStatus } from '../src/main/capture-link.ts';
 import type { Transport } from '../src/main/loopback-http.ts';
 import { ACTOR, FakeChild, fakeService, fakeSpawn, READY_CONSUMED, readyFor, seedRecord, SOURCE, STREAM } from './link-fakes.ts';
 import { INK, MANIFEST, SESSION } from './link-world.ts';
+import { controlPage } from './control-page.ts';
 
 const temps: string[] = [];
 after(() => temps.splice(0).forEach((d) => fs.rmSync(d, { recursive: true, force: true })));
@@ -198,7 +199,7 @@ const WSL = { kind: 'wsl', distribution: 'test-only', user: 'test-only', cd: '/'
  * An explicit Start over the harness-ink capture: its host a fake child (READY as the released host says it), its
  * answers the service's (a registration, the display source, the state, a Stop), or `own` where it answers.
  */
-function started(o: { own?: (method: string, p: string) => { status: number; text: string } | null; token_life_ms?: number } = {}) {
+function started(o: { own?: Parameters<typeof fakeService>[1]; token_life_ms?: number } = {}) {
   const userData = fs.mkdtempSync(path.join(os.tmpdir(), 'lc-link-record-'));
   temps.push(userData);
   const capture = path.join(userData, 'captures', SESSION);
@@ -207,8 +208,9 @@ function started(o: { own?: (method: string, p: string) => { status: number; tex
   const file = path.join(userData, 'capture-host', 'coordination.json');
   const children: FakeChild[] = [];
   const { transport, requests } = fakeService(file, o.own);
+  const said: LinkStatus[] = [];
   const link = new CaptureLink({
-    userData, config: { launch: WSL, dsn_file: '/not-read' }, notify: () => undefined, endCapture: () => undefined,
+    userData, config: { launch: WSL, dsn_file: '/not-read' }, notify: (s) => void said.push(s), endCapture: () => undefined,
     readDsn: () => 'host=/nonexistent-socket dbname=lc_p0_test', transport, retry_ms: 1, stop_wait_ms: 200,
     ...(o.token_life_ms ? { token_life_ms: o.token_life_ms } : {}),
     host: { spawn: fakeSpawn(() => new FakeChild({ ready: readyFor }), children).spawn, end_ms: 200 },
@@ -220,7 +222,7 @@ function started(o: { own?: (method: string, p: string) => { status: number; tex
     fs.appendFileSync(path.join(capture, 'manifest.jsonl'), lines.map((l) => `${l}\n`).join(''));
     link.appended(SESSION, fs.statSync(path.join(capture, 'manifest.jsonl')).size);
   };
-  return { link, userData, capture, file, children, requests, append };
+  return { link, userData, capture, file, children, requests, append, said };
 }
 const until = async (what: string, ok: () => boolean, ms = 5000): Promise<void> => {
   const by = Date.now() + ms;
@@ -260,4 +262,45 @@ test('a state answer the record could not read back is not written: the registra
   assert.equal(again.status().mode, 'development', 'read back');
   w.link.stopSending(SESSION);
   await until('stopped', () => stateOf(w.link) === 'stopped');
+});
+
+// W-COPY-02.
+test('a job in doubt set aside leaves nothing to send, and that is not an answer: the link stays "not storing now", its outcome not known', async () => {
+  // The service takes each original (a receipt) and answers no batch.
+  const w = started({ own: (method, p, body) => {
+    if (method !== 'PUT' || !p.startsWith('/v2/process/originals/')) return null;
+    const b = JSON.parse(body!) as { source: unknown; kind: string; artifact: unknown };
+    return { status: 200, text: JSON.stringify({ contract_version: '0.2.2', source: b.source, kind: b.kind, artifact: b.artifact, status: 'bytes_committed' }) };
+  } });
+  const header = (): string => {
+    const p = controlPage();
+    p.showLink(w.link.status());
+    return `${p.nodes['ai']!.textContent}\n${p.nodes['link']!.textContent}`;
+  };
+  const job = () => (JSON.parse(fs.readFileSync(w.file, 'utf8')) as Seed).streams[0]?.jobs[0] as { status: string; stuck?: boolean } | undefined;
+  w.link.begin(SESSION, w.capture);
+  w.append(3);
+  await until('a batch not answered', () => stateOf(w.link) === 'stalled' && job()?.status === 'unknown');
+  assert.equal((w.link.status() as { storing: boolean }).storing, false);
+  // Its original goes from this device: the job cannot be sent again as recorded, and is set aside (still not known).
+  fs.rmSync(path.join(w.capture, 'frames', `${(JSON.parse(MANIFEST[1]!) as { raw: { sha256: string } }).raw.sha256}.png`));
+  await until('set aside', () => job()?.stuck === true);
+  const batches = w.requests.filter((r) => r.endsWith(':batch')).length;
+  await new Promise((r) => setTimeout(r, 100)); // nothing left to send
+  assert.equal(w.requests.filter((r) => r.endsWith(':batch')).length, batches, 'the job set aside is not sent again');
+  const s = w.link.status();
+  assert.equal(s.mode, 'development');
+  if (s.mode !== 'development') return;
+  assert.deepEqual([s.state, s.storing, s.stored, s.unknown], ['stalled', false, 0, 2], 'no send was answered: not storing, and its outcome stays not known');
+  assert.match(s.detail ?? '', /the last send was not stored; storing is said again once a later send is answered/);
+  assert.doesNotMatch(header(), /are also being stored/);
+  assert.match(header(), /not storing them now[\s\S]*Capture storage \(development\): not storing now \(the frames are kept on this device\)\. 0 record\(s\) stored; 2 not known whether stored/);
+  // The host is lost and the link connects again: a connection is not an answered send either.
+  const from = w.said.length;
+  w.children.at(-1)!.exit(1);
+  await until('connected again', () => w.children.length === 2 && w.said.slice(from).some((x) => x.mode === 'development' && x.state === 'stalled'));
+  assert.deepEqual(w.said.slice(from).filter((x) => x.mode === 'development' && x.storing), [], 'connected again with no send answered: storing is never said');
+  w.link.stopSending(SESSION);
+  await until('stopped', () => stateOf(w.link) === 'stopped');
+  assert.deepEqual([(w.link.status() as { storing: boolean }).storing, (w.link.status() as { unknown: number }).unknown], [false, 2], 'the Stop keeps it not known');
 });
