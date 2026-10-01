@@ -14,7 +14,7 @@ import * as retention from '../src/shared/retention.ts';
 import { CaptureLink, readLinkConfig, type LinkOptions } from '../src/main/capture-link.ts';
 import { readConnectorConfig, Subscription, type SubscriptionOptions } from '../src/main/subscription.ts';
 import { toFramePixels } from '../src/shared/samples.ts';
-import { ASSISTANCE, contextProblem, PNG_MAX_BYTES, questionOf } from '../src/shared/subscription-ask.ts';
+import { ASSISTANCE, contextProblem, PNG_MAX_BYTES, questionOf, questionProblem } from '../src/shared/subscription-ask.ts';
 import { appSource } from './source.ts';
 
 export const HERE = path.dirname(url.fileURLToPath(import.meta.url));
@@ -209,6 +209,7 @@ export function harness(options: { env?: Record<string, string>; link?: Partial<
     contextProblem,
     PNG_MAX_BYTES,
     questionOf,
+    questionProblem,
     shell: { openExternal: async (url: string) => void opened.push(url) },
     Buffer,
     Response,

@@ -381,6 +381,109 @@ test('[synthetic connector] the ink of a selection is the document as it was whe
   assert.deepEqual([doc.ink.revision, doc.ink.visible.length], [revision, 1]);
 });
 
+test('[synthetic connector] the frame is replaced and its bitmap closed while the selection\'s picture is encoded: the selection is kept, with the same pixels, frame facts and ink', async () => {
+  const w = await app();
+  w.page.pointer('pointerdown', 1, 200, 105);
+  for (const x of [240, 280]) w.page.pointer('pointermove', 1, x, 105);
+  w.page.pointer('pointerup', 1, 280, 105);
+  await w.page.review.pending();
+  // The frame the selections are made from: a bitmap this test holds, so it can see when the app closes it.
+  const bitmap = { width: 1280, height: 800, shade: 20, close() { this.width = this.height = 0; } };
+  w.page.review.frame({ bitmap, seq: 41, at: '2026-09-30T12:00:05.000Z', presented: 41, presentedAt: performance.now() });
+  const byId = (): Map<unknown, ReturnType<typeof w.records>[number]> => new Map(w.records().map((r) => [r['selection_id'], r]));
+  // Control: nothing happens while the picture is encoded.
+  await w.select();
+  const [control] = [...byId().values()];
+  assert.deepEqual([control!.context.frame_seq, control!.context.frame_captured_at, control!.context.frame_width, control!.context.frame_height], [41, '2026-09-30T12:00:05.000Z', 1280, 800]);
+  // The same gesture; while its picture is encoded the screen changes, and the sampler takes the next frame and
+  // closes this one (a closed bitmap's size reads as 0).
+  let release!: () => void;
+  w.page.encoding.gate = new Promise<void>((r) => (release = r));
+  w.page.press('ASK');
+  w.page.pointer('pointerdown', 2, 190, 95);
+  for (const [px, py] of [[400, 95], [400, 125], [190, 125]] as const) w.page.pointer('pointermove', 2, px, py);
+  w.page.pointer('pointerup', 2, 192, 97);
+  await settle();
+  w.page.scene.shade = 90;
+  void w.page.review.sample();
+  await until('the app\'s own sampler closed the frame', () => bitmap.width === 0 && bitmap.height === 0);
+  w.page.encoding.gate = null;
+  release();
+  await until('the second selection is kept', () => byId().size === 2 && w.page.ask().form);
+  const held = [...byId().values()].find((r) => r['selection_id'] !== control!['selection_id'])!;
+  assert.equal(w.page.ask().status, null, 'not refused as malformed');
+  assert.deepEqual(held.context, control!.context, 'the frame it was made from: its number, time and size, the region in its pixels, and the ink');
+  assert.deepEqual([held.image.sha256, held.ink_original.sha256], [control!.image.sha256, control!.ink_original.sha256], 'the same pixels and the same ink document, although the screen shows something else now');
+  assert.match(w.page.review.card()!.text, / px of frame 41 \(captured /);
+  // It can be asked about, and what is sent is that picture.
+  w.page.click('askSubmit');
+  await until('sent', () => w.fakes.last().asks().length === 1);
+  const sent = (w.fakes.last().asks()[0]!.params as { request: AskRequest }).request;
+  assert.deepEqual([sent.image.sha256, sent.context.frame_seq, sent.context.frame_width, sent.context.frame_height], [control!.image.sha256, 41, 1280, 800]);
+  w.fakes.last().answer('ok');
+  await until('answered', () => w.page.ask().answer !== null);
+  // A selection after that is made from the new frame: another number, other pixels.
+  await w.page.review.pending();
+  await w.select(600, 120);
+  const later = [...byId().values()].find((r) => r['selection_id'] !== control!['selection_id'] && r['selection_id'] !== held['selection_id'])!;
+  assert.notEqual(later.context.frame_seq, 41);
+  assert.deepEqual([later.context.frame_width, later.context.frame_height], [1280, 800]);
+});
+
+test('[synthetic connector] a question holding half of a surrogate pair is not sent and not recorded as asked; the connector is untouched; valid text of any script is sent as typed', async () => {
+  const w = await app();
+  await w.select();
+  w.page.question('What is \ud83d this?');
+  w.page.click('askSubmit');
+  await until('refused', () => /^Not sent:/.test(w.page.ask().status ?? ''));
+  assert.equal(w.page.ask().status, 'Not sent: the question holds a damaged character (half of a pair), so it cannot be sent as it is; type that part again.');
+  await new Promise((r) => setTimeout(r, 30));
+  assert.deepEqual([w.fakes.last().asks().length, w.records()[0]!.requests, w.sub().state, w.fakes.made.length, w.fakes.last().exited], [0, [], 'signed_in', 1, false]);
+  // The same card can still ask, in any valid text.
+  const question = '这个 😀 是什么? é \u{1F9EE}';
+  w.page.question(`  ${question}  `);
+  w.page.click('askSubmit');
+  await until('sent', () => w.fakes.last().asks().length === 1);
+  assert.equal((w.fakes.last().asks()[0]!.params as { request: AskRequest }).request.question, question);
+  assert.equal(w.records()[0]!.requests[0]!['question'], question);
+  w.fakes.last().answer('ok');
+  await until('answered', () => w.page.ask().answer !== null);
+});
+
+test('[synthetic connector] an answer whose overlay is lost before it reports what it did is recorded as presentation unconfirmed: its text is kept, and it is not counted as shown', async () => {
+  const w = await app();
+  const entry = (): Record<string, unknown> => w.records()[0]!.requests.at(-1)!;
+  await w.select();
+  // An answer the overlay reports as shown.
+  w.page.click('askSubmit');
+  await until('sent', () => w.fakes.last().asks().length === 1);
+  assert.deepEqual([entry()['shown'], 'presentation' in entry()], [false, false], 'nothing to present yet');
+  w.fakes.last().answer('Seen on the card.');
+  await until('shown and reported', () => entry()['shown'] === true);
+  assert.deepEqual([entry()['presentation'], w.page.ask().answer], ['shown', 'Seen on the card.']);
+  // A refusal has nothing to present.
+  w.page.click('askSubmit');
+  await until('sent', () => w.fakes.last().asks().length === 2);
+  w.fakes.last().fail(w.fakes.last().asks()[1]!.id, 'quota');
+  await until('refused', () => /^No answer/.test(w.page.ask().status ?? ''));
+  assert.deepEqual([entry()['shown'], 'presentation' in entry()], [false, false]);
+  // An answer is on its way to the overlay (the overlay has not reported anything) when the overlay is lost.
+  const release = w.page.holdSubmitAck();
+  w.page.click('askSubmit');
+  await until('sent', () => w.fakes.last().asks().length === 3);
+  w.fakes.last().answer('TEXT WHOSE PRESENTATION NOBODY REPORTED');
+  await until('recorded', () => entry()['outcome'] !== null);
+  assert.deepEqual([entry()['shown'], entry()['presentation']], [false, 'unconfirmed'], 'from the moment it is sent to the overlay');
+  w.s.overlay.webContents.emit('render-process-gone', {}, { reason: 'crashed' });
+  await until('the session ended', () => (plain(w.press('lc:session-state')) as { ended?: string | null }).ended != null, 5000);
+  release();
+  await settle();
+  const last = entry();
+  assert.deepEqual([(last['outcome'] as { status: string }).status, (last['outcome'] as { answer: { text: string } }).answer.text, last['shown'], last['presentation']], ['answered', 'TEXT WHOSE PRESENTATION NOBODY REPORTED', false, 'unconfirmed'], 'no report is not proof it was not seen: kept, and not counted as shown');
+  // The earlier entries are as they were.
+  assert.deepEqual(w.records()[0]!.requests.map((x) => [(x['outcome'] as { status: string }).status, x['shown'], x['presentation'] ?? null]), [['answered', true, 'shown'], ['refused', false, null], ['answered', false, 'unconfirmed']]);
+});
+
 test('[synthetic connector] the main process works the pixels out itself: a region off whole pixels is floored and ceiled, and a picture of another size is refused', async () => {
   const w = await app();
   const from = { sender: w.s.overlay.webContents };
@@ -548,6 +651,7 @@ test('[synthetic connector] an answer said before the acknowledgement is shown o
   await until('said', () => /^Cancelled: no answer is shown\./.test(w.page.ask().status ?? ''));
   await until('the record follows', () => (entries()[2]!['outcome'] as { status: string }).status === 'cancelled');
   assert.deepEqual([w.page.ask().answer, entries()[2]!['shown'], entries()[2]!['outcome'], JSON.stringify(w.records()).includes('cancelled before seeing')], [null, false, { status: 'cancelled', uncertain: true }, false]);
+  assert.equal('presentation' in entries()[2]!, false, 'the overlay itself said it did not show it');
   assert.equal(w.fakes.last().asks().length, 3, 'three presses, three sends');
   // The card is closed while an answer is still held back from it: it was never shown, and its text is not kept.
   release = w.page.holdSubmitAck();
@@ -561,6 +665,7 @@ test('[synthetic connector] an answer said before the acknowledgement is shown o
   await settle();
   await new Promise((r) => setTimeout(r, 20));
   assert.deepEqual([w.page.review.card(), entries()[3]!['shown'], entries()[3]!['outcome'], JSON.stringify(w.records()).includes('closed first')], [null, false, { status: 'cancelled', uncertain: true }, false]);
+  assert.equal('presentation' in entries()[3]!, false, 'its card closed before the answer reached it (the overlay\'s messages come in order)');
 });
 
 test('[synthetic connector] an answer whose record cannot be written is said as NOT saved, kept in the app, and written by Save; it is recorded as shown only once the overlay showed it', async () => {
@@ -746,7 +851,7 @@ test('[synthetic connector] an outcome still unwritten when its card goes is wri
   assert.equal(entry()['outcome'], null);
   w.h.end('stopped by the test');
   await until('ended', () => said() !== null, 5000);
-  assert.match(said()!, /^stopped by the test\. How 1 question\(s\) to ChatGPT ended \(an answer included, if one was shown\) could not be written to this device \(Error: EIO: i\/o error \(injected\)\); the selections and their pictures are kept, without that outcome, and writing it is tried again at the next Start and when the app closes$/);
+  assert.match(said()!, /^stopped by the test\. How 1 question\(s\) to ChatGPT ended \(an answer included, if one was shown or may have been\) could not be written to this device \(Error: EIO: i\/o error \(injected\)\); the selections and their pictures are kept, without that outcome, and writing it is tried again at the next Start and when the app closes$/);
   assert.equal(entry()['outcome'], null);
   // The device can be written again: the next Start writes it, exactly as it was held.
   w.h.failWrites.on = false;
@@ -812,7 +917,7 @@ test('[synthetic connector] an outcome that comes after its session ended and ca
   w.fakes.last().answer('An answer after the Stop.');
   await until('the question ended', () => w.sub().asking === false);
   assert.deepEqual([entryOf(first)['outcome'], entryOf(second)['outcome']], [null, null]);
-  assert.equal(ended(), 'stopped by the test. How 2 question(s) to ChatGPT ended (an answer included, if one was shown) could not be written to this device (Error: EIO: i/o error (injected)); the selections and their pictures are kept, without that outcome, and writing it is tried again at the next Start and when the app closes');
+  assert.equal(ended(), 'stopped by the test. How 2 question(s) to ChatGPT ended (an answer included, if one was shown or may have been) could not be written to this device (Error: EIO: i/o error (injected)); the selections and their pictures are kept, without that outcome, and writing it is tried again at the next Start and when the app closes');
   assert.equal(told(), ended(), 'the control window is told, with one notice and the count as it is now');
   // A Start that is cancelled while it is still listing the displays says it again (the records are still held).
   const listing = deferred<unknown[]>();

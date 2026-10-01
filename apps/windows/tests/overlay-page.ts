@@ -90,7 +90,7 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
     dataset = {};
     handlers = new Map<string, (e: unknown) => void>();
     /** What was last drawn into this canvas: the source and its rectangle. */
-    drawn: { src: Partial<Luma> & { drawn?: FakeNode['drawn'] }; rect: number[] } | null = null;
+    drawn: { src: Partial<Luma> & { drawn?: FakeNode['drawn']; shade?: number }; rect: number[] } | null = null;
     constructor(w = 1280, hh = 800) {
       this.width = w;
       this.height = hh;
@@ -98,6 +98,8 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
     getContext() {
       return {
         drawImage: (src: FakeNode['drawn'] extends infer D ? (D extends { src: infer S } ? S : never) : never, ...a: number[]) => {
+          // As Chromium: a closed bitmap, or a canvas with no size, cannot be drawn.
+          if (src.width === 0 || src.height === 0) throw new Error('InvalidStateError: the image source is closed or has no size');
           this.drawn = { src, rect: a.length === 8 ? a.slice(0, 4) : [0, 0, src.width ?? this.width, src.height ?? this.height] };
         },
         getImageData: (x: number, y: number, w: number, h: number) => {
@@ -130,7 +132,9 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
       if (encoding.gate) await encoding.gate;
       // Whole-frame canvases give a PNG of their size (retention checks it); small ones the context picture.
       // `exactPng` (ASK selections): a small canvas too gives a PNG of its own size.
-      const bytes = this.width >= 1280 || scene.exactPng ? png(this.width, this.height, scene.shade) : PNG_BYTES; // what the screen showed
+      // What the screen showed in the frame that was drawn into this canvas (directly, or through a composed one).
+      const shade = this.drawn?.src.shade ?? this.drawn?.src.drawn?.src.shade ?? scene.shade;
+      const bytes = this.width >= 1280 || scene.exactPng ? png(this.width, this.height, shade) : PNG_BYTES;
       return { arrayBuffer: async () => Uint8Array.from(bytes).buffer };
     }
   }
@@ -174,7 +178,8 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
     onAskResult: (f: (...a: unknown[]) => void) => events.set('ask-result', f),
     loadResult() {},
   };
-  const frame = { width: 1280, height: 800, close() {} };
+  // A frame as the overlay takes it: what the screen shows then; closed, its size reads as 0 (as an ImageBitmap's does).
+  const frame = () => ({ width: 1280, height: 800, shade: scene.shade, ...(scene.luma ? { luma: scene.luma } : {}), close() { this.width = this.height = 0; } });
   const sandbox = {
     ...ink,
     ...modes,
@@ -194,7 +199,7 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
     console,
     performance,
     OffscreenCanvas: FakeNode,
-    createImageBitmap: async () => (scene.luma ? { width: 1280, height: 800, luma: scene.luma, close() {} } : frame),
+    createImageBitmap: async () => frame(),
     document: { getElementById: node, createElement: () => ({ videoWidth: 1280, requestVideoFrameCallback() {} }), querySelectorAll: (q: string) => (q.includes('assistance') ? radios : buttons), querySelector: (q: string) => (q.includes('assistance') ? radios.find((r) => r.checked) ?? null : null), addEventListener() {}, elementFromPoint: () => null },
     window: { innerWidth: 1280, innerHeight: 800, devicePixelRatio: 1, addEventListener() {} },
     setTimeout() {},
@@ -214,7 +219,7 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
     sandbox,
   );
   const review = (sandbox as unknown as { review: Review }).review;
-  review.frame({ bitmap: frame, seq: 1, at: '2026-09-30T12:00:00.000Z', presented: 1, presentedAt: performance.now() });
+  review.frame({ bitmap: frame(), seq: 1, at: '2026-09-30T12:00:00.000Z', presented: 1, presentedAt: performance.now() });
   let submitAck: Promise<void> = Promise.resolve();
   /** Holds the answers to lc:ask-submit back from the overlay until the returned function is called. */
   const holdSubmitAck = (): (() => void) => {

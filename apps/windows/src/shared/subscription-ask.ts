@@ -3,6 +3,8 @@
 // user's question, and the facts of where and when it was captured), and what the windows are told. Pure: no I/O.
 // This is the selected-image ASK only. Nothing here watches the screen, and nothing is sent without an explicit Ask.
 
+import { hasLoneSurrogate } from './frame-ingress.ts';
+
 export const ASK_VERSION = 'lc-subscription-ask/1';
 /** The ADR's engineering limits (defaults, not user-mandated values). */
 export const QUESTION_MAX = 4000;
@@ -51,12 +53,18 @@ const isInt = (v: unknown, min: number): v is number => Number.isSafeInteger(v) 
 const isRect = (v: unknown): v is Rect => isObj(v) && ['x', 'y', 'width', 'height'].every((k) => typeof v[k] === 'number' && Number.isFinite(v[k])) && (v['width'] as number) > 0 && (v['height'] as number) > 0;
 const inside = (r: Rect, width: number, height: number): boolean => r.x >= 0 && r.y >= 0 && r.x + r.width <= width && r.y + r.height <= height;
 
-/** The user's question as it is sent: trimmed; refused when empty or over the limit. */
+/**
+ * The user's question as it is sent: trimmed; refused when empty, over the limit, or holding half of a surrogate
+ * pair (text that is not valid Unicode cannot be written to the connector as it is; nothing of it is repaired).
+ */
 export function questionOf(text: unknown): string | null {
   if (typeof text !== 'string') return null;
   const q = text.trim();
-  return q.length > 0 && q.length <= QUESTION_MAX ? q : null;
+  return q.length > 0 && q.length <= QUESTION_MAX && !hasLoneSurrogate(q) ? q : null;
 }
+/** Why `questionOf` refuses a question, in fixed words. */
+export const questionProblem = (text: unknown): string =>
+  typeof text === 'string' && hasLoneSurrogate(text.trim()) ? 'the question holds a damaged character (half of a pair), so it cannot be sent as it is; type that part again' : 'the question is empty or too long';
 
 /** What is wrong with a selection's geometry (rectangles finite, positive, inside the display and the frame), or null. */
 export function contextProblem(c: Pick<AskContext, 'frame_width' | 'frame_height' | 'display' | 'region_dip' | 'region_px'>, image: { width: number; height: number }): string | null {
@@ -144,7 +152,16 @@ export function readAnswer(v: unknown, sent: AskRequest): Answer | string {
   return { request_id: sent.request_id, text: v['text'], model: v['model'] as string, latency_ms: v['latency_ms'], thread_id: v['thread_id'] as string, turn_id: v['turn_id'] as string };
 }
 
-/** The connector's closed error codes, as fixed texts (its own message is never shown). */
+/**
+ * The connector's closed codes as said for an account read and for a sign-in's start: no question is involved in
+ * either, so nothing is said of one. (Its own message is never shown.)
+ */
+export const readErrorText = (code: string): string =>
+  ({ busy: 'the connector is busy, so the account was not read; check again', unavailable: ERROR_TEXT['unavailable']!, unauthenticated: 'the account could not be read: the connector says ChatGPT is not signed in' })[code] ?? 'the account could not be read';
+export const loginErrorText = (code: string): string =>
+  ({ busy: 'a sign-in or a question is already pending in the connector, so no sign-in was started', unavailable: ERROR_TEXT['unavailable']! })[code] ?? 'the sign-in could not be started';
+
+/** The connector's closed error codes, as fixed texts for a question (its own message is never shown). */
 export const ERROR_TEXT: Readonly<Record<string, string>> = {
   busy: 'another question is still being answered',
   unauthenticated: 'ChatGPT is not signed in (sign in from the control window)',

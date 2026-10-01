@@ -774,6 +774,20 @@ async function finishAsk(points: ReadonlyArray<InkPoint>): Promise<void> {
   // The exact ink document drawn into the selection, taken now, before anything is awaited (a later save may put
   // another document in its place without changing what is visible).
   const inkBytes = subscription && held && r ? new TextEncoder().encode(JSON.stringify(inkDoc)) : null;
+  // The facts of the frame and the ink, taken now too. The sampler may replace this frame while the picture is being
+  // encoded and close its bitmap, whose size then reads as 0; the picture below is drawn from it before that.
+  const x0 = Math.max(0, region.x);
+  const y0 = Math.max(0, region.y);
+  const facts = held && r && {
+    region_dip: { x: x0, y: y0, width: Math.min(display.bounds.width, region.x + region.width) - x0, height: Math.min(display.bounds.height, region.y + region.height) - y0 },
+    frame_seq: held.seq,
+    frame_captured_at: held.at,
+    frame_width: held.bitmap.width,
+    frame_height: held.bitmap.height,
+    ink_session: inkDoc.id,
+    ink_revision: inkDoc.ink.revision,
+    visible_strokes: inkDoc.ink.visible.length,
+  };
   let message: string;
   if (!held || !r) {
     message = held ? 'The circled region is outside the captured display, so nothing was selected.' : 'No frame of the display is available (a gap in the capture), so nothing was selected.';
@@ -808,23 +822,11 @@ async function finishAsk(points: ReadonlyArray<InkPoint>): Promise<void> {
   const card = ++cardSeq;
   $('card').hidden = false;
   setMode(reduceMode(mode, { type: 'ask_finished', askEpoch: epoch }).state); // the mode before returns at once; the card stays
-  if (!subscription || !held || !r || !png || !inkBytes) return;
+  if (!subscription || !facts || !png || !inkBytes) return;
   // Retained by the main process as the exact picture, the facts of its frame and the ink drawn into it. Nothing is
   // sent to any AI by this; only the Ask button below does that.
   asked = { card, selection: null, request: null, submitting: false, cancelling: false, early: null, unsaved: null, said: null };
   askStatus('Keeping this selection on this device…');
-  const x0 = Math.max(0, region.x);
-  const y0 = Math.max(0, region.y);
-  const facts = {
-    region_dip: { x: x0, y: y0, width: Math.min(display.bounds.width, region.x + region.width) - x0, height: Math.min(display.bounds.height, region.y + region.height) - y0 },
-    frame_seq: held.seq,
-    frame_captured_at: held.at,
-    frame_width: held.bitmap.width,
-    frame_height: held.bitmap.height,
-    ink_session: inkDoc.id,
-    ink_revision: inkDoc.ink.revision,
-    visible_strokes: inkDoc.ink.visible.length,
-  };
   let kept: Awaited<ReturnType<Api['askSelection']>>;
   try {
     kept = await lc.askSelection(facts, png, inkBytes);

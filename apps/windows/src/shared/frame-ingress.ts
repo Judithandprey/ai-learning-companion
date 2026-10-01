@@ -156,7 +156,7 @@ const isTime = (v: unknown): v is string => typeof v === 'string' && !Number.isN
 /** A finite number within the contracts' safe bounds. */
 const isBounded = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v) && Math.abs(v) <= Number.MAX_SAFE_INTEGER;
 /** Whether any text in a value holds a lone UTF-16 surrogate, which cannot be sent as UTF-8 (JSON.stringify would escape it, and the receiver would read it back as a lone surrogate). */
-const hasLoneSurrogate = (v: unknown): boolean =>
+export const hasLoneSurrogate = (v: unknown): boolean =>
   typeof v === 'string' ? /[\uD800-\uDBFF](?![\uDC00-\uDFFF])|(?<![\uD800-\uDBFF])[\uDC00-\uDFFF]/.test(v) : typeof v === 'object' && v !== null ? Object.values(v).some(hasLoneSurrogate) : false;
 const isLabel = (v: unknown, min = 1): v is string => typeof v === 'string' && v.length >= min && v.length <= 1024;
 const isIdentifier = (v: unknown): v is string => typeof v === 'string' && v.length <= 128 && /^[A-Za-z0-9][A-Za-z0-9_.:-]*$/.test(v);

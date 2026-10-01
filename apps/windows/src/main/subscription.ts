@@ -16,7 +16,7 @@
 import { spawn as spawnChild, type ChildProcess } from 'node:child_process';
 import { readFileSync } from 'node:fs';
 import { childEnv, endChild, type HostExit } from './capture-host.ts';
-import { ASK_VERSION, ERROR_TEXT, LINE_FROM_CONNECTOR_MAX, LINE_TO_CONNECTOR_MAX, officialLoginUrl, readAccount, readAnswer, type Answer, type AskRequest, type Model, type RateLimit } from '../shared/subscription-ask.ts';
+import { ASK_VERSION, ERROR_TEXT, loginErrorText, readErrorText, LINE_FROM_CONNECTOR_MAX, LINE_TO_CONNECTOR_MAX, officialLoginUrl, readAccount, readAnswer, type Answer, type AskRequest, type Model, type RateLimit } from '../shared/subscription-ask.ts';
 
 // ---- configuration (trusted, main process only) ---------------------------------------------------------------
 /**
@@ -94,19 +94,27 @@ export type SubscriptionOptions = {
   readonly request_ms?: number;
   readonly ask_ms?: number;
   readonly end_ms?: number;
+  /** The span in which at most CHANGE_READS_MAX reads are made because the connector said the account changed. */
+  readonly change_window_ms?: number;
 };
 
 type Reply = { ok: true; result: unknown } | { ok: false; code: string } | { ok: false; lost: 'not_sent' | 'no_answer' };
 type Child = { proc: ChildProcess; exited: Promise<HostExit>; gone: boolean };
 /** A question that is out. `interrupts`: what its cancel or its session's Stop was answered (each bounded). */
 type Asking = { readonly id: string; readonly session: string; cancelled: boolean; interrupts: Array<Promise<boolean>> };
-/** How many times in a row the account is read because it changed while it was being read. */
-const READS_MAX = 4;
+/**
+ * How many reads the connector's "the account changed" may cause between the user's own Checks: within one span
+ * (10 s), and in all. A rate alone would let a slow, steady "changed" keep this app reading without end.
+ */
+const CHANGE_READS_MAX = 3;
+const CHANGE_READS_TOTAL_MAX = 64;
 const isObject = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
 /** Whether a cancel's answer says the turn was interrupted for certain: exactly {cancelled: true, uncertain: false}. */
 const cancelConfirmed = (r: Reply): boolean => r.ok && isObject(r.result) && Object.keys(r.result).sort().join() === 'cancelled,uncertain' && r.result['cancelled'] === true && r.result['uncertain'] === false;
-/** Whether a Stop's answer is its acknowledgement: exactly {}. (An unconfirmed interruption is its error.) */
-const stopConfirmed = (r: Reply): boolean => r.ok && isObject(r.result) && Object.keys(r.result).length === 0;
+/** Whether a Stop's (or a sign-in cancel's) answer is its acknowledgement: exactly {}. (An unconfirmed interruption is its error.) */
+const acknowledged = (r: Reply): boolean => r.ok && isObject(r.result) && Object.keys(r.result).length === 0;
+/** A sign-in cancel answered "no such sign-in" (the connector's `invalid_request` for a well-formed cancel): it is not pending there. */
+const notHeld = (r: Reply): boolean => !r.ok && 'code' in r && r.code === 'invalid_request';
 const text = (v: unknown, max: number): string | null => (typeof v === 'string' && v.length > 0 && v.length <= max && !/[\0-\x1f\x7f]/.test(v) ? v : null);
 
 export class Subscription {
@@ -116,6 +124,15 @@ export class Subscription {
   private closing: Promise<unknown> = Promise.resolve();
   /** The account changed, or a sign-in completed, while a read was out: it is read once more after it. */
   private readAgain = false;
+  /** Reads caused by "the account changed" in the current span; `off`: no more until the user's own Check. */
+  private changes = { since: 0, count: 0, total: 0, off: false };
+  /**
+   * Of the pending sign-in, by its id: its cancel is out (its answer is waited for); its cancel was not
+   * acknowledged; its page could not be opened in the browser.
+   */
+  private cancelling: string | null = null;
+  private unconfirmedCancel: string | null = null;
+  private unopened: string | null = null;
   private readonly pending = new Map<string, (r: Reply) => void>();
   private seq = 0;
   private state: Extract<SubscriptionStatus, { mode: 'managed' }>['state'] = 'not_checked';
@@ -137,7 +154,18 @@ export class Subscription {
   }
 
   status(): SubscriptionStatus {
-    return { mode: 'managed', state: this.state, plan: this.plan, rate_limits: this.limits, models: this.models, model: this.model, login: this.loginState, detail: this.detail, asking: this.asking !== null };
+    // What is said beside the state, derived from it: no later text wipes these, and none outlives what it says.
+    const pending = this.loginState === 'waiting' && this.loginId !== null;
+    const notes = [
+      this.detail,
+      this.changes.off && this.state === 'unknown' ? 'the account may have changed since it was last read, and it is not read again by itself; check again' : null,
+      !pending ? null
+        : this.cancelling === this.loginId ? 'the sign-in is being cancelled'
+        : this.unconfirmedCancel === this.loginId ? 'the cancel of the sign-in was not confirmed: it may still be pending in the connector; cancel it again'
+        : this.unopened === this.loginId ? 'the browser could not be opened for the sign-in page; the sign-in is still pending: cancel it, then sign in again'
+        : this.state === 'signed_in' ? 'a sign-in started here is still pending: finish it in your browser, or cancel it' : null,
+    ].filter((n) => n !== null);
+    return { mode: 'managed', state: this.state, plan: this.plan, rate_limits: this.limits, models: this.models, model: this.model, login: this.loginState, detail: notes.join('; ') || null, asking: this.asking !== null };
   }
   private say(): void {
     this.o.notify(this.status());
@@ -223,7 +251,7 @@ export class Subscription {
     }
     if (m['method'] === 'connection/login/completed') this.loginCompleted(m['params']);
     // The connector says the account changed (signed in or out elsewhere in this product's state): read again.
-    if (m['method'] === 'connection/changed' && this.state !== 'not_checked') void this.check();
+    if (m['method'] === 'connection/changed' && this.state !== 'not_checked') void this.read(false);
   }
   /** Whether `child` is still the connector this app speaks to (not ended here, not gone, not replaced). */
   private live(child: Child | null): boolean {
@@ -271,10 +299,32 @@ export class Subscription {
   }
 
   // ---- the connection ------------------------------------------------------------------------------------------
+  /** On the user's press (and when the user's own sign-in completes): reads the account. */
+  check(): Promise<void> {
+    return this.read(true);
+  }
+  /** Whether one more read may be made because the connector said the account changed. */
+  private changeRead(): boolean {
+    const c = this.changes;
+    const now = Date.now();
+    if (now - c.since >= (this.o.change_window_ms ?? 10_000)) Object.assign(c, { since: now, count: 0 });
+    c.total += 1;
+    return (c.count += 1) <= CHANGE_READS_MAX && c.total <= CHANGE_READS_TOTAL_MAX;
+  }
   /** Reads the sign-in state, the plan, the quota windows and the models (the connector's handshake). */
-  async check(): Promise<void> {
+  private async read(byUser: boolean): Promise<void> {
+    if (byUser) this.changes = { since: 0, count: 0, total: 0, off: false };
     // A read is out: what it returns may be older than the change that asked for this one, so it is read once more.
     if (this.state === 'checking') return void (this.readAgain = true);
+    if (!byUser && this.changes.off) return; // said already: nothing more is read for a change until the user's own Check
+    if (!byUser && !this.changeRead()) {
+      // The connector keeps saying the account changed: it is not read again and again. What was read may be older
+      // than the last change, so it is not said as how the account is now.
+      this.changes.off = true; // (said with the state, by status())
+      this.state = 'unknown';
+      this.detail = null;
+      return this.say();
+    }
     this.state = 'checking';
     this.detail = null;
     this.say();
@@ -283,14 +333,15 @@ export class Subscription {
     const child = this.child; // the connector it went to: what follows is this one's, or nothing
     let r = await first;
     // Only reads: no sign-in and no question is ever started by this, and no connector either (a re-read goes only
-    // to the one that said it changed). Bounded, so a connector that says "changed" at every read cannot keep this
-    // app reading; the last read then stands until the user checks again.
-    for (let reads = 1; r.ok && this.live(child) && this.readAgain && reads < READS_MAX; reads += 1) {
+    // to the one that said it changed). Bounded across reads and checks, so a connector that says "changed" at or
+    // after every read cannot keep this app reading; the state is then "not known" until the user checks again.
+    while (r.ok && this.live(child) && this.readAgain && this.changeRead()) {
       this.readAgain = false;
       r = await this.request('connection/read', {}, this.o.request_ms ?? 30_000, true);
     }
     const changedSince = this.readAgain && r.ok; // it changed again during the last read: what was read may be older
     this.readAgain = false;
+    if (changedSince) this.changes.off = true;
     if (r.ok && !this.live(child)) {
       // It answered, and was then ended or lost (a line that is not the envelope's, its exit, the quit): what it said
       // is not said as how the account is now, and no other connector is started for it.
@@ -301,7 +352,7 @@ export class Subscription {
     const account = r.ok ? readAccount(r.result) : null;
     if (!account) {
       this.state = 'unavailable';
-      this.detail = r.ok ? 'the connector answered in a form this app does not read' : 'lost' in r ? (r.lost === 'not_sent' ? 'the connector could not be started' : 'the connector did not answer') : ERROR_TEXT[r.code]!;
+      this.detail = r.ok ? 'the connector answered in a form this app does not read' : 'lost' in r ? (r.lost === 'not_sent' ? 'the connector could not be started' : 'the connector did not answer') : readErrorText(r.code);
       return this.say();
     }
     this.state = changedSince ? 'unknown' : account.state; // not said as signed in (or out) from a read older than the change
@@ -311,11 +362,9 @@ export class Subscription {
     // The chosen model is kept if it is still there and takes pictures; else the catalog's default that does.
     const usable = account.models.filter((m) => m.image_input);
     if (!usable.some((m) => m.id === this.model)) this.model = (usable.find((m) => m.default) ?? usable[0])?.id ?? null;
-    if (this.state === 'signed_in' && this.loginState !== 'none') {
-      this.loginState = 'none';
-      this.loginId = null;
-    }
-    if (changedSince) this.detail = 'the account changed again while it was being read; check again';
+    // Signed in: what an earlier sign-in attempt ended as is no longer said. One that is still pending is not
+    // forgotten: the connector holds it (and refuses questions) until it completes or is cancelled.
+    if (this.state === 'signed_in' && this.loginState !== 'starting' && this.loginState !== 'waiting') this.loginState = 'none';
     this.say();
   }
   /** The model questions are sent to: one of the catalog's that takes pictures. */
@@ -330,6 +379,8 @@ export class Subscription {
     if (this.loginState === 'starting' || this.loginState === 'waiting') return;
     this.loginState = 'starting';
     this.detail = null;
+    this.unconfirmedCancel = null;
+    this.unopened = null;
     this.earlyLogins = [];
     this.say();
     const started = this.request('connection/login/start', {}, this.o.request_ms ?? 30_000);
@@ -341,15 +392,26 @@ export class Subscription {
     const id = result ? text(result['login_id'], 128) : null;
     if (!result || !id) {
       this.loginState = 'failed';
-      this.detail = r.ok ? 'the connector answered in a form this app does not read' : 'lost' in r ? 'the connector did not answer' : ERROR_TEXT[r.code]!;
+      this.detail = r.ok ? 'the connector answered in a form this app does not read' : 'lost' in r ? 'the connector did not answer' : loginErrorText(r.code);
       return this.say();
     }
     const url = officialLoginUrl(result['auth_url']);
     if (!url) {
-      // Not an address this app opens: the sign-in is cancelled, and nothing is opened.
-      void this.request('connection/login/cancel', { login_id: id }, this.o.request_ms ?? 30_000, true);
+      // Not an address this app opens: the sign-in is cancelled, and nothing is opened. Whether the connector let it
+      // go is what the cancel was answered: acknowledged, or "no such sign-in" (it is over there already).
+      const cancel = await this.request('connection/login/cancel', { login_id: id }, this.o.request_ms ?? 30_000, true);
+      if (!this.live(child)) return; // lost meanwhile: said as failed already
+      const NOT_OPENED = 'the sign-in address the connector gave is not an official ChatGPT address, so it was not opened';
+      if (!acknowledged(cancel) && !notHeld(cancel)) {
+        // The connector did not let go of a sign-in this app refused: it is ended, so nothing stays pending in it.
+        // (Only the user's own Check starts one again.)
+        this.fence(child!);
+        this.loginState = 'refused_address';
+        this.detail = `${NOT_OPENED}; the connector did not confirm that it let that sign-in go, so the connector was ended (check the connection to start it again)`;
+        return this.say();
+      }
       this.loginState = 'refused_address';
-      this.detail = 'the sign-in address the connector gave is not an official ChatGPT address, so it was not opened';
+      this.detail = NOT_OPENED;
       return this.say();
     }
     this.loginId = id;
@@ -362,19 +424,39 @@ export class Subscription {
       await this.o.openExternal(url);
     } catch {
       if (this.loginId !== id || this.loginState !== 'waiting') return; // over meanwhile (lost, cancelled, completed): what was said stands
-      this.detail = 'the browser could not be opened; the sign-in is still waiting';
+      this.unopened = id; // (said with the state, by status())
       this.say();
     }
   }
-  /** Cancels only this app's pending sign-in (nothing else is signed out). */
+  /**
+   * Cancels only this app's pending sign-in (nothing else is signed out). It is said as cancelled once the connector
+   * acknowledged the cancel; until then it is still this app's pending sign-in, so its completion is still taken.
+   */
   async cancelLogin(): Promise<void> {
     const id = this.loginId;
-    if (!id || this.loginState !== 'waiting') return;
-    this.loginId = null;
-    this.loginState = 'cancelled';
-    this.detail = null;
+    if (!id || this.loginState !== 'waiting' || this.cancelling === id) return;
+    this.cancelling = id;
+    this.unconfirmedCancel = null;
     this.say();
-    await this.request('connection/login/cancel', { login_id: id }, this.o.request_ms ?? 30_000, true);
+    const r = await this.request('connection/login/cancel', { login_id: id }, this.o.request_ms ?? 30_000, true);
+    if (this.cancelling === id) this.cancelling = null;
+    if (this.loginId !== id) return; // over meanwhile (it completed, failed, or the connector was lost): what was said stands
+    if (acknowledged(r)) {
+      this.loginId = null;
+      this.loginState = 'cancelled';
+      this.detail = null;
+      return this.say();
+    }
+    if (notHeld(r)) {
+      // The connector holds no such sign-in: it is over there, and no completion of it reached this app.
+      this.loginId = null;
+      this.loginState = 'failed';
+      this.detail = 'the connector no longer holds that sign-in; whether it completed is not known (check the connection)';
+      return this.say();
+    }
+    // Not acknowledged (another error, no answer, another shape): the connector may still hold it, or it may complete.
+    this.unconfirmedCancel = id;
+    this.say();
   }
   private loginCompleted(params: unknown): void {
     const p = typeof params === 'object' && params !== null ? (params as Record<string, unknown>) : {};
@@ -407,6 +489,9 @@ export class Subscription {
         signed_out: ERROR_TEXT['unauthenticated']!,
       }[this.state];
     }
+    // The connector refuses a question while a sign-in is pending in it: said here, and nothing is sent.
+    if (this.loginState === 'starting') return 'a sign-in is being started: no question can be sent until that sign-in is over';
+    if (this.loginState === 'waiting') return this.unopened === this.loginId ? 'a sign-in is still pending, though its page could not be opened: cancel it in the control window' : 'a sign-in is still pending: finish it in your browser, or cancel it in the control window';
     if (!this.model) return 'no model that takes pictures is available';
     if (this.asking) return this.asking.cancelled ? 'the question before is still being cancelled' : ERROR_TEXT['busy']!;
     return null;
@@ -444,8 +529,13 @@ export class Subscription {
     if (r.code === 'interrupt_unconfirmed') return { status: 'cancelled', uncertain: true };
     if (r.code === 'unauthenticated' && this.live(child)) {
       // (a connector ended or lost since is said as not available, not as signed out)
-      this.state = 'signed_out';
-      this.say();
+      if (this.state === 'checking') this.readAgain = true; // a read is out: it is read once more, and that says how it is
+      else if (!this.changes.off) {
+        // (while changes are no longer read the state stays "not known": only the user's Check says how it is)
+        if (this.state === 'unavailable') this.detail = null; // a failed read's reason is not said beside it
+        this.state = 'signed_out';
+        this.say();
+      }
     }
     return { status: 'refused', code: r.code, reason: ERROR_TEXT[r.code]! };
   }
@@ -466,7 +556,7 @@ export class Subscription {
     const told = this.request('session/stop', { capture_session_id: captureSession }, this.o.request_ms ?? 30_000, true);
     if (a && a.session === captureSession) {
       a.cancelled = true;
-      a.interrupts.push(told.then(stopConfirmed));
+      a.interrupts.push(told.then(acknowledged));
       this.say();
     }
   }

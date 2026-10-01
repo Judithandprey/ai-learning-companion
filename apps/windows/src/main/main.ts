@@ -33,7 +33,7 @@ import { dirname, join, normalize, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { contextImages, forkDesktopInk, isSessionId, newDesktopInk, parseDesktopInk, PICTURE_BYTES_PER_SAVE, PICTURES_PER_SAVE, summarize, type DesktopDisplay, type DesktopInk, type DesktopInkSummary, type StrokeContext } from '../shared/desktop-ink.ts';
 import { toFramePixels, type DisplaySample } from '../shared/samples.ts';
-import { ASSISTANCE, contextProblem, PNG_MAX_BYTES, questionOf, type AskContext, type AskRequest, type Assistance } from '../shared/subscription-ask.ts';
+import { ASSISTANCE, contextProblem, PNG_MAX_BYTES, questionOf, questionProblem, type AskContext, type AskRequest, type Assistance } from '../shared/subscription-ask.ts';
 import { DEFAULT_RETENTION_POLICY, pngSize, RETENTION_FORMAT, type RetentionPolicy } from '../shared/retention.ts';
 import { CaptureLink, readLinkConfig, type LinkStatus } from './capture-link.ts';
 import { readConnectorConfig, Subscription, type AskOutcome, type SubscriptionStatus } from './subscription.ts';
@@ -750,7 +750,13 @@ function continues(doc: DesktopInk): { ok: true } | { ok: false; reason: string 
 // and when it was captured, and the exact ink document drawn into it, kept under the session's capture folder:
 // asks/<sha256>.png, ink/<sha256>.json, and asks/<selection>.json (the selection, each question about it and how it
 // ended; an answer's text is there, apart from the originals). Nothing is sent until the user presses Ask.
-type AskEntry = { request_id: string; question: string; assistance: Assistance; model: string | null; submitted_at: string; ended_at: string | null; outcome: unknown; shown: boolean };
+/**
+ * One question about a selection. `shown` is true only once the overlay reported that it showed the answer.
+ * `presentation` is written for an answer: 'unconfirmed' from the moment it is sent to the overlay, 'shown' once the
+ * overlay reported it. An answer left 'unconfirmed' (the overlay was lost, or the session ended, before it reported)
+ * may or may not have been seen: it keeps its text, and it is not displayed help as far as this record knows.
+ */
+type AskEntry = { request_id: string; question: string; assistance: Assistance; model: string | null; submitted_at: string; ended_at: string | null; outcome: unknown; shown: boolean; presentation?: 'shown' | 'unconfirmed' };
 type Selection = {
   readonly id: string;
   readonly image: Picture;
@@ -849,7 +855,7 @@ function submitAsk(s: Session, selectionId: unknown, questionValue: unknown, ass
   if (s.ending) return { ok: false, reason: 'the capture is ending' };
   if (sel.request && sel.request.state !== 'done') return { ok: false, reason: sel.request.state === 'asking' ? 'this selection\'s question is still being answered' : 'the question before is still being cancelled' };
   const question = questionOf(questionValue);
-  if (question === null) return { ok: false, reason: 'the question is empty or too long' };
+  if (question === null) return { ok: false, reason: questionProblem(questionValue) };
   if (!ASSISTANCE.includes(assistanceValue as Assistance)) return { ok: false, reason: 'the kind of help is not chosen' };
   const no = subscription.notAskable(s.retention.id);
   if (no) return { ok: false, reason: no };
@@ -908,7 +914,7 @@ function sayUnrecordedAsks(): void {
   lastEnd = /How \d+ question\(s\) to ChatGPT ended /.test(lastEnd) ? lastEnd.replace(/How \d+ question\(s\) to ChatGPT ended .*$/, notice) : `${lastEnd.replace(/\.$/, '')}. ${notice}`;
 }
 const askNotice = (count: number, reason: string | null): string =>
-  `How ${count} question(s) to ChatGPT ended (an answer included, if one was shown) could not be written to this device (${reason ?? 'unknown'}); the selections and their pictures are kept, without that outcome, and writing it is tried again at the next Start and when the app closes`;
+  `How ${count} question(s) to ChatGPT ended (an answer included, if one was shown or may have been) could not be written to this device (${reason ?? 'unknown'}); the selections and their pictures are kept, without that outcome, and writing it is tried again at the next Start and when the app closes`;
 /**
  * How a question ended: recorded, and said to the overlay only if it is still the current selection's live question.
  * An outcome that could not be written is held here and said as not saved (it is written again at the user's press,
@@ -922,6 +928,7 @@ function askEnded(s: Session, sel: Selection, mine: NonNullable<Selection['reque
   entry.ended_at = new Date().toISOString();
   entry.outcome = view; // an answer's text is kept only when it is this selection's live answer; apart from the originals
   entry.shown = false; // until the overlay says it showed it
+  if (view.status === 'answered') entry.presentation = 'unconfirmed';
   const unwritten = saveAsk(s, sel);
   // Said to the overlay only while this is still the selection on its card.
   if (current === s && s.ask === sel && sel.request === mine && !s.overlay.isDestroyed()) return void s.overlay.webContents.send('lc:ask-result', sel.id, mine.id, view, { saved: unwritten === null, reason: unwritten });
@@ -937,10 +944,15 @@ function askPresented(s: Session, selectionId: unknown, requestId: unknown, show
   const sel = s.ask;
   const entry = sel && sel.id === selectionId ? sel.record.requests.find((r) => r.request_id === requestId) : undefined;
   if (!sel || !entry || entry.shown || (entry.outcome as AskOutcome | null)?.status !== 'answered') return { saved: sel ? sel.unsaved === null : true, reason: sel?.unsaved ?? null };
-  if (shown === true) entry.shown = true;
-  else entry.outcome = { status: 'cancelled', uncertain: true }; // not shown after all: its text is not kept
+  if (shown === true) Object.assign(entry, { shown: true, presentation: 'shown' });
+  else notShown(entry);
   const unwritten = saveAsk(s, sel);
   return { saved: unwritten === null, reason: unwritten };
+}
+/** An answer the overlay itself says it did not show (or never took, its card being gone): its text is not kept. */
+function notShown(entry: AskEntry): void {
+  entry.outcome = { status: 'cancelled', uncertain: true };
+  delete entry.presentation;
 }
 /** The user's press on Save: the selection's record, held here since a write failed, is written again. */
 function saveAskAgain(s: Session, selectionId: unknown): { saved: boolean; reason: string | null } {
@@ -961,7 +973,7 @@ function dropSelection(s: Session): void {
   cancelAsk(s, sel.id);
   // An answer the overlay never said it showed (its messages come in order) was not shown on this card: not kept.
   const unshown = sel.record.requests.filter((r) => !r.shown && (r.outcome as AskOutcome | null)?.status === 'answered');
-  for (const r of unshown) r.outcome = { status: 'cancelled', uncertain: true };
+  for (const r of unshown) notShown(r);
   if (unshown.length > 0) saveAsk(s, sel);
   retireSelection(s, sel);
   s.ask = null;

@@ -39,6 +39,8 @@ export class FakeConnector extends EventEmitter {
   stopReceipt: { result: unknown } | null = null;
   /** A test's hook on every request received, before it is answered. */
   onCall: (call: Call) => void = () => undefined;
+  /** Methods this stand-in does not answer by itself: the test answers them by hand (`reply`, `fail`). */
+  readonly manual = new Set<string>();
   /** How long after the end of its input it takes to end (the released connector closes its Codex child first). */
   endDelayMs = 0;
   exited = false;
@@ -60,6 +62,7 @@ export class FakeConnector extends EventEmitter {
     if (m.version !== 'lc-subscription-ask/1') return this.fail(m.id, 'invalid_request');
     this.calls.push({ id: m.id, method: m.method, params: m.params });
     this.onCall(this.calls.at(-1)!);
+    if (this.manual.has(m.method)) return;
     if (m.method === 'connection/read') return this.account === null ? undefined : this.reply(m.id, this.account); // null: the test answers by hand
     if (m.method === 'connection/login/start') return this.reply(m.id, { login_id: 'login-1', auth_url: this.loginUrl });
     if (m.method === 'connection/login/cancel') return this.reply(m.id, {});

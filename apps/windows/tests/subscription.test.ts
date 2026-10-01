@@ -9,7 +9,7 @@ import { spawn } from 'node:child_process';
 import { EventEmitter } from 'node:events';
 import * as path from 'node:path';
 import { readConnectorConfig, Subscription, type AskOutcome, type ConnectorConfig, type SubscriptionStatus } from '../src/main/subscription.ts';
-import { ANSWER_MAX, contextProblem, officialLoginUrl, provenanceOf, questionOf, readAccount, readAnswer, type AskRequest } from '../src/shared/subscription-ask.ts';
+import { ANSWER_MAX, contextProblem, officialLoginUrl, provenanceOf, questionOf, questionProblem, readAccount, readAnswer, type AskRequest } from '../src/shared/subscription-ask.ts';
 import { ACCOUNT, fakeConnectors, LOGIN_URL, type FakeConnector } from './subscription-fakes.ts';
 
 const made: Subscription[] = [];
@@ -51,6 +51,18 @@ test('the question is trimmed; an empty or over-long one is refused', () => {
   assert.equal(questionOf('  why?  '), 'why?');
   for (const bad of ['', '   ', 'x'.repeat(4001), 7, null]) assert.equal(questionOf(bad), null);
   assert.equal(questionOf('x'.repeat(4000))?.length, 4000);
+});
+
+test('a question holding half of a surrogate pair is refused, whichever half and wherever; every valid text is kept as it is', () => {
+  const DAMAGED = 'the question holds a damaged character (half of a pair), so it cannot be sent as it is; type that part again';
+  for (const bad of ['What is \ud83d this?', 'What is \ude00 this?', '\ud83d', 'end \ud83d', '\ude00 start', 'swapped \ude00\ud83d pair', 'two \ud83d\ud83d\ude00 highs']) {
+    assert.equal(questionOf(bad), null, JSON.stringify(bad));
+    assert.equal(questionProblem(bad), DAMAGED);
+  }
+  // Valid Unicode stays: astral characters, combining marks, other scripts, a pair at either end.
+  for (const good of ['What is 😀 this?', '😀', '这道题怎么做？', 'e\u0301 and \u{1F9EE} and \u{10FFFF}', '😀 start and end 😀', 'x'.repeat(3998) + '😀']) assert.equal(questionOf(`  ${good}  `), good);
+  for (const other of ['', '   ', 'x'.repeat(4001), 7]) assert.equal(questionProblem(other), 'the question is empty or too long');
+  assert.equal(questionProblem('  \ud83d  '), DAMAGED, 'as it is sent: trimmed first');
 });
 
 test('a selection\'s rectangles must be finite, positive and inside the display and the frame; the picture is the region\'s size', () => {
@@ -434,7 +446,7 @@ test('a change, or a completed sign-in, said while the account is being read is 
   assert.deepEqual([lost.now().state, lost.fakes.last().count('connection/read')], ['unavailable', 1]);
   const noisy = subscription(WSL, {}, (k) => void (k.onCall = (call) => (call.method === 'connection/read' ? k.event('connection/changed', {}) : undefined)));
   await noisy.s.check();
-  assert.deepEqual([noisy.now().state, noisy.now().detail, noisy.fakes.last().count('connection/read')], ['unknown', 'the account changed again while it was being read; check again', 4], 'a change it did not read: the state is not said as known');
+  assert.deepEqual([noisy.now().state, noisy.now().detail, noisy.fakes.last().count('connection/read')], ['unknown', 'the account may have changed since it was last read, and it is not read again by itself; check again', 4], 'a change it did not read: the state is not said as known');
   await new Promise((r) => setTimeout(r, 30));
   assert.equal(noisy.fakes.last().count('connection/read'), 4, 'and it stops there until the user checks again');
   assert.deepEqual(await noisy.s.ask(request()), { status: 'refused', code: 'local', reason: 'the sign-in state of the ChatGPT subscription is not known (check it in the control window)' });
@@ -587,7 +599,14 @@ test('a sign-in whose start was answered by a connector that is then fenced in t
   const nob = subscription(WSL, { openExternal: () => Promise.reject(new Error('no browser')) });
   await nob.s.check();
   await nob.s.login();
-  assert.deepEqual([nob.now().login, nob.now().detail], ['waiting', 'the browser could not be opened; the sign-in is still waiting']);
+  const NO_BROWSER = 'the browser could not be opened for the sign-in page; the sign-in is still pending: cancel it, then sign in again';
+  assert.deepEqual([nob.now().state, nob.now().login, nob.now().detail], ['signed_in', 'waiting', NO_BROWSER], 'nothing says to finish it in the browser');
+  // A read does not wipe it, and a question is refused in words that fit.
+  await nob.s.check();
+  assert.deepEqual([nob.now().login, nob.now().detail], ['waiting', NO_BROWSER]);
+  assert.deepEqual(await nob.s.ask(request()), { status: 'refused', code: 'local', reason: 'a sign-in is still pending, though its page could not be opened: cancel it in the control window' });
+  await nob.s.cancelLogin();
+  assert.deepEqual([nob.now().login, nob.now().detail], ['cancelled', null]);
 });
 
 test('a question refused as not signed in by a connector that is fenced in the same chunk is not said as signed out: the connector is not available', async () => {
@@ -609,6 +628,338 @@ test('a question refused as not signed in by a connector that is fenced in the s
   live.fakes.last().fail(live.fakes.last().asks()[0]!.id, 'unauthenticated');
   await asked;
   assert.equal(live.now().state, 'signed_out');
+});
+
+test('a failed account read and a failed sign-in start are said in their own words, never as a question that was not answered', async () => {
+  const READ: Record<string, string> = {
+    failed: 'the account could not be read',
+    quota: 'the account could not be read',
+    invalid_request: 'the account could not be read',
+    busy: 'the connector is busy, so the account was not read; check again',
+    unauthenticated: 'the account could not be read: the connector says ChatGPT is not signed in',
+    unavailable: 'the connector, or the official Codex app server it runs, is not available',
+    'a code this app does not know': 'the account could not be read',
+  };
+  for (const [code, said] of Object.entries(READ)) {
+    const { s, fakes, now } = subscription(WSL, {}, (c) => void ((c.account = null), (c.onCall = (call) => (call.method === 'connection/read' ? c.fail(call.id, code) : undefined))));
+    await s.check();
+    assert.deepEqual([now().state, now().detail, fakes.made.length], ['unavailable', said, 1], code);
+  }
+  const START: Record<string, string> = {
+    failed: 'the sign-in could not be started',
+    quota: 'the sign-in could not be started',
+    unauthenticated: 'the sign-in could not be started',
+    busy: 'a sign-in or a question is already pending in the connector, so no sign-in was started',
+    unavailable: 'the connector, or the official Codex app server it runs, is not available',
+  };
+  for (const [code, said] of Object.entries(START)) {
+    const { s, opened, now } = subscription(WSL, {}, (c) => void (c.manual.add('connection/login/start'), (c.onCall = (call) => (call.method === 'connection/login/start' ? c.fail(call.id, code) : undefined))));
+    await s.check();
+    await s.login();
+    assert.deepEqual([now().login, now().detail, opened], ['failed', said, []], code);
+  }
+  // None of them speaks of an answer; only the sign-in's `busy` names a question, as the thing that is pending.
+  for (const said of [...Object.values(READ), ...Object.values(START)]) assert.equal(/answer|did not complete|still being answered/.test(said), false, said);
+});
+
+test('a pending sign-in is not forgotten when the account reads as signed in: it stays pending with its Cancel, no question is sent meanwhile, and its completion is still taken', async () => {
+  const { s, fakes, now, opened } = subscription();
+  const c = () => fakes.last();
+  // An earlier attempt that failed is no longer said once the account reads as signed in.
+  await s.check();
+  await s.login();
+  c().event('connection/login/completed', { login_id: 'login-1', success: false, error: 'login_failed' });
+  await until('failed', () => now().login === 'failed');
+  await s.check();
+  assert.deepEqual([now().state, now().login, now().detail], ['signed_in', 'none', null]);
+  // A sign-in is waiting; the user checks; the account reads as signed in.
+  await s.login();
+  assert.equal(now().login, 'waiting');
+  const calls = c().calls.length;
+  await s.check();
+  assert.deepEqual([now().state, now().login, now().detail], ['signed_in', 'waiting', 'a sign-in started here is still pending: finish it in your browser, or cancel it']);
+  assert.deepEqual(c().calls.slice(calls).map((x) => x.method), ['connection/read'], 'it was not cancelled behind the user\'s back, and not forgotten');
+  // The connector would refuse a question as busy while it holds that sign-in: said here, and nothing is sent.
+  assert.deepEqual(await s.ask(request()), { status: 'refused', code: 'local', reason: 'a sign-in is still pending: finish it in your browser, or cancel it in the control window' });
+  assert.equal(c().asks().length, 0);
+  // Its completion is still this app's: taken, read again, and then a question can be sent.
+  c().event('connection/login/completed', { login_id: 'login-1', success: true, error: null });
+  await until('completed and read again', () => now().login === 'none' && now().state === 'signed_in' && now().detail === null);
+  const asked = s.ask(request());
+  await until('sent', () => c().asks().length === 1);
+  c().answer('An answer.');
+  assert.equal((await asked).status, 'answered');
+  assert.equal(opened.length, 2, 'one page for each of the user\'s two presses');
+  // The same while a sign-in is still starting.
+  const starting = subscription(WSL, {}, (k) => void k.manual.add('connection/login/start'));
+  await starting.s.check();
+  void starting.s.login();
+  await until('starting', () => starting.now().login === 'starting');
+  // A read that says signed in does not forget it either; nothing is said of a browser or a Cancel yet.
+  await starting.s.check();
+  assert.deepEqual([starting.now().state, starting.now().login, starting.now().detail], ['signed_in', 'starting', null]);
+  assert.deepEqual(await starting.s.ask(request()), { status: 'refused', code: 'local', reason: 'a sign-in is being started: no question can be sent until that sign-in is over' });
+  assert.equal(starting.fakes.last().asks().length, 0);
+  const start = starting.fakes.last().calls.find((x) => x.method === 'connection/login/start')!;
+  starting.fakes.last().reply(start.id, { login_id: 'login-1', auth_url: LOGIN_URL });
+  await until('waiting', () => starting.now().login === 'waiting');
+  assert.deepEqual([starting.opened, starting.now().detail], [[LOGIN_URL], 'a sign-in started here is still pending: finish it in your browser, or cancel it']);
+});
+
+test('a sign-in is said as cancelled only when the connector acknowledged the cancel; until then it is still pending, and its completion is still taken', async () => {
+  const NOT_CONFIRMED = 'the cancel of the sign-in was not confirmed: it may still be pending in the connector; cancel it again';
+  const world = () => {
+    const w = subscription(WSL, {}, (k) => void k.manual.add('connection/login/cancel'));
+    return { ...w, c: () => w.fakes.last(), cancelId: () => w.fakes.last().calls.filter((x) => x.method === 'connection/login/cancel').at(-1)!.id };
+  };
+  const waiting = async () => {
+    const w = world();
+    await w.s.check();
+    await w.s.login();
+    assert.equal(w.now().login, 'waiting');
+    return w;
+  };
+  // Acknowledged with exactly {}: cancelled. While its answer is out it is still said as waiting; a second press sends nothing.
+  const a = await waiting();
+  const cancelling = a.s.cancelLogin();
+  await until('told', () => a.c().count('connection/login/cancel') === 1);
+  void a.s.cancelLogin();
+  await new Promise((r) => setTimeout(r, 20));
+  assert.deepEqual([a.now().login, a.now().detail, a.c().count('connection/login/cancel')], ['waiting', 'the sign-in is being cancelled', 1]);
+  a.c().reply(a.cancelId(), {});
+  await cancelling;
+  assert.deepEqual([a.now().login, a.now().detail], ['cancelled', null]);
+  // Refused, another shape, or no answer at all: not said as cancelled; it can be cancelled again.
+  for (const answer of [(w: Awaited<ReturnType<typeof waiting>>) => w.c().fail(w.cancelId(), 'failed'), (w: Awaited<ReturnType<typeof waiting>>) => w.c().reply(w.cancelId(), { cancelled: true }), (w: Awaited<ReturnType<typeof waiting>>) => w.c().reply(w.cancelId(), null), () => undefined]) {
+    const w = await waiting();
+    const out = w.s.cancelLogin();
+    await until('told', () => w.c().count('connection/login/cancel') === 1);
+    answer(w);
+    await out; // (unanswered: the request's own bound)
+    assert.deepEqual([w.now().login, w.now().detail], ['waiting', NOT_CONFIRMED]);
+    const again = w.s.cancelLogin();
+    await until('told again', () => w.c().count('connection/login/cancel') === 2);
+    w.c().reply(w.cancelId(), {});
+    await again;
+    assert.deepEqual([w.now().login, w.now().detail], ['cancelled', null]);
+  }
+  // The sign-in completes while the cancel is out: it is this app's sign-in still, so it is taken and the account read.
+  const done = await waiting();
+  const late = done.s.cancelLogin();
+  await until('told', () => done.c().count('connection/login/cancel') === 1);
+  done.c().event('connection/login/completed', { login_id: 'login-1', success: true, error: null });
+  done.c().fail(done.cancelId(), 'invalid_request'); // the connector no longer holds it
+  await late;
+  await until('read again', () => done.c().count('connection/read') === 2 && done.now().state === 'signed_in');
+  assert.deepEqual([done.now().login, done.now().detail], ['none', null], 'not said as cancelled, and not as unconfirmed');
+  // The same, the connector acknowledging the cancel after all: the sign-in had completed, and that stands.
+  const both = await waiting();
+  const acked = both.s.cancelLogin();
+  await until('told', () => both.c().count('connection/login/cancel') === 1);
+  both.c().event('connection/login/completed', { login_id: 'login-1', success: true, error: null });
+  await until('completed', () => both.now().login === 'none');
+  both.c().reply(both.cancelId(), {});
+  await acked;
+  await until('read again', () => both.c().count('connection/read') === 2 && both.now().state === 'signed_in');
+  assert.deepEqual([both.now().login, both.now().detail], ['none', null]);
+  // A cancel that was not confirmed says nothing about the next sign-in (the stand-in gives every sign-in one id).
+  const next = await waiting();
+  const unconfirmed = next.s.cancelLogin();
+  await until('told', () => next.c().count('connection/login/cancel') === 1);
+  next.c().fail(next.cancelId(), 'failed');
+  await unconfirmed;
+  assert.equal(next.now().detail, NOT_CONFIRMED);
+  next.c().event('connection/login/completed', { login_id: 'login-1', success: false, error: 'login_failed' });
+  await until('failed', () => next.now().login === 'failed');
+  await next.s.login();
+  assert.deepEqual([next.now().login, next.now().detail], ['waiting', 'a sign-in started here is still pending: finish it in your browser, or cancel it']);
+  // The connector says it was cancelled (its completion event) before the cancel's own answer: cancelled.
+  const said = await waiting();
+  const press = said.s.cancelLogin();
+  await until('told', () => said.c().count('connection/login/cancel') === 1);
+  said.c().event('connection/login/completed', { login_id: 'login-1', success: false, error: 'login_cancelled' });
+  said.c().reply(said.cancelId(), {});
+  await press;
+  assert.deepEqual([said.now().login, said.now().detail], ['cancelled', null]);
+  // The connector is lost while the cancel is out: said as the loss, not as cancelled.
+  const lost = await waiting();
+  const out = lost.s.cancelLogin();
+  await until('told', () => lost.c().count('connection/login/cancel') === 1);
+  lost.c().exit(1);
+  await out;
+  assert.deepEqual([lost.now().login, lost.now().detail, lost.now().state], ['failed', 'the connector ended before the sign-in completed', 'unavailable']);
+  // The connector says it holds no such sign-in (its answer to a cancel of one that is over there): not pending, and
+  // not said as cancelled, since no completion of it reached this app.
+  const over = await waiting();
+  const press2 = over.s.cancelLogin();
+  await until('told', () => over.c().count('connection/login/cancel') === 1);
+  over.c().fail(over.cancelId(), 'invalid_request');
+  await press2;
+  assert.deepEqual([over.now().login, over.now().detail], ['failed', 'the connector no longer holds that sign-in; whether it completed is not known (check the connection)']);
+  assert.equal((await over.s.ask(request({ request_id: 'ask-after-cancel.1' }))).status === 'refused', false, 'a question can be asked again');
+  // An address that is not opened: its cancel's answer is read too.
+  const NOT_OPENED = 'the sign-in address the connector gave is not an official ChatGPT address, so it was not opened';
+  for (const answer of ['acknowledged', 'not held', 'refused', 'another shape'] as const) {
+    const w = world();
+    await w.s.check();
+    w.c().loginUrl = 'https://auth.openai.com.evil.example/authorize';
+    const starting = w.s.login();
+    await until('its cancel is told', () => w.c().count('connection/login/cancel') === 1);
+    assert.equal(w.now().login, 'starting');
+    if (answer === 'acknowledged') w.c().reply(w.cancelId(), {});
+    else if (answer === 'not held') w.c().fail(w.cancelId(), 'invalid_request');
+    else if (answer === 'refused') w.c().fail(w.cancelId(), 'failed');
+    else w.c().reply(w.cancelId(), { cancelled: true });
+    await starting;
+    if (answer === 'acknowledged' || answer === 'not held') {
+      // That sign-in is over in the connector: said as not started, and the connector goes on.
+      assert.deepEqual([w.opened, w.now().login, w.now().detail, w.now().state, w.c().exited], [[], 'refused_address', NOT_OPENED, 'signed_in', false], answer);
+      continue;
+    }
+    // The connector did not let go of a sign-in this app refused: it is ended, so nothing stays pending in it.
+    await until('ended', () => w.c().exited);
+    assert.deepEqual([w.opened, w.now().login, w.now().state, w.fakes.made.length], [[], 'refused_address', 'unavailable', 1], answer);
+    assert.equal(w.now().detail, `${NOT_OPENED}; the connector did not confirm that it let that sign-in go, so the connector was ended (check the connection to start it again)`);
+    await new Promise((r) => setTimeout(r, 30));
+    assert.equal(w.fakes.made.length, 1, 'none is started by the app itself');
+    await w.s.check(); // only the user's own Check starts one again
+    assert.deepEqual([w.fakes.made.length, w.now().state, w.now().login], [2, 'signed_in', 'none']);
+  }
+  // The connector is lost while that cancel is out: said as the loss; nothing is opened and nothing stays pending.
+  const gone = world();
+  await gone.s.check();
+  gone.c().loginUrl = 'https://auth.openai.com.evil.example/authorize';
+  const refused = gone.s.login();
+  await until('its cancel is told', () => gone.c().count('connection/login/cancel') === 1);
+  gone.c().exit(1);
+  await refused;
+  assert.deepEqual([gone.opened, gone.now().login, gone.now().state, gone.now().detail, gone.fakes.made.length], [[], 'failed', 'unavailable', 'the connector ended before the sign-in completed', 1]);
+});
+
+test('"the account changed" is read a bounded number of times between the user\'s own Checks, also when it is said after each read; sparse changes are each read', async () => {
+  const CHECK_AGAIN = 'the account may have changed since it was last read, and it is not read again by itself; check again';
+  // A connector that says "changed" just after every answer (the bound inside one read does not see these).
+  const { s, fakes, now, said } = subscription(WSL, {}, (c) => void (c.onCall = (call) => (call.method === 'connection/read' ? void setImmediate(() => c.event('connection/changed', {})) : undefined)));
+  await s.check();
+  await until('not known', () => now().state === 'unknown');
+  await new Promise((r) => setTimeout(r, 60));
+  assert.deepEqual([fakes.last().count('connection/read'), now().state, now().detail, fakes.made.length], [4, 'unknown', CHECK_AGAIN, 1], 'the user\'s read and three for changes; then no more');
+  const notices = said.length;
+  for (let i = 0; i < 20; i += 1) fakes.last().event('connection/changed', {});
+  await new Promise((r) => setTimeout(r, 40));
+  assert.deepEqual([fakes.last().count('connection/read'), said.length], [4, notices], 'further changes read nothing and say nothing');
+  assert.deepEqual(await s.ask(request()), { status: 'refused', code: 'local', reason: 'the sign-in state of the ChatGPT subscription is not known (check it in the control window)' });
+  // The user's own Check reads again, with the same bound.
+  await s.check();
+  await until('not known again', () => now().state === 'unknown' && fakes.last().count('connection/read') === 8);
+  await new Promise((r) => setTimeout(r, 60));
+  assert.equal(fakes.last().count('connection/read'), 8);
+  // Once the connector stops saying it, the user's Check stands.
+  fakes.last().onCall = () => undefined;
+  await s.check();
+  assert.deepEqual([now().state, now().detail, fakes.last().count('connection/read')], ['signed_in', null, 9]);
+  assert.equal(fakes.last().calls.every((x) => x.method === 'connection/read'), true, 'only reads were ever sent');
+  // Sparse changes (fewer than the bound within a span) are each read, however many there are over time.
+  const sparse = subscription(WSL, { change_window_ms: 30 });
+  await sparse.s.check();
+  for (let i = 0; i < 6; i += 1) {
+    await new Promise((r) => setTimeout(r, 45));
+    sparse.fakes.last().event('connection/changed', {});
+    await until('read', () => sparse.fakes.last().count('connection/read') === 2 + i && sparse.now().state === 'signed_in');
+  }
+  assert.deepEqual([sparse.now().state, sparse.now().detail, sparse.fakes.last().count('connection/read')], ['signed_in', null, 7]);
+  // The user's Check pressed while a change's read is out gets a full read of its own.
+  const pressed = subscription(WSL, {}, (c) => void (c.account = null));
+  const first = pressed.s.check();
+  await until('read', () => pressed.fakes.made.length === 1 && pressed.fakes.last().count('connection/read') === 1);
+  const k = pressed.fakes.last();
+  for (let i = 0; i < 3; i += 1) {
+    k.event('connection/changed', {});
+    k.reply(k.calls.at(-1)!.id, ACCOUNT);
+    await until('read again', () => k.count('connection/read') === 2 + i);
+  }
+  k.event('connection/changed', {}); // a fourth change: over the bound, unless the user checks
+  void pressed.s.check();
+  await new Promise((r) => setTimeout(r, 20));
+  k.reply(k.calls.at(-1)!.id, ACCOUNT);
+  await until('read for the user', () => k.count('connection/read') === 5);
+  k.reply(k.calls.at(-1)!.id, ACCOUNT);
+  await first;
+  assert.deepEqual([pressed.now().state, pressed.now().detail, k.count('connection/read')], ['signed_in', null, 5]);
+  // Once the bound is reached nothing more is read for a change, however long after: only the user's Check, or the
+  // user's own sign-in completing, reads again. (Both ways of reaching it: said after each read, and during each.)
+  for (const during of [false, true]) {
+    const l = subscription(WSL, { change_window_ms: 30 }, (c) => void (c.onCall = (call) => (call.method !== 'connection/read' ? undefined : during ? c.event('connection/changed', {}) : void setImmediate(() => c.event('connection/changed', {})))));
+    await l.s.check();
+    await until('not known', () => l.now().state === 'unknown');
+    const c = l.fakes.last();
+    c.onCall = () => undefined;
+    await new Promise((r) => setTimeout(r, 90)); // three spans later
+    c.event('connection/changed', {});
+    await new Promise((r) => setTimeout(r, 60));
+    assert.deepEqual([c.count('connection/read'), l.now().state, l.now().detail], [4, 'unknown', CHECK_AGAIN], during ? 'during each read' : 'after each read');
+    await l.s.login();
+    assert.deepEqual([l.now().state, l.now().login, l.now().detail], ['unknown', 'waiting', CHECK_AGAIN], 'a sign-in press does not wipe what is said of the state');
+    c.event('connection/login/completed', { login_id: 'login-1', success: true, error: null });
+    await until('read for the completed sign-in', () => c.count('connection/read') === 5 && l.now().state === 'signed_in');
+    assert.deepEqual([l.now().login, l.now().detail], ['none', null]);
+  }
+  // A slow, steady "changed" (under the rate, span after span) is bounded too: in all, between the user's Checks.
+  const slow = subscription(WSL, { change_window_ms: 1 }, (c) => void (c.onCall = (call) => (call.method === 'connection/read' ? void setTimeout(() => c.event('connection/changed', {}), 2) : undefined)));
+  await slow.s.check();
+  await until('not known', () => slow.now().state === 'unknown', 8000);
+  await new Promise((r) => setTimeout(r, 60));
+  assert.deepEqual([slow.fakes.last().count('connection/read'), slow.now().detail], [65, CHECK_AGAIN], 'the user\'s read and 64 for changes');
+  await slow.s.check();
+  await until('not known again', () => slow.now().state === 'unknown' && slow.fakes.last().count('connection/read') === 130, 8000);
+  await new Promise((r) => setTimeout(r, 60));
+  assert.deepEqual([slow.fakes.last().count('connection/read'), slow.fakes.made.length], [130, 1], 'the user\'s Check: its read and another 64');
+  // A question refused as not signed in while a read is out does not end that read's turn: it is read once more.
+  const mid = subscription();
+  await mid.s.check();
+  const asked = mid.s.ask(request());
+  await until('sent', () => mid.fakes.last().asks().length === 1);
+  mid.fakes.last().account = null;
+  mid.fakes.last().event('connection/changed', {});
+  await until('a read is out', () => mid.fakes.last().count('connection/read') === 2 && mid.now().state === 'checking');
+  mid.fakes.last().fail(mid.fakes.last().asks()[0]!.id, 'unauthenticated');
+  assert.equal((await asked).status, 'refused');
+  assert.equal(mid.now().state, 'checking', 'the read that is out says how it is, not the question');
+  const SIGNED_OUT = { auth: { state: 'signed_out', mode: null, plan: null }, rate_limits: null, models: [] };
+  mid.fakes.last().account = SIGNED_OUT;
+  mid.fakes.last().reply(mid.fakes.last().calls.filter((x) => x.method === 'connection/read')[1]!.id, ACCOUNT); // the older answer
+  await until('read once more', () => mid.fakes.last().count('connection/read') === 3 && mid.now().state === 'signed_out');
+  assert.equal(mid.now().detail, null);
+  // The same refusal after a read failed: said as not signed in, without the failed read's reason beside it.
+  const failed = subscription();
+  await failed.s.check();
+  const out = failed.s.ask(request());
+  await until('sent', () => failed.fakes.last().asks().length === 1);
+  failed.fakes.last().account = null;
+  failed.fakes.last().event('connection/changed', {});
+  await until('a read is out', () => failed.fakes.last().count('connection/read') === 2);
+  failed.fakes.last().fail(failed.fakes.last().calls.filter((x) => x.method === 'connection/read')[1]!.id, 'busy');
+  await until('the read failed', () => failed.now().state === 'unavailable');
+  assert.equal(failed.now().detail, 'the connector is busy, so the account was not read; check again');
+  failed.fakes.last().fail(failed.fakes.last().asks()[0]!.id, 'unauthenticated');
+  await out;
+  assert.deepEqual([failed.now().state, failed.now().detail], ['signed_out', null]);
+  // The same refusal once changes are no longer read: the state stays "not known" with its notice (the question's
+  // own card says it was refused); only the user's Check says how the account is.
+  const latched = subscription();
+  await latched.s.check();
+  const held = latched.s.ask(request());
+  await until('sent', () => latched.fakes.last().asks().length === 1);
+  for (let i = 0; i < 4; i += 1) {
+    latched.fakes.last().event('connection/changed', {});
+    await until('read, or not', () => latched.now().state !== 'checking' && latched.fakes.last().count('connection/read') === Math.min(2 + i, 4));
+  }
+  assert.deepEqual([latched.now().state, latched.now().detail], ['unknown', CHECK_AGAIN]);
+  latched.fakes.last().fail(latched.fakes.last().asks()[0]!.id, 'unauthenticated');
+  assert.deepEqual(await held, { status: 'refused', code: 'unauthenticated', reason: 'ChatGPT is not signed in (sign in from the control window)' });
+  assert.deepEqual([latched.now().state, latched.now().detail], ['unknown', CHECK_AGAIN], 'not said as signed out from the question alone');
+  await latched.s.check();
+  assert.deepEqual([latched.now().state, latched.now().detail], ['signed_in', null]);
 });
 
 test('a cancel or a Stop is a confirmed interruption only by its own exact receipt; anything else, cancelled:false included, stays not confirmed', async () => {

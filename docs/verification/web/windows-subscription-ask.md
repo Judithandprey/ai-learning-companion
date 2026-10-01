@@ -13,6 +13,10 @@ selected-image ASK only: it is not continuous observation, and no real AI answer
 The lead's review of `68b4cd9` (`handoff_fdc6d726`, `handoff_76d2d16d`) found five defects, W-SUB-01 to W-SUB-05.
 They are corrected in one commit after `4944cc3`; see "Correction after the lead's review" below.
 
+QA's acceptance work on the released source `3e4b406` (app tree `84fc56a`) found QA-SUB-01 on the display and
+QA-SUB-02 to 08 in a source review. The Web items (01, 04, 05, 06, 07, 08) are corrected in one commit after
+`84fc56a`; see "Correction after QA at `3e4b406`" below. QA-SUB-02 and 03 are the Backend's.
+
 ## What the user gets
 
 **Off by default.** Without `LC_SUBSCRIPTION_CONNECTOR` the app is as before: no question form, nothing kept for ASK,
@@ -38,7 +42,14 @@ on POSIX is a socket pair.
 - **Sign in with ChatGPT**, when not signed in, starts the official managed sign-in and opens its page in the user's
   browser. The page is opened only on this press, and only if its address is https on `openai.com` or `chatgpt.com`
   (or a subdomain), with no user, password or port; any other address is refused and that sign-in cancelled.
-  Completion, failure and cancel are shown. **Cancel sign-in** cancels only this app's pending sign-in.
+  Completion, failure and cancel are shown. **Cancel sign-in** cancels only this app's pending sign-in; it is said
+  as cancelled once the connector acknowledged the cancel. Until then it is still pending ("The sign-in is being
+  cancelled", then, if not acknowledged, "The cancel of the sign-in was not confirmed: it may still be pending in
+  the connector; cancel it again"). A sign-in that is pending stays pending when the account reads as signed in;
+  no question is sent while one is pending, and the card says why.
+- A failed Check or sign-in start is said in its own words ("the account could not be read", "the sign-in could not
+  be started", "a sign-in or a question is already pending in the connector, so no sign-in was started"), not as a
+  question that got no answer.
 - **Model for questions** lists only models the catalog says take pictures. A model with no such fact is not offered.
 - The header says "No AI watches the screen: ChatGPT (your subscription) gets only a selection you send with Ask, with
   your question."
@@ -63,7 +74,7 @@ on POSIX is a socket pair.
   nothing is asked again for it. An Ask that is refused meanwhile leaves the answer, that statement and Save on the
   card.
 - What is still unwritten when the session ends is said where the session's end is said, in the control window: "How
-  N question(s) to ChatGPT ended (an answer included, if one was shown) could not be written to this device (reason);
+  N question(s) to ChatGPT ended (an answer included, if one was shown or may have been) could not be written to this device (reason);
   the selections and their pictures are kept, without that outcome, and writing it is tried again at the next Start
   and when the app closes". It is said again at every later session's end while the record is still held. Closing
   the app with such a record held keeps the control window open once, saying so.
@@ -98,9 +109,11 @@ was sent).
   no answer, a lost connector) is "not confirmed". When both were sent, each must confirm.
 - **The account is read again** when the connector says it changed, or when this app's sign-in completes. If that
   comes while a read is out, one more read follows it, so an older answer never stands over a newer state. Only
-  reads are sent by this: no sign-in and no question. At most four reads in a row; if the account changed again
-  during the fourth, the state is said as not known ("the account changed again while it was being read; check
-  again") and nothing is asked until the user checks.
+  reads are sent by this: no sign-in and no question. Between the user's own Checks, "the account changed" causes
+  at most three reads within ten seconds and 64 in all, whether it is said during a read or after it. Past either,
+  the state is said as not known ("the account may have changed since it was last read, and it is not read again by
+  itself; check again"), nothing more is read for a change, and nothing is asked, until the user checks. The user's
+  Check, and the user's own sign-in completing, always read.
 - **A stopped capture session** is remembered for the app's life: its question out is cancelled, the connector is
   told (`session/stop`) by the Stop itself, and no question of it is ever sent again, whatever child runs.
 - **A lost connector** is never replaced by the app itself, not even to cancel what it had: only the user's Check or
@@ -140,11 +153,17 @@ was sent).
   question ended before that answer reaches the overlay (an immediate refusal, for one). The overlay keeps such a
   result until the acknowledgement names its request, and shows it only if it is that request's. A result for
   another request is never shown.
-- **`shown` means shown.** An answer is recorded with `shown: false` when it comes. The overlay then says what it did
-  with it (`lc:ask-presented`, from the overlay only, for the current selection and that request): shown, and the
-  record says `shown: true`; or not shown after all (Cancel or the capture's end crossed it), and the record becomes
-  `cancelled` without the text. An answer the overlay never reported as shown when its card closes or is replaced is
-  recorded the same way. An answer still unreported when the session ends stays `answered` with `shown: false`.
+- **`shown` means shown.** An answer is recorded with `shown: false` and `presentation: "unconfirmed"` when it is
+  sent to the overlay. The overlay then says what it did with it (`lc:ask-presented`, from the overlay only, for
+  the current selection and that request):
+  - shown: the record says `shown: true`, `presentation: "shown"`;
+  - not shown after all (Cancel or the capture's end crossed it): the record becomes `cancelled`, without the text
+    and without `presentation`. An answer whose card closed or was replaced before it reported anything is recorded
+    the same way: the overlay's messages come in order, so no report before the close means it was never put on
+    the card.
+  - no report at all (the overlay was lost, or the session ended first): the record stays `answered`, `shown:
+    false`, `presentation: "unconfirmed"`, **with its text**. No report is not proof that it was not seen. It is
+    not displayed help as far as this record knows, and nothing may count it as such, or as mastery.
 - **An outcome that cannot be written** is held by the main process and said to the overlay with the result
   (`{saved, reason}`). Writing it is tried again on Save (`lc:ask-save`, from the overlay only, for the current
   selection), when its card goes, when the session ends, at the next Start, when the app quits and when Windows
@@ -317,6 +336,62 @@ the build pass.
 **Check of this follow-up.** A two-lens check with a second reviewer per finding: 6 findings, all confirmed, all
 fixed above (four were the quit not being a fence, one the question's "signed out", one the browser text).
 
+## Correction after QA at `3e4b406` (QA-SUB-01, 04, 05, 06, 07, 08)
+
+Lead task `handoff_5aecf0fe` (and `handoff_b386d333`: QA-SUB-02 and 03 are corrected by the Backend at main
+`cd9b0ef`; this side needs no change for them). One commit after `84fc56a`, in `apps/windows/**` and this folder.
+QA's report: `docs/verification/qa/p0-13-subscription-ask-windows-3e4b406.md` at `9abf587`. Synthetic connector
+only; **offline checks only, by the lead's instruction: no Windows run, no display, no sign-in, no model call.**
+
+| Item | What was wrong | What it does now |
+|---|---|---|
+| QA-SUB-01 | `finishAsk` read the frame's width and height after awaiting the picture's encoding. The sampler could replace the frame meanwhile and close its bitmap, whose size then reads 0, so a valid selection was refused as "the selection facts are malformed" (3 of 67 on the display). | The frame's number, time and size, the region and the ink's facts are taken before the first await, with the ink bytes and the drawing of the picture. Nothing of the frame is read after an await. |
+| QA-SUB-04 | A question holding half of a surrogate pair was written to the connector, which ended on it; the record said "uncertain" for a question never sent. | Refused before anything is recorded or sent: "Not sent: the question holds a damaged character (half of a pair), so it cannot be sent as it is; type that part again." Valid text of any script is sent as typed. |
+| QA-SUB-05 | A failed Check or sign-in start was said in a question's words. | Own fixed texts per closed code for the read and for the sign-in's start. |
+| QA-SUB-06 | A signed-in read forgot a pending sign-in without cancelling it, so the connector refused every question as busy; Cancel's answer was never read. | A pending sign-in stays pending (with Cancel) whatever the account reads as; a question is refused here meanwhile, in words that say why. Cancel is said as cancelled only on the connector's `{}`. "No such sign-in" ends it here too, said as not known to have completed. Anything else leaves it pending, said as not confirmed. A completion that arrives while the cancel is out is still taken. |
+| QA-SUB-07 | **Confirmed.** The four-read bound held only inside one check: "changed" said just after each read kept the app reading without end. | One budget across reads and checks: three within ten seconds and 64 in all between the user's Checks, then "not known; check again" and nothing more is read for a change. |
+| QA-SUB-08 | An answer whose overlay was lost before it reported stayed `answered`, `shown: false`, with its text. QA proposed dropping the text. | **Not deleted, by the lead's instruction**: no report is not proof it was not seen. The uncertainty is now explicit: `presentation: "unconfirmed"` from the moment the answer is sent to the overlay, `"shown"` only on the overlay's report. `shown` stays false, so it is never counted as displayed help. |
+
+Smaller things corrected with these, each with a regression:
+- A sign-in address the app refuses, whose cancel the connector does not confirm: the connector is ended, so
+  nothing stays pending in it; only the user's Check starts one again.
+- A browser that cannot be opened is said as that ("cancel it, then sign in again"), kept across reads, and never
+  beside "finish it in your browser".
+- A question refused as not signed in while a read is out leaves the state to that read (it is read once more);
+  while changes are no longer read it leaves "not known".
+- The session-end notice says "if one was shown or may have been".
+
+**Regressions** (`tests/app-ask.test.ts` 31 to 34 cases, `tests/subscription.test.ts` 24 to 29):
+- the frame replaced and closed by the app's own sampler while the picture is encoded: the selection is kept with
+  the same context, picture hash and ink hash as a control selection, and is asked about with that picture; the
+  test fake now refuses to draw a closed bitmap, as Chromium does;
+- seven damaged questions and six valid ones (astral characters, combining marks, CJK, a pair at the 4,000 limit);
+- every closed code for a failed read and a failed sign-in start;
+- the pending sign-in across a signed-in read, in `waiting` and in `starting`; every answer to Cancel (`{}`, an
+  error, another shape, none, "no such sign-in", a completion racing it, the connector lost); the refused address
+  with each answer to its cancel;
+- "changed" after each read, during each read, sparse, slow and steady up to the total, the latch outliving the
+  span, the user's Check and the user's own sign-in resetting it;
+- the answer's presentation: shown, a refusal, and the overlay lost before any report (text kept, not shown).
+- 45 mutants, all killed. The two files ran ten times in a row without a failure.
+
+**Runs** (Linux, offline):
+- The whole `apps/windows` suite against the Backend checkout at `868a91d`: 304 tests, 299 pass, 0 fail, 5 skipped;
+  without a Backend 259 pass, 45 skipped. `tsc` and the build pass.
+- The affected set without a Backend: 113 tests, 107 pass, 0 fail, 6 skipped
+  (`evidence/windows-subscription-ask/linux-qa-sub.txt`; the receipt `linux-qa-sub.json` carries the hashes of the
+  files run, which are this commit's).
+- **Not run on Windows this time** (the last Windows run, Electron as Node, is `84fc56a`'s).
+
+**Review.** Two bounded passes, each finding checked by a second reviewer: 23 findings, all confirmed, all fixed or
+covered above. The fixes made after the second pass were checked by their tests and mutants only.
+
+**Noted, not changed here** (from QA's source review, outside this task's list):
+- A `cancelled` answer to a question this app did not cancel is returned as a confirmed cancel
+  (`uncertain: false`). Reaching it needs the connector's 4,096-request limit.
+- The app waits 5 s for the connector's end, the connector's own cleanup allows 8 s; what the connector's end was
+  is not said in the window.
+
 ## Launch steps, element ids and evidence paths (for the first real check, on the released candidate)
 
 **Configuration**, ready to use on this machine (a file anywhere on Windows, for example
@@ -358,8 +433,9 @@ $env:LC_USER_DATA = "$env:TEMP\lc-subscription-profile"
 - `ink\<sha256>.json`: the exact ink document drawn into it.
 - `asks\<selection>.json` (`lc-windows-ask/v1`): `image`, `context`, `ink_original`, and `requests[]`, each with
   `request_id`, `question`, `assistance`, `model`, `submitted_at`, `ended_at`, `outcome` (for an answer: its text,
-  model, latency and the official thread and turn ids) and `shown` (true only once the overlay reported that it
-  showed the answer).
+  model, latency and the official thread and turn ids), `shown` (true only once the overlay reported that it
+  showed the answer) and, for an answer, `presentation` (`"shown"`, or `"unconfirmed"` while and when no report
+  came).
 
 ## Gaps and next dependencies
 
