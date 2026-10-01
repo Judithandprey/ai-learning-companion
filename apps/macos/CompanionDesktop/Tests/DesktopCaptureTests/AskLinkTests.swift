@@ -26,8 +26,50 @@ final class FakeConnector: AskChildLauncher, @unchecked Sendable {
         private var exited = false
         var hasExited: Bool { lock.withLock { exited } }
 
-        func send(_ line: Data) async -> Bool {
+        private var nextTicket = 0
+        private var serving = 0
+
+        /// Like the real child's one writer: a line waits behind the lines sent before it; a line
+        /// the connector holds stays in the writer until it is released or taken back; and a
+        /// line taken back after part of it was written ends the child.
+        func send(_ line: Data, revocation: AskRevocation?) async -> Bool {
+            let ticket: Int = lock.withLock {
+                defer { nextTicket += 1 }
+                return nextTicket
+            }
+            while lock.withLock({ serving }) != ticket {
+                try? await Task.sleep(nanoseconds: 2_000_000)
+            }
+            defer { lock.withLock { serving += 1 } }
             guard !hasExited, let owner else { return false }
+            let method = (try? JSONSerialization.jsonObject(with: line) as? [String: Any])?["method"] as? String ?? ""
+            if owner.failsWrites.contains(method) {
+                // Not taken in time: the real child is then ended.
+                await end()
+                return false
+            }
+            var held = false
+            // Bounded like the real writer: a line not taken in time fails, and the child is ended.
+            let deadline = Date().addingTimeInterval(8)
+            while owner.holdsWrites.contains(method), !hasExited, revocation?.isRevoked != true {
+                held = true
+                guard Date() < deadline else {
+                    await end()
+                    return false
+                }
+                try? await Task.sleep(nanoseconds: 5_000_000)
+            }
+            guard !hasExited else { return false }
+            let inPart = held && owner.heldWritesAreInPart
+            if let revocation, revocation.attempt(remaining: 1, started: inPart, { 1 }) == nil {
+                if inPart {
+                    // Like the real connector: at EOF it refuses the part in a line that answers
+                    // no call, and ends.
+                    owner.emitRaw("{\"id\":null,\"error\":{\"code\":\"invalid_request\",\"message\":\"synthetic\"}}")
+                    await end()
+                }
+                return false
+            }
             owner.received(line)
             return true
         }
@@ -67,6 +109,9 @@ final class FakeConnector: AskChildLauncher, @unchecked Sendable {
     private var storedAfterLoginStart: (@Sendable (FakeConnector) -> Void)?
     private var storedEndDelay: TimeInterval = 0
     private var storedAfterRead: (@Sendable (FakeConnector) -> Void)?
+    private var storedHoldsWrites: Set<String> = []
+    private var storedFailsWrites: Set<String> = []
+    private var storedHeldInPart = false
 
     /// `otherImageModel` lists a second model as taking images, not the default, before the default.
     static func connection(state: String = "signed_in", mode: Any = "chatgpt", imageModels: Bool = true,
@@ -126,6 +171,24 @@ final class FakeConnector: AskChildLauncher, @unchecked Sendable {
     var afterLoginStart: (@Sendable (FakeConnector) -> Void)? {
         get { lock.withLock { storedAfterLoginStart } }
         set { lock.withLock { storedAfterLoginStart = newValue } }
+    }
+
+    /// Methods whose line stays in the pipe's writer, not yet with the connector, while listed.
+    var holdsWrites: Set<String> {
+        get { lock.withLock { storedHoldsWrites } }
+        set { lock.withLock { storedHoldsWrites = newValue } }
+    }
+
+    /// A held line has been written in part (true), or not at all (false).
+    var heldWritesAreInPart: Bool {
+        get { lock.withLock { storedHeldInPart } }
+        set { lock.withLock { storedHeldInPart = newValue } }
+    }
+
+    /// Methods whose line the connector never takes: the write fails.
+    var failsWrites: Set<String> {
+        get { lock.withLock { storedFailsWrites } }
+        set { lock.withLock { storedFailsWrites = newValue } }
     }
 
     /// Called right behind the answer to each `connection/read`.
@@ -277,20 +340,23 @@ extension DesktopCaptureTests {
                            repository: URL(fileURLWithPath: "/nonexistent-synthetic/repo"))
     }
 
-    /// A 200×100 mid-grey BGRA buffer.
-    func greyBuffer() throws -> CVPixelBuffer {
+    /// A BGRA buffer: mid-grey, or fixed pseudo-random pixels that no PNG encoder can make small.
+    func greyBuffer(width: Int = 200, height: Int = 100, noise: Bool = false) throws -> CVPixelBuffer {
         var created: CVPixelBuffer?
         let attributes = [kCVPixelBufferIOSurfacePropertiesKey as String: [String: Any]()] as CFDictionary
-        XCTAssertEqual(CVPixelBufferCreate(nil, 200, 100, kCVPixelFormatType_32BGRA, attributes, &created), kCVReturnSuccess)
+        XCTAssertEqual(CVPixelBufferCreate(nil, width, height, kCVPixelFormatType_32BGRA, attributes, &created), kCVReturnSuccess)
         let buffer = try XCTUnwrap(created)
         CVPixelBufferLockBaseAddress(buffer, [])
         defer { CVPixelBufferUnlockBaseAddress(buffer, []) }
         let base = try XCTUnwrap(CVPixelBufferGetBaseAddress(buffer)).assumingMemoryBound(to: UInt8.self)
         let rowBytes = CVPixelBufferGetBytesPerRow(buffer)
-        for y in 0..<100 {
-            for x in 0..<200 {
+        var state: UInt32 = 0x1234_5678
+        for y in 0..<height {
+            for x in 0..<width {
                 for channel in 0..<4 {
-                    base[y * rowBytes + x * 4 + channel] = channel == 3 ? 255 : 128
+                    state = state &* 1_664_525 &+ 1_013_904_223
+                    let value: UInt8 = channel == 3 ? 255 : (noise ? UInt8(truncatingIfNeeded: state >> 24) : 128)
+                    base[y * rowBytes + x * 4 + channel] = value
                 }
             }
         }
@@ -303,17 +369,22 @@ extension DesktopCaptureTests {
     /// Frozen as the app freezes it at Finish.
     func askFixture(_ name: String, excluded: Bool = true, withInk: Bool = true, strokeEnd: Double = 90, erased: Bool = false,
                     crop: Bool = true, regionFrom: (x: Double, y: Double) = (20, 5),
-                    regionTo: (x: Double, y: Double) = (60, 25)) throws -> (input: AskSelectionInput, session: URL, frame: FrameReference, document: InkDocument) {
+                    regionTo: (x: Double, y: Double) = (60, 25), large: Bool = false) throws -> (input: AskSelectionInput, session: URL, frame: FrameReference, document: InkDocument) {
         let scope = excluded ? DisplayFacts.appExcludedScope(showsCursor: true) : DisplayFacts.inkOverlayScope(showsCursor: true)
+        // `large`: a 400×200 pt display kept as an 800×400 frame of pseudo-random pixels, so a
+        // region of most of it makes a request far larger than a pipe's buffer.
+        let (points, pixels) = large ? (CGSize(width: 400, height: 200), (800, 400)) : (CGSize(width: 100, height: 50), (200, 100))
+        let (regionFrom, regionTo) = large ? ((x: 10.0, y: 10.0), (x: 390.0, y: 190.0)) : (regionFrom, regionTo)
         let display = DisplayFacts(displayID: 7, name: "Synthetic Display",
-                                   frame: RecordedRect(CGRect(x: -100, y: 0, width: 100, height: 50)), pointPixelScale: 2,
-                                   requestedWidth: 200, requestedHeight: 100, rotationDegrees: 0, isMain: false, scope: scope)
+                                   frame: RecordedRect(CGRect(x: -100, y: 0, width: points.width, height: points.height)), pointPixelScale: 2,
+                                   requestedWidth: pixels.0, requestedHeight: pixels.1, rotationDegrees: 0, isMain: false, scope: scope)
         let recorder = try CaptureRecorder(
             root: root.appending(path: name, directoryHint: .isDirectory), display: display,
             settings: CaptureSettings(minimumFrameInterval: 2, byteCap: 1 << 24, silenceLimit: 6, showsCursor: true),
             permissionPreflightAtStart: true, composesInk: excluded, wall: Date(timeIntervalSince1970: 1_790_000_000.25), host: 100)
         recorder.streamStarted(host: 100, wall: Date(timeIntervalSince1970: 1_790_000_000.5))
-        recorder.frame(facts(.complete, source: 100.2), image: try greyBuffer(), host: 100.3, accepted: true)
+        recorder.frame(facts(.complete, source: 100.2), image: try greyBuffer(width: pixels.0, height: pixels.1, noise: large),
+                       host: 100.3, accepted: true)
         let frame = FrameReference(try XCTUnwrap(recorder.status.lastKept))
         let ink = InkSession(document: InkDocument(displayID: 7, createdInSession: recorder.status.session,
                                                    createdWall: Date(timeIntervalSince1970: 1_790_000_000.5)))
@@ -1041,6 +1112,8 @@ extension DesktopCaptureTests {
         let stormy = FakeConnector()
         let stormyLink = askLink(stormy, changeInterval: 0.4)
         stormy.afterRead = { connector in
+            // Bounded, so a link that read once for every event would fail here soon, not go on.
+            guard connector.params("connection/read").count < 200 else { return }
             for _ in 0..<20 { connector.emit(["method": "connection/changed", "params": [String: Any]()]) }
         }
         await stormyLink.connect()
@@ -1362,6 +1435,7 @@ extension DesktopCaptureTests {
         XCTAssertEqual(record["outcome"] as? String, "cancelled")
         XCTAssertEqual(record["interruption_uncertain"] as? Bool, true)
         XCTAssertEqual(record["connector_cancelled"] as? Bool, true)
+        XCTAssertEqual(record["delivered_to_connector"] as? Bool, true, "the connector had the whole request")
         XCTAssertNil(record["text"], "the suppressed answer is not kept as an answer")
 
         // A new selection while a question is on its way: the old one is fenced, and its answer
@@ -1621,6 +1695,187 @@ extension DesktopCaptureTests {
         await stuckAsk.value
     }
 
+    // MARK: - A request that has not reached the connector yet
+
+    func testAskTakesBackARequestThatHasNotReachedTheConnector() async throws {
+        let notDelivered = "; it had not reached the connector, so nothing was sent to the service"
+        /// A link whose `ask/start` stays in the pipe's writer, with a question submitted on a new card.
+        func held(_ name: String, inPart: Bool = false) async throws
+            -> (connector: FakeConnector, link: AskLink, card: AskCard, session: URL, asking: Task<Void, Never>) {
+            let connector = FakeConnector()
+            connector.holdsWrites = ["ask/start"]
+            connector.heldWritesAreInPart = inPart
+            let link = askLink(connector)
+            await link.connect()
+            let fixture = try askFixture(name)
+            await link.open(fixture.input)
+            let card = try await askCard(link)
+            let asking = Task { await link.submit(question: "Why?", assistance: .hint) }
+            let sending = await until(5) { await link.currentStatus().card?.phase == .sending }
+            XCTAssertTrue(sending, name)
+            XCTAssertEqual(connector.methods, ["connection/read"], "the request is not with the connector yet")
+            return (connector, link, card, fixture.session, asking)
+        }
+        /// After the writer is released: the connector never got the request or a cancel for it.
+        func neverDelivered(_ connector: FakeConnector, _ asking: Task<Void, Never>, _ name: String) async throws {
+            connector.holdsWrites = []
+            await asking.value
+            try await Task.sleep(nanoseconds: 200_000_000)
+            XCTAssertFalse(connector.methods.contains("ask/start"), "\(name): \(connector.methods)")
+            XCTAssertFalse(connector.methods.contains("ask/cancel"), "\(name): nothing to interrupt")
+        }
+        func notDeliveredRecord(_ session: URL, _ card: AskCard, reason: String, _ name: String) throws {
+            let record = try askRecord(session, card.cardID + "-q1.response.json")
+            XCTAssertEqual([record["outcome"] as? String, record["reason"] as? String], ["cancelled", reason], name)
+            XCTAssertEqual(record["delivered_to_connector"] as? Bool, false, name)
+            XCTAssertEqual(record["interruption_uncertain"] as? Bool, false, "\(name): nothing was sent, so nothing is uncertain")
+            XCTAssertTrue(record["connector_cancelled"] is NSNull, name)
+        }
+
+        // Cancel: the request is taken back. It is never delivered, also after the writer runs
+        // again, and the same connector answers the next question.
+        let cancelled = try await held("ask-held-cancel")
+        await cancelled.link.cancelCard()
+        let cancelledCard = try await askCard(cancelled.link)
+        XCTAssertEqual([cancelledCard.phase.rawValue, cancelledCard.detail], ["cancelled", "cancelled" + notDelivered])
+        try await neverDelivered(cancelled.connector, cancelled.asking, "cancel")
+        try notDeliveredRecord(cancelled.session, cancelled.card, reason: "cancelled", "cancel")
+        let afterCancel = try await askCard(cancelled.link)
+        XCTAssertEqual(afterCancel.detail, "cancelled" + notDelivered, "the card still says what happened")
+        await cancelled.link.submit(question: "Why, then?", assistance: .hint)
+        let answered = try await askCard(cancelled.link)
+        XCTAssertEqual([answered.phase.rawValue, answered.answer], ["answered", "Synthetic answer: the value is 42."])
+        XCTAssertEqual([cancelled.connector.launches, cancelled.connector.ends], [1, 0], "the same connector: its pipe was untouched")
+        XCTAssertEqual(cancelled.connector.params("ask/start").count, 1, "only the question submitted afterwards")
+        await cancelled.link.shutdown()
+
+        // Stop: taken back, and the connector is told of the stop behind it, never of the request.
+        let stopped = try await held("ask-held-stop")
+        await stopped.link.sessionStopped(stopped.card.captureSessionID)
+        let stoppedCard = try await askCard(stopped.link)
+        XCTAssertEqual([stoppedCard.phase.rawValue, stoppedCard.detail], ["cancelled", "the capture stopped" + notDelivered])
+        try await neverDelivered(stopped.connector, stopped.asking, "stop")
+        XCTAssertEqual(stopped.connector.methods, ["connection/read", "session/stop"])
+        try notDeliveredRecord(stopped.session, stopped.card, reason: "the capture stopped", "stop")
+        await stopped.link.submit(question: "After stop?", assistance: .hint)
+        XCTAssertFalse(stopped.connector.methods.contains("ask/start"))
+        await stopped.link.shutdown()
+
+        // A new selection, and Close.
+        let replaced = try await held("ask-held-new")
+        let other = try askFixture("ask-held-new-other")
+        await replaced.link.open(other.input)
+        let newCard = try await askCard(replaced.link)
+        XCTAssertEqual([newCard.phase.rawValue, newCard.captureSessionID], ["ready", other.input.selection.nativeSession ?? ""])
+        try await neverDelivered(replaced.connector, replaced.asking, "new selection")
+        try notDeliveredRecord(replaced.session, replaced.card, reason: "a new selection was made", "new selection")
+        await replaced.link.shutdown()
+        let closed = try await held("ask-held-close")
+        await closed.link.closeCard()
+        try await neverDelivered(closed.connector, closed.asking, "close")
+        try notDeliveredRecord(closed.session, closed.card, reason: "the card was closed", "close")
+        await closed.link.shutdown()
+
+        // Quit: taken back at once, and Quit does not wait for the held writer.
+        let quitting = try await held("ask-held-quit")
+        let quitBegan = Date()
+        await quitting.link.shutdown()
+        XCTAssertLessThan(Date().timeIntervalSince(quitBegan), 2)
+        try notDeliveredRecord(quitting.session, quitting.card, reason: "the app is closing", "quit")
+        quitting.connector.holdsWrites = []
+        await quitting.asking.value
+        XCTAssertFalse(quitting.connector.methods.contains("ask/start"))
+        XCTAssertEqual(quitting.connector.ends, 1)
+
+        // Taken back after part of it was written: that connector is ended (its pipe can carry
+        // nothing more), nothing is sent in the request's place, and no connector is started
+        // until the user's own Connect.
+        let cut = try await held("ask-held-part", inPart: true)
+        await cut.link.cancelCard()
+        let ended = await until(5) { await cut.link.currentStatus().connection == .disconnected }
+        XCTAssertTrue(ended)
+        let cutStatus = await cut.link.currentStatus()
+        XCTAssertEqual(cutStatus.detail, "the connector was ended, because a cancelled question had been written to it in part; "
+                       + "nothing of it was sent to the service. Connect starts the connector again")
+        XCTAssertEqual(cutStatus.card?.detail, "cancelled" + notDelivered)
+        try await neverDelivered(cut.connector, cut.asking, "in part")
+        try notDeliveredRecord(cut.session, cut.card, reason: "cancelled", "in part")
+        XCTAssertEqual([cut.connector.launches, cut.connector.ends], [1, 1])
+        await cut.link.submit(question: "Again?", assistance: .hint)
+        XCTAssertEqual(cut.connector.launches, 1, "no connector by itself")
+        await cut.link.connect()
+        await cut.link.submit(question: "Again?", assistance: .hint)
+        let recovered = try await askCard(cut.link)
+        XCTAssertEqual([recovered.phase.rawValue, recovered.answer], ["answered", "Synthetic answer: the value is 42."])
+        XCTAssertEqual(cut.connector.launches, 2, "started by the user's Connect")
+        XCTAssertEqual(cut.connector.params("ask/start").count, 1)
+        // That new connector's own end, later, is said as its own.
+        cut.connector.exitChild()
+        let endedAgain = await until(5) { await cut.link.currentStatus().connection == .disconnected }
+        XCTAssertTrue(endedAgain)
+        let ownEnd = await cut.link.currentStatus()
+        XCTAssertEqual(ownEnd.detail, "the connector ended")
+        await cut.link.shutdown()
+
+        // While the app is closing, a Submit sends nothing, also before the connector has ended.
+        let closing = FakeConnector()
+        closing.endDelay = 1
+        let closingLink = askLink(closing)
+        await closingLink.connect()
+        let lateFixture = try askFixture("ask-held-closing")
+        await closingLink.open(lateFixture.input)
+        let quit = Task { await closingLink.shutdown() }
+        try await Task.sleep(nanoseconds: 300_000_000)
+        XCTAssertEqual(closing.ends, 0, "still ending")
+        await closingLink.submit(question: "Too late?", assistance: .hint)
+        await quit.value
+        XCTAssertFalse(closing.methods.contains("ask/start"))
+
+        // A request the connector does not take in time, with no Cancel: said as not sent (that
+        // is known), not as an unknown outcome, and not sent again.
+        let refusing = FakeConnector()
+        refusing.failsWrites = ["ask/start"]
+        let refusingLink = askLink(refusing)
+        await refusingLink.connect()
+        let untaken = try askFixture("ask-held-untaken")
+        await refusingLink.open(untaken.input)
+        await refusingLink.submit(question: "Why?", assistance: .hint)
+        let untakenCard = try await askCard(refusingLink)
+        XCTAssertEqual([untakenCard.phase.rawValue, untakenCard.detail],
+                       ["failed", "not sent: the connector did not take the request, so nothing reached the service"])
+        XCTAssertEqual(try askRecord(untaken.session, untakenCard.cardID + "-q1.response.json")["outcome"] as? String, "not_sent")
+        XCTAssertEqual(refusing.methods, ["connection/read"])
+        await refusingLink.shutdown()
+
+        // The handle itself: a line delivered whole cannot be taken back, and one taken back is
+        // never marked delivered.
+        let whole = AskRevocation()
+        XCTAssertEqual(whole.attempt(remaining: 10, started: false) { 4 }, 4)
+        XCTAssertEqual(whole.attempt(remaining: 6, started: true) { 6 }, 6)
+        XCTAssertFalse(whole.revoke(), "already with the connector")
+        XCTAssertFalse(whole.isRevoked || whole.wasWrittenInPart)
+        let partial = AskRevocation()
+        XCTAssertEqual(partial.attempt(remaining: 10, started: false) { 4 }, 4)
+        XCTAssertTrue(partial.revoke())
+        XCTAssertNil(partial.attempt(remaining: 6, started: true) { XCTFail("written after it was taken back"); return 6 })
+        XCTAssertTrue(partial.isRevoked && partial.wasWrittenInPart)
+        XCTAssertTrue(partial.revoke(), "still taken back")
+        // Taking back and writing the last byte exclude each other: a take-back that comes while
+        // the last byte is being written waits for it, and then learns the line was delivered.
+        let racing = AskRevocation()
+        let race = EndLog()
+        let lastStep = racing.attempt(remaining: 5, started: true) {
+            DispatchQueue.global().async { race.add(racing.revoke() ? "taken back" : "already delivered") }
+            Thread.sleep(forTimeInterval: 0.3)
+            XCTAssertEqual(race.all, [], "taken back while its last byte was being written")
+            return 5
+        }
+        XCTAssertEqual(lastStep, 5)
+        let raced = await until(5) { race.all.count == 1 }
+        XCTAssertTrue(raced)
+        XCTAssertEqual(race.all, ["already delivered"])
+    }
+
     func testAskConnectorLossAndTimeoutAreUnknownAndNeverRetried() async throws {
         // The connector ends while a question is on its way.
         let connector = FakeConnector()
@@ -1698,7 +1953,8 @@ extension DesktopCaptureTests {
               count) wc -c > "$log/bytes" ;;
               flood) echo $$ > "$log/pid"; trap '' TERM; head -c 300000 /dev/zero | tr '\\0' 'a'; echo
                 sleep 1 < /dev/null > /dev/null 2>&1; printf '{"id":"late","result":{}}\\n'
-                while :; do sleep 1 < /dev/null > /dev/null 2>&1; done ;;
+                # Bounded: if a test run is cut short, this stand-in still ends by itself.
+                i=0; while [ $i -lt 40 ]; do sleep 1 < /dev/null > /dev/null 2>&1; i=$((i+1)); done ;;
             esac
             echo eof >> "$log/ends"
 
@@ -1765,7 +2021,8 @@ extension DesktopCaptureTests {
 
         // A line longer than the bound is not a connector line: the child is reported gone at once,
         // nothing it writes afterwards is passed on, and a child that ignores EOF and SIGTERM is
-        // killed (that process only).
+        // killed (that process only). The stand-in ends by itself after 40 s in any case, so a run
+        // that is cut short leaves no process behind.
         let endsBefore = lines("ends").count
         let flooding = try launch("flood")
         let reportedGone = await until(2) { exits.all.contains("flood") }
@@ -1813,6 +2070,267 @@ extension DesktopCaptureTests {
         let missing = AskConnectorConfig(python: directory.appending(path: "no-such-python"),
                                          repository: directory.appending(path: "repo", directoryHint: .isDirectory))
         XCTAssertNil(ProcessAskLauncher().launch(missing, onLine: { _ in }, onExit: {}))
+    }
+
+    /// The held reader of the lead's review, with real processes and real pipes: a child that does
+    /// not read, so a request larger than the pipe's buffer stays in the writer part way.
+    func testAskRealChildNeverGetsARequestTakenBackInThePipe() async throws {
+        let directory = root.appending(path: "ask-held-child", directoryHint: .isDirectory)
+        let connectors = directory.appending(path: "repo/services/worker/connectors", directoryHint: .isDirectory)
+        let log = directory.appending(path: "log", directoryHint: .isDirectory)
+        try FileManager.default.createDirectory(at: connectors, withIntermediateDirectories: true)
+        try FileManager.default.createDirectory(at: log, withIntermediateDirectories: true)
+        try Data().write(to: connectors.appending(path: "chatgpt_local.py"))
+        // Answers the first line as a signed-in connection, then reads nothing until `release`
+        // exists, then keeps every byte that still comes, up to EOF, in `rest-<launch>`. With
+        // `slow` it reads at once, but only about 4 KiB every 50 ms.
+        let script = """
+        #!/bin/sh
+        log='\(log.path(percentEncoded: false))'
+        echo launch >> "$log/launches"
+        launch=$(wc -l < "$log/launches" | tr -d ' ')
+        IFS= read -r line
+        id=${line#*\\"id\\":\\"}; id=${id%%\\"*}
+        printf '{"id":"%s","result":{"auth":{"state":"signed_in","mode":"chatgpt","plan":null},"rate_limits":null,"models":[{"id":"synthetic-vision","label":"Synthetic vision","image_input":true,"default":true}]}}\\n' "$id"
+        # Bounded: if a test run is cut short, this stand-in still ends by itself.
+        i=0; while [ ! -e "$log/release" ]; do
+          sleep 0.1 < /dev/null > /dev/null 2>&1; i=$((i+1)); [ $i -lt 600 ] || exit 0
+        done
+        if [ -e "$log/slow" ]; then
+          : > "$log/rest-$launch"
+          while :; do
+            dd bs=4096 count=1 2> /dev/null > "$log/chunk-$launch"
+            [ -s "$log/chunk-$launch" ] || break
+            cat "$log/chunk-$launch" >> "$log/rest-$launch"
+            sleep 0.05 < /dev/null > /dev/null 2>&1
+          done
+        else
+          cat > "$log/rest-$launch"
+        fi
+
+        """
+        let python = directory.appending(path: "python-held")
+        try Data(script.utf8).write(to: python)
+        try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: python.path(percentEncoded: false))
+        let config = AskConnectorConfig(python: python, repository: directory.appending(path: "repo", directoryHint: .isDirectory))
+        let release = log.appending(path: "release")
+        func launches() -> Int {
+            ((try? String(contentsOf: log.appending(path: "launches"), encoding: .utf8)) ?? "").split(separator: "\n").count
+        }
+        /// What launch `number` got after its first line, once it has ended.
+        func rest(_ number: Int) async -> Data {
+            let file = log.appending(path: "rest-\(number)")
+            var size = -1
+            // Complete once the child has ended: the size no longer changes.
+            _ = await until(10) {
+                let now = ((try? FileManager.default.attributesOfItem(atPath: file.path(percentEncoded: false)))?[.size] as? Int) ?? -1
+                defer { size = now }
+                return now >= 0 && now == size
+            }
+            return (try? Data(contentsOf: file)) ?? Data()
+        }
+
+        // The transport by itself. A line of 2 MiB is in the writer part way; a small line waits
+        // behind it. Taken back: it is never completed, nothing is appended to it, and both
+        // sends say so soon.
+        let lines = EndLog()
+        let transport = try XCTUnwrap(ProcessAskLauncher(sendTimeout: 20, endGrace: 3).launch(
+            config, onLine: { lines.add(String(decoding: $0, as: UTF8.self)) }, onExit: {}))
+        let first = await transport.send(Data("{\"id\":\"t1\"}\n".utf8))
+        XCTAssertTrue(first)
+        let answered = await until(10) { lines.all.count == 1 }
+        XCTAssertTrue(answered)
+        var big = Data(repeating: 0x62, count: 2 << 20)
+        big.append(0x0A)
+        let handle = AskRevocation()
+        let sendingBig = Task { await transport.send(big, revocation: handle) }
+        let sendingBehind = Task { () -> Bool in
+            try? await Task.sleep(nanoseconds: 300_000_000)
+            return await transport.send(Data("{\"behind\":1}\n".utf8))
+        }
+        try await Task.sleep(nanoseconds: 800_000_000)
+        XCTAssertTrue(handle.revoke(), "not delivered whole: it can still be taken back")
+        try Data().write(to: release)
+        let takenBack = Date()
+        let bigDelivered = await sendingBig.value
+        let behindDelivered = await sendingBehind.value
+        XCTAssertFalse(bigDelivered)
+        XCTAssertFalse(behindDelivered, "nothing follows a line that was cut off")
+        XCTAssertLessThan(Date().timeIntervalSince(takenBack), 6)
+        XCTAssertTrue(handle.wasWrittenInPart)
+        let cutOff = await rest(1)
+        XCTAssertTrue(cutOff.count > 0 && cutOff.count < big.count, "\(cutOff.count) bytes: a part, not the line")
+        XCTAssertFalse(cutOff.contains(0x0A), "no line the connector could act on")
+        XCTAssertNil(cutOff.range(of: Data("behind".utf8)), "nothing was appended to the part")
+        XCTAssertTrue(transport.hasExited)
+
+        // A line taken back before its first byte leaves the pipe as it was: the large line in
+        // front of it arrives whole, and so does a line sent afterwards. (The reader still holds.)
+        try FileManager.default.removeItem(at: release)
+        let intact = try XCTUnwrap(ProcessAskLauncher(sendTimeout: 20, endGrace: 3).launch(config, onLine: { _ in }, onExit: {}))
+        let intactFirst = await intact.send(Data("{\"id\":\"t2\"}\n".utf8))
+        XCTAssertTrue(intactFirst)
+        let frontHandle = AskRevocation()
+        let front = Task { await intact.send(big, revocation: frontHandle) }
+        let queuedHandle = AskRevocation()
+        let queued = Task { () -> Bool in
+            try? await Task.sleep(nanoseconds: 300_000_000)
+            return await intact.send(Data("{\"queued\":1}\n".utf8), revocation: queuedHandle)
+        }
+        try await Task.sleep(nanoseconds: 800_000_000)
+        XCTAssertTrue(queuedHandle.revoke())
+        try Data().write(to: release)
+        let frontDelivered = await front.value
+        let queuedDelivered = await queued.value
+        XCTAssertTrue(frontDelivered, "the clean path: a large line reaches a reader that was slow, whole")
+        XCTAssertFalse(frontHandle.revoke(), "the real writer marked it delivered: it cannot be taken back any more")
+        XCTAssertFalse(queuedDelivered)
+        XCTAssertFalse(queuedHandle.wasWrittenInPart)
+        XCTAssertFalse(intact.hasExited, "taking back a line that was not begun ends nothing")
+        let later = await intact.send(Data("{\"later\":1}\n".utf8))
+        XCTAssertTrue(later)
+        await intact.end()
+        let whole = await rest(2)
+        XCTAssertEqual(whole, big + Data("{\"later\":1}\n".utf8), "the large line and the later line, and nothing of the one taken back")
+
+        // A reader that is slow but reads: the pipe has room again and again. A line taken back
+        // part way is still not completed, and the line queued behind it is not appended to it.
+        try Data().write(to: log.appending(path: "slow"))
+        let slow = try XCTUnwrap(ProcessAskLauncher(sendTimeout: 20, endGrace: 3).launch(config, onLine: { _ in }, onExit: {}))
+        let slowFirst = await slow.send(Data("{\"id\":\"t4\"}\n".utf8))
+        XCTAssertTrue(slowFirst)
+        let slowHandle = AskRevocation()
+        let slowBig = Task { await slow.send(big, revocation: slowHandle) }
+        let slowBehind = Task { () -> Bool in
+            try? await Task.sleep(nanoseconds: 300_000_000)
+            return await slow.send(Data("{\"behind\":1}\n".utf8))
+        }
+        try await Task.sleep(nanoseconds: 800_000_000)
+        // The concurrency threads are kept busy for a moment, so the sender's own follow-up (ending
+        // the child) comes late: the writer's queue alone has to refuse the line behind.
+        for _ in 0..<(ProcessInfo.processInfo.activeProcessorCount * 2) {
+            Task.detached {
+                let busyUntil = Date().addingTimeInterval(0.5)
+                while Date() < busyUntil {}
+            }
+        }
+        XCTAssertTrue(slowHandle.revoke())
+        let slowBigDelivered = await slowBig.value
+        let slowBehindDelivered = await slowBehind.value
+        XCTAssertFalse(slowBigDelivered || slowBehindDelivered)
+        let drained = await rest(3)
+        XCTAssertTrue(drained.count > 0 && drained.count < big.count, "\(drained.count) bytes")
+        XCTAssertFalse(drained.contains(0x0A), "no line the connector could act on")
+        XCTAssertNil(drained.range(of: Data("behind".utf8)), "nothing was appended to the part")
+        try FileManager.default.removeItem(at: log.appending(path: "slow"))
+
+        // Ending the child does not wait for a write that cannot finish.
+        try FileManager.default.removeItem(at: release)
+        let stuck = try XCTUnwrap(ProcessAskLauncher(sendTimeout: 20, endGrace: 3).launch(config, onLine: { _ in }, onExit: {}))
+        let stuckFirst = await stuck.send(Data("{\"id\":\"t3\"}\n".utf8))
+        XCTAssertTrue(stuckFirst)
+        let stuckSend = Task { await stuck.send(big) }
+        try await Task.sleep(nanoseconds: 500_000_000)
+        let ending = Date()
+        await stuck.end()
+        XCTAssertLessThan(Date().timeIntervalSince(ending), 10, "bounded by the end's own grace, not by the write's 20 s")
+        let stuckDelivered = await stuckSend.value
+        XCTAssertFalse(stuckDelivered)
+        XCTAssertTrue(stuck.hasExited)
+
+        // The whole path: Stop, then Cancel, while the selected image is in the pipe part way.
+        for (round, action) in ["stop", "cancel"].enumerated() {
+            try? FileManager.default.removeItem(at: release)
+            let started = launches()
+            let link = AskLink(config: .success(config), launcher: ProcessAskLauncher(sendTimeout: 20, endGrace: 3), callTimeout: 10,
+                               askTimeout: 5)
+            await link.connect()
+            let connected = await link.currentStatus()
+            XCTAssertEqual(connected.connection, .signedIn, action)
+            let fixture = try askFixture("ask-held-child-\(action)", large: true)
+            await link.open(fixture.input)
+            let card = try await askCard(link, action)
+            XCTAssertGreaterThan(Int(card.imageWidth ?? 0) * Int(card.imageHeight ?? 0), 200_000, "a selection far larger than a pipe's buffer")
+            let asking = Task { await link.submit(question: "Why?", assistance: .hint) }
+            let sending = await until(5) { await link.currentStatus().card?.phase == .sending }
+            XCTAssertTrue(sending, action)
+            try await Task.sleep(nanoseconds: 800_000_000)
+            if action == "stop" {
+                await link.sessionStopped(card.captureSessionID)
+            } else {
+                await link.cancelCard()
+            }
+            let fenced = try await askCard(link, action)
+            XCTAssertEqual(fenced.phase, .cancelled, action)
+            XCTAssertTrue(fenced.detail?.hasSuffix("; it had not reached the connector, so nothing was sent to the service") == true,
+                          "\(action): \(fenced.detail ?? "")")
+            // Only now does the child read again.
+            try Data().write(to: release)
+            await asking.value
+            let lost = await until(15) { await link.currentStatus().connection == .disconnected }
+            XCTAssertTrue(lost, action)
+            let after = await link.currentStatus()
+            XCTAssertTrue(after.detail?.hasPrefix("the connector was ended, because a cancelled question had been written to it in part") == true,
+                          "\(action): \(after.detail ?? "")")
+            let got = await rest(started + 1)
+            XCTAssertGreaterThan(got.count, 0, "\(action): a part was in the pipe")
+            XCTAssertFalse(got.contains(0x0A), "\(action): no request the connector could act on, after the local \(action)")
+            XCTAssertNil(got.range(of: Data("ask/cancel".utf8)), action)
+            XCTAssertNil(got.range(of: Data("session/stop".utf8)), action)
+            let record = try askRecord(fixture.session, card.cardID + "-q1.response.json")
+            XCTAssertEqual([record["outcome"] as? String, record["delivered_to_connector"] as? Bool == false ? "not delivered" : "delivered"],
+                           ["cancelled", "not delivered"], action)
+            // No connector by itself; the user's Connect starts one.
+            await link.submit(question: "Again?", assistance: .hint)
+            try await Task.sleep(nanoseconds: 300_000_000)
+            XCTAssertEqual(launches(), started + 1, action)
+            await link.connect()
+            let recovered = await link.currentStatus()
+            XCTAssertEqual(recovered.connection, .signedIn, action)
+            XCTAssertEqual(launches(), started + 2, action)
+
+            // The clean path on that new connector, which reads: the same large request arrives
+            // whole, once. This stand-in never answers, so the outcome is said as not known.
+            if round == 1 {
+                let clean = try askFixture("ask-held-child-clean", large: true)
+                let cleanLink = AskLink(config: .success(config), launcher: ProcessAskLauncher(sendTimeout: 20, endGrace: 3),
+                                        callTimeout: 1.5, askTimeout: 1.5)
+                let before = launches()
+                await cleanLink.connect()
+                await cleanLink.open(clean.input)
+                await cleanLink.submit(question: "Why?", assistance: .hint)
+                let unanswered = try await askCard(cleanLink)
+                XCTAssertTrue(unanswered.detail?.hasPrefix("no answer came; whether the question was answered by the service is not known") == true,
+                              unanswered.detail ?? "")
+                // Cancel after the real writer delivered the request whole: it cannot be taken
+                // back, so the connector is asked to interrupt it, and (this stand-in never
+                // answers) the outcome is said and kept as not known, never as "not sent".
+                let secondAsk = Task { await cleanLink.submit(question: "And then?", assistance: .hint) }
+                let sendingAgain = await until(5) { await cleanLink.currentStatus().card?.phase == .sending }
+                XCTAssertTrue(sendingAgain)
+                try await Task.sleep(nanoseconds: 800_000_000)
+                await cleanLink.cancelCard()
+                let deliveredCard = try await askCard(cleanLink)
+                XCTAssertEqual(deliveredCard.detail, "cancelled; whether the service still answered it is not known (it may have used quota). "
+                               + "Its answer is not shown")
+                let deliveredRecord = try askRecord(clean.session, unanswered.cardID + "-q2.response.json")
+                XCTAssertEqual(deliveredRecord["delivered_to_connector"] as? Bool, true)
+                XCTAssertEqual(deliveredRecord["interruption_uncertain"] as? Bool, true)
+                await secondAsk.value
+                let quitting = Date()
+                await cleanLink.shutdown()
+                XCTAssertLessThan(Date().timeIntervalSince(quitting), 10)
+                let delivered = await rest(before + 1)
+                let received = delivered.split(separator: 0x0A, omittingEmptySubsequences: false)
+                XCTAssertEqual(delivered.last, 0x0A)
+                XCTAssertEqual(received.filter { $0.range(of: Data("\"method\":\"ask/start\"".utf8)) != nil }.count, 2,
+                               "each delivered whole, once")
+                XCTAssertGreaterThan(received.first?.count ?? 0, 1_000_000)
+                XCTAssertEqual(received.filter { $0.range(of: Data("\"method\":\"ask/cancel\"".utf8)) != nil }.count, 2,
+                               "the timed-out question and the cancelled one are both interrupted at the connector")
+            }
+            await link.shutdown()
+        }
     }
 
     func testAskConnectorConfiguration() throws {

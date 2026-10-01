@@ -46,8 +46,10 @@ let askTests: [Entry] = [
     ("testAskRefusesLocallyWithoutSendingAnything", asyncTest(DesktopCaptureTests.testAskRefusesLocallyWithoutSendingAnything)),
     ("testAskCancelNewSelectionAndStopSuppressLaterAnswers", asyncTest(DesktopCaptureTests.testAskCancelNewSelectionAndStopSuppressLaterAnswers)),
     ("testAskLateAnswersCloseAndQuitWithAQuestionOnItsWay", asyncTest(DesktopCaptureTests.testAskLateAnswersCloseAndQuitWithAQuestionOnItsWay)),
+    ("testAskTakesBackARequestThatHasNotReachedTheConnector", asyncTest(DesktopCaptureTests.testAskTakesBackARequestThatHasNotReachedTheConnector)),
     ("testAskConnectorLossAndTimeoutAreUnknownAndNeverRetried", asyncTest(DesktopCaptureTests.testAskConnectorLossAndTimeoutAreUnknownAndNeverRetried)),
     ("testAskConnectorChildGetsAPrivatePipeAndAMinimalEnvironment", asyncTest(DesktopCaptureTests.testAskConnectorChildGetsAPrivatePipeAndAMinimalEnvironment)),
+    ("testAskRealChildNeverGetsARequestTakenBackInThePipe", asyncTest(DesktopCaptureTests.testAskRealChildNeverGetsARequestTakenBackInThePipe)),
     ("testAskConnectorConfiguration", DesktopCaptureTests.testAskConnectorConfiguration),
 ]
 let upload: [Entry] = [
@@ -71,8 +73,10 @@ let everything: [Entry] = [
     ("testAskRefusesLocallyWithoutSendingAnything", asyncTest(DesktopCaptureTests.testAskRefusesLocallyWithoutSendingAnything)),
     ("testAskCancelNewSelectionAndStopSuppressLaterAnswers", asyncTest(DesktopCaptureTests.testAskCancelNewSelectionAndStopSuppressLaterAnswers)),
     ("testAskLateAnswersCloseAndQuitWithAQuestionOnItsWay", asyncTest(DesktopCaptureTests.testAskLateAnswersCloseAndQuitWithAQuestionOnItsWay)),
+    ("testAskTakesBackARequestThatHasNotReachedTheConnector", asyncTest(DesktopCaptureTests.testAskTakesBackARequestThatHasNotReachedTheConnector)),
     ("testAskConnectorLossAndTimeoutAreUnknownAndNeverRetried", asyncTest(DesktopCaptureTests.testAskConnectorLossAndTimeoutAreUnknownAndNeverRetried)),
     ("testAskConnectorChildGetsAPrivatePipeAndAMinimalEnvironment", asyncTest(DesktopCaptureTests.testAskConnectorChildGetsAPrivatePipeAndAMinimalEnvironment)),
+    ("testAskRealChildNeverGetsARequestTakenBackInThePipe", asyncTest(DesktopCaptureTests.testAskRealChildNeverGetsARequestTakenBackInThePipe)),
     ("testAskConnectorConfiguration", DesktopCaptureTests.testAskConnectorConfiguration),
     ("testCaptureHostConfigurationAndStartupRecordKeepSecretsPrivate", DesktopCaptureTests.testCaptureHostConfigurationAndStartupRecordKeepSecretsPrivate),
     ("testHostChildGetsOnlyAPrivatePipeAndEndsOnEOF", asyncTest(DesktopCaptureTests.testHostChildGetsOnlyAPrivatePipeAndEndsOnEOF)),
@@ -166,6 +170,7 @@ if selected.contains("all") { chosen += everything }
 if selected.contains("probe") { chosen += [("testProbeRealHost", asyncTest(DesktopCaptureTests.testProbeRealHost))] }
 if selected.contains("connector") { chosen += [("testProbeRealConnector", asyncTest(DesktopCaptureTests.testProbeRealConnector))] }
 if selected.contains("validator") { chosen += [("testProbeRealValidatorRoundTrip", asyncTest(DesktopCaptureTests.testProbeRealValidatorRoundTrip))] }
+if selected.contains("cutoff") { chosen += [("testProbeCutOffRequestAndTheRealConnectorStream", asyncTest(DesktopCaptureTests.testProbeCutOffRequestAndTheRealConnectorStream))] }
 if selected.contains("memory") { chosen += [("testProbeMemoryHost", asyncTest(DesktopCaptureTests.testProbeMemoryHost))] }
 if let only = ProcessInfo.processInfo.environment["LC_ONLY"] { chosen = chosen.filter { only.split(separator: ",").map(String.init).contains($0.0) } }
 XCTMain([testCase(chosen)])

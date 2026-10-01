@@ -10,6 +10,9 @@ import Foundation
 // - requests go as JSON lines on a private stdin pipe held open for the child's life (EOF asks it
 //   to stop, with its own Codex child); answers and events come as JSON lines on stdout; nothing
 //   it writes to stderr is read, shown or logged;
+// - one writer writes the lines in order. A line can be taken back until its last byte is
+//   written (`AskRevocation`); a line cut off part way is never completed, nothing follows it
+//   into the pipe, and the child is ended;
 // - there is no startup record and no READY line: the first `connection/read` is the handshake.
 // The connector and Codex own the official login and its tokens. This app never opens, copies or
 // shows a credential file, and ending this child logs out nothing else.
@@ -91,14 +94,69 @@ public struct AskConnectorConfig: Equatable, Sendable {
     }
 }
 
+/// Lets the sender take back one line that has not been delivered whole.
+///
+/// A line is delivered only when its last byte, the newline, has been written: the connector acts
+/// on nothing less (it refuses a line without its newline). Taking a line back and writing its
+/// last byte exclude each other, so after `revoke()` returns true that line never becomes one the
+/// connector can act on:
+/// - a line still waiting to be written is dropped, and the pipe stays as it was;
+/// - a line written in part is abandoned, and the child is ended, because its pipe can carry
+///   nothing more. It is never completed, and nothing is sent in its place.
+public final class AskRevocation: @unchecked Sendable {
+    private let lock = NSLock()
+    private var revoked = false
+    private var delivered = false
+    private var inPart = false
+
+    public init() {}
+
+    /// Takes the line back. False when it was already delivered whole.
+    @discardableResult
+    public func revoke() -> Bool {
+        lock.withLock {
+            guard !delivered else { return false }
+            revoked = true
+            return true
+        }
+    }
+
+    public var isRevoked: Bool { lock.withLock { revoked } }
+
+    /// The line was taken back after some of its bytes had been written.
+    public var wasWrittenInPart: Bool { lock.withLock { inPart } }
+
+    /// For the writer: one write step of a line with `remaining` bytes left, unless the line was
+    /// taken back (then nil). `write` must not block; it returns the bytes it wrote, or less than
+    /// one. Writing the last byte and marking the line delivered are one step.
+    func attempt(remaining: Int, started: Bool, _ write: () -> Int) -> Int? {
+        lock.withLock {
+            guard !revoked else {
+                inPart = inPart || started
+                return nil
+            }
+            let written = write()
+            if written == remaining { delivered = true }
+            return written
+        }
+    }
+}
+
 /// A running connector child.
 public protocol AskChild: AnyObject, Sendable {
     var hasExited: Bool { get }
-    /// Writes one whole line; false when it could not be written in time. Never blocks the caller's
-    /// thread for long.
-    func send(_ line: Data) async -> Bool
+    /// Writes one whole line; true only when all of it, its newline included, was written. False
+    /// when it was taken back through `revocation`, or could not be written in time: it is then
+    /// never delivered. Never blocks the caller's thread for long.
+    func send(_ line: Data, revocation: AskRevocation?) async -> Bool
     /// EOF, then a bounded wait, then SIGTERM and SIGKILL of this child only.
     func end() async
+}
+
+extension AskChild {
+    func send(_ line: Data) async -> Bool {
+        await send(line, revocation: nil)
+    }
 }
 
 /// Launches the connector. Injectable for tests. `onLine` gets each stdout line without its
@@ -142,6 +200,8 @@ final class AskProcess: AskChild, @unchecked Sendable {
     /// A line broke the bound: nothing more from this child is passed on.
     private var violated = false
     private var inputClosed = false
+    /// A line was cut off part way: nothing may follow it into the pipe.
+    private var cutOff = false
     private var exitWaiters: [OneShot<Bool>] = []
 
     private init(sendTimeout: TimeInterval, endGrace: TimeInterval, onLine: @escaping @Sendable (Data) -> Void,
@@ -231,45 +291,77 @@ final class AskProcess: AskChild, @unchecked Sendable {
 
     var hasExited: Bool { lock.withLock { exited } }
 
-    func send(_ line: Data) async -> Bool {
-        let done = OneShot<Bool>()
+    func send(_ line: Data, revocation: AskRevocation?) async -> Bool {
+        // `ends`: this send found the child unusable for its line (cut off part way, or not taken
+        // in time), so it ends the child. A send that only met a closed or closing pipe does not.
+        let done = OneShot<(delivered: Bool, ends: Bool)>()
         let deadline = Date().addingTimeInterval(max(sendTimeout, 0))
         // On its own queue: a child that reads slowly never blocks the caller's thread. The pipe is
         // checked and taken there, in order with its close, so nothing is written once it is closed.
         writes.async {
-            guard !self.lock.withLock({ self.inputClosed || self.exited }) else {
-                done.resolve(false)
+            guard !self.closing() else {
+                done.resolve((false, false))
                 return
             }
-            done.resolve(Self.writeAll(line, to: self.input.fileHandleForWriting.fileDescriptor, until: deadline))
+            let result = Self.writeAll(line, to: self.input.fileHandleForWriting.fileDescriptor, until: deadline,
+                                       revocation: revocation, stopped: self.closing)
+            let closing = self.closing()
+            // Marked here, on the writer's own queue, so no line queued behind it is appended
+            // to the part that was written.
+            if !result.delivered, result.written > 0 { self.lock.withLock { self.cutOff = true } }
+            // A line taken back before its first byte leaves the pipe as it was.
+            done.resolve((result.delivered, !result.delivered && !closing && (result.written > 0 || revocation?.isRevoked != true)))
         }
-        let written = await done.wait()
-        // A line cut off part way can never be completed: the child is ended.
-        if !written { await end() }
-        return written
+        let result = await done.wait()
+        if result.ends { await end() }
+        return result.delivered
     }
 
-    /// Writes all of `data`, never past `deadline`; EPIPE is an error here, never a signal.
-    private static func writeAll(_ data: Data, to descriptor: Int32, until deadline: Date) -> Bool {
+    /// The pipe is closed or closing, or the child is gone: nothing more is written.
+    private func closing() -> Bool {
+        lock.withLock { inputClosed || exited || cutOff }
+    }
+
+    /// Writes all of `data`, never past `deadline`, never once `stopped`, and never after the line
+    /// was taken back; EPIPE is an error here, never a signal. `written` is how many bytes went
+    /// into the pipe.
+    private static func writeAll(_ data: Data, to descriptor: Int32, until deadline: Date, revocation: AskRevocation?,
+                                 stopped: () -> Bool) -> (delivered: Bool, written: Int) {
         let flags = fcntl(descriptor, F_GETFL)
-        guard flags >= 0, fcntl(descriptor, F_SETFL, flags | O_NONBLOCK) == 0 else { return false }
-        return data.withUnsafeBytes { (buffer: UnsafeRawBufferPointer) -> Bool in
-            guard let base = buffer.baseAddress else { return data.isEmpty }
+        guard flags >= 0, fcntl(descriptor, F_SETFL, flags | O_NONBLOCK) == 0 else { return (false, 0) }
+        return data.withUnsafeBytes { (buffer: UnsafeRawBufferPointer) -> (delivered: Bool, written: Int) in
+            guard let base = buffer.baseAddress else { return (data.isEmpty, 0) }
             var offset = 0
             while offset < buffer.count {
-                let written = write(descriptor, base + offset, buffer.count - offset)
+                guard !stopped() else { return (false, offset) }
+                var failure: Int32 = 0
+                let step = {
+                    let count = write(descriptor, base + offset, buffer.count - offset)
+                    if count < 0 { failure = errno }
+                    return count
+                }
+                let written: Int
+                if let revocation {
+                    guard let count = revocation.attempt(remaining: buffer.count - offset, started: offset > 0, step) else {
+                        return (false, offset)
+                    }
+                    written = count
+                } else {
+                    written = step()
+                }
                 if written > 0 {
                     offset += written
                     continue
                 }
-                if written < 0, errno == EINTR { continue }
-                guard written < 0, errno == EAGAIN else { return false }
+                if written < 0, failure == EINTR { continue }
+                guard written < 0, failure == EAGAIN else { return (false, offset) }
                 let remaining = deadline.timeIntervalSinceNow
-                guard remaining > 0 else { return false }
+                guard remaining > 0 else { return (false, offset) }
+                // Short waits, so a line taken back or a closing pipe is noticed soon.
                 var ready = pollfd(fd: descriptor, events: Int16(POLLOUT), revents: 0)
-                _ = poll(&ready, 1, Int32(min(remaining, 1) * 1000) + 1)
+                _ = poll(&ready, 1, Int32(min(remaining, 0.1) * 1000) + 1)
             }
-            return true
+            return (true, offset)
         }
     }
 

@@ -2,13 +2,14 @@
 """Mutation check for the ASK tests on the Linux harness. Each mutant changes one place of a
 harness copy of the sources (never the worktree), runs the one test meant to catch it, and is
 'caught' when that test fails in a full run. Baseline: the same tests pass unmutated."""
-import subprocess, sys, os, re
+import subprocess, sys, os, re, signal
 H='/tmp/lc-link-run'
 T={'wire':'testAskEnvelopeAndStrictAnswers','sel':'testAskSelectionIsFrozenWithItsImageInkAndFacts',
    'conn':'testAskConnectionAndSignInStatus','chg':'testAskConnectionChangesRefusalsAndSilenceAreShownAsTheyAre',
    'submit':'testAskSendsOnlyOnSubmitAndShowsTheAnswerOnItsCard','local':'testAskRefusesLocallyWithoutSendingAnything',
    'cancel':'testAskCancelNewSelectionAndStopSuppressLaterAnswers','late':'testAskLateAnswersCloseAndQuitWithAQuestionOnItsWay',
-   'loss':'testAskConnectorLossAndTimeoutAreUnknownAndNeverRetried','child':'testAskConnectorChildGetsAPrivatePipeAndAMinimalEnvironment'}
+   'loss':'testAskConnectorLossAndTimeoutAreUnknownAndNeverRetried','child':'testAskConnectorChildGetsAPrivatePipeAndAMinimalEnvironment',
+   'held':'testAskTakesBackARequestThatHasNotReachedTheConnector','pipe':'testAskRealChildNeverGetsARequestTakenBackInThePipe'}
 M=[
  ('M01 late answer shown on a later question (inFlight guard removed)','AskLink.swift','guard inFlight?.requestID == request.requestID, var waitingCard','guard var waitingCard','late'),
  ('M02 request record not kept before sending','AskLink.swift','guard AskFiles.writeNew(record, to: prepared.directory.appending(path: request.requestID + ".request.json")) else {','guard true else {','submit'),
@@ -34,23 +35,23 @@ M=[
  ('M22 second sign-in click starts another sign-in','AskLink.swift','        if let pending = login { return pending.url }\n        guard !loginStarting else { return nil }\n','','conn'),
  ('M23 a refused question does not re-read the connection','AskLink.swift','reread = ["unauthenticated", "quota", "failed", "unavailable"].contains(code)','reread = false','submit'),
  ('M24 local refusal drops the answered state','AskLink.swift','card.phase = card.answer == nil ? .failed : .answered','card.phase = .failed','submit'),
- ('M25 unkept outcome not said on the card','AskLink.swift','if !AskFiles.writeNew(.object(outcome), to:','if false, !AskFiles.writeNew(.object(outcome), to:','submit'),
+ ('M25 unkept outcome not said on the card','AskLink.swift','\n        if !AskFiles.writeNew(.object(outcome), to:','\n        if false, !AskFiles.writeNew(.object(outcome), to:','submit'),
  ('M26 ink hash bound although ink in pixels is unknown','AskSelection.swift','inkSHA256: ink == .unknown ? nil : input.documentSHA256)','inkSHA256: input.documentSHA256)','sel'),
  ('M27 answer accepted without kind generated_assistance','AskWire.swift','MacIngressUpload.same(result["kind"], "generated_assistance"),','','wire'),
  ('M28 connection reads not coalesced','AskLink.swift','        guard !reading else {\n            readAgain = true\n            return\n        }\n','','chg'),
  ('M29 unconfirmed session/stop not said','AskLink.swift','timeout: callTimeout)\n        if case .result(_, let result)? = reply, result.isEmpty { return }\n        // Not confirmed by the connector: said so. This app\'s own fence','timeout: callTimeout)\n        if reply != nil || reply == nil { return }\n        // Not confirmed by the connector: said so. This app\'s own fence','cancel'),
- ('M30 unavailable replaced by "ended" when the connector exits','AskLink.swift','await lost("the connector ended", keepsRefusal: true)','await lost("the connector ended", keepsRefusal: false)','chg'),
+ ('M30 unavailable replaced by "ended" when the connector exits','AskLink.swift','keepsRefusal: !cutOff)','keepsRefusal: false)','chg'),
  ('M31 connection/changed ignored','AskLink.swift','if method == "connection/changed", params.isEmpty {','if method == "connection/changed", !params.isEmpty {','chg'),
  ('M32 connector unavailable shown as unknown','AskLink.swift','status.connection = code == "unavailable" ? .refused : .unknown','status.connection = .unknown','chg'),
  ('M33 login URL length unbounded','AskWire.swift','text.utf8.count <= 16_384','text.utf8.count <= 16_000_000','wire'),
  ('M34 answer length counted in grapheme clusters','AskWire.swift','text.unicodeScalars.count <= maxTextCharacters','text.count <= maxTextCharacters','wire'),
  ('M35 question sent while a sign-in is pending','AskLink.swift','guard login == nil, !loginStarting else {','guard login == nil || login != nil else {','local'),
- ('M36 fence leaves the old request counted','AskLink.swift','        inFlight = nil\n        card.phase = .cancelled','        card.phase = .cancelled','late'),
+ ('M36 fence leaves the old request counted','AskLink.swift','        inFlight = nil\n        inFlightLine = nil\n        card.phase = .cancelled','        inFlightLine = nil\n        card.phase = .cancelled','late'),
  ('M37 connector cancel answer not recorded','AskLink.swift','"connector_cancelled": cancelled.map(JSONValue.bool) ?? .null,','"connector_cancelled": .null,','cancel'),
  ('M38 ink wording says drawn when unknown','AskLink.swift','card.ink = ready.ink','card.ink = .drawn','submit'),
  ('M39 answered record lacks the presentation limit','AskLink.swift','outcome["presentation"] = .string("put on the card of this selection; display on screen is not recorded")','','submit'),
  ('M40 stopped capture can still submit','AskLink.swift','        guard !stopped.contains(prepared.captureSessionID) else {','        guard !stopped.contains(prepared.captureSessionID) || true else {','cancel'),
- ('M41 unkept outcome: write tried but nothing said on the card','AskLink.swift','            waitingCard.detail = (waitingCard.detail.map { $0 + "; " } ?? "") + "this outcome could not be kept on this Mac"\n','            waitingCard.detail = waitingCard.detail.map { $0 }\n','submit'),
+ ('M41 unkept outcome: write tried but nothing said on the card','AskLink.swift','\n            waitingCard.detail = (waitingCard.detail.map { $0 + "; " } ?? "") + "this outcome could not be kept on this Mac"\n','\n            waitingCard.detail = waitingCard.detail.map { $0 }\n','submit'),
  ('M42 display id sent as a number','AskWire.swift','"id": .string(String(self.context.displayID))','"id": .integer(Int(self.context.displayID))','wire'),
  ('M43 region start rounded to nearest instead of down','AskSelection.swift','let low = max(0, (origin * scale).rounded(.down))','let low = max(0, (origin * scale).rounded())','sel'),
  ('M44 an answer through another sign-in mode is accepted','AskWire.swift','MacIngressUpload.same(result["request_id"], request.requestID), MacIngressUpload.same(result["auth_mode"], "chatgpt"),','MacIngressUpload.same(result["request_id"], request.requestID),','wire'),
@@ -69,11 +70,31 @@ M=[
  ('M57 one read for every connection/changed event','AskLink.swift','let wait = changeInterval - Date().timeIntervalSince(lastChangeRead)','let wait = -1.0 - Date().timeIntervalSince(lastChangeRead)','chg'),
  ('M58 an unconfirmed sign-in cancel is not said','AskLink.swift','        await unconfirmed("the connector did not confirm that the sign-in was cancelled")\n','','chg'),
  ('M59 a refused sign-in start worded with a question\'s words','AskLink.swift','await unconfirmed("the sign-in could not be started"\n                    + (code == "busy" ? ": the connector is busy with a question or another sign-in" : ""))','status.detail = "the sign-in could not be started: " + AskWire.words(for: code)','chg'),
+ ('M60 a fence does not take the undelivered request back','AskLink.swift','let taken = inFlightLine?.revoke() ?? false','let taken = false','held'),
+ ('M61 the writer goes on after the line was taken back','AskChild.swift','                    guard let count = revocation.attempt(remaining: buffer.count - offset, started: offset > 0, step) else {\n                        return (false, offset)\n                    }\n                    written = count','                    written = revocation.attempt(remaining: buffer.count - offset, started: offset > 0, step) ?? step()','pipe'),
+ ('M62 a line is appended behind a part that was cut off','AskChild.swift','            if !result.delivered, result.written > 0 { self.lock.withLock { self.cutOff = true } }\n','','pipe'),
+ ('M63 a delivered request is treated as taken back','AskLink.swift','detail: detail, delivered: !taken)','detail: detail, delivered: false)','cancel'),
+ ('M64 an untaken request is said as an unknown outcome','AskLink.swift','        guard delivered else {\n            // The line never reached','        guard delivered || reply == nil else {\n            // The line never reached','held'),
+ ('M65 a line delivered whole can still be taken back','AskChild.swift','            guard !delivered else { return false }\n            revoked = true','            guard !delivered || delivered else { return false }\n            revoked = true','cancel'),
+ ('M66 ending the child waits for a write that cannot finish','AskChild.swift','                guard !stopped() else { return (false, offset) }\n','','pipe'),
+ ('M67 a taken-back request is still interrupted at the connector','AskLink.swift','        guard fenced.delivered else {\n            record(fenced, cancelled: nil, uncertain: false)\n            return\n        }\n','','held'),
+ ('M68 the last byte is written without the take-back check','AskChild.swift','            if written == remaining { delivered = true }','            if written == remaining + 1 { delivered = true }','cancel'),
+ ('M69 a connector ended for a cut-off request is not explained','AskLink.swift','        takenBack?.wasWrittenInPart == true\n    }','        false\n    }','held'),
+ ('M70 the real writer does not mark a line written in several steps as delivered','AskChild.swift','revocation.attempt(remaining: buffer.count - offset, started: offset > 0, step)','revocation.attempt(remaining: buffer.count + 1, started: offset > 0, step)','pipe'),
+ ('M71 the last byte is written outside the take-back lock','AskChild.swift','        lock.withLock {\n            guard !revoked else {\n                inPart = inPart || started\n                return nil\n            }\n            let written = write()\n            if written == remaining { delivered = true }\n            return written\n        }','        let taken: Bool = lock.withLock {\n            if revoked { inPart = inPart || started }\n            return revoked\n        }\n        if taken { return nil }\n        let written = write()\n        lock.withLock { if written == remaining { delivered = true } }\n        return written','held'),
+ ('M72 a Submit goes out while the app is closing','AskLink.swift','        guard !closed else { return }\n        // Submit starts no connector','        // Submit starts no connector','held'),
+ ('M73 what was taken back is kept across connectors','AskLink.swift','        // What was taken back belonged to an earlier connector.\n        takenBack = nil\n','','held'),
 ]
 def run(only):
     env=dict(os.environ, LC_TESTS='ask', LC_ONLY=only)
-    r=subprocess.run(['./run.sh'],cwd=H,env=env,capture_output=True,text=True)
-    out=r.stdout+r.stderr
+    # Its own process group, so a test that does not end is stopped with everything it started.
+    p=subprocess.Popen(['./run.sh'],cwd=H,env=env,stdout=subprocess.PIPE,stderr=subprocess.STDOUT,text=True,start_new_session=True)
+    try:
+        out,_=p.communicate(timeout=200)
+    except subprocess.TimeoutExpired:
+        os.killpg(p.pid,signal.SIGKILL)
+        out,_=p.communicate()
+        out='error: THE TEST DID NOT END WITHIN 200 s\n'+(out or '')
     ran=re.search(r'Executed (\d+) tests?, with (\d+) failures?',out)
     return ran, out
 sel=sys.argv[1:]

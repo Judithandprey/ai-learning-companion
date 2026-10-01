@@ -553,14 +553,20 @@ the shared private connector interface:
 - a confirmed ASK region gets a card; its image and frozen ink are kept beside the originals;
 - a request leaves only on Submit, with the user's question and chosen help level;
 - an answer is shown only on its own card when its provenance equals the kept request in full;
-- Cancel, Close, a new selection, capture stop, Quit and connector loss suppress later answers;
-  nothing is retried;
+- Cancel, Close, a new selection, capture stop, Quit and connector loss suppress later answers,
+  and take back a request that has not reached the connector whole; nothing is retried;
 - a connector that reports itself unavailable is shown as that, with no bypass.
 
-Source is uncompiled on macOS: 96 declared tests, 13 of them new. On the Linux harness 12/13 new
-tests pass against an in-process stand-in and a stub child (the pixel test needs a real
-rasterizer), and 59 of 59 mutations are caught. Two Linux probes used the released code of main
-`cd9b0ef` without Codex: the real connector's `unavailable` answer is shown as such, and the
+Source is uncompiled on macOS: 98 declared tests, 15 of them new. On the Linux harness 14/15 new
+tests pass against an in-process stand-in and stub children (the pixel test needs a real
+rasterizer), and 73 of 73 mutations are caught. Linux probes used the released code of main
+`fca2a25` without Codex: the real connector's `unavailable` answer is shown as such, and the
 released request validator accepts the requests Swift makes (with a substituted PNG; the new
 checker `checks/validate_ask_request.py` is for the hosted macOS run). No sign-in or model call
 was made, and the app target is not type-checked anywhere.
+
+Correction MAC-SUB-LIB-01 (the lead's review of `a2fe30c`): Cancel, Close, a new selection, Stop
+and Quit now take back a request that has not reached the connector whole. A line still waiting
+is dropped; a line written in part is never completed, nothing follows it, and that connector is
+ended, with a new one only on the user's Connect. A probe with the connector's real stream code
+shows it handling no request after the local Cancel or Stop.

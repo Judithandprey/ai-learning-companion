@@ -1,46 +1,50 @@
-src/AskLinkTests.swift:868:36: warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
- 866 |             ending.connection = FakeConnector.connection(state: "signed_out", mode: NSNull())
- 867 |             // In the first round the exit is reported only after the sign-in start has returned.
- 868 |             ending.afterLoginStart = round == 0 ? { $0.endChildUnreported() } : { $0.exitChild() }
+src/AskLinkTests.swift:939:36: warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 937 |             ending.connection = FakeConnector.connection(state: "signed_out", mode: NSNull())
+ 938 |             // In the first round the exit is reported only after the sign-in start has returned.
+ 939 |             ending.afterLoginStart = round == 0 ? { $0.endChildUnreported() } : { $0.exitChild() }
      |                                    `- warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
- 869 |             let endingLink = askLink(ending)
- 870 |             await endingLink.connect()
+ 940 |             let endingLink = askLink(ending)
+ 941 |             await endingLink.connect()
 
-Test Suite 'All tests' started at 2026-10-01 04:12:07.952
-Test Suite 'bin.xctest' started at 2026-10-01 04:12:07.954
-Test Suite 'DesktopCaptureTests' started at 2026-10-01 04:12:07.954
-Test Case 'DesktopCaptureTests.testAskEnvelopeAndStrictAnswers' started at 2026-10-01 04:12:07.954
-Test Case 'DesktopCaptureTests.testAskEnvelopeAndStrictAnswers' passed (0.532 seconds)
-Test Case 'DesktopCaptureTests.testAskRequestsForTheReleasedValidator' started at 2026-10-01 04:12:08.487
-Test Case 'DesktopCaptureTests.testAskRequestsForTheReleasedValidator' passed (0.186 seconds)
-Test Case 'DesktopCaptureTests.testAskSelectionIsFrozenWithItsImageInkAndFacts' started at 2026-10-01 04:12:08.673
-Test Case 'DesktopCaptureTests.testAskSelectionIsFrozenWithItsImageInkAndFacts' passed (0.137 seconds)
-Test Case 'DesktopCaptureTests.testAskImageDrawsTheInkVisibleWhenTheRegionWasDrawn' started at 2026-10-01 04:12:08.810
-src/AskLinkTests.swift:681: error: DesktopCaptureTests.testAskImageDrawsTheInkVisibleWhenTheRegionWasDrawn : XCTAssertTrue failed - ink at its place: [128, 128, 128, 255]
-src/AskLinkTests.swift:691: error: DesktopCaptureTests.testAskImageDrawsTheInkVisibleWhenTheRegionWasDrawn : XCTAssertTrue failed - ink before its end: [128, 128, 128, 255]
-Test Case 'DesktopCaptureTests.testAskImageDrawsTheInkVisibleWhenTheRegionWasDrawn' failed (0.061 seconds)
-Test Case 'DesktopCaptureTests.testAskConnectionAndSignInStatus' started at 2026-10-01 04:12:08.871
-Test Case 'DesktopCaptureTests.testAskConnectionAndSignInStatus' passed (0.585 seconds)
-Test Case 'DesktopCaptureTests.testAskConnectionChangesRefusalsAndSilenceAreShownAsTheyAre' started at 2026-10-01 04:12:09.456
-Test Case 'DesktopCaptureTests.testAskConnectionChangesRefusalsAndSilenceAreShownAsTheyAre' passed (3.805 seconds)
-Test Case 'DesktopCaptureTests.testAskSendsOnlyOnSubmitAndShowsTheAnswerOnItsCard' started at 2026-10-01 04:12:13.262
-Test Case 'DesktopCaptureTests.testAskSendsOnlyOnSubmitAndShowsTheAnswerOnItsCard' passed (0.124 seconds)
-Test Case 'DesktopCaptureTests.testAskRefusesLocallyWithoutSendingAnything' started at 2026-10-01 04:12:13.386
-Test Case 'DesktopCaptureTests.testAskRefusesLocallyWithoutSendingAnything' passed (0.061 seconds)
-Test Case 'DesktopCaptureTests.testAskCancelNewSelectionAndStopSuppressLaterAnswers' started at 2026-10-01 04:12:13.447
-Test Case 'DesktopCaptureTests.testAskCancelNewSelectionAndStopSuppressLaterAnswers' passed (0.217 seconds)
-Test Case 'DesktopCaptureTests.testAskLateAnswersCloseAndQuitWithAQuestionOnItsWay' started at 2026-10-01 04:12:13.664
-Test Case 'DesktopCaptureTests.testAskLateAnswersCloseAndQuitWithAQuestionOnItsWay' passed (3.62 seconds)
-Test Case 'DesktopCaptureTests.testAskConnectorLossAndTimeoutAreUnknownAndNeverRetried' started at 2026-10-01 04:12:17.284
-Test Case 'DesktopCaptureTests.testAskConnectorLossAndTimeoutAreUnknownAndNeverRetried' passed (0.978 seconds)
-Test Case 'DesktopCaptureTests.testAskConnectorChildGetsAPrivatePipeAndAMinimalEnvironment' started at 2026-10-01 04:12:18.262
-Test Case 'DesktopCaptureTests.testAskConnectorChildGetsAPrivatePipeAndAMinimalEnvironment' passed (6.213 seconds)
-Test Case 'DesktopCaptureTests.testAskConnectorConfiguration' started at 2026-10-01 04:12:24.476
+Test Suite 'All tests' started at 2026-10-01 09:57:18.251
+Test Suite 'bin.xctest' started at 2026-10-01 09:57:18.253
+Test Suite 'DesktopCaptureTests' started at 2026-10-01 09:57:18.253
+Test Case 'DesktopCaptureTests.testAskEnvelopeAndStrictAnswers' started at 2026-10-01 09:57:18.253
+Test Case 'DesktopCaptureTests.testAskEnvelopeAndStrictAnswers' passed (0.481 seconds)
+Test Case 'DesktopCaptureTests.testAskRequestsForTheReleasedValidator' started at 2026-10-01 09:57:18.734
+Test Case 'DesktopCaptureTests.testAskRequestsForTheReleasedValidator' passed (0.07 seconds)
+Test Case 'DesktopCaptureTests.testAskSelectionIsFrozenWithItsImageInkAndFacts' started at 2026-10-01 09:57:18.804
+Test Case 'DesktopCaptureTests.testAskSelectionIsFrozenWithItsImageInkAndFacts' passed (0.109 seconds)
+Test Case 'DesktopCaptureTests.testAskImageDrawsTheInkVisibleWhenTheRegionWasDrawn' started at 2026-10-01 09:57:18.912
+src/AskLinkTests.swift:752: error: DesktopCaptureTests.testAskImageDrawsTheInkVisibleWhenTheRegionWasDrawn : XCTAssertTrue failed - ink at its place: [128, 128, 128, 255]
+src/AskLinkTests.swift:762: error: DesktopCaptureTests.testAskImageDrawsTheInkVisibleWhenTheRegionWasDrawn : XCTAssertTrue failed - ink before its end: [128, 128, 128, 255]
+Test Case 'DesktopCaptureTests.testAskImageDrawsTheInkVisibleWhenTheRegionWasDrawn' failed (0.049 seconds)
+Test Case 'DesktopCaptureTests.testAskConnectionAndSignInStatus' started at 2026-10-01 09:57:18.961
+Test Case 'DesktopCaptureTests.testAskConnectionAndSignInStatus' passed (0.586 seconds)
+Test Case 'DesktopCaptureTests.testAskConnectionChangesRefusalsAndSilenceAreShownAsTheyAre' started at 2026-10-01 09:57:19.547
+Test Case 'DesktopCaptureTests.testAskConnectionChangesRefusalsAndSilenceAreShownAsTheyAre' passed (3.801 seconds)
+Test Case 'DesktopCaptureTests.testAskSendsOnlyOnSubmitAndShowsTheAnswerOnItsCard' started at 2026-10-01 09:57:23.348
+Test Case 'DesktopCaptureTests.testAskSendsOnlyOnSubmitAndShowsTheAnswerOnItsCard' passed (0.119 seconds)
+Test Case 'DesktopCaptureTests.testAskRefusesLocallyWithoutSendingAnything' started at 2026-10-01 09:57:23.467
+Test Case 'DesktopCaptureTests.testAskRefusesLocallyWithoutSendingAnything' passed (0.055 seconds)
+Test Case 'DesktopCaptureTests.testAskCancelNewSelectionAndStopSuppressLaterAnswers' started at 2026-10-01 09:57:23.523
+Test Case 'DesktopCaptureTests.testAskCancelNewSelectionAndStopSuppressLaterAnswers' passed (0.214 seconds)
+Test Case 'DesktopCaptureTests.testAskLateAnswersCloseAndQuitWithAQuestionOnItsWay' started at 2026-10-01 09:57:23.737
+Test Case 'DesktopCaptureTests.testAskLateAnswersCloseAndQuitWithAQuestionOnItsWay' passed (3.619 seconds)
+Test Case 'DesktopCaptureTests.testAskTakesBackARequestThatHasNotReachedTheConnector' started at 2026-10-01 09:57:27.356
+Test Case 'DesktopCaptureTests.testAskTakesBackARequestThatHasNotReachedTheConnector' passed (2.923 seconds)
+Test Case 'DesktopCaptureTests.testAskConnectorLossAndTimeoutAreUnknownAndNeverRetried' started at 2026-10-01 09:57:30.279
+Test Case 'DesktopCaptureTests.testAskConnectorLossAndTimeoutAreUnknownAndNeverRetried' passed (0.979 seconds)
+Test Case 'DesktopCaptureTests.testAskConnectorChildGetsAPrivatePipeAndAMinimalEnvironment' started at 2026-10-01 09:57:31.259
+Test Case 'DesktopCaptureTests.testAskConnectorChildGetsAPrivatePipeAndAMinimalEnvironment' passed (6.209 seconds)
+Test Case 'DesktopCaptureTests.testAskRealChildNeverGetsARequestTakenBackInThePipe' started at 2026-10-01 09:57:37.468
+Test Case 'DesktopCaptureTests.testAskRealChildNeverGetsARequestTakenBackInThePipe' passed (15.186 seconds)
+Test Case 'DesktopCaptureTests.testAskConnectorConfiguration' started at 2026-10-01 09:57:52.654
 Test Case 'DesktopCaptureTests.testAskConnectorConfiguration' passed (0.003 seconds)
-Test Suite 'DesktopCaptureTests' failed at 2026-10-01 04:12:24.479
-	 Executed 13 tests, with 2 failures (0 unexpected) in 16.524 (16.524) seconds
-Test Suite 'bin.xctest' failed at 2026-10-01 04:12:24.479
-	 Executed 13 tests, with 2 failures (0 unexpected) in 16.524 (16.524) seconds
-Test Suite 'All tests' failed at 2026-10-01 04:12:24.479
-	 Executed 13 tests, with 2 failures (0 unexpected) in 16.524 (16.524) seconds
+Test Suite 'DesktopCaptureTests' failed at 2026-10-01 09:57:52.658
+	 Executed 15 tests, with 2 failures (0 unexpected) in 34.404 (34.404) seconds
+Test Suite 'bin.xctest' failed at 2026-10-01 09:57:52.658
+	 Executed 15 tests, with 2 failures (0 unexpected) in 34.404 (34.404) seconds
+Test Suite 'All tests' failed at 2026-10-01 09:57:52.658
+	 Executed 15 tests, with 2 failures (0 unexpected) in 34.404 (34.404) seconds
 ask exit 1

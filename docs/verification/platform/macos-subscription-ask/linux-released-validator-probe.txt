@@ -1,26 +1,26 @@
-src/AskLinkTests.swift:868:36: warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
- 866 |             ending.connection = FakeConnector.connection(state: "signed_out", mode: NSNull())
- 867 |             // In the first round the exit is reported only after the sign-in start has returned.
- 868 |             ending.afterLoginStart = round == 0 ? { $0.endChildUnreported() } : { $0.exitChild() }
+src/AskLinkTests.swift:939:36: warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 937 |             ending.connection = FakeConnector.connection(state: "signed_out", mode: NSNull())
+ 938 |             // In the first round the exit is reported only after the sign-in start has returned.
+ 939 |             ending.afterLoginStart = round == 0 ? { $0.endChildUnreported() } : { $0.exitChild() }
      |                                    `- warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
- 869 |             let endingLink = askLink(ending)
- 870 |             await endingLink.connect()
+ 940 |             let endingLink = askLink(ending)
+ 941 |             await endingLink.connect()
 
-Test Suite 'All tests' started at 2026-10-01 04:15:34.102
-Test Suite 'bin.xctest' started at 2026-10-01 04:15:34.103
-Test Suite 'DesktopCaptureTests' started at 2026-10-01 04:15:34.103
-Test Case 'DesktopCaptureTests.testProbeRealValidatorRoundTrip' started at 2026-10-01 04:15:34.103
+Test Suite 'All tests' started at 2026-10-01 10:01:57.229
+Test Suite 'bin.xctest' started at 2026-10-01 10:01:57.234
+Test Suite 'DesktopCaptureTests' started at 2026-10-01 10:01:57.234
+Test Case 'DesktopCaptureTests.testProbeRealValidatorRoundTrip' started at 2026-10-01 10:01:57.234
 PROBE convert exit=0 4 requests copied with a real PNG each
 PROBE released validator exit=0 PASS: 4 ask/start requests, 72 checks
 PROBE answer ask-fixture-ink-q1: accepted=true text=Synthetic answer. model=synthetic-vision latency=1234 refusedWithTheOtherImageHash=true refusedWithAnotherKind=true
 PROBE answer ask-fixture-wide-q1: accepted=true text=Synthetic answer. model=synthetic-vision latency=1234 refusedWithTheOtherImageHash=true refusedWithAnotherKind=true
 PROBE answer ask-fixture-shared-q1: accepted=true text=Synthetic answer. model=synthetic-vision latency=1234 refusedWithTheOtherImageHash=true refusedWithAnotherKind=true
 PROBE answer ask-fixture-bare-q1: accepted=true text=Synthetic answer. model=synthetic-vision latency=1234 refusedWithTheOtherImageHash=true refusedWithAnotherKind=true
-Test Case 'DesktopCaptureTests.testProbeRealValidatorRoundTrip' passed (0.204 seconds)
-Test Suite 'DesktopCaptureTests' passed at 2026-10-01 04:15:34.308
-	 Executed 1 test, with 0 failures (0 unexpected) in 0.204 (0.204) seconds
-Test Suite 'bin.xctest' passed at 2026-10-01 04:15:34.308
-	 Executed 1 test, with 0 failures (0 unexpected) in 0.204 (0.204) seconds
-Test Suite 'All tests' passed at 2026-10-01 04:15:34.308
-	 Executed 1 test, with 0 failures (0 unexpected) in 0.204 (0.204) seconds
+Test Case 'DesktopCaptureTests.testProbeRealValidatorRoundTrip' passed (3.193 seconds)
+Test Suite 'DesktopCaptureTests' passed at 2026-10-01 10:02:00.427
+	 Executed 1 test, with 0 failures (0 unexpected) in 3.193 (3.193) seconds
+Test Suite 'bin.xctest' passed at 2026-10-01 10:02:00.427
+	 Executed 1 test, with 0 failures (0 unexpected) in 3.193 (3.193) seconds
+Test Suite 'All tests' passed at 2026-10-01 10:02:00.427
+	 Executed 1 test, with 0 failures (0 unexpected) in 3.193 (3.193) seconds
 probe exit 0

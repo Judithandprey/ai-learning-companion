@@ -12,6 +12,9 @@ import Foundation
 // - An answer is shown only on the card it was asked from, while that card still waits for exactly
 //   that request, and only when its provenance equals the request in full. Cancel, a new selection,
 //   the end of the capture or of the connector make a later answer never shown.
+// - Cancel, Close, a new selection, Stop and Quit also take back a request that has not reached
+//   the connector whole (`AskRevocation`): it is then never delivered, and nothing is sent in its
+//   place. A request already delivered may have been answered; that is said as not known.
 // - Model text is data: it is shown as plain text and never run.
 // No credential, login URL or connector message is logged; errors are fixed words.
 
@@ -195,6 +198,9 @@ public actor AskLink {
         let directory: URL
         let cardID: String
         let detail: String
+        /// The request had reached the connector whole. False: it was taken back before that,
+        /// and nothing of it can be acted on.
+        let delivered: Bool
     }
 
     private let config: Result<AskConnectorConfig, CaptureHostProblem>
@@ -228,8 +234,12 @@ public actor AskLink {
     private var reading = false
     private var readAgain = false
     private var prepared: PreparedSelection?
-    /// The request the current card waits for.
+    /// The request the current card waits for, and the handle that takes its line back while it
+    /// has not reached the connector whole.
     private var inFlight: AskRequest?
+    private var inFlightLine: AskRevocation?
+    /// The last line that was taken back, to say why a connector ended.
+    private var takenBack: AskRevocation?
     private var requests = 0
     /// Fenced questions whose record is still being settled.
     private var fencing = 0
@@ -306,6 +316,8 @@ public actor AskLink {
             return false
         }
         child = launched
+        // What was taken back belonged to an earlier connector.
+        takenBack = nil
         launch += 1
         let serial = launch
         // One reader, so lines are handled in the order the child wrote them.
@@ -485,6 +497,7 @@ public actor AskLink {
     /// The user's explicit Submit: this question, this help level and the card's image go to the
     /// connector once. `model` is a catalog model listed as taking images; nil takes the default.
     public func submit(question: String, assistance: AskAssistance, model: String? = nil) async {
+        guard !closed else { return }
         // Submit starts no connector and no sign-in: after a connector was lost, a new one is
         // started only by the user's own Connect.
         guard var card = status.card, card.canSubmit, inFlight == nil, let prepared, prepared.cardID == card.cardID else { return }
@@ -542,17 +555,34 @@ public actor AskLink {
         card.model = chosen.id
         card.latencyMS = nil
         status.card = card
+        let line = AskRevocation()
         inFlight = request
+        inFlightLine = line
         publish()
 
-        let reply = await call("ask/start", .object(["request": request.json(includingImage: true), "model": .string(chosen.id)]),
-                               timeout: askTimeout)
+        let (delivered, reply) = await exchange(
+            "ask/start", .object(["request": request.json(includingImage: true), "model": .string(chosen.id)]),
+            timeout: askTimeout, revocation: line)
         // Shown only on the card that still waits for exactly this request.
         guard inFlight?.requestID == request.requestID, var waitingCard = status.card, waitingCard.cardID == prepared.cardID,
               waitingCard.phase == .sending else { return }
         inFlight = nil
+        inFlightLine = nil
         var outcome: [String: JSONValue] = ["format": .string("lc-macos-ask-response/v1"), "request_id": .string(request.requestID)]
         var reread = false
+        guard delivered else {
+            // The line never reached the connector whole (it had ended, or did not take the line
+            // in time), so nothing reached the service. It is not sent again by itself.
+            waitingCard.phase = .failed
+            waitingCard.detail = "not sent: the connector did not take the request, so nothing reached the service"
+            outcome["outcome"] = .string("not_sent")
+            if !AskFiles.writeNew(.object(outcome), to: prepared.directory.appending(path: request.requestID + ".response.json")) {
+                waitingCard.detail = (waitingCard.detail.map { $0 + "; " } ?? "") + "this outcome could not be kept on this Mac"
+            }
+            status.card = waitingCard
+            publish()
+            return
+        }
         switch reply {
         case .result(_, let result)?:
             if let answer = AskAnswer.parse(result, request: request) {
@@ -651,13 +681,15 @@ public actor AskLink {
     /// is fenced and its record written before this returns. Nothing is signed out.
     public func shutdown() async {
         closed = true
+        // First of all, so a request not yet delivered is taken back before any wait.
+        if let fenced = fenceLocally(detail: "the app is closing") {
+            // EOF ends a delivered question with the child: whether it was still answered is not
+            // known. One that was taken back never reached the connector.
+            record(fenced, cancelled: nil, uncertain: fenced.delivered)
+        }
         // A connector that Check Again is replacing is ended here as well, before this returns.
         await replacing?.end()
         let ending = child
-        if let fenced = fenceLocally(detail: "the app is closing") {
-            // EOF ends the question with the child: whether it was still answered is not known.
-            record(fenced, cancelled: nil, uncertain: true)
-        }
         login = nil
         status.loginPending = false
         // The child stays set while it ends, so answers already on their way are still read.
@@ -676,20 +708,32 @@ public actor AskLink {
     }
 
     /// Fences the card's question on its way, in one step with no wait: the card says so at once
-    /// and can submit nothing with the old request still counted. Nil when nothing was on its way.
+    /// and can submit nothing with the old request still counted, and a request that has not
+    /// reached the connector whole is taken back, so it never does. Nil when nothing was on its way.
     private func fenceLocally(detail: String) -> Fenced? {
         guard var card = status.card, card.phase == .sending, let request = inFlight, let prepared else { return nil }
+        // True: taken back before its last byte. False: the connector has the whole request.
+        let taken = inFlightLine?.revoke() ?? false
+        if taken { takenBack = inFlightLine }
         inFlight = nil
+        inFlightLine = nil
         card.phase = .cancelled
-        card.detail = detail + "; its answer, if one comes, is not shown"
+        card.detail = detail + (taken ? Self.notDeliveredWords : "; its answer, if one comes, is not shown")
         status.card = card
         publish()
-        return Fenced(request: request, directory: prepared.directory, cardID: card.cardID, detail: detail)
+        return Fenced(request: request, directory: prepared.directory, cardID: card.cardID, detail: detail, delivered: !taken)
     }
 
+    private static let notDeliveredWords = "; it had not reached the connector, so nothing was sent to the service"
+
     /// Asks the connector to interrupt a fenced question, and keeps its record. The connector's
-    /// answer says whether it was interrupted for certain; anything else is not known.
+    /// answer says whether it was interrupted for certain; anything else is not known. A request
+    /// that was taken back before it reached the connector needs no interruption and gets none.
     private func settle(_ fenced: Fenced) async {
+        guard fenced.delivered else {
+            record(fenced, cancelled: nil, uncertain: false)
+            return
+        }
         fencing += 1
         defer { fencing -= 1 }
         var cancelled: Bool?
@@ -716,12 +760,12 @@ public actor AskLink {
         }
     }
 
-    /// The kept outcome of a fenced question. `cancelled` is the connector's own word, nil when it
-    /// gave none.
+    /// The kept outcome of a fenced question. `delivered` says whether the request had reached the
+    /// connector whole; `cancelled` is the connector's own word, nil when it gave none.
     private func record(_ fenced: Fenced, cancelled: Bool?, uncertain: Bool) {
         _ = AskFiles.writeNew(.object([
             "format": .string("lc-macos-ask-response/v1"), "request_id": .string(fenced.request.requestID),
-            "outcome": .string("cancelled"), "reason": .string(fenced.detail),
+            "outcome": .string("cancelled"), "reason": .string(fenced.detail), "delivered_to_connector": .bool(fenced.delivered),
             "connector_cancelled": cancelled.map(JSONValue.bool) ?? .null, "interruption_uncertain": .bool(uncertain),
         ]), to: fenced.directory.appending(path: fenced.request.requestID + ".response.json"))
     }
@@ -729,20 +773,28 @@ public actor AskLink {
     // MARK: - The child's lines
 
     private func call(_ method: String, _ params: JSONValue, timeout: TimeInterval) async -> AskWire.Incoming? {
-        guard let child, !child.hasExited else { return nil }
+        await exchange(method, params, timeout: timeout, revocation: nil).reply
+    }
+
+    /// One request and its answer. `delivered` is false when the line did not reach the connector
+    /// whole (no running connector, taken back through `revocation`, or not written in time): it
+    /// is then never delivered. A delivered request without an answer in time has a nil reply.
+    private func exchange(_ method: String, _ params: JSONValue, timeout: TimeInterval,
+                          revocation: AskRevocation?) async -> (delivered: Bool, reply: AskWire.Incoming?) {
+        guard let child, !child.hasExited else { return (false, nil) }
         let id = "c\(nextCall)"
         nextCall += 1
-        guard let line = AskWire.request(id: id, method: method, params: params) else { return nil }
+        guard let line = AskWire.request(id: id, method: method, params: params) else { return (false, nil) }
         let answer = OneShot<AskWire.Incoming?>()
         waiting[id] = answer
-        guard await child.send(line) else {
+        guard await child.send(line, revocation: revocation) else {
             waiting[id] = nil
-            return nil
+            return (false, nil)
         }
         DispatchQueue.global().asyncAfter(deadline: .now() + max(timeout, 0)) { answer.resolve(nil) }
         let reply = await answer.wait()
         waiting[id] = nil
-        return reply
+        return (true, reply)
     }
 
     private func received(_ event: Event, from serial: Int) async {
@@ -758,11 +810,14 @@ public actor AskLink {
                 // Not awaited here: acting on it may wait for answers this reader has to deliver.
                 handle(method, params)
             case nil:
-                // Not a connector line: nothing is believed from this child any more.
-                await lost("the connector wrote something that is not its protocol")
+                // Not a connector line: nothing is believed from this child any more. After a
+                // request of ours was cut off, the connector says so in a line with no call of
+                // ours, and ends: that is this app's own doing, and is said as that.
+                await lost(endsForACutOffRequest() ? Self.cutOffWords : "the connector wrote something that is not its protocol")
             }
         case .exit:
-            await lost("the connector ended", keepsRefusal: true)
+            let cutOff = endsForACutOffRequest()
+            await lost(cutOff ? Self.cutOffWords : "the connector ended", keepsRefusal: !cutOff)
         }
     }
 
@@ -805,6 +860,17 @@ public actor AskLink {
                 : "the sign-in did not complete"
             publish()
         }
+    }
+
+    /// A request taken back after part of it was written ends its connector: the pipe can carry
+    /// nothing more.
+    private static let cutOffWords = "the connector was ended, because a cancelled question had been written to it in part; "
+        + "nothing of it was sent to the service. Connect starts the connector again"
+
+    /// Whether the running connector's end follows such a request. `takenBack` is forgotten when
+    /// the next connector starts.
+    private func endsForACutOffRequest() -> Bool {
+        takenBack?.wasWrittenInPart == true
     }
 
     private func changeReadDue() async {

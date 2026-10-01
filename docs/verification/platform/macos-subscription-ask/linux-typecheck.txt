@@ -1,13 +1,13 @@
 # swiftc -typecheck (Swift toolchain on Linux, functional Apple stubs; NOT a macOS compile)
 <unknown>:0: warning: libc not found for 'x86_64-unknown-linux-gnu'; C stdlib may be unavailable
 Swift version 6.3.3 (swift-6.3.3-RELEASE)
-src/AskLinkTests.swift:868:36: warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
- 866 |             ending.connection = FakeConnector.connection(state: "signed_out", mode: NSNull())
- 867 |             // In the first round the exit is reported only after the sign-in start has returned.
- 868 |             ending.afterLoginStart = round == 0 ? { $0.endChildUnreported() } : { $0.exitChild() }
+src/AskLinkTests.swift:939:36: warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 937 |             ending.connection = FakeConnector.connection(state: "signed_out", mode: NSNull())
+ 938 |             // In the first round the exit is reported only after the sign-in start has returned.
+ 939 |             ending.afterLoginStart = round == 0 ? { $0.endChildUnreported() } : { $0.exitChild() }
      |                                    `- warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
- 869 |             let endingLink = askLink(ending)
- 870 |             await endingLink.connect()
+ 940 |             let endingLink = askLink(ending)
+ 941 |             await endingLink.connect()
 src/MacIngressUploadTests.swift:400:14: warning: concurrently-executed local function 'alteredAck' must be marked as '@Sendable'; this is an error in the Swift 6 language mode
 398 |         let userID = macSource.userID
 399 |         /// The honest ACK with one change.

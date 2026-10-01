@@ -33,7 +33,7 @@ swift build --package-path apps/macos/CompanionDesktop
 COMPANION_DESKTOP_FIXTURE_DIR="$RUNNER_TEMP/companion-desktop-fixture" \
 COMPANION_DESKTOP_INGRESS_FIXTURE_DIR="$RUNNER_TEMP/companion-desktop-ingress-fixture" \
 COMPANION_DESKTOP_ASK_FIXTURE_DIR="$RUNNER_TEMP/companion-desktop-ask-fixture" \
-  swift test --package-path apps/macos/CompanionDesktop                         # 96 tests; keeps fixtures
+  swift test --package-path apps/macos/CompanionDesktop                         # 98 tests; keeps fixtures
 .venv/bin/python apps/macos/CompanionDesktop/checks/validate_desktop_ingress.py "$RUNNER_TEMP/companion-desktop-ingress-fixture"
 .venv/bin/python apps/macos/CompanionDesktop/checks/validate_ask_request.py "$RUNNER_TEMP/companion-desktop-ask-fixture"
 apps/macos/CompanionDesktop/package-app.sh "$RUNNER_TEMP/companion-desktop"   # new directory

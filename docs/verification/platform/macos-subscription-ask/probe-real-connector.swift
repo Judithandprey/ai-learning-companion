@@ -1,7 +1,7 @@
 import Foundation
 import XCTest
 // LINUX-HARNESS-ONLY PROBE (not a committed test): the actual services.worker.connectors.chatgpt_local
-// of main cd9b0ef, launched by the production ProcessAskLauncher under the production AskLink.
+// of main fca2a25, launched by the production ProcessAskLauncher under the production AskLink.
 // `codex_bin` is a stub script, so the connector's launch gate does not admit it: no Codex runs,
 // no sign-in is started, nothing is asked, and no product state is created.
 extension DesktopCaptureTests {
@@ -14,7 +14,7 @@ extension DesktopCaptureTests {
         let state = directory.appending(path: "state", directoryHint: .isDirectory)
         let file = directory.appending(path: "ask-connector.json")
         try JSONSerialization.data(withJSONObject: [
-            "format": "lc-macos-dev-ask-connector/v1", "python": "/usr/bin/python3", "repository": "/tmp/lc-connector-cd9b0ef",
+            "format": "lc-macos-dev-ask-connector/v1", "python": "/usr/bin/python3", "repository": "/tmp/lc-connector-fca2a25",
             "state_dir": state.path(percentEncoded: false), "codex_bin": stub.path(percentEncoded: false),
         ]).write(to: file)
         let config = AskConnectorConfig.load(file)
@@ -57,7 +57,7 @@ extension DesktopCaptureTests {
 }
 
 // LINUX-HARNESS-ONLY PROBE (not a committed test): the released request validator and answer
-// binder of main cd9b0ef (services.learning.subscription_ask), run over the requests Swift makes,
+// binder of main fca2a25 (services.learning.subscription_ask), run over the requests Swift makes,
 // and the app's own answer check run over what the released binder returns. The PNG of each
 // request is replaced by a real PNG first, because the Linux stubs do not write real PNG files
 // (askcheck/linux_real_png_fixture.py); every other field is exactly as Swift wrote it.
@@ -87,7 +87,7 @@ extension DesktopCaptureTests {
                                  real.path(percentEncoded: false)])
         print("PROBE convert exit=\(converted.0) \(converted.1)")
         XCTAssertEqual(converted.0, 0)
-        let checked = try run(["/tmp/lc-connector-cd9b0ef/apps/macos/CompanionDesktop/checks/validate_ask_request.py",
+        let checked = try run(["/tmp/lc-connector-fca2a25/apps/macos/CompanionDesktop/checks/validate_ask_request.py",
                                real.path(percentEncoded: false), results.path(percentEncoded: false)])
         print("PROBE released validator exit=\(checked.0) \(checked.1)")
         XCTAssertEqual(checked.0, 0)
@@ -109,6 +109,79 @@ extension DesktopCaptureTests {
                   + "refusedWithTheOtherImageHash=\(asSent == nil) refusedWithAnotherKind=\(AskAnswer.parse(other, request: request) == nil)")
             XCTAssertNotNil(answer)
             XCTAssertNil(asSent)
+        }
+    }
+}
+
+// LINUX-HARNESS-ONLY PROBE (not a committed test), for MAC-SUB-LIB-01: this worktree's real
+// connector stream code (main fca2a25, with a stand-in client instead of Codex:
+// askcheck/real_bridge_fake_client.py) under the production ProcessAskLauncher and AskLink. The
+// connector is stopped (SIGSTOP) while a large selection is submitted, so the request is in the
+// pipe part way; then Cancel or Stop; then it runs again. What it was given is read from its log.
+extension DesktopCaptureTests {
+    func testProbeCutOffRequestAndTheRealConnectorStream() async throws {
+        let directory = root.appending(path: "cutoff-real", directoryHint: .isDirectory)
+        try FileManager.default.createDirectory(at: directory.appending(path: "repo/services/worker/connectors"), withIntermediateDirectories: true)
+        try Data().write(to: directory.appending(path: "repo/services/worker/connectors/chatgpt_local.py"))
+        let pidFile = directory.appending(path: "pid")
+        let log = directory.appending(path: "connector.log")
+        let python = directory.appending(path: "python-real")
+        try Data("""
+        #!/bin/sh
+        echo $$ > '\(pidFile.path(percentEncoded: false))'
+        LC_PROBE_LOG='\(log.path(percentEncoded: false))' PYTHONDONTWRITEBYTECODE=1 exec /home/agentsdock/Projects/learning-companion/repo/.venv/bin/python -B /tmp/lc-link-run/askcheck/real_bridge_fake_client.py
+
+        """.utf8).write(to: python)
+        try FileManager.default.setAttributes([.posixPermissions: 0o755], ofItemAtPath: python.path(percentEncoded: false))
+        let config = AskConnectorConfig(python: python, repository: directory.appending(path: "repo", directoryHint: .isDirectory))
+        func connectorLog() -> [String] {
+            ((try? String(contentsOf: log, encoding: .utf8)) ?? "").split(separator: "\n").map(String.init)
+        }
+        for (round, action) in ["cancel", "stop", "cancel after delivery"].enumerated() {
+            try? FileManager.default.removeItem(at: log)
+            let link = AskLink(config: .success(config), launcher: ProcessAskLauncher(sendTimeout: 20, endGrace: 5), callTimeout: 10, askTimeout: 5)
+            await link.connect()
+            let connected = await link.currentStatus()
+            XCTAssertEqual(connected.connection, .signedIn, action)
+            let pid = pid_t(Int32((try String(contentsOf: pidFile, encoding: .utf8)).trimmingCharacters(in: .whitespacesAndNewlines))!)
+            let fixture = try askFixture("cutoff-real-\(round)", large: true)
+            await link.open(fixture.input)
+            let card = try await askCard(link, action)
+            let held = round < 2
+            // The connector does not read for a while, as a busy one would not.
+            if held { kill(pid, SIGSTOP) }
+            let asking = Task { await link.submit(question: "Why?", assistance: .hint) }
+            let sending = await until(5) { await link.currentStatus().card?.phase != .ready }
+            XCTAssertTrue(sending, action)
+            try await Task.sleep(nanoseconds: 800_000_000)
+            if action == "stop" { await link.sessionStopped(card.captureSessionID) } else { await link.cancelCard() }
+            let fenced = await link.currentStatus()
+            if held { kill(pid, SIGCONT) }
+            await asking.value
+            if held {
+                let lost = await until(15) { await link.currentStatus().connection == .disconnected }
+                XCTAssertTrue(lost, action)
+            } else {
+                try await Task.sleep(nanoseconds: 500_000_000)
+            }
+            let after = await link.currentStatus()
+            let lines = connectorLog()
+            let record = (try? askRecord(fixture.session, card.cardID + "-q1.response.json")) ?? [:]
+            print("PROBE [\(action)] card after the local \(action): \(fenced.card?.phase.rawValue ?? "none") | \(fenced.card?.detail ?? "nil")")
+            print("PROBE [\(action)] connection afterwards: \(after.connection.rawValue) | \(after.detail ?? "nil")")
+            print("PROBE [\(action)] record: outcome=\(record["outcome"] ?? "nil") delivered_to_connector=\(record["delivered_to_connector"] ?? "nil") interruption_uncertain=\(record["interruption_uncertain"] ?? "nil") code=\(record["code"] ?? "nil")")
+            print("PROBE [\(action)] connector log: " + lines.joined(separator: " ; "))
+            let handledAsk = lines.contains("handled method=ask/start")
+            if held {
+                XCTAssertFalse(handledAsk, "\(action): the connector acted on a request after the local \(action)")
+                XCTAssertTrue(lines.contains { $0.hasPrefix("line bytes=") && $0.hasSuffix("newline=False") }, "\(action): it was given the part, without its newline")
+                XCTAssertFalse(lines.contains("handled method=ask/cancel") || lines.contains("handled method=session/stop"), action)
+                XCTAssertEqual(record["delivered_to_connector"] as? Bool, false, action)
+                XCTAssertTrue(after.detail?.hasPrefix("the connector was ended, because a cancelled question had been written to it in part") == true, action)
+            } else {
+                XCTAssertTrue(handledAsk, "the control: a request that was delivered is handled")
+            }
+            await link.shutdown()
         }
     }
 }
