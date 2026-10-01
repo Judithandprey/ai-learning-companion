@@ -232,6 +232,12 @@ class SubscriptionBridge:
         if self.active is not None or self.login_id or self.login_starting:
             raise LocalError("busy")
         self.request_ids.add(request_id)
+        begin = getattr(self.client, "begin_request", None)
+        if begin is not None:
+            try:
+                begin(request_id)
+            except Exception:
+                raise LocalError("unavailable") from None
         active = _Ask(rpc_id, request_id, session, asyncio.Event())
         self.active = active
         active.task = self._spawn(self._ask(active, request, params["model"]))
@@ -241,6 +247,7 @@ class SubscriptionBridge:
 
     async def _ask(self, active, request, model):
         started = time.monotonic()
+        outcome = "not_submitted"
         try:
             if self._cancelled(active):
                 raise LocalError("cancelled")
@@ -254,6 +261,7 @@ class SubscriptionBridge:
             if self._cancelled(active):
                 raise LocalError("cancelled")
             active.provider_started = True
+            outcome = "uncertain"
             answer = await self.client.ask(prepared["text"], prepared["image_bytes"],
                                            model=model, cancelled=active.cancelled)
             if self._cancelled(active):
@@ -263,15 +271,32 @@ class SubscriptionBridge:
                                thread_id=answer["thread_id"], turn_id=answer["turn_id"])
             if self._cancelled(active):
                 raise LocalError("cancelled")
+            finish = getattr(self.client, "finish_request", None)
+            if finish is not None:
+                finish("completed")
+            outcome = "completed"
             self.emit({"id": active.rpc_id, "result": result})
         except asyncio.CancelledError:
+            outcome = "cancelled"
             if not self.closed:
                 self.error(active.rpc_id, "cancelled")
         except Exception as exc:
+            if self._cancelled(active):
+                outcome = "cancelled"
+            elif getattr(exc, "code", None) not in {"outcome_unknown", "uncertain", "timeout"} and active.provider_started:
+                outcome = "failed"
             if not self.closed:
                 self.error(active.rpc_id, "cancelled" if self._cancelled(active)
                            else getattr(exc, "code", "unavailable"))
         finally:
+            finish = getattr(self.client, "finish_request", None)
+            if finish is not None and outcome != "completed":
+                try:
+                    finish(outcome)
+                except Exception:
+                    # Failure receipts cannot expose private data or grant an
+                    # answer. The failing writer also fences future submissions.
+                    self.exhausted = True
             if self.active is active:
                 self.active = None
 
@@ -354,6 +379,13 @@ class SubscriptionBridge:
             finally:
                 if self.tasks:
                     await asyncio.gather(*tuple(self.tasks), return_exceptions=True)
+                if self.active is not None:
+                    # EOF can cancel a reserved task before its coroutine first
+                    # runs, so its own finally block has not recorded closure.
+                    finish = getattr(self.client, "finish_request", None)
+                    if finish is not None:
+                        finish("cancelled")
+                    self.active = None
 
 
 async def run_stream(read_line, emit, client, *, prepare=_prepare, bind=_bind):

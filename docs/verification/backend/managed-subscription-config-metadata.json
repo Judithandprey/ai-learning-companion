@@ -1,0 +1,45 @@
+{
+  "checked_at": "2026-10-01T06:07:06.575573+00:00",
+  "scope": "Fresh-state metadata only; no account, login, thread or turn RPC",
+  "codex": {
+    "executable": "/home/agentsdock/.codex/packages/standalone/releases/0.158.0-x86_64-unknown-linux-musl/bin/codex",
+    "version": "codex-cli 0.158.0",
+    "sha256": "167c0148a849d2444f1b5a7fb5f8bb2de1de5ae13a2a504b833fc765980f5cd9"
+  },
+  "explicit_bin_override": false,
+  "settings_template_sha256": "1b46d22496a546a83030745743718649f0bf0c221eb30c949c760a741418d9f5",
+  "rpc_methods": [
+    "initialize",
+    "config/read",
+    "configRequirements/read",
+    "skills/list"
+  ],
+  "effective_configuration_passed": true,
+  "managed_provider": {
+    "requires_openai_auth": true,
+    "request_max_retries": 0,
+    "stream_max_retries": 0,
+    "wire_api": "responses",
+    "supports_websockets": false,
+    "base_url": null,
+    "env_key": null,
+    "auth": null,
+    "id": "lc_managed_chatgpt",
+    "default_chatgpt_endpoint": "https://chatgpt.com/backend-api/"
+  },
+  "system_skills": {
+    "count": 6,
+    "names": [
+      "imagegen",
+      "openai-docs",
+      "plugin-creator",
+      "review-agent",
+      "skill-creator",
+      "skill-installer"
+    ],
+    "all_disabled": true
+  },
+  "owned_child_reaped": true,
+  "empty_workdir_removed": true,
+  "temporary_state_removed": true
+}

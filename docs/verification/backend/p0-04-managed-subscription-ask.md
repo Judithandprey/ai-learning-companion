@@ -1,5 +1,9 @@
 # Managed subscription ASK connector — bounded author evidence
 
+Historical first-leaf evidence. The [verified-launch follow-up](p0-04-managed-subscription-launch.md)
+supersedes the permanent-false gate below for one exact measured Linux build and
+records real metadata checks; it does not claim account or image acceptance.
+
 2026-10-01 UTC. Backend task `handoff_ba8e541a6a2a89041ee20b35b1c3173d`.
 Assigned baseline `ff163a6ebbb9d974055e23ae97d0359e17cecef4` was normally merged
 as `e340dcebf40fa7024349dbeac5edd8da76bd0f80`; existing work was preserved.

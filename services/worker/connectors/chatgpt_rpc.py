@@ -10,6 +10,7 @@ Protocol source: https://learn.chatgpt.com/docs/app-server and the installed
 import asyncio
 import base64
 from datetime import datetime, timezone
+from hashlib import sha256
 import inspect
 import json
 import math
@@ -27,6 +28,10 @@ _PLANS = frozenset(("free", "go", "plus", "pro", "prolite", "promax", "team",
     "self_serve_business_prolite", "self_serve_business_usage_based", "business",
     "ent26", "enterprise_cbp_automation", "enterprise_cbp_usage_based",
     "enterprise", "edu", "edu_plus", "edu_pro", "unknown"))
+_ITEM_TYPES = frozenset(("userMessage", "hookPrompt", "agentMessage", "functionCallOutput", "plan",
+    "reasoning", "commandExecution", "fileChange", "mcpToolCall", "dynamicToolCall", "collabAgentToolCall",
+    "subAgentActivity", "webSearch", "imageView", "sleep", "imageGeneration", "enteredReviewMode",
+    "exitedReviewMode", "contextCompaction"))
 _MESSAGES = {
     "unavailable": "The managed connection is unavailable.",
     "protocol_error": "The managed connection returned an invalid response.",
@@ -93,18 +98,29 @@ def _finite_float(value):
 
 class ChatGPTAppServer:
     def __init__(self, command, *, cwd, env, on_event=None, rpc_timeout=15,
-                 turn_timeout=120, shutdown_timeout=3, isolation_verified=False):
+                 turn_timeout=120, shutdown_timeout=3, isolation_verified=False,
+                 verify_config=None, on_receipt=None, expected_provider="openai"):
         if (not isinstance(command, (list, tuple)) or not command
                 or any(type(part) is not str or not part or "\0" in part for part in command)
                 or type(cwd) is not str or not cwd or type(env) is not dict
                 or any(type(k) is not str or type(v) is not str for k, v in env.items())
                 or type(isolation_verified) is not bool
                 or (on_event is not None and not callable(on_event))
+                or (verify_config is not None and not callable(verify_config))
+                or (on_receipt is not None and (not callable(on_receipt) or inspect.iscoroutinefunction(on_receipt)))
+                or type(expected_provider) is not str or _IDENTIFIER.fullmatch(expected_provider) is None
                 or any(type(t) not in (int, float) or not math.isfinite(t) or not 0 < t <= 600
                        for t in (rpc_timeout, turn_timeout, shutdown_timeout))):
             raise RPCError("invalid_request")
         self.command, self.cwd, self.env = tuple(command), cwd, env.copy()
-        self.on_event, self.isolation_verified = on_event, isolation_verified
+        self.on_event = on_event
+        self.verify_config = verify_config
+        self.on_receipt = on_receipt
+        self.expected_provider = expected_provider
+        self._receipt = None
+        self._thread_start_count = self._turn_start_count = 0
+        # A supplied launch verifier always wins over the synthetic-test gate.
+        self.isolation_verified = isolation_verified if verify_config is None else False
         self.rpc_timeout, self.turn_timeout, self.shutdown_timeout = rpc_timeout, turn_timeout, shutdown_timeout
         self._process = self._reader = None
         self._write_lock = asyncio.Lock()
@@ -133,6 +149,7 @@ class ChatGPTAppServer:
                 "capabilities": {"experimentalApi": True, "explicitGatewayOauth": True}})
             _object(result)
             await self._send({"method": "initialized", "params": {}})
+            await self._verify_isolation()
             self._started = True
         except asyncio.CancelledError:
             await self.close()
@@ -141,9 +158,69 @@ class ChatGPTAppServer:
             await self.close()
             raise RPCError("unavailable") from None
 
+    async def _verify_isolation(self):
+        if self.verify_config is None:
+            return
+        self.isolation_verified = False
+        try:
+            # Official configuration, requirements and discovered skills stay
+            # in memory only. Recheck before each thread after possible changes.
+            config = await self._rpc("config/read", {"includeLayers": True, "cwd": self.cwd})
+            requirements = await self._rpc("configRequirements/read", None)
+            skills = await self._rpc("skills/list", {"cwds": [self.cwd], "forceReload": True})
+            verified = self.verify_config(config, requirements, skills)
+            if inspect.isawaitable(verified):
+                verified = await asyncio.wait_for(verified, self.rpc_timeout)
+            if verified is not True or self._fatal is not None or self._closed:
+                raise RPCError("isolation_unverified")
+            self.isolation_verified = True
+        except asyncio.CancelledError:
+            self._fail("isolation_unverified")
+            raise
+        except Exception:
+            self._fail("isolation_unverified")
+            raise RPCError("isolation_unverified") from None
+
+    def begin_request(self, request_id):
+        if (type(request_id) is not str or not 1 <= len(request_id) <= 128
+                or any(ord(c) < 32 or ord(c) == 127 or 0xD800 <= ord(c) <= 0xDFFF for c in request_id)):
+            raise RPCError("invalid_request")
+        if self._active is not None:
+            raise RPCError("busy")
+        self._receipt = {"request_id": request_id, "input_types": [], "text_bytes": None,
+            "text_sha256": None, "image_bytes": None, "image_sha256": None,
+            "submission": "not_submitted", "terminal_status": None, "outcome": "pending",
+            "produced_item_types": [], "thread_start_count": self._thread_start_count,
+            "turn_start_count": self._turn_start_count, "actual_model": None, "thread_id": None, "turn_id": None}
+        self._record(self._receipt)
+
+    def finish_request(self, outcome):
+        if outcome not in ("completed", "cancelled", "failed", "not_submitted", "uncertain"):
+            raise RPCError("invalid_request")
+        self._record(self._receipt, outcome=outcome)
+
+    def _record(self, receipt, **facts):
+        if receipt is None or receipt is not self._receipt:
+            return
+        receipt.update(facts, thread_start_count=self._thread_start_count, turn_start_count=self._turn_start_count)
+        if self.on_receipt is not None:
+            detached = {k: v.copy() if type(v) is list else v for k, v in receipt.items()}
+            try:
+                result = self.on_receipt(detached)
+                if inspect.isawaitable(result):
+                    if inspect.iscoroutine(result):
+                        result.close()
+                    raise RPCError("unavailable")
+            except Exception:
+                self._fail("unavailable")
+                raise RPCError("unavailable") from None
+
     async def _send(self, message, *, before_send=None):
         if self._closed or self._fatal is not None or self._process is None:
             raise RPCError(self._fatal or "closed")
+        method = message.get("method")
+        receipt = self._active.get("receipt") if self._active is not None else None
+        sending = False
         try:
             encoded = json.dumps(message, ensure_ascii=False, separators=(",", ":"), allow_nan=False).encode() + b"\n"
             if len(encoded) > MAX_LINE_BYTES:
@@ -151,13 +228,29 @@ class ChatGPTAppServer:
             async with self._write_lock:
                 if before_send is not None:
                     before_send()
+                if method == "turn/start":
+                    # Persist conservative send intent before publishing bytes:
+                    # a crash after write must not leave a definitive no-send
+                    # receipt. Callback failure here prevents stdin.write.
+                    self._record(receipt, submission="uncertain")
+                sending = True
                 self._process.stdin.write(encoded)
+                if method == "thread/start":
+                    self._thread_start_count += 1
+                elif method == "turn/start":
+                    self._turn_start_count += 1
                 await asyncio.wait_for(self._process.stdin.drain(), self.rpc_timeout)
+                if method in ("thread/start", "turn/start"):
+                    self._record(receipt, **({"submission": "written"} if method == "turn/start" else {}))
         except asyncio.CancelledError:
+            if sending and method == "turn/start":
+                self._record(receipt, submission="uncertain")
             raise
         except RPCError:
             raise
         except Exception:
+            if sending and method == "turn/start":
+                self._record(receipt, submission="uncertain")
             self._fail("unavailable")
             raise RPCError("unavailable") from None
 
@@ -272,10 +365,14 @@ class ChatGPTAppServer:
             self._fail("tool_activity")
             return
         if method == "model/rerouted":
+            if self._active is not None:
+                self._record(self._active["receipt"], actual_model=_identifier(params.get("toModel")))
             self._fail("model_mismatch")
             return
         if (method in ("item/started", "item/completed")
                 and _object(params.get("item")).get("type") not in ("userMessage", "agentMessage", "reasoning")):
+            if self._active is not None:
+                self._record_item_type(self._active, params["item"].get("type"))
             self._fail("tool_activity")
             return
         active = self._active
@@ -294,8 +391,12 @@ class ChatGPTAppServer:
             if active["turn_id"] is not None and turn_id != active["turn_id"]:
                 raise RPCError("protocol_error")
             active["turn_id"] = turn_id
+            self._record(active["receipt"], turn_id=turn_id)
             active["known"].set()
             if method == "turn/completed":
+                if turn.get("status") not in ("completed", "failed", "interrupted"):
+                    raise RPCError("protocol_error")
+                self._record(active["receipt"], terminal_status=turn["status"])
                 items = turn.get("items")
                 if type(items) is not list or len(items) > MAX_TURN_EVENTS:
                     raise RPCError("protocol_error")
@@ -322,6 +423,7 @@ class ChatGPTAppServer:
     def _item(self, active, item, *, completed):
         item = _object(item)
         kind = item.get("type")
+        self._record_item_type(active, kind)
         if kind not in ("userMessage", "agentMessage", "reasoning"):
             self._fail("tool_activity")
             return
@@ -336,6 +438,13 @@ class ChatGPTAppServer:
             active["messages"][item_id] = value
             if sum(len(row[1]) for row in active["messages"].values()) > MAX_TEXT_CHARS:
                 raise RPCError("protocol_error")
+
+    def _record_item_type(self, active, kind):
+        receipt = active["receipt"]
+        if receipt is not None and type(kind) is str and kind in _ITEM_TYPES:
+            types = receipt["produced_item_types"]
+            if kind not in types:
+                self._record(receipt, produced_item_types=[*types, kind])
 
     def _ready(self):
         if not self._started or self._closed or self._fatal:
@@ -490,7 +599,7 @@ class ChatGPTAppServer:
         if self._login_id == login_id:
             self._login_id = None
             await self._emit("connection/login/completed", {
-                "login_id": login_id, "success": False, "error": "Managed login was cancelled."})
+                "login_id": login_id, "success": False, "error": "login_cancelled"})
         return {}
 
     @staticmethod
@@ -512,11 +621,18 @@ class ChatGPTAppServer:
             raise RPCError("invalid_request")
         active = {"thread_id": None, "turn_id": None, "submitted": False, "cancelled": cancelled,
                   "known": asyncio.Event(), "done": asyncio.get_running_loop().create_future(),
-                  "messages": {}, "events": 0}
+                  "messages": {}, "events": 0, "receipt": self._receipt}
         self._active = active
         cancel_wait = None
         try:
             self._check_cancelled(active)
+            try:
+                text_bytes = text.encode("utf-8")
+            except UnicodeError:
+                raise RPCError("invalid_request") from None
+            self._record(active["receipt"], input_types=["text", "image"], text_bytes=len(text_bytes),
+                         text_sha256=sha256(text_bytes).hexdigest(), image_bytes=len(image_bytes),
+                         image_sha256=sha256(image_bytes).hexdigest())
             account = await self._account()
             if account["auth_mode"] != "chatgpt":
                 raise RPCError("unauthenticated")
@@ -526,17 +642,26 @@ class ChatGPTAppServer:
             if (await self._quota())["ordinary_usage_allowed"] is False:
                 raise RPCError("quota_exhausted")
             self._check_cancelled(active)
+            await self._verify_isolation()
+            self._check_cancelled(active)
             started = await self._rpc("thread/start", {
-                "model": model, "allowProviderModelFallback": False, "cwd": self.cwd,
+                "model": model, "modelProvider": self.expected_provider,
+                "allowProviderModelFallback": False, "cwd": self.cwd,
                 "ephemeral": True, "sandbox": "read-only", "approvalPolicy": "never",
                 "dynamicTools": [], "environments": []})
-            if started.get("model") != model or started.get("modelProvider") != "openai":
+            actual_model = _identifier(started.get("model"))
+            thread = _object(started.get("thread"))
+            active["thread_id"] = _identifier(thread.get("id"))
+            self._record(active["receipt"], actual_model=actual_model, thread_id=active["thread_id"])
+            if actual_model != model or started.get("modelProvider") != self.expected_provider:
                 raise RPCError("model_mismatch")
+            sandbox = started.get("sandbox")
             if (started.get("instructionSources") != [] or started.get("cwd") != self.cwd
                     or started.get("approvalPolicy") != "never"
-                    or _object(started.get("sandbox")).get("type") != "readOnly"):
+                    or type(sandbox) is not dict or set(sandbox) != {"type", "networkAccess"}
+                    or sandbox["type"] != "readOnly" or sandbox["networkAccess"] is not False
+                    or thread.get("ephemeral") is not True):
                 raise RPCError("isolation_unverified")
-            active["thread_id"] = _identifier(_object(started.get("thread")).get("id"))
             self._check_cancelled(active)
             def submitting():
                 # The write lock may itself yield. Fence at the actual write,
@@ -553,15 +678,16 @@ class ChatGPTAppServer:
             if active["turn_id"] is not None and active["turn_id"] != turn_id:
                 raise RPCError("protocol_error")
             active["turn_id"] = turn_id
+            self._record(active["receipt"], submission="acknowledged", turn_id=turn_id)
             active["known"].set()
             cancel_wait = asyncio.create_task(cancelled.wait())
             done, _ = await asyncio.wait((active["done"], cancel_wait), timeout=self.turn_timeout,
                                          return_when=asyncio.FIRST_COMPLETED)
             if cancelled.is_set():
-                confirmed = await self.interrupt()
+                confirmed = await self._interrupt_request(active)
                 raise RPCError("cancelled" if confirmed else "cancellation_uncertain")
             if not done:
-                await self.interrupt()
+                await self._interrupt_request(active)
                 raise RPCError("outcome_unknown")
             turn = active["done"].result()
             if "failure" in turn:
@@ -585,12 +711,11 @@ class ChatGPTAppServer:
             self._ready()
             return {"text": answer, "model": model, "thread_id": active["thread_id"], "turn_id": turn_id}
         except asyncio.CancelledError:
-            cancelled.set()
-            await self.interrupt()
+            await self._interrupt_request(active)
             raise
         except RPCError:
             if active["submitted"] and not active["done"].done():
-                await self.interrupt()
+                await self._interrupt_request(active)
             raise
         finally:
             if cancel_wait is not None:
@@ -601,16 +726,21 @@ class ChatGPTAppServer:
                 await self.close()
 
     async def interrupt(self):
+        active = self._active
+        if active is not None:
+            active["cancelled"].set()
+        return await self._interrupt_request(active)
+
+    async def _interrupt_request(self, active):
         # Pin the request before waiting for another cancellation's RPC. The
         # previous ask may finish while the lock is held; never target its heir.
-        active = self._active
+        # Internal cleanup must not turn timeout/failure into user cancellation.
         async with self._interrupt_lock:
             return await self._interrupt(active)
 
     async def _interrupt(self, active):
         if active is None:
             return True
-        active["cancelled"].set()
         if not active["submitted"]:
             return True
         try:
@@ -632,7 +762,6 @@ class ChatGPTAppServer:
                 if not future.done():
                     future.set_exception(RPCError("closed"))
             if self._active is not None:
-                self._active["cancelled"].set()
                 if not self._active["done"].done():
                     self._active["done"].set_result({"failure": "closed"})
             process = self._process

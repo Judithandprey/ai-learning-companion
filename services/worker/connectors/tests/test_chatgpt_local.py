@@ -200,6 +200,70 @@ def test_completed_ask_uses_exact_prepared_pixels_and_bound_provenance(ask_reque
     asyncio.run(run())
 
 
+def test_receipt_binding_records_eof_before_reserved_ask_coroutine_runs(ask_request):
+    async def run():
+        c = await fixture_bridge()
+        receipts = []
+        c.client.begin_request = lambda request_id: receipts.append(("begin", request_id))
+        c.client.finish_request = lambda outcome: receipts.append(("finish", outcome))
+        await c.bridge.handle(message("ask/start", {"request": ask_request, "model": MODEL}))
+        await c.bridge.close()
+        assert receipts == [("begin", ask_request["request_id"]), ("finish", "cancelled")]
+        assert c.learning.prepared == [] and c.learning.bound == []
+        assert not any(call[0] in ("ask", "turn/start") for call in c.client.calls)
+
+    asyncio.run(run())
+
+
+@pytest.mark.parametrize("mode,outcome", [("hang", "uncertain"), ("ignore_interrupt", "uncertain"),
+                                         ("late_complete", "uncertain"), ("start_error", "failed")])
+def test_real_rpc_cleanup_does_not_report_user_cancellation(tmp_path, ask_request, mode, outcome):
+    from services.worker.connectors.chatgpt_local import SubscriptionBridge
+    from services.worker.connectors.tests.test_chatgpt_rpc import client, requests, MODEL as rpc_model
+
+    async def run():
+        receipts, emitted = [], []
+        rpc = client(tmp_path, mode, isolation_verified=True, on_receipt=receipts.append)
+        learning = LearningSpy()
+        bridge = SubscriptionBridge(rpc, emit=emitted.append, prepare=learning.prepare, bind=learning.bind)
+        try:
+            await rpc.start()
+            await bridge.handle(message("ask/start", {"request": ask_request, "model": rpc_model}))
+            active = bridge.active
+            await asyncio.wait_for(active.task, 3)
+            assert active.cancelled.is_set() is False
+            assert len(emitted) == 1
+            assert_closed_error(emitted[0], "outer-one", "failed")
+            assert receipts[-1]["outcome"] == outcome
+            assert receipts[-1]["turn_start_count"] == 1
+            assert sum(row.get("method") == "turn/start" for row in requests(rpc)) == 1
+            assert learning.bound == []
+        finally:
+            await bridge.close()
+        assert rpc._process.returncode is not None
+
+    asyncio.run(run())
+
+
+def test_receipt_write_failure_prevents_ask_submission(ask_request):
+    async def run():
+        c = await fixture_bridge()
+
+        def refuse(_request_id):
+            raise RuntimeError(PRIVATE)
+
+        c.client.begin_request = refuse
+        try:
+            await c.bridge.handle(message("ask/start", {"request": ask_request, "model": MODEL}))
+            assert_closed_error(await response(c, "outer-one"), "outer-one", "unavailable")
+            assert c.client.calls == [] and c.learning.prepared == []
+            assert c.bridge.active is None
+        finally:
+            await c.bridge.close()
+
+    asyncio.run(run())
+
+
 def test_one_active_ask_is_reserved_before_background_work_runs(ask_request):
     async def run():
         c = await fixture_bridge()
