@@ -23,6 +23,10 @@ MAX_IMAGE_BYTES = 8 * 1024 * 1024
 MAX_TEXT_CHARS = 32000
 MAX_PROMPT_CHARS = 65536
 MAX_TURN_EVENTS = 4096
+# Engineering receive allowance, not a provider guarantee: 24 MiB for 32k
+# one-character JSONL deltas (768 framing bytes each), plus 8 MiB for reasoning
+# and metadata. All received bytes count, including empty/foreign notifications.
+MAX_TURN_WIRE_BYTES = 32 * 1024 * 1024
 _IDENTIFIER = re.compile(r"[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}\Z")
 _PLANS = frozenset(("free", "go", "plus", "pro", "prolite", "promax", "team",
     "self_serve_business_prolite", "self_serve_business_usage_based", "business",
@@ -128,6 +132,8 @@ class ChatGPTAppServer:
         self._interrupt_lock = asyncio.Lock()
         self._pending, self._next_id = {}, 0
         self._started = self._closed = False
+        # Unusable is distinct from reaped; the owner still awaits close().
+        self.terminal = asyncio.Event()
         self._fatal = None
         self._active = None
         self._login_id = None
@@ -276,6 +282,7 @@ class ChatGPTAppServer:
 
     def _fail(self, code):
         self._fatal = self._fatal or code
+        self.terminal.set()
         for future in self._pending.values():
             if not future.done():
                 future.set_exception(RPCError(self._fatal))
@@ -291,7 +298,8 @@ class ChatGPTAppServer:
 
     async def _read_loop(self):
         try:
-            while True:
+            lines_since_yield = bytes_since_yield = 0
+            while not self._closed and self._fatal is None:
                 line = await self._process.stdout.readline()
                 if not line:
                     if not self._closed:
@@ -299,6 +307,10 @@ class ChatGPTAppServer:
                     return
                 if len(line) > MAX_LINE_BYTES or not line.endswith(b"\n"):
                     raise RPCError("protocol_error")
+                if self._active is not None:
+                    self._active["wire_bytes"] += len(line)
+                    if self._active["wire_bytes"] > MAX_TURN_WIRE_BYTES:
+                        raise RPCError("protocol_error")
                 message = _object(json.loads(line.decode("utf-8"), object_pairs_hook=_pairs,
                                              parse_constant=_invalid_constant, parse_float=_finite_float))
                 if "method" in message:
@@ -321,6 +333,14 @@ class ChatGPTAppServer:
                             future.set_exception(RPCError("request_failed"))
                         else:
                             future.set_result(_object(message["result"]))
+                lines_since_yield += 1
+                bytes_since_yield += len(line)
+                if lines_since_yield >= 64 or bytes_since_yield >= 256 * 1024:
+                    # readline() can return immediately from buffered input.
+                    # Let deadlines, cancellation and parent cleanup run even
+                    # during a flood, including outside an active ask.
+                    lines_since_yield = bytes_since_yield = 0
+                    await asyncio.sleep(0)
         except asyncio.CancelledError:
             raise
         except Exception:
@@ -380,9 +400,10 @@ class ChatGPTAppServer:
             return
         if params.get("threadId") != active["thread_id"] or active["thread_id"] is None:
             return
-        active["events"] += 1
-        if active["events"] > MAX_TURN_EVENTS:
-            raise RPCError("protocol_error")
+        if method in ("turn/started", "turn/completed", "item/started", "item/completed"):
+            active["events"] += 1
+            if active["events"] > MAX_TURN_EVENTS:
+                raise RPCError("protocol_error")
         if method in ("turn/started", "turn/completed"):
             turn = _object(params.get("turn"))
             turn_id = _identifier(turn.get("id"))
@@ -621,7 +642,7 @@ class ChatGPTAppServer:
             raise RPCError("invalid_request")
         active = {"thread_id": None, "turn_id": None, "submitted": False, "cancelled": cancelled,
                   "known": asyncio.Event(), "done": asyncio.get_running_loop().create_future(),
-                  "messages": {}, "events": 0, "receipt": self._receipt}
+                  "messages": {}, "events": 0, "wire_bytes": 0, "receipt": self._receipt}
         self._active = active
         cancel_wait = None
         try:
@@ -756,8 +777,9 @@ class ChatGPTAppServer:
             return False
 
     async def close(self):
+        self._closed = True
+        self.terminal.set()
         async with self._close_lock:
-            self._closed = True
             for future in self._pending.values():
                 if not future.done():
                     future.set_exception(RPCError("closed"))

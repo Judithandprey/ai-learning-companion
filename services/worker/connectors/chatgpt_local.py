@@ -24,6 +24,9 @@ MAX_OUTPUT_BYTES = 256 * 1024
 MAX_HISTORY = 4096
 # Includes the inner child's 3s terminate + 3s kill/reap allowance.
 SHUTDOWN_SECONDS = 8
+# Let admitted operations publish their sanitized failure and finish receipts;
+# this grace precedes the existing bounded owned-child shutdown.
+TERMINAL_REPLY_SECONDS = 1
 ERRORS = {
     "invalid_request": "The local request is invalid.",
     "busy": "Another request is still active.",
@@ -245,6 +248,11 @@ class SubscriptionBridge:
     def _cancelled(self, active):
         return self.closed or active.cancelled.is_set() or active.session_id in self.stopped_sessions
 
+    def _unfinished_outcome(self, active):
+        if active.cancelled.is_set() or active.session_id in self.stopped_sessions:
+            return "cancelled"
+        return "uncertain" if active.provider_started else "not_submitted"
+
     async def _ask(self, active, request, model):
         started = time.monotonic()
         outcome = "not_submitted"
@@ -264,6 +272,8 @@ class SubscriptionBridge:
             outcome = "uncertain"
             answer = await self.client.ask(prepared["text"], prepared["image_bytes"],
                                            model=model, cancelled=active.cancelled)
+            if self.client.terminal.is_set():
+                raise LocalError("unavailable")
             if self._cancelled(active):
                 raise LocalError("cancelled")
             result = self.bind(prepared, answer["text"], model=answer["model"], auth_mode="chatgpt",
@@ -271,21 +281,29 @@ class SubscriptionBridge:
                                thread_id=answer["thread_id"], turn_id=answer["turn_id"])
             if self._cancelled(active):
                 raise LocalError("cancelled")
+            if self.client.terminal.is_set():
+                raise LocalError("unavailable")
             finish = getattr(self.client, "finish_request", None)
             if finish is not None:
                 finish("completed")
+            if self.client.terminal.is_set():
+                raise LocalError("unavailable")
             outcome = "completed"
             self.emit({"id": active.rpc_id, "result": result})
         except asyncio.CancelledError:
-            outcome = "cancelled"
-            if not self.closed:
+            outcome = self._unfinished_outcome(active) if self.client.terminal.is_set() else "cancelled"
+            if not self.closed and not self.client.terminal.is_set():
                 self.error(active.rpc_id, "cancelled")
         except Exception as exc:
-            if self._cancelled(active):
+            if active.cancelled.is_set() or active.session_id in self.stopped_sessions:
                 outcome = "cancelled"
+            elif self.closed and self.client.terminal.is_set():
+                outcome = self._unfinished_outcome(active)
             elif getattr(exc, "code", None) not in {"outcome_unknown", "uncertain", "timeout"} and active.provider_started:
                 outcome = "failed"
-            if not self.closed:
+            # On an unusable transport, EOF carries the unknown send outcome
+            # to the desktop. A normal error reply would claim a known refusal.
+            if not self.closed and not self.client.terminal.is_set():
                 self.error(active.rpc_id, "cancelled" if self._cancelled(active)
                            else getattr(exc, "code", "unavailable"))
         finally:
@@ -365,11 +383,11 @@ class SubscriptionBridge:
             self.login_id = None
             self.emit({"method": method, "params": event})
 
-    async def close(self):
+    async def close(self, *, terminal_failure=False):
         if self.closed:
             return
         self.closed = True
-        if self.active is not None:
+        if self.active is not None and not terminal_failure:
             self.active.cancelled.set()
         for task in tuple(self.tasks):
             task.cancel()
@@ -384,17 +402,33 @@ class SubscriptionBridge:
                     # runs, so its own finally block has not recorded closure.
                     finish = getattr(self.client, "finish_request", None)
                     if finish is not None:
-                        finish("cancelled")
+                        finish(self._unfinished_outcome(self.active))
                     self.active = None
 
 
 async def run_stream(read_line, emit, client, *, prepare=_prepare, bind=_bind):
     """Run one bounded private stream. EOF closes only the owned client."""
     ready = asyncio.create_task(client.start())
+    terminal = asyncio.create_task(client.terminal.wait())
     bridge = SubscriptionBridge(client, emit=emit, prepare=prepare, bind=bind, ready=ready)
+    reading = None
+    terminal_failure = False
     try:
         while True:
-            raw = await read_line()
+            reading = asyncio.create_task(read_line())
+            done, _ = await asyncio.wait((reading, terminal), return_when=asyncio.FIRST_COMPLETED)
+            if terminal in done or client.terminal.is_set():
+                terminal_failure = True
+                # A permanently unusable inner client must also end its outer
+                # pipe. A later explicit user Check can create a new owner;
+                # this stream never replaces the child or replays an ASK.
+                reading.cancel()
+                await asyncio.gather(reading, return_exceptions=True)
+                reading = None
+                await asyncio.wait({ready, *bridge.tasks}, timeout=TERMINAL_REPLY_SECONDS)
+                break
+            raw = reading.result()
+            reading = None
             if not raw:
                 break
             try:
@@ -405,9 +439,13 @@ async def run_stream(read_line, emit, client, *, prepare=_prepare, bind=_bind):
             await bridge.handle(message)
             await asyncio.sleep(0)
     finally:
+        waiting = [terminal] + ([reading] if reading is not None else [])
+        for task in waiting:
+            task.cancel()
+        await asyncio.gather(*waiting, return_exceptions=True)
         ready.cancel()
         try:
-            await bridge.close()
+            await bridge.close(terminal_failure=terminal_failure)
         finally:
             await asyncio.gather(ready, return_exceptions=True)
 

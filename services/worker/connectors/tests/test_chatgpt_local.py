@@ -83,6 +83,7 @@ class FakeClient:
         self.allow_send = asyncio.Event()
         self.sent = asyncio.Event()
         self.complete = asyncio.Event()
+        self.terminal = asyncio.Event()
         self.started = False
         self.closed = False
         self.ignore_cancel = False
@@ -131,6 +132,7 @@ class FakeClient:
     async def close(self):
         self.calls.append(("close",))
         self.closed = True
+        self.terminal.set()
 
 
 async def fixture_bridge():
@@ -215,9 +217,10 @@ def test_receipt_binding_records_eof_before_reserved_ask_coroutine_runs(ask_requ
     asyncio.run(run())
 
 
-@pytest.mark.parametrize("mode,outcome", [("hang", "uncertain"), ("ignore_interrupt", "uncertain"),
-                                         ("late_complete", "uncertain"), ("start_error", "failed")])
-def test_real_rpc_cleanup_does_not_report_user_cancellation(tmp_path, ask_request, mode, outcome):
+@pytest.mark.parametrize("mode,outcome,terminal", [("hang", "uncertain", False),
+    ("ignore_interrupt", "uncertain", True), ("late_complete", "uncertain", False),
+    ("start_error", "failed", True)])
+def test_real_rpc_cleanup_does_not_report_user_cancellation(tmp_path, ask_request, mode, outcome, terminal):
     from services.worker.connectors.chatgpt_local import SubscriptionBridge
     from services.worker.connectors.tests.test_chatgpt_rpc import client, requests, MODEL as rpc_model
 
@@ -232,8 +235,12 @@ def test_real_rpc_cleanup_does_not_report_user_cancellation(tmp_path, ask_reques
             active = bridge.active
             await asyncio.wait_for(active.task, 3)
             assert active.cancelled.is_set() is False
-            assert len(emitted) == 1
-            assert_closed_error(emitted[0], "outer-one", "failed")
+            assert rpc.terminal.is_set() is terminal
+            if terminal:
+                assert emitted == [], "the terminal outer pipe reports a lost, uncertain request"
+            else:
+                assert len(emitted) == 1
+                assert_closed_error(emitted[0], "outer-one", "failed")
             assert receipts[-1]["outcome"] == outcome
             assert receipts[-1]["turn_start_count"] == 1
             assert sum(row.get("method") == "turn/start" for row in requests(rpc)) == 1
@@ -622,6 +629,269 @@ def test_stream_eof_closes_owned_client_and_suppresses_pending_answer(ask_reques
     asyncio.run(run())
 
 
+@asynccontextmanager
+async def rpc_stream(tmp_path, mode="success"):
+    """The production bridge and RPC over the existing synthetic pipe child."""
+    from services.worker.connectors import chatgpt_local
+    from services.worker.connectors.tests.test_chatgpt_rpc import client
+
+    incoming, outgoing, emitted, receipts = asyncio.Queue(), asyncio.Queue(), [], []
+    rpc = client(tmp_path, mode, isolation_verified=True, on_receipt=receipts.append)
+    learning, reading, read_cancelled = LearningSpy(), asyncio.Event(), asyncio.Event()
+
+    async def read_line():
+        reading.set()
+        try:
+            return await incoming.get()
+        except asyncio.CancelledError:
+            read_cancelled.set()
+            raise
+
+    def emit(value):
+        emitted.append(value)
+        outgoing.put_nowait(value)
+
+    task = asyncio.create_task(chatgpt_local.run_stream(read_line, emit, rpc,
+                                prepare=learning.prepare, bind=learning.bind))
+    stream = SimpleNamespace(client=rpc, task=task, emitted=emitted, queue=outgoing,
+                             incoming=incoming, receipts=receipts, learning=learning,
+                             reading=reading, read_cancelled=read_cancelled)
+    stream.send = lambda value: incoming.put_nowait(json.dumps(value).encode() + b"\n")
+    try:
+        yield stream
+    finally:
+        task.cancel()
+        await asyncio.gather(task, return_exceptions=True)
+        await rpc.close()
+
+
+def test_fatal_rpc_ends_stream_and_only_explicit_new_check_creates_fresh_client(tmp_path, ask_request):
+    from services.worker.connectors.tests.test_chatgpt_rpc import requests, MODEL as rpc_model
+
+    async def run():
+        async with rpc_stream(tmp_path, "retry_error") as old:
+            old.send(message("connection/read", request_id="first-check"))
+            assert "result" in await response(old, "first-check")
+            old.send(message("ask/start", {"request": ask_request, "model": rpc_model}))
+            await asyncio.wait_for(asyncio.shield(old.task), 1)
+            assert [row["id"] for row in old.emitted] == ["first-check"]
+            assert old.read_cancelled.is_set() and old.client._process.returncode is not None
+            assert old.receipts[-1]["outcome"] == "failed"
+            assert old.receipts[-1]["turn_start_count"] == 1
+            assert old.learning.bound == []
+            before = requests(old.client)
+            assert sum(row.get("method") == "turn/start" for row in before) == 1
+            old.send(message("connection/read", request_id="obsolete-check"))
+            await asyncio.sleep(0)
+            assert requests(old.client) == before
+            assert not any(row.get("id") == "obsolete-check" for row in old.emitted)
+        # A new user Check creates a distinct owner. It never replays the ASK.
+        async with rpc_stream(tmp_path) as new:
+            new.send(message("connection/read", request_id="explicit-check"))
+            checked = await response(new, "explicit-check")
+            assert checked["result"]["auth"]["state"] == "signed_in"
+            assert new.client._process.pid != old.client._process.pid
+            assert not new.task.done()
+            assert not any(row.get("method") in ("thread/start", "turn/start") for row in requests(new.client))
+            assert new.receipts == []
+            new.incoming.put_nowait(b"")
+            await asyncio.wait_for(new.task, 1)
+
+    asyncio.run(run())
+
+
+@pytest.mark.parametrize("mode", ["init_hang", "malformed"])
+@pytest.mark.parametrize("method", ["connection/read", "ask/start"])
+def test_startup_failure_wakes_parent_read_and_finalizes_admitted_request(tmp_path, ask_request, mode, method):
+    from services.worker.connectors.tests.test_chatgpt_rpc import requests, MODEL as rpc_model
+
+    async def run():
+        async with rpc_stream(tmp_path, mode) as c:
+            params = {"request": ask_request, "model": rpc_model} if method == "ask/start" else {}
+            c.send(message(method, params))
+            await asyncio.wait_for(asyncio.shield(c.task), 2)
+            assert c.read_cancelled.is_set() and c.client._process.returncode is not None
+            assert not any(row.get("method") in ("thread/start", "turn/start") for row in requests(c.client))
+            if method == "connection/read":
+                assert len(c.emitted) == 1
+                assert_closed_error(c.emitted[0], "outer-one", "unavailable")
+                assert c.receipts == []
+            else:
+                assert c.emitted == []
+                assert c.receipts[-1]["outcome"] == c.receipts[-1]["submission"] == "not_submitted"
+                assert c.receipts[-1]["turn_start_count"] == 0
+
+    asyncio.run(run())
+
+
+def test_idle_inner_eof_closes_outer_stream_without_waiting_for_parent_input(tmp_path):
+    from services.worker.connectors.tests.test_chatgpt_rpc import requests
+
+    async def run():
+        async with rpc_stream(tmp_path) as c:
+            c.send(message("connection/read"))
+            assert "result" in await response(c, "outer-one")
+            c.client._process.terminate()  # Inject exit only into this test-owned fake.
+            await asyncio.wait_for(asyncio.shield(c.task), 1)
+            assert c.client._process.returncode is not None and c.read_cancelled.is_set()
+            assert len(c.emitted) == 1 and c.receipts == []
+            assert not any(row.get("method") in ("thread/start", "turn/start") for row in requests(c.client))
+
+    asyncio.run(run())
+
+
+@pytest.mark.parametrize("mode,code", [("failed", "failed"), ("text_only", "unsupported_model"),
+                                      ("signed_out", "unauthenticated")])
+def test_nonfatal_refusal_keeps_stream_usable_and_preserves_stop_and_duplicate_fences(tmp_path, ask_request, mode, code):
+    from services.worker.connectors.tests.test_chatgpt_rpc import requests, MODEL as rpc_model
+
+    async def run():
+        async with rpc_stream(tmp_path, mode) as c:
+            c.send(message("ask/start", {"request": ask_request, "model": rpc_model}))
+            assert_closed_error(await response(c, "outer-one"), "outer-one", code)
+            assert not c.task.done() and not c.client.terminal.is_set()
+            before = sum(row.get("method") == "turn/start" for row in requests(c.client))
+            c.send(message("ask/start", {"request": ask_request, "model": rpc_model}, request_id="duplicate"))
+            assert_closed_error(await response(c, "duplicate"), "duplicate", "invalid_request")
+            c.send(message("connection/read", request_id="check-again"))
+            assert "result" in await response(c, "check-again")
+            c.send(message("session/stop", {"capture_session_id": ask_request["context"]["capture_session_id"]},
+                           request_id="stop"))
+            assert (await response(c, "stop"))["result"] == {}
+            c.send(message("ask/start", {"request": {**ask_request, "request_id": "after-stop"},
+                                          "model": rpc_model}, request_id="after-stop"))
+            assert_closed_error(await response(c, "after-stop"), "after-stop", "session_stopped")
+            assert sum(row.get("method") == "turn/start" for row in requests(c.client)) == before
+            c.incoming.put_nowait(b"")
+            await asyncio.wait_for(c.task, 1)
+
+    asyncio.run(run())
+
+
+@pytest.mark.parametrize("mode,terminal", [("ignore_interrupt", True), ("late_complete", False)])
+def test_stop_uncertainty_and_late_answer_never_resurrect_request(tmp_path, ask_request, mode, terminal):
+    from services.worker.connectors.tests.test_chatgpt_rpc import requests, MODEL as rpc_model
+
+    async def run():
+        async with rpc_stream(tmp_path, mode) as c:
+            c.send(message("ask/start", {"request": ask_request, "model": rpc_model}))
+            async with asyncio.timeout(2):
+                while not c.receipts or c.receipts[-1]["submission"] != "acknowledged":
+                    await asyncio.sleep(0.005)
+            c.send(message("session/stop", {"capture_session_id": ask_request["context"]["capture_session_id"]},
+                           request_id="stop"))
+            assert_closed_error(await response(c, "stop"), "stop", "interrupt_unconfirmed")
+            if terminal:
+                await asyncio.wait_for(asyncio.shield(c.task), 1)
+                assert not any(row.get("id") == "outer-one" for row in c.emitted)
+            else:
+                assert_closed_error(await response(c, "outer-one"), "outer-one", "cancelled")
+                assert c.receipts[-1]["terminal_status"] == "completed"
+            assert c.client.terminal.is_set() is terminal
+            assert c.receipts[-1]["outcome"] == "cancelled"
+            assert c.learning.bound == [] and sum(row.get("method") == "turn/start" for row in requests(c.client)) == 1
+
+    asyncio.run(run())
+
+
+def test_terminal_grace_expiry_preserves_unknown_receipt_without_forging_cancel(ask_request, monkeypatch):
+    from services.worker.connectors import chatgpt_local
+
+    monkeypatch.setattr(chatgpt_local, "TERMINAL_REPLY_SECONDS", 0.01)
+
+    async def run():
+        client, learning, incoming, emitted, outcomes = FakeClient(), LearningSpy(), asyncio.Queue(), [], []
+        client.allow_send.set()
+        client.finish_request = outcomes.append
+        task = asyncio.create_task(chatgpt_local.run_stream(incoming.get, emitted.append, client,
+                                      prepare=learning.prepare, bind=learning.bind))
+        try:
+            incoming.put_nowait(json.dumps(message("ask/start", {"request": ask_request, "model": MODEL})).encode() + b"\n")
+            await asyncio.wait_for(client.sent.wait(), 1)
+            client.terminal.set()  # The submitted fake deliberately never settles.
+            await asyncio.wait_for(task, 1)
+            assert client.closed and not client.cancelled.is_set()
+            assert outcomes == ["uncertain"] and emitted == [] and learning.bound == []
+            assert not [pending for pending in asyncio.all_tasks() if pending is not asyncio.current_task()]
+        finally:
+            task.cancel()
+            await asyncio.gather(task, return_exceptions=True)
+
+    asyncio.run(run())
+
+
+def test_terminal_event_wins_before_its_waiter_task_resumes(monkeypatch):
+    from services.worker.connectors import chatgpt_local
+
+    async def run():
+        client, incoming, emitted = FakeClient(), asyncio.Queue(), []
+        incoming.put_nowait(json.dumps(message("connection/read")).encode() + b"\n")
+        wait, injected = asyncio.wait, False
+
+        async def race(*args, **kwargs):
+            nonlocal injected
+            result = await wait(*args, **kwargs)
+            if not injected:
+                injected = True
+                client.terminal.set()  # Its waiter cannot resume before we return.
+            return result
+
+        monkeypatch.setattr(chatgpt_local.asyncio, "wait", race)
+        await asyncio.wait_for(chatgpt_local.run_stream(incoming.get, emitted.append, client), 1)
+        assert injected and client.closed and emitted == []
+        assert not any(row[0] == "connection_read" for row in client.calls)
+
+    asyncio.run(run())
+
+
+@pytest.mark.parametrize("when", ["before_bind", "during_finish"])
+def test_terminal_wins_answer_publication_and_receipt_finalization(ask_request, when):
+    async def run():
+        c = await fixture_bridge()
+        outcomes = []
+
+        def finish(outcome):
+            outcomes.append(outcome)
+            if when == "during_finish" and outcome == "completed":
+                c.client.terminal.set()
+
+        c.client.finish_request = finish
+        c.client.allow_send.set()
+        try:
+            await c.bridge.handle(message("ask/start", {"request": ask_request, "model": MODEL}))
+            active = c.bridge.active
+            await asyncio.wait_for(c.client.sent.wait(), 1)
+            if when == "before_bind":
+                c.client.terminal.set()
+            c.client.complete.set()
+            await asyncio.wait_for(active.task, 1)
+            assert c.emitted == [] and not active.cancelled.is_set()
+            assert outcomes[-1] == "failed"
+            if when == "before_bind":
+                assert c.learning.bound == []
+            else:
+                assert outcomes == ["completed", "failed"]
+        finally:
+            await c.bridge.close(terminal_failure=True)
+
+    asyncio.run(run())
+
+
+def test_terminal_close_before_reserved_coroutine_runs_is_not_user_cancel(ask_request):
+    async def run():
+        c = await fixture_bridge()
+        outcomes = []
+        c.client.finish_request = outcomes.append
+        await c.bridge.handle(message("ask/start", {"request": ask_request, "model": MODEL}))
+        active = c.bridge.active
+        c.client.terminal.set()
+        await c.bridge.close(terminal_failure=True)
+        assert outcomes == ["not_submitted"] and not active.cancelled.is_set()
+        assert c.learning.prepared == c.learning.bound == c.emitted == []
+
+    asyncio.run(run())
+
+
 @pytest.mark.parametrize("raw", [b"invalid-json\n", b'{"version":"lc-subscription-ask/1"}\n',
                                  b"x" * 1025], ids=["malformed-json", "invalid-envelope", "oversized-line"])
 def test_stream_protocol_refusal_never_calls_ask_and_closes_its_client(raw, monkeypatch):
@@ -780,6 +1050,72 @@ def test_actual_private_pipe_handshake_then_eof_reaps_only_test_owned_child(tmp_
         if process.poll() is None:
             process.kill()
             process.wait(timeout=3)
+        process.stdout.close()
+        process.stderr.close()
+
+
+def _fatal_rpc_stream_child(report_path):
+    """Run the foreground entrypoint with only a test-owned synthetic RPC child."""
+    from services.worker.connectors import chatgpt_launch, chatgpt_local
+    from services.worker.connectors.tests.test_chatgpt_rpc import client, requests
+
+    @asynccontextmanager
+    async def fake_factory():
+        receipts = []
+        rpc = client(Path(report_path).parent, "retry_error", isolation_verified=True,
+                     on_receipt=receipts.append)
+        try:
+            yield rpc
+        finally:
+            await rpc.close()
+            Path(report_path).write_text(json.dumps({
+                "child_reaped": rpc._process is not None and rpc._process.returncode is not None,
+                "turn_starts": sum(row.get("method") == "turn/start" for row in requests(rpc)),
+                "outcome": receipts[-1]["outcome"] if receipts else None,
+            }))
+
+    chatgpt_launch.create_client = fake_factory
+    sys.argv = ["synthetic-chatgpt-local"]
+    raise SystemExit(chatgpt_local.main())
+
+
+def test_fatal_inner_child_closes_real_outer_pipe_with_parent_still_open(tmp_path, ask_request):
+    from services.worker.connectors.tests.test_chatgpt_rpc import MODEL as rpc_model
+
+    root = Path(__file__).resolve().parents[4]
+    report = tmp_path / "terminal-child-close.json"
+    bootstrap = ("from services.worker.connectors.tests.test_chatgpt_local import _fatal_rpc_stream_child; "
+                 "import sys; _fatal_rpc_stream_child(sys.argv[1])")
+    process = subprocess.Popen([sys.executable, "-u", "-c", bootstrap, str(report)], cwd=root,
+                               env={**os.environ, "PYTHONDONTWRITEBYTECODE": "1"},
+                               stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    lines = queue.Queue()
+
+    def read_output():
+        for line in process.stdout:
+            lines.put(line)
+        lines.put(b"")
+
+    reader = threading.Thread(target=read_output, daemon=True)
+    reader.start()
+    try:
+        process.stdin.write(json.dumps(message("connection/read")).encode() + b"\n")
+        process.stdin.flush()
+        assert json.loads(lines.get(timeout=5))["result"]["auth"]["state"] == "signed_in"
+        process.stdin.write(json.dumps(message("ask/start", {"request": ask_request, "model": rpc_model},
+                                              request_id="fatal-ask")).encode() + b"\n")
+        process.stdin.flush()
+        assert lines.get(timeout=5) == b"", "terminal ASK must end the pipe, not claim a known refusal"
+        assert not process.stdin.closed
+        assert process.wait(timeout=5) == 0
+        assert process.stderr.read() == b""
+        assert json.loads(report.read_text()) == {"child_reaped": True, "turn_starts": 1, "outcome": "failed"}
+    finally:
+        process.stdin.close()
+        if process.poll() is None:
+            process.kill()
+            process.wait(timeout=3)
+        reader.join(timeout=1)
         process.stdout.close()
         process.stderr.close()
 

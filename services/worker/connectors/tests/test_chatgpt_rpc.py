@@ -10,6 +10,7 @@ import sys
 import pytest
 
 from services.worker.connectors.chatgpt_rpc import ChatGPTAppServer, RPCError
+from services.worker.connectors import chatgpt_rpc as rpc
 
 
 PNG = b"\x89PNG\r\n\x1a\nsynthetic-transport-payload"
@@ -105,6 +106,38 @@ for line in sys.stdin:
     send({'id':request['id'],'result':result})
     if method=='initialize' and mode=='startup_tool': event('hook/started',run={})
     if method=='turn/start':
+        if mode.startswith('many_deltas_'):
+            kind=mode.removeprefix('many_deltas_')
+            delta_method={'agent':'item/agentMessage/delta','reasoning':'item/reasoning/textDelta',
+                          'summary':'item/reasoning/summaryTextDelta'}.get(kind,'item/agentMessage/delta')
+            count=32000 if kind=='single' else 9000
+            delta='' if kind=='empty' else 'x' if kind=='single' else 'abc'
+            for _ in range(count):
+                event(delta_method,threadId='thread-1',turnId='turn-1',itemId='stream-1',
+                      delta=delta,contentIndex=0,summaryIndex=0)
+            if kind=='tool':
+                event('item/started',threadId='other-thread',turnId='other-turn',item={'type':'commandExecution'})
+                continue
+            if kind=='request':
+                send({'id':'server-request','method':'item/tool/requestUserInput','params':{'threadId':'other-thread'}})
+                continue
+            if kind=='incomplete': continue
+            text=delta*count if kind in ('agent','single') else 'Completed answer.'
+            completed(items=[{'id':'answer-1','type':'agentMessage','phase':'final_answer','text':text}])
+            continue
+        if mode.startswith('flood_'):
+            kind=mode.removeprefix('flood_')
+            for _ in range(10000):
+                if kind=='slow': time.sleep(.001)
+                if kind=='reply': send({'id':request['id'],'result':{}})
+                elif kind=='lifecycle':
+                    event('item/started',threadId='thread-1',turnId='turn-1',item={'type':'reasoning'})
+                else:
+                    event('unknown/notification' if kind=='unknown' else 'item/agentMessage/delta',
+                          threadId='foreign-thread' if kind in ('foreign','unknown') else 'thread-1',
+                          turnId='turn-1',itemId='stream-1',
+                          delta='' if kind in ('empty','foreign','slow') else 'x'*(16384 if kind=='line' else 256))
+            continue
         if mode in ('hang','ignore_interrupt','late_complete'): continue
         if mode=='disconnect': sys.exit(0)
         if mode.startswith('auth_changed_'):
@@ -168,6 +201,179 @@ def requests(instance):
 async def invoke(instance, *, cancelled=None):
     return await instance.ask("An explicit ASK.", PNG, model=MODEL,
                               cancelled=cancelled if cancelled is not None else asyncio.Event())
+
+
+@pytest.mark.parametrize("kind", ["agent", "reasoning", "summary", "single", "empty"])
+def test_fragmented_stream_does_not_consume_lifecycle_event_budget(tmp_path, kind):
+    async def run():
+        c = client(tmp_path, "many_deltas_" + kind, isolation_verified=True)
+        c.turn_timeout = 5
+        try:
+            await c.start()
+            answer = await invoke(c)
+            expected = "abc" * 9000 if kind == "agent" else "x" * 32000 if kind == "single" else "Completed answer."
+            assert answer["text"] == expected
+            assert c._fatal is None
+            assert sum(row.get("method") == "turn/start" for row in requests(c)) == 1
+        finally:
+            await c.close()
+    asyncio.run(run())
+
+
+@pytest.mark.parametrize("kind", ["agent", "empty", "foreign", "unknown", "reply"])
+def test_all_inbound_wire_bytes_are_charged_before_thread_or_method_filtering(tmp_path, monkeypatch, kind):
+    monkeypatch.setattr(rpc, "MAX_TURN_WIRE_BYTES", 8192)
+
+    async def run():
+        c = client(tmp_path, "flood_" + kind, isolation_verified=True)
+        stop = asyncio.Event()
+        try:
+            await c.start()
+            with pytest.raises(RPCError) as error:
+                await invoke(c, cancelled=stop)
+            assert error.value.code == "protocol_error"
+            assert c.terminal.is_set() and c._process.returncode is not None
+            assert not stop.is_set()
+            assert sum(row.get("method") == "turn/start" for row in requests(c)) == 1
+        finally:
+            await c.close()
+    asyncio.run(run())
+
+
+def test_lifecycle_event_budget_still_rejects_repeated_items(tmp_path):
+    async def run():
+        c = client(tmp_path, "flood_lifecycle", isolation_verified=True)
+        try:
+            await c.start()
+            with pytest.raises(RPCError) as error:
+                await invoke(c)
+            assert error.value.code == "protocol_error" and c.terminal.is_set()
+        finally:
+            await c.close()
+    asyncio.run(run())
+
+
+def test_receive_line_limit_still_applies_before_ignored_delta_filtering(tmp_path, monkeypatch):
+    monkeypatch.setattr(rpc, "MAX_LINE_BYTES", 8192)
+
+    async def run():
+        c = client(tmp_path, "flood_line", isolation_verified=True)
+        try:
+            await c.start()
+            with pytest.raises(RPCError) as error:
+                await invoke(c)
+            assert error.value.code == "protocol_error" and c.terminal.is_set()
+            assert c._process.returncode is not None
+        finally:
+            await c.close()
+    asyncio.run(run())
+
+
+@pytest.mark.parametrize("cancel", [False, True])
+def test_sustained_empty_stream_keeps_deadline_and_explicit_cancel_effective(tmp_path, cancel):
+    async def run():
+        c = client(tmp_path, "flood_slow", isolation_verified=True)
+        c.turn_timeout = .1
+        stop = asyncio.Event()
+        try:
+            await c.start()
+            task = asyncio.create_task(invoke(c, cancelled=stop))
+            if cancel:
+                async with asyncio.timeout(1):
+                    while c._active is None:
+                        await asyncio.sleep(.001)
+                    await c._active["known"].wait()
+                stop.set()
+            with pytest.raises(RPCError) as error:
+                await asyncio.wait_for(task, 1)
+            assert error.value.code == ("cancellation_uncertain" if cancel else "outcome_unknown")
+            assert stop.is_set() is cancel
+            assert c.terminal.is_set() and c._process.returncode is not None
+            assert sum(row.get("method") == "turn/start" for row in requests(c)) == 1
+        finally:
+            await c.close()
+    asyncio.run(run())
+
+
+@pytest.mark.parametrize("kind", ["tool", "request", "incomplete"])
+def test_ignored_deltas_never_authorize_tools_or_replace_a_completed_answer(tmp_path, kind):
+    async def run():
+        c = client(tmp_path, "many_deltas_" + kind, isolation_verified=True)
+        c.turn_timeout = 1
+        try:
+            await c.start()
+            with pytest.raises(RPCError) as error:
+                await invoke(c)
+            assert error.value.code == ("outcome_unknown" if kind == "incomplete" else "tool_activity")
+            assert sum(row.get("method") == "turn/start" for row in requests(c)) == 1
+        finally:
+            await c.close()
+    asyncio.run(run())
+
+
+@pytest.mark.parametrize("active", [False, True])
+@pytest.mark.parametrize("payload_bytes,expected_reads", [(0, 64), (200000, 2)])
+def test_buffered_reader_yields_for_deadlines_and_close_even_without_an_ask(tmp_path, active, payload_bytes, expected_reads):
+    async def run():
+        c = client(tmp_path)
+        line = json.dumps({"method": "unknown/notification", "params": {
+            "threadId": "foreign-thread", "payload": "x" * payload_bytes}}).encode() + b"\n"
+
+        class BufferedChild:
+            stdin = None
+            returncode = None
+            reads = 0
+
+            def __init__(self):
+                self.stdout = self
+
+            async def readline(self):
+                self.reads += 1
+                # Finite even if the production fairness yield regresses.
+                return line if self.reads <= 1024 else b""
+
+            def kill(self):
+                self.returncode = -9
+
+            def terminate(self):
+                self.returncode = -15
+
+            async def wait(self):
+                return self.returncode
+
+        c._process = BufferedChild()
+        if active:
+            c._active = {"thread_id": "thread-1", "wire_bytes": 0,
+                         "done": asyncio.get_running_loop().create_future()}
+        c._reader = asyncio.create_task(c._read_loop())
+        await asyncio.sleep(0)
+        assert c._process.reads == expected_reads
+        assert not c.terminal.is_set()
+        await asyncio.wait_for(c.close(), .5)
+        assert c.terminal.is_set() and c._process.returncode is not None
+        assert c._reader.done()
+    asyncio.run(run())
+
+
+@pytest.mark.parametrize("ending", ["failure", "close"])
+def test_terminal_signal_is_immediate_unusability_not_a_reaping_receipt(tmp_path, ending):
+    async def run():
+        c = client(tmp_path)
+        await c.start()
+        assert not c.terminal.is_set()
+        await c._close_lock.acquire()
+        if ending == "failure":
+            c._fail("protocol_error")
+            assert c.terminal.is_set()
+        closing = asyncio.create_task(c.close())
+        try:
+            await asyncio.wait_for(c.terminal.wait(), .5)
+            assert not closing.done()
+        finally:
+            c._close_lock.release()
+            await closing
+        assert c._process.returncode is not None
+    asyncio.run(run())
 
 
 def test_account_catalog_quota_are_exact_and_redacted(tmp_path, capfd):
