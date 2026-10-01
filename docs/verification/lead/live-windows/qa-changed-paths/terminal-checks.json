@@ -1,0 +1,41 @@
+{
+  "candidate": "69c0a0cbb2856b6931ee60404df3ae07844bcb54",
+  "integrated_commit": "b08d48488dac48af210e5495c59e3fb8c7558d0c",
+  "main_passes": 33,
+  "main_seconds": 4.17,
+  "main_command": ".venv/bin/python -m pytest -q services/worker/connectors/tests/test_chatgpt_request_ledger.py services/worker/connectors/tests/test_chatgpt_failure_outcomes.py services/worker/connectors/tests/test_chatgpt_local.py::test_fatal_inner_child_closes_real_outer_pipe_with_parent_still_open --tb=short",
+  "main_execution": "require_escalated, normal approved execution",
+  "source_sha256": {
+    "docs/verification/backend/p0-04-subscription-terminal-ledger.md": "d6f691fb260db3cbd7de22b5bba2b351f4591e6868086c51773afef0b46c4af4",
+    "services/worker/connectors/chatgpt_live.py": "09e69928b96c302bdd99b72dacfa20d2b1acea125925626343e1694e6ca2b396",
+    "services/worker/connectors/chatgpt_local.py": "3c3fb4b377d117181b3c7f9506a6ff83e0cac88bb879cec7344308021bb5e250",
+    "services/worker/connectors/chatgpt_rpc.py": "f74dd5b742ab56c3c7c620193e69941acf8443d49b8dd2b8182215aaf7a218e2",
+    "services/worker/connectors/tests/test_chatgpt_failure_outcomes.py": "82fb426ca948727d404d15e6c2a2419f7d18d1b5bc7bbf38fdd04eea9f5c05ae",
+    "services/worker/connectors/tests/test_chatgpt_local.py": "27aad1c2050e86bf7c88d0eafa5a7046a5ee2e140ad3abbb5392aefbc52afd3a",
+    "services/worker/connectors/tests/test_chatgpt_request_ledger.py": "a56c05dfd774eb6eea1a2a2e17574bdf609f67d03ab806f3ae4cc60ab43993d5"
+  },
+  "independent_results": {
+    "new": {
+      "passed": 32,
+      "seconds": 3.79
+    },
+    "existing_sandbox": {
+      "passed": 37,
+      "failed": 1,
+      "deselected": 332,
+      "seconds": 8.84
+    },
+    "isolated_eof_sandbox": {
+      "failed": 1,
+      "seconds": 5.32,
+      "error": "queue.Empty waiting for EOF"
+    },
+    "isolated_eof_approved": {
+      "passed": 1,
+      "seconds": 0.35
+    },
+    "qualification": "Unchanged command/source/assertions, normal approved retry; precise blocked primitive undiagnosed. Subset results are not summed with owner419 or main33."
+  },
+  "real_account_provider_device_calls": 0,
+  "worktree_edits_by_reviewer": 0
+}

@@ -256,9 +256,15 @@ choice the user must restate. No account/device/audio allocation is released.
 Web retains its existing TTS/whole-screen/automatic-focus consumer and must keep
 input availability distinct from Talk/playback, with honest unavailable state.
 Backend has now delivered receipt/error/ledger correction `69c0a0c` as
-`handoff_bbf03873362dc28fc2bc713c1c94bc53`; Lead review is underway. Native retains
+`handoff_bbf03873362dc28fc2bc713c1c94bc53`, reviewed/integrated as `b08d484`;
+[focused checks and retained environment failure](../qa-changed-paths/terminal-correction.md). Native retains
 its queued/partial-write Stop correction. Existing Windows/Native dirty work was
 observed and preserved, not treated as tested delivery. Lead reviews exact commits,
 then releases one versioned candidate to the existing QA changed-flow assignment;
 voice/input cases remain unaccepted until a real route exists. No user package,
 profile, private screen, microphone, settings or requirements were changed.
+
+The input availability boundary was substantively sent to the current Windows
+owner at exact pushed `86846c6` as `handoff_3fbf39114e1d40d33326d18d3d132aea`.
+The native receipt is accepted/unread, not proof of adoption; no extra assignment
+or response loop was requested.
