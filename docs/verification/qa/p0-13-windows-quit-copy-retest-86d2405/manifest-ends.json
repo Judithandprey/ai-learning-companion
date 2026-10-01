@@ -1,0 +1,178 @@
+{
+ "a21452ffeb4d40ab": [
+  {
+   "kind": "header",
+   "format": "lc-desktop-capture-retention/v1",
+   "capture_session": "a21452ffeb4d40ab",
+   "started_at": "2026-10-01T02:28:32.514Z",
+   "source": {
+    "kind": "display",
+    "source_id": "screen:0:0",
+    "display_id": "3071609112",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "policy": {
+    "min_interval_ms": 2000,
+    "material_cells": 2,
+    "cell_delta": 4,
+    "heartbeat_ms": 60000,
+    "max_frames": 1000,
+    "max_bytes": 1073741824
+   },
+   "files": "frames/<sha256>.png: the PNG file; sha256 and bytes below are of that file. pixels_sha256 is the SHA-256 of the RGBA pixels this app read back (a different hash).",
+   "ink_originals": "ink/<sha256>.json: the exact editable ink document (lc-desktop-ink/v1 JSON) a composed frame was drawn from, taken with the composition. composed.ink_original names its file, sha256 and bytes, or says why none was retained (refused). A gesture still in progress then (composed.uncommitted_gesture) is in neither the composition nor that document; for strokes whose evidence was still being made (composed.evidence_pending), that document has no evidence entry yet or evidence whose context pictures are null: pending, not failed. Lines written before this have no ink_original: their ink is unknown.",
+   "time_basis": {
+    "sampled_at": "wall-clock ISO time of the sample (this app)",
+    "taken_at": "wall-clock ISO time this app took the held image",
+    "monotonic_ms": "the overlay performance.now() at the sample",
+    "presentation_ms": "the overlay performance time at which the held image's newest frame was presented; null before the first frame callback",
+    "frame_age_ms": "measured at the sample as performance.now() minus the held image's newest frame's presentation time, then rounded. monotonic_ms and presentation_ms are rounded separately and read at slightly different moments, so frame_age_ms can differ from their difference by a millisecond or more. null when presentation_ms is null. The capture latency before presentation is not measured.",
+    "gap_ms": "how late the sampler ran for a sample in state 'gap', as measured then; nothing is known about the display during it"
+   }
+  },
+  {
+   "kind": "ended",
+   "at": "2026-10-01T02:28:43.912Z",
+   "reason": "the app was closed"
+  }
+ ],
+ "e2ed9393a78b3dab": [
+  {
+   "kind": "header",
+   "format": "lc-desktop-capture-retention/v1",
+   "capture_session": "e2ed9393a78b3dab",
+   "started_at": "2026-10-01T02:24:53.291Z",
+   "source": {
+    "kind": "display",
+    "source_id": "screen:0:0",
+    "display_id": "3071609112",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "policy": {
+    "min_interval_ms": 2000,
+    "material_cells": 2,
+    "cell_delta": 4,
+    "heartbeat_ms": 60000,
+    "max_frames": 1000,
+    "max_bytes": 1073741824
+   },
+   "files": "frames/<sha256>.png: the PNG file; sha256 and bytes below are of that file. pixels_sha256 is the SHA-256 of the RGBA pixels this app read back (a different hash).",
+   "ink_originals": "ink/<sha256>.json: the exact editable ink document (lc-desktop-ink/v1 JSON) a composed frame was drawn from, taken with the composition. composed.ink_original names its file, sha256 and bytes, or says why none was retained (refused). A gesture still in progress then (composed.uncommitted_gesture) is in neither the composition nor that document; for strokes whose evidence was still being made (composed.evidence_pending), that document has no evidence entry yet or evidence whose context pictures are null: pending, not failed. Lines written before this have no ink_original: their ink is unknown.",
+   "time_basis": {
+    "sampled_at": "wall-clock ISO time of the sample (this app)",
+    "taken_at": "wall-clock ISO time this app took the held image",
+    "monotonic_ms": "the overlay performance.now() at the sample",
+    "presentation_ms": "the overlay performance time at which the held image's newest frame was presented; null before the first frame callback",
+    "frame_age_ms": "measured at the sample as performance.now() minus the held image's newest frame's presentation time, then rounded. monotonic_ms and presentation_ms are rounded separately and read at slightly different moments, so frame_age_ms can differ from their difference by a millisecond or more. null when presentation_ms is null. The capture latency before presentation is not measured.",
+    "gap_ms": "how late the sampler ran for a sample in state 'gap', as measured then; nothing is known about the display during it"
+   }
+  },
+  {
+   "kind": "ended",
+   "at": "2026-10-01T02:28:21.387Z",
+   "reason": "stopped by the user"
+  }
+ ],
+ "f26d373df392811a": [
+  {
+   "kind": "header",
+   "format": "lc-desktop-capture-retention/v1",
+   "capture_session": "f26d373df392811a",
+   "started_at": "2026-10-01T02:29:03.198Z",
+   "source": {
+    "kind": "display",
+    "source_id": "screen:0:0",
+    "display_id": "3071609112",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "policy": {
+    "min_interval_ms": 2000,
+    "material_cells": 2,
+    "cell_delta": 4,
+    "heartbeat_ms": 60000,
+    "max_frames": 1000,
+    "max_bytes": 1073741824
+   },
+   "files": "frames/<sha256>.png: the PNG file; sha256 and bytes below are of that file. pixels_sha256 is the SHA-256 of the RGBA pixels this app read back (a different hash).",
+   "ink_originals": "ink/<sha256>.json: the exact editable ink document (lc-desktop-ink/v1 JSON) a composed frame was drawn from, taken with the composition. composed.ink_original names its file, sha256 and bytes, or says why none was retained (refused). A gesture still in progress then (composed.uncommitted_gesture) is in neither the composition nor that document; for strokes whose evidence was still being made (composed.evidence_pending), that document has no evidence entry yet or evidence whose context pictures are null: pending, not failed. Lines written before this have no ink_original: their ink is unknown.",
+   "time_basis": {
+    "sampled_at": "wall-clock ISO time of the sample (this app)",
+    "taken_at": "wall-clock ISO time this app took the held image",
+    "monotonic_ms": "the overlay performance.now() at the sample",
+    "presentation_ms": "the overlay performance time at which the held image's newest frame was presented; null before the first frame callback",
+    "frame_age_ms": "measured at the sample as performance.now() minus the held image's newest frame's presentation time, then rounded. monotonic_ms and presentation_ms are rounded separately and read at slightly different moments, so frame_age_ms can differ from their difference by a millisecond or more. null when presentation_ms is null. The capture latency before presentation is not measured.",
+    "gap_ms": "how late the sampler ran for a sample in state 'gap', as measured then; nothing is known about the display during it"
+   }
+  },
+  {
+   "kind": "ended",
+   "at": "2026-10-01T02:29:15.795Z",
+   "reason": "stopped by the user"
+  }
+ ],
+ "f4e3510365cb5393": [
+  {
+   "kind": "header",
+   "format": "lc-desktop-capture-retention/v1",
+   "capture_session": "f4e3510365cb5393",
+   "started_at": "2026-10-01T02:29:32.051Z",
+   "source": {
+    "kind": "display",
+    "source_id": "screen:0:0",
+    "display_id": "3071609112",
+    "label": "整个屏幕",
+    "bounds": {
+     "x": 0,
+     "y": 0,
+     "width": 1280,
+     "height": 800
+    },
+    "scale_factor": 2
+   },
+   "policy": {
+    "min_interval_ms": 2000,
+    "material_cells": 2,
+    "cell_delta": 4,
+    "heartbeat_ms": 60000,
+    "max_frames": 1000,
+    "max_bytes": 1073741824
+   },
+   "files": "frames/<sha256>.png: the PNG file; sha256 and bytes below are of that file. pixels_sha256 is the SHA-256 of the RGBA pixels this app read back (a different hash).",
+   "ink_originals": "ink/<sha256>.json: the exact editable ink document (lc-desktop-ink/v1 JSON) a composed frame was drawn from, taken with the composition. composed.ink_original names its file, sha256 and bytes, or says why none was retained (refused). A gesture still in progress then (composed.uncommitted_gesture) is in neither the composition nor that document; for strokes whose evidence was still being made (composed.evidence_pending), that document has no evidence entry yet or evidence whose context pictures are null: pending, not failed. Lines written before this have no ink_original: their ink is unknown.",
+   "time_basis": {
+    "sampled_at": "wall-clock ISO time of the sample (this app)",
+    "taken_at": "wall-clock ISO time this app took the held image",
+    "monotonic_ms": "the overlay performance.now() at the sample",
+    "presentation_ms": "the overlay performance time at which the held image's newest frame was presented; null before the first frame callback",
+    "frame_age_ms": "measured at the sample as performance.now() minus the held image's newest frame's presentation time, then rounded. monotonic_ms and presentation_ms are rounded separately and read at slightly different moments, so frame_age_ms can differ from their difference by a millisecond or more. null when presentation_ms is null. The capture latency before presentation is not measured.",
+    "gap_ms": "how late the sampler ran for a sample in state 'gap', as measured then; nothing is known about the display during it"
+   }
+  },
+  {
+   "kind": "ended",
+   "at": "2026-10-01T02:29:39.161Z",
+   "reason": "the app was closed"
+  }
+ ]
+}

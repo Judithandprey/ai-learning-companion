@@ -1,0 +1,301 @@
+{
+ "format": "lc-windows-capture-link/v1",
+ "actor": {
+  "user_id": "lc-windows-http-b6015a41b0834da89d06e1c7773afcd8",
+  "device_id": "windows-qa90a6f10c69d441",
+  "session_id": "learning-qae55928abe6dd4b",
+  "producer_id": "windows-app-qa32226a008caf48"
+ },
+ "last_registered_stream": "stream-6109015b8c29697f5192e4f1",
+ "streams": [
+  {
+   "capture_session": "e2ed9393a78b3dab",
+   "capture_dir": "<home>\\AppData\\Local\\Temp\\lc-qa-windows-retest\\qa-parentfix-1790821470563\\userdata\\captures\\e2ed9393a78b3dab",
+   "stream_id": "stream-248e65362779508b7da44cd5",
+   "source_id": "src-c1377d202effe9d80cd8beec",
+   "registration": {
+    "contract_version": "0.2.1",
+    "device_id": "windows-qa90a6f10c69d441",
+    "session_id": "learning-qae55928abe6dd4b",
+    "stream_id": "stream-248e65362779508b7da44cd5",
+    "authorization_generation": 1,
+    "membership_revision": 1,
+    "continuity": {
+     "kind": "initial"
+    }
+   },
+   "registration_key": "stream-248e65362779508b7da44cd5.register",
+   "grant": "consumed",
+   "registered": true,
+   "state": {
+    "revision": 2,
+    "state": "stopped",
+    "pre_stop_sequence": null,
+    "read_at": "2026-10-01T02:28:21.429Z"
+   },
+   "source": {
+    "user_id": "lc-windows-http-b6015a41b0834da89d06e1c7773afcd8",
+    "source_id": "src-c1377d202effe9d80cd8beec",
+    "source_version": 1
+   },
+   "planned_through": 6,
+   "jobs": [
+    {
+     "key": "src-c1377d202effe9d80cd8beec.b2-2",
+     "from": 2,
+     "through": 2,
+     "records": 1,
+     "status": "committed",
+     "body_sha256": "1e8ff1775c577ad64a40b9000e696e9a743a559fa88d16c373118abad614ddc6",
+     "originals": [
+      "src-c1377d202effe9d80cd8beec.png.e888bc54ea7816aded748e07698d16827809c5b86edc44b50dc4ffdb86335254",
+      "src-c1377d202effe9d80cd8beec.ink.591aad51f3af3fd061daa976a802b8ae6511acdaa4c0845d3c64f22611a757aa"
+     ],
+     "ack_sha256": "338c865931f2b4892793015704c25bed84c20e2e6e624897c68d8596668d5539"
+    },
+    {
+     "key": "src-c1377d202effe9d80cd8beec.b3-3",
+     "from": 3,
+     "through": 3,
+     "records": 1,
+     "status": "committed",
+     "body_sha256": "d1cccae219f92eb6f01912deeefd174aed25d3e6e240dbfa832d167966fc891e",
+     "originals": [
+      "src-c1377d202effe9d80cd8beec.png.c1f2ec936647ae3518bb8c2f506b374bf501fc2763110dc3b82fd2722fc8bec1",
+      "src-c1377d202effe9d80cd8beec.ink.591aad51f3af3fd061daa976a802b8ae6511acdaa4c0845d3c64f22611a757aa"
+     ],
+     "ack_sha256": "9fd633450bd2a121f21c523a62b06df508b94296a2dba006ae273861a7189e26"
+    },
+    {
+     "key": "src-c1377d202effe9d80cd8beec.b4-4",
+     "from": 4,
+     "through": 4,
+     "records": 1,
+     "status": "committed",
+     "body_sha256": "1644211cd3881fd6c782a63316268e173da1e5786d25be6e292ae0cc3273c37d",
+     "originals": [
+      "src-c1377d202effe9d80cd8beec.png.c1f2ec936647ae3518bb8c2f506b374bf501fc2763110dc3b82fd2722fc8bec1",
+      "src-c1377d202effe9d80cd8beec.png.f1e6ec377c392b63c0f5d710ed583d968e08d8ac38925adab9acd70c19675907",
+      "src-c1377d202effe9d80cd8beec.ink.27a8acf5ba8fe789af6a6c72ac122532fb2ba858b19966fb22c896b0543d1b51"
+     ],
+     "ack_sha256": "dea5c7dadde9f5097331ee7e35f2d7ce188d5b83ae507c5d03ec983119081246"
+    },
+    {
+     "key": "src-c1377d202effe9d80cd8beec.b5-5",
+     "from": 5,
+     "through": 5,
+     "records": 1,
+     "status": "committed",
+     "body_sha256": "83aa66bda4a9870a895756152a295c5f821ffb72be9e338dfb145eab77481362",
+     "originals": [
+      "src-c1377d202effe9d80cd8beec.png.ed7d5721dd8c052015b22d84b38c35444fc022140274c2abefb68a3257cea652",
+      "src-c1377d202effe9d80cd8beec.png.82126bf46d43f3c89017f717418d5b4fb6199f60a334312c0f62aaea5e3040bb",
+      "src-c1377d202effe9d80cd8beec.ink.27a8acf5ba8fe789af6a6c72ac122532fb2ba858b19966fb22c896b0543d1b51"
+     ],
+     "ack_sha256": "8dd8925b6526b98835fccf8a8cc14682e67ef10f3d62b3d7b938403a24e431a4"
+    },
+    {
+     "key": "src-c1377d202effe9d80cd8beec.b6-6",
+     "from": 6,
+     "through": 6,
+     "records": 1,
+     "status": "committed",
+     "body_sha256": "984eff4affbe297a45d284a11927c2f23ae20727c4feb8cb93c18af4186322b0",
+     "originals": [
+      "src-c1377d202effe9d80cd8beec.png.ed7d5721dd8c052015b22d84b38c35444fc022140274c2abefb68a3257cea652",
+      "src-c1377d202effe9d80cd8beec.png.1964114f6ab9e44c7eadc2d2aa996851beb89b289f016ac2bb412487b02b816c",
+      "src-c1377d202effe9d80cd8beec.ink.15f6f7ebe23db03f9c0693907ffe7f3aad4eb0fa091b4c5e0b6b898c0f5ac576"
+     ],
+     "ack_sha256": "2157bb8d7c3c44d769a8331f4362d0883411af7408407c5f4fe11a53d325e613"
+    }
+   ],
+   "stops": [
+    {
+     "key": "stream-248e65362779508b7da44cd5.stop.1",
+     "body": {
+      "contract_version": "0.2.1",
+      "device_id": "windows-qa90a6f10c69d441",
+      "session_id": "learning-qae55928abe6dd4b",
+      "stream_id": "stream-248e65362779508b7da44cd5",
+      "expected_revision": 1,
+      "action": {
+       "kind": "stop",
+       "pre_stop_sequence": null
+      }
+     },
+     "outcome": "stopped"
+    }
+   ],
+   "final": "stopped",
+   "notes": [
+    "the host ended"
+   ],
+   "registration_sent": true
+  },
+  {
+   "capture_session": "a21452ffeb4d40ab",
+   "capture_dir": "<home>\\AppData\\Local\\Temp\\lc-qa-windows-retest\\qa-parentfix-1790821470563\\userdata\\captures\\a21452ffeb4d40ab",
+   "stream_id": "stream-6109015b8c29697f5192e4f1",
+   "source_id": "src-9f0decb83e24530be7030b5c",
+   "registration": {
+    "contract_version": "0.2.1",
+    "device_id": "windows-qa90a6f10c69d441",
+    "session_id": "learning-qae55928abe6dd4b",
+    "stream_id": "stream-6109015b8c29697f5192e4f1",
+    "authorization_generation": 1,
+    "membership_revision": 1,
+    "continuity": {
+     "kind": "restart",
+     "previous_stream_id": "stream-248e65362779508b7da44cd5",
+     "gap": "unknown"
+    }
+   },
+   "registration_key": "stream-6109015b8c29697f5192e4f1.register",
+   "grant": "consumed",
+   "registered": true,
+   "state": {
+    "revision": 2,
+    "state": "stopped",
+    "pre_stop_sequence": null,
+    "read_at": "2026-10-01T02:28:43.969Z"
+   },
+   "source": {
+    "user_id": "lc-windows-http-b6015a41b0834da89d06e1c7773afcd8",
+    "source_id": "src-9f0decb83e24530be7030b5c",
+    "source_version": 1
+   },
+   "planned_through": 4,
+   "jobs": [
+    {
+     "key": "src-9f0decb83e24530be7030b5c.b2-2",
+     "from": 2,
+     "through": 2,
+     "records": 1,
+     "status": "committed",
+     "body_sha256": "39745313ac966c3e6a73561028cf32e2f374278c7d5ec2386dfbc2da51034268",
+     "originals": [
+      "src-9f0decb83e24530be7030b5c.png.ed7d5721dd8c052015b22d84b38c35444fc022140274c2abefb68a3257cea652",
+      "src-9f0decb83e24530be7030b5c.ink.ac2021805eca7e20401634272be393a54f7cacacbd8c70f4688cf639227bb8ee"
+     ],
+     "ack_sha256": "c1a19a9f159f09af16e04680ef07424bc237be4bceb1e654a793e167594cb9e2"
+    },
+    {
+     "key": "src-9f0decb83e24530be7030b5c.b3-3",
+     "from": 3,
+     "through": 3,
+     "records": 1,
+     "status": "committed",
+     "body_sha256": "01a0fd421fb745b5281cec903a216aa37f59bd512d581f4549b5015565dcea50",
+     "originals": [
+      "src-9f0decb83e24530be7030b5c.png.ed7d5721dd8c052015b22d84b38c35444fc022140274c2abefb68a3257cea652",
+      "src-9f0decb83e24530be7030b5c.png.e726983f1496f4b6c0ea4d9ff42acdfaa6820e52dbed61938c1ee33b8002244b",
+      "src-9f0decb83e24530be7030b5c.ink.ddbcb2e1afc17118fa96101e923487ff2c92703f7da063535394f31b9a2f52cd"
+     ],
+     "ack_sha256": "54e05f32199568df670249d3a66821ebe81442e5c1a0b793f4e91d902bff92a3"
+    },
+    {
+     "key": "src-9f0decb83e24530be7030b5c.b4-4",
+     "from": 4,
+     "through": 4,
+     "records": 1,
+     "status": "committed",
+     "body_sha256": "9c8a675ea2004e6249c18dd6b67f481369ed99e91ffc859ad75a25d0a1614488",
+     "originals": [
+      "src-9f0decb83e24530be7030b5c.png.47bd54d28a20cff2b8db79f2153b1f585f7061e3c2a92b347cc4041b8bc72a72",
+      "src-9f0decb83e24530be7030b5c.png.4aa18f451136f11a4e1001be8ba932f7fc19fba7ed5a4fef49bf85b096cb7460",
+      "src-9f0decb83e24530be7030b5c.ink.ddbcb2e1afc17118fa96101e923487ff2c92703f7da063535394f31b9a2f52cd"
+     ],
+     "ack_sha256": "b7856b6e0f2a1e33353363e9501545073539ba264179d4a2b8f0c7900f207c6a"
+    }
+   ],
+   "stops": [
+    {
+     "key": "stream-6109015b8c29697f5192e4f1.stop.1",
+     "body": {
+      "contract_version": "0.2.1",
+      "device_id": "windows-qa90a6f10c69d441",
+      "session_id": "learning-qae55928abe6dd4b",
+      "stream_id": "stream-6109015b8c29697f5192e4f1",
+      "expected_revision": 1,
+      "action": {
+       "kind": "stop",
+       "pre_stop_sequence": null
+      }
+     },
+     "outcome": "stopped"
+    }
+   ],
+   "final": "stopped",
+   "notes": [
+    "the host ended"
+   ],
+   "registration_sent": true
+  },
+  {
+   "capture_session": "f26d373df392811a",
+   "capture_dir": "<home>\\AppData\\Local\\Temp\\lc-qa-windows-retest\\qa-parentfix-1790821470563\\userdata\\captures\\f26d373df392811a",
+   "stream_id": "stream-2fc0f3dd20e18983f3005341",
+   "source_id": "src-74e506106275725cb82197d7",
+   "registration": {
+    "contract_version": "0.2.1",
+    "device_id": "windows-qa90a6f10c69d441",
+    "session_id": "learning-qae55928abe6dd4b",
+    "stream_id": "stream-2fc0f3dd20e18983f3005341",
+    "authorization_generation": 1,
+    "membership_revision": 1,
+    "continuity": {
+     "kind": "restart",
+     "previous_stream_id": "stream-6109015b8c29697f5192e4f1",
+     "gap": "unknown"
+    }
+   },
+   "registration_key": "stream-2fc0f3dd20e18983f3005341.register",
+   "grant": "requested_unknown",
+   "registered": false,
+   "state": null,
+   "source": null,
+   "planned_through": 0,
+   "jobs": [],
+   "stops": [],
+   "final": null,
+   "notes": [
+    "not connected: the host ended without READY (unavailable)",
+    "not reconciled: the host ended without READY (unavailable)",
+    "not reconciled: the host ended without READY (unavailable)",
+    "not reconciled: the host ended without READY (unavailable)"
+   ]
+  },
+  {
+   "capture_session": "f4e3510365cb5393",
+   "capture_dir": "<home>\\AppData\\Local\\Temp\\lc-qa-windows-retest\\qa-parentfix-1790821470563\\userdata\\captures\\f4e3510365cb5393",
+   "stream_id": "stream-daf1093f815a6efe80f550e4",
+   "source_id": "src-77d7a58a2587a85315df22d4",
+   "registration": {
+    "contract_version": "0.2.1",
+    "device_id": "windows-qa90a6f10c69d441",
+    "session_id": "learning-qae55928abe6dd4b",
+    "stream_id": "stream-daf1093f815a6efe80f550e4",
+    "authorization_generation": 1,
+    "membership_revision": 1,
+    "continuity": {
+     "kind": "restart",
+     "previous_stream_id": "stream-6109015b8c29697f5192e4f1",
+     "gap": "unknown"
+    }
+   },
+   "registration_key": "stream-daf1093f815a6efe80f550e4.register",
+   "grant": "requested_unknown",
+   "registered": false,
+   "state": null,
+   "source": null,
+   "planned_through": 0,
+   "jobs": [],
+   "stops": [],
+   "final": null,
+   "notes": [
+    "not connected: the host ended without READY (unavailable)",
+    "not reconciled: the host ended without READY (unavailable)"
+   ]
+  }
+ ]
+}

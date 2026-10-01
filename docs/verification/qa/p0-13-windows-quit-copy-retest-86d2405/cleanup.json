@@ -1,0 +1,12 @@
+{
+ "after": {
+  "actor_row": false,
+  "documents": 0
+ },
+ "at": "2026-10-01T02:31:06.702006+00:00",
+ "before": {
+  "actor_row": true,
+  "documents": 81
+ },
+ "cleanup": "this run's proven actor only"
+}

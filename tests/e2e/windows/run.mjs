@@ -17,7 +17,7 @@ const HERE = dirname(fileURLToPath(import.meta.url));
 // copyFile can fail with EPERM on the Windows drive mount; write the bytes instead.
 const copyFileSync = (from, to) => writeFileSync(to, readFileSync(from));
 const [scenario, outArg] = process.argv.slice(2);
-if (!scenarios[scenario] || !outArg) throw new Error('usage: run.mjs <smoke|full|ink|parent> <out dir>');
+if (!scenarios[scenario] || !outArg) throw new Error('usage: run.mjs <smoke|full|ink|parent|parentquit|parentfix> <out dir>');
 const out = resolve(outArg);
 const run = (cmd, argv) => execFileSync(cmd, argv, { encoding: 'utf8', cwd: '/mnt/c' }).trim();
 const toWin = (p) => run('wslpath', ['-w', p]);
@@ -68,7 +68,8 @@ if (parent) {
   watchFile = join(out, 'host-watch.jsonl');
   stopFile = join(out, 'host-watch.stop');
   const { openSync } = await import('node:fs');
-  watcher = spawn(PY, [HELPER, 'watch', '--backend', backendCopy, '--out', watchFile, '--stop', stopFile], { cwd: '/tmp', stdio: ['ignore', 'ignore', openSync(join(out, 'host-watch.stderr'), 'w')], env: { ...process.env, PYTHONDONTWRITEBYTECODE: '1' } });
+  // --control: the runner's hostPause/hostResume requests (this run's out folder on the Windows side), for this run's host only.
+  watcher = spawn(PY, [HELPER, 'watch', '--backend', backendCopy, '--out', watchFile, '--stop', stopFile, '--control', paths.winOut], { cwd: '/tmp', stdio: ['ignore', 'ignore', openSync(join(out, 'host-watch.stderr'), 'w')], env: { ...process.env, PYTHONDONTWRITEBYTECODE: '1' } });
 }
 const steps = scenarios[scenario]({ courseUrl, notes: toWin(join(paths.content, 'notes.txt')), edgeProfile: toWin(paths.edgeProfile), userData: toWin(paths.userData), actor });
 writeFileSync(join(work, 'steps.json'), JSON.stringify(steps, null, 1));
@@ -76,8 +77,10 @@ writeFileSync(join(work, 'steps.json'), JSON.stringify(steps, null, 1));
 const started = new Date().toISOString();
 const r = spawnSync('powershell.exe', ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass', '-File', toWin(join(work, 'qa-electron-runner.ps1')),
   '-Electron', electron, '-Stage', toWin(stage), '-UserData', toWin(paths.userData), '-StepsFile', toWin(join(work, 'steps.json')),
-  '-OutDir', toWin(paths.winOut), '-Edge', edge, '-AppTemp', toWin(paths.appTemp), ...extraArgs], { cwd: '/mnt/c', encoding: 'utf8', timeout: 900000 });
+  '-OutDir', toWin(paths.winOut), '-Edge', edge, '-AppTemp', toWin(paths.appTemp), ...extraArgs], { cwd: '/mnt/c', encoding: 'utf8', timeout: scenario === 'parentfix' ? 520000 : 900000 }); // parentfix (about 6 min) must end inside one 10 min foreground call
 mkdirSync(out, { recursive: true });
+// The runner was cut short (the time limit): its own cleanup may not have run, so this run's app may still be on the display.
+const cutShort = Boolean(r.error || r.signal);
 try {
   writeFileSync(join(out, 'runner-stdio.txt'), `${r.stdout ?? ''}\n--- stderr ---\n${r.stderr ?? ''}\nstatus ${r.status} signal ${r.signal}\n`);
   cpSync(paths.winOut, join(out, 'out'), { recursive: true });
@@ -145,7 +148,11 @@ try {
     writeFileSync(stopFile, 'stop');
     await new Promise((res) => (watcher.exitCode !== null || watcher.signalCode !== null ? res() : watcher.on('exit', res)));
   }
-  rmSync(work, { recursive: true, force: true }); // fresh per run; nothing stays on the Windows side
+  if (cutShort) {
+    const pids = join(paths.winOut, 'app-pids.txt');
+    console.error(`RUNNER CUT SHORT (${r.error?.code ?? r.signal}): this run's app may still be running; its work folder is kept.\nOwned app PIDs (key pid start):\n${existsSync(pids) ? readFileSync(pids, 'utf8') : '(none recorded)'}`);
+    process.exitCode = 4;
+  } else rmSync(work, { recursive: true, force: true }); // fresh per run; nothing stays on the Windows side
 }
 console.log(readFileSync(join(out, 'out', 'results.json'), 'utf8').slice(0, 400));
 

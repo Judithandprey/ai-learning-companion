@@ -1,0 +1,1351 @@
+{
+ "counts": {
+  "pass": 24,
+  "limit": 2
+ },
+ "checks": [
+  {
+   "id": "run.shared_desktop_quiet",
+   "status": "pass",
+   "observed": {
+    "foreign_electron_seen": []
+   },
+   "note": "no other Electron app at start, at each screenshot and at the end (point-in-time)"
+  },
+  {
+   "id": "run.completed",
+   "status": "pass",
+   "observed": {
+    "aborted": null,
+    "failed_steps": [],
+    "steps_run": 223,
+    "steps_planned": 223
+   },
+   "note": "every planned step ran; an optional status wait that timed out counts as a failed step here"
+  },
+  {
+   "id": "run.cursor_static",
+   "status": "pass",
+   "observed": {
+    "positions_px": [
+     [
+      1586,
+      949
+     ]
+    ]
+   }
+  },
+  {
+   "id": "quit.control_without_link",
+   "status": "pass",
+   "observed": {
+    "close": {
+     "pid": 55764,
+     "link": "",
+     "via": "page",
+     "close_requested_at": "2026-10-01T02:24:38.3995005Z",
+     "exit_ms": 118,
+     "exited": true,
+     "exit_code": 0,
+     "exited_at": "2026-10-01T02:24:38.5006515Z",
+     "killed": false,
+     "closed_in_finally": false
+    },
+    "bound_ms": 5000,
+    "status": {
+     "mode": "off"
+    }
+   },
+   "note": "control: the same app without the development link"
+  },
+  {
+   "id": "quit.idle_native_close",
+   "status": "pass",
+   "observed": {
+    "close": {
+     "pid": 60936,
+     "link": "main",
+     "via": "wm_close",
+     "close_requested_at": "2026-10-01T02:24:44.4401184Z",
+     "exit_ms": 154,
+     "exited": true,
+     "exit_code": 0,
+     "exited_at": "2026-10-01T02:24:44.5766242Z",
+     "killed": false,
+     "closed_in_finally": false,
+     "wm_close_posted": true
+    },
+    "bound_ms": 5000,
+    "status_before": {
+     "mode": "development",
+     "state": "idle",
+     "stored": 0,
+     "unknown": 0,
+     "refused": 0,
+     "not_sent": 0,
+     "detail": null,
+     "earlier_unknown": 0,
+     "sends_stopped": false,
+     "storing": false
+    },
+    "children_before": [
+     "electron.exe",
+     "electron.exe",
+     "electron.exe"
+    ],
+    "hosts_while_it_ran": []
+   },
+   "note": "link configured, never started; WM_CLOSE posted to the control window (what its title-bar X sends): the app ends by itself"
+  },
+  {
+   "id": "quit.after_stop_page_close",
+   "status": "pass",
+   "observed": {
+    "close": {
+     "pid": 75440,
+     "link": "main",
+     "via": "page",
+     "close_requested_at": "2026-10-01T02:28:22.5487507Z",
+     "exit_ms": 140,
+     "exited": true,
+     "exit_code": 0,
+     "exited_at": "2026-10-01T02:28:22.6703571Z",
+     "killed": false,
+     "closed_in_finally": false
+    },
+    "bound_ms": 5000,
+    "status_before": {
+     "mode": "development",
+     "state": "stopped",
+     "stored": 5,
+     "unknown": 0,
+     "refused": 0,
+     "not_sent": 0,
+     "detail": "stream stopped",
+     "earlier_unknown": 0,
+     "sends_stopped": false,
+     "storing": false
+    },
+    "stream_final": "stopped",
+    "children_before": [
+     "electron.exe",
+     "electron.exe",
+     "electron.exe"
+    ]
+   },
+   "note": "after Start, storing and Stop on the healthy test service; the page's own close (the original QA-WIN-03 route): the app ends by itself"
+  },
+  {
+   "id": "quit.while_capturing_bounded_stop",
+   "status": "pass",
+   "observed": {
+    "close": {
+     "pid": 13320,
+     "link": "main",
+     "via": "wm_close",
+     "close_requested_at": "2026-10-01T02:28:43.8081324Z",
+     "exit_ms": 661,
+     "exited": true,
+     "exit_code": 0,
+     "exited_at": "2026-10-01T02:28:44.4502073Z",
+     "killed": false,
+     "closed_in_finally": false,
+     "wm_close_posted": true,
+     "second_wm_close": {
+      "after_ms": 71,
+      "posted": true
+     }
+    },
+    "bound_ms": 30000,
+    "status_before": {
+     "mode": "development",
+     "state": "sending",
+     "stored": 3,
+     "unknown": 0,
+     "refused": 0,
+     "not_sent": 0,
+     "detail": null,
+     "earlier_unknown": 0,
+     "sends_stopped": false,
+     "storing": true
+    },
+    "manifest_ended": [
+     {
+      "kind": "ended",
+      "at": "2026-10-01T02:28:43.912Z",
+      "reason": "the app was closed"
+     }
+    ],
+    "stream": {
+     "final": "stopped",
+     "stops": [
+      {
+       "key": "stream-6109015b8c29697f5192e4f1.stop.1",
+       "outcome": "stopped"
+      }
+     ],
+     "notes": [
+      "the host ended"
+     ],
+     "jobs": [
+      "committed",
+      "committed",
+      "committed"
+     ]
+    },
+    "server_stream": {
+     "pre_stop_sequence": null,
+     "revision": 2,
+     "state": "stopped"
+    },
+    "server_records": 3,
+    "server_mismatches": [],
+    "host": [
+     {
+      "pid": 1087400,
+      "appeared": 1790821712.723495,
+      "exited": 1790821724.497519
+     }
+    ],
+    "host_exit_after_app_exit_s": 0.05,
+    "saved_ink_before_close": [
+     [
+      "a21452ffeb4d40ab",
+      1,
+      1
+     ],
+     [
+      "e2ed9393a78b3dab",
+      2,
+      2
+     ]
+    ],
+    "saved_ink_after_relaunch": [
+     [
+      "a21452ffeb4d40ab",
+      1,
+      1
+     ],
+     [
+      "e2ed9393a78b3dab",
+      2,
+      2
+     ]
+    ]
+   },
+   "note": "WM_CLOSE to the control window while capturing and storing (no Stop pressed), and a second WM_CLOSE accepted by the same window right behind it: the app ends the session itself ('the app was closed'), the stream is stopped on the service, the host ends and the app exits by itself within the bound; the ink written is saved"
+  },
+  {
+   "id": "quit.relaunched_idle_page_close",
+   "status": "pass",
+   "observed": {
+    "close": {
+     "pid": 72972,
+     "link": "main",
+     "via": "page",
+     "close_requested_at": "2026-10-01T02:28:55.3649862Z",
+     "exit_ms": 91,
+     "exited": true,
+     "exit_code": 0,
+     "exited_at": "2026-10-01T02:28:55.4395987Z",
+     "killed": false,
+     "closed_in_finally": false
+    },
+    "bound_ms": 5000,
+    "status_before": {
+     "mode": "development",
+     "state": "stopped",
+     "stored": 3,
+     "unknown": 0,
+     "refused": 0,
+     "not_sent": 0,
+     "detail": "the host ended",
+     "earlier_unknown": 0,
+     "sends_stopped": false,
+     "storing": false
+    }
+   },
+   "note": "relaunched after the close while capturing, not started again; the page's own close (the original QA-WIN-03 route): the app ends by itself"
+  },
+  {
+   "id": "quit.unavailable_after_stop",
+   "status": "pass",
+   "observed": {
+    "close": {
+     "pid": 74964,
+     "link": "unavail",
+     "via": "wm_close",
+     "close_requested_at": "2026-10-01T02:29:18.9258577Z",
+     "exit_ms": 119,
+     "exited": true,
+     "exit_code": 0,
+     "exited_at": "2026-10-01T02:29:19.0278483Z",
+     "killed": false,
+     "closed_in_finally": false,
+     "wm_close_posted": true
+    },
+    "bound_ms": 5000,
+    "status_while_capturing": {
+     "mode": "development",
+     "state": "not connected",
+     "stored": 0,
+     "unknown": 0,
+     "refused": 0,
+     "not_sent": 0,
+     "detail": "the host ended without READY (unavailable)",
+     "earlier_unknown": 0,
+     "sends_stopped": false,
+     "storing": false
+    },
+    "status_before_close": {
+     "mode": "development",
+     "state": "stopped",
+     "stored": 0,
+     "unknown": 0,
+     "refused": 0,
+     "not_sent": 0,
+     "detail": "the stream was never confirmed registered; whether it or a grant exists is not known",
+     "earlier_unknown": 1,
+     "sends_stopped": false,
+     "storing": false
+    },
+    "stream": {
+     "grant": "requested_unknown",
+     "registered": false,
+     "final": null,
+     "notes": [
+      "not connected: the host ended without READY (unavailable)",
+      "not reconciled: the host ended without READY (unavailable)",
+      "not reconciled: the host ended without READY (unavailable)",
+      "not reconciled: the host ended without READY (unavailable)"
+     ]
+    }
+   },
+   "note": "the test service unavailable; Start, write, ASK, Stop, then WM_CLOSE: the app ends by itself"
+  },
+  {
+   "id": "quit.unavailable_while_capturing",
+   "status": "pass",
+   "observed": {
+    "close": {
+     "pid": 24832,
+     "link": "unavail",
+     "via": "wm_close",
+     "close_requested_at": "2026-10-01T02:29:39.0754400Z",
+     "exit_ms": 260,
+     "exited": true,
+     "exit_code": 0,
+     "exited_at": "2026-10-01T02:29:39.3164897Z",
+     "killed": false,
+     "closed_in_finally": false,
+     "wm_close_posted": true
+    },
+    "bound_ms": 30000,
+    "status_before": {
+     "mode": "development",
+     "state": "not connected",
+     "stored": 0,
+     "unknown": 0,
+     "refused": 0,
+     "not_sent": 0,
+     "detail": "the host ended without READY (unavailable)",
+     "earlier_unknown": 1,
+     "sends_stopped": false,
+     "storing": false
+    },
+    "manifest_ended": [
+     {
+      "kind": "ended",
+      "at": "2026-10-01T02:29:39.161Z",
+      "reason": "the app was closed"
+     }
+    ],
+    "stream": {
+     "grant": "requested_unknown",
+     "registered": false,
+     "final": null,
+     "notes": [
+      "not connected: the host ended without READY (unavailable)",
+      "not reconciled: the host ended without READY (unavailable)"
+     ]
+    }
+   },
+   "note": "the test service unavailable; WM_CLOSE while capturing (no Stop pressed): the app ends the session itself and exits by itself"
+  },
+  {
+   "id": "quit.final_relaunch_close",
+   "status": "pass",
+   "observed": {
+    "close": {
+     "pid": 64604,
+     "link": "unavail",
+     "via": "page",
+     "close_requested_at": "2026-10-01T02:29:52.1557229Z",
+     "exit_ms": 105,
+     "exited": true,
+     "exit_code": 0,
+     "exited_at": "2026-10-01T02:29:52.2426462Z",
+     "killed": false,
+     "closed_in_finally": false
+    },
+    "bound_ms": 5000,
+    "status_before": {
+     "mode": "development",
+     "state": "not connected",
+     "stored": 0,
+     "unknown": 0,
+     "refused": 0,
+     "not_sent": 0,
+     "detail": "not reconciled: the host ended without READY (unavailable)",
+     "earlier_unknown": 2,
+     "sends_stopped": false,
+     "storing": false
+    }
+   },
+   "note": "the last relaunch, closed without a Start"
+  },
+  {
+   "id": "relaunch.same_profile_without_kill",
+   "status": "pass",
+   "observed": {
+    "launches": [
+     {
+      "launched": "app-idle",
+      "pid": 60936,
+      "ok": true,
+      "control_page_ready": true,
+      "previous": {
+       "key": "app",
+       "pid": 55764,
+       "exit_code": 0,
+       "killed": false
+      },
+      "gap_after_previous_exit_s": 1.65
+     },
+     {
+      "launched": "app-main",
+      "pid": 75440,
+      "ok": true,
+      "control_page_ready": true,
+      "previous": {
+       "key": "app-idle",
+       "pid": 60936,
+       "exit_code": 0,
+       "killed": false
+      },
+      "gap_after_previous_exit_s": 1.57
+     },
+     {
+      "launched": "app-capturing",
+      "pid": 13320,
+      "ok": true,
+      "control_page_ready": true,
+      "previous": {
+       "key": "app-main",
+       "pid": 75440,
+       "exit_code": 0,
+       "killed": false
+      },
+      "gap_after_previous_exit_s": 1.6
+     },
+     {
+      "launched": "app-after-capturing",
+      "pid": 72972,
+      "ok": true,
+      "control_page_ready": true,
+      "previous": {
+       "key": "app-capturing",
+       "pid": 13320,
+       "exit_code": 0,
+       "killed": false
+      },
+      "gap_after_previous_exit_s": 1.65
+     },
+     {
+      "launched": "app-unavail",
+      "pid": 74964,
+      "ok": true,
+      "control_page_ready": true,
+      "previous": {
+       "key": "app-after-capturing",
+       "pid": 72972,
+       "exit_code": 0,
+       "killed": false
+      },
+      "gap_after_previous_exit_s": 1.56
+     },
+     {
+      "launched": "app-unavail-capturing",
+      "pid": 24832,
+      "ok": true,
+      "control_page_ready": true,
+      "previous": {
+       "key": "app-unavail",
+       "pid": 74964,
+       "exit_code": 0,
+       "killed": false
+      },
+      "gap_after_previous_exit_s": 1.63
+     },
+     {
+      "launched": "app-final",
+      "pid": 64604,
+      "ok": true,
+      "control_page_ready": true,
+      "previous": {
+       "key": "app-unavail-capturing",
+       "pid": 24832,
+       "exit_code": 0,
+       "killed": false
+      },
+      "gap_after_previous_exit_s": 1.65
+     }
+    ],
+    "ended_by_qa": []
+   },
+   "note": "seven relaunches of the same user-data folder, each after the previous process ended by itself with code 0; each new control page came up"
+  },
+  {
+   "id": "relaunch.record_and_ink_kept_no_host_before_start",
+   "status": "pass",
+   "observed": {
+    "after_stop": {
+     "mode": "development",
+     "state": "stopped",
+     "stored": 5,
+     "unknown": 0,
+     "refused": 0,
+     "not_sent": 0,
+     "detail": "stream stopped",
+     "earlier_unknown": 0,
+     "sends_stopped": false,
+     "storing": false
+    },
+    "relaunched_after_stop": {
+     "mode": "development",
+     "state": "stopped",
+     "stored": 5,
+     "unknown": 0,
+     "refused": 0,
+     "not_sent": 0,
+     "detail": "the host ended",
+     "earlier_unknown": 0,
+     "sends_stopped": false,
+     "storing": false
+    },
+    "relaunched_after_close_while_capturing": {
+     "mode": "development",
+     "state": "stopped",
+     "stored": 3,
+     "unknown": 0,
+     "refused": 0,
+     "not_sent": 0,
+     "detail": "the host ended",
+     "earlier_unknown": 0,
+     "sends_stopped": false,
+     "storing": false
+    },
+    "stream2_committed_records": 3,
+    "hosts_before_a_start": {
+     "app-main": [],
+     "app-capturing": [],
+     "app-after-capturing": []
+    },
+    "saved_ink_before": [
+     [
+      "e2ed9393a78b3dab",
+      2,
+      2
+     ]
+    ],
+    "saved_ink_after_relaunch": [
+     [
+      "e2ed9393a78b3dab",
+      2,
+      2
+     ]
+    ]
+   },
+   "note": "each relaunch reads the stopped stream and its counts from the record, starts no host before a Start, and lists the same saved ink"
+  },
+  {
+   "id": "relaunch.unavailable_hosts_before_a_start_observed",
+   "status": "limit",
+   "observed": {
+    "hosts_before_a_start": {
+     "app-unavail": [],
+     "app-unavail-capturing": [
+      {
+       "pid": 1087492,
+       "appeared": 1790821760.87232,
+       "exited": 1790821761.285167
+      }
+     ],
+     "app-final": [
+      {
+       "pid": 1087537,
+       "appeared": 1790821781.33229,
+       "exited": 1790821781.745373
+      },
+      {
+       "pid": 1087542,
+       "appeared": 1790821781.745334,
+       "exited": 1790821782.160065
+      }
+     ]
+    },
+    "status": {
+     "app-unavail": {
+      "l": {
+       "mode": "development",
+       "state": "stopped",
+       "stored": 3,
+       "unknown": 0,
+       "refused": 0,
+       "not_sent": 0,
+       "detail": "the host ended",
+       "earlier_unknown": 0,
+       "sends_stopped": false,
+       "storing": false
+      },
+      "line": "Capture storage (development): stopped. 3 record(s) stored. the host ended. AI: not connected."
+     },
+     "app-unavail-capturing": {
+      "l": {
+       "mode": "development",
+       "state": "not connected",
+       "stored": 0,
+       "unknown": 0,
+       "refused": 0,
+       "not_sent": 0,
+       "detail": "not reconciled: the host ended without READY (unavailable)",
+       "earlier_unknown": 1,
+       "sends_stopped": false,
+       "storing": false
+      },
+      "line": "Capture storage (development): not connected (the frames stay on this device). 0 record(s) stored; 1 earlier stream(s) whose end is not known. not reconciled: the host ended without READY (unavailable). AI: not connected."
+     },
+     "app-final": {
+      "l": {
+       "mode": "development",
+       "state": "not connected",
+       "stored": 0,
+       "unknown": 0,
+       "refused": 0,
+       "not_sent": 0,
+       "detail": "not reconciled: the host ended without READY (unavailable)",
+       "earlier_unknown": 2,
+       "sends_stopped": false,
+       "storing": false
+      },
+      "line": "Capture storage (development): not connected (the frames stay on this device). 0 record(s) stored; 2 earlier stream(s) whose end is not known. not reconciled: the host ended without READY (unavailable). AI: not connected."
+     }
+    }
+   },
+   "note": "observation, not judged: 3 host(s) appeared after a relaunch and before any Start while earlier streams were never confirmed; each ended"
+  },
+  {
+   "id": "originals.kept_through_closes_and_fault",
+   "status": "pass",
+   "observed": {
+    "checkpoints": 19,
+    "originals": 25,
+    "changed": [],
+    "vanished": [],
+    "name_is_not_sha256": [],
+    "manifests_only_grow": true
+   },
+   "note": "at every planned checkpoint: each retained frame, ink original and context picture keeps its bytes (= its name) from first sight on; manifests only grow"
+  },
+  {
+   "id": "copy.header_and_line_follow_the_link_state",
+   "status": "pass",
+   "observed": {
+    "problems": [],
+    "reads": [
+     {
+      "read": "n_off",
+      "at": "2026-10-01T02:24:37.685Z",
+      "mode": "off",
+      "state": null,
+      "storing": null,
+      "stored": null,
+      "unknown": null,
+      "not_sent": null,
+      "earlier_unknown": null,
+      "detail": null,
+      "header_says_storing": false,
+      "header": "No AI is connected: captured frames and ink stay on this device, and nothing is sent anywhere.",
+      "line": ""
+     },
+     {
+      "read": "a_idle",
+      "at": "2026-10-01T02:24:43.749Z",
+      "mode": "development",
+      "state": "idle",
+      "storing": false,
+      "stored": 0,
+      "unknown": 0,
+      "not_sent": 0,
+      "earlier_unknown": 0,
+      "detail": null,
+      "header_says_storing": false,
+      "header": "Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI.",
+      "line": "Capture storage (development): not connected yet (a connection is tried when you press Start). 0 record(s) stored. AI: not connected."
+     },
+     {
+      "read": "b_idle",
+      "at": "2026-10-01T02:24:49.687Z",
+      "mode": "development",
+      "state": "idle",
+      "storing": false,
+      "stored": 0,
+      "unknown": 0,
+      "not_sent": 0,
+      "earlier_unknown": 0,
+      "detail": null,
+      "header_says_storing": false,
+      "header": "Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI.",
+      "line": "Capture storage (development): not connected yet (a connection is tried when you press Start). 0 record(s) stored. AI: not connected."
+     },
+     {
+      "read": "b_storing_now",
+      "at": "2026-10-01T02:25:03.935Z",
+      "mode": "development",
+      "state": "sending",
+      "storing": true,
+      "stored": 2,
+      "unknown": 0,
+      "not_sent": 0,
+      "earlier_unknown": 0,
+      "detail": null,
+      "header_says_storing": true,
+      "header": "Development mode: captured frames and ink are kept on this device and are also being stored in a local test capture service on it; the counts are below. No AI is connected; nothing is sent to any AI.",
+      "line": "Capture storage (development): storing. 2 record(s) stored. AI: not connected."
+     },
+     {
+      "read": "b_before_pause",
+      "at": "2026-10-01T02:25:13.216Z",
+      "mode": "development",
+      "state": "sending",
+      "storing": true,
+      "stored": 3,
+      "unknown": 0,
+      "not_sent": 0,
+      "earlier_unknown": 0,
+      "detail": null,
+      "header_says_storing": true,
+      "header": "Development mode: captured frames and ink are kept on this device and are also being stored in a local test capture service on it; the counts are below. No AI is connected; nothing is sent to any AI.",
+      "line": "Capture storage (development): storing. 3 record(s) stored. AI: not connected."
+     },
+     {
+      "read": "b_paused_8s",
+      "at": "2026-10-01T02:25:21.570Z",
+      "mode": "development",
+      "state": "sending",
+      "storing": true,
+      "stored": 3,
+      "unknown": 0,
+      "not_sent": 0,
+      "earlier_unknown": 0,
+      "detail": null,
+      "header_says_storing": true,
+      "header": "Development mode: captured frames and ink are kept on this device and are also being stored in a local test capture service on it; the counts are below. No AI is connected; nothing is sent to any AI.",
+      "line": "Capture storage (development): storing. 3 record(s) stored. AI: not connected."
+     },
+     {
+      "read": "b_stalled_now",
+      "at": "2026-10-01T02:28:15.950Z",
+      "mode": "development",
+      "state": "stalled",
+      "storing": false,
+      "stored": 3,
+      "unknown": 1,
+      "not_sent": 0,
+      "earlier_unknown": 0,
+      "detail": "storage of the last send is not confirmed (no answer, or the service said to send it again later); the same record(s) are tried again",
+      "header_says_storing": false,
+      "header": "Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI.",
+      "line": "Capture storage (development): not storing now (the frames are kept on this device). 3 record(s) stored; 1 not known whether stored. storage of the last send is not confirmed (no answer, or the service said to send it again later); the same record(s) are tried again. AI: not connected."
+     },
+     {
+      "read": "b_recovered_now",
+      "at": "2026-10-01T02:28:17.245Z",
+      "mode": "development",
+      "state": "sending",
+      "storing": true,
+      "stored": 4,
+      "unknown": 0,
+      "not_sent": 0,
+      "earlier_unknown": 0,
+      "detail": null,
+      "header_says_storing": true,
+      "header": "Development mode: captured frames and ink are kept on this device and are also being stored in a local test capture service on it; the counts are below. No AI is connected; nothing is sent to any AI.",
+      "line": "Capture storage (development): storing. 4 record(s) stored. AI: not connected."
+     },
+     {
+      "read": "b_pre_stop_now",
+      "at": "2026-10-01T02:28:21.260Z",
+      "mode": "development",
+      "state": "sending",
+      "storing": true,
+      "stored": 5,
+      "unknown": 0,
+      "not_sent": 0,
+      "earlier_unknown": 0,
+      "detail": null,
+      "header_says_storing": true,
+      "header": "Development mode: captured frames and ink are kept on this device and are also being stored in a local test capture service on it; the counts are below. No AI is connected; nothing is sent to any AI.",
+      "line": "Capture storage (development): storing. 5 record(s) stored. AI: not connected."
+     },
+     {
+      "read": "b_stopped_now",
+      "at": "2026-10-01T02:28:21.775Z",
+      "mode": "development",
+      "state": "stopped",
+      "storing": false,
+      "stored": 5,
+      "unknown": 0,
+      "not_sent": 0,
+      "earlier_unknown": 0,
+      "detail": "stream stopped",
+      "header_says_storing": false,
+      "header": "Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI.",
+      "line": "Capture storage (development): stopped. 5 record(s) stored. stream stopped. AI: not connected."
+     },
+     {
+      "read": "c_relaunched",
+      "at": "2026-10-01T02:28:30.814Z",
+      "mode": "development",
+      "state": "stopped",
+      "storing": false,
+      "stored": 5,
+      "unknown": 0,
+      "not_sent": 0,
+      "earlier_unknown": 0,
+      "detail": "the host ended",
+      "header_says_storing": false,
+      "header": "Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI.",
+      "line": "Capture storage (development): stopped. 5 record(s) stored. the host ended. AI: not connected."
+     },
+     {
+      "read": "c_storing_now",
+      "at": "2026-10-01T02:28:43.714Z",
+      "mode": "development",
+      "state": "sending",
+      "storing": true,
+      "stored": 3,
+      "unknown": 0,
+      "not_sent": 0,
+      "earlier_unknown": 0,
+      "detail": null,
+      "header_says_storing": true,
+      "header": "Development mode: captured frames and ink are kept on this device and are also being stored in a local test capture service on it; the counts are below. No AI is connected; nothing is sent to any AI.",
+      "line": "Capture storage (development): storing. 3 record(s) stored. AI: not connected."
+     },
+     {
+      "read": "d_relaunched",
+      "at": "2026-10-01T02:28:54.633Z",
+      "mode": "development",
+      "state": "stopped",
+      "storing": false,
+      "stored": 3,
+      "unknown": 0,
+      "not_sent": 0,
+      "earlier_unknown": 0,
+      "detail": "the host ended",
+      "header_says_storing": false,
+      "header": "Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI.",
+      "line": "Capture storage (development): stopped. 3 record(s) stored. the host ended. AI: not connected."
+     },
+     {
+      "read": "e_idle",
+      "at": "2026-10-01T02:29:01.532Z",
+      "mode": "development",
+      "state": "stopped",
+      "storing": false,
+      "stored": 3,
+      "unknown": 0,
+      "not_sent": 0,
+      "earlier_unknown": 0,
+      "detail": "the host ended",
+      "header_says_storing": false,
+      "header": "Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI.",
+      "line": "Capture storage (development): stopped. 3 record(s) stored. the host ended. AI: not connected."
+     },
+     {
+      "read": "e_fail_now",
+      "at": "2026-10-01T02:29:10.142Z",
+      "mode": "development",
+      "state": "not connected",
+      "storing": false,
+      "stored": 0,
+      "unknown": 0,
+      "not_sent": 0,
+      "earlier_unknown": 0,
+      "detail": "the host ended without READY (unavailable)",
+      "header_says_storing": false,
+      "header": "Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI.",
+      "line": "Capture storage (development): not connected (the frames stay on this device). 0 record(s) stored. the host ended without READY (unavailable). AI: not connected."
+     },
+     {
+      "read": "e_with_card",
+      "at": "2026-10-01T02:29:15.686Z",
+      "mode": "development",
+      "state": "not connected",
+      "storing": false,
+      "stored": 0,
+      "unknown": 0,
+      "not_sent": 0,
+      "earlier_unknown": 0,
+      "detail": "the host ended without READY (unavailable)",
+      "header_says_storing": false,
+      "header": "Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI.",
+      "line": "Capture storage (development): not connected (the frames stay on this device). 0 record(s) stored. the host ended without READY (unavailable). AI: not connected."
+     },
+     {
+      "read": "e_stopped_now",
+      "at": "2026-10-01T02:29:18.820Z",
+      "mode": "development",
+      "state": "stopped",
+      "storing": false,
+      "stored": 0,
+      "unknown": 0,
+      "not_sent": 0,
+      "earlier_unknown": 1,
+      "detail": "the stream was never confirmed registered; whether it or a grant exists is not known",
+      "header_says_storing": false,
+      "header": "Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI.",
+      "line": "Capture storage (development): stopped. 0 record(s) stored; 1 earlier stream(s) whose end is not known. the stream was never confirmed registered; whether it or a grant exists is not known. AI: not connected."
+     },
+     {
+      "read": "f_relaunched",
+      "at": "2026-10-01T02:29:31.210Z",
+      "mode": "development",
+      "state": "not connected",
+      "storing": false,
+      "stored": 0,
+      "unknown": 0,
+      "not_sent": 0,
+      "earlier_unknown": 1,
+      "detail": "not reconciled: the host ended without READY (unavailable)",
+      "header_says_storing": false,
+      "header": "Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI.",
+      "line": "Capture storage (development): not connected (the frames stay on this device). 0 record(s) stored; 1 earlier stream(s) whose end is not known. not reconciled: the host ended without READY (unavailable). AI: not connected."
+     },
+     {
+      "read": "f_fail_now",
+      "at": "2026-10-01T02:29:38.935Z",
+      "mode": "development",
+      "state": "not connected",
+      "storing": false,
+      "stored": 0,
+      "unknown": 0,
+      "not_sent": 0,
+      "earlier_unknown": 1,
+      "detail": "the host ended without READY (unavailable)",
+      "header_says_storing": false,
+      "header": "Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI.",
+      "line": "Capture storage (development): not connected (the frames stay on this device). 0 record(s) stored; 1 earlier stream(s) whose end is not known. the host ended without READY (unavailable). AI: not connected."
+     },
+     {
+      "read": "g_relaunched",
+      "at": "2026-10-01T02:29:51.503Z",
+      "mode": "development",
+      "state": "not connected",
+      "storing": false,
+      "stored": 0,
+      "unknown": 0,
+      "not_sent": 0,
+      "earlier_unknown": 2,
+      "detail": "not reconciled: the host ended without READY (unavailable)",
+      "header_says_storing": false,
+      "header": "Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI.",
+      "line": "Capture storage (development): not connected (the frames stay on this device). 0 record(s) stored; 2 earlier stream(s) whose end is not known. not reconciled: the host ended without READY (unavailable). AI: not connected."
+     }
+    ]
+   },
+   "note": "in all reads: the header says frames are being stored exactly when the link reports storing (state 'storing' only); the line's count is the status count; nothing asserts that a send was not stored; no AI is connected"
+  },
+  {
+   "id": "copy.each_state_reads_as_expected",
+   "status": "pass",
+   "observed": {
+    "matches": {
+     "idle": {
+      "a_idle": true,
+      "b_idle": true
+     },
+     "storing": {
+      "b_storing_now": true,
+      "c_storing_now": true
+     },
+     "stopped": {
+      "b_stopped_now": true,
+      "c_relaunched": true,
+      "d_relaunched": true
+     },
+     "unavailable": {
+      "e_fail_now": true,
+      "e_with_card": true,
+      "f_fail_now": true
+     },
+     "unavailable_after_stop": {
+      "e_stopped_now": true
+     }
+    },
+    "lines": {
+     "a_idle": "Capture storage (development): not connected yet (a connection is tried when you press Start). 0 record(s) stored. AI: not connected.",
+     "b_idle": "Capture storage (development): not connected yet (a connection is tried when you press Start). 0 record(s) stored. AI: not connected.",
+     "b_storing_now": "Capture storage (development): storing. 2 record(s) stored. AI: not connected.",
+     "c_storing_now": "Capture storage (development): storing. 3 record(s) stored. AI: not connected.",
+     "b_stopped_now": "Capture storage (development): stopped. 5 record(s) stored. stream stopped. AI: not connected.",
+     "c_relaunched": "Capture storage (development): stopped. 5 record(s) stored. the host ended. AI: not connected.",
+     "d_relaunched": "Capture storage (development): stopped. 3 record(s) stored. the host ended. AI: not connected.",
+     "e_fail_now": "Capture storage (development): not connected (the frames stay on this device). 0 record(s) stored. the host ended without READY (unavailable). AI: not connected.",
+     "e_with_card": "Capture storage (development): not connected (the frames stay on this device). 0 record(s) stored. the host ended without READY (unavailable). AI: not connected.",
+     "f_fail_now": "Capture storage (development): not connected (the frames stay on this device). 0 record(s) stored; 1 earlier stream(s) whose end is not known. the host ended without READY (unavailable). AI: not connected.",
+     "e_stopped_now": "Capture storage (development): stopped. 0 record(s) stored; 1 earlier stream(s) whose end is not known. the stream was never confirmed registered; whether it or a grant exists is not known. AI: not connected."
+    }
+   },
+   "note": "idle: not connected yet; storing: counts; stopped; unavailable: not connected, 0 stored, the reason; after Stop while unavailable: the registration is not known"
+  },
+  {
+   "id": "fault.only_this_runs_host_paused_and_resumed",
+   "status": "pass",
+   "observed": {
+    "paused": [
+     {
+      "event": "paused",
+      "hosts": [
+       {
+        "pid": 1086763,
+        "state_before": "S",
+        "state_after": "T"
+       }
+      ],
+      "at": "2026-10-01T02:25:13.458096+00:00"
+     }
+    ],
+    "resumed": [
+     {
+      "event": "resumed",
+      "reason": "the request was removed",
+      "hosts": [
+       {
+        "pid": 1086763,
+        "continued": true,
+        "state_after": "R"
+       }
+      ],
+      "at": "2026-10-01T02:28:16.801602+00:00"
+     }
+    ],
+    "paused_for_s": 183.3,
+    "session_host": [
+     {
+      "pid": 1086763,
+      "appeared": 1790821493.565876,
+      "exited": 1790821701.763258
+     }
+    ],
+    "other_hosts_from_pause_to_stop": [],
+    "already_in_the_copy_at_watch_start": []
+   },
+   "note": "exactly the session's one host (its working folder is this run's private Backend copy) was stopped and continued; it stayed the same process, so the recovery is a later answer from the same service, not a reconnect"
+  },
+  {
+   "id": "copy.lost_reply_is_unconfirmed_not_failed",
+   "status": "pass",
+   "observed": {
+    "before_the_pause": {
+     "state": "sending",
+     "storing": true,
+     "stored": 3,
+     "unknown": 0
+    },
+    "8_s_into_the_pause": {
+     "state": "sending",
+     "storing": true,
+     "stored": 3,
+     "unknown": 0
+    },
+    "stalled": {
+     "read": "b_stalled_now",
+     "at": "2026-10-01T02:28:15.950Z",
+     "mode": "development",
+     "state": "stalled",
+     "storing": false,
+     "stored": 3,
+     "unknown": 1,
+     "not_sent": 0,
+     "earlier_unknown": 0,
+     "detail": "storage of the last send is not confirmed (no answer, or the service said to send it again later); the same record(s) are tried again",
+     "header_says_storing": false,
+     "header": "Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI.",
+     "line": "Capture storage (development): not storing now (the frames are kept on this device). 3 record(s) stored; 1 not known whether stored. storage of the last send is not confirmed (no answer, or the service said to send it again later); the same record(s) are tried again. AI: not connected."
+    },
+    "seconds_from_pause_to_stalled": 182.7
+   },
+   "note": "after the send got no answer: 'not storing now', the stored count unchanged, the record counted as 'not known whether stored', the detail says storage is not confirmed and that it is tried again"
+  },
+  {
+   "id": "copy.later_answer_restores_storing",
+   "status": "pass",
+   "observed": {
+    "stalled": {
+     "state": "stalled",
+     "storing": false,
+     "stored": 3,
+     "unknown": 1
+    },
+    "recovered": {
+     "read": "b_recovered_now",
+     "at": "2026-10-01T02:28:17.245Z",
+     "mode": "development",
+     "state": "sending",
+     "storing": true,
+     "stored": 4,
+     "unknown": 0,
+     "not_sent": 0,
+     "earlier_unknown": 0,
+     "detail": null,
+     "header_says_storing": true,
+     "header": "Development mode: captured frames and ink are kept on this device and are also being stored in a local test capture service on it; the counts are below. No AI is connected; nothing is sent to any AI.",
+     "line": "Capture storage (development): storing. 4 record(s) stored. AI: not connected."
+    },
+    "seconds_from_resume_to_storing": 0.4
+   },
+   "note": "once the same host answers again: 'storing', nothing unknown, and the earlier unknown record(s) are now counted as stored"
+  },
+  {
+   "id": "copy.says_storing_while_a_send_waits",
+   "status": "limit",
+   "observed": {
+    "8_s_into_the_pause": {
+     "state": "sending",
+     "storing": true,
+     "stored": 3,
+     "unknown": 0,
+     "header_says_storing": true,
+     "line": "Capture storage (development): storing. 3 record(s) stored. AI: not connected."
+    },
+    "jobs_out_in_the_record_then": [
+     [
+      "src-c1377d202effe9d80cd8beec.b5-5",
+      "sending"
+     ]
+    ],
+    "seconds_until_the_app_said_not_storing": 182.7
+   },
+   "note": "observation, not judged here: 8 s into the pause the record held a send still out and the app still said 'storing' (its stored count unchanged); it said 'not storing now' 182.7 s after the pause"
+  },
+  {
+   "id": "counts.final_counts_equal_the_server_once_each",
+   "status": "pass",
+   "observed": {
+    "stream1": {
+     "status_stored": 5,
+     "committed_records": 5,
+     "server_records": 5,
+     "server_stream": {
+      "pre_stop_sequence": null,
+      "revision": 2,
+      "state": "stopped"
+     },
+     "frames_compared": 10,
+     "mismatches": []
+    },
+    "stream2": {
+     "status_stored_after_relaunch": 3,
+     "committed_records": 3,
+     "server_records": 3,
+     "server_stream": {
+      "pre_stop_sequence": null,
+      "revision": 2,
+      "state": "stopped"
+     },
+     "frames_compared": 6,
+     "mismatches": []
+    },
+    "jobs_not_committed": [],
+    "server_capture_records": 8,
+    "distinct": 8,
+    "unavailable_streams_on_server": []
+   },
+   "note": "after the lost reply and its retries the server holds every record exactly once; the app's stored counts equal the server's; raw, composed and ink bytes are equal; the unavailable streams left nothing on the server"
+  },
+  {
+   "id": "copy.ask_card_conditional_in_every_state",
+   "status": "pass",
+   "observed": {
+    "problems": [],
+    "same_first_line_in_all_states": true,
+    "first_line": "No AI is connected: this selection was not sent to any AI. (Development mode: a local test capture service on this device may also store the whole-display frames kept here, only while it is connected and answering; the control window shows whether it is storing now.)",
+    "link_state_at_each_read": {
+     "card_open": "sending",
+     "card_paused": "sending",
+     "card_stalled": "stalled",
+     "card_recovered": "sending",
+     "card_unavail": "not connected"
+    }
+   },
+   "note": "storing, waiting, not storing, storing again, and unavailable: the card says no AI is connected and that the test service MAY also store frames only while connected and answering; it never says they are stored"
+  },
+  {
+   "id": "card.open_card_unchanged_through_fault_and_recovery",
+   "status": "pass",
+   "observed": {
+    "reads": [
+     {
+      "at": "2026-10-01T02:25:09.163Z",
+      "shown": true,
+      "mode": "WRITE",
+      "revision": 1,
+      "crop_sha256": "d6f24b0249e5d0cf56c158193604015da21741b492f98b044530cade86a0171c",
+      "crop_chars": 33262,
+      "crop_is_png": true
+     },
+     {
+      "at": "2026-10-01T02:25:21.609Z",
+      "shown": true,
+      "mode": "WRITE",
+      "revision": 1,
+      "crop_sha256": "d6f24b0249e5d0cf56c158193604015da21741b492f98b044530cade86a0171c",
+      "crop_chars": 33262,
+      "crop_is_png": true
+     },
+     {
+      "at": "2026-10-01T02:28:15.975Z",
+      "shown": true,
+      "mode": "WRITE",
+      "revision": 1,
+      "crop_sha256": "d6f24b0249e5d0cf56c158193604015da21741b492f98b044530cade86a0171c",
+      "crop_chars": 33262,
+      "crop_is_png": true
+     },
+     {
+      "at": "2026-10-01T02:28:17.248Z",
+      "shown": true,
+      "mode": "WRITE",
+      "revision": 1,
+      "crop_sha256": "d6f24b0249e5d0cf56c158193604015da21741b492f98b044530cade86a0171c",
+      "crop_chars": 33262,
+      "crop_is_png": true
+     }
+    ],
+    "same_text": true,
+    "after_close": {
+     "mode": "WRITE",
+     "card": false
+    },
+    "ink_revision_after_writing_on": 2,
+    "saved_ink_and_context_files_unchanged": true
+   },
+   "note": "one card left open from before the pause until after the recovery: the same text, the same selected picture (hashed in the page) and the same ink revision; closing it returns to WRITE and the next stroke is revision + 1; the saved ink and its context pictures are unchanged"
+  },
+  {
+   "id": "release.owned_processes_ended_by_themselves",
+   "status": "pass",
+   "observed": {
+    "apps": {
+     "app": {
+      "pid": 55764,
+      "exited": true,
+      "exit_code": 0,
+      "exit_ms": 118,
+      "killed": null
+     },
+     "app-idle": {
+      "pid": 60936,
+      "exited": true,
+      "exit_code": 0,
+      "exit_ms": 154,
+      "killed": null
+     },
+     "app-main": {
+      "pid": 75440,
+      "exited": true,
+      "exit_code": 0,
+      "exit_ms": 140,
+      "killed": null
+     },
+     "app-capturing": {
+      "pid": 13320,
+      "exited": true,
+      "exit_code": 0,
+      "exit_ms": 661,
+      "killed": null
+     },
+     "app-after-capturing": {
+      "pid": 72972,
+      "exited": true,
+      "exit_code": 0,
+      "exit_ms": 91,
+      "killed": null
+     },
+     "app-unavail": {
+      "pid": 74964,
+      "exited": true,
+      "exit_code": 0,
+      "exit_ms": 119,
+      "killed": null
+     },
+     "app-unavail-capturing": {
+      "pid": 24832,
+      "exited": true,
+      "exit_code": 0,
+      "exit_ms": 260,
+      "killed": null
+     },
+     "app-final": {
+      "pid": 64604,
+      "exited": true,
+      "exit_code": 0,
+      "exit_ms": 105,
+      "killed": null
+     }
+    },
+    "wsl_exe_seen": [
+     {
+      "pid": 73856,
+      "running_at_end": false
+     },
+     {
+      "pid": 36448,
+      "running_at_end": false
+     }
+    ],
+    "hosts_seen": 8,
+    "hosts_remaining_at_watch_end": []
+   },
+   "note": "all eight app processes ended by themselves with code 0; no wsl.exe child and no host of this run remains"
+  },
+  {
+   "id": "database.readback_read_only",
+   "status": "pass",
+   "observed": {
+    "by_kind": {
+     "artifact": 15,
+     "authorization": 1,
+     "capture_artifact_ref": 15,
+     "capture_binding": 2,
+     "capture_record": 8,
+     "capture_replay": 8,
+     "capture_slot": 8,
+     "control_lineage": 1,
+     "control_membership": 1,
+     "control_replay": 4,
+     "control_start": 2,
+     "control_stream": 2,
+     "device": 1,
+     "raw_capture_frame": 8,
+     "session": 1,
+     "snapshot": 2,
+     "source": 2
+    },
+    "unchanged": true
+   }
+  }
+ ]
+}

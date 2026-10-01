@@ -30,6 +30,11 @@
 #   { "seedLinkRecord": true, "actor": {user_id,...}, "as": "seed" }   write a QA-minted actor as a fresh coordination record
 #   { "children": true, "as": "name" }                                  the app's child processes (name, pid, start; no command line)
 #   { "endHungApp": true, "as": "name" }   if the owned app did not exit after closeApp: record it, then end that PID only
+#   { "closeApp": true, "via": "page|wm_close", "again": true, "waitMs": 30000 }   close request -> own exit, timed; never kills
+#     ("page" is the page's own window.close(); "wm_close" posts WM_CLOSE to the control window, as its title-bar X does,
+#      so the app's own close handler runs; "again" posts a second WM_CLOSE to that window right behind the first)
+#   { "hostPause": true, "as": "name" } / { "hostResume": true, "as": "name" }   ask this run's WSL watcher to pause/resume
+#     only this run's own test-service host (a send then gets no answer); the watcher resumes it on its own in any case
 # The file steps only touch paths inside this run's user-data folder (or its test-owned temp folder), never elsewhere.
 param(
   [Parameter(Mandatory = $true)][string]$Electron,
@@ -57,6 +62,7 @@ public static class QaWin {
   [DllImport("user32.dll")] public static extern bool ShowWindow(IntPtr h, int cmd);
   [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr h);
   [DllImport("user32.dll")] public static extern bool BringWindowToTop(IntPtr h);
+  [DllImport("user32.dll")] public static extern bool PostMessage(IntPtr h, uint msg, IntPtr w, IntPtr l);
   [DllImport("user32.dll")] public static extern bool SetProcessDPIAware();
   [DllImport("user32.dll")] public static extern int GetSystemMetrics(int i);
   [DllImport("user32.dll")] public static extern IntPtr GetForegroundWindow();
@@ -168,6 +174,9 @@ function Start-App([string]$key, [string]$link = '') {
   foreach ($t in @('control', 'overlay')) { if ($sockets[$t]) { try { $sockets[$t].ws.Dispose() } catch { }; $sockets.Remove($t) } }
   $results.processes[$key] = [ordered]@{ pid = $script:app.Id; devtools = "127.0.0.1:$($script:appPort)"; started_at = (Get-Date).ToUniversalTime().ToString('o'); link = $link }
   if ($linkFile) { $results.processes[$key].link_config_sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $linkFile).Hash.ToLower() }
+  # Every app PID of this run with its start time, on disk at once: if the runner itself is cut short, the owned process
+  # can be confirmed (PID and start time) before anyone ends it.
+  try { Add-Content -Encoding ASCII -Path (Join-Path $OutDir 'app-pids.txt') -Value "$key $($script:app.Id) $($script:app.StartTime.ToUniversalTime().ToString('o'))" } catch { }
 }
 # The shared display: another Electron app (for example a self-test) means another owner; do not start over it.
 if ($results.foreign.start -and -not $AllowForeign) {
@@ -378,11 +387,34 @@ try {
         $results.values[$step.as] = @($list | ForEach-Object { [ordered]@{ type = $_.type; url = $_.url; title = $_.title } })
       }
       elseif ($null -ne $step.closeApp) {
+        # Only a close request and a wait: the app must end by itself. exit_ms runs from just before the request to the
+        # moment the wait returned (an upper bound of the app's own time to exit); a process still alive is left alone.
         $entry.kind = 'closeApp'
-        try { [void](Eval 'control' 'window.close(), true') } catch { $entry.closeNote = 'control socket closed while closing' }
-        $entry.exited = $script:app.WaitForExit(30000)
-        $results.processes[$script:appKey].exited = $entry.exited
-        if ($entry.exited) { $results.processes[$script:appKey].exit_code = $script:app.ExitCode; $results.processes[$script:appKey].exited_at = (Get-Date).ToUniversalTime().ToString('o') }
+        $via = if ($step.via) { [string]$step.via } else { 'page' }
+        $wait = if ($step.waitMs) { [int]$step.waitMs } else { 30000 }
+        $entry.via = $via
+        $pr = $results.processes[$script:appKey]
+        if ($step.again -and $via -ne 'wm_close') { throw 'a repeated close request needs wm_close' }
+        $h = [IntPtr]::Zero
+        if ($via -eq 'wm_close') { $h = Window-Handle 'control'; if ($h -eq [IntPtr]::Zero) { throw 'control window not found' } }
+        elseif ($via -ne 'page') { throw "unknown close $via" }
+        $entry.close_requested_at = (Get-Date).ToUniversalTime().ToString('o')
+        $sw = [Diagnostics.Stopwatch]::StartNew()
+        if ($via -eq 'wm_close') { $entry.posted = [QaWin]::PostMessage($h, 0x0010, [IntPtr]::Zero, [IntPtr]::Zero) }
+        else { try { [void](Eval 'control' 'window.close(), true') } catch { $entry.closeNote = 'control socket closed while closing' } }
+        if ($step.again) {
+          # The same window handle again, shortly after: whether Windows accepted the post is recorded, nothing more is claimed.
+          Start-Sleep -Milliseconds 60
+          $entry.again = [ordered]@{ after_ms = [int]$sw.ElapsedMilliseconds; posted = [QaWin]::PostMessage($h, 0x0010, [IntPtr]::Zero, [IntPtr]::Zero) }
+        }
+        $entry.exited = $script:app.WaitForExit($wait)
+        $entry.exit_ms = [int]$sw.ElapsedMilliseconds
+        $pr.exited = $entry.exited; $pr.close_via = $via; $pr.close_requested_at = $entry.close_requested_at; $pr.exit_ms = $entry.exit_ms
+        if ($entry.exited) {
+          $entry.exit_code = $script:app.ExitCode
+          $pr.exit_code = $script:app.ExitCode
+          $pr.exited_at = $(try { $script:app.ExitTime.ToUniversalTime().ToString('o') } catch { (Get-Date).ToUniversalTime().ToString('o') })
+        }
       }
       elseif ($null -ne $step.endHungApp) {
         # QA-WIN-03: after closeApp the window is gone but the owned app process may not exit. Recorded, then only that
@@ -403,6 +435,9 @@ try {
       elseif ($null -ne $step.launchApp) {
         $entry.kind = 'launchApp'
         if (-not $script:app.HasExited) { throw 'the previous app process has not exited' }
+        # What the previous owned process did, as recorded: it ended by itself or QA ended it (never hidden here).
+        $prev = $results.processes[$script:appKey]
+        $entry.previous = [ordered]@{ key = $script:appKey; pid = $script:app.Id; exit_code = $script:app.ExitCode; killed = [bool]$prev.killed }
         Start-Sleep -Milliseconds 1500
         Start-App ([string]$step.as) ([string]$step.link)
         $entry.pid = $script:app.Id
@@ -419,6 +454,31 @@ try {
         $json = ($record | ConvertTo-Json -Depth 5 -Compress) + "`n"
         [IO.File]::WriteAllBytes((Join-Path $dir 'coordination.json'), [Text.Encoding]::UTF8.GetBytes($json))
         $results.values[[string]$step.as] = [ordered]@{ sha256 = (Sha (Join-Path $dir 'coordination.json')); user_id = [string]$a.user_id }
+      }
+      elseif ($null -ne $step.hostPause -or $null -ne $step.hostResume) {
+        # The WSL watcher of this run (qa_parent_db.py watch --control) pauses/resumes only this run's own host; this
+        # step only writes or removes the request in this run's out folder and waits for the watcher's answer.
+        $pause = $null -ne $step.hostPause
+        $entry.kind = if ($pause) { 'hostPause' } else { 'hostResume' }
+        if (-not $LinkDir) { throw 'no development link in this run' }
+        $req = Join-Path $OutDir 'host-pause.request'; $ack = Join-Path $OutDir 'host-pause.ack'
+        if ($pause) { [IO.File]::WriteAllText($req, 'pause') } else { Remove-Item -LiteralPath $req -Force -ErrorAction SilentlyContinue }
+        $deadline = (Get-Date).AddSeconds(10)
+        while ((Test-Path -LiteralPath $ack) -ne $pause) {
+          if ((Get-Date) -gt $deadline) { Remove-Item -LiteralPath $req -Force -ErrorAction SilentlyContinue; throw "the watcher did not answer the host $($entry.kind)" }
+          Start-Sleep -Milliseconds 100
+        }
+        $entry.answered_at = (Get-Date).ToUniversalTime().ToString('o')
+        if ($pause) {
+          $answer = $null
+          while (-not $answer) {
+            try { $answer = Get-Content -Raw -LiteralPath $ack | ConvertFrom-Json } catch { $answer = $null }
+            if (-not $answer) { if ((Get-Date) -gt $deadline) { Remove-Item -LiteralPath $req -Force -ErrorAction SilentlyContinue; throw 'the watcher answer could not be read' }; Start-Sleep -Milliseconds 100 }
+          }
+          $entry.hosts = @($answer.hosts).Count
+          if ($entry.hosts -lt 1) { Remove-Item -LiteralPath $req -Force -ErrorAction SilentlyContinue; throw 'no host of this run was running to pause' }
+        }
+        if ($step.as) { $results.values[[string]$step.as] = [ordered]@{ at = $entry.answered_at; hosts = $entry.hosts } }
       }
       elseif ($null -ne $step.children) {
         # Read-only: the app's direct child processes (no command line is read); every wsl.exe seen is remembered.
@@ -499,6 +559,8 @@ try {
 }
 catch { $results.aborted = $_.Exception.Message }
 finally {
+  # A host pause never outlives the steps (the watcher also resumes on its own).
+  try { Remove-Item -LiteralPath (Join-Path $OutDir 'host-pause.request') -Force -ErrorAction SilentlyContinue } catch { }
   # An app still running (for example after an aborted step) is asked to close itself first: its close ends a running
   # session gracefully, with the capture link's Stop, instead of being killed.
   if ($script:app -and -not $script:app.HasExited) { try { [void](Eval 'control' 'window.close(), true') } catch { } }
@@ -506,6 +568,7 @@ finally {
   foreach ($name in @($started.Keys)) { try { Stop-Process -Id $started[$name].Id -Force -ErrorAction SilentlyContinue } catch { } }
   if (-not $script:app.HasExited) {
     # The app holds its quit while the capture link's Stop runs (bounded at 20 s); wait for that before any kill.
+    $results.processes[$script:appKey].closed_in_finally = $true
     if (-not $script:app.WaitForExit(30000)) { Stop-Process -Id $script:app.Id -Force -ErrorAction SilentlyContinue; $results.processes[$script:appKey].killed = $true }
   }
   $results.processes[$script:appKey].exit_code = $(try { $script:app.ExitCode } catch { $null })

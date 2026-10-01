@@ -178,6 +178,22 @@ const askOnce = (as) => [click('[data-mode=ASK]'), pen(ellipse(165, 557, 150, 45
   overlay("JSON.stringify({ text: document.getElementById('cardText').textContent, revision: __lcOverlay.state().doc.revision, mode: __lcOverlay.state().mode })", as),
   click('#close')];
 
+// ---- QA-WIN-03/04 retest (86d2405) ------------------------------------------------------------------------------------
+// The open ASK card as the page shows it: its text, the selected picture (hashed in the page, never exported) and the ink.
+const cardRead = (as) => overlay(`(async () => { const src = document.getElementById('crop').src;
+  const h = [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(src)))].map((x) => x.toString(16).padStart(2, '0')).join('');
+  const st = __lcOverlay.state();
+  return JSON.stringify({ at: new Date().toISOString(), shown: !document.getElementById('card').hidden, text: document.getElementById('cardText').textContent,
+    card_all_text: document.getElementById('card').textContent, crop_chars: src.length, crop_is_png: src.startsWith('data:image/png;base64,'), crop_sha256: h,
+    mode: st.mode, revision: st.doc.revision, hint: document.getElementById('hint').textContent }); })()`, as);
+const cardShown = { waitEval: "!document.getElementById('card').hidden", target: 'overlay', timeoutMs: 8000 };
+// The last status the app notified says storing, with nothing unknown or unsent (a send still waiting for its answer is
+// not in any status: the app notifies only when a send returns).
+const QUIET = 'l.storing === true && l.unknown === 0 && l.not_sent === 0';
+const coordCopy = (to) => ({ copyTree: 'userdata', path: 'capture-host', to, required: false });
+const kidsOf = (as) => ({ children: true, as, required: false });
+const failSettled = (as) => linkUntil("l.state !== 'connecting' && l.state !== 'idle' && l.state !== 'stopped'", as, 40000);
+
 export const scenarios = {
   full: (p) => [
     ...setup(p),
@@ -397,6 +413,80 @@ export const scenarios = {
     linkNow('b_before_stop'), ...stopSession('b_stopped'), linkUntil("l.state === 'stopped'", 'b_link_stopped', 65000),
     { sleep: 3000 }, { targets: 'app', as: 'b_targets_before' }, { children: true, as: 'b_kids_before', required: false },
     { closeApp: true }, { targets: 'app', as: 'b_targets_after', required: false }, { children: true, as: 'b_kids_after', required: false },
+  ],
+
+  // The QA-WIN-03/04 retest only (86d2405): every close is a request followed by a wait (nothing is killed), every relaunch
+  // (closes: WM_CLOSE to the control window, what its title-bar X sends, for A, C, E and F; the page's own window.close(), the
+  // route of the original QA-WIN-03 report, for the no-link control, B, D and G)
+  // is of the same profile after the previous process ended by itself, and the header / link line / ASK card are read in
+  // each storage state. One isolated fault with a card left open: this run's own test-service host is paused, so one
+  // send gets no answer, then resumed. Strokes are DevTools-injected pen events (synthetic).
+  parentfix: (p) => [
+    ...setup(p), linkHook, linkNow('n_off'), kidsOf('kids_n'),
+    { closeApp: true },                                       // control: the app without the development link
+    { seedLinkRecord: true, actor: p.actor, as: 'seed' },
+    // A. Link configured, never started: the native close (WM_CLOSE to the control window, as its title-bar X does).
+    { launchApp: true, as: 'app-idle', link: 'main' }, waitDisplays, linkHook, { sleep: 3000 },
+    linkNow('a_idle'), kidsOf('kids_a'), hashesP('a-idle'),
+    { closeApp: true, via: 'wm_close' }, hashesP('a-closed'),
+    // B. Relaunch (no kill). Start on the visible QA course: storing copy; an ASK card left open through a lost reply and
+    //    its recovery; continue writing; Stop; close after Stop.
+    { launchApp: true, as: 'app-main', link: 'main' }, waitDisplays, inkHook, linkHook, { sleep: 3000 },
+    linkNow('b_idle'), kidsOf('kids_b_idle'),
+    { window: 'edge', show: 'front' }, showPanel, { sleep: 1200 }, mark('before-start'), { desktopShot: 'before-start' },
+    ...startSession('s1'), linkUntil("l.state === 'sending'", 'b_sending'), kidsOf('kids_b'),
+    { sleep: 3500 }, setText('qa-sign', '+'), { sleep: 3500 },
+    linkUntil(`${QUIET} && l.stored >= 2`, 'b_storing'), linkNow('b_storing_now'),
+    click('[data-mode=WRITE]'), click('#pen'), pen(INK.wave), ...stateP('b-write'),
+    click('[data-mode=ASK]'), pen(INK.ask), cardShown, cardRead('card_open'), overlayState('b_card_open'),
+    { sleep: 4000 }, hashesP('b-before-pause', true), linkUntil(QUIET, 'b_quiet_before_pause'), linkNow('b_before_pause'),
+    // The fault: only this run's host is paused (SIGSTOP by the WSL watcher); one visible change is then retained and sent.
+    { hostPause: true, as: 'pause' },
+    setText('qa-digit', '8'), mark('paused-change'), { sleep: 8000 },
+    linkNow('b_paused_8s'), coordCopy('coord-paused-8s'), cardRead('card_paused'),
+    linkUntil("l.state === 'stalled'", 'b_stalled', 205000), linkNow('b_stalled_now'), cardRead('card_stalled'), { desktopShot: 'stalled' },
+    coordCopy('coord-stalled'),
+    { hostResume: true, as: 'resume' },
+    linkUntil(QUIET, 'b_recovered', 60000), linkNow('b_recovered_now'), cardRead('card_recovered'), hashesP('b-recovered', true),
+    click('#close'), overlayState('b_card_closed'),
+    pen(INK.c1), ...stateP('b-continued'),
+    linkUntil(QUIET, 'b_pre_stop'), linkNow('b_pre_stop_now'),
+    ...stopSession('b_stopped'), linkUntil("l.state === 'stopped'", 'b_link_stopped', 65000), linkNow('b_stopped_now'), kidsOf('kids_b_stopped'),
+    coordCopy('coord-b-stopped'), hashesP('b-stopped', true), linkEvents('b_events'), timeline('b_timeline'), listInk('b_ink'),
+    { closeApp: true }, hashesP('b-closed', true),
+    // C. Relaunch (no kill). Start, write, then close the control window WHILE capturing (no Stop pressed): WM_CLOSE, and a
+    //    second WM_CLOSE to the same window right behind it (a repeated close request while the first is being served).
+    { launchApp: true, as: 'app-capturing', link: 'main' }, waitDisplays, inkHook, linkHook, { sleep: 6000 },
+    linkNow('c_relaunched'), kidsOf('kids_c_idle'), listInk('c_ink'), hashesP('c-relaunched', true),
+    { window: 'edge', show: 'front' },
+    ...startSession('s2'), linkUntil("l.state === 'sending'", 'c_sending'), kidsOf('kids_c'),
+    click('[data-mode=WRITE]'), click('#pen'), pen(INK.relaunch), ...stateP('c-write'),
+    setText('qa-sign', '−'), { sleep: 3500 },
+    linkUntil(`${QUIET} && l.stored >= 2`, 'c_storing'), linkNow('c_storing_now'), linkEvents('c_events'), listInk('c_ink_before_close'),
+    coordCopy('coord-c-before-close'), hashesP('c-before-close', true),
+    { closeApp: true, via: 'wm_close', again: true, waitMs: 95000 }, hashesP('c-closed', true), coordCopy('coord-c-closed'),
+    // D. Relaunch (no kill) after the close while capturing: what the app says about that stream; closed without a Start.
+    { launchApp: true, as: 'app-after-capturing', link: 'main' }, waitDisplays, inkHook, linkHook, { sleep: 8000 },
+    linkNow('d_relaunched'), kidsOf('kids_d'), listInk('d_ink'), hashesP('d-relaunched', true),
+    { closeApp: true },
+    // E. The test service unavailable (a DSN file naming a socket that does not exist): copy, card, Stop, close after Stop.
+    { launchApp: true, as: 'app-unavail', link: 'unavail' }, waitDisplays, inkHook, linkHook, { sleep: 4000 },
+    linkNow('e_idle'), kidsOf('kids_e_idle'),
+    { window: 'edge', show: 'front' },
+    ...startSession('s3'), failSettled('e_fail'), { sleep: 4000 }, linkNow('e_fail_now'), kidsOf('kids_e'),
+    click('[data-mode=WRITE]'), click('#pen'), pen(INK.c2), ...stateP('e-write'),
+    click('[data-mode=ASK]'), pen(INK.ask), cardShown, cardRead('card_unavail'), linkNow('e_with_card'), click('#close'), overlayState('e_card_closed'),
+    ...stopSession('e_stopped'), { sleep: 3000 }, linkNow('e_stopped_now'), linkEvents('e_events'), coordCopy('coord-e-stopped'), hashesP('e-stopped', true),
+    { closeApp: true, via: 'wm_close' }, hashesP('e-closed', true),
+    // F. Relaunch (no kill), still unavailable: Start, then close WHILE capturing.
+    { launchApp: true, as: 'app-unavail-capturing', link: 'unavail' }, waitDisplays, inkHook, linkHook, { sleep: 10000 },
+    linkNow('f_relaunched'), kidsOf('kids_f_idle'), linkEvents('f_events_idle'),
+    ...startSession('s4'), failSettled('f_fail'), { sleep: 4000 }, linkNow('f_fail_now'), hashesP('f-before-close', true),
+    { closeApp: true, via: 'wm_close', waitMs: 95000 }, hashesP('f-closed', true),
+    // G. Final relaunch (no kill): the saved ink and the record are still there; close.
+    { launchApp: true, as: 'app-final', link: 'unavail' }, waitDisplays, inkHook, linkHook, { sleep: 10000 },
+    linkNow('g_relaunched'), kidsOf('kids_g'), listInk('g_ink'), linkEvents('g_events'), coordCopy('coord-final'),
+    { closeApp: true }, hashesP('final', true),
   ],
 
   smoke: (p) => [

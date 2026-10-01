@@ -1,0 +1,20 @@
+{
+ "scenario": "parentfix",
+ "started": "2026-10-01T02:24:31.414Z",
+ "ended": "2026-10-01T02:29:55.782Z",
+ "work": "<home>\\AppData\\Local\\Temp\\lc-qa-windows-retest\\qa-parentfix-1790821470563",
+ "steps": 223,
+ "harness_sha256": {
+  "analyze.py": "3bd0e0eeebba00865c1c35fab0be6c5ebb41a7d1e3a8e56bfd2805572b25cbe7",
+  "analyze_fix.py": "ba2b42095a4218e14c947e848dd3a08c8cd264a105596a48fd8420f1a1a28103",
+  "analyze_ink.py": "f497dd24f101d61fca273128060d8cd39d4c8f0bbf94b08a5b81e8a4f450d4c1",
+  "analyze_parent.py": "28a4ad8eafa1e18f2fecfddb4ab0f4acca1553e757dc4570a51f74c140ff87ac",
+  "course.html": "2cecf763803f33e64c283dfb7f0f133bc2b9b0412f08873bb5cb1caf831c03ab",
+  "notes.txt": "ca986c9c569bcdd36100d87df9ce28eeabd3025fc7d5a43f171c4a957f55b53c",
+  "qa-electron-runner.ps1": "0dfb3b4c2e40cc56ae48378b9a6e4c2998270e1b26f4a251fd5b958fe0d0d612",
+  "qa-png-to-bmp.ps1": "6f887944f49430065891d294ddba78d88e235ad88344890deaa304ac91f4a675",
+  "qa_parent_db.py": "17bc8dea331c14c0559246a884e7787f3d880db7f2f62652fd45eaa350cd9cd7",
+  "run.mjs": "0bff3999fd5564d0287c115cbc39471761eb5208321d73da3a56707de511ca33",
+  "scenarios.mjs": "335a8f64e62df441eef9b1602d25974b51ce206a9965c2bb955cc45f30e3f93a"
+ }
+}

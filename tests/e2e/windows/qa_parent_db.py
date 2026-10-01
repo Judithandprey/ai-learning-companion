@@ -2,7 +2,7 @@
 """QA helper for the Windows app-parent pass on the dedicated local test database (lc_p0_test). WSL side only.
 
   qa_parent_db.py preflight --backend <private copy> --out <json>
-  qa_parent_db.py watch     --backend <private copy> --out <jsonl> --stop <file>
+  qa_parent_db.py watch     --backend <private copy> --out <jsonl> --stop <file> [--control <dir>]
   qa_parent_db.py readback  --backend <private copy> --actor <id> --run <run out dir> --out <json>
   qa_parent_db.py cleanup   --backend <private copy> --actor <id> --out <json>
 
@@ -18,6 +18,7 @@ import base64
 import hashlib
 import json
 import os
+import signal
 import sys
 import time
 from datetime import datetime, timezone
@@ -73,7 +74,10 @@ def write(path, value):
 
 
 def preflight(a):
-    backend(a.backend)
+    root = backend(a.backend)
+    if own_processes(root):  # a leftover host: this run's watcher would not know whose it is
+        print("BLOCKED: a process is already working inside the private Backend copy", file=sys.stderr)
+        return 2
     from services.api.tests.postgres_check import verify_test_database
     from services.api.tests.postgres_desktop_runtime_check import verify_pristine_actor
     from services.api.tests.postgres_ingress_http_check import verify_migrations
@@ -93,24 +97,111 @@ def preflight(a):
     return 0
 
 
+# The app gives one upload three sends of 60 s each before it reports the send as unanswered (about 182 s).
+PAUSE_REQUEST, PAUSE_ACK, MAX_PAUSE_S = "host-pause.request", "host-pause.ack", 260
+
+
+def proc_state(pid):
+    try:
+        with open(f"/proc/{pid}/stat") as f:
+            return f.read().rsplit(")", 1)[1].split()[0]
+    except OSError:
+        return None
+
+
 def watch(a):
-    """Host appear/exit events (pid, ppid, start ticks, UTC) for processes working inside the private copy."""
+    """Host appear/exit events (pid, ppid, start ticks, UTC) for processes working inside the private copy.
+
+    With --control <dir>: while <dir>/host-pause.request exists, every host of this run is paused with SIGSTOP, so a send
+    gets no answer; removing the request resumes them with SIGCONT. Only a process that appeared after this watcher
+    started, whose working folder is inside the private copy at that moment, is signalled (anything already there at the
+    start is never touched), and it is resumed only while its start ticks are unchanged (never a reused PID). A pause
+    never lasts longer than MAX_PAUSE_S and is undone when the watcher ends, also on SIGTERM/SIGHUP. Only a SIGKILL of
+    the watcher cannot undo it: the paused PID is in the log and is then continued by hand, by that exact PID.
+    """
     root = os.path.realpath(a.backend)
+    for number in (signal.SIGTERM, signal.SIGHUP):
+        signal.signal(number, lambda *_: sys.exit(143))  # main() re-raises SystemExit, so the finally below runs
+    baseline = {(p[0], p[2]) for p in own_processes(root)}  # not started under this watcher: never signalled
     seen = {}
+    paused = {}  # pid -> start ticks
+    paused_at = None
+    spent = False  # a request that reached the pause limit pauses nothing again until it is removed
     deadline = time.monotonic() + 3600
+    request = os.path.join(a.control, PAUSE_REQUEST) if a.control else None
+    ack = os.path.join(a.control, PAUSE_ACK) if a.control else None
     with open(a.out, "a", encoding="utf-8") as log:
-        log.write(json.dumps({"event": "watch_start", "at": now(), "monotonic": time.monotonic()}) + "\n")
-        while not os.path.exists(a.stop) and time.monotonic() < deadline:
-            current = {p[0]: p for p in own_processes(root)}
-            for pid, p in current.items():
-                if pid not in seen:
-                    log.write(json.dumps({"event": "appear", "pid": pid, "ppid": p[1], "start_ticks": p[2], "at": now()}) + "\n")
-            for pid in set(seen) - set(current):
-                log.write(json.dumps({"event": "exit", "pid": pid, "at": now()}) + "\n")
-            seen = current
+        def say(event):
+            log.write(json.dumps({**event, "at": now()}) + "\n")
             log.flush()
-            time.sleep(0.2)
-        log.write(json.dumps({"event": "watch_end", "at": now(), "remaining": sorted(seen)}) + "\n")
+
+        def resume(reason):
+            nonlocal paused_at
+            done = []
+            for pid, ticks in sorted(paused.items()):
+                same = [p for p in own_processes(root) if p[0] == pid and p[2] == ticks]
+                try:
+                    if same:
+                        os.kill(pid, signal.SIGCONT)
+                    done.append({"pid": pid, "continued": bool(same), "state_after": proc_state(pid)})
+                except ProcessLookupError:
+                    done.append({"pid": pid, "continued": False, "gone": True})
+            paused.clear()
+            paused_at = None
+            say({"event": "resumed", "reason": reason, "hosts": done})
+
+        say({"event": "watch_start", "monotonic": time.monotonic(), "already_there": sorted(p for p, _ in baseline)})
+        try:
+            while not os.path.exists(a.stop) and time.monotonic() < deadline:
+                current = {p[0]: p for p in own_processes(root)}
+                for pid, p in current.items():
+                    if pid not in seen:
+                        log.write(json.dumps({"event": "appear", "pid": pid, "ppid": p[1], "start_ticks": p[2], "at": now()}) + "\n")
+                for pid in set(seen) - set(current):
+                    log.write(json.dumps({"event": "exit", "pid": pid, "at": now()}) + "\n")
+                seen = current
+                want = bool(request) and os.path.exists(request)
+                if want and paused_at is None and not spent:
+                    hosts = []
+                    for pid, p in sorted(current.items()):
+                        if (pid, p[2]) in baseline:
+                            continue
+                        before = proc_state(pid)
+                        paused[pid] = p[2]  # recorded first: an interruption after the signal still resumes it
+                        try:
+                            os.kill(pid, signal.SIGSTOP)
+                            hosts.append({"pid": pid, "state_before": before})
+                        except ProcessLookupError:
+                            del paused[pid]
+                    paused_at = time.monotonic()
+                    time.sleep(0.05)
+                    for h in hosts:
+                        h["state_after"] = proc_state(h["pid"])
+                    say({"event": "paused", "hosts": hosts})
+                    try:
+                        with open(ack + ".tmp", "w", encoding="utf-8") as f:
+                            json.dump({"at": now(), "hosts": hosts}, f)
+                        os.replace(ack + ".tmp", ack)  # the runner never reads a half-written answer
+                    except OSError as error:
+                        say({"event": "ack_error", "error": type(error).__name__})
+                elif paused_at is not None and not want:
+                    resume("the request was removed")
+                elif paused_at is not None and time.monotonic() - paused_at > MAX_PAUSE_S:
+                    resume(f"the {MAX_PAUSE_S} s pause limit was reached")
+                    spent = True
+                if not want:
+                    spent = False
+                if ack and paused_at is None and os.path.exists(ack):
+                    try:
+                        os.remove(ack)  # tried again at the next turn if Windows holds the file
+                    except OSError as error:
+                        say({"event": "ack_error", "error": type(error).__name__})
+                log.flush()
+                time.sleep(0.2)
+        finally:
+            if paused:
+                resume("the watcher ended")
+            log.write(json.dumps({"event": "watch_end", "at": now(), "remaining": sorted(seen)}) + "\n")
     return 0
 
 
@@ -263,6 +354,7 @@ def main():
     p.add_argument("--actor")
     p.add_argument("--run")
     p.add_argument("--stop")
+    p.add_argument("--control")
     a = p.parse_args()
     try:
         return {"preflight": preflight, "watch": watch, "readback": readback, "cleanup": cleanup}[a.command](a)

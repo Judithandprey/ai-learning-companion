@@ -1,0 +1,1708 @@
+[
+ {
+  "consoleStart": "<home>\\AppData\\Local\\Temp\\lc-qa-windows-retest\\qa-parentfix-1790821470563\\content\\notes.txt",
+  "title": "QA Lecture 7 notes",
+  "as": "console"
+ },
+ {
+  "window": "console",
+  "show": "maximize"
+ },
+ {
+  "edgeStart": "file:///<home>/AppData/Local/Temp/lc-qa-windows-retest/qa-parentfix-1790821470563/content/course.html",
+  "profile": "<home>\\AppData\\Local\\Temp\\lc-qa-windows-retest\\qa-parentfix-1790821470563\\edge-profile",
+  "as": "edge"
+ },
+ {
+  "window": "edge",
+  "show": "front"
+ },
+ {
+  "sleep": 1500
+ },
+ {
+  "waitEval": "document.querySelectorAll('#displays li[role=option]').length > 0",
+  "target": "control",
+  "timeoutMs": 20000
+ },
+ {
+  "eval": "(async () => (await window.lc.listDisplays()).map(d => ({ label: d.label, primary: d.primary, bounds: d.bounds, scale_factor: d.scale_factor, source_id: d.source_id })))()",
+  "target": "control",
+  "as": "displays"
+ },
+ {
+  "eval": "(() => { if (!window.__qaLinkHooked) { window.__qaLink = [];\n  window.lc.onLink((l) => window.__qaLink.push({ ...l, qa_at: new Date().toISOString() })); window.__qaLinkHooked = true; } return true; })()",
+  "target": "control",
+  "as": "link_hooked"
+ },
+ {
+  "eval": "(async () => JSON.stringify({ at: new Date().toISOString(), l: await window.lc.linkState(), ai: document.getElementById('ai').textContent,\n  line: document.getElementById('link').textContent, hidden: document.getElementById('link').hidden, session: document.getElementById('session').textContent }))()",
+  "target": "control",
+  "as": "n_off"
+ },
+ {
+  "children": true,
+  "as": "kids_n",
+  "required": false
+ },
+ {
+  "closeApp": true
+ },
+ {
+  "seedLinkRecord": true,
+  "actor": {
+   "device_id": "windows-qa90a6f10c69d441",
+   "producer_id": "windows-app-qa32226a008caf48",
+   "session_id": "learning-qae55928abe6dd4b",
+   "user_id": "lc-windows-http-b6015a41b0834da89d06e1c7773afcd8"
+  },
+  "as": "seed"
+ },
+ {
+  "launchApp": true,
+  "as": "app-idle",
+  "link": "main"
+ },
+ {
+  "waitEval": "document.querySelectorAll('#displays li[role=option]').length > 0",
+  "target": "control",
+  "timeoutMs": 20000
+ },
+ {
+  "eval": "(() => { if (!window.__qaLinkHooked) { window.__qaLink = [];\n  window.lc.onLink((l) => window.__qaLink.push({ ...l, qa_at: new Date().toISOString() })); window.__qaLinkHooked = true; } return true; })()",
+  "target": "control",
+  "as": "link_hooked"
+ },
+ {
+  "sleep": 3000
+ },
+ {
+  "eval": "(async () => JSON.stringify({ at: new Date().toISOString(), l: await window.lc.linkState(), ai: document.getElementById('ai').textContent,\n  line: document.getElementById('link').textContent, hidden: document.getElementById('link').hidden, session: document.getElementById('session').textContent }))()",
+  "target": "control",
+  "as": "a_idle"
+ },
+ {
+  "children": true,
+  "as": "kids_a",
+  "required": false
+ },
+ {
+  "hashTree": [
+   "ink",
+   "captures",
+   "capture-host"
+  ],
+  "frames": false,
+  "as": "h_a-idle"
+ },
+ {
+  "closeApp": true,
+  "via": "wm_close"
+ },
+ {
+  "hashTree": [
+   "ink",
+   "captures",
+   "capture-host"
+  ],
+  "frames": false,
+  "as": "h_a-closed"
+ },
+ {
+  "launchApp": true,
+  "as": "app-main",
+  "link": "main"
+ },
+ {
+  "waitEval": "document.querySelectorAll('#displays li[role=option]').length > 0",
+  "target": "control",
+  "timeoutMs": 20000
+ },
+ {
+  "eval": "(() => { if (!window.__qaHooked) { window.__qa = []; window.__qaSessions = []; window.__qaMarks = []; window.__qaInkSaved = [];\n  window.lc.onSample((s) => window.__qa.push({ ...s, qa_received_at: new Date().toISOString() }));\n  window.lc.onSession((s) => window.__qaSessions.push({ ...s, qa_at: new Date().toISOString() }));\n  window.lc.onInkSaved(() => window.__qaInkSaved.push(new Date().toISOString())); window.__qaHooked = true; } return true; })()",
+  "target": "control",
+  "as": "hooked"
+ },
+ {
+  "eval": "(() => { if (!window.__qaLinkHooked) { window.__qaLink = [];\n  window.lc.onLink((l) => window.__qaLink.push({ ...l, qa_at: new Date().toISOString() })); window.__qaLinkHooked = true; } return true; })()",
+  "target": "control",
+  "as": "link_hooked"
+ },
+ {
+  "sleep": 3000
+ },
+ {
+  "eval": "(async () => JSON.stringify({ at: new Date().toISOString(), l: await window.lc.linkState(), ai: document.getElementById('ai').textContent,\n  line: document.getElementById('link').textContent, hidden: document.getElementById('link').hidden, session: document.getElementById('session').textContent }))()",
+  "target": "control",
+  "as": "b_idle"
+ },
+ {
+  "children": true,
+  "as": "kids_b_idle",
+  "required": false
+ },
+ {
+  "window": "edge",
+  "show": "front"
+ },
+ {
+  "eval": "(document.getElementById('qa-live').hidden = false, true)",
+  "target": "edge"
+ },
+ {
+  "sleep": 1200
+ },
+ {
+  "eval": "(window.__qaMarks.push({ label: \"before-start\", samples: window.__qa.length, at: new Date().toISOString() }), true)",
+  "target": "control"
+ },
+ {
+  "desktopShot": "before-start"
+ },
+ {
+  "eval": "document.querySelector('#displays li[aria-selected=true]').click(), document.getElementById('start').click(), true",
+  "target": "control"
+ },
+ {
+  "waitEval": "(async () => { const s = await window.lc.sessionState(); return s.running && !s.starting ? JSON.stringify(s) : false })()",
+  "target": "control",
+  "timeoutMs": 20000,
+  "as": "s1"
+ },
+ {
+  "waitEval": "document.readyState === 'complete'",
+  "target": "overlay",
+  "timeoutMs": 15000
+ },
+ {
+  "sleep": 2500
+ },
+ {
+  "waitEval": "(async () => { const l = await window.lc.linkState(); return l && l.mode === 'development' && (l.state === 'sending') && JSON.stringify({ at: new Date().toISOString(), l }); })()",
+  "target": "control",
+  "timeoutMs": 40000,
+  "as": "b_sending",
+  "required": false
+ },
+ {
+  "children": true,
+  "as": "kids_b",
+  "required": false
+ },
+ {
+  "sleep": 3500
+ },
+ {
+  "eval": "(document.getElementById(\"qa-sign\").textContent = \"+\",\n  window.__qaTick = (window.__qaTick || 0) + 1, document.getElementById('qa-tick').textContent = 't' + window.__qaTick, true)",
+  "target": "edge"
+ },
+ {
+  "sleep": 3500
+ },
+ {
+  "waitEval": "(async () => { const l = await window.lc.linkState(); return l && l.mode === 'development' && (l.storing === true && l.unknown === 0 && l.not_sent === 0 && l.stored >= 2) && JSON.stringify({ at: new Date().toISOString(), l }); })()",
+  "target": "control",
+  "timeoutMs": 40000,
+  "as": "b_storing",
+  "required": false
+ },
+ {
+  "eval": "(async () => JSON.stringify({ at: new Date().toISOString(), l: await window.lc.linkState(), ai: document.getElementById('ai').textContent,\n  line: document.getElementById('link').textContent, hidden: document.getElementById('link').hidden, session: document.getElementById('session').textContent }))()",
+  "target": "control",
+  "as": "b_storing_now"
+ },
+ {
+  "eval": "document.querySelector(\"[data-mode=WRITE]\").click(), true",
+  "target": "overlay"
+ },
+ {
+  "eval": "document.querySelector(\"#pen\").click(), true",
+  "target": "overlay"
+ },
+ {
+  "stroke": [
+   [
+    50,
+    312
+   ],
+   [
+    71,
+    315
+   ],
+   [
+    93,
+    317
+   ],
+   [
+    114,
+    318
+   ],
+   [
+    135,
+    317
+   ],
+   [
+    156,
+    316
+   ],
+   [
+    178,
+    313
+   ],
+   [
+    199,
+    310
+   ],
+   [
+    220,
+    307
+   ],
+   [
+    241,
+    306
+   ],
+   [
+    263,
+    306
+   ],
+   [
+    284,
+    308
+   ],
+   [
+    305,
+    310
+   ],
+   [
+    326,
+    313
+   ],
+   [
+    348,
+    316
+   ],
+   [
+    369,
+    318
+   ],
+   [
+    390,
+    318
+   ],
+   [
+    411,
+    317
+   ],
+   [
+    433,
+    314
+   ],
+   [
+    454,
+    312
+   ],
+   [
+    475,
+    309
+   ],
+   [
+    496,
+    307
+   ],
+   [
+    518,
+    306
+   ],
+   [
+    539,
+    307
+   ],
+   [
+    560,
+    309
+   ]
+  ],
+  "pointerType": "pen"
+ },
+ {
+  "sleep": 3500
+ },
+ {
+  "waitEval": "(() => { const s = __lcOverlay.state(); return s.unsaved === null && s.pendingImages === 0 && !s.gesture && s.saveText !== 'Saving…'\n  && s.retention.deferred === 0 && s.samples.at(-1)?.composed?.ink_revision === s.doc.revision\n  && JSON.stringify({ doc: s.doc, saveText: s.saveText, retention: s.retention }); })()",
+  "target": "overlay",
+  "timeoutMs": 20000,
+  "as": "saved_b-write"
+ },
+ {
+  "eval": "(window.__qaMarks.push({ label: \"b-write\", samples: window.__qa.length, at: new Date().toISOString() }), true)",
+  "target": "control"
+ },
+ {
+  "eval": "JSON.stringify((() => { const st = __lcOverlay.state(); const s = st.samples.at(-1);\n  return { aligned: st.aligned, alignment: __lcOverlay.alignment(), doc: st.doc, pinned: st.pinned, hint: st.hint, gesture: st.gesture,\n    last: s ? { seq: s.seq, sampled_at: s.sampled_at, state: s.state, raw: s.raw && { pixels_sha256: s.raw.pixels_sha256 },\n      composed: s.composed && { ink_session: s.composed.ink_session, ink_revision: s.composed.ink_revision, ink_marks: s.composed.ink_marks, pixels_sha256: s.composed.pixels_sha256 } } : null }; })())",
+  "target": "overlay",
+  "as": "app_b-write"
+ },
+ {
+  "eval": "JSON.stringify({\n  mode: [...document.querySelectorAll('[data-mode]')].find((b) => b.getAttribute('aria-pressed') === 'true')?.dataset.mode ?? null,\n  tool: document.getElementById('pen').getAttribute('aria-pressed') === 'true' ? 'pen' : document.getElementById('eraser').getAttribute('aria-pressed') === 'true' ? 'eraser' : null,\n  mouse: document.getElementById('mouse').getAttribute('aria-pressed'),\n  hint: document.getElementById('hint').textContent,\n  card: !document.getElementById('card').hidden,\n  cancel: !document.getElementById('cancel').hidden,\n  disabled: [...document.querySelectorAll('#toolbar button')].filter((b) => b.disabled).length })",
+  "target": "overlay",
+  "as": "ov_b-write",
+  "required": true
+ },
+ {
+  "snapshot": "b-write"
+ },
+ {
+  "hashTree": [
+   "ink",
+   "captures",
+   "capture-host"
+  ],
+  "frames": false,
+  "as": "h_b-write"
+ },
+ {
+  "eval": "document.querySelector(\"[data-mode=ASK]\").click(), true",
+  "target": "overlay"
+ },
+ {
+  "stroke": [
+   [
+    315,
+    557
+   ],
+   [
+    313,
+    565
+   ],
+   [
+    306,
+    572
+   ],
+   [
+    295,
+    580
+   ],
+   [
+    280,
+    586
+   ],
+   [
+    261,
+    591
+   ],
+   [
+    240,
+    596
+   ],
+   [
+    216,
+    599
+   ],
+   [
+    191,
+    601
+   ],
+   [
+    165,
+    602
+   ],
+   [
+    139,
+    601
+   ],
+   [
+    114,
+    599
+   ],
+   [
+    90,
+    596
+   ],
+   [
+    69,
+    591
+   ],
+   [
+    50,
+    586
+   ],
+   [
+    35,
+    580
+   ],
+   [
+    24,
+    572
+   ],
+   [
+    17,
+    565
+   ],
+   [
+    15,
+    557
+   ],
+   [
+    17,
+    549
+   ],
+   [
+    24,
+    542
+   ],
+   [
+    35,
+    535
+   ],
+   [
+    50,
+    528
+   ],
+   [
+    69,
+    523
+   ],
+   [
+    90,
+    518
+   ],
+   [
+    114,
+    515
+   ],
+   [
+    139,
+    513
+   ],
+   [
+    165,
+    512
+   ],
+   [
+    191,
+    513
+   ],
+   [
+    216,
+    515
+   ],
+   [
+    240,
+    518
+   ],
+   [
+    261,
+    523
+   ],
+   [
+    280,
+    528
+   ],
+   [
+    295,
+    535
+   ],
+   [
+    306,
+    542
+   ],
+   [
+    313,
+    549
+   ],
+   [
+    315,
+    557
+   ]
+  ],
+  "pointerType": "pen"
+ },
+ {
+  "waitEval": "!document.getElementById('card').hidden",
+  "target": "overlay",
+  "timeoutMs": 8000
+ },
+ {
+  "eval": "(async () => { const src = document.getElementById('crop').src;\n  const h = [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(src)))].map((x) => x.toString(16).padStart(2, '0')).join('');\n  const st = __lcOverlay.state();\n  return JSON.stringify({ at: new Date().toISOString(), shown: !document.getElementById('card').hidden, text: document.getElementById('cardText').textContent,\n    card_all_text: document.getElementById('card').textContent, crop_chars: src.length, crop_is_png: src.startsWith('data:image/png;base64,'), crop_sha256: h,\n    mode: st.mode, revision: st.doc.revision, hint: document.getElementById('hint').textContent }); })()",
+  "target": "overlay",
+  "as": "card_open"
+ },
+ {
+  "eval": "JSON.stringify({\n  mode: [...document.querySelectorAll('[data-mode]')].find((b) => b.getAttribute('aria-pressed') === 'true')?.dataset.mode ?? null,\n  tool: document.getElementById('pen').getAttribute('aria-pressed') === 'true' ? 'pen' : document.getElementById('eraser').getAttribute('aria-pressed') === 'true' ? 'eraser' : null,\n  mouse: document.getElementById('mouse').getAttribute('aria-pressed'),\n  hint: document.getElementById('hint').textContent,\n  card: !document.getElementById('card').hidden,\n  cancel: !document.getElementById('cancel').hidden,\n  disabled: [...document.querySelectorAll('#toolbar button')].filter((b) => b.disabled).length })",
+  "target": "overlay",
+  "as": "ov_b_card_open",
+  "required": true
+ },
+ {
+  "sleep": 4000
+ },
+ {
+  "hashTree": [
+   "ink",
+   "captures",
+   "capture-host"
+  ],
+  "frames": true,
+  "as": "h_b-before-pause"
+ },
+ {
+  "waitEval": "(async () => { const l = await window.lc.linkState(); return l && l.mode === 'development' && (l.storing === true && l.unknown === 0 && l.not_sent === 0) && JSON.stringify({ at: new Date().toISOString(), l }); })()",
+  "target": "control",
+  "timeoutMs": 40000,
+  "as": "b_quiet_before_pause",
+  "required": false
+ },
+ {
+  "eval": "(async () => JSON.stringify({ at: new Date().toISOString(), l: await window.lc.linkState(), ai: document.getElementById('ai').textContent,\n  line: document.getElementById('link').textContent, hidden: document.getElementById('link').hidden, session: document.getElementById('session').textContent }))()",
+  "target": "control",
+  "as": "b_before_pause"
+ },
+ {
+  "hostPause": true,
+  "as": "pause"
+ },
+ {
+  "eval": "(document.getElementById(\"qa-digit\").textContent = \"8\",\n  window.__qaTick = (window.__qaTick || 0) + 1, document.getElementById('qa-tick').textContent = 't' + window.__qaTick, true)",
+  "target": "edge"
+ },
+ {
+  "eval": "(window.__qaMarks.push({ label: \"paused-change\", samples: window.__qa.length, at: new Date().toISOString() }), true)",
+  "target": "control"
+ },
+ {
+  "sleep": 8000
+ },
+ {
+  "eval": "(async () => JSON.stringify({ at: new Date().toISOString(), l: await window.lc.linkState(), ai: document.getElementById('ai').textContent,\n  line: document.getElementById('link').textContent, hidden: document.getElementById('link').hidden, session: document.getElementById('session').textContent }))()",
+  "target": "control",
+  "as": "b_paused_8s"
+ },
+ {
+  "copyTree": "userdata",
+  "path": "capture-host",
+  "to": "coord-paused-8s",
+  "required": false
+ },
+ {
+  "eval": "(async () => { const src = document.getElementById('crop').src;\n  const h = [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(src)))].map((x) => x.toString(16).padStart(2, '0')).join('');\n  const st = __lcOverlay.state();\n  return JSON.stringify({ at: new Date().toISOString(), shown: !document.getElementById('card').hidden, text: document.getElementById('cardText').textContent,\n    card_all_text: document.getElementById('card').textContent, crop_chars: src.length, crop_is_png: src.startsWith('data:image/png;base64,'), crop_sha256: h,\n    mode: st.mode, revision: st.doc.revision, hint: document.getElementById('hint').textContent }); })()",
+  "target": "overlay",
+  "as": "card_paused"
+ },
+ {
+  "waitEval": "(async () => { const l = await window.lc.linkState(); return l && l.mode === 'development' && (l.state === 'stalled') && JSON.stringify({ at: new Date().toISOString(), l }); })()",
+  "target": "control",
+  "timeoutMs": 205000,
+  "as": "b_stalled",
+  "required": false
+ },
+ {
+  "eval": "(async () => JSON.stringify({ at: new Date().toISOString(), l: await window.lc.linkState(), ai: document.getElementById('ai').textContent,\n  line: document.getElementById('link').textContent, hidden: document.getElementById('link').hidden, session: document.getElementById('session').textContent }))()",
+  "target": "control",
+  "as": "b_stalled_now"
+ },
+ {
+  "eval": "(async () => { const src = document.getElementById('crop').src;\n  const h = [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(src)))].map((x) => x.toString(16).padStart(2, '0')).join('');\n  const st = __lcOverlay.state();\n  return JSON.stringify({ at: new Date().toISOString(), shown: !document.getElementById('card').hidden, text: document.getElementById('cardText').textContent,\n    card_all_text: document.getElementById('card').textContent, crop_chars: src.length, crop_is_png: src.startsWith('data:image/png;base64,'), crop_sha256: h,\n    mode: st.mode, revision: st.doc.revision, hint: document.getElementById('hint').textContent }); })()",
+  "target": "overlay",
+  "as": "card_stalled"
+ },
+ {
+  "desktopShot": "stalled"
+ },
+ {
+  "copyTree": "userdata",
+  "path": "capture-host",
+  "to": "coord-stalled",
+  "required": false
+ },
+ {
+  "hostResume": true,
+  "as": "resume"
+ },
+ {
+  "waitEval": "(async () => { const l = await window.lc.linkState(); return l && l.mode === 'development' && (l.storing === true && l.unknown === 0 && l.not_sent === 0) && JSON.stringify({ at: new Date().toISOString(), l }); })()",
+  "target": "control",
+  "timeoutMs": 60000,
+  "as": "b_recovered",
+  "required": false
+ },
+ {
+  "eval": "(async () => JSON.stringify({ at: new Date().toISOString(), l: await window.lc.linkState(), ai: document.getElementById('ai').textContent,\n  line: document.getElementById('link').textContent, hidden: document.getElementById('link').hidden, session: document.getElementById('session').textContent }))()",
+  "target": "control",
+  "as": "b_recovered_now"
+ },
+ {
+  "eval": "(async () => { const src = document.getElementById('crop').src;\n  const h = [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(src)))].map((x) => x.toString(16).padStart(2, '0')).join('');\n  const st = __lcOverlay.state();\n  return JSON.stringify({ at: new Date().toISOString(), shown: !document.getElementById('card').hidden, text: document.getElementById('cardText').textContent,\n    card_all_text: document.getElementById('card').textContent, crop_chars: src.length, crop_is_png: src.startsWith('data:image/png;base64,'), crop_sha256: h,\n    mode: st.mode, revision: st.doc.revision, hint: document.getElementById('hint').textContent }); })()",
+  "target": "overlay",
+  "as": "card_recovered"
+ },
+ {
+  "hashTree": [
+   "ink",
+   "captures",
+   "capture-host"
+  ],
+  "frames": true,
+  "as": "h_b-recovered"
+ },
+ {
+  "eval": "document.querySelector(\"#close\").click(), true",
+  "target": "overlay"
+ },
+ {
+  "eval": "JSON.stringify({\n  mode: [...document.querySelectorAll('[data-mode]')].find((b) => b.getAttribute('aria-pressed') === 'true')?.dataset.mode ?? null,\n  tool: document.getElementById('pen').getAttribute('aria-pressed') === 'true' ? 'pen' : document.getElementById('eraser').getAttribute('aria-pressed') === 'true' ? 'eraser' : null,\n  mouse: document.getElementById('mouse').getAttribute('aria-pressed'),\n  hint: document.getElementById('hint').textContent,\n  card: !document.getElementById('card').hidden,\n  cancel: !document.getElementById('cancel').hidden,\n  disabled: [...document.querySelectorAll('#toolbar button')].filter((b) => b.disabled).length })",
+  "target": "overlay",
+  "as": "ov_b_card_closed",
+  "required": true
+ },
+ {
+  "stroke": [
+   [
+    45,
+    487
+   ],
+   [
+    60,
+    487
+   ],
+   [
+    76,
+    487
+   ],
+   [
+    91,
+    487
+   ],
+   [
+    107,
+    487
+   ],
+   [
+    122,
+    487
+   ],
+   [
+    138,
+    487
+   ],
+   [
+    153,
+    487
+   ],
+   [
+    168,
+    487
+   ],
+   [
+    184,
+    487
+   ],
+   [
+    199,
+    487
+   ],
+   [
+    215,
+    487
+   ],
+   [
+    230,
+    487
+   ]
+  ],
+  "pointerType": "pen"
+ },
+ {
+  "sleep": 3500
+ },
+ {
+  "waitEval": "(() => { const s = __lcOverlay.state(); return s.unsaved === null && s.pendingImages === 0 && !s.gesture && s.saveText !== 'Saving…'\n  && s.retention.deferred === 0 && s.samples.at(-1)?.composed?.ink_revision === s.doc.revision\n  && JSON.stringify({ doc: s.doc, saveText: s.saveText, retention: s.retention }); })()",
+  "target": "overlay",
+  "timeoutMs": 20000,
+  "as": "saved_b-continued"
+ },
+ {
+  "eval": "(window.__qaMarks.push({ label: \"b-continued\", samples: window.__qa.length, at: new Date().toISOString() }), true)",
+  "target": "control"
+ },
+ {
+  "eval": "JSON.stringify((() => { const st = __lcOverlay.state(); const s = st.samples.at(-1);\n  return { aligned: st.aligned, alignment: __lcOverlay.alignment(), doc: st.doc, pinned: st.pinned, hint: st.hint, gesture: st.gesture,\n    last: s ? { seq: s.seq, sampled_at: s.sampled_at, state: s.state, raw: s.raw && { pixels_sha256: s.raw.pixels_sha256 },\n      composed: s.composed && { ink_session: s.composed.ink_session, ink_revision: s.composed.ink_revision, ink_marks: s.composed.ink_marks, pixels_sha256: s.composed.pixels_sha256 } } : null }; })())",
+  "target": "overlay",
+  "as": "app_b-continued"
+ },
+ {
+  "eval": "JSON.stringify({\n  mode: [...document.querySelectorAll('[data-mode]')].find((b) => b.getAttribute('aria-pressed') === 'true')?.dataset.mode ?? null,\n  tool: document.getElementById('pen').getAttribute('aria-pressed') === 'true' ? 'pen' : document.getElementById('eraser').getAttribute('aria-pressed') === 'true' ? 'eraser' : null,\n  mouse: document.getElementById('mouse').getAttribute('aria-pressed'),\n  hint: document.getElementById('hint').textContent,\n  card: !document.getElementById('card').hidden,\n  cancel: !document.getElementById('cancel').hidden,\n  disabled: [...document.querySelectorAll('#toolbar button')].filter((b) => b.disabled).length })",
+  "target": "overlay",
+  "as": "ov_b-continued",
+  "required": true
+ },
+ {
+  "snapshot": "b-continued"
+ },
+ {
+  "hashTree": [
+   "ink",
+   "captures",
+   "capture-host"
+  ],
+  "frames": false,
+  "as": "h_b-continued"
+ },
+ {
+  "waitEval": "(async () => { const l = await window.lc.linkState(); return l && l.mode === 'development' && (l.storing === true && l.unknown === 0 && l.not_sent === 0) && JSON.stringify({ at: new Date().toISOString(), l }); })()",
+  "target": "control",
+  "timeoutMs": 40000,
+  "as": "b_pre_stop",
+  "required": false
+ },
+ {
+  "eval": "(async () => JSON.stringify({ at: new Date().toISOString(), l: await window.lc.linkState(), ai: document.getElementById('ai').textContent,\n  line: document.getElementById('link').textContent, hidden: document.getElementById('link').hidden, session: document.getElementById('session').textContent }))()",
+  "target": "control",
+  "as": "b_pre_stop_now"
+ },
+ {
+  "eval": "document.getElementById('stop').click(), true",
+  "target": "control"
+ },
+ {
+  "waitEval": "(async () => { const s = await window.lc.sessionState(); return !s.running && !s.starting ? JSON.stringify(s) : false })()",
+  "target": "control",
+  "timeoutMs": 70000,
+  "as": "b_stopped"
+ },
+ {
+  "waitEval": "(async () => { const l = await window.lc.linkState(); return l && l.mode === 'development' && (l.state === 'stopped') && JSON.stringify({ at: new Date().toISOString(), l }); })()",
+  "target": "control",
+  "timeoutMs": 65000,
+  "as": "b_link_stopped",
+  "required": false
+ },
+ {
+  "eval": "(async () => JSON.stringify({ at: new Date().toISOString(), l: await window.lc.linkState(), ai: document.getElementById('ai').textContent,\n  line: document.getElementById('link').textContent, hidden: document.getElementById('link').hidden, session: document.getElementById('session').textContent }))()",
+  "target": "control",
+  "as": "b_stopped_now"
+ },
+ {
+  "children": true,
+  "as": "kids_b_stopped",
+  "required": false
+ },
+ {
+  "copyTree": "userdata",
+  "path": "capture-host",
+  "to": "coord-b-stopped",
+  "required": false
+ },
+ {
+  "hashTree": [
+   "ink",
+   "captures",
+   "capture-host"
+  ],
+  "frames": true,
+  "as": "h_b-stopped"
+ },
+ {
+  "eval": "JSON.stringify(window.__qaLink || [])",
+  "target": "control",
+  "as": "b_events"
+ },
+ {
+  "eval": "JSON.stringify({ samples: window.__qa, sessions: window.__qaSessions, marks: window.__qaMarks, inkSaved: window.__qaInkSaved })",
+  "target": "control",
+  "as": "b_timeline"
+ },
+ {
+  "eval": "(async () => JSON.stringify(await window.lc.listInk()))()",
+  "target": "control",
+  "as": "b_ink"
+ },
+ {
+  "closeApp": true
+ },
+ {
+  "hashTree": [
+   "ink",
+   "captures",
+   "capture-host"
+  ],
+  "frames": true,
+  "as": "h_b-closed"
+ },
+ {
+  "launchApp": true,
+  "as": "app-capturing",
+  "link": "main"
+ },
+ {
+  "waitEval": "document.querySelectorAll('#displays li[role=option]').length > 0",
+  "target": "control",
+  "timeoutMs": 20000
+ },
+ {
+  "eval": "(() => { if (!window.__qaHooked) { window.__qa = []; window.__qaSessions = []; window.__qaMarks = []; window.__qaInkSaved = [];\n  window.lc.onSample((s) => window.__qa.push({ ...s, qa_received_at: new Date().toISOString() }));\n  window.lc.onSession((s) => window.__qaSessions.push({ ...s, qa_at: new Date().toISOString() }));\n  window.lc.onInkSaved(() => window.__qaInkSaved.push(new Date().toISOString())); window.__qaHooked = true; } return true; })()",
+  "target": "control",
+  "as": "hooked"
+ },
+ {
+  "eval": "(() => { if (!window.__qaLinkHooked) { window.__qaLink = [];\n  window.lc.onLink((l) => window.__qaLink.push({ ...l, qa_at: new Date().toISOString() })); window.__qaLinkHooked = true; } return true; })()",
+  "target": "control",
+  "as": "link_hooked"
+ },
+ {
+  "sleep": 6000
+ },
+ {
+  "eval": "(async () => JSON.stringify({ at: new Date().toISOString(), l: await window.lc.linkState(), ai: document.getElementById('ai').textContent,\n  line: document.getElementById('link').textContent, hidden: document.getElementById('link').hidden, session: document.getElementById('session').textContent }))()",
+  "target": "control",
+  "as": "c_relaunched"
+ },
+ {
+  "children": true,
+  "as": "kids_c_idle",
+  "required": false
+ },
+ {
+  "eval": "(async () => JSON.stringify(await window.lc.listInk()))()",
+  "target": "control",
+  "as": "c_ink"
+ },
+ {
+  "hashTree": [
+   "ink",
+   "captures",
+   "capture-host"
+  ],
+  "frames": true,
+  "as": "h_c-relaunched"
+ },
+ {
+  "window": "edge",
+  "show": "front"
+ },
+ {
+  "eval": "document.querySelector('#displays li[aria-selected=true]').click(), document.getElementById('start').click(), true",
+  "target": "control"
+ },
+ {
+  "waitEval": "(async () => { const s = await window.lc.sessionState(); return s.running && !s.starting ? JSON.stringify(s) : false })()",
+  "target": "control",
+  "timeoutMs": 20000,
+  "as": "s2"
+ },
+ {
+  "waitEval": "document.readyState === 'complete'",
+  "target": "overlay",
+  "timeoutMs": 15000
+ },
+ {
+  "sleep": 2500
+ },
+ {
+  "waitEval": "(async () => { const l = await window.lc.linkState(); return l && l.mode === 'development' && (l.state === 'sending') && JSON.stringify({ at: new Date().toISOString(), l }); })()",
+  "target": "control",
+  "timeoutMs": 40000,
+  "as": "c_sending",
+  "required": false
+ },
+ {
+  "children": true,
+  "as": "kids_c",
+  "required": false
+ },
+ {
+  "eval": "document.querySelector(\"[data-mode=WRITE]\").click(), true",
+  "target": "overlay"
+ },
+ {
+  "eval": "document.querySelector(\"#pen\").click(), true",
+  "target": "overlay"
+ },
+ {
+  "stroke": [
+   [
+    420,
+    600
+   ],
+   [
+    433,
+    600
+   ],
+   [
+    446,
+    601
+   ],
+   [
+    459,
+    601
+   ],
+   [
+    471,
+    602
+   ],
+   [
+    484,
+    602
+   ],
+   [
+    497,
+    603
+   ],
+   [
+    510,
+    603
+   ],
+   [
+    523,
+    603
+   ],
+   [
+    536,
+    604
+   ],
+   [
+    549,
+    604
+   ],
+   [
+    561,
+    605
+   ],
+   [
+    574,
+    605
+   ],
+   [
+    587,
+    606
+   ],
+   [
+    600,
+    606
+   ]
+  ],
+  "pointerType": "pen"
+ },
+ {
+  "sleep": 3500
+ },
+ {
+  "waitEval": "(() => { const s = __lcOverlay.state(); return s.unsaved === null && s.pendingImages === 0 && !s.gesture && s.saveText !== 'Saving…'\n  && s.retention.deferred === 0 && s.samples.at(-1)?.composed?.ink_revision === s.doc.revision\n  && JSON.stringify({ doc: s.doc, saveText: s.saveText, retention: s.retention }); })()",
+  "target": "overlay",
+  "timeoutMs": 20000,
+  "as": "saved_c-write"
+ },
+ {
+  "eval": "(window.__qaMarks.push({ label: \"c-write\", samples: window.__qa.length, at: new Date().toISOString() }), true)",
+  "target": "control"
+ },
+ {
+  "eval": "JSON.stringify((() => { const st = __lcOverlay.state(); const s = st.samples.at(-1);\n  return { aligned: st.aligned, alignment: __lcOverlay.alignment(), doc: st.doc, pinned: st.pinned, hint: st.hint, gesture: st.gesture,\n    last: s ? { seq: s.seq, sampled_at: s.sampled_at, state: s.state, raw: s.raw && { pixels_sha256: s.raw.pixels_sha256 },\n      composed: s.composed && { ink_session: s.composed.ink_session, ink_revision: s.composed.ink_revision, ink_marks: s.composed.ink_marks, pixels_sha256: s.composed.pixels_sha256 } } : null }; })())",
+  "target": "overlay",
+  "as": "app_c-write"
+ },
+ {
+  "eval": "JSON.stringify({\n  mode: [...document.querySelectorAll('[data-mode]')].find((b) => b.getAttribute('aria-pressed') === 'true')?.dataset.mode ?? null,\n  tool: document.getElementById('pen').getAttribute('aria-pressed') === 'true' ? 'pen' : document.getElementById('eraser').getAttribute('aria-pressed') === 'true' ? 'eraser' : null,\n  mouse: document.getElementById('mouse').getAttribute('aria-pressed'),\n  hint: document.getElementById('hint').textContent,\n  card: !document.getElementById('card').hidden,\n  cancel: !document.getElementById('cancel').hidden,\n  disabled: [...document.querySelectorAll('#toolbar button')].filter((b) => b.disabled).length })",
+  "target": "overlay",
+  "as": "ov_c-write",
+  "required": true
+ },
+ {
+  "snapshot": "c-write"
+ },
+ {
+  "hashTree": [
+   "ink",
+   "captures",
+   "capture-host"
+  ],
+  "frames": false,
+  "as": "h_c-write"
+ },
+ {
+  "eval": "(document.getElementById(\"qa-sign\").textContent = \"−\",\n  window.__qaTick = (window.__qaTick || 0) + 1, document.getElementById('qa-tick').textContent = 't' + window.__qaTick, true)",
+  "target": "edge"
+ },
+ {
+  "sleep": 3500
+ },
+ {
+  "waitEval": "(async () => { const l = await window.lc.linkState(); return l && l.mode === 'development' && (l.storing === true && l.unknown === 0 && l.not_sent === 0 && l.stored >= 2) && JSON.stringify({ at: new Date().toISOString(), l }); })()",
+  "target": "control",
+  "timeoutMs": 40000,
+  "as": "c_storing",
+  "required": false
+ },
+ {
+  "eval": "(async () => JSON.stringify({ at: new Date().toISOString(), l: await window.lc.linkState(), ai: document.getElementById('ai').textContent,\n  line: document.getElementById('link').textContent, hidden: document.getElementById('link').hidden, session: document.getElementById('session').textContent }))()",
+  "target": "control",
+  "as": "c_storing_now"
+ },
+ {
+  "eval": "JSON.stringify(window.__qaLink || [])",
+  "target": "control",
+  "as": "c_events"
+ },
+ {
+  "eval": "(async () => JSON.stringify(await window.lc.listInk()))()",
+  "target": "control",
+  "as": "c_ink_before_close"
+ },
+ {
+  "copyTree": "userdata",
+  "path": "capture-host",
+  "to": "coord-c-before-close",
+  "required": false
+ },
+ {
+  "hashTree": [
+   "ink",
+   "captures",
+   "capture-host"
+  ],
+  "frames": true,
+  "as": "h_c-before-close"
+ },
+ {
+  "closeApp": true,
+  "via": "wm_close",
+  "again": true,
+  "waitMs": 95000
+ },
+ {
+  "hashTree": [
+   "ink",
+   "captures",
+   "capture-host"
+  ],
+  "frames": true,
+  "as": "h_c-closed"
+ },
+ {
+  "copyTree": "userdata",
+  "path": "capture-host",
+  "to": "coord-c-closed",
+  "required": false
+ },
+ {
+  "launchApp": true,
+  "as": "app-after-capturing",
+  "link": "main"
+ },
+ {
+  "waitEval": "document.querySelectorAll('#displays li[role=option]').length > 0",
+  "target": "control",
+  "timeoutMs": 20000
+ },
+ {
+  "eval": "(() => { if (!window.__qaHooked) { window.__qa = []; window.__qaSessions = []; window.__qaMarks = []; window.__qaInkSaved = [];\n  window.lc.onSample((s) => window.__qa.push({ ...s, qa_received_at: new Date().toISOString() }));\n  window.lc.onSession((s) => window.__qaSessions.push({ ...s, qa_at: new Date().toISOString() }));\n  window.lc.onInkSaved(() => window.__qaInkSaved.push(new Date().toISOString())); window.__qaHooked = true; } return true; })()",
+  "target": "control",
+  "as": "hooked"
+ },
+ {
+  "eval": "(() => { if (!window.__qaLinkHooked) { window.__qaLink = [];\n  window.lc.onLink((l) => window.__qaLink.push({ ...l, qa_at: new Date().toISOString() })); window.__qaLinkHooked = true; } return true; })()",
+  "target": "control",
+  "as": "link_hooked"
+ },
+ {
+  "sleep": 8000
+ },
+ {
+  "eval": "(async () => JSON.stringify({ at: new Date().toISOString(), l: await window.lc.linkState(), ai: document.getElementById('ai').textContent,\n  line: document.getElementById('link').textContent, hidden: document.getElementById('link').hidden, session: document.getElementById('session').textContent }))()",
+  "target": "control",
+  "as": "d_relaunched"
+ },
+ {
+  "children": true,
+  "as": "kids_d",
+  "required": false
+ },
+ {
+  "eval": "(async () => JSON.stringify(await window.lc.listInk()))()",
+  "target": "control",
+  "as": "d_ink"
+ },
+ {
+  "hashTree": [
+   "ink",
+   "captures",
+   "capture-host"
+  ],
+  "frames": true,
+  "as": "h_d-relaunched"
+ },
+ {
+  "closeApp": true
+ },
+ {
+  "launchApp": true,
+  "as": "app-unavail",
+  "link": "unavail"
+ },
+ {
+  "waitEval": "document.querySelectorAll('#displays li[role=option]').length > 0",
+  "target": "control",
+  "timeoutMs": 20000
+ },
+ {
+  "eval": "(() => { if (!window.__qaHooked) { window.__qa = []; window.__qaSessions = []; window.__qaMarks = []; window.__qaInkSaved = [];\n  window.lc.onSample((s) => window.__qa.push({ ...s, qa_received_at: new Date().toISOString() }));\n  window.lc.onSession((s) => window.__qaSessions.push({ ...s, qa_at: new Date().toISOString() }));\n  window.lc.onInkSaved(() => window.__qaInkSaved.push(new Date().toISOString())); window.__qaHooked = true; } return true; })()",
+  "target": "control",
+  "as": "hooked"
+ },
+ {
+  "eval": "(() => { if (!window.__qaLinkHooked) { window.__qaLink = [];\n  window.lc.onLink((l) => window.__qaLink.push({ ...l, qa_at: new Date().toISOString() })); window.__qaLinkHooked = true; } return true; })()",
+  "target": "control",
+  "as": "link_hooked"
+ },
+ {
+  "sleep": 4000
+ },
+ {
+  "eval": "(async () => JSON.stringify({ at: new Date().toISOString(), l: await window.lc.linkState(), ai: document.getElementById('ai').textContent,\n  line: document.getElementById('link').textContent, hidden: document.getElementById('link').hidden, session: document.getElementById('session').textContent }))()",
+  "target": "control",
+  "as": "e_idle"
+ },
+ {
+  "children": true,
+  "as": "kids_e_idle",
+  "required": false
+ },
+ {
+  "window": "edge",
+  "show": "front"
+ },
+ {
+  "eval": "document.querySelector('#displays li[aria-selected=true]').click(), document.getElementById('start').click(), true",
+  "target": "control"
+ },
+ {
+  "waitEval": "(async () => { const s = await window.lc.sessionState(); return s.running && !s.starting ? JSON.stringify(s) : false })()",
+  "target": "control",
+  "timeoutMs": 20000,
+  "as": "s3"
+ },
+ {
+  "waitEval": "document.readyState === 'complete'",
+  "target": "overlay",
+  "timeoutMs": 15000
+ },
+ {
+  "sleep": 2500
+ },
+ {
+  "waitEval": "(async () => { const l = await window.lc.linkState(); return l && l.mode === 'development' && (l.state !== 'connecting' && l.state !== 'idle' && l.state !== 'stopped') && JSON.stringify({ at: new Date().toISOString(), l }); })()",
+  "target": "control",
+  "timeoutMs": 40000,
+  "as": "e_fail",
+  "required": false
+ },
+ {
+  "sleep": 4000
+ },
+ {
+  "eval": "(async () => JSON.stringify({ at: new Date().toISOString(), l: await window.lc.linkState(), ai: document.getElementById('ai').textContent,\n  line: document.getElementById('link').textContent, hidden: document.getElementById('link').hidden, session: document.getElementById('session').textContent }))()",
+  "target": "control",
+  "as": "e_fail_now"
+ },
+ {
+  "children": true,
+  "as": "kids_e",
+  "required": false
+ },
+ {
+  "eval": "document.querySelector(\"[data-mode=WRITE]\").click(), true",
+  "target": "overlay"
+ },
+ {
+  "eval": "document.querySelector(\"#pen\").click(), true",
+  "target": "overlay"
+ },
+ {
+  "stroke": [
+   [
+    60,
+    600
+   ],
+   [
+    73,
+    600
+   ],
+   [
+    86,
+    601
+   ],
+   [
+    99,
+    601
+   ],
+   [
+    111,
+    602
+   ],
+   [
+    124,
+    602
+   ],
+   [
+    137,
+    603
+   ],
+   [
+    150,
+    603
+   ],
+   [
+    163,
+    603
+   ],
+   [
+    176,
+    604
+   ],
+   [
+    189,
+    604
+   ],
+   [
+    201,
+    605
+   ],
+   [
+    214,
+    605
+   ],
+   [
+    227,
+    606
+   ],
+   [
+    240,
+    606
+   ]
+  ],
+  "pointerType": "pen"
+ },
+ {
+  "sleep": 3500
+ },
+ {
+  "waitEval": "(() => { const s = __lcOverlay.state(); return s.unsaved === null && s.pendingImages === 0 && !s.gesture && s.saveText !== 'Saving…'\n  && s.retention.deferred === 0 && s.samples.at(-1)?.composed?.ink_revision === s.doc.revision\n  && JSON.stringify({ doc: s.doc, saveText: s.saveText, retention: s.retention }); })()",
+  "target": "overlay",
+  "timeoutMs": 20000,
+  "as": "saved_e-write"
+ },
+ {
+  "eval": "(window.__qaMarks.push({ label: \"e-write\", samples: window.__qa.length, at: new Date().toISOString() }), true)",
+  "target": "control"
+ },
+ {
+  "eval": "JSON.stringify((() => { const st = __lcOverlay.state(); const s = st.samples.at(-1);\n  return { aligned: st.aligned, alignment: __lcOverlay.alignment(), doc: st.doc, pinned: st.pinned, hint: st.hint, gesture: st.gesture,\n    last: s ? { seq: s.seq, sampled_at: s.sampled_at, state: s.state, raw: s.raw && { pixels_sha256: s.raw.pixels_sha256 },\n      composed: s.composed && { ink_session: s.composed.ink_session, ink_revision: s.composed.ink_revision, ink_marks: s.composed.ink_marks, pixels_sha256: s.composed.pixels_sha256 } } : null }; })())",
+  "target": "overlay",
+  "as": "app_e-write"
+ },
+ {
+  "eval": "JSON.stringify({\n  mode: [...document.querySelectorAll('[data-mode]')].find((b) => b.getAttribute('aria-pressed') === 'true')?.dataset.mode ?? null,\n  tool: document.getElementById('pen').getAttribute('aria-pressed') === 'true' ? 'pen' : document.getElementById('eraser').getAttribute('aria-pressed') === 'true' ? 'eraser' : null,\n  mouse: document.getElementById('mouse').getAttribute('aria-pressed'),\n  hint: document.getElementById('hint').textContent,\n  card: !document.getElementById('card').hidden,\n  cancel: !document.getElementById('cancel').hidden,\n  disabled: [...document.querySelectorAll('#toolbar button')].filter((b) => b.disabled).length })",
+  "target": "overlay",
+  "as": "ov_e-write",
+  "required": true
+ },
+ {
+  "snapshot": "e-write"
+ },
+ {
+  "hashTree": [
+   "ink",
+   "captures",
+   "capture-host"
+  ],
+  "frames": false,
+  "as": "h_e-write"
+ },
+ {
+  "eval": "document.querySelector(\"[data-mode=ASK]\").click(), true",
+  "target": "overlay"
+ },
+ {
+  "stroke": [
+   [
+    315,
+    557
+   ],
+   [
+    313,
+    565
+   ],
+   [
+    306,
+    572
+   ],
+   [
+    295,
+    580
+   ],
+   [
+    280,
+    586
+   ],
+   [
+    261,
+    591
+   ],
+   [
+    240,
+    596
+   ],
+   [
+    216,
+    599
+   ],
+   [
+    191,
+    601
+   ],
+   [
+    165,
+    602
+   ],
+   [
+    139,
+    601
+   ],
+   [
+    114,
+    599
+   ],
+   [
+    90,
+    596
+   ],
+   [
+    69,
+    591
+   ],
+   [
+    50,
+    586
+   ],
+   [
+    35,
+    580
+   ],
+   [
+    24,
+    572
+   ],
+   [
+    17,
+    565
+   ],
+   [
+    15,
+    557
+   ],
+   [
+    17,
+    549
+   ],
+   [
+    24,
+    542
+   ],
+   [
+    35,
+    535
+   ],
+   [
+    50,
+    528
+   ],
+   [
+    69,
+    523
+   ],
+   [
+    90,
+    518
+   ],
+   [
+    114,
+    515
+   ],
+   [
+    139,
+    513
+   ],
+   [
+    165,
+    512
+   ],
+   [
+    191,
+    513
+   ],
+   [
+    216,
+    515
+   ],
+   [
+    240,
+    518
+   ],
+   [
+    261,
+    523
+   ],
+   [
+    280,
+    528
+   ],
+   [
+    295,
+    535
+   ],
+   [
+    306,
+    542
+   ],
+   [
+    313,
+    549
+   ],
+   [
+    315,
+    557
+   ]
+  ],
+  "pointerType": "pen"
+ },
+ {
+  "waitEval": "!document.getElementById('card').hidden",
+  "target": "overlay",
+  "timeoutMs": 8000
+ },
+ {
+  "eval": "(async () => { const src = document.getElementById('crop').src;\n  const h = [...new Uint8Array(await crypto.subtle.digest('SHA-256', new TextEncoder().encode(src)))].map((x) => x.toString(16).padStart(2, '0')).join('');\n  const st = __lcOverlay.state();\n  return JSON.stringify({ at: new Date().toISOString(), shown: !document.getElementById('card').hidden, text: document.getElementById('cardText').textContent,\n    card_all_text: document.getElementById('card').textContent, crop_chars: src.length, crop_is_png: src.startsWith('data:image/png;base64,'), crop_sha256: h,\n    mode: st.mode, revision: st.doc.revision, hint: document.getElementById('hint').textContent }); })()",
+  "target": "overlay",
+  "as": "card_unavail"
+ },
+ {
+  "eval": "(async () => JSON.stringify({ at: new Date().toISOString(), l: await window.lc.linkState(), ai: document.getElementById('ai').textContent,\n  line: document.getElementById('link').textContent, hidden: document.getElementById('link').hidden, session: document.getElementById('session').textContent }))()",
+  "target": "control",
+  "as": "e_with_card"
+ },
+ {
+  "eval": "document.querySelector(\"#close\").click(), true",
+  "target": "overlay"
+ },
+ {
+  "eval": "JSON.stringify({\n  mode: [...document.querySelectorAll('[data-mode]')].find((b) => b.getAttribute('aria-pressed') === 'true')?.dataset.mode ?? null,\n  tool: document.getElementById('pen').getAttribute('aria-pressed') === 'true' ? 'pen' : document.getElementById('eraser').getAttribute('aria-pressed') === 'true' ? 'eraser' : null,\n  mouse: document.getElementById('mouse').getAttribute('aria-pressed'),\n  hint: document.getElementById('hint').textContent,\n  card: !document.getElementById('card').hidden,\n  cancel: !document.getElementById('cancel').hidden,\n  disabled: [...document.querySelectorAll('#toolbar button')].filter((b) => b.disabled).length })",
+  "target": "overlay",
+  "as": "ov_e_card_closed",
+  "required": true
+ },
+ {
+  "eval": "document.getElementById('stop').click(), true",
+  "target": "control"
+ },
+ {
+  "waitEval": "(async () => { const s = await window.lc.sessionState(); return !s.running && !s.starting ? JSON.stringify(s) : false })()",
+  "target": "control",
+  "timeoutMs": 70000,
+  "as": "e_stopped"
+ },
+ {
+  "sleep": 3000
+ },
+ {
+  "eval": "(async () => JSON.stringify({ at: new Date().toISOString(), l: await window.lc.linkState(), ai: document.getElementById('ai').textContent,\n  line: document.getElementById('link').textContent, hidden: document.getElementById('link').hidden, session: document.getElementById('session').textContent }))()",
+  "target": "control",
+  "as": "e_stopped_now"
+ },
+ {
+  "eval": "JSON.stringify(window.__qaLink || [])",
+  "target": "control",
+  "as": "e_events"
+ },
+ {
+  "copyTree": "userdata",
+  "path": "capture-host",
+  "to": "coord-e-stopped",
+  "required": false
+ },
+ {
+  "hashTree": [
+   "ink",
+   "captures",
+   "capture-host"
+  ],
+  "frames": true,
+  "as": "h_e-stopped"
+ },
+ {
+  "closeApp": true,
+  "via": "wm_close"
+ },
+ {
+  "hashTree": [
+   "ink",
+   "captures",
+   "capture-host"
+  ],
+  "frames": true,
+  "as": "h_e-closed"
+ },
+ {
+  "launchApp": true,
+  "as": "app-unavail-capturing",
+  "link": "unavail"
+ },
+ {
+  "waitEval": "document.querySelectorAll('#displays li[role=option]').length > 0",
+  "target": "control",
+  "timeoutMs": 20000
+ },
+ {
+  "eval": "(() => { if (!window.__qaHooked) { window.__qa = []; window.__qaSessions = []; window.__qaMarks = []; window.__qaInkSaved = [];\n  window.lc.onSample((s) => window.__qa.push({ ...s, qa_received_at: new Date().toISOString() }));\n  window.lc.onSession((s) => window.__qaSessions.push({ ...s, qa_at: new Date().toISOString() }));\n  window.lc.onInkSaved(() => window.__qaInkSaved.push(new Date().toISOString())); window.__qaHooked = true; } return true; })()",
+  "target": "control",
+  "as": "hooked"
+ },
+ {
+  "eval": "(() => { if (!window.__qaLinkHooked) { window.__qaLink = [];\n  window.lc.onLink((l) => window.__qaLink.push({ ...l, qa_at: new Date().toISOString() })); window.__qaLinkHooked = true; } return true; })()",
+  "target": "control",
+  "as": "link_hooked"
+ },
+ {
+  "sleep": 10000
+ },
+ {
+  "eval": "(async () => JSON.stringify({ at: new Date().toISOString(), l: await window.lc.linkState(), ai: document.getElementById('ai').textContent,\n  line: document.getElementById('link').textContent, hidden: document.getElementById('link').hidden, session: document.getElementById('session').textContent }))()",
+  "target": "control",
+  "as": "f_relaunched"
+ },
+ {
+  "children": true,
+  "as": "kids_f_idle",
+  "required": false
+ },
+ {
+  "eval": "JSON.stringify(window.__qaLink || [])",
+  "target": "control",
+  "as": "f_events_idle"
+ },
+ {
+  "eval": "document.querySelector('#displays li[aria-selected=true]').click(), document.getElementById('start').click(), true",
+  "target": "control"
+ },
+ {
+  "waitEval": "(async () => { const s = await window.lc.sessionState(); return s.running && !s.starting ? JSON.stringify(s) : false })()",
+  "target": "control",
+  "timeoutMs": 20000,
+  "as": "s4"
+ },
+ {
+  "waitEval": "document.readyState === 'complete'",
+  "target": "overlay",
+  "timeoutMs": 15000
+ },
+ {
+  "sleep": 2500
+ },
+ {
+  "waitEval": "(async () => { const l = await window.lc.linkState(); return l && l.mode === 'development' && (l.state !== 'connecting' && l.state !== 'idle' && l.state !== 'stopped') && JSON.stringify({ at: new Date().toISOString(), l }); })()",
+  "target": "control",
+  "timeoutMs": 40000,
+  "as": "f_fail",
+  "required": false
+ },
+ {
+  "sleep": 4000
+ },
+ {
+  "eval": "(async () => JSON.stringify({ at: new Date().toISOString(), l: await window.lc.linkState(), ai: document.getElementById('ai').textContent,\n  line: document.getElementById('link').textContent, hidden: document.getElementById('link').hidden, session: document.getElementById('session').textContent }))()",
+  "target": "control",
+  "as": "f_fail_now"
+ },
+ {
+  "hashTree": [
+   "ink",
+   "captures",
+   "capture-host"
+  ],
+  "frames": true,
+  "as": "h_f-before-close"
+ },
+ {
+  "closeApp": true,
+  "via": "wm_close",
+  "waitMs": 95000
+ },
+ {
+  "hashTree": [
+   "ink",
+   "captures",
+   "capture-host"
+  ],
+  "frames": true,
+  "as": "h_f-closed"
+ },
+ {
+  "launchApp": true,
+  "as": "app-final",
+  "link": "unavail"
+ },
+ {
+  "waitEval": "document.querySelectorAll('#displays li[role=option]').length > 0",
+  "target": "control",
+  "timeoutMs": 20000
+ },
+ {
+  "eval": "(() => { if (!window.__qaHooked) { window.__qa = []; window.__qaSessions = []; window.__qaMarks = []; window.__qaInkSaved = [];\n  window.lc.onSample((s) => window.__qa.push({ ...s, qa_received_at: new Date().toISOString() }));\n  window.lc.onSession((s) => window.__qaSessions.push({ ...s, qa_at: new Date().toISOString() }));\n  window.lc.onInkSaved(() => window.__qaInkSaved.push(new Date().toISOString())); window.__qaHooked = true; } return true; })()",
+  "target": "control",
+  "as": "hooked"
+ },
+ {
+  "eval": "(() => { if (!window.__qaLinkHooked) { window.__qaLink = [];\n  window.lc.onLink((l) => window.__qaLink.push({ ...l, qa_at: new Date().toISOString() })); window.__qaLinkHooked = true; } return true; })()",
+  "target": "control",
+  "as": "link_hooked"
+ },
+ {
+  "sleep": 10000
+ },
+ {
+  "eval": "(async () => JSON.stringify({ at: new Date().toISOString(), l: await window.lc.linkState(), ai: document.getElementById('ai').textContent,\n  line: document.getElementById('link').textContent, hidden: document.getElementById('link').hidden, session: document.getElementById('session').textContent }))()",
+  "target": "control",
+  "as": "g_relaunched"
+ },
+ {
+  "children": true,
+  "as": "kids_g",
+  "required": false
+ },
+ {
+  "eval": "(async () => JSON.stringify(await window.lc.listInk()))()",
+  "target": "control",
+  "as": "g_ink"
+ },
+ {
+  "eval": "JSON.stringify(window.__qaLink || [])",
+  "target": "control",
+  "as": "g_events"
+ },
+ {
+  "copyTree": "userdata",
+  "path": "capture-host",
+  "to": "coord-final",
+  "required": false
+ },
+ {
+  "closeApp": true
+ },
+ {
+  "hashTree": [
+   "ink",
+   "captures",
+   "capture-host"
+  ],
+  "frames": true,
+  "as": "h_final"
+ }
+]

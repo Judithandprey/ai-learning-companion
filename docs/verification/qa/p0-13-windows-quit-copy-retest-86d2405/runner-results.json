@@ -1,0 +1,2275 @@
+{
+ "steps": [
+  {
+   "i": 1,
+   "ok": true,
+   "at": "2026-10-01T02:24:32.7567336Z",
+   "kind": "consoleStart"
+  },
+  {
+   "i": 2,
+   "ok": true,
+   "at": "2026-10-01T02:24:33.4568878Z",
+   "kind": "window",
+   "window": "console",
+   "show": "maximize",
+   "is_foreground": false
+  },
+  {
+   "i": 3,
+   "ok": true,
+   "at": "2026-10-01T02:24:34.2914786Z",
+   "kind": "edgeStart"
+  },
+  {
+   "i": 4,
+   "ok": true,
+   "at": "2026-10-01T02:24:35.0240884Z",
+   "kind": "window",
+   "window": "edge",
+   "show": "front",
+   "foreground": true,
+   "is_foreground": true
+  },
+  {
+   "i": 5,
+   "ok": true,
+   "at": "2026-10-01T02:24:35.9238484Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 6,
+   "ok": true,
+   "at": "2026-10-01T02:24:37.4337743Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 7,
+   "ok": true,
+   "at": "2026-10-01T02:24:37.4812532Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "displays"
+  },
+  {
+   "i": 8,
+   "ok": true,
+   "at": "2026-10-01T02:24:37.6786078Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "link_hooked"
+  },
+  {
+   "i": 9,
+   "ok": true,
+   "at": "2026-10-01T02:24:37.6831077Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "n_off"
+  },
+  {
+   "i": 10,
+   "ok": true,
+   "at": "2026-10-01T02:24:37.6871187Z",
+   "kind": "children"
+  },
+  {
+   "i": 11,
+   "ok": true,
+   "at": "2026-10-01T02:24:38.3905007Z",
+   "kind": "closeApp",
+   "via": "page",
+   "close_requested_at": "2026-10-01T02:24:38.3995005Z",
+   "exited": true,
+   "exit_ms": 118,
+   "exit_code": 0
+  },
+  {
+   "i": 12,
+   "ok": true,
+   "at": "2026-10-01T02:24:38.5327546Z",
+   "kind": "seedLinkRecord"
+  },
+  {
+   "i": 13,
+   "ok": true,
+   "at": "2026-10-01T02:24:38.5932781Z",
+   "kind": "launchApp",
+   "previous": {
+    "key": "app",
+    "pid": 55764,
+    "exit_code": 0,
+    "killed": false
+   },
+   "pid": 60936
+  },
+  {
+   "i": 14,
+   "ok": true,
+   "at": "2026-10-01T02:24:40.2146859Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 15,
+   "ok": true,
+   "at": "2026-10-01T02:24:40.7235368Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "link_hooked"
+  },
+  {
+   "i": 16,
+   "ok": true,
+   "at": "2026-10-01T02:24:40.7325425Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 17,
+   "ok": true,
+   "at": "2026-10-01T02:24:43.7457451Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "a_idle"
+  },
+  {
+   "i": 18,
+   "ok": true,
+   "at": "2026-10-01T02:24:43.7507483Z",
+   "kind": "children"
+  },
+  {
+   "i": 19,
+   "ok": true,
+   "at": "2026-10-01T02:24:44.3934295Z",
+   "kind": "hashTree",
+   "as": "h_a-idle"
+  },
+  {
+   "i": 20,
+   "ok": true,
+   "at": "2026-10-01T02:24:44.4341200Z",
+   "kind": "closeApp",
+   "via": "wm_close",
+   "close_requested_at": "2026-10-01T02:24:44.4401184Z",
+   "posted": true,
+   "exited": true,
+   "exit_ms": 154,
+   "exit_code": 0
+  },
+  {
+   "i": 21,
+   "ok": true,
+   "at": "2026-10-01T02:24:44.5947339Z",
+   "kind": "hashTree",
+   "as": "h_a-closed"
+  },
+  {
+   "i": 22,
+   "ok": true,
+   "at": "2026-10-01T02:24:44.6002392Z",
+   "kind": "launchApp",
+   "previous": {
+    "key": "app-idle",
+    "pid": 60936,
+    "exit_code": 0,
+    "killed": false
+   },
+   "pid": 75440
+  },
+  {
+   "i": 23,
+   "ok": true,
+   "at": "2026-10-01T02:24:46.1454946Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 24,
+   "ok": true,
+   "at": "2026-10-01T02:24:46.6784589Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "hooked"
+  },
+  {
+   "i": 25,
+   "ok": true,
+   "at": "2026-10-01T02:24:46.6804571Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "link_hooked"
+  },
+  {
+   "i": 26,
+   "ok": true,
+   "at": "2026-10-01T02:24:46.6829530Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 27,
+   "ok": true,
+   "at": "2026-10-01T02:24:49.6835855Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "b_idle"
+  },
+  {
+   "i": 28,
+   "ok": true,
+   "at": "2026-10-01T02:24:49.6884512Z",
+   "kind": "children"
+  },
+  {
+   "i": 29,
+   "ok": true,
+   "at": "2026-10-01T02:24:50.3457498Z",
+   "kind": "window",
+   "window": "edge",
+   "show": "front",
+   "foreground": true,
+   "is_foreground": true
+  },
+  {
+   "i": 30,
+   "ok": true,
+   "at": "2026-10-01T02:24:51.1685509Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": null
+  },
+  {
+   "i": 31,
+   "ok": true,
+   "at": "2026-10-01T02:24:51.1725513Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 32,
+   "ok": true,
+   "at": "2026-10-01T02:24:52.3829667Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 33,
+   "ok": true,
+   "at": "2026-10-01T02:24:52.3859684Z",
+   "kind": "desktopShot",
+   "label": "before-start",
+   "foreign": null,
+   "cursor": [
+    1586,
+    949
+   ],
+   "size": "2560 x 1600"
+  },
+  {
+   "i": 34,
+   "ok": true,
+   "at": "2026-10-01T02:24:53.0849142Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 35,
+   "ok": true,
+   "at": "2026-10-01T02:24:53.2164772Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "s1"
+  },
+  {
+   "i": 36,
+   "ok": true,
+   "at": "2026-10-01T02:24:53.6958939Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 37,
+   "ok": true,
+   "at": "2026-10-01T02:24:53.7190100Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 38,
+   "ok": true,
+   "at": "2026-10-01T02:24:56.2253943Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "b_sending"
+  },
+  {
+   "i": 39,
+   "ok": true,
+   "at": "2026-10-01T02:24:56.2293914Z",
+   "kind": "children"
+  },
+  {
+   "i": 40,
+   "ok": true,
+   "at": "2026-10-01T02:24:56.9176823Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 41,
+   "ok": true,
+   "at": "2026-10-01T02:25:00.4187655Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": null
+  },
+  {
+   "i": 42,
+   "ok": true,
+   "at": "2026-10-01T02:25:00.4219444Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 43,
+   "ok": true,
+   "at": "2026-10-01T02:25:03.9293341Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "b_storing"
+  },
+  {
+   "i": 44,
+   "ok": true,
+   "at": "2026-10-01T02:25:03.9333460Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "b_storing_now"
+  },
+  {
+   "i": 45,
+   "ok": true,
+   "at": "2026-10-01T02:25:03.9353446Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 46,
+   "ok": true,
+   "at": "2026-10-01T02:25:03.9404644Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 47,
+   "ok": true,
+   "at": "2026-10-01T02:25:03.9617409Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 25
+  },
+  {
+   "i": 48,
+   "ok": true,
+   "at": "2026-10-01T02:25:04.5754647Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 49,
+   "ok": true,
+   "at": "2026-10-01T02:25:08.0811558Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": "saved_b-write"
+  },
+  {
+   "i": 50,
+   "ok": true,
+   "at": "2026-10-01T02:25:08.0855122Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 51,
+   "ok": true,
+   "at": "2026-10-01T02:25:08.0895194Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_b-write"
+  },
+  {
+   "i": 52,
+   "ok": true,
+   "at": "2026-10-01T02:25:08.0985163Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_b-write"
+  },
+  {
+   "i": 53,
+   "ok": true,
+   "at": "2026-10-01T02:25:08.1019714Z",
+   "kind": "snapshot",
+   "label": "b-write",
+   "contextPictures": 1
+  },
+  {
+   "i": 54,
+   "ok": true,
+   "at": "2026-10-01T02:25:08.1270386Z",
+   "kind": "hashTree",
+   "as": "h_b-write"
+  },
+  {
+   "i": 55,
+   "ok": true,
+   "at": "2026-10-01T02:25:08.1490866Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 56,
+   "ok": true,
+   "at": "2026-10-01T02:25:08.1729751Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 37
+  },
+  {
+   "i": 57,
+   "ok": true,
+   "at": "2026-10-01T02:25:09.0259123Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 58,
+   "ok": true,
+   "at": "2026-10-01T02:25:09.1594919Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "card_open"
+  },
+  {
+   "i": 59,
+   "ok": true,
+   "at": "2026-10-01T02:25:09.1638512Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_b_card_open"
+  },
+  {
+   "i": 60,
+   "ok": true,
+   "at": "2026-10-01T02:25:09.1658578Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 61,
+   "ok": true,
+   "at": "2026-10-01T02:25:13.1756096Z",
+   "kind": "hashTree",
+   "as": "h_b-before-pause"
+  },
+  {
+   "i": 62,
+   "ok": true,
+   "at": "2026-10-01T02:25:13.2106326Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "b_quiet_before_pause"
+  },
+  {
+   "i": 63,
+   "ok": true,
+   "at": "2026-10-01T02:25:13.2146739Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "b_before_pause"
+  },
+  {
+   "i": 64,
+   "ok": true,
+   "at": "2026-10-01T02:25:13.2161872Z",
+   "kind": "hostPause",
+   "answered_at": "2026-10-01T02:25:13.5499790Z",
+   "hosts": 1
+  },
+  {
+   "i": 65,
+   "ok": true,
+   "at": "2026-10-01T02:25:13.5594837Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": null
+  },
+  {
+   "i": 66,
+   "ok": true,
+   "at": "2026-10-01T02:25:13.5624961Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 67,
+   "ok": true,
+   "at": "2026-10-01T02:25:13.5654967Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 68,
+   "ok": true,
+   "at": "2026-10-01T02:25:21.5679035Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "b_paused_8s"
+  },
+  {
+   "i": 69,
+   "ok": true,
+   "at": "2026-10-01T02:25:21.5720635Z",
+   "kind": "copyTree",
+   "files": 1
+  },
+  {
+   "i": 70,
+   "ok": true,
+   "at": "2026-10-01T02:25:21.6064287Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "card_paused"
+  },
+  {
+   "i": 71,
+   "ok": true,
+   "at": "2026-10-01T02:25:21.6104255Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "b_stalled"
+  },
+  {
+   "i": 72,
+   "ok": true,
+   "at": "2026-10-01T02:28:15.9490761Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "b_stalled_now"
+  },
+  {
+   "i": 73,
+   "ok": true,
+   "at": "2026-10-01T02:28:15.9722073Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "card_stalled"
+  },
+  {
+   "i": 74,
+   "ok": true,
+   "at": "2026-10-01T02:28:15.9747161Z",
+   "kind": "desktopShot",
+   "label": "stalled",
+   "foreign": null,
+   "cursor": [
+    1586,
+    949
+   ],
+   "size": "2560 x 1600"
+  },
+  {
+   "i": 75,
+   "ok": true,
+   "at": "2026-10-01T02:28:16.6719058Z",
+   "kind": "copyTree",
+   "files": 1
+  },
+  {
+   "i": 76,
+   "ok": true,
+   "at": "2026-10-01T02:28:16.6864306Z",
+   "kind": "hostResume",
+   "answered_at": "2026-10-01T02:28:16.8064803Z"
+  },
+  {
+   "i": 77,
+   "ok": true,
+   "at": "2026-10-01T02:28:16.8074823Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "b_recovered"
+  },
+  {
+   "i": 78,
+   "ok": true,
+   "at": "2026-10-01T02:28:17.2434385Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "b_recovered_now"
+  },
+  {
+   "i": 79,
+   "ok": true,
+   "at": "2026-10-01T02:28:17.2469570Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "card_recovered"
+  },
+  {
+   "i": 80,
+   "ok": true,
+   "at": "2026-10-01T02:28:17.2493368Z",
+   "kind": "hashTree",
+   "as": "h_b-recovered"
+  },
+  {
+   "i": 81,
+   "ok": true,
+   "at": "2026-10-01T02:28:17.3035292Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 82,
+   "ok": true,
+   "at": "2026-10-01T02:28:17.3065247Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_b_card_closed"
+  },
+  {
+   "i": 83,
+   "ok": true,
+   "at": "2026-10-01T02:28:17.3089420Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 13
+  },
+  {
+   "i": 84,
+   "ok": true,
+   "at": "2026-10-01T02:28:17.6944322Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 85,
+   "ok": true,
+   "at": "2026-10-01T02:28:21.2095077Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": "saved_b-continued"
+  },
+  {
+   "i": 86,
+   "ok": true,
+   "at": "2026-10-01T02:28:21.2129631Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 87,
+   "ok": true,
+   "at": "2026-10-01T02:28:21.2159664Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_b-continued"
+  },
+  {
+   "i": 88,
+   "ok": true,
+   "at": "2026-10-01T02:28:21.2276925Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_b-continued"
+  },
+  {
+   "i": 89,
+   "ok": true,
+   "at": "2026-10-01T02:28:21.2307105Z",
+   "kind": "snapshot",
+   "label": "b-continued",
+   "contextPictures": 2
+  },
+  {
+   "i": 90,
+   "ok": true,
+   "at": "2026-10-01T02:28:21.2347138Z",
+   "kind": "hashTree",
+   "as": "h_b-continued"
+  },
+  {
+   "i": 91,
+   "ok": true,
+   "at": "2026-10-01T02:28:21.2539560Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "b_pre_stop"
+  },
+  {
+   "i": 92,
+   "ok": true,
+   "at": "2026-10-01T02:28:21.2580551Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "b_pre_stop_now"
+  },
+  {
+   "i": 93,
+   "ok": true,
+   "at": "2026-10-01T02:28:21.2600552Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 94,
+   "ok": true,
+   "at": "2026-10-01T02:28:21.2914624Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "b_stopped"
+  },
+  {
+   "i": 95,
+   "ok": true,
+   "at": "2026-10-01T02:28:21.4306965Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "b_link_stopped"
+  },
+  {
+   "i": 96,
+   "ok": true,
+   "at": "2026-10-01T02:28:21.7726393Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "b_stopped_now"
+  },
+  {
+   "i": 97,
+   "ok": true,
+   "at": "2026-10-01T02:28:21.7756374Z",
+   "kind": "children"
+  },
+  {
+   "i": 98,
+   "ok": true,
+   "at": "2026-10-01T02:28:22.4262057Z",
+   "kind": "copyTree",
+   "files": 1
+  },
+  {
+   "i": 99,
+   "ok": true,
+   "at": "2026-10-01T02:28:22.4402104Z",
+   "kind": "hashTree",
+   "as": "h_b-stopped"
+  },
+  {
+   "i": 100,
+   "ok": true,
+   "at": "2026-10-01T02:28:22.4959832Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "b_events"
+  },
+  {
+   "i": 101,
+   "ok": true,
+   "at": "2026-10-01T02:28:22.4999805Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "b_timeline"
+  },
+  {
+   "i": 102,
+   "ok": true,
+   "at": "2026-10-01T02:28:22.5256227Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "b_ink"
+  },
+  {
+   "i": 103,
+   "ok": true,
+   "at": "2026-10-01T02:28:22.5487507Z",
+   "kind": "closeApp",
+   "via": "page",
+   "close_requested_at": "2026-10-01T02:28:22.5487507Z",
+   "exited": true,
+   "exit_ms": 140,
+   "exit_code": 0
+  },
+  {
+   "i": 104,
+   "ok": true,
+   "at": "2026-10-01T02:28:22.6898885Z",
+   "kind": "hashTree",
+   "as": "h_b-closed"
+  },
+  {
+   "i": 105,
+   "ok": true,
+   "at": "2026-10-01T02:28:22.7312245Z",
+   "kind": "launchApp",
+   "previous": {
+    "key": "app-main",
+    "pid": 75440,
+    "exit_code": 0,
+    "killed": false
+   },
+   "pid": 13320
+  },
+  {
+   "i": 106,
+   "ok": true,
+   "at": "2026-10-01T02:28:24.2772345Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 107,
+   "ok": true,
+   "at": "2026-10-01T02:28:24.7945587Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "hooked"
+  },
+  {
+   "i": 108,
+   "ok": true,
+   "at": "2026-10-01T02:28:24.7965639Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "link_hooked"
+  },
+  {
+   "i": 109,
+   "ok": true,
+   "at": "2026-10-01T02:28:24.7976274Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 110,
+   "ok": true,
+   "at": "2026-10-01T02:28:30.8117086Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "c_relaunched"
+  },
+  {
+   "i": 111,
+   "ok": true,
+   "at": "2026-10-01T02:28:30.8157131Z",
+   "kind": "children"
+  },
+  {
+   "i": 112,
+   "ok": true,
+   "at": "2026-10-01T02:28:31.4633961Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "c_ink"
+  },
+  {
+   "i": 113,
+   "ok": true,
+   "at": "2026-10-01T02:28:31.4683920Z",
+   "kind": "hashTree",
+   "as": "h_c-relaunched"
+  },
+  {
+   "i": 114,
+   "ok": true,
+   "at": "2026-10-01T02:28:31.5134479Z",
+   "kind": "window",
+   "window": "edge",
+   "show": "front",
+   "foreground": true,
+   "is_foreground": true
+  },
+  {
+   "i": 115,
+   "ok": true,
+   "at": "2026-10-01T02:28:32.3132548Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 116,
+   "ok": true,
+   "at": "2026-10-01T02:28:32.4443674Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "s2"
+  },
+  {
+   "i": 117,
+   "ok": true,
+   "at": "2026-10-01T02:28:32.9305406Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 118,
+   "ok": true,
+   "at": "2026-10-01T02:28:32.9788532Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 119,
+   "ok": true,
+   "at": "2026-10-01T02:28:35.4853557Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "c_sending"
+  },
+  {
+   "i": 120,
+   "ok": true,
+   "at": "2026-10-01T02:28:35.4898727Z",
+   "kind": "children"
+  },
+  {
+   "i": 121,
+   "ok": true,
+   "at": "2026-10-01T02:28:36.1056712Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 122,
+   "ok": true,
+   "at": "2026-10-01T02:28:36.1106861Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 123,
+   "ok": true,
+   "at": "2026-10-01T02:28:36.1128243Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 15
+  },
+  {
+   "i": 124,
+   "ok": true,
+   "at": "2026-10-01T02:28:36.6301374Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 125,
+   "ok": true,
+   "at": "2026-10-01T02:28:40.1397451Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": "saved_c-write"
+  },
+  {
+   "i": 126,
+   "ok": true,
+   "at": "2026-10-01T02:28:40.1441727Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 127,
+   "ok": true,
+   "at": "2026-10-01T02:28:40.1465031Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_c-write"
+  },
+  {
+   "i": 128,
+   "ok": true,
+   "at": "2026-10-01T02:28:40.1551857Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_c-write"
+  },
+  {
+   "i": 129,
+   "ok": true,
+   "at": "2026-10-01T02:28:40.1571934Z",
+   "kind": "snapshot",
+   "label": "c-write",
+   "contextPictures": 3
+  },
+  {
+   "i": 130,
+   "ok": true,
+   "at": "2026-10-01T02:28:40.1621849Z",
+   "kind": "hashTree",
+   "as": "h_c-write"
+  },
+  {
+   "i": 131,
+   "ok": true,
+   "at": "2026-10-01T02:28:40.1892020Z",
+   "kind": "eval",
+   "target": "edge",
+   "as": null
+  },
+  {
+   "i": 132,
+   "ok": true,
+   "at": "2026-10-01T02:28:40.1922181Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 133,
+   "ok": true,
+   "at": "2026-10-01T02:28:43.7088122Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "c_storing"
+  },
+  {
+   "i": 134,
+   "ok": true,
+   "at": "2026-10-01T02:28:43.7131466Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "c_storing_now"
+  },
+  {
+   "i": 135,
+   "ok": true,
+   "at": "2026-10-01T02:28:43.7196108Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "c_events"
+  },
+  {
+   "i": 136,
+   "ok": true,
+   "at": "2026-10-01T02:28:43.7226555Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "c_ink_before_close"
+  },
+  {
+   "i": 137,
+   "ok": true,
+   "at": "2026-10-01T02:28:43.7256576Z",
+   "kind": "copyTree",
+   "files": 1
+  },
+  {
+   "i": 138,
+   "ok": true,
+   "at": "2026-10-01T02:28:43.7392086Z",
+   "kind": "hashTree",
+   "as": "h_c-before-close"
+  },
+  {
+   "i": 139,
+   "ok": true,
+   "at": "2026-10-01T02:28:43.8041153Z",
+   "kind": "closeApp",
+   "via": "wm_close",
+   "close_requested_at": "2026-10-01T02:28:43.8081324Z",
+   "posted": true,
+   "again": {
+    "after_ms": 71,
+    "posted": true
+   },
+   "exited": true,
+   "exit_ms": 661,
+   "exit_code": 0
+  },
+  {
+   "i": 140,
+   "ok": true,
+   "at": "2026-10-01T02:28:44.4695181Z",
+   "kind": "hashTree",
+   "as": "h_c-closed"
+  },
+  {
+   "i": 141,
+   "ok": true,
+   "at": "2026-10-01T02:28:44.5594664Z",
+   "kind": "copyTree",
+   "files": 1
+  },
+  {
+   "i": 142,
+   "ok": true,
+   "at": "2026-10-01T02:28:44.5644632Z",
+   "kind": "launchApp",
+   "previous": {
+    "key": "app-capturing",
+    "pid": 13320,
+    "exit_code": 0,
+    "killed": false
+   },
+   "pid": 72972
+  },
+  {
+   "i": 143,
+   "ok": true,
+   "at": "2026-10-01T02:28:46.1081357Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 144,
+   "ok": true,
+   "at": "2026-10-01T02:28:46.6234539Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "hooked"
+  },
+  {
+   "i": 145,
+   "ok": true,
+   "at": "2026-10-01T02:28:46.6261667Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "link_hooked"
+  },
+  {
+   "i": 146,
+   "ok": true,
+   "at": "2026-10-01T02:28:46.6284437Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 147,
+   "ok": true,
+   "at": "2026-10-01T02:28:54.6304220Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "d_relaunched"
+  },
+  {
+   "i": 148,
+   "ok": true,
+   "at": "2026-10-01T02:28:54.6354232Z",
+   "kind": "children"
+  },
+  {
+   "i": 149,
+   "ok": true,
+   "at": "2026-10-01T02:28:55.2882106Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "d_ink"
+  },
+  {
+   "i": 150,
+   "ok": true,
+   "at": "2026-10-01T02:28:55.2932286Z",
+   "kind": "hashTree",
+   "as": "h_d-relaunched"
+  },
+  {
+   "i": 151,
+   "ok": true,
+   "at": "2026-10-01T02:28:55.3649862Z",
+   "kind": "closeApp",
+   "via": "page",
+   "close_requested_at": "2026-10-01T02:28:55.3649862Z",
+   "exited": true,
+   "exit_ms": 91,
+   "exit_code": 0
+  },
+  {
+   "i": 152,
+   "ok": true,
+   "at": "2026-10-01T02:28:55.4573896Z",
+   "kind": "launchApp",
+   "previous": {
+    "key": "app-after-capturing",
+    "pid": 72972,
+    "exit_code": 0,
+    "killed": false
+   },
+   "pid": 74964
+  },
+  {
+   "i": 153,
+   "ok": true,
+   "at": "2026-10-01T02:28:56.9989562Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 154,
+   "ok": true,
+   "at": "2026-10-01T02:28:57.5166345Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "hooked"
+  },
+  {
+   "i": 155,
+   "ok": true,
+   "at": "2026-10-01T02:28:57.5186337Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "link_hooked"
+  },
+  {
+   "i": 156,
+   "ok": true,
+   "at": "2026-10-01T02:28:57.5206361Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 157,
+   "ok": true,
+   "at": "2026-10-01T02:29:01.5289526Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "e_idle"
+  },
+  {
+   "i": 158,
+   "ok": true,
+   "at": "2026-10-01T02:29:01.5333166Z",
+   "kind": "children"
+  },
+  {
+   "i": 159,
+   "ok": true,
+   "at": "2026-10-01T02:29:02.1857600Z",
+   "kind": "window",
+   "window": "edge",
+   "show": "front",
+   "foreground": true,
+   "is_foreground": true
+  },
+  {
+   "i": 160,
+   "ok": true,
+   "at": "2026-10-01T02:29:02.9963336Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 161,
+   "ok": true,
+   "at": "2026-10-01T02:29:03.1248585Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "s3"
+  },
+  {
+   "i": 162,
+   "ok": true,
+   "at": "2026-10-01T02:29:03.5822221Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 163,
+   "ok": true,
+   "at": "2026-10-01T02:29:03.6095972Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 164,
+   "ok": true,
+   "at": "2026-10-01T02:29:06.1219391Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "e_fail"
+  },
+  {
+   "i": 165,
+   "ok": true,
+   "at": "2026-10-01T02:29:06.1259596Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 166,
+   "ok": true,
+   "at": "2026-10-01T02:29:10.1387271Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "e_fail_now"
+  },
+  {
+   "i": 167,
+   "ok": true,
+   "at": "2026-10-01T02:29:10.1432386Z",
+   "kind": "children"
+  },
+  {
+   "i": 168,
+   "ok": true,
+   "at": "2026-10-01T02:29:10.7960572Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 169,
+   "ok": true,
+   "at": "2026-10-01T02:29:10.8022307Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 170,
+   "ok": true,
+   "at": "2026-10-01T02:29:10.8042378Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 15
+  },
+  {
+   "i": 171,
+   "ok": true,
+   "at": "2026-10-01T02:29:11.1932947Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 172,
+   "ok": true,
+   "at": "2026-10-01T02:29:14.6972515Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": "saved_e-write"
+  },
+  {
+   "i": 173,
+   "ok": true,
+   "at": "2026-10-01T02:29:14.7006551Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 174,
+   "ok": true,
+   "at": "2026-10-01T02:29:14.7029556Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "app_e-write"
+  },
+  {
+   "i": 175,
+   "ok": true,
+   "at": "2026-10-01T02:29:14.7115583Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_e-write"
+  },
+  {
+   "i": 176,
+   "ok": true,
+   "at": "2026-10-01T02:29:14.7137635Z",
+   "kind": "snapshot",
+   "label": "e-write",
+   "contextPictures": 4
+  },
+  {
+   "i": 177,
+   "ok": true,
+   "at": "2026-10-01T02:29:14.7218652Z",
+   "kind": "hashTree",
+   "as": "h_e-write"
+  },
+  {
+   "i": 178,
+   "ok": true,
+   "at": "2026-10-01T02:29:14.7714747Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 179,
+   "ok": true,
+   "at": "2026-10-01T02:29:14.7744805Z",
+   "kind": "stroke",
+   "pointerType": "pen",
+   "points": 37
+  },
+  {
+   "i": 180,
+   "ok": true,
+   "at": "2026-10-01T02:29:15.6708262Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 181,
+   "ok": true,
+   "at": "2026-10-01T02:29:15.6745997Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "card_unavail"
+  },
+  {
+   "i": 182,
+   "ok": true,
+   "at": "2026-10-01T02:29:15.6836119Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "e_with_card"
+  },
+  {
+   "i": 183,
+   "ok": true,
+   "at": "2026-10-01T02:29:15.6857348Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 184,
+   "ok": true,
+   "at": "2026-10-01T02:29:15.6882971Z",
+   "kind": "eval",
+   "target": "overlay",
+   "as": "ov_e_card_closed"
+  },
+  {
+   "i": 185,
+   "ok": true,
+   "at": "2026-10-01T02:29:15.6908056Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 186,
+   "ok": true,
+   "at": "2026-10-01T02:29:15.6928083Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "e_stopped"
+  },
+  {
+   "i": 187,
+   "ok": true,
+   "at": "2026-10-01T02:29:15.8106119Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 188,
+   "ok": true,
+   "at": "2026-10-01T02:29:18.8173147Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "e_stopped_now"
+  },
+  {
+   "i": 189,
+   "ok": true,
+   "at": "2026-10-01T02:29:18.8213253Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "e_events"
+  },
+  {
+   "i": 190,
+   "ok": true,
+   "at": "2026-10-01T02:29:18.8234406Z",
+   "kind": "copyTree",
+   "files": 1
+  },
+  {
+   "i": 191,
+   "ok": true,
+   "at": "2026-10-01T02:29:18.8274575Z",
+   "kind": "hashTree",
+   "as": "h_e-stopped"
+  },
+  {
+   "i": 192,
+   "ok": true,
+   "at": "2026-10-01T02:29:18.9248586Z",
+   "kind": "closeApp",
+   "via": "wm_close",
+   "close_requested_at": "2026-10-01T02:29:18.9258577Z",
+   "posted": true,
+   "exited": true,
+   "exit_ms": 119,
+   "exit_code": 0
+  },
+  {
+   "i": 193,
+   "ok": true,
+   "at": "2026-10-01T02:29:19.0466369Z",
+   "kind": "hashTree",
+   "as": "h_e-closed"
+  },
+  {
+   "i": 194,
+   "ok": true,
+   "at": "2026-10-01T02:29:19.1225712Z",
+   "kind": "launchApp",
+   "previous": {
+    "key": "app-unavail",
+    "pid": 74964,
+    "exit_code": 0,
+    "killed": false
+   },
+   "pid": 24832
+  },
+  {
+   "i": 195,
+   "ok": true,
+   "at": "2026-10-01T02:29:20.6629133Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 196,
+   "ok": true,
+   "at": "2026-10-01T02:29:21.1815305Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "hooked"
+  },
+  {
+   "i": 197,
+   "ok": true,
+   "at": "2026-10-01T02:29:21.1825320Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "link_hooked"
+  },
+  {
+   "i": 198,
+   "ok": true,
+   "at": "2026-10-01T02:29:21.1996023Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 199,
+   "ok": true,
+   "at": "2026-10-01T02:29:31.2073834Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "f_relaunched"
+  },
+  {
+   "i": 200,
+   "ok": true,
+   "at": "2026-10-01T02:29:31.2107991Z",
+   "kind": "children"
+  },
+  {
+   "i": 201,
+   "ok": true,
+   "at": "2026-10-01T02:29:31.8481807Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "f_events_idle"
+  },
+  {
+   "i": 202,
+   "ok": true,
+   "at": "2026-10-01T02:29:31.8518577Z",
+   "kind": "eval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 203,
+   "ok": true,
+   "at": "2026-10-01T02:29:31.9798364Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "s4"
+  },
+  {
+   "i": 204,
+   "ok": true,
+   "at": "2026-10-01T02:29:32.4131531Z",
+   "kind": "waitEval",
+   "target": "overlay",
+   "as": null
+  },
+  {
+   "i": 205,
+   "ok": true,
+   "at": "2026-10-01T02:29:32.4189669Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 206,
+   "ok": true,
+   "at": "2026-10-01T02:29:34.9226618Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": "f_fail"
+  },
+  {
+   "i": 207,
+   "ok": true,
+   "at": "2026-10-01T02:29:34.9266634Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 208,
+   "ok": true,
+   "at": "2026-10-01T02:29:38.9321351Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "f_fail_now"
+  },
+  {
+   "i": 209,
+   "ok": true,
+   "at": "2026-10-01T02:29:38.9361407Z",
+   "kind": "hashTree",
+   "as": "h_f-before-close"
+  },
+  {
+   "i": 210,
+   "ok": true,
+   "at": "2026-10-01T02:29:39.0732442Z",
+   "kind": "closeApp",
+   "via": "wm_close",
+   "close_requested_at": "2026-10-01T02:29:39.0754400Z",
+   "posted": true,
+   "exited": true,
+   "exit_ms": 260,
+   "exit_code": 0
+  },
+  {
+   "i": 211,
+   "ok": true,
+   "at": "2026-10-01T02:29:39.3355326Z",
+   "kind": "hashTree",
+   "as": "h_f-closed"
+  },
+  {
+   "i": 212,
+   "ok": true,
+   "at": "2026-10-01T02:29:39.4304239Z",
+   "kind": "launchApp",
+   "previous": {
+    "key": "app-unavail-capturing",
+    "pid": 24832,
+    "exit_code": 0,
+    "killed": false
+   },
+   "pid": 64604
+  },
+  {
+   "i": 213,
+   "ok": true,
+   "at": "2026-10-01T02:29:40.9710891Z",
+   "kind": "waitEval",
+   "target": "control",
+   "as": null
+  },
+  {
+   "i": 214,
+   "ok": true,
+   "at": "2026-10-01T02:29:41.4906393Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "hooked"
+  },
+  {
+   "i": 215,
+   "ok": true,
+   "at": "2026-10-01T02:29:41.4926411Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "link_hooked"
+  },
+  {
+   "i": 216,
+   "ok": true,
+   "at": "2026-10-01T02:29:41.4931492Z",
+   "kind": "sleep"
+  },
+  {
+   "i": 217,
+   "ok": true,
+   "at": "2026-10-01T02:29:51.5006679Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "g_relaunched"
+  },
+  {
+   "i": 218,
+   "ok": true,
+   "at": "2026-10-01T02:29:51.5050669Z",
+   "kind": "children"
+  },
+  {
+   "i": 219,
+   "ok": true,
+   "at": "2026-10-01T02:29:52.1329387Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "g_ink"
+  },
+  {
+   "i": 220,
+   "ok": true,
+   "at": "2026-10-01T02:29:52.1384525Z",
+   "kind": "eval",
+   "target": "control",
+   "as": "g_events"
+  },
+  {
+   "i": 221,
+   "ok": true,
+   "at": "2026-10-01T02:29:52.1404546Z",
+   "kind": "copyTree",
+   "files": 1
+  },
+  {
+   "i": 222,
+   "ok": true,
+   "at": "2026-10-01T02:29:52.1547200Z",
+   "kind": "closeApp",
+   "via": "page",
+   "close_requested_at": "2026-10-01T02:29:52.1557229Z",
+   "exited": true,
+   "exit_ms": 105,
+   "exit_code": 0
+  },
+  {
+   "i": 223,
+   "ok": true,
+   "at": "2026-10-01T02:29:52.2612433Z",
+   "kind": "hashTree",
+   "as": "h_final"
+  }
+ ],
+ "values": {
+  "displays": {
+   "label": "整个屏幕",
+   "primary": true,
+   "bounds": {
+    "x": 0,
+    "y": 0,
+    "width": 1280,
+    "height": 800
+   },
+   "scale_factor": 2,
+   "source_id": "screen:0:0"
+  },
+  "link_hooked": true,
+  "n_off": "{\"at\":\"2026-10-01T02:24:37.685Z\",\"l\":{\"mode\":\"off\"},\"ai\":\"No AI is connected: captured frames and ink stay on this device, and nothing is sent anywhere.\",\"line\":\"\",\"hidden\":true,\"session\":\"Not capturing.\"}",
+  "kids_n": {
+   "app_pid": 55764,
+   "at": "2026-10-01T02:24:38.3895007Z",
+   "children": [
+    {
+     "name": "electron.exe",
+     "pid": 27572,
+     "created": "2026-10-01T02:24:32.8578510Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 10072,
+     "created": "2026-10-01T02:24:32.8630660Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 73612,
+     "created": "2026-10-01T02:24:32.8779350Z"
+    }
+   ]
+  },
+  "seed": {
+   "sha256": "cbaee524f186ebb3a9a0c4eb76efa5eb70ac0111578e8afcd3d1ed11a3cfbe8d",
+   "user_id": "lc-windows-http-b6015a41b0834da89d06e1c7773afcd8"
+  },
+  "a_idle": "{\"at\":\"2026-10-01T02:24:43.749Z\",\"l\":{\"mode\":\"development\",\"state\":\"idle\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":false},\"ai\":\"Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI.\",\"line\":\"Capture storage (development): not connected yet (a connection is tried when you press Start). 0 record(s) stored. AI: not connected.\",\"hidden\":false,\"session\":\"Not capturing.\"}",
+  "kids_a": {
+   "app_pid": 60936,
+   "at": "2026-10-01T02:24:44.3924209Z",
+   "children": [
+    {
+     "name": "electron.exe",
+     "pid": 76888,
+     "created": "2026-10-01T02:24:40.2547520Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 57004,
+     "created": "2026-10-01T02:24:40.2579880Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 71796,
+     "created": "2026-10-01T02:24:40.2700620Z"
+    }
+   ]
+  },
+  "hooked": true,
+  "b_idle": "{\"at\":\"2026-10-01T02:24:49.687Z\",\"l\":{\"mode\":\"development\",\"state\":\"idle\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":false},\"ai\":\"Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI.\",\"line\":\"Capture storage (development): not connected yet (a connection is tried when you press Start). 0 record(s) stored. AI: not connected.\",\"hidden\":false,\"session\":\"Not capturing.\"}",
+  "kids_b_idle": {
+   "app_pid": 75440,
+   "at": "2026-10-01T02:24:50.3457498Z",
+   "children": [
+    {
+     "name": "electron.exe",
+     "pid": 55132,
+     "created": "2026-10-01T02:24:46.2477970Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 76132,
+     "created": "2026-10-01T02:24:46.2515340Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 76088,
+     "created": "2026-10-01T02:24:46.2627000Z"
+    }
+   ]
+  },
+  "s1": "{\"running\":true,\"starting\":false,\"ending\":false,\"display\":{\"display_id\":\"3071609112\",\"label\":\"整个屏幕\",\"bounds\":{\"x\":0,\"y\":0,\"width\":1280,\"height\":800},\"scale_factor\":2},\"session_id\":\"2\"}",
+  "b_sending": "{\"at\":\"2026-10-01T02:24:56.229Z\",\"l\":{\"mode\":\"development\",\"state\":\"sending\",\"stored\":1,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":true}}",
+  "kids_b": {
+   "app_pid": 75440,
+   "at": "2026-10-01T02:24:56.9166856Z",
+   "children": [
+    {
+     "name": "electron.exe",
+     "pid": 55132,
+     "created": "2026-10-01T02:24:46.2477970Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 76132,
+     "created": "2026-10-01T02:24:46.2515340Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 76088,
+     "created": "2026-10-01T02:24:46.2627000Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 72056,
+     "created": "2026-10-01T02:24:53.3020290Z"
+    },
+    {
+     "name": "wsl.exe",
+     "pid": 73856,
+     "created": "2026-10-01T02:24:53.3161700Z"
+    }
+   ]
+  },
+  "b_storing": "{\"at\":\"2026-10-01T02:25:03.933Z\",\"l\":{\"mode\":\"development\",\"state\":\"sending\",\"stored\":2,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":true}}",
+  "b_storing_now": "{\"at\":\"2026-10-01T02:25:03.935Z\",\"l\":{\"mode\":\"development\",\"state\":\"sending\",\"stored\":2,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":true},\"ai\":\"Development mode: captured frames and ink are kept on this device and are also being stored in a local test capture service on it; the counts are below. No AI is connected; nothing is sent to any AI.\",\"line\":\"Capture storage (development): storing. 2 record(s) stored. AI: not connected.\",\"hidden\":false,\"session\":\"Capturing 整个屏幕 (1280×800 at 2×). The overlay is on that display: ✋ passes clicks to your apps, ✎ writes, ? selects.\"}",
+  "saved_b-write": "{\"doc\":{\"id\":\"e2ed9393a78b3dab\",\"revision\":1,\"visible\":[\"stk_90a40b3b07062d658dc87012e5c5df57\"],\"history\":[\"add\"],\"strokes\":1},\"saveText\":\"Saved on this device at 19:25:04.\",\"retention\":{\"retained\":3,\"refused\":0,\"lastRefusal\":\"\",\"deferred\":0}}",
+  "app_b-write": "{\"aligned\":{\"stk_90a40b3b07062d658dc87012e5c5df57\":\"unknown\"},\"alignment\":[{\"id\":\"stk_90a40b3b07062d658dc87012e5c5df57\",\"region\":{\"x\":42,\"y\":298,\"width\":526,\"height\":28},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":263,\"rows\":14,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}}],\"doc\":{\"id\":\"e2ed9393a78b3dab\",\"revision\":1,\"visible\":[\"stk_90a40b3b07062d658dc87012e5c5df57\"],\"history\":[\"add\"],\"strokes\":1},\"pinned\":0,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 15. No AI is connected. Saved on this device at 19:25:04. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"gesture\":null,\"last\":{\"seq\":15,\"sampled_at\":\"2026-10-01T02:25:07.917Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"55904f24b994e5013fc35da030bc60b3b6f5fc39c1bf7f44042020a1764141f0\"},\"composed\":{\"ink_session\":\"e2ed9393a78b3dab\",\"ink_revision\":1,\"ink_marks\":{\"verified\":0,\"changed\":0,\"unknown\":1,\"following_content\":0},\"pixels_sha256\":\"8898f9c8442d172040f72fc4895b7b2908ecd32618d1dc4f7ab3d2c52de735e0\"}}}",
+  "ov_b-write": "{\"mode\":\"WRITE\",\"tool\":\"pen\",\"mouse\":\"false\",\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 15. No AI is connected. Saved on this device at 19:25:04. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"card\":false,\"cancel\":false,\"disabled\":1}",
+  "card_open": "{\"at\":\"2026-10-01T02:25:09.163Z\",\"shown\":true,\"text\":\"No AI is connected: this selection was not sent to any AI. (Development mode: a local test capture service on this device may also store the whole-display frames kept here, only while it is connected and answering; the control window shows whether it is storing now.)\\nRegion 7,504 316×106 DIP on 整个屏幕 = 632×212 px of frame 16 (captured 19:25:08), with your ink revision 1 drawn over it.\\n1 of your strokes are drawn dashed, as on screen: their alignment with what is under them is not verified.\",\"card_all_text\":\"\\n  ×\\n  Selection · no AI connected\\n  \\n  No AI is connected: this selection was not sent to any AI. (Development mode: a local test capture service on this device may also store the whole-display frames kept here, only while it is connected and answering; the control window shows whether it is storing now.)\\nRegion 7,504 316×106 DIP on 整个屏幕 = 632×212 px of frame 16 (captured 19:25:08), with your ink revision 1 drawn over it.\\n1 of your strokes are drawn dashed, as on screen: their alignment with what is under them is not verified.\\n\",\"crop_chars\":33262,\"crop_is_png\":true,\"crop_sha256\":\"d6f24b0249e5d0cf56c158193604015da21741b492f98b044530cade86a0171c\",\"mode\":\"WRITE\",\"revision\":1,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 16. No AI is connected. Saved on this device at 19:25:04. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\"}",
+  "ov_b_card_open": "{\"mode\":\"WRITE\",\"tool\":\"pen\",\"mouse\":\"false\",\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 16. No AI is connected. Saved on this device at 19:25:04. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"card\":true,\"cancel\":false,\"disabled\":1}",
+  "b_quiet_before_pause": "{\"at\":\"2026-10-01T02:25:13.214Z\",\"l\":{\"mode\":\"development\",\"state\":\"sending\",\"stored\":3,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":true}}",
+  "b_before_pause": "{\"at\":\"2026-10-01T02:25:13.216Z\",\"l\":{\"mode\":\"development\",\"state\":\"sending\",\"stored\":3,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":true},\"ai\":\"Development mode: captured frames and ink are kept on this device and are also being stored in a local test capture service on it; the counts are below. No AI is connected; nothing is sent to any AI.\",\"line\":\"Capture storage (development): storing. 3 record(s) stored. AI: not connected.\",\"hidden\":false,\"session\":\"Capturing 整个屏幕 (1280×800 at 2×). The overlay is on that display: ✋ passes clicks to your apps, ✎ writes, ? selects.\"}",
+  "pause": {
+   "at": "2026-10-01T02:25:13.5499790Z",
+   "hosts": 1
+  },
+  "b_paused_8s": "{\"at\":\"2026-10-01T02:25:21.570Z\",\"l\":{\"mode\":\"development\",\"state\":\"sending\",\"stored\":3,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":true},\"ai\":\"Development mode: captured frames and ink are kept on this device and are also being stored in a local test capture service on it; the counts are below. No AI is connected; nothing is sent to any AI.\",\"line\":\"Capture storage (development): storing. 3 record(s) stored. AI: not connected.\",\"hidden\":false,\"session\":\"Capturing 整个屏幕 (1280×800 at 2×). The overlay is on that display: ✋ passes clicks to your apps, ✎ writes, ? selects.\"}",
+  "card_paused": "{\"at\":\"2026-10-01T02:25:21.609Z\",\"shown\":true,\"text\":\"No AI is connected: this selection was not sent to any AI. (Development mode: a local test capture service on this device may also store the whole-display frames kept here, only while it is connected and answering; the control window shows whether it is storing now.)\\nRegion 7,504 316×106 DIP on 整个屏幕 = 632×212 px of frame 16 (captured 19:25:08), with your ink revision 1 drawn over it.\\n1 of your strokes are drawn dashed, as on screen: their alignment with what is under them is not verified.\",\"card_all_text\":\"\\n  ×\\n  Selection · no AI connected\\n  \\n  No AI is connected: this selection was not sent to any AI. (Development mode: a local test capture service on this device may also store the whole-display frames kept here, only while it is connected and answering; the control window shows whether it is storing now.)\\nRegion 7,504 316×106 DIP on 整个屏幕 = 632×212 px of frame 16 (captured 19:25:08), with your ink revision 1 drawn over it.\\n1 of your strokes are drawn dashed, as on screen: their alignment with what is under them is not verified.\\n\",\"crop_chars\":33262,\"crop_is_png\":true,\"crop_sha256\":\"d6f24b0249e5d0cf56c158193604015da21741b492f98b044530cade86a0171c\",\"mode\":\"WRITE\",\"revision\":1,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 27. No AI is connected. Saved on this device at 19:25:04. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\"}",
+  "b_stalled": "{\"at\":\"2026-10-01T02:28:15.948Z\",\"l\":{\"mode\":\"development\",\"state\":\"stalled\",\"stored\":3,\"unknown\":1,\"refused\":0,\"not_sent\":0,\"detail\":\"storage of the last send is not confirmed (no answer, or the service said to send it again later); the same record(s) are tried again\",\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":false}}",
+  "b_stalled_now": "{\"at\":\"2026-10-01T02:28:15.950Z\",\"l\":{\"mode\":\"development\",\"state\":\"stalled\",\"stored\":3,\"unknown\":1,\"refused\":0,\"not_sent\":0,\"detail\":\"storage of the last send is not confirmed (no answer, or the service said to send it again later); the same record(s) are tried again\",\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":false},\"ai\":\"Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI.\",\"line\":\"Capture storage (development): not storing now (the frames are kept on this device). 3 record(s) stored; 1 not known whether stored. storage of the last send is not confirmed (no answer, or the service said to send it again later); the same record(s) are tried again. AI: not connected.\",\"hidden\":false,\"session\":\"Capturing 整个屏幕 (1280×800 at 2×). The overlay is on that display: ✋ passes clicks to your apps, ✎ writes, ? selects.\"}",
+  "card_stalled": "{\"at\":\"2026-10-01T02:28:15.975Z\",\"shown\":true,\"text\":\"No AI is connected: this selection was not sent to any AI. (Development mode: a local test capture service on this device may also store the whole-display frames kept here, only while it is connected and answering; the control window shows whether it is storing now.)\\nRegion 7,504 316×106 DIP on 整个屏幕 = 632×212 px of frame 16 (captured 19:25:08), with your ink revision 1 drawn over it.\\n1 of your strokes are drawn dashed, as on screen: their alignment with what is under them is not verified.\",\"card_all_text\":\"\\n  ×\\n  Selection · no AI connected\\n  \\n  No AI is connected: this selection was not sent to any AI. (Development mode: a local test capture service on this device may also store the whole-display frames kept here, only while it is connected and answering; the control window shows whether it is storing now.)\\nRegion 7,504 316×106 DIP on 整个屏幕 = 632×212 px of frame 16 (captured 19:25:08), with your ink revision 1 drawn over it.\\n1 of your strokes are drawn dashed, as on screen: their alignment with what is under them is not verified.\\n\",\"crop_chars\":33262,\"crop_is_png\":true,\"crop_sha256\":\"d6f24b0249e5d0cf56c158193604015da21741b492f98b044530cade86a0171c\",\"mode\":\"WRITE\",\"revision\":1,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 192. No AI is connected. Saved on this device at 19:25:04. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\"}",
+  "resume": {
+   "at": "2026-10-01T02:28:16.8064803Z",
+   "hosts": null
+  },
+  "b_recovered": "{\"at\":\"2026-10-01T02:28:17.243Z\",\"l\":{\"mode\":\"development\",\"state\":\"sending\",\"stored\":4,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":true}}",
+  "b_recovered_now": "{\"at\":\"2026-10-01T02:28:17.245Z\",\"l\":{\"mode\":\"development\",\"state\":\"sending\",\"stored\":4,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":true},\"ai\":\"Development mode: captured frames and ink are kept on this device and are also being stored in a local test capture service on it; the counts are below. No AI is connected; nothing is sent to any AI.\",\"line\":\"Capture storage (development): storing. 4 record(s) stored. AI: not connected.\",\"hidden\":false,\"session\":\"Capturing 整个屏幕 (1280×800 at 2×). The overlay is on that display: ✋ passes clicks to your apps, ✎ writes, ? selects.\"}",
+  "card_recovered": "{\"at\":\"2026-10-01T02:28:17.248Z\",\"shown\":true,\"text\":\"No AI is connected: this selection was not sent to any AI. (Development mode: a local test capture service on this device may also store the whole-display frames kept here, only while it is connected and answering; the control window shows whether it is storing now.)\\nRegion 7,504 316×106 DIP on 整个屏幕 = 632×212 px of frame 16 (captured 19:25:08), with your ink revision 1 drawn over it.\\n1 of your strokes are drawn dashed, as on screen: their alignment with what is under them is not verified.\",\"card_all_text\":\"\\n  ×\\n  Selection · no AI connected\\n  \\n  No AI is connected: this selection was not sent to any AI. (Development mode: a local test capture service on this device may also store the whole-display frames kept here, only while it is connected and answering; the control window shows whether it is storing now.)\\nRegion 7,504 316×106 DIP on 整个屏幕 = 632×212 px of frame 16 (captured 19:25:08), with your ink revision 1 drawn over it.\\n1 of your strokes are drawn dashed, as on screen: their alignment with what is under them is not verified.\\n\",\"crop_chars\":33262,\"crop_is_png\":true,\"crop_sha256\":\"d6f24b0249e5d0cf56c158193604015da21741b492f98b044530cade86a0171c\",\"mode\":\"WRITE\",\"revision\":1,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 193. No AI is connected. Saved on this device at 19:25:04. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\"}",
+  "ov_b_card_closed": "{\"mode\":\"WRITE\",\"tool\":\"pen\",\"mouse\":\"false\",\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 193. No AI is connected. Saved on this device at 19:25:04. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"card\":false,\"cancel\":false,\"disabled\":1}",
+  "saved_b-continued": "{\"doc\":{\"id\":\"e2ed9393a78b3dab\",\"revision\":2,\"visible\":[\"stk_90a40b3b07062d658dc87012e5c5df57\",\"stk_a878df81f9c15588ace210503bcde3e4\"],\"history\":[\"add\",\"add\"],\"strokes\":2},\"saveText\":\"Saved on this device at 19:28:17.\",\"retention\":{\"retained\":5,\"refused\":0,\"lastRefusal\":\"\",\"deferred\":0}}",
+  "app_b-continued": "{\"aligned\":{\"stk_90a40b3b07062d658dc87012e5c5df57\":\"unknown\",\"stk_a878df81f9c15588ace210503bcde3e4\":\"verified\"},\"alignment\":[{\"id\":\"stk_90a40b3b07062d658dc87012e5c5df57\",\"region\":{\"x\":42,\"y\":298,\"width\":526,\"height\":28},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":263,\"rows\":14,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}},{\"id\":\"stk_a878df81f9c15588ace210503bcde3e4\",\"region\":{\"x\":37,\"y\":479,\"width\":201,\"height\":16},\"aligned\":\"verified\",\"fingerprint_change\":0,\"detail\":{\"cols\":201,\"rows\":16,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}}],\"doc\":{\"id\":\"e2ed9393a78b3dab\",\"revision\":2,\"visible\":[\"stk_90a40b3b07062d658dc87012e5c5df57\",\"stk_a878df81f9c15588ace210503bcde3e4\"],\"history\":[\"add\",\"add\"],\"strokes\":2},\"pinned\":0,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 198. No AI is connected. Saved on this device at 19:28:17. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"gesture\":null,\"last\":{\"seq\":198,\"sampled_at\":\"2026-10-01T02:28:20.710Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"244341fb0203676b95f3303f73288fcc8c887d09a1ef48d52932e009bafa1576\"},\"composed\":{\"ink_session\":\"e2ed9393a78b3dab\",\"ink_revision\":2,\"ink_marks\":{\"verified\":1,\"changed\":0,\"unknown\":1,\"following_content\":0},\"pixels_sha256\":\"01f91eddc43de1504017df31ef47f0386d5fd8359bb0297167180afc1fc8a5bb\"}}}",
+  "ov_b-continued": "{\"mode\":\"WRITE\",\"tool\":\"pen\",\"mouse\":\"false\",\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 198. No AI is connected. Saved on this device at 19:28:17. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"card\":false,\"cancel\":false,\"disabled\":1}",
+  "b_pre_stop": "{\"at\":\"2026-10-01T02:28:21.258Z\",\"l\":{\"mode\":\"development\",\"state\":\"sending\",\"stored\":5,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":true}}",
+  "b_pre_stop_now": "{\"at\":\"2026-10-01T02:28:21.260Z\",\"l\":{\"mode\":\"development\",\"state\":\"sending\",\"stored\":5,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":true},\"ai\":\"Development mode: captured frames and ink are kept on this device and are also being stored in a local test capture service on it; the counts are below. No AI is connected; nothing is sent to any AI.\",\"line\":\"Capture storage (development): storing. 5 record(s) stored. AI: not connected.\",\"hidden\":false,\"session\":\"Capturing 整个屏幕 (1280×800 at 2×). The overlay is on that display: ✋ passes clicks to your apps, ✎ writes, ? selects.\"}",
+  "b_stopped": "{\"running\":false,\"starting\":false,\"ended\":\"stopped by the user\"}",
+  "b_link_stopped": "{\"at\":\"2026-10-01T02:28:21.772Z\",\"l\":{\"mode\":\"development\",\"state\":\"stopped\",\"stored\":5,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":\"stream stopped\",\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":false}}",
+  "b_stopped_now": "{\"at\":\"2026-10-01T02:28:21.775Z\",\"l\":{\"mode\":\"development\",\"state\":\"stopped\",\"stored\":5,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":\"stream stopped\",\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":false},\"ai\":\"Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI.\",\"line\":\"Capture storage (development): stopped. 5 record(s) stored. stream stopped. AI: not connected.\",\"hidden\":false,\"session\":\"Not capturing: stopped by the user.\"}",
+  "kids_b_stopped": {
+   "app_pid": 75440,
+   "at": "2026-10-01T02:28:22.4252015Z",
+   "children": [
+    {
+     "name": "electron.exe",
+     "pid": 55132,
+     "created": "2026-10-01T02:24:46.2477970Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 76132,
+     "created": "2026-10-01T02:24:46.2515340Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 76088,
+     "created": "2026-10-01T02:24:46.2627000Z"
+    }
+   ]
+  },
+  "b_events": "[{\"mode\":\"development\",\"state\":\"connecting\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":false,\"qa_at\":\"2026-10-01T02:24:53.292Z\"},{\"mode\":\"development\",\"state\":\"connecting\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":false,\"qa_at\":\"2026-10-01T02:24:53.302Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":true,\"qa_at\":\"2026-10-01T02:24:55.052Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":1,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":true,\"qa_at\":\"2026-10-01T02:24:55.242Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":1,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":true,\"qa_at\":\"2026-10-01T02:24:55.242Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":2,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":true,\"qa_at\":\"2026-10-01T02:25:01.797Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":2,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":true,\"qa_at\":\"2026-10-01T02:25:01.797Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":3,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":true,\"qa_at\":\"2026-10-01T02:25:05.055Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":3,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":true,\"qa_at\":\"2026-10-01T02:25:05.055Z\"},{\"mode\":\"development\",\"state\":\"stalled\",\"stored\":3,\"unknown\":1,\"refused\":0,\"not_sent\":0,\"detail\":\"storage of the last send is not confirmed (no answer, or the service said to send it again later); the same record(s) are tried again\",\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":false,\"qa_at\":\"2026-10-01T02:28:15.883Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":4,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":true,\"qa_at\":\"2026-10-01T02:28:17.179Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":4,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":true,\"qa_at\":\"2026-10-01T02:28:17.179Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":5,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":true,\"qa_at\":\"2026-10-01T02:28:18.923Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":5,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":true,\"qa_at\":\"2026-10-01T02:28:18.923Z\"},{\"mode\":\"development\",\"state\":\"stopping\",\"stored\":5,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":false,\"qa_at\":\"2026-10-01T02:28:21.285Z\"},{\"mode\":\"development\",\"state\":\"stopped\",\"stored\":5,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":\"stream stopped\",\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":false,\"qa_at\":\"2026-10-01T02:28:21.740Z\"},{\"mode\":\"development\",\"state\":\"stopped\",\"stored\":5,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":\"stream stopped\",\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":false,\"qa_at\":\"2026-10-01T02:28:21.740Z\"}]",
+  "b_ink": "{\"sessions\":[{\"id\":\"e2ed9393a78b3dab\",\"created_at\":\"2026-10-01T02:24:53.290Z\",\"forked_from\":null,\"display_label\":\"整个屏幕\",\"strokes\":2,\"revision\":2}],\"unreadable\":0}",
+  "c_relaunched": "{\"at\":\"2026-10-01T02:28:30.814Z\",\"l\":{\"mode\":\"development\",\"state\":\"stopped\",\"stored\":5,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":\"the host ended\",\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":false},\"ai\":\"Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI.\",\"line\":\"Capture storage (development): stopped. 5 record(s) stored. the host ended. AI: not connected.\",\"hidden\":false,\"session\":\"Not capturing.\"}",
+  "kids_c_idle": {
+   "app_pid": 13320,
+   "at": "2026-10-01T02:28:31.4633961Z",
+   "children": [
+    {
+     "name": "electron.exe",
+     "pid": 74712,
+     "created": "2026-10-01T02:28:24.3794320Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 72264,
+     "created": "2026-10-01T02:28:24.3834230Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 59448,
+     "created": "2026-10-01T02:28:24.3949640Z"
+    }
+   ]
+  },
+  "c_ink": "{\"sessions\":[{\"id\":\"e2ed9393a78b3dab\",\"created_at\":\"2026-10-01T02:24:53.290Z\",\"forked_from\":null,\"display_label\":\"整个屏幕\",\"strokes\":2,\"revision\":2}],\"unreadable\":0}",
+  "s2": "{\"running\":true,\"starting\":false,\"ending\":false,\"display\":{\"display_id\":\"3071609112\",\"label\":\"整个屏幕\",\"bounds\":{\"x\":0,\"y\":0,\"width\":1280,\"height\":800},\"scale_factor\":2},\"session_id\":\"2\"}",
+  "c_sending": "{\"at\":\"2026-10-01T02:28:35.489Z\",\"l\":{\"mode\":\"development\",\"state\":\"sending\",\"stored\":1,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":true}}",
+  "kids_c": {
+   "app_pid": 13320,
+   "at": "2026-10-01T02:28:36.1046718Z",
+   "children": [
+    {
+     "name": "electron.exe",
+     "pid": 74712,
+     "created": "2026-10-01T02:28:24.3794320Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 72264,
+     "created": "2026-10-01T02:28:24.3834230Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 59448,
+     "created": "2026-10-01T02:28:24.3949640Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 65028,
+     "created": "2026-10-01T02:28:32.5261870Z"
+    },
+    {
+     "name": "wsl.exe",
+     "pid": 36448,
+     "created": "2026-10-01T02:28:32.5435990Z"
+    }
+   ]
+  },
+  "saved_c-write": "{\"doc\":{\"id\":\"a21452ffeb4d40ab\",\"revision\":1,\"visible\":[\"stk_aa2b9550c985f8a5dc51987a2393ef67\"],\"history\":[\"add\"],\"strokes\":1},\"saveText\":\"Saved on this device at 19:28:36.\",\"retention\":{\"retained\":2,\"refused\":0,\"lastRefusal\":\"\",\"deferred\":0}}",
+  "app_c-write": "{\"aligned\":{\"stk_aa2b9550c985f8a5dc51987a2393ef67\":\"unknown\"},\"alignment\":[{\"id\":\"stk_aa2b9550c985f8a5dc51987a2393ef67\",\"region\":{\"x\":412,\"y\":592,\"width\":196,\"height\":22},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":130,\"rows\":14,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}}],\"doc\":{\"id\":\"a21452ffeb4d40ab\",\"revision\":1,\"visible\":[\"stk_aa2b9550c985f8a5dc51987a2393ef67\"],\"history\":[\"add\"],\"strokes\":1},\"pinned\":0,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 8. No AI is connected. Saved on this device at 19:28:36. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"gesture\":null,\"last\":{\"seq\":8,\"sampled_at\":\"2026-10-01T02:28:39.648Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"244341fb0203676b95f3303f73288fcc8c887d09a1ef48d52932e009bafa1576\"},\"composed\":{\"ink_session\":\"a21452ffeb4d40ab\",\"ink_revision\":1,\"ink_marks\":{\"verified\":0,\"changed\":0,\"unknown\":1,\"following_content\":0},\"pixels_sha256\":\"e541c69650c12f5a048bfe37c9845483e3bb95e8172d1e74f3b630b254c6a346\"}}}",
+  "ov_c-write": "{\"mode\":\"WRITE\",\"tool\":\"pen\",\"mouse\":\"false\",\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 8. No AI is connected. Saved on this device at 19:28:36. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"card\":false,\"cancel\":false,\"disabled\":1}",
+  "c_storing": "{\"at\":\"2026-10-01T02:28:43.712Z\",\"l\":{\"mode\":\"development\",\"state\":\"sending\",\"stored\":3,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":true}}",
+  "c_storing_now": "{\"at\":\"2026-10-01T02:28:43.714Z\",\"l\":{\"mode\":\"development\",\"state\":\"sending\",\"stored\":3,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":true},\"ai\":\"Development mode: captured frames and ink are kept on this device and are also being stored in a local test capture service on it; the counts are below. No AI is connected; nothing is sent to any AI.\",\"line\":\"Capture storage (development): storing. 3 record(s) stored. AI: not connected.\",\"hidden\":false,\"session\":\"Capturing 整个屏幕 (1280×800 at 2×). The overlay is on that display: ✋ passes clicks to your apps, ✎ writes, ? selects.\"}",
+  "c_events": "[{\"mode\":\"development\",\"state\":\"connecting\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":false,\"qa_at\":\"2026-10-01T02:28:32.515Z\"},{\"mode\":\"development\",\"state\":\"connecting\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":false,\"qa_at\":\"2026-10-01T02:28:32.525Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":true,\"qa_at\":\"2026-10-01T02:28:33.116Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":true,\"qa_at\":\"2026-10-01T02:28:33.117Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":1,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":true,\"qa_at\":\"2026-10-01T02:28:33.578Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":1,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":true,\"qa_at\":\"2026-10-01T02:28:33.579Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":2,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":true,\"qa_at\":\"2026-10-01T02:28:37.888Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":2,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":true,\"qa_at\":\"2026-10-01T02:28:37.889Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":3,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":true,\"qa_at\":\"2026-10-01T02:28:41.109Z\"},{\"mode\":\"development\",\"state\":\"sending\",\"stored\":3,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":true,\"qa_at\":\"2026-10-01T02:28:41.110Z\"}]",
+  "c_ink_before_close": "{\"sessions\":[{\"id\":\"a21452ffeb4d40ab\",\"created_at\":\"2026-10-01T02:28:32.513Z\",\"forked_from\":null,\"display_label\":\"整个屏幕\",\"strokes\":1,\"revision\":1},{\"id\":\"e2ed9393a78b3dab\",\"created_at\":\"2026-10-01T02:24:53.290Z\",\"forked_from\":null,\"display_label\":\"整个屏幕\",\"strokes\":2,\"revision\":2}],\"unreadable\":0}",
+  "d_relaunched": "{\"at\":\"2026-10-01T02:28:54.633Z\",\"l\":{\"mode\":\"development\",\"state\":\"stopped\",\"stored\":3,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":\"the host ended\",\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":false},\"ai\":\"Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI.\",\"line\":\"Capture storage (development): stopped. 3 record(s) stored. the host ended. AI: not connected.\",\"hidden\":false,\"session\":\"Not capturing.\"}",
+  "kids_d": {
+   "app_pid": 72972,
+   "at": "2026-10-01T02:28:55.2882106Z",
+   "children": [
+    {
+     "name": "electron.exe",
+     "pid": 76524,
+     "created": "2026-10-01T02:28:46.2125390Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 74508,
+     "created": "2026-10-01T02:28:46.2167900Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 59916,
+     "created": "2026-10-01T02:28:46.2286520Z"
+    }
+   ]
+  },
+  "d_ink": "{\"sessions\":[{\"id\":\"a21452ffeb4d40ab\",\"created_at\":\"2026-10-01T02:28:32.513Z\",\"forked_from\":null,\"display_label\":\"整个屏幕\",\"strokes\":1,\"revision\":1},{\"id\":\"e2ed9393a78b3dab\",\"created_at\":\"2026-10-01T02:24:53.290Z\",\"forked_from\":null,\"display_label\":\"整个屏幕\",\"strokes\":2,\"revision\":2}],\"unreadable\":0}",
+  "e_idle": "{\"at\":\"2026-10-01T02:29:01.532Z\",\"l\":{\"mode\":\"development\",\"state\":\"stopped\",\"stored\":3,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":\"the host ended\",\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":false},\"ai\":\"Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI.\",\"line\":\"Capture storage (development): stopped. 3 record(s) stored. the host ended. AI: not connected.\",\"hidden\":false,\"session\":\"Not capturing.\"}",
+  "kids_e_idle": {
+   "app_pid": 74964,
+   "at": "2026-10-01T02:29:02.1847561Z",
+   "children": [
+    {
+     "name": "electron.exe",
+     "pid": 74016,
+     "created": "2026-10-01T02:28:57.0957570Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 65372,
+     "created": "2026-10-01T02:28:57.0987880Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 77240,
+     "created": "2026-10-01T02:28:57.1091200Z"
+    }
+   ]
+  },
+  "s3": "{\"running\":true,\"starting\":false,\"ending\":false,\"display\":{\"display_id\":\"3071609112\",\"label\":\"整个屏幕\",\"bounds\":{\"x\":0,\"y\":0,\"width\":1280,\"height\":800},\"scale_factor\":2},\"session_id\":\"2\"}",
+  "e_fail": "{\"at\":\"2026-10-01T02:29:06.125Z\",\"l\":{\"mode\":\"development\",\"state\":\"not connected\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":\"the host ended without READY (unavailable)\",\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":false}}",
+  "e_fail_now": "{\"at\":\"2026-10-01T02:29:10.142Z\",\"l\":{\"mode\":\"development\",\"state\":\"not connected\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":\"the host ended without READY (unavailable)\",\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":false},\"ai\":\"Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI.\",\"line\":\"Capture storage (development): not connected (the frames stay on this device). 0 record(s) stored. the host ended without READY (unavailable). AI: not connected.\",\"hidden\":false,\"session\":\"Capturing 整个屏幕 (1280×800 at 2×). The overlay is on that display: ✋ passes clicks to your apps, ✎ writes, ? selects.\"}",
+  "kids_e": {
+   "app_pid": 74964,
+   "at": "2026-10-01T02:29:10.7960572Z",
+   "children": [
+    {
+     "name": "electron.exe",
+     "pid": 74016,
+     "created": "2026-10-01T02:28:57.0957570Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 65372,
+     "created": "2026-10-01T02:28:57.0987880Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 77240,
+     "created": "2026-10-01T02:28:57.1091200Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 73316,
+     "created": "2026-10-01T02:29:03.2086450Z"
+    }
+   ]
+  },
+  "saved_e-write": "{\"doc\":{\"id\":\"f26d373df392811a\",\"revision\":1,\"visible\":[\"stk_41bcec315c2dd1b5555ac5fc185d0f2b\"],\"history\":[\"add\"],\"strokes\":1},\"saveText\":\"Saved on this device at 19:29:11.\",\"retention\":{\"retained\":2,\"refused\":0,\"lastRefusal\":\"\",\"deferred\":0}}",
+  "app_e-write": "{\"aligned\":{\"stk_41bcec315c2dd1b5555ac5fc185d0f2b\":\"unknown\"},\"alignment\":[{\"id\":\"stk_41bcec315c2dd1b5555ac5fc185d0f2b\",\"region\":{\"x\":52,\"y\":592,\"width\":196,\"height\":22},\"aligned\":\"unknown\",\"fingerprint_change\":0,\"detail\":{\"cols\":130,\"rows\":14,\"result\":\"same\",\"moved_cells\":0,\"moved_at\":[]}}],\"doc\":{\"id\":\"f26d373df392811a\",\"revision\":1,\"visible\":[\"stk_41bcec315c2dd1b5555ac5fc185d0f2b\"],\"history\":[\"add\"],\"strokes\":1},\"pinned\":0,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 12. No AI is connected. Saved on this device at 19:29:11. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"gesture\":null,\"last\":{\"seq\":12,\"sampled_at\":\"2026-10-01T02:29:14.547Z\",\"state\":\"fresh\",\"raw\":{\"pixels_sha256\":\"84ec3fe5050f09e859df6a2e6a298fb78b07dc47f5b53842e1ed725425fb6aaa\"},\"composed\":{\"ink_session\":\"f26d373df392811a\",\"ink_revision\":1,\"ink_marks\":{\"verified\":0,\"changed\":0,\"unknown\":1,\"following_content\":0},\"pixels_sha256\":\"fcd33d794e24df633d28b995e089d6986d93cc3602cfad3165d28f1732762f8d\"}}}",
+  "ov_e-write": "{\"mode\":\"WRITE\",\"tool\":\"pen\",\"mouse\":\"false\",\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 12. No AI is connected. Saved on this device at 19:29:11. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"card\":false,\"cancel\":false,\"disabled\":1}",
+  "card_unavail": "{\"at\":\"2026-10-01T02:29:15.683Z\",\"shown\":true,\"text\":\"No AI is connected: this selection was not sent to any AI. (Development mode: a local test capture service on this device may also store the whole-display frames kept here, only while it is connected and answering; the control window shows whether it is storing now.)\\nRegion 7,504 316×106 DIP on 整个屏幕 = 632×212 px of frame 13 (captured 19:29:15), with your ink revision 1 drawn over it.\\n1 of your strokes are drawn dashed, as on screen: their alignment with what is under them is not verified.\",\"card_all_text\":\"\\n  ×\\n  Selection · no AI connected\\n  \\n  No AI is connected: this selection was not sent to any AI. (Development mode: a local test capture service on this device may also store the whole-display frames kept here, only while it is connected and answering; the control window shows whether it is storing now.)\\nRegion 7,504 316×106 DIP on 整个屏幕 = 632×212 px of frame 13 (captured 19:29:15), with your ink revision 1 drawn over it.\\n1 of your strokes are drawn dashed, as on screen: their alignment with what is under them is not verified.\\n\",\"crop_chars\":35722,\"crop_is_png\":true,\"crop_sha256\":\"7d00877530f16a6ab8876dd8761f37c8b50bd3838ae66030127baaf6a816c476\",\"mode\":\"WRITE\",\"revision\":1,\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 13. No AI is connected. Saved on this device at 19:29:11. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\"}",
+  "e_with_card": "{\"at\":\"2026-10-01T02:29:15.686Z\",\"l\":{\"mode\":\"development\",\"state\":\"not connected\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":\"the host ended without READY (unavailable)\",\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":false},\"ai\":\"Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI.\",\"line\":\"Capture storage (development): not connected (the frames stay on this device). 0 record(s) stored. the host ended without READY (unavailable). AI: not connected.\",\"hidden\":false,\"session\":\"Capturing 整个屏幕 (1280×800 at 2×). The overlay is on that display: ✋ passes clicks to your apps, ✎ writes, ? selects.\"}",
+  "ov_e_card_closed": "{\"mode\":\"WRITE\",\"tool\":\"pen\",\"mouse\":\"false\",\"hint\":\"Pen writes; mouse writing off; new ink fixed on the screen. Capturing this display · frame 13. No AI is connected. Saved on this device at 19:29:11. 1 stroke(s) dashed: whether the pixels under them stayed cannot be told (not captured, or too plain).\",\"card\":false,\"cancel\":false,\"disabled\":1}",
+  "e_stopped": "{\"running\":false,\"starting\":false,\"ended\":\"stopped by the user\"}",
+  "e_stopped_now": "{\"at\":\"2026-10-01T02:29:18.820Z\",\"l\":{\"mode\":\"development\",\"state\":\"stopped\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":\"the stream was never confirmed registered; whether it or a grant exists is not known\",\"earlier_unknown\":1,\"sends_stopped\":false,\"storing\":false},\"ai\":\"Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI.\",\"line\":\"Capture storage (development): stopped. 0 record(s) stored; 1 earlier stream(s) whose end is not known. the stream was never confirmed registered; whether it or a grant exists is not known. AI: not connected.\",\"hidden\":false,\"session\":\"Not capturing: stopped by the user.\"}",
+  "e_events": "[{\"mode\":\"development\",\"state\":\"connecting\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":false,\"qa_at\":\"2026-10-01T02:29:03.199Z\"},{\"mode\":\"development\",\"state\":\"connecting\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":false,\"qa_at\":\"2026-10-01T02:29:03.208Z\"},{\"mode\":\"development\",\"state\":\"not connected\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":\"the host ended without READY (unavailable)\",\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":false,\"qa_at\":\"2026-10-01T02:29:04.022Z\"},{\"mode\":\"development\",\"state\":\"stopping\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":null,\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":false,\"qa_at\":\"2026-10-01T02:29:15.693Z\"},{\"mode\":\"development\",\"state\":\"stopped\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":\"the stream was never confirmed registered; whether it or a grant exists is not known\",\"earlier_unknown\":0,\"sends_stopped\":false,\"storing\":false,\"qa_at\":\"2026-10-01T02:29:15.694Z\"},{\"mode\":\"development\",\"state\":\"stopped\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":\"the stream was never confirmed registered; whether it or a grant exists is not known\",\"earlier_unknown\":1,\"sends_stopped\":false,\"storing\":false,\"qa_at\":\"2026-10-01T02:29:15.694Z\"}]",
+  "f_relaunched": "{\"at\":\"2026-10-01T02:29:31.210Z\",\"l\":{\"mode\":\"development\",\"state\":\"not connected\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":\"not reconciled: the host ended without READY (unavailable)\",\"earlier_unknown\":1,\"sends_stopped\":false,\"storing\":false},\"ai\":\"Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI.\",\"line\":\"Capture storage (development): not connected (the frames stay on this device). 0 record(s) stored; 1 earlier stream(s) whose end is not known. not reconciled: the host ended without READY (unavailable). AI: not connected.\",\"hidden\":false,\"session\":\"Not capturing.\"}",
+  "kids_f_idle": {
+   "app_pid": 24832,
+   "at": "2026-10-01T02:29:31.8481807Z",
+   "children": [
+    {
+     "name": "electron.exe",
+     "pid": 75672,
+     "created": "2026-10-01T02:29:20.7695310Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 6304,
+     "created": "2026-10-01T02:29:20.7727410Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 76120,
+     "created": "2026-10-01T02:29:20.7875830Z"
+    }
+   ]
+  },
+  "f_events_idle": "[{\"mode\":\"development\",\"state\":\"not connected\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":\"not reconciled: the host ended without READY (unavailable)\",\"earlier_unknown\":1,\"sends_stopped\":false,\"storing\":false,\"qa_at\":\"2026-10-01T02:29:21.291Z\"}]",
+  "s4": "{\"running\":true,\"starting\":false,\"ending\":false,\"display\":{\"display_id\":\"3071609112\",\"label\":\"整个屏幕\",\"bounds\":{\"x\":0,\"y\":0,\"width\":1280,\"height\":800},\"scale_factor\":2},\"session_id\":\"2\"}",
+  "f_fail": "{\"at\":\"2026-10-01T02:29:34.926Z\",\"l\":{\"mode\":\"development\",\"state\":\"not connected\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":\"the host ended without READY (unavailable)\",\"earlier_unknown\":1,\"sends_stopped\":false,\"storing\":false}}",
+  "f_fail_now": "{\"at\":\"2026-10-01T02:29:38.935Z\",\"l\":{\"mode\":\"development\",\"state\":\"not connected\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":\"the host ended without READY (unavailable)\",\"earlier_unknown\":1,\"sends_stopped\":false,\"storing\":false},\"ai\":\"Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI.\",\"line\":\"Capture storage (development): not connected (the frames stay on this device). 0 record(s) stored; 1 earlier stream(s) whose end is not known. the host ended without READY (unavailable). AI: not connected.\",\"hidden\":false,\"session\":\"Capturing 整个屏幕 (1280×800 at 2×). The overlay is on that display: ✋ passes clicks to your apps, ✎ writes, ? selects.\"}",
+  "g_relaunched": "{\"at\":\"2026-10-01T02:29:51.503Z\",\"l\":{\"mode\":\"development\",\"state\":\"not connected\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":\"not reconciled: the host ended without READY (unavailable)\",\"earlier_unknown\":2,\"sends_stopped\":false,\"storing\":false},\"ai\":\"Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI.\",\"line\":\"Capture storage (development): not connected (the frames stay on this device). 0 record(s) stored; 2 earlier stream(s) whose end is not known. not reconciled: the host ended without READY (unavailable). AI: not connected.\",\"hidden\":false,\"session\":\"Not capturing.\"}",
+  "kids_g": {
+   "app_pid": 64604,
+   "at": "2026-10-01T02:29:52.1319380Z",
+   "children": [
+    {
+     "name": "electron.exe",
+     "pid": 21996,
+     "created": "2026-10-01T02:29:41.0726280Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 75648,
+     "created": "2026-10-01T02:29:41.0769400Z"
+    },
+    {
+     "name": "electron.exe",
+     "pid": 75440,
+     "created": "2026-10-01T02:29:41.0933800Z"
+    }
+   ]
+  },
+  "g_ink": "{\"sessions\":[{\"id\":\"f26d373df392811a\",\"created_at\":\"2026-10-01T02:29:03.197Z\",\"forked_from\":null,\"display_label\":\"整个屏幕\",\"strokes\":1,\"revision\":1},{\"id\":\"a21452ffeb4d40ab\",\"created_at\":\"2026-10-01T02:28:32.513Z\",\"forked_from\":null,\"display_label\":\"整个屏幕\",\"strokes\":1,\"revision\":1},{\"id\":\"e2ed9393a78b3dab\",\"created_at\":\"2026-10-01T02:24:53.290Z\",\"forked_from\":null,\"display_label\":\"整个屏幕\",\"strokes\":2,\"revision\":2}],\"unreadable\":0}",
+  "g_events": "[{\"mode\":\"development\",\"state\":\"not connected\",\"stored\":0,\"unknown\":0,\"refused\":0,\"not_sent\":0,\"detail\":\"not reconciled: the host ended without READY (unavailable)\",\"earlier_unknown\":2,\"sends_stopped\":false,\"storing\":false,\"qa_at\":\"2026-10-01T02:29:42.056Z\"}]"
+ },
+ "errors": [],
+ "processes": {
+  "app": {
+   "pid": 55764,
+   "devtools": "127.0.0.1:64469",
+   "started_at": "2026-10-01T02:24:32.7427257Z",
+   "link": "",
+   "exited": true,
+   "close_via": "page",
+   "close_requested_at": "2026-10-01T02:24:38.3995005Z",
+   "exit_ms": 118,
+   "exit_code": 0,
+   "exited_at": "2026-10-01T02:24:38.5006515Z"
+  },
+  "console": {
+   "pid": 72532
+  },
+  "edge": {
+   "pid": 74012
+  },
+  "app-idle": {
+   "pid": 60936,
+   "devtools": "127.0.0.1:55821",
+   "started_at": "2026-10-01T02:24:40.1460814Z",
+   "link": "main",
+   "link_config_sha256": "c978a6da40e413f733e0b6ff19c2ce01ce522216e32eca12dbec3e6c3fee66b9",
+   "exited": true,
+   "close_via": "wm_close",
+   "close_requested_at": "2026-10-01T02:24:44.4401184Z",
+   "exit_ms": 154,
+   "exit_code": 0,
+   "exited_at": "2026-10-01T02:24:44.5766242Z"
+  },
+  "app-main": {
+   "pid": 75440,
+   "devtools": "127.0.0.1:59729",
+   "started_at": "2026-10-01T02:24:46.1417387Z",
+   "link": "main",
+   "link_config_sha256": "c978a6da40e413f733e0b6ff19c2ce01ce522216e32eca12dbec3e6c3fee66b9",
+   "exited": true,
+   "close_via": "page",
+   "close_requested_at": "2026-10-01T02:28:22.5487507Z",
+   "exit_ms": 140,
+   "exit_code": 0,
+   "exited_at": "2026-10-01T02:28:22.6703571Z"
+  },
+  "app-capturing": {
+   "pid": 13320,
+   "devtools": "127.0.0.1:59230",
+   "started_at": "2026-10-01T02:28:24.2738526Z",
+   "link": "main",
+   "link_config_sha256": "c978a6da40e413f733e0b6ff19c2ce01ce522216e32eca12dbec3e6c3fee66b9",
+   "exited": true,
+   "close_via": "wm_close",
+   "close_requested_at": "2026-10-01T02:28:43.8081324Z",
+   "exit_ms": 661,
+   "exit_code": 0,
+   "exited_at": "2026-10-01T02:28:44.4502073Z"
+  },
+  "app-after-capturing": {
+   "pid": 72972,
+   "devtools": "127.0.0.1:59252",
+   "started_at": "2026-10-01T02:28:46.1051350Z",
+   "link": "main",
+   "link_config_sha256": "c978a6da40e413f733e0b6ff19c2ce01ce522216e32eca12dbec3e6c3fee66b9",
+   "exited": true,
+   "close_via": "page",
+   "close_requested_at": "2026-10-01T02:28:55.3649862Z",
+   "exit_ms": 91,
+   "exit_code": 0,
+   "exited_at": "2026-10-01T02:28:55.4395987Z"
+  },
+  "app-unavail": {
+   "pid": 74964,
+   "devtools": "127.0.0.1:59264",
+   "started_at": "2026-10-01T02:28:56.9949597Z",
+   "link": "unavail",
+   "link_config_sha256": "b781ca11a6b2eb4d9b6f74c902b67d7e683d08cdafe2c997a4d608962106049c",
+   "exited": true,
+   "close_via": "wm_close",
+   "close_requested_at": "2026-10-01T02:29:18.9258577Z",
+   "exit_ms": 119,
+   "exit_code": 0,
+   "exited_at": "2026-10-01T02:29:19.0278483Z"
+  },
+  "app-unavail-capturing": {
+   "pid": 24832,
+   "devtools": "127.0.0.1:61607",
+   "started_at": "2026-10-01T02:29:20.6589112Z",
+   "link": "unavail",
+   "link_config_sha256": "b781ca11a6b2eb4d9b6f74c902b67d7e683d08cdafe2c997a4d608962106049c",
+   "exited": true,
+   "close_via": "wm_close",
+   "close_requested_at": "2026-10-01T02:29:39.0754400Z",
+   "exit_ms": 260,
+   "exit_code": 0,
+   "exited_at": "2026-10-01T02:29:39.3164897Z"
+  },
+  "app-final": {
+   "pid": 64604,
+   "devtools": "127.0.0.1:53527",
+   "started_at": "2026-10-01T02:29:40.9680902Z",
+   "link": "unavail",
+   "link_config_sha256": "b781ca11a6b2eb4d9b6f74c902b67d7e683d08cdafe2c997a4d608962106049c",
+   "exited": true,
+   "close_via": "page",
+   "close_requested_at": "2026-10-01T02:29:52.1557229Z",
+   "exit_ms": 105,
+   "exit_code": 0,
+   "exited_at": "2026-10-01T02:29:52.2426462Z"
+  }
+ },
+ "foreign": {
+  "start": null,
+  "end": null
+ },
+ "cursor": {
+  "start": [
+   1586,
+   949
+  ],
+  "end": [
+   1586,
+   949
+  ]
+ },
+ "wsl_seen": [
+  {
+   "pid": 73856,
+   "running_at_end": false
+  },
+  {
+   "pid": 36448,
+   "running_at_end": false
+  }
+ ]
+}

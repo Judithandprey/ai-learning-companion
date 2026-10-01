@@ -1,0 +1,51 @@
+{
+ "candidate": "86d240550803022e02dbbb5ae2323793fbfdebfa",
+ "qa_merge": "b64669f8525f8ac5e52c7f9484a5acf0dddbd147",
+ "tree_equalities": {
+  "apps_windows_86d2405_vs_41fd2cb": true,
+  "qa_merge_apps_services_packages_vs_86d2405": true,
+  "services_packages_86d2405_vs_c4c84a5": true
+ },
+ "stage": {
+  "name": "lc-qa-windows-retest",
+  "files": 57,
+  "tree_sha256": "ce19204576470ef25dddde667ae1c726d573331e1d06e662e4662353867af893",
+  "clean_rebuild_from_86d2405_tree_sha256": "ce19204576470ef25dddde667ae1c726d573331e1d06e662e4662353867af893",
+  "method": "sha256 of the sorted sha256sum lines over package.json + dist/**; rebuild = git archive 86d2405 (package.json tsconfig.json apps packages) + tsc -p apps/windows/tsconfig.json + copy-static.mjs"
+ },
+ "backend_copy": {
+  "paths": [
+   "packages",
+   "services"
+  ],
+  "equal_to_86d2405_before_the_run": true,
+  "after_the_run": "19 __pycache__ folders written by the host (as in the c4c84a5 pass)"
+ },
+ "runtime": {
+  "windows": "10.0.26200",
+  "electron": "44.5.1 (apps/windows/package.json pin)",
+  "node": "24.21.0",
+  "postgresql": "see preflight.json",
+  "database": "lc_p0_test"
+ },
+ "owner_module_tests_on_this_tree": {
+  "tests": 234,
+  "pass": 229,
+  "skipped": 5,
+  "fail": 0,
+  "command": "LC_BACKEND_ROOT=<git archive 86d2405> LC_PYTHON=<repo venv python> node --test --test-timeout=30000 tests/*.test.ts (apps/windows)",
+  "note": "the owner's own tests with an in-memory store; a control, not native QA. Without the two variables 44 are skipped (190 pass)"
+ },
+ "harness": "run.json harness_sha256 holds the executed files; they are committed unchanged (checked after the run)",
+ "display": {
+  "checked_free_before_utc": "2026-10-01T02:23:03Z",
+  "runner_utc": [
+   "2026-10-01T02:24:31Z",
+   "2026-10-01T02:29:56Z"
+  ],
+  "watcher_end_utc": "2026-10-01T02:30:11Z",
+  "no_electron_after_utc": "2026-10-01T02:30:23Z",
+  "qa_edge_and_console_pids_gone_checked_utc": "2026-10-01T02:43:52Z",
+  "note": "the two display checks and the Edge/console check are QA process listings made outside the runner; only these times are recorded"
+ }
+}
