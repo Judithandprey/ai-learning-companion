@@ -35,8 +35,11 @@ valid within their recorded scope. The corrected 121-case analyzer replay remain
 accepted; no repeat was needed. Its historical 86d2405 copy/clock expectations
 must not be changed to pretend they exercised the new product wording.
 
-Next: publish this candidate, then release ONE bounded existing P0-13
-QA-WIN-05 test of actual pending/confirmed UI. Check waiting promptly, preserved
+Published candidate **`476fd1fb832e708b79ad5e5be1c7ef17925febee`** is verified
+on origin/main. ONE bounded existing P0-13 QA-WIN-05 test was accepted as
+`handoff_4a7462d6ff20c6603a98c39f62a3b66b` (initially unread,
+execution_started:false). [Exact task and receipt](windows-win05-qa-dispatch.json).
+This acceptance is not execution or a pass. Next: QA checks actual pending/confirmed UI. Check waiting promptly, preserved
 confirmed counts and actual ACK recovery using only QA-owned processes/data;
 no full quit/ink/DB campaign. [Exact next scope](windows-win05-next-qa.md).
 Dispatch receipt and actual execution are separate evidence. Native's existing

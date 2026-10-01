@@ -1,0 +1,21 @@
+{
+  "candidate": "476fd1fb832e708b79ad5e5be1c7ef17925febee",
+  "push": {
+    "success": true,
+    "from": "8cf758a",
+    "to": "476fd1f",
+    "remote": "origin",
+    "branch": "main",
+    "head_equals_origin_main": true
+  },
+  "body": "P0-13 / QA-WIN-05: start ONE bounded changed-path actual Windows acceptance, continuing the existing card. Exact reviewed/pushed main: 476fd1fb832e708b79ad5e5be1c7ef17925febee (origin/main verified). Windows bytes equal Web d295a514b531e7fae5ad35df10b4bc10b43bf742 / corrective code 44fbd503bcbc45f4f3b28ff52d78e379ddbaf8c9. Preserve your work and normally adopt/read this baseline; no reset.\n\nRead the complete bounded task at this SHA:\ndocs/verification/lead/windows-parent-review/correction/qa-win-03-04/copy-retest/independent-qa-audit/windows-win05-next-qa.md\nand its windows-win05-integration.md. Affected complete source/English §7.1/7.2, R03/R07/R35/R36/R51/R52, A12/A14/A27/A31 remain in force. Your write paths: tests/e2e/windows and docs/verification/qa only.\n\nObservable outcome: a pending upload is promptly described as waiting/unconfirmed, previously confirmed counts remain truthful, and actual ACK recovery changes counts appropriately. Use the existing actual Windows app/QA-owned host: establish confirmed records, hold only your proven host/transport's next pending send without closing it, observe before timeout, then resume and obtain actual ACK. If the existing safe setup permits, check Stop during one pending send without expanding the campaign. No extra 182-second wait merely to replay the old timeout. Do not manufacture UI state as application evidence.\n\nCheck current display occupancy before claiming it. Web has reported no GUI run for this correction; your prior release remains historical. Use only fresh bounded QA identity and the existing authorized lc_p0_test/private DSN guards; no migrations, user-preview database/ports4173/8174, Paperclip, user apps or service restarts. Retain process/display release evidence. Raw screen/credentials stay private; committed evidence is sanitized. No provider activation.\n\nYour analyzer correction72bf9a3 is reviewed/integrated as f2c883d with its original base93645a4: seven independent groups and 121 retained-evidence replay cases pass, original actual 24-pass/two-limit result preserved. QA-HARNESS-01/02 close. Do not rerun or alter frozen86d2405 fixtures/copy/timing to claim the new wording passed; add only minimal versioned checks for this candidate. No additional mutation framework or whole quit/ink/DB campaign.\n\nWindows source correction passes three independent probe groups and 78 exact-main affected checks plus TypeScript/static build. Failed retry-journal notification now matches restored counts; no fourth upload and no journal change. Those are source/Linux results, not your actual Windows acceptance. No physical disk-fill/ENOSPC GUI reproduction assigned. Keep provider-disabled and physical-input/macOS/full-product limits explicit.\n\nDeliver exact source/build and result evidence once, with actual inputs, limitations and cleanup. Next owner: Lead reviews/integrates; only a concrete production defect returns to Web. This is the runnable next task, not an acknowledgment request.",
+  "receipt": {
+    "content": [
+      {
+        "type": "text",
+        "text": "{\"ok\": true, \"route_id\": \"route_6fd5946d12ac46e98ef15d2140c7261f\", \"action\": \"instruction\", \"accepted\": true, \"mode\": \"async_route_v1\", \"delivery_mode\": \"mailbox\", \"message_id\": \"handoff_4a7462d6ff20c6603a98c39f62a3b66b\", \"duplicate\": false, \"state\": \"unread\", \"execution_started\": false}"
+      }
+    ],
+    "isError": false
+  }
+}
