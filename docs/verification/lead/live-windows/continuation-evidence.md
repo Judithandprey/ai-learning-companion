@@ -6,6 +6,12 @@ supplement, not a new campaign. Existing owners and the active old Windows app
 are preserved. No account, model, microphone, desktop capture or user-app action
 was performed by this continuation.
 
+Reviewed implementation/document baseline **`b1d163d`** was committed and ordinarily
+pushed to `origin/main` successfully (`a8bf1fe..b1d163d`). Post-push local HEAD and
+the origin/main tracking reference matched; the worktree was clean. The following
+record-only commit does not change the tested helper or any runtime source. Native
+notification of this baseline remains unsent due the actual denial below.
+
 ## Actual quota result
 
 The original operator `quota_regression_probe.py` was executed **unchanged** using
