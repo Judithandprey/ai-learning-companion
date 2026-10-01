@@ -1,5 +1,20 @@
 # macOS pending and confirmed storage status
 
+**Native result: passed** on exact published
+`1199dbc8436d111c2fb0458e828cc9348943b4a3`,
+[macOS-only run36813100587](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36813100587).
+The actual App builds/packages and all **83 XCTest methods pass**, including
+28 Link tests and all five new storage-status tests.
+[Native record](native-verification.json), [actual test output](native-run/tests.txt),
+[read-only artifact audit](native-run/audit.json).
+
+The audit verifies115 artifact hashes and2848 source Git blobs/modes/paths,
+reviewed native-tree equality, the built Mach-O/plist/package and executed test
+names, with zero discrepancies. Existing fixture validators also pass (83 ingress,
+27 composition,362 retained-frame and24 upload assertions); these are separate
+from XCTest cases and actual-device acceptance. This resolves the pending native
+check below without relabeling earlier Linux failures or historical78 results.
+
 Owner delivery `30807f23a911739c089126d86b2b34d51976ea18`, received in
 `handoff_5f123c736a6e803ba04d69cc271f5e7d`, answers the existing
 MAC-STORAGE-COPY-01 task. [Actual delivery identity](delivery.json).
@@ -41,10 +56,16 @@ parent-link defaults remain78. [Audit review/controls](audit-review.md) checks
 the historical default unchanged and rejects old78 evidence under the new mode.
 This avoids copying the artifact auditor or re-labeling previous results.
 
-Proportional native verification is pending exact-source publication and the
-existing macOS-only workflow. Actual run/artifact evidence will be recorded here
-before claiming native compile/test success. Real Mac screen permissions/UI, physical pen,
+The exact-source native check above now supplies actual compile/test evidence.
+The original source-review checkpoint and its then-NOT_RUN boundary remain
+historical; it is not a continuing build blocker. Real Mac screen permissions/UI, physical pen,
 actual PostgreSQL, real provider/audio/Notability and both full §7.1 gates remain
 unverified. User availability of an interactive Mac is pending; no purchase or
 new configuration is inferred. Windows' separate focused QA continues on its
 published candidate; do not repeat that campaign here.
+
+Next: Lead reviews the independently assigned Windows QA result when delivered.
+Native/QA require a usable authorized Mac for interactive permission/UI/capture/
+ink/Stop acceptance; the existing availability question remains unanswered.
+No duplicate build, mobile campaign or provider activation is assigned. Native
+receives the exact tested result and next dependency in one substantive handoff.

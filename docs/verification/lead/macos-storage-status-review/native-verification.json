@@ -1,0 +1,23 @@
+{
+  "source": "1199dbc8436d111c2fb0458e828cc9348943b4a3",
+  "approved_owner": "30807f23a911739c089126d86b2b34d51976ea18",
+  "run_id": 36813100587,
+  "result": "success",
+  "scope": "macos-only; exact-source app build/package/XCTest and existing synthetic fixture validators",
+  "xctests_pass": 83,
+  "xctests_fail": 0,
+  "xctest_duration_seconds": 56.119,
+  "capture_link_tests": 28,
+  "artifact_hashes": 115,
+  "source_git_blobs": 2848,
+  "native_tree": "a830c199a4339610583d6d9f1465f4a3e49c3842",
+  "source_equals_reviewed": true,
+  "audit_exit": 0,
+  "audit_milestone": "storage-status",
+  "audit_command": ".venv/bin/python docs/verification/lead/macos-parent-review/correction/audit.py --artifact-dir /tmp/lc-macos-storage-36813100587 --commit 1199dbc8436d111c2fb0458e828cc9348943b4a3 --approved 30807f23a911739c089126d86b2b34d51976ea18 --run 36813100587 --milestone storage-status --output /tmp/macos-storage-36813100587-audit.json",
+  "interactive_mac": "unconfirmed; prior user availability question pending",
+  "provider": "disabled",
+  "actual_postgresql": "not_run",
+  "physical_pen_audio_notability": "not_run",
+  "next_owner": "Lead reviews separate Windows QA actual result; Native/QA interactive Mac verification requires confirmed authorized machine access. No repeated build or mobile task."
+}
