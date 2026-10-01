@@ -1,0 +1,160 @@
+Single-line (or single-statement) mutations of the corrected source, each run on the Linux harness against the named tests.
+A mutation is caught when the run reports an error. File and line are the repository file; the logged test lines are
+harness lines (repository line + 1, for the harness import header).
+
+== M1-cross-restart-doubt: CAUGHT
+file: CaptureLink.swift:1201
+before: inDoubt = earlier.outcome != "refused"
+after:  inDoubt = false
+tests: testReopenedStopReusesItsRecordedCommand
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1340: error: DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand : XCTAssertEqual failed: ("Optional("refused")") is not equal to ("Optional("unknown")") - a later refusal after unknown
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1340: error: DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand : XCTAssertEqual failed: ("Optional("refused")") is not equal to ("Optional("unknown")") - a later refusal after written
+	 Executed 1 test, with 2 failures (0 unexpected) in 0.145 (0.145) seconds
+
+== M2-replay-server-end: CAUGHT
+file: CaptureLink.swift:574
+before:                 serviceEnded(a, state: state.state)
+                        return false
+                    }
+                    guard saved else { return false }
+                case .notSent:
+after:                  return false
+                    }
+                    guard saved else { return false }
+                case .notSent:
+tests: testServerEndInARegistrationReplayEndsTheCaptureDespiteARecordFault,testReconnectReplayActsOnABelievedServerEndOrLostPermission
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1707: error: DesktopCaptureTests.testServerEndInARegistrationReplayEndsTheCaptureDespiteARecordFault : XCTAssertTrue failed - []
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1712: error: DesktopCaptureTests.testServerEndInARegistrationReplayEndsTheCaptureDespiteARecordFault : XCTAssertEqual failed: ("stopped") is not equal to ("endedByService") - 
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1756: error: DesktopCaptureTests.testReconnectReplayActsOnABelievedServerEndOrLostPermission : XCTAssertTrue failed - withdrawn: []
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1764: error: DesktopCaptureTests.testReconnectReplayActsOnABelievedServerEndOrLostPermission : XCTAssertEqual failed: ("5") is not equal to ("1") - no state read and no Stop after a believed withdrawal
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1766: error: DesktopCaptureTests.testReconnectReplayActsOnABelievedServerEndOrLostPermission : XCTAssertEqual failed: ("1") is not equal to ("0") - withdrawn
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1768: error: DesktopCaptureTests.testReconnectReplayActsOnABelievedServerEndOrLostPermission : XCTAssertEqual failed: ("stopped") is not equal to ("endedByService") - withdrawn
+... 1 more error lines
+	 Executed 2 tests, with 7 failures (0 unexpected) in 42.133 (42.133) seconds
+
+== M3-renew-after-doubt: CAUGHT
+file: CaptureLink.swift:1229
+before:             case .unknown(_, let later) where later?.status == 401:
+                        renewal = true
+after:              case .unknown(_, let later) where later?.status == 401:
+                        renewal = false
+tests: testStopAfterDoubtRenewsTheBearerAndKeepsTheDoubt
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1591: error: DesktopCaptureTests.testStopAfterDoubtRenewsTheBearerAndKeepsTheDoubt : XCTAssertEqual failed: ("1") is not equal to ("2") - taken
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1592: error: DesktopCaptureTests.testStopAfterDoubtRenewsTheBearerAndKeepsTheDoubt : XCTAssertEqual failed: ("Optional(true)") is not equal to ("Optional(false)") - taken
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1594: error: DesktopCaptureTests.testStopAfterDoubtRenewsTheBearerAndKeepsTheDoubt : XCTAssertEqual failed: ("2") is not equal to ("3") - taken
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1597: error: DesktopCaptureTests.testStopAfterDoubtRenewsTheBearerAndKeepsTheDoubt : XCTAssertEqual failed: ("1") is not equal to ("2") - taken
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1602: error: DesktopCaptureTests.testStopAfterDoubtRenewsTheBearerAndKeepsTheDoubt : XCTAssertEqual failed: ("Optional("unknown")") is not equal to ("Optional("stopped")") - taken
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1603: error: DesktopCaptureTests.testStopAfterDoubtRenewsTheBearerAndKeepsTheDoubt : XCTAssertEqual failed: ("nil") is not equal to ("Optional("stopped")") - taken
+... 4 more error lines
+	 Executed 1 test, with 10 failures (0 unexpected) in 1.358 (1.358) seconds
+
+== M4-renew-keeps-doubt: CAUGHT
+file: CaptureLink.swift:1230
+before:                 renewal = true
+                        inDoubt = true
+after:                  renewal = true
+tests: testStopAfterDoubtRenewsTheBearerAndKeepsTheDoubt
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1602: error: DesktopCaptureTests.testStopAfterDoubtRenewsTheBearerAndKeepsTheDoubt : XCTAssertEqual failed: ("Optional("refused")") is not equal to ("Optional("unknown")") - refused
+	 Executed 1 test, with 1 failure (0 unexpected) in 1.377 (1.377) seconds
+
+== M5-source-authority: CAUGHT
+file: CaptureLink.swift:649
+before: case .unknown(_, let later) where later?.status == 403 || later?.status == 404:
+                    // Whether the earlier attempt registered it
+after:  case .unknown(_, let later) where later?.status == 499:
+                    // Whether the earlier attempt registered it
+tests: testSourceInDoubtThenRefusedEndsTheCaptureWithoutClaimingItWasNotRegistered
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1652: error: DesktopCaptureTests.testSourceInDoubtThenRefusedEndsTheCaptureWithoutClaimingItWasNotRegistered : XCTAssertTrue failed - taken then 403
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1655: error: DesktopCaptureTests.testSourceInDoubtThenRefusedEndsTheCaptureWithoutClaimingItWasNotRegistered : XCTAssertEqual failed: ("stopped") is not equal to ("endedByService") - taken then 403
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1652: error: DesktopCaptureTests.testSourceInDoubtThenRefusedEndsTheCaptureWithoutClaimingItWasNotRegistered : XCTAssertTrue failed - 503 then 403
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1655: error: DesktopCaptureTests.testSourceInDoubtThenRefusedEndsTheCaptureWithoutClaimingItWasNotRegistered : XCTAssertEqual failed: ("stopped") is not equal to ("endedByService") - 503 then 403
+	 Executed 1 test, with 4 failures (0 unexpected) in 61.712 (61.712) seconds
+
+== M6-in-flight-refused: CAUGHT
+file: CaptureLink.swift:1209
+before: journal.streams[index].stops[recorded].outcome = "written"
+after:  _ = 0
+tests: testReopenedStopReusesItsRecordedCommand
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1372: error: DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand : XCTAssertEqual failed: ("Optional("refused")") is not equal to ("Optional("written")") - sent again; its answer was not recorded
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1379: error: DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand : XCTAssertEqual failed: ("[Optional("refused")]") is not equal to ("[Optional("written")]") - 
+	 Executed 1 test, with 2 failures (0 unexpected) in 0.177 (0.177) seconds
+
+== M7-other-url-doubt: CAUGHT
+file: CaptureControl.swift:181
+before:                 inDoubt = true
+                        reason = "answered from another URL, which is not believed"
+after:                  reason = "answered from another URL, which is not believed"
+tests: testLaterRefusalKeepsAnEarlierControlDoubt
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1440: error: DesktopCaptureTests.testLaterRefusalKeepsAnEarlierControlDoubt : XCTAssertEqual failed: ("refused 403 forbidden") is not equal to ("unknown") - register: another URL then 403
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1440: error: DesktopCaptureTests.testLaterRefusalKeepsAnEarlierControlDoubt : XCTAssertEqual failed: ("refused 403 forbidden") is not equal to ("unknown") - stop: another URL then 403
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1440: error: DesktopCaptureTests.testLaterRefusalKeepsAnEarlierControlDoubt : XCTAssertEqual failed: ("refused 403 forbidden") is not equal to ("unknown") - source: another URL then 403
+	 Executed 1 test, with 3 failures (0 unexpected) in 0.005 (0.005) seconds
+
+== M8-usable-fault-check: NOT CAUGHT
+file: CaptureLink.swift:498
+before:         fault == nil && current(a)
+after:          current(a)
+tests: testRecordFaultFencesEveryLaterRequest
+	 Executed 1 test, with 0 failures (0 unexpected) in 3.244 (3.244) seconds
+
+== M9-registered-save-ignored: NOT CAUGHT
+file: CaptureLink.swift:577
+before:             guard saved else { return false }
+                case .notSent:
+after:          case .notSent:
+tests: testRecordFaultFencesEveryLaterRequest
+	 Executed 1 test, with 0 failures (0 unexpected) in 3.244 (3.244) seconds
+
+== M10-replay-permission: CAUGHT
+file: CaptureLink.swift:589
+before:             if status == 403 || status == 404 {
+                        authorityLost(a)
+                    } else {
+                        notConnected(a, "the registered stream could not be confirmed (\(code))")
+after:              if status == 499 {
+                        authorityLost(a)
+                    } else {
+                        notConnected(a, "the registered stream could not be confirmed (\(code))")
+tests: testReconnectReplayActsOnABelievedServerEndOrLostPermission
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1756: error: DesktopCaptureTests.testReconnectReplayActsOnABelievedServerEndOrLostPermission : XCTAssertTrue failed - forbidden: []
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1768: error: DesktopCaptureTests.testReconnectReplayActsOnABelievedServerEndOrLostPermission : XCTAssertEqual failed: ("stopped") is not equal to ("endedByService") - forbidden
+	 Executed 1 test, with 2 failures (0 unexpected) in 20.419 (20.419) seconds
+
+== M11-stop-key-reuse: CAUGHT
+file: CaptureLink.swift:1198
+before: if let recorded = journal.streams[index].stops.lastIndex(where: { $0.body.utf8.elementsEqual(text.utf8) }) {
+after:  if let recorded = journal.streams[index].stops.lastIndex(where: { _ in false }) {
+tests: testReopenedStopReusesItsRecordedCommand
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1273: error: DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand : XCTAssertEqual failed: ("["stream-reuse-same.stop.2"]") is not equal to ("["stream-reuse-same.stop.1"]") - 
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1275: error: DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand : XCTAssertEqual failed: ("2") is not equal to ("1") - no second command for the same revision
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1276: error: DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand : XCTAssertEqual failed: ("Optional("unknown")") is not equal to ("Optional("stopped")") - 
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1277: error: DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand : XCTAssertEqual failed: ("nil") is not equal to ("Optional(1)") - 
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1279: error: DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand : XCTAssertEqual failed: ("[]") is not equal to ("["the recorded Stop stream-reuse-same.stop.1 (unknown) is sent again with the same bytes"]") - 
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1309: error: DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand : XCTAssertEqual failed: ("["stream-reuse-written.stop.2"]") is not equal to ("["stream-reuse-written.stop.1"]") - 
+... 23 more error lines
+	 Executed 1 test, with 29 failures (0 unexpected) in 0.161 (0.161) seconds
+
+== M12-write-doubt: CAUGHT
+file: CaptureControl.swift:190
+before:                 if write, inDoubt {
+after:                  if false {
+tests: testLaterRefusalKeepsAnEarlierControlDoubt
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1440: error: DesktopCaptureTests.testLaterRefusalKeepsAnEarlierControlDoubt : XCTAssertEqual failed: ("refused 401 unauthenticated") is not equal to ("unknown") - register: lost then 401
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1440: error: DesktopCaptureTests.testLaterRefusalKeepsAnEarlierControlDoubt : XCTAssertEqual failed: ("refused 403 forbidden") is not equal to ("unknown") - register: 503 then 403
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1440: error: DesktopCaptureTests.testLaterRefusalKeepsAnEarlierControlDoubt : XCTAssertEqual failed: ("refused 403 forbidden") is not equal to ("unknown") - register: malformed 200 then 403
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1440: error: DesktopCaptureTests.testLaterRefusalKeepsAnEarlierControlDoubt : XCTAssertEqual failed: ("refused 403 forbidden") is not equal to ("unknown") - register: another URL then 403
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1440: error: DesktopCaptureTests.testLaterRefusalKeepsAnEarlierControlDoubt : XCTAssertEqual failed: ("refused 401 unauthenticated") is not equal to ("unknown") - stop: lost then 401
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1440: error: DesktopCaptureTests.testLaterRefusalKeepsAnEarlierControlDoubt : XCTAssertEqual failed: ("refused 403 forbidden") is not equal to ("unknown") - stop: 503 then 403
+... 6 more error lines
+	 Executed 1 test, with 12 failures (0 unexpected) in 0.005 (0.005) seconds
+== M13-both-fences (M8 and M9 together, plus the same save guard after the state read): CAUGHT
+file: CaptureLink.swift (the `usable` fault check, and `guard saved else { return false }` after the registration and after the state read)
+note: M8 and M9 each leave the other fence in place, so neither alone changes a tested path; together they restore the f625b48 behaviour.
+tests: testRecordFaultFencesEveryLaterRequest
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1211: error: DesktopCaptureTests.testRecordFaultFencesEveryLaterRequest : XCTAssertEqual failed: ("["POST", "GET", "PUT"]") is not equal to ("["POST"]") - nothing after the fault: registration
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1212: error: DesktopCaptureTests.testRecordFaultFencesEveryLaterRequest : XCTAssertFalse failed - registration
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1222: error: DesktopCaptureTests.testRecordFaultFencesEveryLaterRequest : XCTAssertEqual failed: ("["POST", "GET", "PUT"]") is not equal to ("["POST"]") - no Stop without a written witness: registration
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1211: error: DesktopCaptureTests.testRecordFaultFencesEveryLaterRequest : XCTAssertEqual failed: ("["POST", "GET", "PUT"]") is not equal to ("["POST", "GET"]") - nothing after the fault: state
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1212: error: DesktopCaptureTests.testRecordFaultFencesEveryLaterRequest : XCTAssertFalse failed - state
+/tmp/lc-link-mut2/src/CaptureLinkTests.swift:1222: error: DesktopCaptureTests.testRecordFaultFencesEveryLaterRequest : XCTAssertEqual failed: ("["POST", "GET", "PUT"]") is not equal to ("["POST", "GET"]") - no Stop without a written witness: state
+	 Executed 1 test, with 6 failures (0 unexpected) in 3.243 (3.243) seconds

@@ -1,0 +1,92 @@
+Test Case 'DesktopCaptureTests.testDamagedLinkRecordIsKeptAndNeverUsed' started at 2026-09-30 18:48:57.131
+src/CaptureLinkTests.swift:875: error: DesktopCaptureTests.testDamagedLinkRecordIsKeptAndNeverUsed : XCTAssertEqual failed: ("idle") is not equal to ("unavailable") - foreign stop
+src/CaptureLinkTests.swift:883: error: DesktopCaptureTests.testDamagedLinkRecordIsKeptAndNeverUsed : XCTAssertEqual failed: ("2") is not equal to ("0") - no host for foreign stop
+src/CaptureLinkTests.swift:884: error: DesktopCaptureTests.testDamagedLinkRecordIsKeptAndNeverUsed : XCTAssertEqual failed: ("3") is not equal to ("1") - foreign stop
+src/CaptureLinkTests.swift:885: error: DesktopCaptureTests.testDamagedLinkRecordIsKeptAndNeverUsed : XCTAssertEqual failed: ("776 bytes") is not equal to ("621 bytes") - kept as it was: foreign stop
+Test Case 'DesktopCaptureTests.testDamagedLinkRecordIsKeptAndNeverUsed' failed (2.547 seconds)
+Test Case 'DesktopCaptureTests.testRecordFaultFencesEveryLaterRequest' started at 2026-09-30 18:48:59.679
+src/CaptureLinkTests.swift:1208: error: DesktopCaptureTests.testRecordFaultFencesEveryLaterRequest : XCTAssertTrue failed - registration
+src/CaptureLinkTests.swift:1211: error: DesktopCaptureTests.testRecordFaultFencesEveryLaterRequest : XCTAssertEqual failed: ("["POST", "GET", "PUT"]") is not equal to ("["POST"]") - nothing after the fault: registration
+src/CaptureLinkTests.swift:1212: error: DesktopCaptureTests.testRecordFaultFencesEveryLaterRequest : XCTAssertFalse failed - registration
+src/CaptureLinkTests.swift:1222: error: DesktopCaptureTests.testRecordFaultFencesEveryLaterRequest : XCTAssertEqual failed: ("["POST", "GET", "PUT"]") is not equal to ("["POST"]") - no Stop without a written witness: registration
+src/CaptureLinkTests.swift:1208: error: DesktopCaptureTests.testRecordFaultFencesEveryLaterRequest : XCTAssertTrue failed - state
+src/CaptureLinkTests.swift:1211: error: DesktopCaptureTests.testRecordFaultFencesEveryLaterRequest : XCTAssertEqual failed: ("["POST", "GET", "PUT"]") is not equal to ("["POST", "GET"]") - nothing after the fault: state
+src/CaptureLinkTests.swift:1212: error: DesktopCaptureTests.testRecordFaultFencesEveryLaterRequest : XCTAssertFalse failed - state
+src/CaptureLinkTests.swift:1222: error: DesktopCaptureTests.testRecordFaultFencesEveryLaterRequest : XCTAssertEqual failed: ("["POST", "GET", "PUT"]") is not equal to ("["POST", "GET"]") - no Stop without a written witness: state
+Test Case 'DesktopCaptureTests.testRecordFaultFencesEveryLaterRequest' failed (23.324 seconds)
+Test Case 'DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand' started at 2026-09-30 18:49:23.003
+src/CaptureLinkTests.swift:1273: error: DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand : XCTAssertEqual failed: ("["stream-reuse-same.stop.2"]") is not equal to ("["stream-reuse-same.stop.1"]") - 
+src/CaptureLinkTests.swift:1275: error: DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand : XCTAssertEqual failed: ("2") is not equal to ("1") - no second command for the same revision
+src/CaptureLinkTests.swift:1276: error: DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand : XCTAssertEqual failed: ("Optional("unknown")") is not equal to ("Optional("stopped")") - 
+src/CaptureLinkTests.swift:1277: error: DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand : XCTAssertEqual failed: ("nil") is not equal to ("Optional(1)") - 
+src/CaptureLinkTests.swift:1279: error: DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand : XCTAssertEqual failed: ("[]") is not equal to ("["the recorded Stop stream-reuse-same.stop.1 (unknown) is sent again with the same bytes"]") - 
+src/CaptureLinkTests.swift:1309: error: DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand : XCTAssertEqual failed: ("["stream-reuse-written.stop.2"]") is not equal to ("["stream-reuse-written.stop.1"]") - 
+src/CaptureLinkTests.swift:1310: error: DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand : XCTAssertEqual failed: ("2") is not equal to ("1") - 
+src/CaptureLinkTests.swift:1311: error: DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand : XCTAssertEqual failed: ("Optional("written")") is not equal to ("Optional("stopped")") - 
+src/CaptureLinkTests.swift:1319: error: DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand : XCTAssertEqual failed: ("2") is not equal to ("1") - 
+src/CaptureLinkTests.swift:1320: error: DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand : XCTAssertEqual failed: ("Optional("refused")") is not equal to ("Optional("stopped")") - 
+src/CaptureLinkTests.swift:1321: error: DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand : XCTAssertNil failed: "403" - 
+src/CaptureLinkTests.swift:1322: error: DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand : XCTAssertNil failed: "forbidden" - 
+src/CaptureLinkTests.swift:1323: error: DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand : XCTAssertEqual failed: ("Optional([])") is not equal to ("Optional(["the recorded Stop stream-reuse-refused.stop.1 (refused 403 forbidden) is sent again with the same bytes"])") - 
+src/CaptureLinkTests.swift:1338: error: DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand : XCTAssertEqual failed: ("["stream-reuse-403-unknown.stop.2"]") is not equal to ("["stream-reuse-403-unknown.stop.1"]") - unknown
+src/CaptureLinkTests.swift:1339: error: DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand : XCTAssertEqual failed: ("2") is not equal to ("1") - unknown
+src/CaptureLinkTests.swift:1341: error: DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand : XCTAssertEqual failed: ("nil") is not equal to ("Optional(403)") - unknown
+src/CaptureLinkTests.swift:1342: error: DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand : XCTAssertEqual failed: ("nil") is not equal to ("Optional(1)") - unknown
+src/CaptureLinkTests.swift:1338: error: DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand : XCTAssertEqual failed: ("["stream-reuse-403-written.stop.2"]") is not equal to ("["stream-reuse-403-written.stop.1"]") - written
+src/CaptureLinkTests.swift:1339: error: DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand : XCTAssertEqual failed: ("2") is not equal to ("1") - written
+src/CaptureLinkTests.swift:1340: error: DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand : XCTAssertEqual failed: ("Optional("written")") is not equal to ("Optional("unknown")") - a later refusal after written
+src/CaptureLinkTests.swift:1341: error: DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand : XCTAssertEqual failed: ("nil") is not equal to ("Optional(403)") - written
+src/CaptureLinkTests.swift:1342: error: DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand : XCTAssertEqual failed: ("nil") is not equal to ("Optional(1)") - written
+src/CaptureLinkTests.swift:1338: error: DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand : XCTAssertEqual failed: ("["stream-reuse-403-refused.stop.2"]") is not equal to ("["stream-reuse-403-refused.stop.1"]") - refused
+src/CaptureLinkTests.swift:1339: error: DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand : XCTAssertEqual failed: ("2") is not equal to ("1") - refused
+src/CaptureLinkTests.swift:1341: error: DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand : XCTAssertEqual failed: ("nil") is not equal to ("Optional(403)") - refused
+src/CaptureLinkTests.swift:1342: error: DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand : XCTAssertEqual failed: ("nil") is not equal to ("Optional(1)") - refused
+src/CaptureLinkTests.swift:1369: error: DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand : XCTAssertEqual failed: ("["GET", "POST", "GET"]") is not equal to ("["GET", "POST"]") - no read back after the fault
+src/CaptureLinkTests.swift:1372: error: DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand : XCTAssertEqual failed: ("Optional("refused")") is not equal to ("Optional("written")") - sent again; its answer was not recorded
+src/CaptureLinkTests.swift:1373: error: DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand : XCTAssertNil failed: "403" - 
+src/CaptureLinkTests.swift:1379: error: DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand : XCTAssertEqual failed: ("[Optional("refused"), Optional("written")]") is not equal to ("[Optional("written")]") - 
+Test Case 'DesktopCaptureTests.testReopenedStopReusesItsRecordedCommand' failed (0.111 seconds)
+Test Case 'DesktopCaptureTests.testLaterRefusalKeepsAnEarlierControlDoubt' started at 2026-09-30 18:49:23.114
+src/CaptureLinkTests.swift:1440: error: DesktopCaptureTests.testLaterRefusalKeepsAnEarlierControlDoubt : XCTAssertEqual failed: ("refused 401 unauthenticated") is not equal to ("unknown") - register: lost then 401
+src/CaptureLinkTests.swift:1440: error: DesktopCaptureTests.testLaterRefusalKeepsAnEarlierControlDoubt : XCTAssertEqual failed: ("refused 403 forbidden") is not equal to ("unknown") - register: 503 then 403
+src/CaptureLinkTests.swift:1440: error: DesktopCaptureTests.testLaterRefusalKeepsAnEarlierControlDoubt : XCTAssertEqual failed: ("refused 403 forbidden") is not equal to ("unknown") - register: malformed 200 then 403
+src/CaptureLinkTests.swift:1440: error: DesktopCaptureTests.testLaterRefusalKeepsAnEarlierControlDoubt : XCTAssertEqual failed: ("refused 403 forbidden") is not equal to ("unknown") - register: another URL then 403
+src/CaptureLinkTests.swift:1440: error: DesktopCaptureTests.testLaterRefusalKeepsAnEarlierControlDoubt : XCTAssertEqual failed: ("refused 401 unauthenticated") is not equal to ("unknown") - stop: lost then 401
+src/CaptureLinkTests.swift:1440: error: DesktopCaptureTests.testLaterRefusalKeepsAnEarlierControlDoubt : XCTAssertEqual failed: ("refused 403 forbidden") is not equal to ("unknown") - stop: 503 then 403
+src/CaptureLinkTests.swift:1440: error: DesktopCaptureTests.testLaterRefusalKeepsAnEarlierControlDoubt : XCTAssertEqual failed: ("refused 403 forbidden") is not equal to ("unknown") - stop: malformed 200 then 403
+src/CaptureLinkTests.swift:1440: error: DesktopCaptureTests.testLaterRefusalKeepsAnEarlierControlDoubt : XCTAssertEqual failed: ("refused 403 forbidden") is not equal to ("unknown") - stop: another URL then 403
+src/CaptureLinkTests.swift:1440: error: DesktopCaptureTests.testLaterRefusalKeepsAnEarlierControlDoubt : XCTAssertEqual failed: ("refused 401 unauthenticated") is not equal to ("unknown") - source: lost then 401
+src/CaptureLinkTests.swift:1440: error: DesktopCaptureTests.testLaterRefusalKeepsAnEarlierControlDoubt : XCTAssertEqual failed: ("refused 403 forbidden") is not equal to ("unknown") - source: 503 then 403
+src/CaptureLinkTests.swift:1440: error: DesktopCaptureTests.testLaterRefusalKeepsAnEarlierControlDoubt : XCTAssertEqual failed: ("refused 403 forbidden") is not equal to ("unknown") - source: malformed 200 then 403
+src/CaptureLinkTests.swift:1440: error: DesktopCaptureTests.testLaterRefusalKeepsAnEarlierControlDoubt : XCTAssertEqual failed: ("refused 403 forbidden") is not equal to ("unknown") - source: another URL then 403
+Test Case 'DesktopCaptureTests.testLaterRefusalKeepsAnEarlierControlDoubt' failed (0.002 seconds)
+Test Case 'DesktopCaptureTests.testLostAnswerThenRefusalStaysUnknownInTheLink' started at 2026-09-30 18:49:23.116
+src/CaptureLinkTests.swift:1509: error: DesktopCaptureTests.testLostAnswerThenRefusalStaysUnknownInTheLink : XCTAssertEqual failed: ("Optional("refused")") is not equal to ("Optional("unknown")") - never refused: the first attempt may have committed
+src/CaptureLinkTests.swift:1522: error: DesktopCaptureTests.testLostAnswerThenRefusalStaysUnknownInTheLink : XCTAssertEqual failed: ("Optional("refused")") is not equal to ("Optional("unknown")") - the read settled the stream, not this command's outcome
+src/CaptureLinkTests.swift:1546: error: DesktopCaptureTests.testLostAnswerThenRefusalStaysUnknownInTheLink : XCTAssertEqual failed: ("Optional("the stream was not registered (forbidden); frames stay on this Mac")") is not equal to ("Optional("whether the stream was registered is not known; frames stay on this Mac")") - 
+Test Case 'DesktopCaptureTests.testLostAnswerThenRefusalStaysUnknownInTheLink' failed (1.301 seconds)
+Test Case 'DesktopCaptureTests.testStopAfterDoubtRenewsTheBearerAndKeepsTheDoubt' started at 2026-09-30 18:49:24.417
+src/CaptureLinkTests.swift:1602: error: DesktopCaptureTests.testStopAfterDoubtRenewsTheBearerAndKeepsTheDoubt : XCTAssertEqual failed: ("Optional("refused")") is not equal to ("Optional("unknown")") - refused
+Test Case 'DesktopCaptureTests.testStopAfterDoubtRenewsTheBearerAndKeepsTheDoubt' failed (1.397 seconds)
+Test Case 'DesktopCaptureTests.testSourceInDoubtThenRefusedEndsTheCaptureWithoutClaimingItWasNotRegistered' started at 2026-09-30 18:49:25.814
+src/CaptureLinkTests.swift:1667: error: DesktopCaptureTests.testSourceInDoubtThenRefusedEndsTheCaptureWithoutClaimingItWasNotRegistered : XCTAssertTrue failed - taken then 403: ["the capture service no longer permits this stream or its source"]
+src/CaptureLinkTests.swift:1667: error: DesktopCaptureTests.testSourceInDoubtThenRefusedEndsTheCaptureWithoutClaimingItWasNotRegistered : XCTAssertTrue failed - 503 then 403: ["the capture service no longer permits this stream or its source"]
+src/CaptureLinkTests.swift:1660: error: DesktopCaptureTests.testSourceInDoubtThenRefusedEndsTheCaptureWithoutClaimingItWasNotRegistered : XCTAssertEqual failed: ("Optional("the display source was not registered; frames stay on this Mac")") is not equal to ("Optional("whether the display source was registered is not known; frames stay on this Mac")") - 
+src/CaptureLinkTests.swift:1667: error: DesktopCaptureTests.testSourceInDoubtThenRefusedEndsTheCaptureWithoutClaimingItWasNotRegistered : XCTAssertTrue failed - all lost: []
+Test Case 'DesktopCaptureTests.testSourceInDoubtThenRefusedEndsTheCaptureWithoutClaimingItWasNotRegistered' failed (2.776 seconds)
+Test Case 'DesktopCaptureTests.testServerEndInARegistrationReplayEndsTheCaptureDespiteARecordFault' started at 2026-09-30 18:49:28.590
+src/CaptureLinkTests.swift:1710: error: DesktopCaptureTests.testServerEndInARegistrationReplayEndsTheCaptureDespiteARecordFault : XCTAssertEqual failed: ("["POST /v2/process/streams", "GET /v2/process/streams/stream-78d909da13f2326b6b68da7c"]") is not equal to ("["POST /v2/process/streams"]") - 
+Test Case 'DesktopCaptureTests.testServerEndInARegistrationReplayEndsTheCaptureDespiteARecordFault' failed (0.27 seconds)
+Test Case 'DesktopCaptureTests.testReconnectReplayActsOnABelievedServerEndOrLostPermission' started at 2026-09-30 18:49:28.861
+src/CaptureLinkTests.swift:1756: error: DesktopCaptureTests.testReconnectReplayActsOnABelievedServerEndOrLostPermission : XCTAssertTrue failed - withdrawn: []
+src/CaptureLinkTests.swift:1764: error: DesktopCaptureTests.testReconnectReplayActsOnABelievedServerEndOrLostPermission : XCTAssertEqual failed: ("8") is not equal to ("1") - no state read and no Stop after a believed withdrawal
+src/CaptureLinkTests.swift:1766: error: DesktopCaptureTests.testReconnectReplayActsOnABelievedServerEndOrLostPermission : XCTAssertEqual failed: ("1") is not equal to ("0") - withdrawn
+src/CaptureLinkTests.swift:1768: error: DesktopCaptureTests.testReconnectReplayActsOnABelievedServerEndOrLostPermission : XCTAssertEqual failed: ("stopped") is not equal to ("endedByService") - withdrawn
+src/CaptureLinkTests.swift:1769: error: DesktopCaptureTests.testReconnectReplayActsOnABelievedServerEndOrLostPermission : XCTAssertEqual failed: ("nil") is not equal to ("Optional("withdrawn")") - withdrawn
+src/CaptureLinkTests.swift:1756: error: DesktopCaptureTests.testReconnectReplayActsOnABelievedServerEndOrLostPermission : XCTAssertTrue failed - forbidden: []
+src/CaptureLinkTests.swift:1758: error: DesktopCaptureTests.testReconnectReplayActsOnABelievedServerEndOrLostPermission : XCTAssertFalse failed - forbidden: the stream was not registered (forbidden); frames stay on this Mac
+src/CaptureLinkTests.swift:1768: error: DesktopCaptureTests.testReconnectReplayActsOnABelievedServerEndOrLostPermission : XCTAssertEqual failed: ("stopped") is not equal to ("endedByService") - forbidden
+Test Case 'DesktopCaptureTests.testReconnectReplayActsOnABelievedServerEndOrLostPermission' failed (41.862 seconds)
+	 Executed 9 tests, with 71 failures (0 unexpected) in 73.591 (73.591) seconds
+	 Executed 9 tests, with 71 failures (0 unexpected) in 73.591 (73.591) seconds
+	 Executed 9 tests, with 71 failures (0 unexpected) in 73.591 (73.591) seconds

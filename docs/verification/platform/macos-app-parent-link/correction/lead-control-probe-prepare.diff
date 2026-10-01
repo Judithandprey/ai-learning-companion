@@ -1,0 +1,10 @@
+3,4c3,4
+< root=Path('/tmp/lc-macos-parent-f625b48/apps/macos/CompanionDesktop/Sources/DesktopCapture')
+< out=Path('/tmp/macos-parent-f625-host-control-probes')
+---
+> root=Path('/home/agentsdock/Projects/learning-companion/wt-platform/apps/macos/CompanionDesktop/Sources/DesktopCapture')
+> out=Path('/tmp/lc-correction-probes/control')
+77c77
+< (out/'source.json').write_text(json.dumps({'candidate':'f625b480e591682be75dd6a7617c08eee4cf7bd6','files':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in [root/'CaptureControl.swift',root/'CaptureHost.swift',root/'MacIngressUpload.swift']},'extraction':'CaptureControl.send/typedError and actual helpers; private removed only from send; scripted transport and acceptance callback'},indent=2)+'\n')
+---
+> (out/'source.json').write_text(json.dumps({'candidate':'corrected worktree on f625b480e591682be75dd6a7617c08eee4cf7bd6','files':{p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in [root/'CaptureControl.swift',root/'CaptureHost.swift',root/'MacIngressUpload.swift']},'extraction':'CaptureControl.send/typedError and actual helpers; private removed only from send; scripted transport and acceptance callback'},indent=2)+'\n')

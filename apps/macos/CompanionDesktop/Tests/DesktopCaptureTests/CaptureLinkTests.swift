@@ -3,6 +3,13 @@ import Foundation
 import XCTest
 @testable import DesktopCapture
 
+private extension Array {
+    /// The element at `index`, or nil: a short array is then a failed assertion, never a trap.
+    func at(_ index: Int) -> Element? {
+        indices.contains(index) ? self[index] : nil
+    }
+}
+
 // MARK: - A loopback HTTP/1.1 server (at file scope, so the socket calls are the system's)
 
 final class LoopbackServer: @unchecked Sendable {
@@ -141,7 +148,9 @@ final class LoopbackServer: @unchecked Sendable {
 
 /// Control 0.2.1 streams, the 0.2.4 display source and (through `StandInHost.honest`) the
 /// originals and the 0.2.12 batch. Once a stream is not live, its originals are refused 403 and
-/// its batches 409 capture_stopped, as the released routes do.
+/// its batches 409 capture_stopped, as the released routes do. A Stop under a key that already
+/// committed with the same bytes answers the current state; another revision is 409
+/// stale_revision.
 final class ServiceStandIn: @unchecked Sendable {
     typealias Stream = (registration: [String: Any], state: String, revision: Int)
     /// `.some(reply)` answers instead of the stand-in (`.some(nil)` drops the connection); nil
@@ -153,6 +162,7 @@ final class ServiceStandIn: @unchecked Sendable {
     private let lock = NSLock()
     private var streams: [String: Stream] = [:]
     private var sources: [String: String] = [:]
+    private var commands: [String: Data] = [:]
     var override: Override?
 
     func respond(_ request: LoopbackServer.Request, _ index: Int) -> LoopbackServer.Reply? {
@@ -188,9 +198,18 @@ final class ServiceStandIn: @unchecked Sendable {
             if command { id = String(id.dropLast(":control".count)) }
             guard let current = lock.withLock({ streams[id] }) else { return typed(404, "not_found", "0.2.1") }
             if request.method == "GET" { return reply(200, stateObject(id, current)) }
+            let key = id + " " + (request.header("Idempotency-Key").first ?? "")
+            if let committed = lock.withLock({ commands[key] }) {
+                guard committed == request.body else { return typed(409, "idempotency_conflict", "0.2.1") }
+                return reply(200, stateObject(id, current))
+            }
+            guard (body["expected_revision"] as? Int) == current.revision else { return typed(409, "stale_revision", "0.2.1") }
             guard current.state == "live" else { return typed(409, "invalid_transition", "0.2.1") }
             let stopped: Stream = (registration: current.registration, state: "stopped", revision: current.revision + 1)
-            lock.withLock { streams[id] = stopped }
+            lock.withLock {
+                streams[id] = stopped
+                commands[key] = request.body
+            }
             return reply(200, stateObject(id, stopped))
         }
         if request.method == "PUT", path.hasPrefix("/v2/process/display-sources/") {
@@ -568,9 +587,10 @@ extension DesktopCaptureTests {
         let opening = requests.prefix(3).map { "\($0.method) \($0.target)" }
         XCTAssertEqual(opening, ["POST /v2/process/streams", "GET /v2/process/streams/" + stream,
                                  "PUT /v2/process/display-sources/" + source])
-        let registration = try decodedObject(requests[0].body)
+        let registering = try XCTUnwrap(requests.first)
+        let registration = try decodedObject(registering.body)
         XCTAssertEqual(registration["continuity"] as? [String: String], ["kind": "initial"])
-        XCTAssertEqual(requests[0].header("Idempotency-Key"), [stream + ".register"])
+        XCTAssertEqual(registering.header("Idempotency-Key"), [stream + ".register"])
         let record = try XCTUnwrap(stub.records().first)
         XCTAssertEqual(stub.records().count, 1)
         XCTAssertEqual(record["fresh_consent"] as? Bool, true, "the user's Start is the fresh consent")
@@ -836,6 +856,7 @@ extension DesktopCaptureTests {
             }),
             ("path source", { $0["sourceID"] = "../src" }),
             ("no producer", { $0["producerID"] = nil }),
+            ("foreign stop", { $0["stops"] = [["key": "stream-other.stop.1", "body": "{}", "outcome": "unknown"]] }),
             ("unknown grant", { $0["grant"] = "granted" }),
             ("unknown final", { $0["final"] = "gone" }),
             ("other key", { $0["registrationKey"] = "other.register" }),
@@ -964,10 +985,10 @@ extension DesktopCaptureTests {
         XCTAssertTrue(second)
         var streams = try linkStreams(directory)
         XCTAssertEqual(streams.count, 2)
-        XCTAssertNil(streams[1]["final"] as? String)
-        XCTAssertEqual(streams[1]["registrationSent"] as? Bool, true)
-        let s1 = try XCTUnwrap((streams[0]["registration"] as? [String: Any])?["streamID"] as? String)
-        let s2 = try XCTUnwrap((streams[1]["registration"] as? [String: Any])?["streamID"] as? String)
+        XCTAssertNil(streams.at(1)?["final"] as? String)
+        XCTAssertEqual(streams.at(1)?["registrationSent"] as? Bool, true)
+        let s1 = try XCTUnwrap((streams.at(0)?["registration"] as? [String: Any])?["streamID"] as? String)
+        let s2 = try XCTUnwrap((streams.at(1)?["registration"] as? [String: Any])?["streamID"] as? String)
         let posted = try decodedObject(try XCTUnwrap(registrations().last).body)
         XCTAssertEqual(posted["continuity"] as? [String: String], ["kind": "restart", "previous_stream_id": s1, "gap": "unknown"])
         // While S2 cannot be settled, a new Start registers nothing: its predecessor is not closed.
@@ -984,7 +1005,7 @@ extension DesktopCaptureTests {
         let restarted = stubLink(stub, directory)
         await restarted.reconcile()
         streams = try linkStreams(directory)
-        XCTAssertEqual(streams[1]["final"] as? String, "stopped")
+        XCTAssertEqual(streams.at(1)?["final"] as? String, "stopped")
         let fourth = await capture(restarted, until: .storing)
         XCTAssertTrue(fourth)
         let latest = try decodedObject(try XCTUnwrap(registrations().last).body)
@@ -1131,6 +1152,621 @@ extension DesktopCaptureTests {
         await stubLink(working, directory).reconcile()
         XCTAssertEqual(working.records().count, 0)
         XCTAssertEqual(server.requests.count, 0)
+    }
+
+    // MARK: - Lead review corrections: record faults, recorded Stops, earlier doubt
+
+    /// A registered, live stream of the stub lineage as an earlier run left it, with its Stops.
+    func seedOpenStream(_ id: String, in directory: URL, service: ServiceStandIn, stops: [LinkStop]) throws -> StreamRegistration {
+        let registration = StreamRegistration(deviceID: "synthetic-mac-device", sessionID: "synthetic-learning-session",
+                                              streamID: id, previousStreamID: nil)
+        _ = service.route(LoopbackServer.Request(method: "POST", target: "/v2/process/streams", headers: [],
+                                                 body: try DesktopJSON.encode(registration.json)))
+        var stream = LinkStream(userID: "synthetic-user", producerID: "synthetic-mac-producer", registration: registration,
+                                registrationKey: id + ".register", sourceID: "src-" + id, sourceTimezone: "UTC",
+                                captureSession: "synthetic", grant: "consumed", delivered: true, registrationSent: true,
+                                registered: true)
+        stream.state = StreamStateValue(state: "live", revision: 1)
+        stream.stops = stops
+        var journal = LinkJournal()
+        journal.streams = [stream]
+        XCTAssertNil(journal.problem)
+        try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        try JSONEncoder().encode(journal).write(to: directory.appending(path: "journal.json"))
+        return registration
+    }
+
+    func testRecordFaultFencesEveryLaterRequest() async throws {
+        let session = try writeMacSession(root: root.appending(path: "fence-session", directoryHint: .isDirectory))
+        // The record becomes unwritable as the service answers one request: `after` names it.
+        let cases: [(name: String, method: String, prefix: String, expected: [String])] = [
+            ("registration", "POST", "/v2/process/streams", ["POST"]),
+            ("state", "GET", "/v2/process/streams/", ["POST", "GET"]),
+        ]
+        for fenced in cases {
+            let service = ServiceStandIn()
+            let directory = root.appending(path: "fence-link-" + fenced.name, directoryHint: .isDirectory)
+            let path = directory.path(percentEncoded: false)
+            service.override = { request, _ in
+                guard request.method == fenced.method, request.target.hasPrefix(fenced.prefix) else { return nil }
+                let answer = service.route(request)
+                try? FileManager.default.setAttributes([.posixPermissions: 0o500], ofItemAtPath: path)
+                return answer
+            }
+            let server = try LoopbackServer { service.respond($0, $1) }
+            defer { server.stop() }
+            let stub = try stubHost("fence-host-" + fenced.name, origin: server.origin)
+            let link = stubLink(stub, directory)
+            let gate = LiveGate()
+            let ended = EndLog()
+            await link.begin(gate: gate, session: session) { ended.add($0) }
+            let faulted = await until(20) { await link.currentStatus().detail?.hasSuffix("nothing more is sent") == true }
+            XCTAssertTrue(faulted, fenced.name)
+            // This stream's own child is ended; nothing else is started or requested.
+            let childEnded = await until(10) { stub.lines("ends") == ["eof"] }
+            XCTAssertTrue(childEnded, fenced.name)
+            link.framesChanged()
+            try await Task.sleep(nanoseconds: 1_500_000_000)
+            XCTAssertEqual(server.requests.map(\.method), fenced.expected, "nothing after the fault: \(fenced.name)")
+            XCTAssertFalse(server.requests.contains { $0.target.hasPrefix("/v2/process/display-sources/") }, fenced.name)
+            XCTAssertEqual(stub.records().count, 1, "no new child: \(fenced.name)")
+            // Local capture goes on: the fault is not a reason to end it.
+            XCTAssertTrue(gate.isOpen, fenced.name)
+            XCTAssertEqual(ended.all, [], fenced.name)
+            let during = await link.currentStatus()
+            XCTAssertEqual(during.state, .notConnected, fenced.name)
+            XCTAssertEqual(during.detail, "the capture link record could not be written; nothing more is sent", fenced.name)
+            gate.close("user_stop")
+            await link.stop()
+            XCTAssertEqual(server.requests.map(\.method), fenced.expected, "no Stop without a written witness: \(fenced.name)")
+            let stopped = await link.currentStatus()
+            XCTAssertEqual(stopped.detail, "the capture link record could not be written; nothing more is sent; "
+                           + "the server Stop is not confirmed", fenced.name)
+            try FileManager.default.setAttributes([.posixPermissions: 0o700], ofItemAtPath: path)
+            service.override = nil
+            // The record on disk still says the registration was sent, so the next launch settles it.
+            let kept = try XCTUnwrap(try linkStreams(directory).first)
+            XCTAssertEqual(kept["registrationSent"] as? Bool, true, fenced.name)
+            XCTAssertNil(kept["final"] as? String, fenced.name)
+            let stream = try linkStreamID(directory)
+            let before = server.requests.count
+            await stubLink(stub, directory).reconcile()
+            let settled = server.requests.dropFirst(before).map { "\($0.method) \($0.target)" }
+            XCTAssertEqual(settled, ["GET /v2/process/streams/\(stream)", "POST /v2/process/streams/\(stream):control",
+                                     "GET /v2/process/streams/\(stream)"], fenced.name)
+            XCTAssertEqual(try linkStreams(directory).first?["final"] as? String, "stopped", fenced.name)
+        }
+    }
+
+    func testReopenedStopReusesItsRecordedCommand() async throws {
+        let service = ServiceStandIn()
+        let server = try LoopbackServer { service.respond($0, $1) }
+        defer { server.stop() }
+        func recordedStop(_ registration: StreamRegistration, revision: Int) throws -> String {
+            String(decoding: try DesktopJSON.encode(registration.stopBody(expectedRevision: revision)), as: UTF8.self)
+        }
+        func reconcileSeed(_ id: String, final: String? = "stopped", stop: (StreamRegistration) throws -> LinkStop,
+                           prepare: () -> Void = {}) async throws -> (LoopbackServer.Request, [[String: Any]], [String: Any]) {
+            let directory = root.appending(path: "reuse-link-" + id, directoryHint: .isDirectory)
+            let template = StreamRegistration(deviceID: "synthetic-mac-device", sessionID: "synthetic-learning-session",
+                                              streamID: id, previousStreamID: nil)
+            _ = try seedOpenStream(id, in: directory, service: service, stops: [try stop(template)])
+            prepare()
+            let stub = try stubHost("reuse-host-" + id, origin: server.origin)
+            let before = server.requests.count
+            await stubLink(stub, directory).reconcile()
+            let sent = Array(server.requests.dropFirst(before))
+            XCTAssertEqual(sent.map(\.method), ["GET", "POST", "GET"], id)
+            XCTAssertEqual(stub.records().first?["fresh_consent"] as? Bool, false, id)
+            let stream = try XCTUnwrap(try linkStreams(directory).first)
+            XCTAssertEqual(stream["final"] as? String, final, id)
+            return (try XCTUnwrap(sent.at(1), id), try XCTUnwrap(stream["stops"] as? [[String: Any]]), stream)
+        }
+
+        // The same revision: the recorded command goes again under its own key, with its exact bytes.
+        var stored = ""
+        let (same, sameStops, sameStream) = try await reconcileSeed("stream-reuse-same", stop: { registration in
+            stored = try recordedStop(registration, revision: 1)
+            return LinkStop(key: "stream-reuse-same.stop.1", body: stored, outcome: "unknown")
+        })
+        XCTAssertEqual(same.header("Idempotency-Key"), ["stream-reuse-same.stop.1"])
+        XCTAssertEqual(String(decoding: same.body, as: UTF8.self), stored)
+        XCTAssertEqual(sameStops.count, 1, "no second command for the same revision")
+        XCTAssertEqual(sameStops.at(0)?["outcome"] as? String, "stopped")
+        XCTAssertEqual(sameStops.at(0)?["replays"] as? Int, 1)
+        let notes = (sameStream["notes"] as? [String]) ?? []
+        XCTAssertEqual(notes, ["the recorded Stop stream-reuse-same.stop.1 (unknown) is sent again with the same bytes"])
+
+        // Control: the read revision changed, so a new command is made; the earlier one is kept.
+        let (changed, changedStops, _) = try await reconcileSeed("stream-reuse-changed", stop: { registration in
+            LinkStop(key: "stream-reuse-changed.stop.1", body: try recordedStop(registration, revision: 1), outcome: "unknown")
+        }, prepare: { service.setState("stream-reuse-changed", "live") })
+        XCTAssertEqual(changed.header("Idempotency-Key"), ["stream-reuse-changed.stop.2"])
+        XCTAssertEqual(try decodedObject(changed.body)["expected_revision"] as? Int, 2)
+        XCTAssertEqual(changedStops.map { $0["key"] as? String }, ["stream-reuse-changed.stop.1", "stream-reuse-changed.stop.2"])
+        XCTAssertEqual(changedStops.map { $0["outcome"] as? String }, ["unknown", "stopped"])
+        XCTAssertNil(changedStops.at(0)?["replays"] as? Int)
+
+        // Control: stored bytes that are not exactly this stream's Stop at this revision are never
+        // sent; they stay as they are, and a new command is made.
+        let foreign = "{\"action\":{\"kind\":\"stop\",\"pre_stop_sequence\":null},\"contract_version\":\"0.2.1\","
+            + "\"device_id\":\"synthetic-mac-device\",\"expected_revision\":1,\"session_id\":\"another-session\","
+            + "\"stream_id\":\"stream-reuse-foreign\"}"
+        let (fresh, freshStops, _) = try await reconcileSeed("stream-reuse-foreign", stop: { _ in
+            LinkStop(key: "stream-reuse-foreign.stop.1", body: foreign, outcome: "unknown")
+        })
+        XCTAssertEqual(fresh.header("Idempotency-Key"), ["stream-reuse-foreign.stop.2"])
+        XCTAssertEqual(try decodedObject(fresh.body)["session_id"] as? String, "synthetic-learning-session")
+        XCTAssertEqual(freshStops.at(0)?["body"] as? String, foreign)
+        XCTAssertEqual(freshStops.map { $0["outcome"] as? String }, ["unknown", "stopped"])
+
+        // Control: a command recorded but never known sent (a crash after the journal write) is
+        // also sent under its own key.
+        let (written, writtenStops, _) = try await reconcileSeed("stream-reuse-written", stop: { registration in
+            LinkStop(key: "stream-reuse-written.stop.1", body: try recordedStop(registration, revision: 1), outcome: "written")
+        })
+        XCTAssertEqual(written.header("Idempotency-Key"), ["stream-reuse-written.stop.1"])
+        XCTAssertEqual(writtenStops.count, 1)
+        XCTAssertEqual(writtenStops.at(0)?["outcome"] as? String, "stopped")
+
+        // A recorded known refusal that is sent again and now taken: the entry holds this answer,
+        // and the earlier answer stays in the notes.
+        let (_, takenStops, takenStream) = try await reconcileSeed("stream-reuse-refused", stop: { registration in
+            LinkStop(key: "stream-reuse-refused.stop.1", body: try recordedStop(registration, revision: 1), outcome: "refused",
+                     httpStatus: 403, code: "forbidden")
+        })
+        XCTAssertEqual(takenStops.count, 1)
+        XCTAssertEqual(takenStops.at(0)?["outcome"] as? String, "stopped")
+        XCTAssertNil(takenStops.at(0)?["httpStatus"])
+        XCTAssertNil(takenStops.at(0)?["code"])
+        XCTAssertEqual(takenStream["notes"] as? [String], ["the recorded Stop stream-reuse-refused.stop.1 (refused 403 forbidden) "
+                                                           + "is sent again with the same bytes"])
+
+        // A recorded command sent again and refused at once: one that may already have taken
+        // effect (unknown, or written and never known sent) stays not known; a known refusal
+        // stays a refusal. The reads still show the stream live, so it is not settled.
+        service.override = { request, _ in
+            guard request.target.hasSuffix(":control") else { return nil }
+            return service.typed(403, "forbidden", "0.2.1")
+        }
+        for (earlier, expected) in [("unknown", "unknown"), ("written", "unknown"), ("refused", "refused")] {
+            let id = "stream-reuse-403-" + earlier
+            let (again, againStops, _) = try await reconcileSeed(id, final: nil, stop: { registration in
+                LinkStop(key: id + ".stop.1", body: try recordedStop(registration, revision: 1), outcome: earlier)
+            })
+            XCTAssertEqual(again.header("Idempotency-Key"), [id + ".stop.1"], earlier)
+            XCTAssertEqual(againStops.count, 1, earlier)
+            XCTAssertEqual(againStops.at(0)?["outcome"] as? String, expected, "a later refusal after \(earlier)")
+            XCTAssertEqual(againStops.at(0)?["httpStatus"] as? Int, 403, earlier)
+            XCTAssertEqual(againStops.at(0)?["replays"] as? Int, 1, earlier)
+        }
+        service.override = nil
+
+        // A recorded known refusal is in flight again once it is sent: if its answer is never
+        // recorded (here the record becomes unwritable as the service commits it), the record does
+        // not go on calling it known not taken.
+        let lostDirectory = root.appending(path: "reuse-link-lost", directoryHint: .isDirectory)
+        let lostPath = lostDirectory.path(percentEncoded: false)
+        _ = try seedOpenStream("stream-reuse-lost", in: lostDirectory, service: service, stops: [
+            LinkStop(key: "stream-reuse-lost.stop.1",
+                     body: try recordedStop(StreamRegistration(deviceID: "synthetic-mac-device",
+                                                               sessionID: "synthetic-learning-session",
+                                                               streamID: "stream-reuse-lost", previousStreamID: nil), revision: 1),
+                     outcome: "refused", httpStatus: 403, code: "forbidden"),
+        ])
+        service.override = { request, _ in
+            guard request.target == "/v2/process/streams/stream-reuse-lost:control" else { return nil }
+            let answer = service.route(request)
+            try? FileManager.default.setAttributes([.posixPermissions: 0o500], ofItemAtPath: lostPath)
+            return answer
+        }
+        let lostStub = try stubHost("reuse-host-lost", origin: server.origin)
+        let lostBefore = server.requests.count
+        await stubLink(lostStub, lostDirectory).reconcile()
+        try FileManager.default.setAttributes([.posixPermissions: 0o700], ofItemAtPath: lostPath)
+        service.override = nil
+        XCTAssertEqual(server.requests.dropFirst(lostBefore).map(\.method), ["GET", "POST"], "no read back after the fault")
+        var lostStream = try XCTUnwrap(try linkStreams(lostDirectory).first)
+        var lostStops = try XCTUnwrap(lostStream["stops"] as? [[String: Any]])
+        XCTAssertEqual(lostStops.at(0)?["outcome"] as? String, "written", "sent again; its answer was not recorded")
+        XCTAssertNil(lostStops.at(0)?["httpStatus"])
+        XCTAssertNil(lostStream["final"] as? String)
+        await stubLink(lostStub, lostDirectory).reconcile()
+        lostStream = try XCTUnwrap(try linkStreams(lostDirectory).first)
+        lostStops = try XCTUnwrap(lostStream["stops"] as? [[String: Any]])
+        XCTAssertEqual(lostStream["final"] as? String, "stopped")
+        XCTAssertEqual(lostStops.map { $0["outcome"] as? String }, ["written"])
+    }
+
+    func testLaterRefusalKeepsAnEarlierControlDoubt() async throws {
+        let registration = StreamRegistration(deviceID: "synthetic-mac-device", sessionID: "synthetic-learning-session",
+                                              streamID: "stream-doubt", previousStreamID: nil)
+        let incarnation = CaptureIncarnation(deviceID: registration.deviceID, sessionID: registration.sessionID,
+                                             streamID: registration.streamID)
+        let authority = try MacIngressAuthority(origin: Self.uploadOrigin, token: Self.uploadToken,
+                                                expiresAt: Date(timeIntervalSinceNow: 3600), userID: "synthetic-user",
+                                                incarnation: incarnation)
+        let stand = ServiceStandIn()
+        let state = Self.json(200, stand.stateObject("stream-doubt", (registration: try decodedObject(try DesktopJSON.encode(registration.json)),
+                                                                       state: "live", revision: 1)))
+        let stopBody = try DesktopJSON.encode(registration.stopBody(expectedRevision: 1))
+        let sourceBody = try XCTUnwrap(CaptureControl.sourceBody(sourceID: "src-doubt", streamID: "stream-doubt", timezone: "UTC"))
+        let snapshot = Self.json(200, [
+            "contract_version": "0.2.3", "user_id": "synthetic-user", "source_id": "src-doubt", "source_version": 1,
+            "type": "shared_display", "device_id": registration.deviceID, "session_id": registration.sessionID,
+            "stream_id": "stream-doubt", "project_id": NSNull(), "created_at": "2026-09-30T21:00:00Z", "source_timezone": "UTC",
+        ] as [String: Any])
+        func refusal(_ status: Int, _ code: String, _ version: String) -> MacHTTPReply {
+            Self.json(status, ["contract_version": version, "error": code, "retryable": code == "unavailable"] as [String: Any])
+        }
+        /// One scripted answer per attempt: nil is a lost answer.
+        typealias Script = [MacHTTPReply?]
+        func run(_ operation: String, _ script: Script, stopped: Bool = false) async -> (String, [SentRequest]) {
+            let host = StandInHost { _, index in
+                guard index < script.count, let reply = script[index] else { throw URLError(.networkConnectionLost) }
+                return reply
+            }
+            let control = CaptureControl(authority: authority, transport: host, attempts: 3, pause: 0)
+            let name: String
+            switch operation {
+            case "register":
+                name = Self.outcomeName(await control.register(registration, key: "stream-doubt.register", shouldStop: { stopped }))
+            case "stop":
+                name = Self.outcomeName(await control.stop(registration, body: stopBody, key: "stream-doubt.stop.1"))
+            case "source":
+                name = Self.outcomeName(await control.putSource(sourceBody, sourceID: "src-doubt", registration: registration,
+                                                                timezone: "UTC", createdAt: nil, shouldStop: { stopped }))
+            default:
+                name = Self.outcomeName(await control.read(registration))
+            }
+            return (name, host.sent)
+        }
+        let writes: [(operation: String, version: String, success: MacHTTPReply)] = [
+            ("register", "0.2.1", state), ("stop", "0.2.1", state), ("source", "0.2.4", snapshot),
+        ]
+        for write in writes {
+            let forbidden = refusal(403, "forbidden", write.version)
+            // An earlier attempt in doubt, then a typed refusal of its retry: still not known.
+            let doubts: [(String, Script)] = [
+                ("lost then 401", [nil, refusal(401, "unauthenticated", write.version)]),
+                ("503 then 403", [refusal(503, "unavailable", write.version), forbidden]),
+                ("malformed 200 then 403", [Self.json(200, ["unexpected": true]), forbidden]),
+                ("another URL then 403", [MacHTTPReply(status: write.success.status, body: write.success.body,
+                                                       url: URL(string: "http://127.0.0.1:1/elsewhere")), forbidden]),
+            ]
+            for (name, script) in doubts {
+                let (outcome, sent) = await run(write.operation, script)
+                XCTAssertEqual(outcome, "unknown", "\(write.operation): \(name)")
+                XCTAssertEqual(sent.count, 2, "\(write.operation): \(name)")
+                XCTAssertEqual(sent.at(0)?.body, sent.at(1)?.body, "the same bytes: \(write.operation)")
+                XCTAssertEqual(sent.at(0)?.headers, sent.at(1)?.headers, "the same headers: \(write.operation)")
+            }
+            // Controls: a first-attempt refusal is known not taken; an exactly corresponding answer
+            // settles an earlier doubt.
+            let (first, firstSent) = await run(write.operation, [forbidden])
+            XCTAssertEqual(first, "refused 403 forbidden", write.operation)
+            XCTAssertEqual(firstSent.count, 1)
+            let (settled, settledSent) = await run(write.operation, [nil, write.success])
+            XCTAssertEqual(settled, "ok", write.operation)
+            XCTAssertEqual(settledSent.count, 2)
+            let (lost, lostSent) = await run(write.operation, [nil, nil, nil])
+            XCTAssertEqual(lost, "unknown", write.operation)
+            XCTAssertEqual(lostSent.count, 3)
+        }
+        // Controls: stopped before the first attempt, nothing is sent.
+        for operation in ["register", "source"] {
+            let (unsent, sent) = await run(operation, [state], stopped: true)
+            XCTAssertEqual(unsent, "notSent", operation)
+            XCTAssertEqual(sent.count, 0, operation)
+        }
+        // Control: a read changes nothing, so a later refusal is its answer.
+        let (read, readSent) = await run("read", [nil, refusal(403, "forbidden", "0.2.1")])
+        XCTAssertEqual(read, "refused 403 forbidden")
+        XCTAssertEqual(readSent.count, 2)
+    }
+
+    static func outcomeName<Value>(_ outcome: ControlOutcome<Value>) -> String {
+        switch outcome {
+        case .ok: return "ok"
+        case .refused(let status, let code): return "refused \(status) \(code)"
+        case .unknown: return "unknown"
+        case .notSent: return "notSent"
+        }
+    }
+
+    func testLostAnswerThenRefusalStaysUnknownInTheLink() async throws {
+        let session = try writeMacSession(root: root.appending(path: "doubt-session", directoryHint: .isDirectory))
+        let forbidden: [String: Any] = ["contract_version": "0.2.1", "error": "forbidden", "retryable": false]
+
+        // The Stop commits, its answer is lost, and its retry and the read back are refused.
+        let service = ServiceStandIn()
+        let commits = EndLog()
+        service.override = { request, _ in
+            guard request.target.hasSuffix(":control") || (request.method == "GET" && !commits.all.isEmpty) else { return nil }
+            if request.method == "GET" { return service.reply(403, forbidden) }
+            guard commits.all.isEmpty else { return service.reply(403, forbidden) }
+            commits.add("committed")
+            _ = service.route(request)
+            return .some(nil)
+        }
+        let server = try LoopbackServer { service.respond($0, $1) }
+        defer { server.stop() }
+        let stub = try stubHost("doubt-host", origin: server.origin)
+        let directory = root.appending(path: "doubt-link", directoryHint: .isDirectory)
+        let link = stubLink(stub, directory)
+        let gate = LiveGate()
+        await link.begin(gate: gate, session: session) { _ in }
+        let stored = await until(20) { await link.currentStatus().stored == 7 }
+        XCTAssertTrue(stored)
+        gate.close("user_stop")
+        await link.stop()
+        let status = await link.currentStatus()
+        XCTAssertEqual(status.detail, "the server Stop is not confirmed")
+        var stream = try XCTUnwrap(try linkStreams(directory).first)
+        var stops = try XCTUnwrap(stream["stops"] as? [[String: Any]])
+        XCTAssertEqual(stops.count, 1)
+        XCTAssertEqual(stops.at(0)?["outcome"] as? String, "unknown", "never refused: the first attempt may have committed")
+        XCTAssertNil(stream["final"] as? String)
+        let controls = server.requests.filter { $0.target.hasSuffix(":control") }
+        XCTAssertEqual(controls.count, 2)
+        XCTAssertEqual(controls.at(0)?.body, controls.at(1)?.body)
+        XCTAssertEqual(controls.at(0)?.header("Idempotency-Key"), controls.at(1)?.header("Idempotency-Key"))
+        // Independent state evidence settles the stream at the next launch; no second command.
+        service.override = nil
+        await stubLink(stub, directory).reconcile()
+        stream = try XCTUnwrap(try linkStreams(directory).first)
+        stops = try XCTUnwrap(stream["stops"] as? [[String: Any]])
+        XCTAssertEqual(stream["final"] as? String, "stopped")
+        XCTAssertEqual(stops.count, 1)
+        XCTAssertEqual(stops.at(0)?["outcome"] as? String, "unknown", "the read settled the stream, not this command's outcome")
+        XCTAssertEqual(server.requests.filter { $0.target.hasSuffix(":control") }.count, 2)
+
+        // The registration commits, its answer is lost, and its retry is refused: shown as not
+        // known, never as "not registered"; the Stop then finds it registered and Stops it.
+        let registering = ServiceStandIn()
+        let registered = EndLog()
+        registering.override = { request, _ in
+            guard request.method == "POST", request.target == "/v2/process/streams" else { return nil }
+            guard registered.all.isEmpty else { return registering.reply(403, forbidden) }
+            registered.add("committed")
+            _ = registering.route(request)
+            return .some(nil)
+        }
+        let registerServer = try LoopbackServer { registering.respond($0, $1) }
+        defer { registerServer.stop() }
+        let registerStub = try stubHost("doubt-register-host", origin: registerServer.origin)
+        let registerDirectory = root.appending(path: "doubt-register-link", directoryHint: .isDirectory)
+        let registerLink = stubLink(registerStub, registerDirectory)
+        let registerGate = LiveGate()
+        await registerLink.begin(gate: registerGate, session: session) { _ in }
+        let shown = await until(20) { await registerLink.currentStatus().state == .notConnected }
+        XCTAssertTrue(shown)
+        let detail = await registerLink.currentStatus().detail
+        XCTAssertEqual(detail, "whether the stream was registered is not known; frames stay on this Mac")
+        XCTAssertFalse(registerServer.requests.contains { $0.target.hasPrefix("/v2/process/display-sources/") })
+        registerGate.close("user_stop")
+        await registerLink.stop()
+        let settled = try XCTUnwrap(try linkStreams(registerDirectory).first)
+        XCTAssertEqual(settled["registered"] as? Bool, true)
+        XCTAssertEqual(settled["final"] as? String, "stopped")
+    }
+
+    func testStopAfterDoubtRenewsTheBearerAndKeepsTheDoubt() async throws {
+        let session = try writeMacSession(root: root.appending(path: "renew-session", directoryHint: .isDirectory))
+        // `renewed`: how the renewed child's Stop is answered (nil lets the stand-in take it).
+        let variants: [(name: String, renewed: Int?, outcome: String, final: String?)] = [
+            ("taken", nil, "stopped", "stopped"), ("refused", 403, "unknown", nil),
+        ]
+        for variant in variants {
+            let service = ServiceStandIn()
+            let armed = Toggle()
+            let bearers = EndLog()
+            let drops = EndLog()
+            // The first bearer's Stop gets no answer (and is not taken); its retry is refused 401.
+            service.override = { request, _ in
+                let bearer = request.header("Authorization").first ?? ""
+                if bearers.all.isEmpty { bearers.add(bearer) }
+                guard armed.isOn, request.target.hasSuffix(":control") else { return nil }
+                if bearer == bearers.all.first {
+                    guard drops.all.isEmpty else { return service.typed(401, "unauthenticated", "0.2.1") }
+                    drops.add("dropped")
+                    return .some(nil)
+                }
+                return variant.renewed.map { service.typed($0, "forbidden", "0.2.1") }
+            }
+            let server = try LoopbackServer { service.respond($0, $1) }
+            defer { server.stop() }
+            let stub = try stubHost("renew-host-" + variant.name, origin: server.origin)
+            let directory = root.appending(path: "renew-link-" + variant.name, directoryHint: .isDirectory)
+            let link = stubLink(stub, directory)
+            let gate = LiveGate()
+            await link.begin(gate: gate, session: session) { _ in }
+            let stored = await until(20) { await link.currentStatus().stored == 7 }
+            XCTAssertTrue(stored, variant.name)
+            armed.isOn = true
+            gate.close("user_stop")
+            await link.stop()
+            // A new child and bearer without consent; the same key and bytes each time.
+            XCTAssertEqual(stub.records().count, 2, variant.name)
+            XCTAssertEqual(stub.records().last?["fresh_consent"] as? Bool, false, variant.name)
+            let controls = server.requests.filter { $0.target.hasSuffix(":control") }
+            XCTAssertEqual(controls.count, 3, variant.name)
+            XCTAssertEqual(Set(controls.map(\.body)).count, 1, variant.name)
+            XCTAssertEqual(Set(controls.compactMap { $0.header("Idempotency-Key").first }).count, 1, variant.name)
+            XCTAssertEqual(Set(controls.compactMap { $0.header("Authorization").first }).count, 2, variant.name)
+            let stream = try XCTUnwrap(try linkStreams(directory).first)
+            let stops = try XCTUnwrap(stream["stops"] as? [[String: Any]])
+            XCTAssertEqual(stops.count, 1, variant.name)
+            // A refusal of the resend does not make the first attempt known not taken.
+            XCTAssertEqual(stops.at(0)?["outcome"] as? String, variant.outcome, variant.name)
+            XCTAssertEqual(stream["final"] as? String, variant.final, variant.name)
+        }
+    }
+
+    func testSourceInDoubtThenRefusedEndsTheCaptureWithoutClaimingItWasNotRegistered() async throws {
+        let session = try writeMacSession(root: root.appending(path: "source-session", directoryHint: .isDirectory))
+        // The first PUT is in doubt (taken with an answer that is not believed, or answered 503);
+        // `refusal` is its retry's answer (nil: every PUT is taken and its answer lost).
+        let variants: [(name: String, commits: Bool, refusal: Int?)] = [
+            ("taken then 403", true, 403), ("503 then 403", false, 403), ("all lost", true, nil),
+        ]
+        for variant in variants {
+            let service = ServiceStandIn()
+            let puts = EndLog()
+            service.override = { request, _ in
+                guard request.method == "PUT", request.target.hasPrefix("/v2/process/display-sources/") else { return nil }
+                let first = puts.all.isEmpty
+                puts.add("put")
+                if first, !variant.commits {
+                    return service.reply(503, ["contract_version": "0.2.4", "error": "unavailable", "retryable": true])
+                }
+                if first, variant.refusal != nil {
+                    // Taken, with an answered 200 that does not correspond: no dropped connection,
+                    // so the doubt does not depend on how the transport treats one.
+                    _ = service.route(request)
+                    return service.reply(200, ["unexpected": true])
+                }
+                if variant.refusal == nil {
+                    _ = service.route(request)
+                    return .some(nil)
+                }
+                return service.typed(403, "forbidden", "0.2.4")
+            }
+            let server = try LoopbackServer { service.respond($0, $1) }
+            defer { server.stop() }
+            let name = variant.name.replacingOccurrences(of: " ", with: "-")
+            let stub = try stubHost("source-host-" + name, origin: server.origin)
+            let directory = root.appending(path: "source-link-" + name, directoryHint: .isDirectory)
+            let link = stubLink(stub, directory)
+            let gate = LiveGate()
+            let ended = EndLog()
+            await link.begin(gate: gate, session: session) { reason in
+                ended.add(reason)
+                gate.close(reason)
+                Task { await link.stop() }
+            }
+            if variant.refusal != nil {
+                // The permission is gone: this capture ends, and the earlier doubt is kept.
+                let lost = await until(30) { ended.all == ["server_permission_lost"] }
+                XCTAssertTrue(lost, variant.name)
+                await link.stop()
+                let status = await link.currentStatus()
+                XCTAssertEqual(status.state, .endedByService, variant.name)
+            } else {
+                let shown = await until(30) { await link.currentStatus().state == .notConnected }
+                XCTAssertTrue(shown, variant.name)
+                let detail = await link.currentStatus().detail
+                XCTAssertEqual(detail, "whether the display source was registered is not known; frames stay on this Mac")
+                XCTAssertTrue(gate.isOpen, variant.name)
+                XCTAssertEqual(ended.all, [], variant.name)
+                gate.close("user_stop")
+                await link.stop()
+            }
+            let notes = (try XCTUnwrap(try linkStreams(directory).first)["notes"] as? [String]) ?? []
+            XCTAssertTrue(notes.contains("whether the display source was registered is not known"), "\(variant.name): \(notes)")
+            XCTAssertFalse(server.requests.contains { $0.target.hasPrefix("/v2/process/originals/") }, variant.name)
+        }
+    }
+
+    func testServerEndInARegistrationReplayEndsTheCaptureDespiteARecordFault() async throws {
+        let service = ServiceStandIn()
+        let armed = Toggle()
+        let directory = root.appending(path: "replay-end-link", directoryHint: .isDirectory)
+        let path = directory.path(percentEncoded: false)
+        // After the child is lost, the registration replay answers withdrawn, and the record becomes
+        // unwritable as it does.
+        service.override = { request, _ in
+            guard armed.isOn, request.method == "POST", request.target == "/v2/process/streams" else { return nil }
+            let answer = service.route(request)
+            try? FileManager.default.setAttributes([.posixPermissions: 0o500], ofItemAtPath: path)
+            return answer
+        }
+        let server = try LoopbackServer { service.respond($0, $1) }
+        defer { server.stop() }
+        let stub = try stubHost("replay-end-host", origin: server.origin)
+        let session = try writeMacSession(root: root.appending(path: "replay-end-session", directoryHint: .isDirectory))
+        let link = stubLink(stub, directory)
+        let gate = LiveGate()
+        let ended = EndLog()
+        await link.begin(gate: gate, session: session) { reason in
+            ended.add(reason)
+            gate.close(reason)
+            Task { await link.stop() }
+        }
+        let stored = await until(20) { await link.currentStatus().stored == 7 }
+        XCTAssertTrue(stored)
+        service.setState(try linkStreamID(directory), "withdrawn")
+        armed.isOn = true
+        let before = server.requests.count
+        let pid = try XCTUnwrap(stub.lines("pids").first.flatMap { Int32($0) })
+        XCTAssertEqual(kill(pid, SIGKILL), 0)
+        // The believed withdrawal ends this capture although the record could not be written, and
+        // nothing more is requested.
+        let endedByService = await until(20) { ended.all == ["server_withdrawn"] }
+        XCTAssertTrue(endedByService, "\(ended.all)")
+        await link.stop()
+        try FileManager.default.setAttributes([.posixPermissions: 0o700], ofItemAtPath: path)
+        XCTAssertEqual(server.requests.dropFirst(before).map { "\($0.method) \($0.target)" }, ["POST /v2/process/streams"])
+        let status = await link.currentStatus()
+        XCTAssertEqual(status.state, .endedByService)
+    }
+
+    func testReconnectReplayActsOnABelievedServerEndOrLostPermission() async throws {
+        let session = try writeMacSession(root: root.appending(path: "replay-session", directoryHint: .isDirectory))
+        // After the child is lost, the registration replay is answered `replay`: the stream's
+        // withdrawn state (and the state read after it would get no believed answer), or a 403.
+        let variants: [(name: String, withdrawn: Bool, reason: String, final: String, controls: Int)] = [
+            ("withdrawn", true, "server_withdrawn", "withdrawn", 0), ("forbidden", false, "server_permission_lost", "stopped", 1),
+        ]
+        for variant in variants {
+            let service = ServiceStandIn()
+            let armed = Toggle()
+            service.override = { request, _ in
+                guard armed.isOn else { return nil }
+                if variant.withdrawn, request.method == "GET" {
+                    return service.reply(503, ["contract_version": "0.2.1", "error": "unavailable", "retryable": true])
+                }
+                if !variant.withdrawn, request.method == "POST", request.target == "/v2/process/streams" {
+                    return service.typed(403, "forbidden", "0.2.1")
+                }
+                return nil
+            }
+            let server = try LoopbackServer { service.respond($0, $1) }
+            defer { server.stop() }
+            let stub = try stubHost("replay-host-" + variant.name, origin: server.origin)
+            let directory = root.appending(path: "replay-link-" + variant.name, directoryHint: .isDirectory)
+            let link = stubLink(stub, directory)
+            let gate = LiveGate()
+            let ended = EndLog()
+            await link.begin(gate: gate, session: session) { reason in
+                ended.add(reason)
+                gate.close(reason)
+                Task { await link.stop() }
+            }
+            let stored = await until(20) { await link.currentStatus().stored == 7 }
+            XCTAssertTrue(stored, variant.name)
+            if variant.withdrawn { service.setState(try linkStreamID(directory), "withdrawn") }
+            armed.isOn = true
+            let before = server.requests.count
+            let pid = try XCTUnwrap(stub.lines("pids").first.flatMap { Int32($0) })
+            XCTAssertEqual(kill(pid, SIGKILL), 0, variant.name)
+            // The replay's believed answer ends this capture at once: no state read is needed.
+            let endedByService = await until(20) { ended.all == [variant.reason] }
+            XCTAssertTrue(endedByService, "\(variant.name): \(ended.all)")
+            let during = await link.currentStatus().detail ?? ""
+            XCTAssertFalse(during.contains("not registered"), "\(variant.name): \(during)")
+            await link.stop()
+            armed.isOn = false
+            let after = server.requests.dropFirst(before)
+            XCTAssertEqual(after.first.map { "\($0.method) \($0.target)" }, "POST /v2/process/streams", variant.name)
+            if variant.withdrawn {
+                XCTAssertEqual(after.count, 1, "no state read and no Stop after a believed withdrawal")
+            }
+            XCTAssertEqual(after.filter { $0.target.hasSuffix(":control") }.count, variant.controls, variant.name)
+            let status = await link.currentStatus()
+            XCTAssertEqual(status.state, .endedByService, variant.name)
+            XCTAssertEqual(try linkStreams(directory).first?["final"] as? String, variant.final, variant.name)
+        }
     }
 
     // MARK: - URLSession on a real loopback socket

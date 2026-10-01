@@ -1,0 +1,26 @@
+Test Suite 'All tests' started at 2026-09-30 18:38:52.286
+Test Suite 'bin.xctest' started at 2026-09-30 18:38:52.288
+Test Suite 'DesktopCaptureTests' started at 2026-09-30 18:38:52.288
+Test Case 'DesktopCaptureTests.testPreparesTheExactMacBatchWithImmutableInkReferences' started at 2026-09-30 18:38:52.288
+Test Case 'DesktopCaptureTests.testPreparesTheExactMacBatchWithImmutableInkReferences' passed (0.428 seconds)
+Test Case 'DesktopCaptureTests.testUploadsEveryOriginalThenTheExactBatch' started at 2026-09-30 18:38:52.716
+Test Case 'DesktopCaptureTests.testUploadsEveryOriginalThenTheExactBatch' passed (0.729 seconds)
+Test Case 'DesktopCaptureTests.testUnbelievedAnswersStayInDoubtAndResendTheSameBytes' started at 2026-09-30 18:38:53.444
+Test Case 'DesktopCaptureTests.testUnbelievedAnswersStayInDoubtAndResendTheSameBytes' passed (1.984 seconds)
+Test Case 'DesktopCaptureTests.testTypedRefusalsAndDependencies' started at 2026-09-30 18:38:55.428
+Test Case 'DesktopCaptureTests.testTypedRefusalsAndDependencies' passed (0.799 seconds)
+Test Case 'DesktopCaptureTests.testStopCancellationAndExpiryPreventNewSends' started at 2026-09-30 18:38:56.228
+Test Case 'DesktopCaptureTests.testStopCancellationAndExpiryPreventNewSends' passed (0.356 seconds)
+Test Case 'DesktopCaptureTests.testLocalRefusalsSendNothing' started at 2026-09-30 18:38:56.583
+Test Case 'DesktopCaptureTests.testLocalRefusalsSendNothing' passed (0.621 seconds)
+Test Case 'DesktopCaptureTests.testLoopbackTransportSendsExactHeadersAndNeverFollowsRedirects' started at 2026-09-30 18:38:57.204
+Test Case 'DesktopCaptureTests.testLoopbackTransportSendsExactHeadersAndNeverFollowsRedirects' passed (0.356 seconds)
+Test Case 'DesktopCaptureTests.testUTCTimestampsFollowTheReleasedRule' started at 2026-09-30 18:38:57.560
+Test Case 'DesktopCaptureTests.testUTCTimestampsFollowTheReleasedRule' passed (0.0 seconds)
+Test Suite 'DesktopCaptureTests' passed at 2026-09-30 18:38:57.560
+	 Executed 8 tests, with 0 failures (0 unexpected) in 5.272 (5.272) seconds
+Test Suite 'bin.xctest' passed at 2026-09-30 18:38:57.560
+	 Executed 8 tests, with 0 failures (0 unexpected) in 5.272 (5.272) seconds
+Test Suite 'All tests' passed at 2026-09-30 18:38:57.560
+	 Executed 8 tests, with 0 failures (0 unexpected) in 5.272 (5.272) seconds
+exit 0

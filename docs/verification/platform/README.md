@@ -525,3 +525,11 @@ interpreter harness, 14/15 new tests pass; the 307 case is a corelibs redirect l
 actual host child accepted the Swift startup record (`unavailable` without a database, and a
 controlled `invalid_startup`). The actual host with MemoryStore completed Start → 7 stored → Stop.
 There is no PostgreSQL, hosted macOS or real-Mac evidence.
+
+**Correction (2026-10-01 UTC).** The lead's review `b408f4f` held `f625b48` for three defects:
+requests after a record fault, a reopened Stop sent under a new key, and an earlier doubt turned
+into a known refusal. All three are corrected, with 8 new tests (78 declared; none run on macOS).
+On the Linux harness 22/23 link tests pass and the new tests fail on the `f625b48` sources. The
+lead's control probe passes unchanged (6/6), and the lead's link-probe scenarios no longer
+reproduce the two defects (3/3 with corrected expectations). Details are in the record's
+correction section.

@@ -1,0 +1,110 @@
+{
+  "cases" : 3,
+  "commit" : "corrected worktree on f625b480e591682be75dd6a7617c08eee4cf7bd6",
+  "results" : [
+    {
+      "bug_reproduced" : false,
+      "case" : "positive_control_registration_source_Stop",
+      "fresh_starts" : [
+        true
+      ],
+      "requests" : [
+        {
+          "body" : "{\"authorization_generation\":1,\"continuity\":{\"kind\":\"initial\"},\"contract_version\":\"0.2.1\",\"device_id\":\"probe-device\",\"membership_revision\":1,\"session_id\":\"probe-session\",\"stream_id\":\"stream-4f779bc5562929103c3d9ff8\"}",
+          "detail_before_send" : "",
+          "key" : "stream-4f779bc5562929103c3d9ff8.register",
+          "method" : "POST",
+          "path" : "\/v2\/process\/streams",
+          "status_before_send" : "connecting"
+        },
+        {
+          "body" : "",
+          "detail_before_send" : "",
+          "key" : "",
+          "method" : "GET",
+          "path" : "\/v2\/process\/streams\/stream-4f779bc5562929103c3d9ff8",
+          "status_before_send" : "connecting"
+        },
+        {
+          "body" : "{\"contract_version\":\"0.2.4\",\"project_id\":null,\"source_id\":\"src-5d241e0c448ba9ac1b032c08\",\"source_timezone\":\"America\/Los_Angeles\",\"stream_id\":\"stream-4f779bc5562929103c3d9ff8\"}",
+          "detail_before_send" : "",
+          "key" : "",
+          "method" : "PUT",
+          "path" : "\/v2\/process\/display-sources\/src-5d241e0c448ba9ac1b032c08",
+          "status_before_send" : "connecting"
+        },
+        {
+          "body" : "{\"action\":{\"kind\":\"stop\",\"pre_stop_sequence\":null},\"contract_version\":\"0.2.1\",\"device_id\":\"probe-device\",\"expected_revision\":1,\"session_id\":\"probe-session\",\"stream_id\":\"stream-4f779bc5562929103c3d9ff8\"}",
+          "detail_before_send" : "nothing new is sent",
+          "key" : "stream-4f779bc5562929103c3d9ff8.stop.1",
+          "method" : "POST",
+          "path" : "\/v2\/process\/streams\/stream-4f779bc5562929103c3d9ff8:control",
+          "status_before_send" : "stopping"
+        },
+        {
+          "body" : "",
+          "detail_before_send" : "nothing new is sent",
+          "key" : "",
+          "method" : "GET",
+          "path" : "\/v2\/process\/streams\/stream-4f779bc5562929103c3d9ff8",
+          "status_before_send" : "stopping"
+        }
+      ]
+    },
+    {
+      "bug_reproduced" : false,
+      "case" : "sticky_save_fault_requests_nothing_more",
+      "fresh_starts" : [
+        true
+      ],
+      "requests" : [
+        {
+          "body" : "{\"authorization_generation\":1,\"continuity\":{\"kind\":\"initial\"},\"contract_version\":\"0.2.1\",\"device_id\":\"probe-device\",\"membership_revision\":1,\"session_id\":\"probe-session\",\"stream_id\":\"stream-63b2158685f4832611c3d472\"}",
+          "detail_before_send" : "",
+          "key" : "stream-63b2158685f4832611c3d472.register",
+          "method" : "POST",
+          "path" : "\/v2\/process\/streams",
+          "status_before_send" : "connecting"
+        }
+      ]
+    },
+    {
+      "bug_reproduced" : false,
+      "case" : "unknown_Stop_reopen_reuses_key_same_revision_body",
+      "fresh_starts" : [
+        false
+      ],
+      "persisted_key" : "probe-stream.stop.1",
+      "requests" : [
+        {
+          "body" : "",
+          "detail_before_send" : "checking earlier streams",
+          "key" : "",
+          "method" : "GET",
+          "path" : "\/v2\/process\/streams\/probe-stream",
+          "status_before_send" : "reconciling"
+        },
+        {
+          "body" : "{\"action\":{\"kind\":\"stop\",\"pre_stop_sequence\":null},\"contract_version\":\"0.2.1\",\"device_id\":\"probe-device\",\"expected_revision\":1,\"session_id\":\"probe-session\",\"stream_id\":\"probe-stream\"}",
+          "detail_before_send" : "checking earlier streams",
+          "key" : "probe-stream.stop.1",
+          "method" : "POST",
+          "path" : "\/v2\/process\/streams\/probe-stream:control",
+          "status_before_send" : "reconciling"
+        },
+        {
+          "body" : "",
+          "detail_before_send" : "checking earlier streams",
+          "key" : "",
+          "method" : "GET",
+          "path" : "\/v2\/process\/streams\/probe-stream",
+          "status_before_send" : "reconciling"
+        }
+      ],
+      "same_body" : true,
+      "sent_key" : "probe-stream.stop.1"
+    }
+  ],
+  "scope" : "Linux Swift interpreter with pre-existing Apple stubs, actual candidate CaptureLink logic, fake launcher and in-memory transport; no child\/socket\/database\/GUI\/provider. Not macOS compile or native test evidence.",
+  "temp_directory" : "\/tmp\/lc-correction-probes\/link\/cases-D6BE465D-65BB-416D-BB34-0F58D55A917B"
+}

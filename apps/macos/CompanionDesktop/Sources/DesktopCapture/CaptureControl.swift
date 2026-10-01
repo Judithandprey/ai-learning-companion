@@ -5,7 +5,9 @@ import Foundation
 // corresponding 200 (a StreamState for exactly this registration and owner; a
 // DisplaySourceSnapshot for exactly this source and stream) or a closed typed error of the
 // route's own family whose code is released for its status. Everything else, and every lost
-// answer, is unknown: it may have taken effect. Retries resend the same bytes and key.
+// answer, is unknown: it may have taken effect. Retries resend the same bytes and key. Once an
+// attempt of a write may have taken effect, a later refusal of its retry does not make it known
+// not taken: only an exactly corresponding 200 settles it here, or a later read of the state.
 
 /// One stream incarnation as registered: exact identities, predecessor and pins.
 public struct StreamRegistration: Equatable, Sendable, Codable {
@@ -61,10 +63,12 @@ public struct StreamStateValue: Equatable, Sendable, Codable {
 /// How one control or source call settled.
 public enum ControlOutcome<Value: Sendable>: Sendable {
     case ok(Value)
-    /// A believed typed refusal: known not taken.
+    /// A believed typed refusal with no earlier attempt in doubt: known not taken.
     case refused(status: Int, code: String)
-    /// Not known whether it took effect.
-    case unknown(String)
+    /// Not known whether it took effect. `later` is a believed refusal of a retry that came after
+    /// an attempt in doubt: it answers that retry only, and may still call for a new bearer (401)
+    /// or mean the permission is gone (403, 404).
+    case unknown(String, later: (status: Int, code: String)? = nil)
     /// The caller stopped before any attempt was sent: known not taken.
     case notSent
 }
@@ -154,6 +158,9 @@ struct CaptureControl {
                                        shouldStop: @Sendable () -> Bool = { false },
                                        accept: (Data) -> Value?) async -> ControlOutcome<Value> {
         var reason = "no attempt was made"
+        // A read changes nothing, so its refusal is always its answer.
+        let write = request.httpMethod != "GET"
+        var inDoubt = false
         for attempt in 1...max(attempts, 1) {
             if attempt > 1, pause > 0 {
                 try? await Task.sleep(nanoseconds: UInt64(pause * Double(attempt - 1) * 1_000_000_000))
@@ -166,10 +173,12 @@ struct CaptureControl {
             do {
                 reply = try await transport.send(request, responseLimit: Self.replyLimit)
             } catch {
+                inDoubt = true
                 reason = "no answer (\(MacIngressUpload.errorName(error)))"
                 continue
             }
             if reply.url != nil, reply.url != request.url {
+                inDoubt = true
                 reason = "answered from another URL, which is not believed"
                 continue
             }
@@ -177,8 +186,14 @@ struct CaptureControl {
                 return .ok(value)
             }
             if reply.status != 200, let code = Self.typedError(reply, family: family), code != "unavailable" {
+                // An earlier attempt may have taken effect; this refusal answers only the retry.
+                if write, inDoubt {
+                    return .unknown("an earlier attempt was in doubt before this refusal (\(reply.status) \(code)); "
+                                    + "whether it took effect is not known", later: (status: reply.status, code: code))
+                }
                 return .refused(status: reply.status, code: code)
             }
+            inDoubt = true
             reason = MacIngressUpload.unbelieved("the request", status: reply.status, body: reply.body)
         }
         return .unknown(reason)

@@ -5,6 +5,12 @@ baseline is the verified transport `923217b`, normally merged into `team/ios` as
 lead's Windows parent review `ddcae90` (`handoff_3b8ff4be3c8321c7aa7493e59672155a`) was applied
 as lifecycle guidance within the same task.
 
+The first delivery was `f625b48`. The lead's review `b408f4f` held it for three defects
+(`handoff_2bedf7ee1ad4bca823a2de9f24046f36`). They are corrected in the commit that carries this
+text; see [Correction after the lead's review](#correction-after-the-leads-review-b408f4f). The
+flow table below describes the corrected behaviour. "Checks and results" and "Review" record the
+first delivery, whose logs are kept unchanged; the correction section has the current counts.
+
 Read for this task:
 - `services/api/desktop_local.py` and its README section;
 - the released control 0.2.1, display source 0.2.4 and macOS ingress 0.2.12 routes, including the
@@ -34,12 +40,12 @@ foreground host. Local capture, ink, save and reopen never wait for the link or 
 | Lineage | The server keeps one lineage head per user, device, session and producer, and a new stream must name that closed head. Each stream records its user and producer. The predecessor is the last **registered** stream of the same lineage in the journal. At each Start, the lineage's unsettled streams are first settled, as at launch, by one settlement at a time; a Stop meanwhile waits for it and then shows the settled state. If one still cannot be settled, the Start is **not linked** ("an earlier stream of this capture could not be settled"), and nothing is journaled or registered. |
 | Start | The user's explicit Start is the only `fresh_consent=true`. The link then:<br>1. journals a new stream and source ID before launching;<br>2. on `pending` READY, POSTs the registration under `<stream>.register`. `registrationSent` is journaled first. The capture gate is checked before **every** attempt, so no attempt goes out after Stop. A stop before the first attempt resets `registrationSent`;<br>3. GETs the stream, which must be exactly this identity, live, at revision 1. Another believed live revision is "not connected", not a service end;<br>4. PUTs the display source, which must answer exactly its descriptor. The gate is checked before every attempt here too;<br>5. only then sends. |
 | Sending | Kept frames are ready when their composition outcome is recorded, or as soon as they are kept if the session does not compose ink. They go in batches of up to 20. `MacIngressBatch` builds each batch with content-addressed IDs within the source. Each batch's exact bytes are written to their own file and its key journaled before the first send. `MacIngressUpload` then PUTs the originals and POSTs the batch. The link resends a batch in doubt at most twice (at most 3 upload calls), with the same bytes and key, only while live. Each upload call makes up to 3 HTTP attempts per request, so the same batch can reach the service up to 9 times. A batch refused only for an expired bearer or a 401 counts as **not sent**; it goes again with the same bytes after a new bearer. A later refusal never makes a doubt known. A frame that cannot be described is kept locally and counted as refused. While nothing is ready, planning runs at most once a second. |
-| Stop | The capture gate closes first, so nothing new is sent. The connection or reconnection and an in-flight batch each get 5 s, then are cancelled and stay **not known**. The unknown-boundary Stop is journaled before dispatch and sent with the same key and bytes on retry. A believed `stopped` answer settles the stream; the state is read back either way. A stale revision gets one new Stop at the read revision. Then the child gets EOF. After Stop the host refuses uploads, so unsent frames stay on this Mac, counted "not sent". |
+| Stop | The capture gate closes first, so nothing new is sent. The connection or reconnection and an in-flight batch each get 5 s, then are cancelled and stay **not known**. The unknown-boundary Stop is journaled before dispatch and sent with the same key and bytes on retry. A Stop already recorded for exactly this stream and read revision is the same command: its key and exact bytes are sent again, also after a restart, and only if its stored bytes equal this stream's Stop at that revision. A new command is made only when there is none for the read revision. A believed `stopped` answer settles the stream; the state is read back either way. A stale revision gets one new Stop at the read revision. A refusal that follows an attempt in doubt leaves the Stop **not known**; a 401 then still gets a new child and bearer for the same key and bytes. Then the child gets EOF. After Stop the host refuses uploads, so unsent frames stay on this Mac, counted "not sent". |
 | Stop before a registration | If no child ever got the record, or the registration was never POSTed, the stream is `abandoned`. It was never registered, and it is never registered after Stop. No later launch starts a child for it. |
-| Server end | A believed `stopped` or `withdrawn` state after a 409 `capture_stopped`, 403 or 404 ends this capture through the app's normal Stop path (`server_stopped`/`server_withdrawn`). So does a 403/404 on the state or source (`server_permission_lost`). The app acts on it only while that same capture's gate is open, never on a later capture. No Stop is sent for a withdrawn stream. |
+| Server end | A believed `stopped` or `withdrawn` state after a 409 `capture_stopped`, 403 or 404 ends this capture through the app's normal Stop path (`server_stopped`/`server_withdrawn`). So does a believed non-live state in a registration replay's answer, and a 403/404 on the state, the source or a replay of a registration already known committed (`server_permission_lost`). The app acts on it only while that same capture's gate is open, never on a later capture. No Stop is sent for a withdrawn stream. |
 | Child loss / renewal | A **tracked** reconnection, which Stop waits for, starts a new child with `fresh_consent=false`. It happens at most 2 times per Start and only while the capture is current and open. The registration is replayed under its own key, followed by the same GET and source checks, before sending resumes. A child that exits before its stream went live is replaced the same way. It never registers anew or revives a stopped stream. A reconnection never leaves two children, and one that finds Stop begun hands its child to the Stop. Child EOF or exit is not treated as a server or physical Stop. |
-| Restart | Each launch reconciles every unsettled stream once, with `fresh_consent=false` and the stream's own recorded identities. A `consumed` stream is read and, if still live, Stopped (journaled first) and read again. A `pending` or never-POSTed stream is `abandoned` and never registered. Nothing is resent, no source is created, and no capture starts. A new stream needs a new explicit Start. |
-| Link record | `CaptureLink/journal.json` (directory `700`, file `600`) holds identities, keys, each batch body's relative path and SHA-256, Stop bodies and outcomes, but no bearer, DSN or pixels. The exact batch bytes are in one file per batch, `CaptureLink/<stream-id>/<batch-key>.json` (`600`). Every file is written completely and flushed (`F_FULLFSYNC` on Darwin) before an atomic rename, and the directory is flushed after it. A failed, short or stalled write keeps the old file. A write failure is sticky: nothing more is sent, no Stop goes out unwritten, and the counts so far stay shown. A batch that was never written shows as not sent. A record that does not decode, or whose consumed fields do not have the form this link writes, is left byte for byte; no host, grant or Stop uses it. |
+| Restart | Each launch reconciles every unsettled stream once, with `fresh_consent=false` and the stream's own recorded identities. A `consumed` stream is read and, if still live, Stopped (journaled first) and read again. A `pending` or never-POSTed stream is `abandoned` and never registered. No batch or registration is resent; a Stop already recorded for the read revision is sent again under its own key and bytes. No source is created, and no capture starts. A new stream needs a new explicit Start. |
+| Link record | `CaptureLink/journal.json` (directory `700`, file `600`) holds identities, keys, each batch body's relative path and SHA-256, Stop bodies and outcomes, but no bearer, DSN or pixels. The exact batch bytes are in one file per batch, `CaptureLink/<stream-id>/<batch-key>.json` (`600`). Every file is written completely and flushed (`F_FULLFSYNC` on Darwin) before an atomic rename, and the directory is flushed after it. A failed, short or stalled write keeps the old file. A write failure is sticky: no child is started and nothing more is requested or sent in this run, this stream's own child is ended, no Stop goes out unwritten, and the counts so far stay shown. Local capture is not ended by it; a believed server stop or withdrawal still is. A batch that was never written shows as not sent. A record that does not decode, or whose consumed fields do not have the form this link writes, is left byte for byte; no host, grant or Stop uses it. |
 | Quit | Capture and ink end first, and the link's Stop starts at once, even if Quit is then held for unsaved ink. Quit waits once, bounded to 10 s, for that Stop. A second Quit meanwhile is refused and does not skip the first. Whatever does not finish is reconciled at the next launch. |
 | UI | A "Capture storage (development)" section and menu line show the state (not set up, unavailable, connecting, storing, not connected, stopping, stopped, ended by the service). They also show counts (stored, not known, refused, not sent, earlier streams not settled) and a fixed-word detail, plus: "a stored frame is not seen by any AI. AI: not connected." The ASK selection message now says "it is not sent to any AI" instead of "nothing is sent". |
 
@@ -49,7 +55,7 @@ foreground host. Local capture, ink, save and reopen never wait for the link or 
 | --- | --- |
 | WIN-HOST-01: EPIPE | The write is non-blocking and bounded, and EPIPE is an error (`F_SETNOSIGPIPE`). The child is ended and reaped: EOF, SIGTERM, then SIGKILL of that pid only. Tested with a child that closes its stdin and a 300 KB record. |
 | WIN-HOST-02: failed spawn labelled delivered | `Process.run` failure gives `delivered: false`. The stream is then abandoned, and no later launch asks a child about it. Tested at both launcher and link level. |
-| C1: durable-record validation | The record is strictly decoded, then every consumed field is validated, including user and producer. Invalid bytes are preserved, and no host, grant or Stop is used. A legitimate unsettled record with no `final` is still reconciled. Tested with 7 damages plus the legitimate control. |
+| C1: durable-record validation | The record is strictly decoded, then every consumed field is validated, including user and producer. Invalid bytes are preserved, and no host, grant or Stop is used. A legitimate unsettled record with no `final` is still reconciled. Tested with 8 damages (7 at `f625b48`, plus a Stop key of another stream) and the legitimate control. |
 | C2: short write before rename | A complete write loop, then fsync and close, then rename. A short or zero-progress write removes the temporary file and keeps the old one. Tested with an injected 23-byte short write and a read-only directory: no Stop is dispatched unwritten. |
 | APP-Q1: repeated Quit | One pending Quit; a repeated Quit is refused until it settles (source only). |
 | APP-U1: fault hides outcomes | A fault publishes "not connected" with the counts kept. The fault reason is followed by "the server Stop is not confirmed", and the UI keeps "AI: not connected". Tested. |
@@ -161,13 +167,101 @@ is now added. It found 11 more low findings, all verified and all fixed:
 - **Wording.** HTTP attempts per upload are now stated.
 - **Evidence.** The retained evidence is refreshed from the final sources.
 
+## Correction after the lead's review (`b408f4f`)
+
+The lead held `f625b48` for three defects (`docs/verification/lead/macos-parent-review/` at
+`b408f4f`). All three are corrected in `CaptureLink.swift` and `CaptureControl.swift`, with no
+wire, dependency, shared-file or app-target change.
+
+| Finding | Correction |
+| --- | --- |
+| **MAC-PARENT-C1.** After a registration answered 200, a journal-write failure showed "nothing more is sent", but the GET and the display-source PUT still followed. | Every step of the connection is journaled before the next request, and a failed write ends the connection there:<br>- no child is launched and no request is made after the fault, including on reconnect and in the Stop's read back;<br>- this stream's own child gets EOF;<br>- local capture, its originals and the earlier outcomes are untouched, and the fault alone never ends capture;<br>- a believed server stop or withdrawal still ends the capture, also when it arrives in the answer whose write failed, and without waiting for a further read;<br>- the record on disk still says the registration was sent, so the next launch reads and Stops the stream. |
+| **MAC-PARENT-C2.** Reopening a recorded unknown `.stop.1` at live revision 1 sent the same body as `.stop.2`. | The recorded Stop is reused only when its stored bytes are exactly this stream's Stop at the read revision; its key and bytes are then sent again. A new command (next key) is made only when there is none for that revision: none yet, a changed revision, or stored bytes that are not this stream's command, which are never sent and stay as they are. A reused entry counts `replays`, and its earlier outcome and answer go to the stream's notes. A recorded known refusal is marked in flight (`written`) before it is sent again. Journal validation now requires each Stop key to be `<stream>.stop.<n>`. |
+| **MAC-CONTROL-01.** A lost, 503 or malformed reply followed by a 401/403 on the retry was returned as known refused. | For the three writes (registration, display source, Stop), once an attempt may have taken effect, a later typed refusal returns **unknown** and carries that refusal. Only an exactly corresponding 200 settles it in the call. A first-attempt refusal is still refused, and a stop before the first send is still not sent. A read (GET) changes nothing, so its refusal stays its answer. In the link:<br>- the registration shows "whether the stream was registered is not known";<br>- the display source shows "whether the display source was registered is not known"; a carried 403/404 still ends the capture as lost permission;<br>- a replay of a registration already known committed is never described as "not registered": a 403/404, also a carried one, ends the capture as lost permission;<br>- the Stop is journaled `unknown`, also when a recorded Stop is sent again after a restart; a carried 401 still renews the bearer and resends the same key and bytes. |
+
+**Tests.** `CaptureLinkTests.swift` now has **23** XCTests (8 new), for **78** declared tests in
+8 files. The new ones:
+1. `testRecordFaultFencesEveryLaterRequest`: the record becomes unwritable as the registration, or
+   the state read, is answered. Nothing follows, the child gets EOF, the gate stays open, no Stop
+   goes out unwritten, and the next launch settles the stream.
+2. `testReopenedStopReusesItsRecordedCommand`:
+   - the same revision reuses key and bytes;
+   - controls: a changed revision, foreign stored bytes, and a `written` entry;
+   - a recorded refusal that is then taken;
+   - a recorded command refused at once after `unknown`, `written` and `refused`;
+   - a recorded refusal sent again whose answer is never recorded.
+3. `testLaterRefusalKeepsAnEarlierControlDoubt`: for registration, Stop and source, each of lost
+   then 401, 503 then 403, malformed 200 then 403 and another URL then 403 is unknown, with
+   identical retry bytes and headers. Controls: first-attempt 403, lost then exact success, all
+   lost, stopped before sending, and a read.
+4. `testLostAnswerThenRefusalStaysUnknownInTheLink`: a committed Stop and a committed registration
+   whose answers are lost and whose retries are refused.
+5. `testStopAfterDoubtRenewsTheBearerAndKeepsTheDoubt`: lost then 401 renews, with the same key
+   and bytes through a second child; a refusal of that resend stays unknown.
+6. `testSourceInDoubtThenRefusedEndsTheCaptureWithoutClaimingItWasNotRegistered`. The doubt is a
+   taken PUT answered with a 200 that does not correspond, or a 503; only the "all lost" variant
+   drops connections.
+7. `testServerEndInARegistrationReplayEndsTheCaptureDespiteARecordFault`.
+8. `testReconnectReplayActsOnABelievedServerEndOrLostPermission`: after the child is lost, a
+   replay answered withdrawn ends the capture with no further request, and a replay answered 403
+   ends it as lost permission.
+
+The tests in this file no longer index arrays directly after a count assertion, so a short array
+is a failed assertion and not a trap that would end the whole run.
+
+The damaged-record test has one more case (a Stop key of another stream). The test stand-in's
+Stop now follows the released `command`: a committed key with the same bytes answers the current
+state, and another revision is 409 `stale_revision`.
+
+**Results (Linux reviewers' harness; none is macOS).** Logs are in
+[`macos-app-parent-link/correction/`](macos-app-parent-link/correction/) with `SHA256SUMS`.
+
+| Check | Result |
+| --- | --- |
+| Type-check, module with Darwin stubs and the test target | 0 errors, no warning in the changed files, no expression over 100 ms ([log](macos-app-parent-link/correction/linux-typecheck.txt)). |
+| Link tests | **22/23 pass** ([log](macos-app-parent-link/correction/linux-link-tests.txt)). The one failure is still the corelibs redirect limitation. |
+| Upload tests / whole suite | 8/8 and **74/78** ([log](macos-app-parent-link/correction/linux-all-tests.txt)); the other 3 failures are the known stub artefacts. |
+| The 8 new tests and the damaged-record test on the `f625b48` sources | All 9 fail ([log](macos-app-parent-link/correction/baseline-f625b48-new-tests.txt)). |
+| Mutations of the corrected source | 13 mutations, each listed with its file, line and before/after ([log](macos-app-parent-link/correction/mutations.txt)). 11 are caught. The two not caught alone are the two fences after a record fault: the fault check in the shared `usable` predicate, and the save guard after the registration. Each leaves the other in place. Removing both restores the `f625b48` behaviour and is caught (M13). |
+| The lead's control probe (`prepare.py`, with only its paths and its `candidate` label substituted) on the corrected source | 6/6 pass: the three reproductions are now `unknown`, and the three controls are unchanged ([output](macos-app-parent-link/correction/lead-control-probe.json), [diff](macos-app-parent-link/correction/lead-control-probe-prepare.diff)). |
+| The lead's link probe scenarios (fake launcher, in-memory transport), with corrected expectations | 3/3: the positive control is unchanged; after the fault only the registration POST is sent and the gate stays open; the reopened Stop goes under `probe-stream.stop.1` with the same body ([output](macos-app-parent-link/correction/lead-link-probe-results.json), [probe](macos-app-parent-link/correction/lead-link-probe-main.swift), [diff](macos-app-parent-link/correction/lead-link-probe-main.diff)). |
+| Actual `desktop_local` probes | Rerun and unchanged: `unavailable` without a database, `invalid_startup` for the control, and Start → 7 stored → Stop over MemoryStore ([log](macos-app-parent-link/correction/linux-host-probes.txt)). |
+| macOS build/test, real PostgreSQL, real Mac | **NOT_RUN / none.** |
+
+**Review.** Workflow `wf_ec955dc8-510` reviewed the correction in three dimensions with
+adversarial verification. It raised 8 findings, all confirmed and all fixed:
+- a server end carried in a registration replay whose write failed did not end the capture;
+- a recorded refusal sent again stayed "known not taken" while in flight;
+- a reused entry kept the earlier answer's status and code;
+- a 401 after a doubt no longer renewed the bearer for the Stop;
+- a 403/404 after a doubt on the display source no longer ended the capture, and was worded as
+  "not registered";
+- two test gaps: the cross-restart doubt, and the other-URL doubt.
+
+Recheck `wf_28312dc3-753` confirmed all 8 fixes and raised 7 more low or medium findings, all
+fixed:
+- a believed non-live registration replay ended the capture only when its write failed;
+- a 403/404 for a replay of a committed registration was shown as "not registered";
+- a test depended on a dropped PUT connection, which URLSession may replay on Darwin;
+- tests indexed arrays after non-fatal count assertions;
+- two stale statements in this record, an overstated index sentence, and mutations that were
+  not described.
+
 ## Retained gaps and next action
 
-- **Lead:** run the hosted macOS build/test on this exact commit. Swift may differ on Darwin: the
-  socket redirect, `F_SETNOSIGPIPE`, and `Process` pipe ends and exit notification. Fix failures
-  first.
+- **Lead:** recheck the three findings on the correction commit, then run the hosted macOS
+  build/test on it. Swift may differ on Darwin: the socket redirect, `F_SETNOSIGPIPE`, and
+  `Process` pipe ends and exit notification. Fix failures first.
 - **Not verified on a Mac:** screen permission, live UI, Start/Stop/Quit timing, ATS, the real
   PostgreSQL host and its lineage refusals, and sleep/logout. The app target is uncompiled.
+- **After a record fault** the server stream stays live until the record is writable again and
+  the app is relaunched: no Stop is sent without a written witness.
+- **Unverified on Darwin:** URLSession may itself replay a GET or PUT whose connection dropped
+  before any response. That would hide the first attempt of the display-source PUT or an original
+  PUT from this code, so a refusal of the replay would look like a first-attempt refusal. Linux
+  corelibs does not do this; the hosted run cannot show it either without a dropped connection.
+- **Revocation before a reconnect** usually surfaces as the host's `unavailable` at startup: the
+  link then shows "not connected" and capture is not ended. Only a believed answer ends it.
 - **Unchanged limits:** there is no AI and no enrollment. Native gaps are not sent. Server-side
   pins are fixed at 1/1. A stream whose registration may exist but whose state cannot be read is
   shown as an earlier unsettled stream. It is retried at each launch and at each Start of its

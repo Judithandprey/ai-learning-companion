@@ -24,6 +24,9 @@ import Foundation
 // - App restart: every unsettled stream is reconciled with a fresh_consent=false child under its
 //   own recorded identities — read, and Stopped if still live. Nothing is resent and capture never
 //   restarts.
+// - A record that cannot be written is a sticky fault: no child is started and nothing more is
+//   requested or sent in this run, this stream's own child is ended, and the next launch
+//   reconciles. Local capture and its originals go on unchanged.
 // The journal holds no token, connection string or pixels. Nothing retained is changed.
 
 /// What the link shows. Counts are kept frames (records); details are fixed words.
@@ -110,7 +113,13 @@ extension LinkStream {
             guard jobStates.contains(job.status), DesktopIngress.isIdentifier(job.key), job.sends >= 0,
                   job.callbacks.allSatisfy({ $0 >= 0 }) else { return "a malformed batch" }
         }
-        guard stops.allSatisfy({ stopOutcomes.contains($0.outcome) && DesktopIngress.isIdentifier($0.key) }) else {
+        let stopPrefix = registration.streamID + ".stop."
+        guard stops.allSatisfy({ stop in
+            let number = stop.key.dropFirst(stopPrefix.count)
+            return stopOutcomes.contains(stop.outcome) && DesktopIngress.isIdentifier(stop.key)
+                && stop.key.hasPrefix(stopPrefix) && !number.isEmpty && number.allSatisfy { ("0"..."9").contains($0) }
+                && (stop.replays ?? 0) >= 0
+        }) else {
             return "a malformed Stop"
         }
         return nil
@@ -169,11 +178,17 @@ struct LinkJob: Codable, Equatable {
 
 struct LinkStop: Codable, Equatable {
     var key: String
+    /// The exact command bytes sent under `key`.
     var body: String
-    /// written, stopped, refused or unknown.
+    /// written (journaled; whether it was sent is not known after a restart), stopped, refused
+    /// (known not taken) or unknown (it may have taken effect).
     var outcome: String
+    /// The believed refusal that answered the latest send, if one did (for `unknown`: of a retry
+    /// after an attempt in doubt). Answers of earlier sends are in the stream's notes.
     var httpStatus: Int?
     var code: String?
+    /// How often a later Stop of the same stream and revision sent this command again.
+    var replays: Int?
 }
 
 public actor CaptureLink {
@@ -466,7 +481,7 @@ public actor CaptureLink {
         let connecting = Task {
             _ = await self.connect(a, config: config, fresh: true)
             // A child that exited before the stream went live was not acted on: replaced now.
-            if self.current(a), a.host?.hasExited == true { await self.reconnect(a) }
+            if self.usable(a), a.host?.hasExited == true { await self.reconnect(a) }
         }
         a.connecting = connecting
         await connecting.value
@@ -477,16 +492,38 @@ public actor CaptureLink {
         a.gate.isOpen && a.stopping == nil && active === a
     }
 
-    /// Shows a connection problem only for the current capture.
+    /// Whether anything may still be started, requested or sent for `a`: it is current, and the
+    /// record can still be written.
+    private func usable(_ a: Active) -> Bool {
+        fault == nil && current(a)
+    }
+
+    /// Shows a connection problem only for the current capture (a record fault stays shown).
     private func notConnected(_ a: Active, _ detail: String) {
-        if current(a) { publish(.notConnected, detail: detail + "; frames stay on this Mac") }
+        if usable(a) { publish(.notConnected, detail: detail + "; frames stay on this Mac") }
+    }
+
+    /// After a record fault this stream's own child is ended: nothing more goes through it. Local
+    /// capture goes on, and ending the child is not a server Stop.
+    private func endHostAfterFault(_ a: Active) async {
+        guard fault != nil, let host = a.host else { return }
+        a.live = false
+        a.host = nil
+        _ = await host.end()
     }
 
     /// Launches a child for this stream, registers (fresh only, never after Stop), reads the state,
-    /// registers the display source, and opens sending. True when live.
+    /// registers the display source, and opens sending. True when live. Every step is journaled
+    /// before the next request: a record that cannot be written ends the connection there.
     private func connect(_ a: Active, config: CaptureHostConfig, fresh: Bool) async -> Bool {
+        let live = await establish(a, config: config, fresh: fresh)
+        await endHostAfterFault(a)
+        return live && fault == nil
+    }
+
+    private func establish(_ a: Active, config: CaptureHostConfig, fresh: Bool) async -> Bool {
         let index = a.index
-        guard current(a) else { return false }
+        guard usable(a) else { return false }
         let host: any CaptureHostHandle
         let ready: HostReady
         let authority: MacIngressAuthority
@@ -516,20 +553,28 @@ public actor CaptureLink {
             }
         } else {
             journal.streams[index].grant = "consumed"
-            _ = save()
+            guard save() else { return false }
         }
-        guard current(a) else { return false }
+        guard usable(a) else { return false }
         if !journal.streams[index].registered {
             journal.streams[index].registrationSent = true
             guard save() else { return false }
         }
         // A consumed stream's registration replay under its key returns the current state.
         let registration = journal.streams[index].registration
+        // The registration is already known committed: this request only replays it.
+        let replay = journal.streams[index].registered || journal.streams[index].grant == "consumed"
         let gate = a.gate
         switch await control.register(registration, key: journal.streams[index].registrationKey,
                                       shouldStop: { !gate.isOpen }) {
         case .ok(let state):
-            registered(index, state)
+            let saved = registered(index, state)
+            guard state.state == "live" else {
+                // A believed server end still ends this capture, whatever the record.
+                serviceEnded(a, state: state.state)
+                return false
+            }
+            guard saved else { return false }
         case .notSent:
             // Stopped before it was sent: known not registered.
             if !journal.streams[index].registered {
@@ -537,10 +582,29 @@ public actor CaptureLink {
                 _ = save()
             }
             return false
+        case .refused(let status, let code) where replay:
+            note(index, "registration replay refused (\(status) \(code))")
+            _ = save()
+            // The registered stream is no longer permitted, as for its state and source.
+            if status == 403 || status == 404 {
+                authorityLost(a)
+            } else {
+                notConnected(a, "the registered stream could not be confirmed (\(code))")
+            }
+            return false
         case .refused(let status, let code):
             note(index, "registration refused (\(status) \(code))")
             _ = save()
             notConnected(a, "the stream was not registered (\(code))")
+            return false
+        case .unknown(_, let later) where replay:
+            note(index, "the registration replay was not answered in a believed way")
+            _ = save()
+            if later?.status == 403 || later?.status == 404 {
+                authorityLost(a)
+            } else {
+                notConnected(a, "the registered stream could not be confirmed")
+            }
             return false
         case .unknown:
             note(index, "whether the registration committed is not known")
@@ -548,15 +612,17 @@ public actor CaptureLink {
             notConnected(a, "whether the stream was registered is not known")
             return false
         }
-        guard current(a) else { return false }
+        guard usable(a) else { return false }
         switch await control.read(registration) {
         case .ok(let state):
             journal.streams[index].state = state
-            _ = save()
+            let saved = save()
             guard state.state == "live" else {
+                // A believed server end still ends this capture, whatever the record.
                 serviceEnded(a, state: state.state)
                 return false
             }
+            guard saved else { return false }
             guard state.revision == 1 else {
                 notConnected(a, "the stream's server revision is not the registered one")
                 return false
@@ -568,7 +634,7 @@ public actor CaptureLink {
             notConnected(a, "the stream state could not be read")
             return false
         }
-        guard current(a) else { return false }
+        guard usable(a) else { return false }
         let stream = journal.streams[index]
         guard let body = CaptureControl.sourceBody(sourceID: stream.sourceID, streamID: registration.streamID,
                                                    timezone: stream.sourceTimezone) else { return false }
@@ -580,24 +646,36 @@ public actor CaptureLink {
         case .refused(let status, _) where status == 403 || status == 404:
             authorityLost(a)
             return false
+        case .unknown(_, let later) where later?.status == 403 || later?.status == 404:
+            // Whether the earlier attempt registered it stays not known; the permission is gone.
+            note(index, "whether the display source was registered is not known")
+            authorityLost(a)
+            return false
         case .notSent:
             return false
-        case .refused, .unknown:
+        case .refused:
             notConnected(a, "the display source was not registered")
             return false
+        case .unknown:
+            note(index, "whether the display source was registered is not known")
+            _ = save()
+            notConnected(a, "whether the display source was registered is not known")
+            return false
         }
-        guard current(a) else { return false }
+        guard usable(a) else { return false }
         a.live = true
         publish(.storing, detail: nil)
         kick()
         return true
     }
 
-    private func registered(_ index: Int, _ state: StreamStateValue) {
+    /// Records a believed registration. False when the record could not be written: nothing more
+    /// is requested for the stream in this run.
+    private func registered(_ index: Int, _ state: StreamStateValue) -> Bool {
         journal.streams[index].registered = true
         journal.streams[index].grant = "consumed"
         journal.streams[index].state = state
-        _ = save()
+        return save()
     }
 
     private enum Launched {
@@ -608,6 +686,8 @@ public actor CaptureLink {
 
     /// One child for this stream's registration and recorded identities, with a new random bearer.
     private func launchHost(_ config: CaptureHostConfig, index: Int, fresh: Bool) async -> Launched {
+        // No child is started once the record cannot be written.
+        if let fault { return .failure(fault) }
         let dsn: String
         switch config.readDSN() {
         case .success(let text):
@@ -631,7 +711,11 @@ public actor CaptureLink {
         switch result {
         case .success(let (host, ready)):
             journal.streams[index].delivered = true
-            _ = save()
+            guard save() else {
+                // Not recorded: the child is not used, and it is ended.
+                _ = await host.end()
+                return .failure(fault ?? "the capture link record could not be written")
+            }
             let incarnation = CaptureIncarnation(deviceID: stream.registration.deviceID, sessionID: stream.registration.sessionID,
                                                  streamID: stream.registration.streamID)
             guard let authority = try? MacIngressAuthority(origin: ready.origin, token: token, expiresAt: expires,
@@ -683,7 +767,7 @@ public actor CaptureLink {
     }
 
     private func kick() {
-        guard let a = active, a.live, current(a), fault == nil else { return }
+        guard let a = active, a.live, usable(a) else { return }
         if a.runner != nil {
             a.again = true
             return
@@ -701,7 +785,8 @@ public actor CaptureLink {
             await runOnce(a)
             let wait = idleWait(a)
             if a.again, wait > 0 { try? await Task.sleep(nanoseconds: UInt64(wait * 1_000_000_000)) }
-        } while a.again && a.live && current(a) && !Task.isCancelled
+        } while a.again && a.live && usable(a) && !Task.isCancelled
+        await endHostAfterFault(a)
         a.runner = nil
     }
 
@@ -711,7 +796,7 @@ public actor CaptureLink {
 
     private func runOnce(_ a: Active) async {
         for _ in 0..<Self.batchesPerRun {
-            guard a.live, current(a), fault == nil, !Task.isCancelled, let authority = a.authority else { return }
+            guard a.live, usable(a), !Task.isCancelled, let authority = a.authority else { return }
             if authority.expiresAt.timeIntervalSince(clock()) < Self.renewBefore {
                 await reconnect(a)
                 continue
@@ -889,6 +974,8 @@ public actor CaptureLink {
     }
 
     private func refusedBy(_ a: Active, stage: MacIngressStage, status: Int?, code: String?, expired: Bool) async {
+        // Nothing more is requested once the record cannot be written.
+        guard usable(a) else { return }
         switch (status, code) {
         case (nil, _) where expired, (401?, _):
             // A new child and bearer without consent.
@@ -922,7 +1009,7 @@ public actor CaptureLink {
 
     /// The live stream's child exited: a tracked reconnection, which Stop waits for.
     private func hostExited(_ hostID: ObjectIdentifier) {
-        guard let a = active, let host = a.host, ObjectIdentifier(host) == hostID, a.live, current(a), !a.reconnecting else {
+        guard let a = active, let host = a.host, ObjectIdentifier(host) == hostID, a.live, usable(a), !a.reconnecting else {
             return
         }
         a.live = false
@@ -932,7 +1019,7 @@ public actor CaptureLink {
     /// A new child for the same registration without consent: sending resumes only if the stream
     /// is still live with exactly this identity. Never after Stop.
     private func reconnect(_ a: Active) async {
-        guard case .success(let config) = config, current(a), !a.reconnecting else { return }
+        guard case .success(let config) = config, usable(a), !a.reconnecting else { return }
         a.reconnecting = true
         defer { a.reconnecting = false }
         repeat {
@@ -941,14 +1028,14 @@ public actor CaptureLink {
             let old = a.host
             a.host = nil
             _ = await old?.end()
-            guard current(a) else { return }
+            guard usable(a) else { return }
             guard a.reconnects <= Self.reconnectsPerStart else {
                 notConnected(a, "offline: the capture service was lost")
                 return
             }
             _ = await connect(a, config: config, fresh: false)
             // A new child that already exited (its exit was not acted on) is replaced in turn.
-        } while current(a) && a.host?.hasExited == true
+        } while usable(a) && a.host?.hasExited == true
     }
 
     /// The service stopped or withdrew the stream (a believed state other than live).
@@ -1027,7 +1114,7 @@ public actor CaptureLink {
                 if !stream.registered {
                     switch await control.read(stream.registration) {
                     case .ok(let state):
-                        registered(index, state)
+                        _ = registered(index, state)
                         if state.state != "live" { journal.streams[index].final = state.state }
                     case .refused(404, _):
                         abandon(index)
@@ -1087,7 +1174,13 @@ public actor CaptureLink {
     }
 
     /// The journaled unknown-boundary Stop: written before dispatch, the same key and bytes on
-    /// retry, then the state read back. A stale revision gets one new Stop at the read revision.
+    /// every retry, then the state read back.
+    ///
+    /// A Stop already recorded for exactly this stream and revision is the same command: its key
+    /// and exact bytes are sent again, also after a restart, and a later refusal does not make its
+    /// earlier possible commit known not taken. A new command is made only when there is none for
+    /// the read revision (none yet, or the revision changed); a stale revision gets one such new
+    /// Stop.
     private func sendStop(_ index: Int, control: () async -> CaptureControl?,
                           renew: () async -> CaptureControl?) async {
         for _ in 0..<2 {
@@ -1095,33 +1188,80 @@ public actor CaptureLink {
             let registration = journal.streams[index].registration
             let revision = journal.streams[index].state?.revision ?? 1
             guard let body = try? DesktopJSON.encode(registration.stopBody(expectedRevision: revision)) else { return }
-            let key = registration.streamID + ".stop.\(journal.streams[index].stops.count + 1)"
-            journal.streams[index].stops.append(LinkStop(key: key, body: String(decoding: body, as: UTF8.self), outcome: "written"))
-            let last = journal.streams[index].stops.count - 1
+            let text = String(decoding: body, as: UTF8.self)
+            let entry: Int
+            // Whether this command may already have taken effect before this send.
+            var inDoubt = false
+            // A recorded known refusal, restored if nothing is sent after all.
+            var refusedBefore: LinkStop?
+            // Used only when its stored bytes are exactly this stream's Stop at this revision.
+            if let recorded = journal.streams[index].stops.lastIndex(where: { $0.body.utf8.elementsEqual(text.utf8) }) {
+                entry = recorded
+                let earlier = journal.streams[index].stops[recorded]
+                inDoubt = earlier.outcome != "refused"
+                // The earlier answer stays in the notes; the entry then holds this send's answer.
+                let answer = [earlier.httpStatus.map { String($0) }, earlier.code].compactMap { $0 }
+                note(index, "the recorded Stop \(earlier.key) (\(([earlier.outcome] + answer).joined(separator: " "))) is sent "
+                     + "again with the same bytes")
+                if !inDoubt {
+                    // In flight again: no longer known not taken until this send is answered.
+                    refusedBefore = earlier
+                    journal.streams[index].stops[recorded].outcome = "written"
+                }
+                journal.streams[index].stops[recorded].httpStatus = nil
+                journal.streams[index].stops[recorded].code = nil
+                journal.streams[index].stops[recorded].replays = (earlier.replays ?? 0) + 1
+            } else {
+                let key = registration.streamID + ".stop.\(journal.streams[index].stops.count + 1)"
+                journal.streams[index].stops.append(LinkStop(key: key, body: text, outcome: "written"))
+                entry = journal.streams[index].stops.count - 1
+            }
+            let key = journal.streams[index].stops[entry].key
             // An unwritten Stop is never sent.
             guard save() else { return }
             var outcome = await current.stop(registration, body: body, key: key)
-            if case .refused(401, _) = outcome, let fresh = await renew() {
+            // A 401 asks for a new bearer: the same key and bytes go again through a new child. After
+            // an attempt in doubt, a refusal of that resend does not make the doubt known.
+            var renewal = false
+            switch outcome {
+            case .refused(401, _):
+                renewal = true
+            case .unknown(_, let later) where later?.status == 401:
+                renewal = true
+                inDoubt = true
+            default:
+                break
+            }
+            if renewal, let fresh = await renew() {
                 current = fresh
                 outcome = await current.stop(registration, body: body, key: key)
             }
             var again = false
             switch outcome {
             case .ok(let state):
-                journal.streams[index].stops[last].outcome = "stopped"
+                journal.streams[index].stops[entry].outcome = "stopped"
                 journal.streams[index].state = state
                 if state.state != "live" { journal.streams[index].final = state.state }
             case .refused(let status, let code):
-                journal.streams[index].stops[last].outcome = "refused"
-                journal.streams[index].stops[last].httpStatus = status
-                journal.streams[index].stops[last].code = code
+                // The refusal answers this send only: an earlier doubt stays.
+                journal.streams[index].stops[entry].outcome = inDoubt ? "unknown" : "refused"
+                journal.streams[index].stops[entry].httpStatus = status
+                journal.streams[index].stops[entry].code = code
                 again = code == "stale_revision" || code == "invalid_transition"
-            case .unknown:
-                journal.streams[index].stops[last].outcome = "unknown"
+            case .unknown(_, let later):
+                journal.streams[index].stops[entry].outcome = "unknown"
+                journal.streams[index].stops[entry].httpStatus = later?.status
+                journal.streams[index].stops[entry].code = later?.code
             case .notSent:
-                break
+                // Nothing was sent: a recorded known refusal is as it was.
+                if let refusedBefore, !inDoubt {
+                    journal.streams[index].stops[entry].outcome = refusedBefore.outcome
+                    journal.streams[index].stops[entry].httpStatus = refusedBefore.httpStatus
+                    journal.streams[index].stops[entry].code = refusedBefore.code
+                }
             }
-            _ = save()
+            // Nothing more is requested once the record cannot be written.
+            guard save() else { return }
             // The state after the Stop, whatever its answer.
             if case .ok(let state) = await current.read(registration) {
                 journal.streams[index].state = state
@@ -1132,8 +1272,7 @@ public actor CaptureLink {
             } else {
                 again = false
             }
-            _ = save()
-            if !again { return }
+            guard save(), again else { return }
         }
     }
 
