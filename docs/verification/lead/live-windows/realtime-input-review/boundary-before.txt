@@ -1,0 +1,22 @@
+..FF.                                                                    [100%]
+=================================== FAILURES ===================================
+________________ test_foreign_thread_backing_turn_must_not_pass ________________
+realtime-input-candidate-review/test_candidate.py:111: in test_foreign_thread_backing_turn_must_not_pass
+    assert result['status'] == 'not_passed', result
+E   AssertionError: {'closed_event': True, 'events': {'thread/realtime/closed': 1, 'thread/realtime/started': 1, 'thread/realtime/transcript/done': 1}, 'failure': None, 'fixture_seconds': 0.5, ...}
+E   assert 'fixture_tran..._terms_passed' == 'not_passed'
+E
+E     - not_passed
+E     + fixture_transport_and_terms_passed
+_____________ test_canonical_backing_item_promotion_must_not_pass ______________
+realtime-input-candidate-review/test_candidate.py:115: in test_canonical_backing_item_promotion_must_not_pass
+    assert result['status'] == 'not_passed', result
+E   AssertionError: {'closed_event': True, 'events': {'thread/realtime/closed': 1, 'thread/realtime/item/completed': 1, 'thread/realtime/started': 1, 'thread/realtime/transcript/done': 1}, 'failure': None, 'fixture_seconds': 0.5, ...}
+E   assert 'fixture_tran..._terms_passed' == 'not_passed'
+E
+E     - not_passed
+E     + fixture_transport_and_terms_passed
+=========================== short test summary info ============================
+FAILED realtime-input-candidate-review/test_candidate.py::test_foreign_thread_backing_turn_must_not_pass
+FAILED realtime-input-candidate-review/test_candidate.py::test_canonical_backing_item_promotion_must_not_pass
+2 failed, 3 passed in 5.98s

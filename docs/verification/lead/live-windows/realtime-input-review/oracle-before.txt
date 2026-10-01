@@ -1,0 +1,11 @@
+F                                                                        [100%]
+=================================== FAILURES ===================================
+_____ test_empty_or_prompted_oracle_terms_must_not_claim_matching_evidence _____
+realtime-input-candidate-review/test_candidate.py:139: in test_empty_or_prompted_oracle_terms_must_not_claim_matching_evidence
+    assert not all(observer.evidence()['fixture_terms_matched']), {
+E   AssertionError: {'actual': [True], 'problem': 'vacuous term or term already present in the fixed prompt', 'terms': [''], 'transcript': 'unrelated utterance'}
+E   assert not True
+E    +  where True = all([True])
+=========================== short test summary info ============================
+FAILED realtime-input-candidate-review/test_candidate.py::test_empty_or_prompted_oracle_terms_must_not_claim_matching_evidence
+1 failed in 1.44s
