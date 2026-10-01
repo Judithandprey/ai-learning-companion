@@ -210,3 +210,22 @@ Backend completed this bounded source handoff. The existing Windows TTS/live
 consumer, two TTS corrections and one eventual integrated QA pass continue.
 Lead owns the next input decision; do not run repeated ordinary-audio attempts
 or reopen the same schema-only candidate without new capability evidence.
+
+## Next bounded existing-owner route check
+
+Reviewed evidence/current task baseline `3f4580b` was normally pushed to origin/main.
+Support's prior System.Speech receipt explicitly leaves other Windows speech APIs
+unmeasured. Lead sent one next current-task check of installed
+`Windows.Media.SpeechRecognition`/WinRT capability, native runtime and actual local
+English recognition availability; no repeated Codex/realtime/account survey.
+
+Native receipt `handoff_c0c29265c5847247938fd5430c5ae5f6` was accepted, initially
+unread with execution_started=false. The bounded write paths remain Support's
+probe/evidence directories. No installation, online activation, private capture,
+audio device, model/account call or new framework is permitted. A single generated
+in-memory fixture is conditional on a supported local non-device input interface;
+language catalog metadata alone cannot pass. If such a path is unavailable, return
+the precise installed/runtime/consent dependency and finish. Lead then decides the
+input implementation, retaining Web's production ownership and current TTS/live
+work. This continuation is one actual pending owner action, not proof it started
+or a claim that usable voice input has been delivered.
