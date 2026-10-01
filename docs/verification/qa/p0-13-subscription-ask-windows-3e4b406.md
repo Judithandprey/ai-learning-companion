@@ -4,10 +4,11 @@
   (`handoff_de323dc5105b08860c398a13b7206dbd`, driver task `handoff_16a192142160536115f6087460e33b77`).
 - **Candidate:** pushed `3e4b40654460a2dc2407f1d9be60d8e1a5b39a3e`. Its Windows app tree is the owner's `84fc56a`
   (both `5bda4761…`, compared by QA). Staged from `team/qa` at the normal merge `a9ff602`, Electron 44.5.1.
-- **QA harness:** `team/qa` `677323a`. The final runs executed exactly the bytes of the commit named for each in
+- **QA harness:** `team/qa` `85d79e6`. The final runs executed exactly the bytes of the commit named for each in
   [harness.json](p0-13-subscription-ask-windows-3e4b406/harness.json): six runs at `110c733`, the click probe at
   `9cac50b`, and one earlier probe run at `3002218`. The real turn's step list is the same at `110c733` and `9cac50b`.
-  `677323a` changes one note text of the analyzer after those runs, nothing else.
+  `677323a` changes one note text of the analyzer after those runs. `85d79e6` corrects the cleanup of the start-file check
+  (see "What happened on the way"); it was not run on the display.
 - **Plan:** [p0-13-subscription-ask-plan.md](p0-13-subscription-ask-plan.md), updated to this stage.
 - **Date and display:** 2026-10-01, 08:22–09:10 and 10:04–10:14 UTC, the Windows host (2560×1600 at scale 2 =
   1280×800 DIP), WSL2 Ubuntu.
@@ -16,19 +17,32 @@
 
 | Part | Result |
 | --- | --- |
-| Real image turn (the acceptance itself) | **not_run.** The product is **not signed in**. No question was asked. **0 of the 1 allocated attempt used.** |
+| Real image turn (the acceptance itself) | **not_run, held.** The product is **not signed in**, and the lead holds the turn until the corrected source is released (below). No question was asked. **0 of the 1 allocated attempt used.** |
 | Real app, real connector: Check connection | **pass.** State `signed_out`; the official "Sign in with ChatGPT" button is offered |
 | The user's sign-in entry | **ready**, checked up to the Check connection press. The sign-in itself is the user's and was not started |
 | Card, question box and keyboard | **pass** with synthetic OS input (OS clicks, OS keys) |
 | Deterministic controls (QA's stand-in, no model) | **pass, 18 of 18 checks**, labelled synthetic |
 | Driver for the one real turn | **ready, after a correction** (see "What happened on the way"): steps, gates and reads rehearsed with the stand-in; the connector copy can prepare a question. Not rehearsable: the connector's `thread/start` and `turn/start` against the real binary |
-| Product findings | **QA-SUB-01** (display): a valid selection is sometimes refused. **QA-SUB-02 to 08** (source review): two medium, five low. **QA-SUB-03 is a risk to the one attempt** |
+| Product findings | **QA-SUB-01** (display): a valid selection is sometimes refused. **QA-SUB-02 to 08** (source review): two medium, five low. **QA-SUB-03 is a risk to the one attempt**; the lead has it fixed first |
 
 **"The image path works" is not claimed.** Account, model list and login state are checked as preconditions; they are
 never a pass of the image acceptance. Official image input, a model reading the pixels and the ink, and the answer in
 the card are still not shown.
 
-## What the user does next (the only blocker for the real turn)
+## What the real turn waits for
+
+Two things, by the lead's decision of 2026-10-01 (`handoff_1d22cacea8942c35870ca6cd44e0cc7c`):
+
+- **The corrected source.** QA-SUB-03 is fixed first. Backend has QA-SUB-02 and 03; Web has QA-SUB-01, 04, 05 and 06
+  and a bounded assessment of 07 and 08. The lead has since released Backend's correction of 02 and 03 as `cd9b0ef`
+  (source and synthetic tests; QA has not run it). Web's corrections are still open. The turn is held until the lead
+  releases the exact combined commit. QA then
+  stages that commit and makes its connector copy from it. The next behaviour retest covers only the corrected paths
+  and the conditional image turn; the 18 controls and the sign-in checks are not run again.
+- **The user's sign-in**, which the lead has passed on to the user. The sign-in entry and the product's sign-in state
+  are kept as they are. QA does not use the Windows display and does not poll the sign-in while the user may use it.
+
+### The user's sign-in
 
 1. On Windows, open `%TEMP%\lc-subscription-signin-3e4b40654460\` and start
    `Start-Learning-Companion-Subscription.cmd`. It starts the released app with the trusted connector configuration and
@@ -40,7 +54,8 @@ the card are still not shown.
 5. Close the window, and tell the lead. No token, address or screenshot of the sign-in page is needed in chat.
 
 - QA checked that start file up to step 2 ([launcher-check.json](p0-13-subscription-ask-windows-3e4b406/launcher-check.json)):
-  the app opens, Check says `signed_out`, the Sign in button is shown and enabled, and the app closes. QA did not press Sign in.
+  the app opens, Check says `signed_out`, the Sign in button is shown and enabled, and the app closes. QA did not press
+  Sign in. That check was made before the user had the entry, with the earlier version of the check; it is not repeated.
 - Not checked by anyone yet: whether the browser's return to the sign-in listener inside WSL arrives (the owner's open
   point). If it does not, the app keeps saying "Waiting for you to finish signing in, in your browser." with a Cancel
   button. It says "The sign-in did not complete." only if the official Codex reports a failed sign-in or the connector
@@ -50,19 +65,23 @@ the card are still not shown.
 - The connector copy it uses is `~/.local/share/lc-qa/subscription-source-3e4b40654460` in WSL: the released commit's
   `services/` and `packages/` (`git archive`), 268 files, each compared with the commit.
 
-## The real turn, once signed in
+## The real turn, once released and signed in
 
-One command, one press, no retry:
+One command, one press, no retry. The command is shown for this candidate; the corrected release changes the commit,
+the staged app and the copy:
 
 ```
 QA_STAGE_NAME=lc-qa-windows-sub-3e4b406 QA_SUB_ALLOW_REAL_CONNECTOR=1 \
-QA_SUB_ALLOW_REAL_TURN=<the lead's allocation id> QA_SUB_SOURCE=3e4b40654460a2dc2407f1d9be60d8e1a5b39a3e \
+QA_SUB_ALLOW_REAL_TURN=handoff_d548b28a9fa5613b7543be19858a5ca2 QA_SUB_SOURCE=3e4b40654460a2dc2407f1d9be60d8e1a5b39a3e \
 QA_SUB_BACKEND=~/.local/share/lc-qa/subscription-source-3e4b40654460 QA_SUB_CODEX_BIN=~/.local/bin/codex \
 node tests/e2e/windows/run.mjs subask <new out dir>
 ```
 
-- **The allocation is single-use.** A ledger file outside the run folders records each run under that id and whether
-  Ask was pressed. Another run starts only if every earlier one provably stopped before the press. "Unknown" counts as used.
+- **The allocation** (lead): the id is the release message's, `handoff_d548b28a9fa5613b7543be19858a5ca2`. Still one
+  attempt, none spent. Every real Ask press uses it, also one that provably submitted nothing; "unknown" counts as
+  spent; no automatic retry. Receipt and billing facts are reported separately.
+- **The harness enforces that.** A ledger file outside the run folders records each run under that id and whether Ask
+  was pressed. Another run starts only if every earlier one provably stopped before the press.
 - **Before the app starts**, the harness refuses unless the Backend copy is the commit's `services/` and `packages/`
   file for file, nothing else runs in it, and the connector's own preparation of a question works in it (run offline
   with the project's Python; nothing is sent).
@@ -78,11 +97,14 @@ node tests/e2e/windows/run.mjs subask <new out dir>
   not picture input. `full_solution` has no such clause.
   - The other side: QA-SUB-03 below makes a long answer risky. One reader of the source review advises keeping the
     first real turn at "A hint"; another advises a question that needs a short answer. QA's question asks for two
-    lines only. **The lead decides between the two risks**;
-    `QA_SUB_ASSISTANCE=explain` or `hint` switches the level, and the analyzer follows the level the run used.
+    lines only.
+  - **Lead decision:** `full_solution` is approved only for this generated, non-sensitive two-card recognition test
+    with its two-line answer. It is not a product default and no permission for a learner's homework. QA-SUB-03 is
+    fixed before the turn. (`QA_SUB_ASSISTANCE` can still switch the level; the analyzer follows the level the run used.)
 - **What a failed first turn would mean.** A mismatch at `thread/start` sends no turn (receipt `not_submitted`, turn
   count 0): no prompt and no picture leave the connector, so QA expects no ChatGPT allowance to be used (not
-  measured). QA's single-use rule still counts the press. One at `turn/start` or later is a submission. The receipt shows which, and the lead decides whether another attempt is allowed.
+  measured). The press still uses the one attempt (the lead's rule above). One at `turn/start` or later is a
+  submission. The receipt shows which.
 
 ## Final runs
 
@@ -198,7 +220,7 @@ it refuses that launch and exits at once.) "Confirmed" means the skeptic could n
 own test fakes. Details, lines and the properties found to hold, in the reviewers' own words:
 [source-review.json](p0-13-subscription-ask-windows-3e4b406/source-review.json).
 
-**Before the one attempt is spent, the lead should decide on QA-SUB-03.**
+**Lead decision: QA-SUB-03 is fixed before the one attempt is spent.**
 
 | Id | Owner | Severity | Finding (confirmed) |
 | --- | --- | --- | --- |
@@ -265,6 +287,18 @@ provenance is compared before an answer is shown; answers are rendered as text o
   the copy correction. A first click probe made no click at all (the pointer was only placed, not moved). Its run
   folder was not kept, so this rests on QA's observation and the commit message of `9cac50b`, which corrected it; the
   probe was then run again.
+- **The start-file check let go of too much, and of too little.** The lead's review found that the check had no
+  cleanup of its own after a DevTools failure or at its 150 s limit, and that it removed the entry's profile folder
+  unconditionally. Corrected in `85d79e6`, without a display run:
+  - The check now runs byte-identical copies of the start file and its configuration in a new folder of its own. The
+    user's entry folder and its profile are never touched.
+  - It refuses to start beside an open Electron app or a connector running from the copy.
+  - It ends only processes that carry its own port in their command line: first it waits, then asks them to close,
+    then ends them. A process on the port that is not its own is never ended.
+  - Its folder is removed only when it made it and the exit is confirmed. If the look fails, nothing is ended and
+    nothing is removed, and that is said (exit 3).
+  - The rule has 21 offline tests; the read-only process query was run without a window. The corrected check itself,
+    and its force path, have not been run on the display. The three saved checks ended by themselves and stay valid.
 - **QA's own pre-run review** (five reviewers, a skeptic each) gave 40 findings on the harness, 38 confirmed: among
   them the single-use allocation, the gates at the press, the 300 s wait, the step-dispatch fault that would have
   skipped the click and keys, and the evidence writer's refusal. All are fixed in the frozen harness

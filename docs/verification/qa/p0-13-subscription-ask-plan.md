@@ -1,7 +1,8 @@
 # Managed-subscription ASK on Windows: QA acceptance plan
 
 - **Status (2026-10-01): driver ready after one correction (the connector copy); controls and the real Check connection
-  run; the real image turn NOT run.** The product is not signed in. 0 of the 1 allocated attempt is used. Results so far:
+  run; the real image turn NOT run and HELD.** It waits for the corrected source (QA-SUB-03 first) and for the user's
+  sign-in. 0 of the 1 allocated attempt is used. Results so far:
   [p0-13-subscription-ask-windows-3e4b406.md](p0-13-subscription-ask-windows-3e4b406.md).
 - **Assignment:** lead `handoff_de323dc5105b08860c398a13b7206dbd` (P0-13 / G4); driver task
   `handoff_16a192142160536115f6087460e33b77`; release `handoff_d548b28a9fa5613b7543be19858a5ca2`.
@@ -12,12 +13,13 @@
   [release note](../lead/subscription-ask/windows-release/README.md).
 - **Budget:** exactly one real image submission, reserved by the lead for QA, conditional on the managed sign-in, a
   picture model, the generated surface and valid source and ink evidence. No automatic retry.
-- **What exists** (in [tests/e2e/windows/](../../../tests/e2e/windows/), harness `677323a`):
+- **What exists** (in [tests/e2e/windows/](../../../tests/e2e/windows/), harness `85d79e6`):
   - `surface.html`, `judge_surface_answer.py` (rule fixed before any call; 31 self-test cases);
   - `qa_fake_bridge.py`: QA's stand-in connector for the deterministic controls; `qa_sub_watch.py`: a read-only
     process watch;
   - scenarios `surfacecheck`, `subcontrols`, `subselect` and `subtype` (probes), `subrehearsal`, `subcheck` and `subask`;
-  - `analyze_sub.py` for all of them; `signin_launcher.mjs` for the user's own sign-in entry;
+  - `analyze_sub.py` for all of them; `signin_launcher.mjs` for the user's own sign-in entry (its check runs in a
+    folder of its own and lets go only of what it started: `signin_cleanup.mjs`, 21 offline tests);
   - `sub_copy.mjs` and `qa_sub_copy_check.py`: the private Backend copy is the commit's `services/` and `packages/`
     file for file, and the connector's own preparation of a question is run in it, offline, before any real run;
   - `run.mjs` interlocks: the real connector needs `QA_SUB_ALLOW_REAL_CONNECTOR=1`; a real question needs
@@ -78,9 +80,10 @@ text and the level through DevTools; typing into the box was checked separately 
 answer" and `hint` "Do not reveal the final answer or a full solution"; a model that obeys could withhold the two
 cards, and the one attempt would be unjudgeable for a reason that is not picture input. `full_solution` has no such
 clause. Against it stands QA-SUB-03 (a turn with more than 4096 notifications is killed), which makes a long answer
-risky; the question asks for two lines only. The lead decides, and can set `QA_SUB_ASSISTANCE=explain` or `hint`; the
-analyzer follows the level the run used. The exact text sent is recomputed from the app's retained request and
-compared with the connector's receipt.
+risky; the question asks for two lines only. **Lead decision:** `full_solution` is approved only for this generated,
+non-sensitive two-card recognition test with its two-line answer, not as a product default or for a learner's
+homework; QA-SUB-03 is fixed before the turn. The analyzer follows the level the run used. The exact text sent is
+recomputed from the app's retained request and compared with the connector's receipt.
 
 ### Judging rule (fixed now, before any call)
 
@@ -160,8 +163,10 @@ The hold is a deliberately broad tripwire, not language understanding. A false h
 ### Budget and stop rules
 
 - The lead owns the ledger and has reserved **one** submission attempt for QA
-  ([request-budget.json](../lead/subscription-ask/request-budget.json)). QA's harness makes that one attempt
-  single-use: a second run under the same allocation id starts only if the first provably stopped before the press.
+  ([request-budget.json](../lead/subscription-ask/request-budget.json)). The allocation id is the release message's,
+  `handoff_d548b28a9fa5613b7543be19858a5ca2`. Every real Ask press uses the attempt, also one that provably submitted
+  nothing; "unknown" counts as spent. QA's harness enforces it: a second run under the same id starts only if the
+  first provably stopped before the press.
 - A completed or an incomplete submission each use one attempt.
 - QA stops and reports, without another attempt, on any of:
   - a quota or rate-limit answer;
@@ -228,15 +233,16 @@ None of this is acceptance evidence for the real turn.
 
 ## 5. What the real turn still needs
 
+- **The corrected source**, released by the lead: QA-SUB-03 first (Backend, with 02; released as `cd9b0ef`, not yet
+  run by QA); Web has 01, 04, 05, 06 and a bounded assessment of 07 and 08, still open. QA stages that exact commit and makes its Backend copy from it. The harness checks
+  the copy before any real run (file-for-file comparison, and the connector's own preparation of a question run
+  offline).
 - **The user's sign-in**, through the start file QA prepared and checked up to the Check connection press. QA does not
-  sign in, sees no address and no token.
-- A Backend copy that can answer a question: the commit's `services/` and `packages/`. The harness now checks this
-  before any real run (file-for-file comparison, and the connector's own preparation of a question run offline).
-- The lead's decision on QA-SUB-03 and on the assistance level.
-- The lead's allocation id for `QA_SUB_ALLOW_REAL_TURN` and the display.
-- Then one `subask` run. It is judged by `analyze_sub.py` with the receipt of that one request
-  (`receipts/<launch>/<sha256(request_id)>.json`, the only thing QA reads in the product state) and by a person
-  reading the full answer.
+  sign in, sees no address and no token, and does not use the display or poll the sign-in while the user may use it.
+  The sign-in entry and the product's sign-in state are kept.
+- Then a retest of the corrected paths only, and one `subask` run. It is judged by `analyze_sub.py` with the receipt of
+  that one request (`receipts/<launch>/<sha256(request_id)>.json`, the only thing QA reads in the product state) and by
+  a person reading the full answer. The 18 controls and the sign-in checks are not run again.
 
 ## 6. What will not be claimed
 
