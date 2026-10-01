@@ -17,6 +17,7 @@ from services.worker.connectors.chatgpt_rpc import RPCError
 
 
 MEASURED_SHA256 = "167c0148a849d2444f1b5a7fb5f8bb2de1de5ae13a2a504b833fc765980f5cd9"
+MEASURED_MACOS_SHA256 = "788a818fbb9596869c7a487554507cb8bdca17584b8671112b23f9e225ba35c8"
 SYSTEM_SKILLS = ("imagegen", "openai-docs", "plugin-creator", "review-agent", "skill-creator", "skill-installer")
 
 
@@ -403,17 +404,22 @@ def test_missing_or_relative_trusted_binary_is_sanitized_before_state_creation(f
     assert factory == []
 
 
-def test_binary_identity_hashes_synthetic_bytes_and_binds_the_measured_version(tmp_path, monkeypatch):
+@pytest.mark.parametrize("system,machine,digest_setting", [
+    ("linux", "x86_64", "SUPPORTED_BINARY_SHA256"),
+    ("darwin", "arm64", "SUPPORTED_MACOS_BINARY_SHA256"),
+])
+def test_binary_identity_hashes_synthetic_bytes_and_binds_the_measured_version(tmp_path, monkeypatch, system, machine, digest_setting):
     # Substitute only the expected digest for this inert test file. No executable
     # is launched, and this is not acceptance of an actual installed Codex build.
     assert launch.SUPPORTED_BINARY_SHA256 == MEASURED_SHA256
+    assert launch.SUPPORTED_MACOS_BINARY_SHA256 == MEASURED_MACOS_SHA256
     binary = tmp_path / "not-executed-codex"
     contents = b"synthetic exact executable bytes"
     binary.write_bytes(contents)
     binary.chmod(0o700)
-    monkeypatch.setattr(launch, "SUPPORTED_BINARY_SHA256", hashlib.sha256(contents).hexdigest())
-    monkeypatch.setattr(sys, "platform", "linux")
-    monkeypatch.setattr(platform, "machine", lambda: "x86_64")
+    monkeypatch.setattr(launch, digest_setting, hashlib.sha256(contents).hexdigest())
+    monkeypatch.setattr(sys, "platform", system)
+    monkeypatch.setattr(platform, "machine", lambda: machine)
     assert launch._binary_identity(str(binary)) == {
         "executable": str(binary.resolve()), "version": "codex-cli 0.158.0", "sha256": hashlib.sha256(contents).hexdigest()}
     binary.write_bytes(b"synthetic different version or substituted bytes")
@@ -421,16 +427,44 @@ def test_binary_identity_hashes_synthetic_bytes_and_binds_the_measured_version(t
         launch._binary_identity(str(binary))
 
 
-@pytest.mark.parametrize("system,machine", [("darwin", "x86_64"), ("win32", "AMD64"), ("linux", "aarch64")])
+@pytest.mark.parametrize("system,machine", [
+    ("darwin", "x86_64"), ("win32", "AMD64"), ("linux", "aarch64"),
+    ("darwin", "aarch64"), ("linux", "arm64"), ("freebsd", "x86_64"),
+])
 def test_matching_bytes_do_not_authorize_unmeasured_platform(tmp_path, monkeypatch, system, machine):
     binary = tmp_path / "synthetic-codex"
     binary.write_bytes(b"synthetic bytes")
     binary.chmod(0o700)
-    monkeypatch.setattr(launch, "SUPPORTED_BINARY_SHA256", hashlib.sha256(binary.read_bytes()).hexdigest())
+    digest = hashlib.sha256(binary.read_bytes()).hexdigest()
+    monkeypatch.setattr(launch, "SUPPORTED_BINARY_SHA256", digest)
+    monkeypatch.setattr(launch, "SUPPORTED_MACOS_BINARY_SHA256", digest)
     monkeypatch.setattr(sys, "platform", system)
     monkeypatch.setattr(platform, "machine", lambda: machine)
+
+    def refuse_open(*args, **kwargs):
+        pytest.fail("unknown platform must be refused before reading binary bytes")
+
+    monkeypatch.setattr(Path, "open", refuse_open)
     with pytest.raises(RPCError):
         launch._binary_identity(str(binary))
+
+
+@pytest.mark.parametrize("system,machine,wrong_contents", [
+    ("linux", "x86_64", b"synthetic Darwin arm64 executable"),
+    ("darwin", "arm64", b"synthetic Linux x86_64 executable"),
+])
+def test_platform_cannot_admit_the_other_platforms_known_hash(tmp_path, monkeypatch, system, machine, wrong_contents):
+    # Expected hashes are substituted only for inert fixture files; the actual
+    # file hashing and platform-to-digest selection still execute normally.
+    monkeypatch.setattr(launch, "SUPPORTED_BINARY_SHA256", hashlib.sha256(b"synthetic Linux x86_64 executable").hexdigest())
+    monkeypatch.setattr(launch, "SUPPORTED_MACOS_BINARY_SHA256", hashlib.sha256(b"synthetic Darwin arm64 executable").hexdigest())
+    monkeypatch.setattr(sys, "platform", system)
+    monkeypatch.setattr(platform, "machine", lambda: machine)
+    binary = tmp_path / "not-executed-cross-platform-codex"
+    binary.write_bytes(wrong_contents)
+    with pytest.raises(RPCError) as error:
+        launch._binary_identity(str(binary))
+    assert error.value.code == "isolation_unverified"
 
 
 def test_unverified_binary_cannot_create_state_or_construct_client(factory, tmp_path, monkeypatch):

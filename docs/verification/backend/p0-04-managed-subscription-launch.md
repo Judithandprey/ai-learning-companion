@@ -1,5 +1,9 @@
 # Managed subscription launch and private ASK receipts
 
+The later [macOS exact-binary admission](p0-04-managed-subscription-macos-admission.md)
+adds only the separately measured Darwin arm64 pin. This report retains the
+original Linux-only evidence and limits of its own delivery.
+
 2026-10-01 UTC. Follow-up to Backend leaf `18fe4788e9cba52d7f336c273047432e00525499`.
 Task `handoff_9aa9afa6f12bdfa0279320454611d396`, receipt addition
 `handoff_dc6670aef8be6b88e933047b657a4ae9`, policy/login corrections

@@ -1,7 +1,7 @@
 """Product-owned launch boundary for the managed subscription connector.
 
-The exact Linux binary/config combination follows Support's measured 0.158.0
-report. Other builds and inherited configuration fail closed before inference.
+The exact Linux and macOS binary/config combinations follow measured 0.158.0
+reports. Other builds and inherited configuration fail closed before inference.
 Credentials belong to Codex; this module never opens or copies its auth files.
 """
 
@@ -25,6 +25,7 @@ _MARKER = ".lc-managed-chatgpt-v1"
 _MARKER_BYTES = b"Learning Companion managed ChatGPT state v1\n"
 _LOCK = ".lc-managed-chatgpt.lock"
 SUPPORTED_BINARY_SHA256 = "167c0148a849d2444f1b5a7fb5f8bb2de1de5ae13a2a504b833fc765980f5cd9"
+SUPPORTED_MACOS_BINARY_SHA256 = "788a818fbb9596869c7a487554507cb8bdca17584b8671112b23f9e225ba35c8"
 SUPPORTED_VERSION = "codex-cli 0.158.0"
 MANAGED_PROVIDER = "lc_managed_chatgpt"
 _BUNDLED_SKILLS = ("imagegen", "openai-docs", "plugin-creator", "review-agent", "skill-creator", "skill-installer")
@@ -44,12 +45,16 @@ _DISABLED = (
 
 
 def _binary_identity(executable):
-    if sys.platform != "linux" or platform.machine() != "x86_64":
+    expected_digest = {
+        ("linux", "x86_64"): SUPPORTED_BINARY_SHA256,
+        ("darwin", "arm64"): SUPPORTED_MACOS_BINARY_SHA256,
+    }.get((sys.platform, platform.machine()))
+    if expected_digest is None:
         raise RPCError("isolation_unverified")
     path = Path(executable).resolve(strict=True)
     with path.open("rb") as binary:
         digest = hashlib.file_digest(binary, "sha256").hexdigest()
-    if digest != SUPPORTED_BINARY_SHA256:
+    if digest != expected_digest:
         raise RPCError("isolation_unverified")
     # This version is bound to the exact executable measured by Support and our
     # no-inference config probe, rather than trusting a replaceable version label.
