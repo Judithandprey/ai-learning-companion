@@ -16,7 +16,8 @@ artifacts without executing the application or rerunning fixtures. Raw run and
 artifact receipts bind source and run. The service ZIP digest is retained as
 reported, not claimed independently recomputed.
 
-Only selected generated fixture/logs and receipts are committed here;
+Only selected generated fixture/logs and receipts are committed here (raw `.log`
+files are retained as `.txt` to follow repository evidence conventions);
 `retained-hashes.json` covers them. `SHA256SUMS` is the original complete artifact
 manifest; remaining files, source archive and MacDesktop.zip remain in the hosted
 artifact and local `/tmp/lc-macos-ask-36902046846` download. Reproduce the audit:
