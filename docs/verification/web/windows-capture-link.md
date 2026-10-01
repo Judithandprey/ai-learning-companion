@@ -152,8 +152,8 @@ statement bounds. The file is read at each host start and passed only in the hos
     before the state read that follows it.
   - A send whose storage is not confirmed (no answer, a 503, a lost answer, a missing dependency; it may have
     arrived, and its records stay counted as not known) leaves the stream live but
-    `stalled`: the status says it is not storing now, until a later send is answered. Only an answered (committed)
-    send says storing again. Nothing left to send (the job set aside as it cannot be sent again), or a new
+    `stalled`: the status says storage is not confirmed now, until a later send is answered. Only an answered
+    (committed) send says it is confirmed again. Nothing left to send (the job set aside as it cannot be sent again), or a new
     connection after a lost host or an expired bearer, is not an answer; later lines are still sent.
   - Before the first retained frame there is no manifest yet; that is nothing to send, not an error.
   - While the Start is live, a job whose outcome is unknown is sent again with the same key and body. A later
@@ -273,13 +273,13 @@ never the token.
   - one Stop per revision: a Stop that never reached the service is sent again at the next Start under the same key;
   - READY `pending` with the port never reached is known pending, abandoned at the Stop, and the next Start registers;
   - a manifest not yet written when the link is ready does not leave a lasting fault in the status;
-  - sends that get no answer are said as not storing now, the same key throughout, and storing again from the
-    answer on;
+  - sends that get no answer are said as storage not confirmed, the same key throughout, and confirmed again from
+    the answer on;
   - (in the test of a job in doubt whose original is gone) not storing while nothing was answered, then storing
     again once later lines are answered, the earlier job still not known;
   - a later send slow to be answered (QA-WIN-05): said as waiting before it leaves, the confirmed count kept, and
     the answer restores the confirmed counts.
-- `capture-link-record.test.ts` (31), without the Backend (a fake host child and fake answers):
+- `capture-link-record.test.ts` (32), without the Backend (a fake host child and fake answers):
   - a record as this app writes it is used: its live stream is reconciled with a read and one Stop, and its unknown
     job stays unknown;
   - 19 damaged records (a null job, a stream without `final`, unknown ends, statuses or grants, a missing count,
@@ -302,6 +302,8 @@ never the token.
     claim nothing while it lasts, and a Stop during it keeps the job's exact key and body and every count;
   - every upload request, retries too, leaves only after the app said a send is out; between sends none is out;
   - a job known not sent, sent again: written and counted as not known while it is out;
+  - that write failing: no request leaves, the record stays, and the last status said is the status (still not
+    sent, further sends stopped);
   - a send the service refuses is said before the state read that follows.
 - `app-link.test.ts` (13): the real `main.ts` and overlay under the fakes. The fake app quits as Electron does: a
   quit asked for while `will-quit` is being delivered is ignored, and a prevented quit is dropped.
@@ -566,6 +568,14 @@ stored** (about 182 s: three tries of 60 s). The counts were right throughout.
 run): the affected files on Linux against the released host at main `5dc1d52` (kept in-memory store): 94 tests, 94
 pass. The whole `apps/windows` suite: 240 tests, 235 pass, 5 skipped (the owned flows); without a Backend 195 pass,
 45 skipped. `tsc` and the build pass. Each part of the repair removed makes a named test fail.
+**Lead review of `d6f4e20` (one notification defect), corrected in `44fbd50`.** When the write of
+a resend's "being sent" failed, the job was put back to not sent and nothing was sent, but the last status said still
+counted it as not known. The corrected status is now said after the rollback (the fault and "further sends stopped"
+kept). Regression: three refused connections, then that write fails: no fourth request, the record unchanged, and
+the last notification equal to the status (0 not known, 2 not sent). The focused output above (`linux-focused.txt`)
+is of `d6f4e20` and is kept as run. `linux-focused-correction.txt` is of `44fbd50`, against the released host at
+main `f2c883d`: the five link test files, 78 tests, 78 pass; its receipt names the executed files.
+
 - Not run: the real app on Windows, a real hung host, the database. The delayed and held answers are a held
   in-process transport (no Backend) and a delayed answer from the released host over the in-memory store. A real
   check of the changed texts on the Windows display is the lead's to release to QA.
