@@ -25,9 +25,27 @@
 </div>
 <section id="card" class="card" role="region" aria-label="Selection" hidden>
   <button type="button" id="close" class="close" aria-label="Close">×</button>
-  <p class="badge">Selection · no AI connected</p>
+  <p id="badge" class="badge">Selection · no AI connected</p>
   <img id="crop" alt="The selected region with your ink, from the captured frame">
   <p id="cardText" class="text"></p>
+  <div id="askForm" class="ask" hidden>
+    <label for="question">Your question about this selection</label>
+    <textarea id="question" rows="3" maxlength="4000"></textarea>
+    <div class="assist" role="radiogroup" aria-label="How much help you want">
+      <label><input type="radio" name="assistance" value="hint" checked> A hint</label>
+      <label><input type="radio" name="assistance" value="explain"> Explain it</label>
+      <label><input type="radio" name="assistance" value="full_solution"> Full solution</label>
+    </div>
+    <div class="actions">
+      <button type="button" id="askSubmit">Ask ChatGPT</button>
+      <button type="button" id="askCancel" hidden>Cancel</button>
+    </div>
+  </div>
+  <p id="askStatus" class="text" role="status" hidden></p>
+  <div id="answerBox" class="answer" hidden>
+    <p class="badge">Answer from ChatGPT · generated text, apart from your selection</p>
+    <p id="answer" class="text"></p>
+  </div>
 </section>
 <script type="module" src="overlay.js"></script>
 </body>

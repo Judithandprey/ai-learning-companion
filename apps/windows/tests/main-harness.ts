@@ -12,6 +12,9 @@ import * as desktopInk from '../src/shared/desktop-ink.ts';
 import { fingerprintToBase64 } from '../src/shared/samples.ts';
 import * as retention from '../src/shared/retention.ts';
 import { CaptureLink, readLinkConfig, type LinkOptions } from '../src/main/capture-link.ts';
+import { readConnectorConfig, Subscription, type SubscriptionOptions } from '../src/main/subscription.ts';
+import { toFramePixels } from '../src/shared/samples.ts';
+import { ASSISTANCE, contextProblem, PNG_MAX_BYTES, questionOf } from '../src/shared/subscription-ask.ts';
 import { appSource } from './source.ts';
 
 export const HERE = path.dirname(url.fileURLToPath(import.meta.url));
@@ -21,8 +24,21 @@ export const SOURCE = appSource('src/main/main.ts')
   .replace('dirname(fileURLToPath(import.meta.url))', "'/fake/dist/apps/windows/src/main'");
 
 const links: CaptureLink[] = [];
-/** Every capture link an app under test made is stopped (its host ended), even after a failed test. */
-export const quitLinks = async (): Promise<void> => void (await Promise.all(links.splice(0).map((l) => l.quit(10_000))));
+const subscriptions: Subscription[] = [];
+/** Every capture link and subscription connector an app under test made is stopped (its child ended), even after a failed test. */
+export const quitLinks = async (): Promise<void> => void (await Promise.all([...links.splice(0).map((l) => l.quit(10_000)), ...subscriptions.splice(0).map((x) => x.quit())]));
+
+/** App data folders of the apps under test (they hold retained pictures): removed when the test process ends. */
+const appData: string[] = [];
+process.on('exit', () => {
+  for (const d of appData) {
+    try {
+      fs.rmSync(d, { recursive: true, force: true });
+    } catch {
+      // still in use (Windows): left for the system's own cleanup of the temporary folder
+    }
+  }
+});
 
 export type Deferred<T> = { promise: Promise<T>; resolve: (v: T) => void; reject: (e: unknown) => void };
 export const deferred = <T>(): Deferred<T> => {
@@ -80,9 +96,10 @@ export type Review = {
  * `env`: the app's environment (empty by default: the development capture link stays off). `link`: options added to
  * the app's own capture link (a recording transport, shorter bounds), for tests.
  */
-export function harness(options: { env?: Record<string, string>; link?: Partial<LinkOptions> } = {}) {
+export function harness(options: { env?: Record<string, string>; link?: Partial<LinkOptions>; subscription?: Partial<SubscriptionOptions>; /** For one test: the subscription layer forgets to cancel (the app's own fence must still hold). */ leakySubscription?: boolean } = {}) {
   FakeWindow.all = [];
   const userData = fs.mkdtempSync(path.join(os.tmpdir(), 'lc-main-test-'));
+  appData.push(userData);
   const sources: Array<Promise<unknown[]>> = [];
   const handlers: Record<string, (...a: unknown[]) => unknown> = {};
   const permission: Record<string, (...a: unknown[]) => unknown> = {};
@@ -93,6 +110,8 @@ export function harness(options: { env?: Record<string, string>; link?: Partial<
   const source = { id: 'screen:1:0', display_id: '1', name: 'Display 1', thumbnail: { toDataURL: () => '' } };
   /** n: times the app really quit (its will-quit not prevented). ignored: quits asked for while one was under way. */
   const quits = { n: 0, ignored: 0 };
+  /** Addresses the app opened in the user's browser. */
+  const opened: string[] = [];
   // app.quit() as Electron's Browser::Quit does it (no window is ever open here when it is called): a quit asked for
   // while one is under way is ignored; will-quit is delivered, and if it is prevented the quit is dropped. Electron
   // clears its "quitting" state only after that event's handlers and the microtasks they queued have run, so it is
@@ -172,6 +191,24 @@ export function harness(options: { env?: Record<string, string>; link?: Partial<
       }
     },
     readLinkConfig,
+    // The managed subscription: the app's own class, with a test's connector child in place of the real one.
+    Subscription: class extends Subscription {
+      constructor(o: SubscriptionOptions) {
+        super({ ...o, ...options.subscription });
+        subscriptions.push(this);
+        if (options.leakySubscription) {
+          this.cancel = () => undefined;
+          this.stopSession = () => undefined;
+        }
+      }
+    },
+    readConnectorConfig,
+    toFramePixels,
+    ASSISTANCE,
+    contextProblem,
+    PNG_MAX_BYTES,
+    questionOf,
+    shell: { openExternal: async (url: string) => void opened.push(url) },
     Buffer,
     Response,
     URL,
@@ -187,7 +224,7 @@ export function harness(options: { env?: Record<string, string>; link?: Partial<
   const fire = (ms: number): void => {
     for (const t of timers.splice(0).filter((x) => (x.ms === ms ? true : (timers.push(x), false)))) t.f();
   };
-  return { ...review, app, userData, sources, handlers, permission, failWrites, source, quits, fire, liveOverlays: () => FakeWindow.all.filter((w) => w.opts.transparent && !w.destroyed) };
+  return { ...review, app, userData, sources, handlers, permission, failWrites, source, quits, opened, fire, liveOverlays: () => FakeWindow.all.filter((w) => w.opts.transparent && !w.destroyed) };
 }
 export type H = ReturnType<typeof harness>;
 export type Session = { overlay: FakeWindow; ending: boolean; capture: string; doc: desktopInk.DesktopInk };

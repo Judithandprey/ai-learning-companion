@@ -72,7 +72,7 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
    * `luma`, that grayscale 1280×800 screen: each frame taken keeps its own pixels, and canvases read back the area
    * average of what was drawn into them, so local changes and separately pinned frames are real.
    */
-  const scene = { shade: 20, luma: null as Uint8Array | null };
+  const scene = { shade: 20, luma: null as Uint8Array | null, exactPng: false };
   if (policy) (s as unknown as { retention: { policy: retention.RetentionPolicy } }).retention.policy = policy; // the main process enforces the same
   const nodes = new Map<string, FakeNode>();
   const events = new Map<string, (...a: unknown[]) => void>();
@@ -85,6 +85,8 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
     hidden = true;
     disabled = false;
     textContent = '';
+    value = '';
+    checked = false;
     dataset = {};
     handlers = new Map<string, (e: unknown) => void>();
     /** What was last drawn into this canvas: the source and its rectangle. */
@@ -127,7 +129,8 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
     async convertToBlob() {
       if (encoding.gate) await encoding.gate;
       // Whole-frame canvases give a PNG of their size (retention checks it); small ones the context picture.
-      const bytes = this.width >= 1280 ? png(this.width, this.height, scene.shade) : PNG_BYTES; // what the screen showed
+      // `exactPng` (ASK selections): a small canvas too gives a PNG of its own size.
+      const bytes = this.width >= 1280 || scene.exactPng ? png(this.width, this.height, scene.shade) : PNG_BYTES; // what the screen showed
       return { arrayBuffer: async () => Uint8Array.from(bytes).buffer };
     }
   }
@@ -136,8 +139,9 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
     return nodes.get(id)!;
   };
   const buttons = ['NAV', 'ASK', 'WRITE'].map((m) => Object.assign(new FakeNode(), { dataset: { mode: m } }));
+  const radios = ['hint', 'explain', 'full_solution'].map((v, i) => Object.assign(new FakeNode(), { value: v, checked: i === 0 }));
   const lc = {
-    ready: async () => ({ display: s.doc.display, doc: plain(s.doc), source_id: 'screen:1:0', address_sha256: crypto.createHash('sha256').update(s.doc.id).digest('hex'), retention_policy: policy, development: (plain(await h.handlers['lc:overlay-ready']!({ sender: s.overlay.webContents })) as { development: boolean }).development }),
+    ready: async () => ({ display: s.doc.display, doc: plain(s.doc), source_id: 'screen:1:0', address_sha256: crypto.createHash('sha256').update(s.doc.id).digest('hex'), retention_policy: policy, ...(plain(await h.handlers['lc:overlay-ready']!({ sender: s.overlay.webContents })) as { development: boolean; subscription: boolean }) }),
     interactive() {},
     armCapture: async () => true,
     saveInk: async (d: desktopInk.DesktopInk, p: unknown[]) => {
@@ -156,6 +160,12 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
     },
     onStop: (f: (...a: unknown[]) => void) => events.set('stop', f),
     onLoadDoc: (f: (...a: unknown[]) => void) => events.set('load', f),
+    // ASK with the subscription: as over IPC (bytes cross as Uint8Array, the rest as plain data).
+    askSelection: async (facts: unknown, png: Uint8Array, inkBytes: Uint8Array) => plain(await h.handlers['lc:ask-selection']!({ sender: s.overlay.webContents }, plain(facts), Uint8Array.from(png), Uint8Array.from(inkBytes))),
+    askSubmit: async (id: string, question: string, assistance: string) => plain(await h.handlers['lc:ask-submit']!({ sender: s.overlay.webContents }, id, question, assistance)),
+    askCancel: (id: string) => void h.handlers['lc:ask-cancel']!({ sender: s.overlay.webContents }, id),
+    askClosed: () => void h.handlers['lc:ask-closed']!({ sender: s.overlay.webContents }),
+    onAskResult: (f: (...a: unknown[]) => void) => events.set('ask-result', f),
     loadResult() {},
   };
   const frame = { width: 1280, height: 800, close() {} };
@@ -179,7 +189,7 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
     performance,
     OffscreenCanvas: FakeNode,
     createImageBitmap: async () => (scene.luma ? { width: 1280, height: 800, luma: scene.luma, close() {} } : frame),
-    document: { getElementById: node, createElement: () => ({ videoWidth: 1280, requestVideoFrameCallback() {} }), querySelectorAll: () => buttons, addEventListener() {}, elementFromPoint: () => null },
+    document: { getElementById: node, createElement: () => ({ videoWidth: 1280, requestVideoFrameCallback() {} }), querySelectorAll: (q: string) => (q.includes('assistance') ? radios : buttons), querySelector: (q: string) => (q.includes('assistance') ? radios.find((r) => r.checked) ?? null : null), addEventListener() {}, elementFromPoint: () => null },
     window: { innerWidth: 1280, innerHeight: 800, devicePixelRatio: 1, addEventListener() {} },
     setTimeout() {},
     FileReader: class {
@@ -205,10 +215,16 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
   s.overlay.webContents.send = (...args: unknown[]) => {
     send(...args);
     if (args[0] === 'lc:stop') queueMicrotask(() => events.get('stop')!(...args.slice(1)));
+    if (args[0] === 'lc:ask-result') queueMicrotask(() => events.get('ask-result')!(...(plain(args.slice(1)) as unknown[])));
   };
   let t = 0;
   const pointer = (name: string, id = 1, x = 10, y = 10): void => node('ink').handlers.get(name)!({ pointerId: id, isPrimary: true, pointerType: 'pen', button: 0, buttons: 1, clientX: x, clientY: y, timeStamp: (t += 10), pressure: 0.5 });
   const click = (id: string): void => node(id).handlers.get('click')!({});
-  return { review, scene, acks, saves, encoding, pointer, click, hint: () => node('hint').textContent, undoDisabled: () => node('undo').disabled, userData: h.userData, captureId: s.doc.id };
+  /** The card's ASK parts, as shown. */
+  const ask = () => ({ badge: node('badge').textContent, form: !node('askForm').hidden, submit: !node('askSubmit').disabled, cancel: !node('askCancel').hidden, status: node('askStatus').hidden ? null : node('askStatus').textContent, answer: node('answerBox').hidden ? null : node('answer').textContent });
+  /** A press on a mode button, as the user's (the mode before is remembered, as in the app). */
+  const press = (m: string): void => buttons.find((b) => b.dataset.mode === m)!.handlers.get('click')!({});
+  const choose = (assistance: string): void => radios.forEach((r) => void (r.checked = r.value === assistance));
+  return { review, scene, acks, saves, encoding, pointer, click, hint: () => node('hint').textContent, undoDisabled: () => node('undo').disabled, userData: h.userData, captureId: s.doc.id, ask, choose, press, question: (text: string) => void (node('question').value = text) };
 }
 

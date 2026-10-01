@@ -28,6 +28,18 @@
   <p id="retention" class="status"></p>
   <p id="link" class="status" hidden></p>
 </section>
+<section id="subscription" aria-labelledby="sub-title" hidden>
+  <h2 id="sub-title">ChatGPT subscription</h2>
+  <p class="hint">Your own ChatGPT subscription, through the official Codex app server, which keeps the sign-in: this app never reads your password, tokens or cookies. No AI watches the screen. Only a selection you send with Ask on its card is sent, with your question.</p>
+  <p id="subState" class="status"></p>
+  <p id="subQuota" class="status" hidden></p>
+  <div class="actions">
+    <button id="subCheck" type="button">Check connection</button>
+    <button id="subLogin" type="button" hidden>Sign in with ChatGPT</button>
+    <button id="subLoginCancel" type="button" class="plain" hidden>Cancel sign-in</button>
+  </div>
+  <p id="subModelRow" class="status" hidden><label for="subModel">Model for questions </label><select id="subModel"></select></p>
+</section>
 <section id="kept" class="kept" aria-labelledby="kept-title" hidden>
   <h2 id="kept-title">Ink that could not be saved</h2>
   <p class="hint">This ink is kept in the app, not yet on this device's disk. Retry saving it, export it to a file you choose, or discard it. Closing the app keeps waiting for your choice.</p>

@@ -88,7 +88,7 @@ export type HostOptions = {
  * The environment of the child: nothing of this app's configuration, and no libpq setting (PGHOSTADDR, PGSERVICE,
  * PGHOST and the rest could send the host to another database than the checked DSN names).
  */
-function childEnv(): NodeJS.ProcessEnv {
+export function childEnv(): NodeJS.ProcessEnv {
   const env: NodeJS.ProcessEnv = {};
   for (const [k, v] of Object.entries(process.env)) if (!/^(LC_|WSLENV$|PYTHON|PG)/i.test(k)) env[k] = v;
   env['PYTHONDONTWRITEBYTECODE'] = '1';
@@ -316,13 +316,18 @@ export async function startHost(launch: HostLaunch, record: StartupRecord, optio
 }
 
 /** End of input, a bounded wait, then this child alone is killed; says whether the host itself was seen to end. */
-async function endChild(child: ChildProcess, closeInput: () => void, exited: Promise<HostExit>, endMs: number, kind: HostLaunch['kind']): Promise<{ ended: boolean; exit: HostExit | null; note: string }> {
+export async function endChild(child: ChildProcess, closeInput: () => void, exited: Promise<HostExit>, endMs: number, kind: HostLaunch['kind']): Promise<{ ended: boolean; exit: HostExit | null; note: string }> {
   try {
     closeInput();
   } catch {
     // the input is already closed
   }
-  const within = (ms: number): Promise<HostExit | null> => Promise.race([exited, sleep(ms).then(() => null)]);
+  const within = async (ms: number): Promise<HostExit | null> => {
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const exit = await Promise.race([exited, new Promise<null>((r) => (timer = setTimeout(() => r(null), ms)))]);
+    clearTimeout(timer); // a wait that is over does not keep the process alive
+    return exit;
+  };
   const exit = await within(endMs);
   if (exit) return { ended: true, exit, note: exit.error ? `the host ended (${exit.error})` : 'the host ended' };
   try {

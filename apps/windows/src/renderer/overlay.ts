@@ -32,7 +32,7 @@ import { decideRetention, DEFAULT_RETENTION_POLICY, type Retained, type Retentio
 import { alignmentOf, DETAIL_DELTA, detailChange, detailGrid, fingerprintFromBase64, fingerprintToBase64, lumaChange, luminance, sampleState, toFramePixels, type Alignment, type Detail, type DisplaySample, type InkMarks } from '../shared/samples.ts';
 
 type Api = {
-  ready(): Promise<{ source_id: string; display: DesktopDisplay; doc: DesktopInk; address_sha256: string; retention_policy?: RetentionPolicy; development?: boolean } | null>;
+  ready(): Promise<{ source_id: string; display: DesktopDisplay; doc: DesktopInk; address_sha256: string; retention_policy?: RetentionPolicy; development?: boolean; subscription?: boolean } | null>;
   retainFrame(facts: unknown, raw: Uint8Array, composed: Uint8Array | null, ink: Uint8Array | null): Promise<{ ok: true } | { ok: false; reason: string; limit?: true; retry?: true }>;
   notRetained(run: { from_seq: number; to_seq: number; samples: number; reason: string }): void;
   observationGap(gap: { sample_seq: number; gap_ms: number; sampled_at: string; monotonic_ms: number }): void;
@@ -46,7 +46,18 @@ type Api = {
   stopped(unsaved: string | null): void;
   onLoadDoc(fn: (doc: DesktopInk) => void): void;
   onStop(fn: (reason: string) => void): void;
+  askSelection(facts: unknown, png: Uint8Array, ink: Uint8Array): Promise<{ ok: true; selection_id: string } | { ok: false; reason: string }>;
+  askSubmit(selectionId: string, question: string, assistance: string): Promise<{ ok: true; request_id: string; model: string | null } | { ok: false; reason: string }>;
+  askCancel(selectionId: string): void;
+  askClosed(): void;
+  onAskResult(fn: (selectionId: string, requestId: string, outcome: AskOutcome) => void): void;
 };
+/** How a question to ChatGPT ended, as the main process says it (an answer only for the request that was sent). */
+type AskOutcome =
+  | { status: 'answered'; answer: { text: string; model: string; latency_ms: number } }
+  | { status: 'refused'; reason: string }
+  | { status: 'cancelled'; uncertain: boolean }
+  | { status: 'uncertain'; reason: string };
 const lc = (globalThis as unknown as { lc: Api }).lc;
 const $ = <T extends HTMLElement>(id: string): T => document.getElementById(id) as T;
 
@@ -66,6 +77,14 @@ const display = info.display;
  * service). Whether it is storing now changes while a card is shown, so a card never says; the control window does.
  */
 const development = info.development === true;
+/**
+ * The managed ChatGPT subscription is configured: an ASK selection can be sent, with the user's question, when the
+ * user presses Ask on its card. Nothing else is ever sent to an AI, and no AI watches the screen.
+ */
+const subscription = info.subscription === true;
+/** The card's selection, as the main process retained it for a question (only with the subscription configured). */
+let asked: { card: number; selection: string | null; request: string | null; submitting: boolean; cancelling: boolean } | null = null;
+let cardSeq = 0;
 let doc: DesktopInk = info.doc;
 let mode: ModeState = INITIAL_MODE_STATE;
 let tool: 'pen' | 'eraser' = 'pen';
@@ -182,6 +201,14 @@ function endCapture(reason: string): void {
   for (const t of stream?.getTracks() ?? []) t.stop();
   sampling = sampling.then(() => takeSample(0)); // after a sample in progress, which is then dropped
   lc.ended(reason);
+  // No question is asked after the end. One that is out is cancelled by the main process; an answer already shown stays.
+  if (asked) {
+    askForm('hidden');
+    if (asked.request || asked.submitting) {
+      asked.cancelling = true;
+      askStatus('The capture ended: the question that was out is cancelled, and no answer to it is shown.');
+    } else if ($('answerBox').hidden) askStatus('The capture ended: nothing more is asked.');
+  }
   render();
 }
 
@@ -694,6 +721,30 @@ const dashedNote = (m: InkMarks): string => {
   const n = m.changed + m.unknown + m.following_content;
   return n > 0 ? `\n${n} of your strokes are drawn dashed, as on screen: their alignment with what is under them is not verified.` : '';
 };
+const DEFAULT_QUESTION = 'Explain what is selected.';
+function askStatus(text: string | null): void {
+  $('askStatus').hidden = text === null;
+  $('askStatus').textContent = text ?? '';
+}
+/** The card's question form: shown for a retained selection; Ask is off while a question is out. */
+function askForm(state: 'hidden' | 'ready' | 'asking'): void {
+  $('askForm').hidden = state === 'hidden';
+  $<HTMLButtonElement>('askSubmit').disabled = state !== 'ready';
+  $<HTMLTextAreaElement>('question').disabled = state !== 'ready';
+  for (const el of document.querySelectorAll<HTMLInputElement>('input[name="assistance"]')) el.disabled = state !== 'ready';
+  $('askCancel').hidden = state !== 'asking';
+}
+/** The card is closed or replaced: its selection is no longer asked about, and a question out about it is cancelled. */
+function resetAsk(): void {
+  if (asked) lc.askClosed(); // the main process cancels what is out for it; its answer is never shown
+  asked = null;
+  for (const el of document.querySelectorAll<HTMLInputElement>('input[name="assistance"]')) el.checked = el.value === 'hint'; // the help is chosen per selection
+  askForm('hidden');
+  askStatus(null);
+  $('answerBox').hidden = true;
+  $('answer').textContent = '';
+  $('badge').textContent = subscription ? 'Selection · not sent to any AI' : 'Selection · no AI connected';
+}
 async function finishAsk(points: ReadonlyArray<InkPoint>): Promise<void> {
   const epoch = mode.askEpoch;
   const region = regionOf(points);
@@ -702,6 +753,10 @@ async function finishAsk(points: ReadonlyArray<InkPoint>): Promise<void> {
   const inkDoc = doc;
   const r = held ? toFramePixels(region, display.bounds, held.bitmap) : null;
   let image: string | null = null;
+  let png: Uint8Array | null = null;
+  // The exact ink document drawn into the selection, taken now, before anything is awaited (a later save may put
+  // another document in its place without changing what is visible).
+  const inkBytes = subscription && held && r ? new TextEncoder().encode(JSON.stringify(inkDoc)) : null;
   let message: string;
   if (!held || !r) {
     message = held ? 'The circled region is outside the captured display, so nothing was selected.' : 'No frame of the display is available (a gap in the capture), so nothing was selected.';
@@ -711,15 +766,19 @@ async function finishAsk(points: ReadonlyArray<InkPoint>): Promise<void> {
     const out = new OffscreenCanvas(r.width, r.height);
     out.getContext('2d')!.drawImage(compose(held.bitmap, inkDoc.ink), r.x, r.y, r.width, r.height, 0, 0, r.width, r.height);
     const blob = await out.convertToBlob({ type: 'image/png' });
+    if (subscription) png = new Uint8Array(await blob.arrayBuffer());
     image = await new Promise<string>((ok) => {
       const fr = new FileReader();
       fr.onload = () => ok(String(fr.result));
       fr.readAsDataURL(blob);
     });
+    const service = development ? ' (Development mode: a local test capture service on this device may also store the whole-display frames kept here, only while it is connected and answering; the control window shows whether it is storing now.)' : '';
     message =
-      (development
-        ? `No AI is connected: this selection was not sent to any AI. (Development mode: a local test capture service on this device may also store the whole-display frames kept here, only while it is connected and answering; the control window shows whether it is storing now.)\n`
-        : `No AI is connected: this selection was not sent anywhere.\n`) +
+      (subscription
+        ? `This selection is sent to ChatGPT, with your question, only when you press Ask below; nothing else of the screen is sent to any AI, and no AI watches it.${service}\n`
+        : development
+          ? `No AI is connected: this selection was not sent to any AI.${service}\n`
+          : `No AI is connected: this selection was not sent anywhere.\n`) +
       `Region ${Math.round(region.x)},${Math.round(region.y)} ${Math.round(region.width)}×${Math.round(region.height)} DIP on ${display.label} = ${r.width}×${r.height} px of frame ${held.seq} (captured ${new Date(held.at).toLocaleTimeString()}), with your ink revision ${inkDoc.ink.revision} drawn over it.` +
       dashedNote(marks);
   }
@@ -728,9 +787,97 @@ async function finishAsk(points: ReadonlyArray<InkPoint>): Promise<void> {
   img.hidden = image === null;
   if (image !== null) img.src = image;
   $('cardText').textContent = message;
+  resetAsk();
+  const card = ++cardSeq;
   $('card').hidden = false;
-  setMode(reduceMode(mode, { type: 'ask_finished', askEpoch: epoch }).state);
+  setMode(reduceMode(mode, { type: 'ask_finished', askEpoch: epoch }).state); // the mode before returns at once; the card stays
+  if (!subscription || !held || !r || !png || !inkBytes) return;
+  // Retained by the main process as the exact picture, the facts of its frame and the ink drawn into it. Nothing is
+  // sent to any AI by this; only the Ask button below does that.
+  asked = { card, selection: null, request: null, submitting: false, cancelling: false };
+  askStatus('Keeping this selection on this device…');
+  const x0 = Math.max(0, region.x);
+  const y0 = Math.max(0, region.y);
+  const facts = {
+    region_dip: { x: x0, y: y0, width: Math.min(display.bounds.width, region.x + region.width) - x0, height: Math.min(display.bounds.height, region.y + region.height) - y0 },
+    frame_seq: held.seq,
+    frame_captured_at: held.at,
+    frame_width: held.bitmap.width,
+    frame_height: held.bitmap.height,
+    ink_session: inkDoc.id,
+    ink_revision: inkDoc.ink.revision,
+    visible_strokes: inkDoc.ink.visible.length,
+  };
+  let kept: Awaited<ReturnType<Api['askSelection']>>;
+  try {
+    kept = await lc.askSelection(facts, png, inkBytes);
+  } catch {
+    kept = { ok: false, reason: 'the app did not answer' };
+  }
+  if (asked?.card !== card) return; // closed, or another selection since
+  if (!kept.ok) return askStatus(`This selection cannot be asked about: ${kept.reason}. It was not sent to any AI.`);
+  asked.selection = kept.selection_id;
+  $<HTMLTextAreaElement>('question').value = DEFAULT_QUESTION;
+  askStatus(ended ? 'The capture ended: nothing is asked.' : null);
+  askForm(ended ? 'hidden' : 'ready');
 }
+/** The user pressed Ask: this selection's picture and the question go to ChatGPT, once. */
+async function submitAsk(): Promise<void> {
+  const a = asked;
+  if (ended || !a || !a.selection || a.request || a.submitting) return;
+  a.submitting = true;
+  a.cancelling = false;
+  const question = $<HTMLTextAreaElement>('question').value;
+  const assistance = document.querySelector<HTMLInputElement>('input[name="assistance"]:checked')?.value ?? 'hint';
+  askForm('asking');
+  $('answerBox').hidden = true;
+  askStatus('Sending this picture and your question to ChatGPT…');
+  let sent: Awaited<ReturnType<Api['askSubmit']>>;
+  try {
+    sent = await lc.askSubmit(a.selection, question, assistance);
+  } catch {
+    sent = { ok: false, reason: 'the app did not answer' };
+  }
+  a.submitting = false;
+  if (asked !== a) return;
+  if (!sent.ok) {
+    askForm(ended ? 'hidden' : 'ready');
+    return askStatus(`Not sent: ${sent.reason}.`);
+  }
+  a.request = sent.request_id;
+  // Handed to the connector: whether ChatGPT took it is known only when an answer, or a refusal, comes.
+  $('badge').textContent = 'Selection · asked: being sent to ChatGPT';
+  if (a.cancelling) return; // cancelled while it was being sent: the status already says so
+  askStatus(`Asked at ${new Date().toLocaleTimeString()}${sent.model ? ` (${sent.model})` : ''}: this picture and your question are being sent to ChatGPT. Waiting for the answer…`);
+}
+/** Cancel, or the card closed, while a question is out: its answer is not shown. */
+function cancelAsk(): void {
+  const a = asked;
+  if (!a?.selection || (!a.request && !a.submitting)) return;
+  a.cancelling = true;
+  lc.askCancel(a.selection); // by selection: the main process cancels the question that is out for it
+  $('askCancel').hidden = true;
+  askStatus('Cancelling: an answer that still arrives is not shown.');
+}
+lc.onAskResult((selectionId, requestId, outcome) => {
+  const a = asked;
+  if (!a || a.selection !== selectionId || a.request !== requestId) return; // not this card's question: never shown
+  a.request = null;
+  // Cancelled here after the answer had already left the main process: it is still not shown.
+  const out: AskOutcome = (a.cancelling || ended) && outcome.status === 'answered' ? { status: 'cancelled', uncertain: true } : outcome;
+  a.cancelling = false;
+  askForm(ended ? 'hidden' : 'ready');
+  if (out.status === 'answered') {
+    // Text only, apart from the selection above; never markup.
+    $('answer').textContent = out.answer.text;
+    $('answerBox').hidden = false;
+    $('badge').textContent = 'Selection · answered by ChatGPT below';
+    return askStatus(`Answered by ChatGPT (${out.answer.model}) in ${(out.answer.latency_ms / 1000).toFixed(1)} s, about the picture above and your question only.`);
+  }
+  $('badge').textContent = 'Selection · asked: no answer shown';
+  if (out.status === 'cancelled') return askStatus(`Cancelled: no answer is shown.${out.uncertain ? ' Whether ChatGPT stopped working on it is not confirmed; it may still have counted against your usage.' : ''}`);
+  askStatus(out.status === 'refused' ? `No answer: ${out.reason}. It was not sent again.` : `No answer: ${out.reason}. It is not sent again automatically.`);
+});
 
 // ---- modes, input and toolbar ----------------------------------------------------------------------------------
 let interactive = false;
@@ -856,7 +1003,10 @@ control($('undo'), () => commit(undo(doc.ink, now()), null));
 control($('redo'), () => commit(redo(doc.ink, now()), null));
 control($('placement'), () => ((placement = placement === 'screen' ? 'content' : 'screen'), render()));
 control($('cancel'), () => setMode(reduceMode(mode, { type: 'ask_cancelled' }).state));
+control($('askSubmit'), () => void submitAsk());
+$('askCancel').addEventListener('click', cancelAsk);
 $('close').addEventListener('click', () => {
+  resetAsk(); // a question still out is cancelled with its card
   $('card').hidden = true;
   if (mode.mode === 'NAV') setInteractive(false);
 });
@@ -893,7 +1043,7 @@ function renderToolbar(): void {
     following > 0 ? `${following} stroke(s) set to follow content, dashed: following content is not established, they stay where written.` : '',
   ];
   const modeText = mode.mode === 'NAV' ? 'Clicks go to your apps.' : mode.mode === 'ASK' ? 'Circle a region. Esc or Cancel returns.' : `${mouseWrites ? 'Pen and mouse write' : 'Pen writes; mouse writing off'}; ${placement === 'screen' ? 'new ink fixed on the screen' : 'following content is not established here: ink stays where written'}.`;
-  $('hint').textContent = [transientHint || modeText, captureText(), 'No AI is connected.', saveText, ...marks].filter(Boolean).join(' ');
+  $('hint').textContent = [transientHint || modeText, captureText(), subscription ? 'No AI watches this screen: ChatGPT gets only a selection you send with Ask.' : 'No AI is connected.', saveText, ...marks].filter(Boolean).join(' ');
 }
 
 // ---- whole-display retention ------------------------------------------------------------------------------

@@ -15,22 +15,28 @@
 //   No AI is connected. Nothing is sent anywhere, except in an explicitly enabled development mode
 //   (LC_DEV_CAPTURE_HOST, capture-link.ts): there each retained frame and ink original of a Start is also stored in a
 //   local test capture service through the released local host, and the control window says so.
+// - No AI watches the screen. Only when the managed ChatGPT subscription is explicitly configured
+//   (LC_SUBSCRIPTION_CONNECTOR, subscription.ts), and only when the user presses Ask on a selection, that one picture
+//   and the user's question are sent to ChatGPT through the official Codex app server; the selection, the request
+//   and its outcome are kept under the session's capture folder (asks/).
 // - Whole-display frames showing a material step are retained as files (userData/captures/<session>/:
 //   raw and composed PNGs by file SHA-256 under frames/, one manifest.jsonl line per retained, not
 //   retained, refused and ended event), within per-session caps; nothing retained is ever deleted.
 // - Renderers are sandboxed with context isolation and no Node; they are served only from this app's
 //   build over app://, may not navigate or open windows, and their IPC is checked by sender and shape.
 
-import { app, BrowserWindow, desktopCapturer, dialog, ipcMain, Menu, nativeImage, net, protocol, screen, session, type IpcMainEvent, type IpcMainInvokeEvent } from 'electron';
+import { app, BrowserWindow, desktopCapturer, dialog, ipcMain, Menu, nativeImage, net, protocol, screen, session, shell, type IpcMainEvent, type IpcMainInvokeEvent } from 'electron';
 import { createHash, randomBytes } from 'node:crypto';
 import { appendFileSync, existsSync, lstatSync, mkdirSync, readdirSync, readFileSync, renameSync, rmdirSync, rmSync, statSync, truncateSync, writeFileSync } from 'node:fs';
 import { release } from 'node:os';
 import { dirname, join, normalize, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import { contextImages, forkDesktopInk, isSessionId, newDesktopInk, parseDesktopInk, PICTURE_BYTES_PER_SAVE, PICTURES_PER_SAVE, summarize, type DesktopDisplay, type DesktopInk, type DesktopInkSummary, type StrokeContext } from '../shared/desktop-ink.ts';
-import type { DisplaySample } from '../shared/samples.ts';
+import { toFramePixels, type DisplaySample } from '../shared/samples.ts';
+import { ASSISTANCE, contextProblem, PNG_MAX_BYTES, questionOf, type AskContext, type AskRequest, type Assistance } from '../shared/subscription-ask.ts';
 import { DEFAULT_RETENTION_POLICY, pngSize, RETENTION_FORMAT, type RetentionPolicy } from '../shared/retention.ts';
 import { CaptureLink, readLinkConfig, type LinkStatus } from './capture-link.ts';
+import { readConnectorConfig, Subscription, type AskOutcome, type SubscriptionStatus } from './subscription.ts';
 
 const HERE = dirname(fileURLToPath(import.meta.url)); // dist/apps/windows/src/main
 const DIST = normalize(join(HERE, '..', '..', '..', '..')); // dist/
@@ -71,6 +77,8 @@ type Session = {
   retention: Retention;
   /** Work the overlay has finished (ink saves, answered retained frames); a Stop waits while it grows. */
   progress: number;
+  /** The newest ASK selection retained for a question (only with the subscription configured). */
+  ask: Selection | null;
 };
 type Retention = {
   readonly id: string;
@@ -109,6 +117,9 @@ let lastEnd: string | null = null;
 /** The development capture link (off unless explicitly configured), and what it says. */
 let link: CaptureLink | null = null;
 let linkStatus: LinkStatus = { mode: 'off' };
+/** The managed ChatGPT subscription (off unless explicitly configured), and what it says. */
+let subscription: Subscription | null = null;
+let subscriptionStatus: SubscriptionStatus = { mode: 'off' };
 
 const secure = (extra: Electron.WebPreferences = {}): Electron.WebPreferences => ({ contextIsolation: true, sandbox: true, nodeIntegration: false, webviewTag: false, spellcheck: false, ...extra });
 
@@ -167,7 +178,7 @@ export async function start(sourceId: string): Promise<{ ok: true } | { ok: fals
   overlay.setIgnoreMouseEvents(true, { forward: true });
   const s: Session = { sourceId, display, overlay, doc: newDesktopInk(id, sha256(id), new Date().toISOString(), display), ignoring: true, samples: [], ending: false, capture: 'unused', opening: null, offered: null, shown: false,
     retention: { id, startedAt: new Date().toISOString(), policy: retentionPolicy, frames: 0, bytes: 0, notRetained: 0, refused: 0, unwritten: 0, headerWritten: false, validBytes: 0, pending: new Map(), answered: new Set(), unfinished: null, endRecorded: false },
-    progress: 0 };
+    progress: 0, ask: null };
   current = s;
   lastEnd = null;
   link?.begin(id, captureDir(id)); // the explicit user Start is the only one that asks for a stream
@@ -219,6 +230,7 @@ export function end(reason: string): void {
   if (!s || s.ending) return;
   s.ending = true;
   link?.stopSending(s.retention.id); // latched now: nothing new is sent after the Stop begins
+  stopAsking(s); // and no question of this session is sent or answered from here
   lastEnd = reason;
   notifyControl();
   if (s.overlay.isDestroyed()) return finish(s, reason);
@@ -272,6 +284,7 @@ function finish(s: Session, reason: string): void {
   if (current !== s) return;
   current = null;
   link?.stopSending(s.retention.id); // however the session ended
+  stopAsking(s);
   lastEnd ??= reason;
   s.opening?.resolve({ ok: false, reason: 'the session ended' });
   s.opening = null;
@@ -724,6 +737,170 @@ function continues(doc: DesktopInk): { ok: true } | { ok: false; reason: string 
   const kept = stored.doc.ink.history.every((op, i) => JSON.stringify(op) === JSON.stringify(doc.ink.history[i]));
   return kept ? { ok: true } : { ok: false, reason: 'the stored history is not the start of this one, so it was left untouched' };
 }
+// ---- ASK: a selection, and a question about it to the managed ChatGPT subscription ----------------------------------
+// Only with the subscription configured. A selection is the exact composed PNG the overlay showed, the facts of where
+// and when it was captured, and the exact ink document drawn into it, kept under the session's capture folder:
+// asks/<sha256>.png, ink/<sha256>.json, and asks/<selection>.json (the selection, each question about it and how it
+// ended; an answer's text is there, apart from the originals). Nothing is sent until the user presses Ask.
+type AskEntry = { request_id: string; question: string; assistance: Assistance; model: string | null; submitted_at: string; ended_at: string | null; outcome: unknown; shown: boolean };
+type Selection = {
+  readonly id: string;
+  readonly image: Picture;
+  readonly context: AskContext;
+  readonly record: { format: 'lc-windows-ask/v1'; selection_id: string; selected_at: string; image: unknown; context: AskContext; ink_original: unknown; requests: AskEntry[] };
+  /** The question that is out, or the last one. */
+  request: { id: string; state: 'asking' | 'cancelled' | 'done' } | null;
+};
+const askFile = (id: string, name: string): string => join(captureDir(id), 'asks', name);
+const isRectValue = (v: unknown): v is { x: number; y: number; width: number; height: number } => isObj(v) && ['x', 'y', 'width', 'height'].every((k) => typeof v[k] === 'number' && Number.isFinite(v[k]));
+type AskAnswer = { ok: true; selection_id: string } | { ok: false; reason: string };
+
+/** Retains an ASK selection as the overlay composed it. Nothing is sent; a question in flight before it is cancelled. */
+function retainSelection(s: Session, factsValue: unknown, pngValue: unknown, inkValue: unknown): AskAnswer {
+  if (!subscription) return { ok: false, reason: 'no AI is connected' };
+  // A new selection replaces the card: the one before can no longer be asked about, and a question still out about
+  // it is cancelled, whether or not this one is retained.
+  dropSelection(s);
+  if (s.ending) return { ok: false, reason: 'the capture is ending' };
+  const f = factsValue;
+  if (!isObj(f) || !isRectValue(f['region_dip']) || !isSeq(f['frame_seq']) || !isTime(f['frame_captured_at']) || !isSeq(f['frame_width']) || !isSeq(f['frame_height']) || !isHex(f['ink_session'], 16) || !isCount(f['ink_revision']) || !isCount(f['visible_strokes'])) {
+    return { ok: false, reason: 'the selection facts are malformed' };
+  }
+  const most = (dip: number): number => Math.ceil(dip * s.display.scale_factor) + 16;
+  if (f['frame_width'] > most(s.display.bounds.width) || f['frame_height'] > most(s.display.bounds.height)) return { ok: false, reason: 'the frame is larger than the chosen display' };
+  // The pixels of the selection are worked out here, from the display and the frame, not taken from the overlay.
+  const region_dip = { x: f['region_dip'].x, y: f['region_dip'].y, width: f['region_dip'].width, height: f['region_dip'].height };
+  const region_px = toFramePixels(region_dip, s.display.bounds, { width: f['frame_width'], height: f['frame_height'] });
+  if (!region_px) return { ok: false, reason: 'the selected region is not inside the display' };
+  if (Object.prototype.toString.call(pngValue) === '[object Uint8Array]' && (pngValue as Uint8Array).length > PNG_MAX_BYTES) return { ok: false, reason: `the selection's picture is over ${PNG_MAX_BYTES} bytes` };
+  const image = readPicture(pngValue, region_px.width, region_px.height, s.retention.id);
+  if (typeof image === 'string') return { ok: false, reason: `the selection's picture is ${image}` };
+  const ink = readInkOriginal(inkValue, { ink_session: f['ink_session'], ink_revision: f['ink_revision'], visible_strokes: f['visible_strokes'] });
+  const context: AskContext = {
+    capture_session_id: s.retention.id,
+    frame_seq: f['frame_seq'],
+    frame_captured_at: new Date(f['frame_captured_at']).toISOString(),
+    frame_width: f['frame_width'],
+    frame_height: f['frame_height'],
+    display: { id: s.display.display_id, bounds: { x: s.display.bounds.x, y: s.display.bounds.y, width: s.display.bounds.width, height: s.display.bounds.height }, scale_factor: s.display.scale_factor },
+    region_dip,
+    region_px,
+    ink_revision: f['ink_revision'],
+    ink_sha256: 'data' in ink ? ink.sha256 : null, // null: the exact ink document could not be retained (the record says why)
+    source_url: null,
+    source_version: null,
+    media_position: null,
+  };
+  const problem = contextProblem(context, image);
+  if (problem) return { ok: false, reason: problem };
+  const id = `ask-${randomBytes(8).toString('hex')}`;
+  const originals = [
+    { name: `asks/${image.sha256}.png`, file: askFile(s.retention.id, `${image.sha256}.png`), sha: image.sha256, data: image.data },
+    ...('data' in ink ? [{ name: `ink/${ink.sha256}.json`, file: inkOriginalFile(s.retention.id, ink.sha256), sha: ink.sha256, data: ink.data }] : []),
+  ];
+  const record: Selection['record'] = {
+    format: 'lc-windows-ask/v1',
+    selection_id: id,
+    selected_at: new Date().toISOString(),
+    image: { file: originals[0]!.name, sha256: image.sha256, bytes: image.bytes, width: image.width, height: image.height },
+    context,
+    ink_original: 'data' in ink ? { file: `ink/${ink.sha256}.json`, sha256: ink.sha256, bytes: ink.bytes } : { refused: ink.refused },
+    requests: [],
+  };
+  try {
+    // What is already at an address is reused only if it is exactly these bytes; anything else is left untouched.
+    const toWrite = originals.filter((o) => {
+      const stored = storedOriginal(o.file, o.sha, o.data.length);
+      if (stored.state !== 'absent' && stored.state !== 'same') throw new NotItsBytes(`the original already stored as ${o.name} is not these bytes (${stored.reason}); it is left untouched`);
+      return stored.state === 'absent';
+    });
+    const adding = toWrite.reduce((a, o) => a + o.data.length, 0);
+    if (s.retention.bytes + adding > s.retention.policy.max_bytes) return { ok: false, reason: `the retention limit of ${s.retention.policy.max_bytes} bytes for this session is reached` };
+    for (const o of toWrite) {
+      mkdirSync(dirname(o.file), { recursive: true });
+      writeAtomic(o.file, o.data);
+      s.retention.bytes += o.data.length;
+    }
+    writeAtomic(askFile(s.retention.id, `${id}.json`), `${JSON.stringify(record)}\n`);
+  } catch (error) {
+    return { ok: false, reason: error instanceof NotItsBytes ? error.message : `the selection could not be written to this device (${message(error)})` };
+  }
+  s.ask = { id, image, context, record, request: null };
+  s.progress += 1;
+  notifyRetention(s);
+  return { ok: true, selection_id: id };
+}
+
+/** The user pressed Ask: one question about the current selection is written, then sent, once. */
+function submitAsk(s: Session, selectionId: unknown, questionValue: unknown, assistanceValue: unknown): { ok: true; request_id: string; model: string | null } | { ok: false; reason: string } {
+  const sel = s.ask;
+  if (!subscription) return { ok: false, reason: 'no AI is connected' };
+  if (!sel || sel.id !== selectionId) return { ok: false, reason: 'this is no longer the current selection' };
+  if (s.ending) return { ok: false, reason: 'the capture is ending' };
+  if (sel.request && sel.request.state !== 'done') return { ok: false, reason: sel.request.state === 'asking' ? 'this selection\'s question is still being answered' : 'the question before is still being cancelled' };
+  const question = questionOf(questionValue);
+  if (question === null) return { ok: false, reason: 'the question is empty or too long' };
+  if (!ASSISTANCE.includes(assistanceValue as Assistance)) return { ok: false, reason: 'the kind of help is not chosen' };
+  const no = subscription.notAskable(s.retention.id);
+  if (no) return { ok: false, reason: no };
+  const model = subscriptionStatus.mode === 'managed' ? subscriptionStatus.model : null;
+  const request: AskRequest = {
+    request_id: `${sel.id}.${sel.record.requests.length + 1}`,
+    question,
+    assistance: assistanceValue as Assistance,
+    image: { png_base64: Buffer.from(sel.image.data).toString('base64'), sha256: sel.image.sha256, width: sel.image.width, height: sel.image.height },
+    context: sel.context,
+  };
+  const entry: AskEntry = { request_id: request.request_id, question, assistance: request.assistance, model, submitted_at: new Date().toISOString(), ended_at: null, outcome: null, shown: false };
+  sel.record.requests.push(entry);
+  try {
+    writeAtomic(askFile(s.retention.id, `${sel.id}.json`), `${JSON.stringify(sel.record)}\n`); // written before it is sent
+  } catch (error) {
+    sel.record.requests.pop();
+    return { ok: false, reason: `the question could not be written to this device (${message(error)}), so it was not sent` };
+  }
+  const mine = { id: request.request_id, state: 'asking' as 'asking' | 'cancelled' | 'done' };
+  sel.request = mine;
+  void subscription.ask(request).then((outcome) => askEnded(s, sel, mine, entry, outcome));
+  return { ok: true, request_id: request.request_id, model };
+}
+
+/** How a question ended: recorded, and shown only if it is still the current selection's live question. */
+function askEnded(s: Session, sel: Selection, mine: NonNullable<Selection['request']>, entry: AskEntry, outcome: AskOutcome): void {
+  // Checked again here, whatever the connector checked: the session, the selection and the request are still these.
+  const live = current === s && !s.ending && s.ask === sel && sel.request === mine && mine.state === 'asking';
+  const view: AskOutcome = outcome.status === 'answered' && !live ? { status: 'cancelled', uncertain: true } : outcome;
+  mine.state = 'done';
+  entry.ended_at = new Date().toISOString();
+  entry.outcome = view; // an answer's text is kept only when it is this selection's live answer; apart from the originals
+  entry.shown = live && outcome.status === 'answered';
+  try {
+    writeAtomic(askFile(s.retention.id, `${sel.id}.json`), `${JSON.stringify(sel.record)}\n`);
+  } catch {
+    // The outcome could not be written; what is shown below says how it ended.
+  }
+  // Said to the overlay only while this is still the selection on its card.
+  if (current === s && s.ask === sel && sel.request === mine && !s.overlay.isDestroyed()) s.overlay.webContents.send('lc:ask-result', sel.id, mine.id, view);
+}
+
+/** The card of the current selection is gone (closed, or replaced): its question out is cancelled, and it is no longer asked about. */
+function dropSelection(s: Session): void {
+  if (s.ask) cancelAsk(s, s.ask.id);
+  s.ask = null;
+}
+/** Cancels the question that is out for this selection: from now its answer is never shown. */
+function cancelAsk(s: Session, selectionId: unknown): void {
+  const sel = s.ask;
+  if (!sel || sel.id !== selectionId || sel.request?.state !== 'asking') return;
+  sel.request.state = 'cancelled';
+  subscription?.cancel(sel.request.id);
+}
+/** The session is ending: no question of it is sent or answered from here. */
+function stopAsking(s: Session): void {
+  if (s.ask?.request?.state === 'asking') s.ask.request.state = 'cancelled';
+  subscription?.stopSession(s.retention.id);
+}
+
 function writeAtomic(file: string, data: string | Uint8Array): void {
   const tmp = `${file}.${process.pid}.tmp`;
   try {
@@ -932,6 +1109,12 @@ const fromOverlay = (e: IpcMainEvent | IpcMainInvokeEvent): boolean => current !
 ipcMain.handle('lc:list-displays', async (e) => (fromControl(e) ? listDisplays() : []));
 ipcMain.handle('lc:session-state', (e) => (fromControl(e) ? sessionInfo() : null));
 ipcMain.handle('lc:link-state', (e) => (fromControl(e) ? linkStatus : null));
+// The managed ChatGPT subscription: its state, and the user's own presses (check, sign in, cancel, choose a model).
+ipcMain.handle('lc:sub-state', (e) => (fromControl(e) ? subscriptionStatus : null));
+ipcMain.on('lc:sub-check', (e) => void (fromControl(e) ? subscription?.check() : undefined));
+ipcMain.on('lc:sub-login', (e) => void (fromControl(e) ? subscription?.login() : undefined));
+ipcMain.on('lc:sub-login-cancel', (e) => void (fromControl(e) ? subscription?.cancelLogin() : undefined));
+ipcMain.on('lc:sub-model', (e, id: unknown) => void (fromControl(e) ? subscription?.chooseModel(id) : undefined));
 ipcMain.handle('lc:start', async (e, sourceId: unknown) => (fromControl(e) && typeof sourceId === 'string' ? start(sourceId) : { ok: false, reason: 'refused' }));
 ipcMain.handle('lc:stop', (e) => {
   if (fromControl(e)) end('stopped by the user');
@@ -967,8 +1150,13 @@ ipcMain.handle('lc:discard-recovery', async (e, id: unknown) => {
 });
 ipcMain.handle('lc:overlay-ready', (e) => {
   if (!fromOverlay(e) || !current) return null;
-  return { source_id: current.sourceId, display: current.display, doc: current.doc, address_sha256: sha256(current.doc.id), retention_policy: current.retention.policy, development: linkStatus.mode === 'development' };
+  return { source_id: current.sourceId, display: current.display, doc: current.doc, address_sha256: sha256(current.doc.id), retention_policy: current.retention.policy, development: linkStatus.mode === 'development', subscription: subscriptionStatus.mode === 'managed' };
 });
+// ASK: a selection is retained; a question about it is sent only by lc:ask-submit, the user's own press.
+ipcMain.handle('lc:ask-selection', (e, facts: unknown, png: unknown, ink: unknown) => (fromOverlay(e) && current ? retainSelection(current, facts, png, ink ?? null) : { ok: false, reason: 'refused' }));
+ipcMain.handle('lc:ask-submit', (e, selectionId: unknown, question: unknown, assistance: unknown) => (fromOverlay(e) && current ? submitAsk(current, selectionId, question, assistance) : { ok: false, reason: 'refused' }));
+ipcMain.on('lc:ask-cancel', (e, selectionId: unknown) => void (fromOverlay(e) && current ? cancelAsk(current, selectionId) : undefined));
+ipcMain.on('lc:ask-closed', (e) => void (fromOverlay(e) && current ? dropSelection(current) : undefined)); // the card was closed or replaced
 // Retained frames keep arriving while a Stop waits for the overlay: they were observed before the end.
 ipcMain.handle('lc:retain-frame', (e, facts: unknown, raw: unknown, composed: unknown, ink: unknown): RetainAnswer => (fromOverlay(e) && current ? retainFrame(current, facts, raw, composed, ink ?? null) : { ok: false, reason: 'refused' }));
 ipcMain.on('lc:not-retained', (e, run: unknown) => {
@@ -1042,10 +1230,9 @@ app.on('before-quit', () => writeUnrecordedEnds());
 let linkQuitting: Promise<void> | null = null;
 let linkQuitDone = false;
 app.on('will-quit', (e) => {
-  if (!link || linkQuitDone) return;
+  if ((!link && !subscription) || linkQuitDone) return;
   e.preventDefault();
-  linkQuitting ??= link
-    .quit(20_000)
+  linkQuitting ??= Promise.all([link?.quit(20_000), subscription?.quit()])
     .catch(() => undefined)
     .then(() => {
       linkQuitDone = true;
@@ -1056,6 +1243,9 @@ app.on('will-quit', (e) => {
 });
 function notifyLink(): void {
   if (control && !control.isDestroyed()) control.webContents.send('lc:link', linkStatus);
+}
+function notifySubscription(): void {
+  if (control && !control.isDestroyed()) control.webContents.send('lc:sub', subscriptionStatus);
 }
 
 app.whenReady().then(async () => {
@@ -1077,6 +1267,20 @@ app.whenReady().then(async () => {
     });
     linkStatus = link.status();
     void link.reconcile();
+  }
+  // The managed ChatGPT subscription: explicitly configured; nothing is started or asked until the user presses.
+  const connector = readConnectorConfig(process.env);
+  if (connector && 'error' in connector) subscriptionStatus = { mode: 'unavailable', reason: connector.error };
+  else if (connector) {
+    subscription = new Subscription({
+      config: connector,
+      notify: (st) => {
+        subscriptionStatus = st;
+        notifySubscription();
+      },
+      openExternal: (url) => shell.openExternal(url),
+    });
+    subscriptionStatus = subscription.status();
   }
   protocol.handle('app', (request) => {
     const url = new URL(request.url);

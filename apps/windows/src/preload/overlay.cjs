@@ -16,4 +16,10 @@ contextBridge.exposeInMainWorld('lc', {
   stopped: (unsaved) => ipcRenderer.send('lc:stopped', unsaved == null ? null : String(unsaved)),
   onLoadDoc: (fn) => ipcRenderer.on('lc:load-doc', (_e, doc) => fn(doc)),
   onStop: (fn) => ipcRenderer.on('lc:stop', (_e, reason) => fn(reason)),
+  // ASK with the managed ChatGPT subscription: a selection is retained; a question is sent only by askSubmit.
+  askSelection: (facts, png, ink) => ipcRenderer.invoke('lc:ask-selection', facts, png, ink ?? null),
+  askSubmit: (selectionId, question, assistance) => ipcRenderer.invoke('lc:ask-submit', String(selectionId), String(question), String(assistance)),
+  askCancel: (selectionId) => ipcRenderer.send('lc:ask-cancel', String(selectionId)),
+  askClosed: () => ipcRenderer.send('lc:ask-closed'),
+  onAskResult: (fn) => ipcRenderer.on('lc:ask-result', (_e, selectionId, requestId, outcome) => fn(selectionId, requestId, outcome)),
 });

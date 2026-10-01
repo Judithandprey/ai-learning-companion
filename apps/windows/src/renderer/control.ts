@@ -28,6 +28,21 @@ type LinkStatus =
   | { mode: 'off' }
   | { mode: 'unavailable'; reason: string }
   | { mode: 'development'; state: string; stored: number; unknown: number; refused: number; not_sent: number; detail: string | null; earlier_unknown: number; sends_stopped: boolean; awaiting: boolean; storing: boolean };
+/** The managed ChatGPT subscription (main process, subscription.ts), as states, labels and counts only. */
+type SubStatus =
+  | { mode: 'off' }
+  | { mode: 'unavailable'; reason: string }
+  | {
+      mode: 'managed';
+      state: 'not_checked' | 'checking' | 'signed_in' | 'signed_out' | 'unknown' | 'unavailable';
+      plan: string | null;
+      rate_limits: Array<{ label: string; used_percent: number; resets_at: string | null }> | null;
+      models: Array<{ id: string; label: string; image_input: boolean; default: boolean }>;
+      model: string | null;
+      login: 'none' | 'starting' | 'waiting' | 'failed' | 'cancelled' | 'refused_address';
+      detail: string | null;
+      asking: boolean;
+    };
 type Api = {
   listDisplays(): Promise<DisplayChoice[]>;
   sessionState(): Promise<SessionInfo | null>;
@@ -48,6 +63,12 @@ type Api = {
   onRetention(fn: (r: { frames: number; bytes: number; not_retained: number; refused: number; unwritten: number; unfinished: number[] | null; ended: boolean; end_recorded: boolean; place: string }) => void): void;
   linkState(): Promise<LinkStatus | null>;
   onLink(fn: (s: LinkStatus) => void): void;
+  subState(): Promise<SubStatus | null>;
+  onSub(fn: (s: SubStatus) => void): void;
+  subCheck(): void;
+  subLogin(): void;
+  subLoginCancel(): void;
+  subModel(id: string): void;
 };
 const lc = (globalThis as unknown as { lc: Api }).lc;
 const $ = (id: string): HTMLElement => document.getElementById(id)!;
@@ -275,17 +296,26 @@ void lc.sessionState().then((s) => (s ? showSession(s) : undefined));
 
 /** The header when nothing is stored anywhere (control.html's own text). */
 const AI_DEFAULT = 'No AI is connected: captured frames and ink stay on this device, and nothing is sent anywhere.';
-/** What the development capture link does; in that mode the header says it too. Otherwise the header is the default. */
+// What the header and the lines say of AI: nothing is connected, unless the managed ChatGPT subscription is
+// configured; then an AI gets only a selection the user sends with Ask, and that is said instead.
+const NO_AI = 'No AI is connected; nothing is sent to any AI.';
+const ASK_ONLY = 'No AI watches the screen: ChatGPT (your subscription) gets only a selection you send with Ask, with your question.';
+let lastLink: LinkStatus = { mode: 'off' };
+let lastSub: SubStatus = { mode: 'off' };
+/** What the development capture link does, and what the subscription can be sent; the header says both. */
 function showLink(l: LinkStatus): void {
+  lastLink = l;
+  const managed = lastSub.mode === 'managed';
+  const ai = managed ? ASK_ONLY : NO_AI;
   const el = $('link');
-  if (l.mode !== 'development') $('ai').textContent = AI_DEFAULT;
+  if (l.mode !== 'development') $('ai').textContent = managed ? `Captured frames and ink stay on this device. ${ASK_ONLY}` : AI_DEFAULT;
   if (l.mode === 'off') {
     el.hidden = true;
     return;
   }
   el.hidden = false;
   if (l.mode === 'unavailable') {
-    // Storage cannot happen: the header keeps saying nothing is sent.
+    // Storage cannot happen: the header keeps saying nothing is stored anywhere.
     el.textContent = `Capture storage (development): off. ${l.reason}.`;
     return;
   }
@@ -293,12 +323,12 @@ function showLink(l: LinkStatus): void {
   // a send's outcome is known only once the service answers. After a fault, earlier sends are not undone and stay
   // counted; only further sends have stopped.
   $('ai').textContent = l.sends_stopped
-    ? 'Development mode: captured frames and ink are kept on this device. Further sends to the local test capture service on it have stopped; what the latest capture sent before is counted below. No AI is connected; nothing is sent to any AI.'
+    ? `Development mode: captured frames and ink are kept on this device. Further sends to the local test capture service on it have stopped; what the latest capture sent before is counted below. ${ai}`
     : l.state === 'sending'
-      ? 'Development mode: captured frames and ink are kept on this device and are also sent to a local test capture service on it. A record counts as stored only once that service confirms it; the counts are below. No AI is connected; nothing is sent to any AI.'
+      ? `Development mode: captured frames and ink are kept on this device and are also sent to a local test capture service on it. A record counts as stored only once that service confirms it; the counts are below. ${ai}`
       : l.state === 'stalled' || l.awaiting // a send still out (at a Stop, say) may yet be confirmed
-        ? 'Development mode: captured frames and ink are kept on this device. Whether a local test capture service on it is storing them now is not confirmed; its state, and the latest capture\'s counts, are below. No AI is connected; nothing is sent to any AI.'
-        : 'Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture\'s counts, are below. No AI is connected; nothing is sent to any AI.';
+        ? `Development mode: captured frames and ink are kept on this device. Whether a local test capture service on it is storing them now is not confirmed; its state, and the latest capture's counts, are below. ${ai}`
+        : `Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. ${ai}`;
   const states: Record<string, string> = {
     idle: 'not connected yet (a connection is tried when you press Start)',
     connecting: 'connecting',
@@ -319,9 +349,73 @@ function showLink(l: LinkStatus): void {
     l.not_sent > 0 ? `${l.not_sent} not sent (kept on this device)` : '',
     l.earlier_unknown > 0 ? `${l.earlier_unknown} earlier stream(s) whose end is not known` : '',
   ].filter(Boolean);
-  el.textContent = `Capture storage (development): ${states[l.state] ?? l.state}. ${parts.join('; ')}.${l.detail ? ` ${l.detail}.` : ''} AI: not connected.`;
+  el.textContent = `Capture storage (development): ${states[l.state] ?? l.state}. ${parts.join('; ')}.${l.detail ? ` ${l.detail}.` : ''} ${managed ? 'These stored frames are not sent to any AI.' : 'AI: not connected.'}`;
 }
+
+/** The managed ChatGPT subscription: its sign-in state, plan, usage limits and models, and what the user can press. */
+function showSubscription(s: SubStatus): void {
+  lastSub = s;
+  showLink(lastLink); // the header's sentence about AI follows it
+  const section = $('subscription');
+  section.hidden = s.mode === 'off';
+  if (s.mode === 'off') return;
+  const show = (id: string, on: boolean): void => void ($(id).hidden = !on);
+  if (s.mode === 'unavailable') {
+    $('subState').textContent = `ChatGPT subscription: off. ${s.reason}.`;
+    for (const id of ['subQuota', 'subCheck', 'subLogin', 'subLoginCancel', 'subModelRow']) show(id, false);
+    return;
+  }
+  const states: Record<string, string> = {
+    not_checked: 'Not checked yet. Check connection starts the connector, which asks the official Codex app server for your sign-in state, plan, usage limits and models; no picture and no question is sent by that.',
+    checking: 'Checking…',
+    signed_in: `Signed in with ChatGPT${s.plan ? ` (${s.plan})` : ''}, as the official Codex app server reports. That does not show that a model will answer.`,
+    signed_out: 'Not signed in. Sign in with ChatGPT opens the official sign-in page in your browser.',
+    unknown: 'The sign-in state is not known.',
+    unavailable: 'Not available.',
+  };
+  const logins: Record<string, string> = {
+    none: '',
+    starting: ' Starting the sign-in…',
+    waiting: ' Waiting for you to finish signing in, in your browser.',
+    failed: ' The sign-in did not complete.',
+    cancelled: ' The sign-in was cancelled.',
+    refused_address: ' The sign-in was not started.',
+  };
+  $('subState').textContent = `${states[s.state] ?? s.state}${logins[s.login] ?? ''}${s.detail ? ` ${s.detail[0]!.toUpperCase()}${s.detail.slice(1)}.` : ''}${s.asking ? ' A question is out.' : ''}`;
+  const known = s.state === 'signed_in' || s.state === 'signed_out' || s.state === 'unknown';
+  show('subQuota', s.state === 'signed_in');
+  $('subQuota').textContent = s.rate_limits === null
+    ? 'Usage limits: not reported.'
+    : `Usage limits: ${s.rate_limits.map((r) => `${r.label} ${Math.round(r.used_percent)}% used${r.resets_at ? `, resets ${new Date(r.resets_at).toLocaleString()}` : ''}`).join('; ') || 'none reported'}.`;
+  show('subCheck', true);
+  ($('subCheck') as HTMLButtonElement).disabled = s.state === 'checking';
+  show('subLogin', known && s.state !== 'signed_in' && s.login !== 'waiting' && s.login !== 'starting');
+  show('subLoginCancel', s.login === 'waiting');
+  // Only models that take pictures can be asked; the catalog listing one does not show that it will answer.
+  const usable = s.models.filter((m) => m.image_input);
+  show('subModelRow', s.state === 'signed_in');
+  const select = $('subModel') as HTMLSelectElement;
+  select.replaceChildren(
+    ...usable.map((m) => {
+      const o = document.createElement('option');
+      o.value = m.id;
+      o.textContent = m.label;
+      o.selected = m.id === s.model;
+      return o;
+    }),
+  );
+  select.disabled = usable.length === 0;
+  if (usable.length === 0 && s.state === 'signed_in') $('subState').textContent += ' No model that takes pictures is listed, so a question cannot be sent.';
+}
+// ---- end of the link and subscription texts ----
+
 lc.onLink(showLink);
 void lc.linkState().then((l) => (l ? showLink(l) : undefined));
+lc.onSub(showSubscription);
+void lc.subState().then((x) => (x ? showSubscription(x) : undefined));
+$('subCheck').addEventListener('click', () => lc.subCheck());
+$('subLogin').addEventListener('click', () => lc.subLogin());
+$('subLoginCancel').addEventListener('click', () => lc.subLoginCancel());
+$('subModel').addEventListener('change', () => lc.subModel(($('subModel') as HTMLSelectElement).value));
 void showDisplays();
 void showInk();

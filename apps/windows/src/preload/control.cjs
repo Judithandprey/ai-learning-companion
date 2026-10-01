@@ -21,4 +21,11 @@ contextBridge.exposeInMainWorld('lc', {
   onRetention: (fn) => ipcRenderer.on('lc:retention', (_e, r) => fn(r)),
   linkState: () => ipcRenderer.invoke('lc:link-state'),
   onLink: (fn) => ipcRenderer.on('lc:link', (_e, s) => fn(s)),
+  // The managed ChatGPT subscription: its state, and the user's own presses.
+  subState: () => ipcRenderer.invoke('lc:sub-state'),
+  onSub: (fn) => ipcRenderer.on('lc:sub', (_e, s) => fn(s)),
+  subCheck: () => ipcRenderer.send('lc:sub-check'),
+  subLogin: () => ipcRenderer.send('lc:sub-login'),
+  subLoginCancel: () => ipcRenderer.send('lc:sub-login-cancel'),
+  subModel: (id) => ipcRenderer.send('lc:sub-model', String(id)),
 });

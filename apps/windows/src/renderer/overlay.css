@@ -16,4 +16,12 @@ canvas#ink { position: fixed; inset: 0; width: 100vw; height: 100vh; touch-actio
 .card .badge { margin: 0 0 6px; font-size: 11px; font-weight: 600; text-transform: uppercase; color: #8e5b00; }
 .card img { display: block; max-width: 100%; border: 1px solid #ccc; }
 .card .text { font-size: 12px; white-space: pre-wrap; }
+.card .ask { margin-top: 8px; display: grid; gap: 6px; }
+.card .ask label { font-size: 12px; }
+.card .ask textarea { box-sizing: border-box; width: 100%; font: inherit; resize: vertical; }
+.card .ask .assist { display: flex; flex-wrap: wrap; gap: 4px 12px; }
+.card .ask .actions { display: flex; gap: 8px; }
+.card .ask button { font: inherit; padding: 4px 12px; }
+.card .answer { margin-top: 8px; padding-top: 6px; border-top: 1px solid #ccc; }
+.card .answer .badge { color: #0a5f2a; }
 .card .close { all: unset; position: absolute; top: 4px; right: 10px; cursor: pointer; font-size: 18px; color: #555; }
