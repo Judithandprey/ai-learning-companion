@@ -312,3 +312,22 @@ real('a manifest not yet written when the link is ready is not a lasting fault: 
   link.stopSending(SESSION);
   await until('stopped', () => state(link.status()) === 'stopped');
 });
+
+real('sends that get no answer: the link says it is not storing now (the same job is tried again), and storing again once one is answered', { timeout: 120_000 }, async () => {
+  let dropped = 0;
+  // One whole upload (its three tries of the batch) gets no answer; the next is answered.
+  const w = world({ fault: (r) => (r.method === 'POST' && r.path.endsWith(':batch') && dropped++ < 3 ? 'drop-answer' : null) });
+  const link = w.make();
+  link.begin(SESSION, w.capture);
+  w.append(link, 3);
+  await until('stored', () => stored(link) === 2);
+  const said = w.statuses.flatMap((s) => (s.mode === 'development' ? [[s.state, s.storing] as const] : []));
+  assert.equal(said.some(([st, storing]) => st === 'stalled' && storing === false), true, 'not storing while the send went unanswered');
+  assert.equal(said.some(([st, storing]) => st !== 'sending' && storing), false, 'storing is only ever said of a live, answered stream');
+  assert.equal(w.statuses.some((s) => s.mode === 'development' && s.state === 'stalled' && s.stored === 2), false, 'storing again from the answer on');
+  const now = link.status();
+  assert.deepEqual(now.mode === 'development' && [now.state, now.storing, now.detail], ['sending', true, null], 'answered again: storing');
+  assert.equal(new Set(w.requests.filter((r) => r.path.endsWith(':batch')).map((r) => r.key)).size, 1, 'the same key throughout');
+  link.stopSending(SESSION);
+  await until('stopped', () => state(link.status()) === 'stopped');
+});

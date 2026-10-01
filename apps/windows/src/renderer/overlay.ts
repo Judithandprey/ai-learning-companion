@@ -32,7 +32,7 @@ import { decideRetention, DEFAULT_RETENTION_POLICY, type Retained, type Retentio
 import { alignmentOf, DETAIL_DELTA, detailChange, detailGrid, fingerprintFromBase64, fingerprintToBase64, lumaChange, luminance, sampleState, toFramePixels, type Alignment, type Detail, type DisplaySample, type InkMarks } from '../shared/samples.ts';
 
 type Api = {
-  ready(): Promise<{ source_id: string; display: DesktopDisplay; doc: DesktopInk; address_sha256: string; retention_policy?: RetentionPolicy; stored?: boolean } | null>;
+  ready(): Promise<{ source_id: string; display: DesktopDisplay; doc: DesktopInk; address_sha256: string; retention_policy?: RetentionPolicy; storage?: Storage } | null>;
   retainFrame(facts: unknown, raw: Uint8Array, composed: Uint8Array | null, ink: Uint8Array | null): Promise<{ ok: true } | { ok: false; reason: string; limit?: true; retry?: true }>;
   notRetained(run: { from_seq: number; to_seq: number; samples: number; reason: string }): void;
   observationGap(gap: { sample_seq: number; gap_ms: number; sampled_at: string; monotonic_ms: number }): void;
@@ -46,7 +46,13 @@ type Api = {
   stopped(unsaved: string | null): void;
   onLoadDoc(fn: (doc: DesktopInk) => void): void;
   onStop(fn: (reason: string) => void): void;
+  onStorage(fn: (storage: Storage) => void): void;
 };
+/**
+ * The development capture link, as the main process says it is now: storing retained frames in a local test capture
+ * service, configured but not storing now, or null (no such link: nothing is sent anywhere).
+ */
+type Storage = 'storing' | 'not_storing' | null;
 const lc = (globalThis as unknown as { lc: Api }).lc;
 const $ = <T extends HTMLElement>(id: string): T => document.getElementById(id) as T;
 
@@ -61,8 +67,8 @@ const hex = (buf: ArrayBuffer): string => Array.from(new Uint8Array(buf), (b) =>
 const info = await lc.ready();
 if (!info) throw new Error('no session');
 const display = info.display;
-/** Development mode: the main process also stores retained frames in a local test capture service. */
-const stored = info.stored === true;
+let storage: Storage = info.storage ?? null;
+lc.onStorage((s) => void (storage = s));
 let doc: DesktopInk = info.doc;
 let mode: ModeState = INITIAL_MODE_STATE;
 let tool: 'pen' | 'eraser' = 'pen';
@@ -714,9 +720,11 @@ async function finishAsk(points: ReadonlyArray<InkPoint>): Promise<void> {
       fr.readAsDataURL(blob);
     });
     message =
-      (stored
-        ? `No AI is connected: this selection was not sent to any AI. (Development mode: the whole-display frames kept on this device are also stored in a local test capture service.)\n`
-        : `No AI is connected: this selection was not sent anywhere.\n`) +
+      (storage === 'storing'
+        ? `No AI is connected: this selection was not sent to any AI. (Development mode: the whole-display frames kept on this device are also being stored in a local test capture service; the control window shows the counts.)\n`
+        : storage === 'not_storing'
+          ? `No AI is connected: this selection was not sent to any AI. (Development mode: the local test capture service is not storing frames now. Frames are kept on this device; they are stored there too only if the service becomes available during this capture. The control window shows its state and the latest capture's counts.)\n`
+          : `No AI is connected: this selection was not sent anywhere.\n`) +
       `Region ${Math.round(region.x)},${Math.round(region.y)} ${Math.round(region.width)}×${Math.round(region.height)} DIP on ${display.label} = ${r.width}×${r.height} px of frame ${held.seq} (captured ${new Date(held.at).toLocaleTimeString()}), with your ink revision ${inkDoc.ink.revision} drawn over it.` +
       dashedNote(marks);
   }

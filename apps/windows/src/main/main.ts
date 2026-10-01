@@ -967,7 +967,7 @@ ipcMain.handle('lc:discard-recovery', async (e, id: unknown) => {
 });
 ipcMain.handle('lc:overlay-ready', (e) => {
   if (!fromOverlay(e) || !current) return null;
-  return { source_id: current.sourceId, display: current.display, doc: current.doc, address_sha256: sha256(current.doc.id), retention_policy: current.retention.policy, stored: linkStatus.mode === 'development' && !linkStatus.sends_stopped };
+  return { source_id: current.sourceId, display: current.display, doc: current.doc, address_sha256: sha256(current.doc.id), retention_policy: current.retention.policy, storage: overlayStorage() };
 });
 // Retained frames keep arriving while a Stop waits for the overlay: they were observed before the end.
 ipcMain.handle('lc:retain-frame', (e, facts: unknown, raw: unknown, composed: unknown, ink: unknown): RetainAnswer => (fromOverlay(e) && current ? retainFrame(current, facts, raw, composed, ink ?? null) : { ok: false, reason: 'refused' }));
@@ -1049,11 +1049,20 @@ app.on('will-quit', (e) => {
     .catch(() => undefined)
     .then(() => {
       linkQuitDone = true;
-      app.quit();
+      // In a later task, never from here: with nothing to stop this runs while Electron is still delivering this
+      // will-quit, when a quit is ignored (and the prevented one is then dropped, leaving the app without a window).
+      setImmediate(() => app.quit());
     });
 });
+/**
+ * What the overlay says of storage: null without the development link; else whether retained frames are being
+ * stored now (not merely configured).
+ */
+const overlayStorage = (): 'storing' | 'not_storing' | null => (linkStatus.mode === 'development' ? (linkStatus.storing ? 'storing' : 'not_storing') : null);
 function notifyLink(): void {
   if (control && !control.isDestroyed()) control.webContents.send('lc:link', linkStatus);
+  // The overlay's ASK card follows the link as it is now, not as it was when the overlay opened.
+  if (current && !current.overlay.isDestroyed()) current.overlay.webContents.send('lc:storage', overlayStorage());
 }
 
 app.whenReady().then(async () => {

@@ -12,7 +12,7 @@ import * as path from 'node:path';
 import { syncBuiltinESMExports } from 'node:module';
 import { CaptureLink, type LinkStatus } from '../src/main/capture-link.ts';
 import type { Transport } from '../src/main/loopback-http.ts';
-import { ACTOR, FakeChild, fakeSpawn, READY_CONSUMED, readyFor, seedRecord, SOURCE, STREAM } from './link-fakes.ts';
+import { ACTOR, FakeChild, fakeService, fakeSpawn, READY_CONSUMED, readyFor, seedRecord, SOURCE, STREAM } from './link-fakes.ts';
 import { INK, MANIFEST, SESSION } from './link-world.ts';
 
 const temps: string[] = [];
@@ -194,8 +194,6 @@ test('a fault before anything was recorded: nothing was sent, so the link says i
 
 // ---- an explicit Start with a fake host --------------------------------------------------------------------
 const WSL = { kind: 'wsl', distribution: 'test-only', user: 'test-only', cd: '/', python: '/unused' } as const;
-const answer = (revision: number, state: string, extra: object = {}) => ({ status: 200, text: JSON.stringify({ contract_version: '0.2.1', stream_id: STREAM_OF.id, revision, state, pre_stop_sequence: null, ...extra }) });
-const STREAM_OF = { id: '' };
 /**
  * An explicit Start over the harness-ink capture: its host a fake child (READY as the released host says it), its
  * answers the service's (a registration, the display source, the state, a Stop), or `own` where it answers.
@@ -208,24 +206,7 @@ function started(o: { own?: (method: string, p: string) => { status: number; tex
   for (const d of ['frames', 'ink']) fs.cpSync(path.join(INK, d), path.join(capture, d), { recursive: true });
   const file = path.join(userData, 'capture-host', 'coordination.json');
   const children: FakeChild[] = [];
-  const requests: string[] = [];
-  let stopped = false;
-  const transport: Transport = async (r) => {
-    const p = new URL(r.url).pathname;
-    if (p === '/openapi.json') return { status: 404, text: '{}' };
-    requests.push(`${r.method} ${p}`);
-    STREAM_OF.id = (JSON.parse(fs.readFileSync(file, 'utf8')) as Seed).streams.at(-1)!.stream_id;
-    const own = o.own?.(r.method, p);
-    if (own) return own;
-    if (r.method === 'POST' && p === '/v2/process/streams') return answer(1, 'live');
-    if (r.method === 'PUT' && p.startsWith('/v2/process/display-sources/')) {
-      const actor = (JSON.parse(fs.readFileSync(file, 'utf8')) as Seed).actor;
-      return { status: 200, text: JSON.stringify({ contract_version: '0.2.4', source_id: p.split('/').at(-1), user_id: actor.user_id, source_version: 1 }) };
-    }
-    if (r.method === 'GET') return stopped ? answer(2, 'stopped') : answer(1, 'live');
-    if (p.endsWith(':control')) return ((stopped = true), answer(2, 'stopped'));
-    return { status: 500, text: '{}' };
-  };
+  const { transport, requests } = fakeService(file, o.own);
   const link = new CaptureLink({
     userData, config: { launch: WSL, dsn_file: '/not-read' }, notify: () => undefined, endCapture: () => undefined,
     readDsn: () => 'host=/nonexistent-socket dbname=lc_p0_test', transport, retry_ms: 1, stop_wait_ms: 200,
@@ -270,7 +251,7 @@ test('after a record-write fault no host is started again and nothing is registe
 });
 
 test('a state answer the record could not read back is not written: the registration stays not known, and the record stays readable', async () => {
-  const w = started({ own: (method, p) => (method === 'POST' && p === '/v2/process/streams' ? answer(0, 'live') : null) });
+  const w = started({ own: (method, p) => (method === 'POST' && p === '/v2/process/streams' ? { status: 200, text: JSON.stringify({ contract_version: '0.2.1', stream_id: (JSON.parse(fs.readFileSync(w.file, 'utf8')) as Seed).streams[0]!.stream_id, revision: 0, state: 'live', pre_stop_sequence: null }) } : null) });
   w.link.begin(SESSION, w.capture);
   await until('not connected', () => stateOf(w.link) === 'not connected');
   const rec = (JSON.parse(fs.readFileSync(w.file, 'utf8')) as Seed).streams[0]!;

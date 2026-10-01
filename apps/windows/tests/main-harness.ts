@@ -20,6 +20,10 @@ export const SOURCE = appSource('src/main/main.ts')
   .replace(/^export /gm, '')
   .replace('dirname(fileURLToPath(import.meta.url))', "'/fake/dist/apps/windows/src/main'");
 
+const links: CaptureLink[] = [];
+/** Every capture link an app under test made is stopped (its host ended), even after a failed test. */
+export const quitLinks = async (): Promise<void> => void (await Promise.all(links.splice(0).map((l) => l.quit(10_000))));
+
 export type Deferred<T> = { promise: Promise<T>; resolve: (v: T) => void; reject: (e: unknown) => void };
 export const deferred = <T>(): Deferred<T> => {
   let resolve!: (v: T) => void;
@@ -87,8 +91,29 @@ export function harness(options: { env?: Record<string, string>; link?: Partial<
   const timers: Array<{ f: () => void; ms: number }> = [];
   const display = { id: 1, bounds: { x: 0, y: 0, width: 1280, height: 800 }, scaleFactor: 1 };
   const source = { id: 'screen:1:0', display_id: '1', name: 'Display 1', thumbnail: { toDataURL: () => '' } };
-  const quits = { n: 0 };
-  const app = Object.assign(new EventEmitter(), { requestSingleInstanceLock: () => true, whenReady: () => Promise.resolve(), quit: () => void (quits.n += 1), exit() {}, getPath: () => userData, setPath() {} });
+  /** n: times the app really quit (its will-quit not prevented). ignored: quits asked for while one was under way. */
+  const quits = { n: 0, ignored: 0 };
+  // app.quit() as Electron's Browser::Quit does it (no window is ever open here when it is called): a quit asked for
+  // while one is under way is ignored; will-quit is delivered, and if it is prevented the quit is dropped. Electron
+  // clears its "quitting" state only after that event's handlers and the microtasks they queued have run, so it is
+  // cleared here in a later task.
+  let quitting = false;
+  const events = new EventEmitter();
+  const app = Object.assign(events, {
+    requestSingleInstanceLock: () => true,
+    whenReady: () => Promise.resolve(),
+    quit: (): void => {
+      if (quitting) return void (quits.ignored += 1);
+      quitting = true;
+      let prevented = false;
+      events.emit('will-quit', { preventDefault: () => void (prevented = true) });
+      if (prevented) return void setImmediate(() => void (quitting = false));
+      quits.n += 1; // the app is gone: nothing later quits it again
+    },
+    exit() {},
+    getPath: () => userData,
+    setPath() {},
+  });
   const sandbox = {
     ...fs,
     writeFileSync: (...a: Parameters<typeof fs.writeFileSync>) => {
@@ -140,11 +165,12 @@ export function harness(options: { env?: Record<string, string>; link?: Partial<
     net: {},
     ipcMain: { handle: (n: string, f: never) => (handlers[n] = f), on: (n: string, f: never) => (handlers[n] = f) },
     process: { ...process, env: options.env ?? {} },
-    CaptureLink: options.link ? class extends CaptureLink {
+    CaptureLink: class extends CaptureLink {
       constructor(o: LinkOptions) {
         super({ ...o, ...options.link });
+        links.push(this);
       }
-    } : CaptureLink,
+    },
     readLinkConfig,
     Buffer,
     Response,
@@ -152,6 +178,7 @@ export function harness(options: { env?: Record<string, string>; link?: Partial<
     TextDecoder,
     console,
     setTimeout: (f: () => void, ms: number) => void timers.push({ f, ms }),
+    setImmediate,
   };
   vm.createContext(sandbox);
   vm.runInContext(`${SOURCE}\nglobalThis.review = { start, end, current: () => current, control: () => control, recoveryInfo, retryRecovery, exportRecovery, inkContexts, openInk };`, sandbox);

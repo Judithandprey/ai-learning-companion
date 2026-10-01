@@ -1,12 +1,14 @@
 // Fakes for the capture link's tests without the Backend: a stand-in for the host's child process (no process, no
 // port) that takes its startup line, then says `ready` (or nothing), and exits at the end of its input, or only when
-// told (`hold`); and a coordination record as this app writes it.
+// told (`hold`); a stand-in for the service's answers; and a coordination record as this app writes it.
 import { createHash } from 'node:crypto';
 import { EventEmitter } from 'node:events';
 import * as os from 'node:os';
 import * as path from 'node:path';
 import { PassThrough } from 'node:stream';
+import * as fs from 'node:fs';
 import type { spawn } from 'node:child_process';
+import type { Transport } from '../src/main/loopback-http.ts';
 
 export class FakeChild extends EventEmitter {
   readonly stdin = new PassThrough();
@@ -86,3 +88,28 @@ export function seedRecord() {
   };
 }
 export type SeedRecord = ReturnType<typeof seedRecord>;
+
+/**
+ * The service's answers without a service (no socket): a registration (live), the display source, the state, a Stop,
+ * read from the coordination record `file` as the app wrote it; `own` answers first where it returns one. Uploads
+ * (originals, batches) are answered 503 unless `own` answers them. Every request but the port probe is in `requests`.
+ */
+export function fakeService(file: string, own?: (method: string, path: string) => { status: number; text: string } | null) {
+  const requests: string[] = [];
+  let stopped = false;
+  const transport: Transport = async (r) => {
+    const p = new URL(r.url).pathname;
+    if (p === '/openapi.json') return { status: 404, text: '{}' };
+    requests.push(`${r.method} ${p}`);
+    const record = JSON.parse(fs.readFileSync(file, 'utf8')) as { actor: { user_id: string }; streams: Array<{ stream_id: string }> };
+    const state = (revision: number, s: string) => ({ status: 200, text: JSON.stringify({ contract_version: '0.2.1', stream_id: record.streams.at(-1)!.stream_id, revision, state: s, pre_stop_sequence: null }) });
+    const mine = own?.(r.method, p);
+    if (mine) return mine;
+    if (r.method === 'POST' && p === '/v2/process/streams') return state(1, 'live');
+    if (r.method === 'PUT' && p.startsWith('/v2/process/display-sources/')) return { status: 200, text: JSON.stringify({ contract_version: '0.2.4', source_id: p.split('/').at(-1), user_id: record.actor.user_id, source_version: 1 }) };
+    if (r.method === 'GET' && p.startsWith('/v2/process/streams/')) return stopped ? state(2, 'stopped') : state(1, 'live');
+    if (p.endsWith(':control')) return ((stopped = true), state(2, 'stopped'));
+    return { status: 503, text: JSON.stringify({ contract_version: '0.2.4', error: 'unavailable', retryable: true }) };
+  };
+  return { transport, requests };
+}

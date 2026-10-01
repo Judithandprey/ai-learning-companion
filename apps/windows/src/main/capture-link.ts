@@ -158,8 +158,8 @@ export type LinkStatus =
   | { readonly mode: 'unavailable'; readonly reason: string }
   | {
       readonly mode: 'development';
-      /** What this app's capture link is doing now. */
-      readonly state: 'idle' | 'connecting' | 'sending' | 'offline' | 'stopping' | 'stopped' | 'not connected' | 'ended by the service' | 'reconciling';
+      /** What this app's capture link is doing now. `stalled`: live, but the last send got no answer (it is tried again). */
+      readonly state: 'idle' | 'connecting' | 'sending' | 'stalled' | 'offline' | 'stopping' | 'stopped' | 'not connected' | 'ended by the service' | 'reconciling';
       readonly stored: number;
       readonly unknown: number;
       readonly refused: number;
@@ -169,6 +169,11 @@ export type LinkStatus =
       readonly earlier_unknown: number;
       /** The record could not be written: nothing further is sent in this run (the detail says so); the counts stay. */
       readonly sends_stopped: boolean;
+      /**
+       * Retained frames are being stored now: a Start's stream is live on the service, not stopping, and its last send
+       * was answered. What the app says about storage follows this, never the mere configuration.
+       */
+      readonly storing: boolean;
     };
 
 export type LinkOptions = {
@@ -417,6 +422,7 @@ export class CaptureLink {
       detail: [this.fault, stuck ? `${stuck} record(s) in doubt cannot be sent again from this device; whether they were stored stays not known` : null, detail].filter(Boolean).join('; ') || null,
       earlier_unknown: earlier,
       sends_stopped: this.fault !== null,
+      storing: a !== null && a.live && !a.stopping && this.fault === null && a.state === 'sending',
     };
   }
   private say(a: Active, state: Active['state'], detail: string | null = a.detail): void {
@@ -663,11 +669,12 @@ export class CaptureLink {
         }
         continue;
       }
+      if (a.validBytes === 0) return this.say(a, 'sending', null); // nothing retained yet (the manifest is made with its first line)
       let text: string;
       try {
         text = readFileSync(join(rec.capture_dir, 'manifest.jsonl')).subarray(0, a.validBytes).toString('utf8');
       } catch {
-        return this.say(a, 'sending', 'the retention manifest could not be read');
+        return this.say(a, 'stalled', 'the retention manifest could not be read; it is read again at the next retained frame');
       }
       let planned;
       try {
@@ -708,7 +715,8 @@ export class CaptureLink {
       delete job.body;
       delete job.in_doubt;
       this.save();
-      this.o.notify(this.status());
+      if (a.state === 'stalled' && a.live && !a.stopping) this.say(a, 'sending', null); // answered again
+      else this.o.notify(this.status());
       return true;
     }
     if (result.status === 'refused' && result.http_status === undefined) {
@@ -748,7 +756,9 @@ export class CaptureLink {
     else job.status = 'not_sent';
     if (result.status === 'unknown' && result.error === 'dependency_missing') job.reason = result.reason;
     this.save();
-    this.o.notify(this.status());
+    // Live, but this send was not answered: nothing is being stored until one is (the same record(s) are tried again).
+    if (a.live && !a.stopping && !this.fault) this.say(a, 'stalled', 'the service did not answer; the same record(s) are tried again');
+    else this.o.notify(this.status());
     return false;
   }
   /**

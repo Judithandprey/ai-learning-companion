@@ -7,14 +7,17 @@ import assert from 'node:assert/strict';
 import * as fs from 'node:fs';
 import * as os from 'node:os';
 import * as path from 'node:path';
-import { deferred, harness, running, plain, settle, type FakeWindow } from './main-harness.ts';
-import { FakeChild, fakeSpawn, seedRecord } from './link-fakes.ts';
+import { deferred, harness, running, plain, quitLinks, settle, type FakeWindow } from './main-harness.ts';
+import { FakeChild, fakeService, fakeSpawn, readyFor, seedRecord } from './link-fakes.ts';
+import { controlPage } from './control-page.ts';
 import { overlayPage, until } from './overlay-page.ts';
 import { DEFAULT_RETENTION_POLICY } from '../src/shared/retention.ts';
 import { startHost } from '../src/main/capture-host.ts';
 import { loopbackTransport, type Transport } from '../src/main/loopback-http.ts';
 import { hostAvailable, memoryLaunch, newToken, privateBackend, record, removeCopies } from './host-fixture.ts';
 
+after(() => fakeChildren.splice(0).forEach((c) => c.exit(1))); // first: a fake host a failed test left waiting
+after(quitLinks); // before the Backend copies go: a link's host runs from one
 after(removeCopies);
 const temps: string[] = [];
 after(() => temps.splice(0).forEach((d) => fs.rmSync(d, { recursive: true, force: true })));
@@ -24,13 +27,13 @@ const temp = (prefix: string): string => {
   return d;
 };
 const real = hostAvailable ? test : test.skip;
-type Said = { mode: string; state?: string; stored?: number; unknown?: number };
+type Said = { mode: string; state?: string; stored?: number; unknown?: number; storing?: boolean };
 
 test('without the development configuration the link is off: no status, and the overlay is told nothing is stored', async () => {
   const h = harness();
   const s = await running(h);
-  const ready = plain(await h.handlers['lc:overlay-ready']!({ sender: s.overlay.webContents })) as { stored: boolean };
-  assert.equal(ready.stored, false);
+  const ready = plain(await h.handlers['lc:overlay-ready']!({ sender: s.overlay.webContents })) as { storage: string | null };
+  assert.equal(ready.storage, null);
   assert.deepEqual(plain(await h.handlers['lc:link-state']!({ sender: (h.control() as unknown as FakeWindow).webContents })), { mode: 'off' });
   assert.equal((h.control() as unknown as FakeWindow).sent.some((m) => m[0] === 'lc:link'), false);
 });
@@ -45,8 +48,9 @@ real('with it: an explicit Start stores each retained frame and its ink original
   const h = harness({ env: { LC_DEV_CAPTURE_HOST: configFile } });
   const s = await running(h);
   const said = (): Said | undefined => plain((h.control() as unknown as FakeWindow).sent.filter((m) => m[0] === 'lc:link').at(-1)?.[1]) as Said | undefined;
-  const ready = plain(await h.handlers['lc:overlay-ready']!({ sender: s.overlay.webContents })) as { stored: boolean };
-  assert.equal(ready.stored, true, 'the overlay is told storage is on');
+  const ready = plain(await h.handlers['lc:overlay-ready']!({ sender: s.overlay.webContents })) as { storage: string | null };
+  assert.notEqual(ready.storage, null, 'the overlay is told of the link, and whether it is storing now');
+  const told = (): unknown => s.overlay.sent.filter((m) => m[0] === 'lc:storage').at(-1)?.[1];
   const page = await overlayPage(h, s, { ...DEFAULT_RETENTION_POLICY, min_interval_ms: 0 });
   const step = async (shade: number): Promise<void> => {
     page.scene.shade = shade;
@@ -60,6 +64,15 @@ real('with it: an explicit Start stores each retained frame and its ink original
   await page.review.pending();
   await step(60); // a changed frame, drawn with that ink: its ink original is retained with it
   await until('two records stored', () => (said()?.stored ?? 0) >= 2, 30_000);
+  assert.deepEqual([said()?.storing, told()], [true, 'storing'], 'storing now, and the overlay was told so');
+  // The ASK card says what is so now (the overlay opened while the link was still connecting).
+  page.review.mode('ASK');
+  page.pointer('pointerdown', 2, 190, 95);
+  for (const [x, y] of [[400, 95], [400, 125], [190, 125]] as const) page.pointer('pointermove', 2, x, y);
+  page.pointer('pointerup', 2, 192, 97);
+  await until('the ASK card', () => page.review.card() !== null);
+  assert.match(page.review.card()!.text, /this selection was not sent to any AI\. \(Development mode: the whole-display frames kept on this device are also being stored in a local test capture service/);
+  page.click('close');
   const captures = path.join(h.userData, 'captures');
   const capture = path.join(captures, fs.readdirSync(captures)[0]!);
   const coordination = JSON.parse(fs.readFileSync(path.join(h.userData, 'capture-host', 'coordination.json'), 'utf8'));
@@ -69,6 +82,7 @@ real('with it: an explicit Start stores each retained frame and its ink original
   h.end('stopped by the test');
   await until('the overlay confirmed the Stop', () => page.acks.length > 0, 5000);
   await until('the link stopped', () => said()?.state === 'stopped', 30_000);
+  assert.equal(said()?.storing, false, 'no longer storing');
   const after = JSON.parse(fs.readFileSync(path.join(h.userData, 'capture-host', 'coordination.json'), 'utf8')).streams[0];
   assert.deepEqual([after.final, after.stops.length, after.stops[0].outcome, after.jobs.every((j: { status: string }) => j.status === 'committed')], ['stopped', 1, 'stopped', true]);
   const manifest = fs.readFileSync(path.join(capture, 'manifest.jsonl'), 'utf8').trim().split('\n').map((l) => JSON.parse(l));
@@ -210,8 +224,13 @@ real('a link that cannot write its record does not break the app\'s Start: the c
   }
 });
 
-test('quitting while the link is still stopping: every quit waits for that one stop; the app quits once, after it settled', { timeout: 30_000 }, async () => {
-  // A host (a fake child, no process) that takes its record and says nothing until told: the Start stays connecting.
+const fakeChildren: FakeChild[] = [];
+/**
+ * The app with its link on and a fake host child (no process, no port), made by `child`. Its requests are answered
+ * by a stand-in for the service when `service` is set (registration, source, state, Stop; uploads 503 unless `own`
+ * answers them); otherwise no request is expected.
+ */
+function appWithFakeHost(child: () => FakeChild, service?: { own?: Parameters<typeof fakeService>[1] }) {
   const dsnFile = path.join(temp('lc-dsn-'), 'test-database.dsn');
   fs.writeFileSync(dsnFile, 'host=/nonexistent-socket dbname=lc_p0_test');
   const configFile = path.join(temp('lc-config-'), 'dev-capture-host.json');
@@ -220,19 +239,143 @@ test('quitting while the link is still stopping: every quit waits for that one s
   const noRequest: Transport = async () => {
     throw new Error('no request is made here');
   };
-  const h = harness({ env: { LC_DEV_CAPTURE_HOST: configFile }, link: { host: { spawn: fakeSpawn(() => new FakeChild({ ready: null, hold: true }), children).spawn, ready_ms: 60_000, end_ms: 200 }, transport: noRequest } });
+  const made = (): FakeChild => {
+    const c = child();
+    fakeChildren.push(c);
+    return c;
+  };
+  let transport = noRequest;
+  const h = harness({ env: { LC_DEV_CAPTURE_HOST: configFile }, link: { host: { spawn: fakeSpawn(made, children).spawn, ready_ms: 60_000, end_ms: 200 }, transport: (r) => transport(r), retry_ms: 20, stop_wait_ms: 500 } });
+  const fake = service ? fakeService(path.join(h.userData, 'capture-host', 'coordination.json'), service.own) : null;
+  if (fake) transport = fake.transport;
+  const said = (): Said & { detail?: string | null } | undefined => {
+    const last = (h.control() as unknown as FakeWindow).sent.filter((m) => m[0] === 'lc:link').at(-1)?.[1];
+    return last === undefined ? undefined : (plain(last) as Said);
+  };
+  /** The control window's header and link line for what the app said last (or, before it said anything, says when asked). */
+  const shown = (): string => {
+    const p = controlPage();
+    p.showLink(said() ?? plain(h.handlers['lc:link-state']!({ sender: (h.control() as unknown as FakeWindow).webContents })));
+    return `${p.nodes['ai']!.textContent}\n${p.nodes['link']!.textContent}`;
+  };
+  return { h, children, said, shown, requests: fake?.requests ?? [] };
+}
+/** An ASK circle on the overlay page; the card's text (the card is then closed). */
+async function askCard(page: Awaited<ReturnType<typeof frames>>['page']): Promise<string> {
+  page.review.mode('ASK');
+  page.pointer('pointerdown', 2, 190, 95);
+  for (const [x, y] of [[400, 95], [400, 125], [190, 125]] as const) page.pointer('pointermove', 2, x, y);
+  page.pointer('pointerup', 2, 192, 97);
+  await until('the ASK card', () => page.review.card() !== null);
+  const text = page.review.card()!.text;
+  page.click('close');
+  return text;
+}
+const CLAIMS_STORAGE = /also (being )?stored in a local test capture service/;
+
+// QA-WIN-03. The harness's app.quit() behaves as Electron's: a quit asked for while will-quit is being delivered is
+// ignored, and a prevented quit is dropped.
+test('closing the app with the link on and nothing to stop: the app really quits (the quit is asked again in a later task, not while will-quit is delivered)', { timeout: 30_000 }, async () => {
+  const { h, children } = appWithFakeHost(() => new FakeChild({ ready: null }));
+  await settle(); // the app starts; no Start
+  h.app.quit(); // as the control window closing does
+  assert.equal(h.quits.n, 0, 'held for the link\'s stop');
+  await until('the app quit', () => h.quits.n === 1, 5000);
+  assert.deepEqual([h.quits.ignored, children.length], [0, 0], 'no quit was asked while one was under way; no host was ever started');
+});
+
+test('quitting while the link is still stopping: every quit waits for that one stop; the app quits once, after it settled', { timeout: 30_000 }, async () => {
+  // A host that takes its record and says nothing until told: the Start stays connecting.
+  const { h, children } = appWithFakeHost(() => new FakeChild({ ready: null, hold: true }));
   await running(h);
   await until('the host has its record', () => children[0]?.input.endsWith('\n') === true, 5000);
-  const prevented: number[] = [];
-  const quit = (n: number): void => void h.app.emit('will-quit', { preventDefault: () => prevented.push(n) });
-  quit(1);
-  quit(2); // a second quit (another window closing, say) while the first is pending
+  h.app.quit();
   await settle();
-  assert.deepEqual([prevented, h.quits.n], [[1, 2], 0], 'both quits wait; the app has not quit yet');
+  await new Promise((r) => setImmediate(r));
+  h.app.quit(); // a second quit (another window closing, say) while the first is pending
+  await settle();
+  await new Promise((r) => setImmediate(r));
+  assert.deepEqual([h.quits.n, h.quits.ignored], [0, 0], 'both quits wait; the app has not quit yet');
   children[0]!.exit(0); // the host ends without READY: the Stop can now finish
   await until('the app quit, once', () => h.quits.n === 1, 5000);
-  quit(3); // the quit that follows is let through
-  assert.deepEqual([prevented, h.quits.n, children.length], [[1, 2], 1, 1]);
+  await new Promise((r) => setImmediate(r));
+  assert.deepEqual([h.quits.n, h.quits.ignored, children.length], [1, 0, 1]);
+});
+
+// QA-WIN-04.
+test('a service that is not available: the link line, the header and the ASK card all say nothing is being stored now', { timeout: 30_000 }, async () => {
+  const { h, children, said, shown } = appWithFakeHost(() => new FakeChild({ ready: null, hold: true }));
+  // Before any Start: configured, and nothing is promised.
+  await settle();
+  assert.doesNotMatch(shown(), CLAIMS_STORAGE);
+  assert.match(shown(), /Capture storage \(development\): not connected yet \(a connection is tried when you press Start\)\. 0 record\(s\) stored/);
+  const s = await running(h);
+  const { page } = await frames(h, s);
+  // Connecting (the host has its record and has not answered): configured, but not storing.
+  await until('the host has its record', () => children[0]?.input.endsWith('\n') === true, 5000);
+  assert.deepEqual([said()?.state, said()?.storing], ['connecting', false]);
+  const early = await askCard(page);
+  assert.doesNotMatch(early, CLAIMS_STORAGE, 'while connecting');
+  assert.match(early, /Frames are kept on this device; they are stored there too only if the service becomes available during this capture/, 'nothing is promised either way while a connection may still be made');
+  // The host ends without READY, as with a service that is not available.
+  children[0]!.stderr.write('{"format":"lc-desktop-capture-host-error-v1","error":"unavailable"}\n');
+  await settle();
+  children[0]!.exit(1);
+  await until('not connected', () => said()?.state === 'not connected', 5000);
+  assert.deepEqual([said()?.storing, said()?.stored, said()?.detail], [false, 0, 'the host ended without READY (unavailable)']);
+  const card = await askCard(page);
+  assert.match(card, /No AI is connected: this selection was not sent to any AI\. \(Development mode: the local test capture service is not storing frames now\./);
+  assert.doesNotMatch(card, CLAIMS_STORAGE);
+  assert.doesNotMatch(shown(), CLAIMS_STORAGE);
+  assert.match(shown(), /A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below[\s\S]*not connected \(the frames stay on this device\)\. 0 record\(s\) stored/);
+  h.end('stopped by the test');
+  await until('stopped', () => said()?.state === 'stopped', 5000);
+  assert.doesNotMatch(shown(), CLAIMS_STORAGE, 'nor after the Stop');
+});
+
+test('the texts follow the link as it changes: storing only while the stream is live and answered, not while a send goes unanswered, nor once the Stop has begun', { timeout: 30_000 }, async () => {
+  // A host that says READY, and a service that registers the stream and its source and then answers no upload.
+  const { h, said, shown } = appWithFakeHost(() => new FakeChild({ ready: readyFor }), {});
+  const s = await running(h);
+  const told = (): unknown => s.overlay.sent.filter((m) => m[0] === 'lc:storage').at(-1)?.[1];
+  const { page, step } = await frames(h, s);
+  assert.equal(plain(await h.handlers['lc:overlay-ready']!({ sender: s.overlay.webContents })) !== null, true);
+  // Live, nothing retained yet: storing, with no false error about a manifest not yet made.
+  await until('live', () => said()?.state === 'sending', 5000);
+  assert.deepEqual([said()?.storing, said()?.detail, told()], [true, null, 'storing']);
+  assert.match(shown(), /are also being stored in a local test capture service on it; the counts are below[\s\S]*Capture storage \(development\): storing\. 0 record\(s\) stored\. AI: not connected\.$/);
+  assert.match(await askCard(page), /are also being stored in a local test capture service; the control window shows the counts/, 'the overlay opened before the link was live, and was told since');
+  // A frame is retained; its upload is not answered (503): not storing now, and that is said everywhere.
+  await step(20);
+  await until('a send not answered', () => said()?.state === 'stalled', 10_000);
+  assert.deepEqual([said()?.storing, said()?.stored, told()], [false, 0, 'not_storing']);
+  assert.doesNotMatch(shown(), CLAIMS_STORAGE);
+  assert.match(shown(), /Capture storage \(development\): not storing now: trying again \(the frames are kept on this device\)\. 0 record\(s\) stored;[\s\S]*the service did not answer; the same record\(s\) are tried again\. AI: not connected\.$/);
+  assert.doesNotMatch(await askCard(page), CLAIMS_STORAGE);
+  // The Stop: from its first moment nothing says frames are being stored.
+  const states: Array<[string | undefined, boolean | undefined]> = [];
+  const control = h.control() as unknown as FakeWindow;
+  const from = control.sent.length;
+  h.end('stopped by the test');
+  await until('stopped', () => said()?.state === 'stopped', 10_000);
+  for (const m of control.sent.slice(from)) if (m[0] === 'lc:link') states.push([(m[1] as Said).state, (m[1] as Said).storing]);
+  assert.equal(states.some(([state]) => state === 'stopping'), true);
+  assert.equal(states.every(([, storing]) => storing === false), true, 'never storing once the Stop has begun');
+});
+
+test('a Stop while frames are being stored: from its first moment nothing says they are', { timeout: 30_000 }, async () => {
+  const { h, said } = appWithFakeHost(() => new FakeChild({ ready: readyFor }), {});
+  const s = await running(h);
+  await until('live', () => said()?.storing === true, 5000);
+  const control = h.control() as unknown as FakeWindow;
+  const from = control.sent.length;
+  const told = s.overlay.sent.length;
+  h.end('stopped by the test');
+  await until('stopped', () => said()?.state === 'stopped', 10_000);
+  const after = control.sent.slice(from).filter((m) => m[0] === 'lc:link').map((m) => [(m[1] as Said).state, (m[1] as Said).storing]);
+  assert.deepEqual(after[0], ['stopping', false]);
+  assert.equal(after.every(([, storing]) => storing === false), true);
+  assert.deepEqual([...new Set(s.overlay.sent.slice(told).filter((m) => m[0] === 'lc:storage').map((m) => m[1]))], ['not_storing'], 'and the overlay is told');
 });
 
 (process.platform === 'win32' ? test.skip : test)('after a record-write fault, a new Start\'s overlay is not told its frames are stored; the control window then keeps the earlier outcome', { timeout: 30_000 }, async () => {
@@ -250,8 +393,8 @@ test('quitting while the link is still stopping: every quit waits for that one s
     const s = await running(h);
     const said = (): Record<string, unknown> | undefined => plain((h.control() as unknown as FakeWindow).sent.filter((m) => m[0] === 'lc:link').at(-1)?.[1]) as Record<string, unknown> | undefined;
     await until('the fault is said', () => said()?.['sends_stopped'] === true, 5000);
-    const ready = plain(await h.handlers['lc:overlay-ready']!({ sender: s.overlay.webContents })) as { stored: boolean };
-    assert.equal(ready.stored, false, 'nothing of this Start is stored');
+    const ready = plain(await h.handlers['lc:overlay-ready']!({ sender: s.overlay.webContents })) as { storage: string | null };
+    assert.equal(ready.storage, 'not_storing', 'nothing of this Start is stored');
     assert.deepEqual([said()?.['mode'], said()?.['stored'], said()?.['unknown']], ['development', 0, 0], 'this Start\'s own counts: nothing');
     h.end('stopped by the test');
     await until('stopped', () => said()?.['state'] === 'stopped', 5000);
