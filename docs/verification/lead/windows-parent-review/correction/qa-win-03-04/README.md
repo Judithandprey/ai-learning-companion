@@ -57,3 +57,5 @@ leaf commits; existing QA then receives one exact release for its already queued
 quit/clean-relaunch/failure-copy retest. Both full core AI gates remain open.
 
 [Independent quit review](windows-qa03-quit-review.md) approves QA-WIN-03 source separately: six callback-model/retention checks pass, including the old-code failure control and repeated pending quit. Both old and new staged-tree hashes match. It does not supersede the two QA-WIN-04 holds or independent GUI retest. One nonblocking script note: orchestrator success should also require driver exit zero; the supplied actual driver did exit zero, so this does not invalidate its evidence.
+
+The one substantive follow-up is actually accepted as `handoff_15bf1ff7825def923a56731a4feed652`, replying to the delivered correction at exact review baseline `bf2900c`. [Receipt](handoff.json) initially says unread/execution_started:false; no read, start or repair is inferred from delivery.

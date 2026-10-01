@@ -1,0 +1,13 @@
+{
+  "review_baseline": "bf2900c",
+  "candidate": "70cb7e872e1cc7826d5b108ccc006b758d3cfb70",
+  "code": "5cd0bec87db7a1f0989ab8e7f0ed702261dbccf2",
+  "reply_to": "handoff_ad2da359f7d9ade4f5ed7696c5407753",
+  "message_id": "handoff_15bf1ff7825def923a56731a4feed652",
+  "accepted": true,
+  "state_at_receipt": "unread",
+  "execution_started_at_receipt": false,
+  "owner": "web",
+  "scope": "Same QA-WIN-04 repair; retain quit correction and passing evidence, no full campaign.",
+  "next": "Lead focused retest/integration, then existing conditional independent QA at exact release."
+}
