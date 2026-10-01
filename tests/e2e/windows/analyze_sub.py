@@ -72,9 +72,10 @@ SCENARIO = run_info.get("scenario")
 SUB = run_info.get("subscription") or {}
 circled = run_info.get("surface_circled_cards")
 watch = jsonl("connector-watch.jsonl")
-# The real connector as the lead released it: the project's Python, a private exact-source copy whose files are those of
-# the named commit, the connector's own product state, no stand-in anywhere in the run.
-REAL = bool(SUB.get("kind") == "real" and SUB.get("files_are_the_source_commits") is True and SUB.get("source") and not exists("bridge")
+# The real connector as the lead released it: the project's Python, a private exact-source copy that is the named commit's
+# services/ and packages/ file for file and in which the connector's own preparation of a question works, the connector's
+# own product state, no stand-in anywhere in the run.
+REAL = bool(SUB.get("kind") == "real" and SUB.get("copy_is_the_commits_services_and_packages") is True and (SUB.get("ask_path") or {}).get("ok") is True and SUB.get("source") and not exists("bridge")
             and str(SUB.get("python", "")).endswith("/repo/.venv/bin/python") and str(SUB.get("state_dir", "")).startswith("the connector's default product state"))
 
 
@@ -424,8 +425,8 @@ elif SCENARIO == "subselect":
 
 # =================================================================== subcheck: the real connector, no question
 elif SCENARIO == "subcheck":
-    check("run.real_connector", "pass" if REAL else "fail", {k: SUB.get(k) for k in ("kind", "python", "state_dir", "codex_bin", "source", "files_are_the_source_commits", "connector_files_sha256", "wsl")},
-          "the app's connector was the released one: the project's Python running a private exact-source copy whose five files are the named commit's, with the connector's own product state")
+    check("run.real_connector", "pass" if REAL else "fail", {k: SUB.get(k) for k in ("kind", "python", "state_dir", "codex_bin", "source", "copy_is_the_commits_services_and_packages", "copy_files", "ask_path", "connector_files_sha256", "wsl")},
+          "the app's connector was the released one: the project's Python running a private copy that is the named commit's services/ and packages/ file for file, in which the connector's own preparation of a question was run offline before the app started; the connector's own product state")
     nc, st, card, typed = D("r_not_checked"), D("r_state"), D("r_card"), D("r_typed")
     s = st.get("s") or {}
     pressed = presses("subCheck")
@@ -483,8 +484,8 @@ elif SCENARIO == "subcheck":
 # =================================================================== subask: the one real image turn
 elif SCENARIO in ("subask", "subrehearsal"):
     APP = "app-real" if SCENARIO == "subask" else "app-fake"
-    check("run.real_connector", "pass" if REAL else "limit" if SCENARIO == "subrehearsal" and SUB.get("kind") == "fake" and exists("bridge") else "fail", {k: SUB.get(k) for k in ("kind", "python", "state_dir", "codex_bin", "source", "files_are_the_source_commits", "connector_files_sha256", "wsl", "allocation", "ask_pressed")},
-          "the app's connector was the released one: the project's Python running a private exact-source copy whose five files are the named commit's, with the connector's own product state" if REAL else
+    check("run.real_connector", "pass" if REAL else "limit" if SCENARIO == "subrehearsal" and SUB.get("kind") == "fake" and exists("bridge") else "fail", {k: SUB.get(k) for k in ("kind", "python", "state_dir", "codex_bin", "source", "copy_is_the_commits_services_and_packages", "copy_files", "ask_path", "connector_files_sha256", "wsl", "allocation", "ask_pressed")},
+          "the app's connector was the released one: the project's Python running a private copy that is the named commit's services/ and packages/ file for file, in which the connector's own preparation of a question was run offline before the app started; the connector's own product state" if REAL else
           "REHEARSAL: the same steps as the real turn, with QA's stand-in bridge instead of the connector. No Codex, no ChatGPT, no allowance; nothing here is real-model evidence" if SCENARIO == "subrehearsal" else None)
     st, before, ready, after = D("a_state"), D("a_card"), D("a_ready"), D("a_after")
     s = st.get("s") or {}
@@ -581,6 +582,11 @@ elif SCENARIO in ("subask", "subrehearsal"):
             prompt_error = f"{type(error).__name__}: {str(error)[:200]}"
     backend_is_the_copy = bool(BACKEND) and all(os.path.isfile(os.path.join(BACKEND, name)) and sha(open(os.path.join(BACKEND, name), "rb").read()) == digest
                                                  for name, digest in (SUB.get("connector_files_sha256") or {"-": ""}).items())
+    check("run.prompt_recomputed_from_the_kept_request", "limit" if not_reached or not BACKEND else "pass" if prompt is not None else "fail",
+          {"backend_given": bool(BACKEND), "recomputed": prompt is not None, "error": prompt_error, "prompt_bytes": prompt and len(prompt.encode()), "prompt_sha256": prompt and sha(prompt.encode())},
+          NOT_REACHED if not_reached else "no Backend copy was given (--backend): the prompt was not recomputed" if not BACKEND else
+          "the released prepare_subscription_ask, loaded from the Backend copy, builds the prompt from the request the app kept" if prompt is not None else
+          "the Backend copy could not build the prompt from the kept request: see the error. The same code runs inside the connector for a real question")
     produced = as_list((receipt or {}).get("produced_item_types"))
     ans = out.get("answer") or {}
     # Bound: the receipt is of this request and of exactly these input bytes. Completed: what it says of the turn.

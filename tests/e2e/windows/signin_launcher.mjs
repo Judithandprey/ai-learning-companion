@@ -3,7 +3,7 @@
 // QA never signs in: this only puts a start file on the Windows side and checks that it leads to the app's own
 // "Sign in with ChatGPT" button. Pressing that button and the browser consent are the user's.
 //
-//   node signin_launcher.mjs prepare <released commit>   a private exact-source copy of the connector (kept, outside /tmp),
+//   node signin_launcher.mjs prepare <released commit>   a private exact-source copy of the Backend (services/ and packages/; kept, outside /tmp),
 //                                                         the trusted configuration and a start file next to the staged app
 //   node signin_launcher.mjs check <released commit>     starts the app THROUGH that start file, presses only "Check
 //                                                         connection", reads what the app then says, closes the app
@@ -16,6 +16,7 @@ import { createHash } from 'node:crypto';
 import { chmodSync, existsSync, mkdirSync, readFileSync, readlinkSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { askPathCheck, compareCopy, makeCopy } from './sub_copy.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const [action, commit] = process.argv.slice(2);
@@ -34,24 +35,21 @@ const launcher = join(temp, launcherName);
 const START = 'Start-Learning-Companion-Subscription.cmd';
 const PY = '/home/agentsdock/Projects/learning-companion/repo/.venv/bin/python';
 const CODEX = '/home/agentsdock/.local/bin/codex';
-const FILES = ['services/worker/connectors/chatgpt_local.py', 'services/worker/connectors/chatgpt_rpc.py', 'services/worker/connectors/chatgpt_launch.py', 'services/worker/connectors/chatgpt_receipts.py', 'services/learning/subscription_ask.py'];
 const sha = (bytes) => createHash('sha256').update(bytes).digest('hex');
-// The copy's five connector files are the commit's (their hashes are printed).
-const sourceFiles = () => Object.fromEntries(FILES.map((f) => {
-  const here = sha(readFileSync(join(source, f)));
-  if (here !== sha(execFileSync('git', ['-C', HERE, 'show', `${commit}:${f}`], { maxBuffer: 16 * 1024 * 1024 }))) throw new Error(`${f} in the copy is not the file of ${commit}`);
-  return [f, here];
-}));
+// The copy is the commit's `services/` and `packages/`, file for file, and the connector's own preparation of a question
+// works in it (offline; see sub_copy.mjs). A copy that only answers Check connection is refused here.
+const checkedCopy = () => {
+  const same = compareCopy(commit, source);
+  if (!same.equal) throw new Error(`the copy is not the commit's services/ and packages/: ${JSON.stringify({ missing: same.missing.slice(0, 5), differing: same.differing.slice(0, 5), extra: same.extra.slice(0, 5) })}`);
+  const ask = askPathCheck(PY, source);
+  if (!ask.ok) throw new Error(`the connector cannot prepare a question in the copy: ${JSON.stringify(ask)}`);
+  return { files_equal_to_the_commit: same.files, ask_path: ask };
+};
 
 if (action === 'prepare') {
-  if (!existsSync(join(source, 'services'))) {
-    mkdirSync(source, { recursive: true, mode: 0o700 });
-    const root = execFileSync('git', ['-C', HERE, 'rev-parse', '--show-toplevel'], { encoding: 'utf8' }).trim();
-    const tar = execFileSync('git', ['-C', root, 'archive', commit, 'services'], { maxBuffer: 256 * 1024 * 1024 });
-    execFileSync('tar', ['-x', '-C', source], { input: tar });
-  }
-  chmodSync(source, 0o700);
-  const files = sourceFiles();
+  if (!existsSync(source)) mkdirSync(source, { recursive: true, mode: 0o700 });
+  if (!compareCopy(commit, source).equal) makeCopy(commit, source);
+  const copy = checkedCopy();
   mkdirSync(launcher, { recursive: true });
   // The trusted configuration (ADR 0003): which Python runs which connector copy in WSL, the connector's own product
   // state, and the official codex binary (admitted by the connector only by its pinned sha256). It names no credential.
@@ -68,10 +66,10 @@ if (action === 'prepare') {
     `start "" "%TEMP%\\${ELECTRON}\\electron.exe" "%TEMP%\\${stageName}" %*`, ''].join('\r\n');
   writeFileSync(join(launcher, START), cmd);
   console.log(JSON.stringify({ start_file: `%TEMP%\\${launcherName}\\${START}`, configuration_sha256: sha(config), start_file_sha256: sha(cmd), connector_copy: source.replace(process.env.HOME, '~'),
-    connector_files_sha256: files, staged_app: `%TEMP%\\${stageName}`, electron: `%TEMP%\\${ELECTRON}\\electron.exe` }, null, 1));
+    copy, staged_app: `%TEMP%\\${stageName}`, electron: `%TEMP%\\${ELECTRON}\\electron.exe` }, null, 1));
 } else {
   if (!existsSync(join(launcher, START)) || !existsSync(join(launcher, 'connector.json'))) throw new Error('prepare first');
-  sourceFiles();
+  const copy = checkedCopy();
   const inside = readdirSync('/proc').filter((n) => /^\d+$/.test(n)).filter((n) => { try { const cwd = readlinkSync(`/proc/${n}/cwd`); return cwd === source || cwd.startsWith(`${source}/`); } catch { return false; } });
   if (inside.length) throw new Error('a connector is running from the copy (the app is open?): close it first');
   // Run on Windows by the staged Electron as plain Node: start the app through the start file (with a DevTools port for
@@ -127,5 +125,5 @@ const list = async () => { try { return await (await fetch('http://127.0.0.1:' +
   rmSync(join(launcher, 'profile'), { recursive: true, force: true });
   const line = (r.stdout ?? '').split(/\r?\n/).filter((l) => l.startsWith('{')).at(-1);
   if (!line) throw new Error(`the check wrote no result (status ${r.status}, ${String(r.stderr ?? '').slice(0, 300)})`);
-  console.log(JSON.stringify({ commit, ...JSON.parse(line), start_file: `%TEMP%\\${launcherName}\\${START}` }, null, 1));
+  console.log(JSON.stringify({ commit, copy, ...JSON.parse(line), start_file: `%TEMP%\\${launcherName}\\${START}` }, null, 1));
 }

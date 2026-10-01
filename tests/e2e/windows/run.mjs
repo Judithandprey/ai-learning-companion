@@ -12,6 +12,7 @@ import { chmodSync, cpSync, existsSync, mkdirSync, mkdtempSync, readdirSync, rea
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { FAKE_BRIDGE_SCRIPT, REHEARSAL_BRIDGE_SCRIPT, scenarios } from './scenarios.mjs';
+import { askPathCheck, compareCopy } from './sub_copy.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 // copyFile can fail with EPERM on the Windows drive mount; write the bytes instead.
@@ -121,25 +122,28 @@ if (sub) {
     // The process watch counts what runs inside that folder: it must be a private copy in which nothing else runs.
     const inside = readdirSync('/proc').filter((n) => /^\d+$/.test(n)).filter((n) => { try { const cwd = readlinkSync(`/proc/${n}/cwd`); return cwd === backend || cwd.startsWith(`${backend}/`); } catch { return false; } });
     if (inside.length) throw new Error(`QA_SUB_BACKEND must be a private copy in which nothing runs; ${inside.length} process(es) have their working folder inside it`);
-    // Which connector this is: the bytes of its files, and (QA_SUB_SOURCE = the released commit) that they are that commit's.
+    // Which connector this is: QA_SUB_SOURCE names the released commit, and the copy must be that commit's services/ and
+    // packages/, file for file. The connector's question path loads both; a copy without them answers Check connection
+    // and refuses every question, which would spend the one attempt on nothing.
     const FILES = ['services/worker/connectors/chatgpt_local.py', 'services/worker/connectors/chatgpt_rpc.py', 'services/worker/connectors/chatgpt_launch.py', 'services/worker/connectors/chatgpt_receipts.py', 'services/learning/subscription_ask.py'];
     const sha = (bytes) => createHash('sha256').update(bytes).digest('hex');
     const source = process.env.QA_SUB_SOURCE || null;
+    if (!source || !/^[0-9a-f]{40}$/.test(source)) throw new Error('set QA_SUB_SOURCE to the released commit (40 hex) the private Backend copy was made from');
     const connector = Object.fromEntries(FILES.map((f) => [f, sha(readFileSync(join(backend, f)))]));
-    if (source) for (const f of FILES) {
-      const committed = sha(execFileSync('git', ['-C', HERE, 'show', `${source}:${f}`], { maxBuffer: 16 * 1024 * 1024 }));
-      if (committed !== connector[f]) throw new Error(`${f} in QA_SUB_BACKEND is not the file of ${source}`);
-    }
-    if (scenario === 'subask' && !source) throw new Error('a real question needs QA_SUB_SOURCE: the released commit the private Backend copy was made from');
+    const same = compareCopy(source, backend);
+    if (!same.equal) throw new Error(`QA_SUB_BACKEND is not ${source}'s services/ and packages/: ${JSON.stringify({ missing: same.missing.slice(0, 5), differing: same.differing.slice(0, 5), extra: same.extra.slice(0, 5) })}`);
     subRoot = backend;
     subState = process.env.QA_SUB_STATE_DIR || null;
     // wsl.exe --exec starts the connector without a login shell: `codex` is then not on PATH on this machine, so the
     // trusted configuration names the official binary (the connector admits it only by its pinned sha256).
     const python = process.env.QA_SUB_PYTHON || PY, codexBin = process.env.QA_SUB_CODEX_BIN || null;
+    // The connector's own preparation of a question, run in the copy with that Python (offline; nothing is sent).
+    const askPath = askPathCheck(python, backend);
+    if (!askPath.ok) throw new Error(`the connector cannot prepare a question in QA_SUB_BACKEND: ${JSON.stringify(askPath)}`);
     if (!codexBin || !codexBin.startsWith('/') || !existsSync(codexBin)) throw new Error('set QA_SUB_CODEX_BIN to the absolute path of the official codex binary (the lead\'s trusted configuration)');
     writeFileSync(join(linkDir, 'sub-real.json'), config({ cd: backend, python }, subState, codexBin));
     subInfo = { kind: 'real', python, state_dir: subState ?? 'the connector\'s default product state (state_dir null)', codex_bin: codexBin, backend_copy: backend, source,
-                connector_files_sha256: connector, files_are_the_source_commits: Boolean(source), model: process.env.QA_SUB_MODEL || null, assistance, real_turn_allowed: scenario === 'subask', wsl };
+                connector_files_sha256: connector, copy_is_the_commits_services_and_packages: same.equal, copy_files: same.files, ask_path: askPath, model: process.env.QA_SUB_MODEL || null, assistance, real_turn_allowed: scenario === 'subask', wsl };
     if (scenario === 'subask') {
       // The allocation's ledger: one file per allocation id, outside every run folder.
       const dir = join(process.env.HOME, '.local', 'state', 'lc-qa-subscription');
