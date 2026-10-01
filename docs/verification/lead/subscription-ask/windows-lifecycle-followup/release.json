@@ -1,0 +1,30 @@
+{
+  "baseline": "c44e6204b3e0c49f710fc7bb73d540ef6daa7b06",
+  "push_confirmed": true,
+  "qa_release": {
+    "ok": true,
+    "route_id": "route_6fd5946d12ac46e98ef15d2140c7261f",
+    "action": "instruction",
+    "accepted": true,
+    "mode": "async_route_v1",
+    "delivery_mode": "mailbox",
+    "message_id": "handoff_e8b0cc78f1fd26c823c0101b2eebd8c9",
+    "duplicate": false,
+    "state": "unread",
+    "execution_started": false
+  },
+  "actual_qa_prior_adoption": {
+    "delivery": "handoff_8be1d802ab248cf853c4e6ad11307f2b",
+    "main_baseline": "8eac9fc",
+    "owner_merge": "75fa327",
+    "observed_work": "offline changed-path preparation in progress"
+  },
+  "web_quit_completion": {
+    "message_id": "handoff_7ae38cb944ffff4cc897d511bf79145d",
+    "accepted": true,
+    "initial_execution_started": false
+  },
+  "display_released": false,
+  "inference_allocation_unchanged": true,
+  "real_model_requests_this_turn": 0
+}
