@@ -22,6 +22,8 @@ final class InkController: ObservableObject {
     @Published private(set) var unsavedWarning: String?
 
     weak var capture: CaptureController?
+    /// Gets each confirmed region, for its card. Nothing is sent by confirming.
+    weak var ask: AskController?
     private var session: InkSession?
     private var store: InkStore?
     private var displayID: CGDirectDisplayID?
@@ -236,12 +238,27 @@ final class InkController: ObservableObject {
     }
 
     /// Keeps the region with the retained frame pinned when it was drawn, never a later one, and
-    /// an actual crop of it when the mapping is still valid. Nothing is sent to any AI or explained.
+    /// an actual crop of it when the mapping is still valid. The previous mode is back at once.
+    /// Nothing is sent: the selection's card opens, and a question leaves only on its Submit.
     func finishAsk() {
         guard let session, let store else { return }
         if let selection = session.finishAsk(geometryProblem: geometry?.problem,
                                              inkDirectory: store.fileURL.deletingLastPathComponent(), host: HostClock.now()) {
-            save("Selection \(selection.id) kept" + (selection.crop == nil ? " without a crop (\(selection.cropProblem ?? "unknown"))" : " with a crop of \(selection.frame?.file ?? "")") + "; it is not sent to any AI")
+            // The editable ink is frozen here, as exact bytes, before anything is saved or prepared.
+            let frozen: AskSelectionInput?
+            if let directory = capture?.sessionDirectory, let display = capture?.status?.display {
+                frozen = AskSelectionInput.freeze(selection: selection, document: session.document, captureSession: directory,
+                                                  display: display)
+            } else {
+                frozen = nil
+            }
+            // A card opens only when the ChatGPT connector is set up on this Mac.
+            let opensCard = frozen != nil && ask?.status.connection.opensCards == true
+            save("Selection \(selection.id) kept" + (selection.crop == nil ? " without a crop (\(selection.cropProblem ?? "unknown"))" : " with a crop of \(selection.frame?.file ?? "")")
+                + (opensCard ? "; nothing is sent unless you submit a question on its card" : "; nothing is sent"))
+            if let frozen {
+                ask?.selectionConfirmed(frozen)
+            }
         }
         refresh()
     }

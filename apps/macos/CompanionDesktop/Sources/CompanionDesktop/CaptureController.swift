@@ -59,6 +59,8 @@ final class CaptureController: ObservableObject {
     let ink = InkController()
     /// Links each explicit Start to the local capture service, when it is configured.
     let link = CaptureLink(config: CaptureHostConfig.load())
+    /// The ChatGPT subscription connection and the card of a confirmed selection.
+    let ask = AskController()
     private var active: CaptureRun?
     private var shown: CaptureRun?
     /// The gate of a Start that has no session yet; nil once the session exists.
@@ -92,6 +94,7 @@ final class CaptureController: ObservableObject {
         RunLoop.main.add(ticker, forMode: .common)
         self.ticker = ticker
         ink.capture = self
+        ink.ask = ask
         // Earlier unsettled streams are read, and Stopped if still live; nothing is resent and no
         // capture starts.
         let link = link
@@ -328,6 +331,8 @@ final class CaptureController: ObservableObject {
         // Sending already stopped with the gate; the server Stop follows.
         let link = link
         Task { await link.stop() }
+        // Nothing more is asked from this capture, and a question on its way is fenced.
+        ask.captureStopped(run.recorder.directory.lastPathComponent)
         Task {
             let problem = await Self.stopStream(run)
             // Frames kept before the gate closed get their composition request before the ending.
@@ -382,6 +387,7 @@ final class CaptureController: ObservableObject {
             run.pendingEndingDetail = reason.summary
             let link = link
             Task { await link.stop() }
+            ask.captureStopped(run.recorder.directory.lastPathComponent)
             Task {
                 await run.settleCompositions()
                 run.finish(detail: reason.summary)
@@ -444,6 +450,7 @@ final class CaptureController: ObservableObject {
         // The link's Stop starts now, also when Quit is then held for unsaved ink; Quit joins it.
         let link = link
         Task { await link.stop() }
+        ask.captureStopped(run.recorder.directory.lastPathComponent)
         // Also when a stream error closed the gate off the main thread and its main-thread report
         // has not arrived yet: ink input closes and saves now, and a failed save holds Quit.
         ink.captureEnding(reason: run.gate.closure?.reason ?? "app_quit")

@@ -1,0 +1,12 @@
+# DesktopCapture library built as a module against Darwin stub modules on Linux (-enable-testing); NOT a macOS compile
+== DesktopCapture module (Swift 5, -enable-testing)
+== module ok
+module build exit 0
+# App target sources: syntax-only parse (swiftc -parse); they are NOT type-checked anywhere
+parse AskController.swift exit 0
+parse CaptureController.swift exit 0
+parse CaptureRun.swift exit 0
+parse CompanionDesktopApp.swift exit 0
+parse ContentView.swift exit 0
+parse InkController.swift exit 0
+parse InkViews.swift exit 0

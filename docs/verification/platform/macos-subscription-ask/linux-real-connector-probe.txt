@@ -1,0 +1,28 @@
+src/AskLinkTests.swift:868:36: warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 866 |             ending.connection = FakeConnector.connection(state: "signed_out", mode: NSNull())
+ 867 |             // In the first round the exit is reported only after the sign-in start has returned.
+ 868 |             ending.afterLoginStart = round == 0 ? { $0.endChildUnreported() } : { $0.exitChild() }
+     |                                    `- warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 869 |             let endingLink = askLink(ending)
+ 870 |             await endingLink.connect()
+
+Test Suite 'All tests' started at 2026-10-01 04:14:56.200
+Test Suite 'bin.xctest' started at 2026-10-01 04:14:56.201
+Test Suite 'DesktopCaptureTests' started at 2026-10-01 04:14:56.201
+Test Case 'DesktopCaptureTests.testProbeRealConnector' started at 2026-10-01 04:14:56.201
+PROBE round=1 connection=refused summary=The connector reports the ChatGPT connection as unavailable: nothing can be asked. detail=the connector is unavailable seconds=0.06
+PROBE round=1 after-exit connection=refused detail=the connector is unavailable
+PROBE round=2 connection=refused summary=The connector reports the ChatGPT connection as unavailable: nothing can be asked. detail=the connector is unavailable seconds=0.06
+PROBE round=2 after-exit connection=refused detail=the connector is unavailable
+PROBE sign-in page=nil detail=the connector is unavailable pending=false
+PROBE card phase=failed detail=not sent: ChatGPT is not connected and signed in
+PROBE asks files=["<card>.ink.json", "<card>.png"]
+PROBE state directory created=false statuses=["disconnected", "connecting", "refused", "refused", "connecting", "refused", "refused", "refused", "refused", "disconnected"]
+Test Case 'DesktopCaptureTests.testProbeRealConnector' passed (3.145 seconds)
+Test Suite 'DesktopCaptureTests' passed at 2026-10-01 04:14:59.346
+	 Executed 1 test, with 0 failures (0 unexpected) in 3.145 (3.145) seconds
+Test Suite 'bin.xctest' passed at 2026-10-01 04:14:59.346
+	 Executed 1 test, with 0 failures (0 unexpected) in 3.145 (3.145) seconds
+Test Suite 'All tests' passed at 2026-10-01 04:14:59.346
+	 Executed 1 test, with 0 failures (0 unexpected) in 3.145 (3.145) seconds
+probe exit 0

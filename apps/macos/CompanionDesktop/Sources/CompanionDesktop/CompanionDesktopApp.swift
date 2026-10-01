@@ -102,15 +102,19 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// Every normal Quit (menu, ⌘Q, logout) ends capture and ink input first; it is then held while
     /// ink exists only in memory, until that ink is saved, exported or explicitly discarded. A
     /// linked stream gets one bounded wait for its server Stop; another Quit meanwhile does not
-    /// skip it. What does not finish is reconciled at the next launch.
+    /// skip it. What does not finish is reconciled at the next launch. The subscription connector,
+    /// this app's own child, is ended too; nothing is signed out.
     func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
         guard let capture = Self.capture else { return .terminateNow }
         guard !quitPending else { return .terminateCancel }
         guard capture.quitRequested() else { return .terminateCancel }
         quitPending = true
         let link = capture.link
+        let ask = capture.ask.link
         Task { @MainActor in
+            async let connector: Void = ask.shutdown()
             await link.quit(within: 10)
+            await connector
             self.quitPending = false
             NSApp.reply(toApplicationShouldTerminate: true)
         }

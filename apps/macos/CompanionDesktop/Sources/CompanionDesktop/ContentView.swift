@@ -69,9 +69,13 @@ struct ContentView: View {
                 if let detail = controller.linkStatus.detail {
                     Text(detail).font(.caption).foregroundStyle(.secondary)
                 }
-                Text("Frames and ink are always kept on this Mac first. The service is a local test service on this Mac; a stored frame is not seen by any AI. AI: not connected.")
+                Text("Frames and ink are always kept on this Mac first. The service is a local test service on this Mac; a stored frame is not seen by any AI.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
+            }
+
+            Section("Ask ChatGPT about a selection (your subscription)") {
+                AskConnectionView(ask: controller.ask)
             }
         }
         .formStyle(.grouped)

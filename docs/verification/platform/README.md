@@ -541,3 +541,26 @@ stored. A counts line separates frames confirmed stored (verified ACK only) from
 an answer, not known, refused and not sent, and pending frames are shown as soon as their send is
 recorded. There are 5 new tests (83 declared); on the Linux harness 27/28 link tests pass and all
 14 mutations are caught. This change has not been built or run on macOS.
+
+## macOS: ask ChatGPT about a selection through the subscription (2026-10-01 UTC)
+
+Lead task `handoff_d98adf0e2c88ebeb0bde9d50c30bd5cb` on baseline `1b7c905` (merged as `d4c2a8c`),
+under ADR 0003. [`macos-subscription-ask.md`](macos-subscription-ask.md) records the Mac side of
+the shared private connector interface:
+- the connector runs as this app's own foreground child with a minimal environment;
+- the connection section shows the managed sign-in state, plan, quota and image-capable models,
+  and opens only the official sign-in page on the user's click;
+- a confirmed ASK region gets a card; its image and frozen ink are kept beside the originals;
+- a request leaves only on Submit, with the user's question and chosen help level;
+- an answer is shown only on its own card when its provenance equals the kept request in full;
+- Cancel, Close, a new selection, capture stop, Quit and connector loss suppress later answers;
+  nothing is retried;
+- a connector that reports itself unavailable is shown as that, with no bypass.
+
+Source is uncompiled on macOS: 96 declared tests, 13 of them new. On the Linux harness 12/13 new
+tests pass against an in-process stand-in and a stub child (the pixel test needs a real
+rasterizer), and 59 of 59 mutations are caught. Two Linux probes used the released code of main
+`cd9b0ef` without Codex: the real connector's `unavailable` answer is shown as such, and the
+released request validator accepts the requests Swift makes (with a substituted PNG; the new
+checker `checks/validate_ask_request.py` is for the hosted macOS run). No sign-in or model call
+was made, and the app target is not type-checked anywhere.

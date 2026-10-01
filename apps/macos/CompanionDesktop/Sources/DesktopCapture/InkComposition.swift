@@ -266,12 +266,20 @@ public enum InkComposer {
     /// The raw image with the strokes drawn over it, at its own size; nil if drawing fails.
     /// Display-local points (origin top-left, y down) are scaled by `scaleX` × `scaleY`.
     public static func render(_ raw: CGImage, strokes: [InkStroke], scaleX: Double, scaleY: Double) -> CGImage? {
+        render(region: raw, originX: 0, originY: 0, strokes: strokes, scaleX: scaleX, scaleY: scaleY)
+    }
+
+    /// As `render`, for `region`: the part of the frame whose top-left pixel is (`originX`,
+    /// `originY`). The strokes are drawn where they lie in the whole frame, so only the parts
+    /// inside the region show.
+    public static func render(region: CGImage, originX: Int, originY: Int, strokes: [InkStroke], scaleX: Double,
+                              scaleY: Double) -> CGImage? {
         guard let space = CGColorSpace(name: CGColorSpace.sRGB),
-              let context = CGContext(data: nil, width: raw.width, height: raw.height, bitsPerComponent: 8, bytesPerRow: 0,
+              let context = CGContext(data: nil, width: region.width, height: region.height, bitsPerComponent: 8, bytesPerRow: 0,
                                       space: space, bitmapInfo: CGImageAlphaInfo.premultipliedLast.rawValue) else { return nil }
-        context.draw(raw, in: CGRect(x: 0, y: 0, width: raw.width, height: raw.height))
+        context.draw(region, in: CGRect(x: 0, y: 0, width: region.width, height: region.height))
         // The context's origin is bottom-left; display points run top-down.
-        context.translateBy(x: 0, y: CGFloat(raw.height))
+        context.translateBy(x: CGFloat(-originX), y: CGFloat(region.height + originY))
         context.scaleBy(x: CGFloat(scaleX), y: CGFloat(-scaleY))
         // An sRGB colour in the sRGB context, so no colour matching changes it.
         context.setStrokeColor(CGColor(srgbRed: CGFloat(InkStyle.red), green: CGFloat(InkStyle.green), blue: CGFloat(InkStyle.blue), alpha: 1))
