@@ -1,7 +1,7 @@
 // node --test tests/e2e/windows/signin_cleanup.test.mjs   (no Windows, no display: the rule only)
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { argv, lookCommand, ownedKind, readLook, releaseOwned, signalCommand } from './signin_cleanup.mjs';
+import { argv, isChild, launches, lookCommand, ownedKind, readLook, releaseOwned, signalCommand, windowsCalls } from './signin_cleanup.mjs';
 
 const EXE = 'C:\\T\\lc-electron-44.5.1-win32-x64\\electron.exe';
 const STAGE = 'C:\\T\\lc-qa-windows-sub';
@@ -92,6 +92,9 @@ test('a child process of an Electron app, and a readable other app, are foreign'
   assert.equal(ownedKind(app(41, { command_line: `"${EXE}" --type=renderer --remote-debugging-port=43000` }), expected), 'foreign');
   assert.equal(ownedKind(other(77), expected), 'foreign');
   assert.equal(ownedKind(other(77, { created: '3000' }), expected), 'foreign');
+  // a child made since the check began whose path cannot be read is still a child; without a creation time it cannot be told
+  assert.equal(ownedKind(app(51, { exe: null, command_line: `"${EXE}" --type=gpu-process` }), expected), 'foreign');
+  assert.equal(ownedKind(app(51, { created: null, command_line: `"${EXE}" --type=gpu-process` }), expected), 'unresolved');
 });
 
 test('an unreadable command line: unresolved if the process was made since the check began (whatever its path looks like), else foreign', () => {
@@ -107,6 +110,8 @@ test('an unreadable command line: unresolved if the process was made since the c
 test('the commands are built only for a real port and a whole identity, and carry the texts encoded', () => {
   assert.throws(() => lookCommand(80)); assert.throws(() => lookCommand(43000, "x' -or '1"));
   assert.match(lookCommand(43000), /-LocalPort 43000 /);
+  // the look asks for EVERY process of the image name: nothing is filtered or cut between the query and the rows
+  assert.match(lookCommand(43000), /\$rows = @\(Get-CimInstance Win32_Process -Filter "Name='electron\.exe'" \| ForEach-Object \{ @\{ pid = \[int\]\$_\.ProcessId; /);
   assert.throws(() => signalCommand({ pid: 41 }, 'force')); assert.throws(() => signalCommand(app(41), 'kill')); assert.throws(() => signalCommand(app(41, { created: '20x0' }), 'force')); assert.throws(() => signalCommand(app(41, { command_line: null }), 'close')); assert.throws(() => signalCommand(app(41, { command_line: '' }), 'close')); assert.throws(() => signalCommand(app(41, { exe: '' }), 'force'));
   const force = signalCommand(app(41), 'force'), close = signalCommand(app(41), 'close');
   assert.ok(!force.includes(STAGE) && !force.includes('remote-debugging-port'));   // the launch texts are passed as base64, never as shell text
@@ -309,4 +314,62 @@ test('a process caught unreadable while it exits is looked at again, not reporte
   const { deps, calls } = world({ procs: [{ p: app(41) }], at: { 1: blind, 2: gone } });
   const r = await releaseOwned(deps);
   assert.deepEqual([r.exit, r.folder, calls.signals, calls.removed], ['confirmed', 'removed', [], 1]);
+});
+
+// ---- the launcher's side: the cleanup must be given the complete look ---------------------------------------------------
+// The launcher's one way to run a Windows command, played here: the look command answers with every process of this small
+// world as Windows would write it; a signal command is recorded and answered 'signalled'.
+function windows(procsAt) {
+  const seen = { looks: 0, signals: [] };
+  const ps = (command) => {
+    if (command === lookCommand(43000)) { seen.looks += 1; return `${Buffer.from(JSON.stringify({ now: '1500', processes: procsAt(seen.looks), listen: [] })).toString('base64')}\r\n`; }
+    seen.signals.push(command);
+    return 'signalled\r\n';
+  };
+  return { seen, ps };
+}
+const boundary = (ps, over = {}) => { let slept = 0, removed = 0; return { deps: { ...windowsCalls(ps, 43000), sleep: async () => { slept += 1; }, now: () => slept * 500, expected, ownsFolder: true,
+  removeFolder: async () => { removed += 1; return true; }, waitSelfMs: 2000, waitCloseMs: 2000, waitForceMs: 2000, stepMs: 500, ...over }, removed: () => removed }; };
+
+test('through the launcher\'s own look: a remembered process that later shows a --type= command line is still seen: not revalidated, unknown, nothing signalled, folder kept', async () => {
+  const changed = app(741, { command_line: `${app(741).command_line} --type=renderer` });
+  const { seen, ps } = windows((look) => [look === 1 ? app(741) : changed]);          // the same PID and creation time throughout
+  const { deps, removed } = boundary(ps);
+  const r = await releaseOwned(deps);
+  assert.equal(isChild(changed), true);
+  assert.deepEqual([r.owned_seen, r.not_revalidated, r.exit, r.folder, removed(), seen.signals, r.children, r.foreign],
+    [[{ pid: 741, created: '2000', kind: 'app' }], [{ pid: 741, created: '2000' }], 'unknown', 'kept', 0, [], [], []]);
+  assert.match(r.folder_reason, /not known/);
+});
+
+test('through the launcher\'s own look: the app\'s child processes are seen, never signalled, reported apart from foreign apps, and do not stand in the way', async () => {
+  const child = (pid, type) => ({ pid, created: '2050', exe: EXE, command_line: `"${EXE}" --type=${type} --user-data-dir="${DIR}\\profile"` });
+  const { seen, ps } = windows((look) => (look < 3 ? [app(41), child(51, 'renderer'), child(52, 'gpu-process'), other(9)] : [child(52, 'gpu-process'), other(9)]));
+  const { deps, removed } = boundary(ps);
+  const r = await releaseOwned(deps);
+  assert.deepEqual([r.owned_seen, r.exit, r.folder, removed(), seen.signals, r.children, r.foreign, r.unresolved, r.not_revalidated],
+    [[{ pid: 41, created: '2000', kind: 'app' }], 'confirmed', 'removed', 1, [], [52], [9], [], []]);
+});
+
+test('through the launcher\'s own signal: the identity goes into the command, and an answer that is not one of the five is an error', async () => {
+  const { seen, ps } = windows(() => [app(41)]);
+  const { deps } = boundary(ps);
+  const r = await releaseOwned(deps);
+  assert.deepEqual(seen.signals, [signalCommand(app(41), 'close'), signalCommand(app(41), 'force')]);
+  assert.deepEqual([r.asked_to_close, r.ended_by_force, r.exit, r.folder], [[{ pid: 41, created: '2000' }], [{ pid: 41, created: '2000' }], 'still_running', 'kept']);
+  await assert.rejects(windowsCalls(() => 'True\r\n', 43000).signal(app(41), 'close'), /unreadable answer/);
+  for (const word of ['signalled', 'no_window', 'gone', 'stale', 'unverified']) assert.equal(await windowsCalls(() => `noise\r\n${word}\r\n`, 43000).signal(app(41), 'close'), word);   // the last line, each of the five
+  const stopped = boundary(() => 'unverified\r\n', { look: async () => ({ processes: [app(41)], listen: [] }) });
+  const u = await releaseOwned(stopped.deps);
+  assert.deepEqual([u.signals, u.exit, u.folder], [[{ pid: 41, created: '2000', how: 'close', answer: 'unverified' }], 'unknown', 'kept']);        // and 'unverified' stops everything
+  await assert.rejects(windowsCalls(() => 'not a look', 43000).look());
+});
+
+test('before the start only: child processes are left out of "is an Electron app open?", and a process that cannot be read is not left out', () => {
+  const child = other(7, { command_line: '"C:\\Other\\electron.exe" --type=crashpad-handler' });
+  const blind = other(8, { command_line: null });
+  const undated = other(5, { created: null, command_line: child.command_line });      // the cleanup could not tell it apart later: the check does not start
+  assert.deepEqual(launches([child, other(9), blind, undated]).map((p) => p.pid), [9, 8, 5]);
+  assert.deepEqual(launches([child]), []);
+  assert.deepEqual([isChild(child), isChild(other(9)), isChild(blind), isChild(other(6, { command_line: '"C:\\Other\\electron.exe" C:\\x\\--type=a' }))], [true, false, false, false]);
 });

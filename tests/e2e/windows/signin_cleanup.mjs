@@ -12,13 +12,18 @@
 //
 // The rule:
 //   - a signal is sent only to an identity that is owned at that look, and the caller's `signal` validates the identity
-//     again while it holds the process (see signin_launcher.mjs). A close request comes first, force only after it;
+//     again while it holds the process (`signalCommand`, run through `windowsCalls`). A close request comes first, force only after it;
 //   - if a remembered process is still there but can no longer be shown to be the same launch (its command line cannot
 //     be read, or differs), or a new process of the same runtime cannot be told apart, ownership is UNKNOWN: nothing more
 //     is signalled, nothing is removed, and that is what is reported;
 //   - the folder is removed only if this check made it, every remembered identity is confirmed gone, nothing owned or
 //     unresolved is left, and nothing that is not owned holds the check's port;
 //   - when a look fails, nothing more is signalled and nothing is removed.
+//
+// The cleanup reads the COMPLETE look: every process of the runtime's image name, child processes included. A remembered
+// process that later shows another command line (a `--type=` one too) is then still found by its PID and creation time,
+// and is "not revalidated", never "gone". Leaving child processes out is for the caller's question before anything is
+// started (`launches`), and for the report (`children`); it is never done to what `releaseOwned` looks at.
 
 /**
  * A Windows command line as its arguments, by the rules of CommandLineToArgvW: the program name is taken up to its
@@ -54,6 +59,15 @@ const samePath = (a, b) => typeof a === 'string' && typeof b === 'string' && a.t
 const readable = (v) => typeof v === 'string' && v.length > 0;
 const after = (created, notBefore) => { try { return BigInt(created) >= BigInt(notBefore); } catch { return false; } };
 export const key = (p) => `${p.pid}:${p.created}`;
+/** A readable command line with a `--type=` argument: a child process of some Electron app, never an app's own launch. */
+export const isChild = (p) => readable(p.command_line) && argv(p.command_line).slice(1).some((a) => a.startsWith('--type='));
+/**
+ * The processes of a look that are not plainly child processes. Only for the question "is an Electron app open?" before
+ * anything is started. Never give its result to `releaseOwned`: a remembered process would be hidden from it.
+ * A child process whose creation time cannot be read is kept: the cleanup could not tell it apart later, so the check
+ * must not start beside it.
+ */
+export const launches = (processes) => processes.filter((p) => !(isChild(p) && readable(p.created)));
 
 /**
  * What one process is to this check.
@@ -68,9 +82,10 @@ export const key = (p) => `${p.pid}:${p.created}`;
 export function ownedKind(p, expected) {
   if (!readable(p.created)) return 'unresolved';                                // no creation time: it cannot be told
   const young = after(p.created, expected.notBefore);
-  if (!readable(p.command_line) || !readable(p.exe)) return young ? 'unresolved' : 'foreign';   // made since the check began and not readable: it could be this check's
+  if (!readable(p.command_line)) return young ? 'unresolved' : 'foreign';   // made since the check began and not readable: it could be this check's
+  if (isChild(p)) return 'foreign';                                         // a child of some Electron app, never a launch of ours (whatever its path)
+  if (!readable(p.exe)) return young ? 'unresolved' : 'foreign';
   const args = argv(p.command_line).slice(1);
-  if (args.some((a) => a.startsWith('--type='))) return 'foreign';          // a child of some Electron app, never a launch of ours
   const is = (want) => args.length === want.length && samePath(args[0], want[0]) && want.slice(1).every((a, i) => args[i + 1] === a);
   if (young && samePath(p.exe, expected.exe)) { if (is(expected.app)) return 'app'; if (is(expected.checker)) return 'checker'; }
   return args.some((a) => expected.markers.includes(a)) ? 'unresolved' : 'foreign';
@@ -79,7 +94,8 @@ export function ownedKind(p, expected) {
 /**
  * @param {object} d
  * @param {() => Promise<{ processes: Array<{pid:number,created:string,exe:string|null,command_line:string|null}>, listen: number[] }>} d.look
- *        every main process of the Electron runtime's image name, and the PIDs listening on the check's port. Throws when it cannot look.
+ *        EVERY process of the Electron runtime's image name (child processes too: nothing taken out), and the PIDs listening
+ *        on the check's port. Throws when it cannot look.
  * @param {(identity: object, how: 'close'|'force') => Promise<'signalled'|'no_window'|'gone'|'stale'|'unverified'>} d.signal
  *        validates that exact identity again while holding the process, and only then signals it. 'stale': that PID is another
  *        process now (nothing was signalled). 'unverified': the same process, but its launch identity could not be shown again.
@@ -88,7 +104,7 @@ export function ownedKind(p, expected) {
  * @param {() => Promise<boolean>} d.removeFolder   removes the folder; resolves to whether one was removed
  */
 export async function releaseOwned({ look, signal, sleep, now = Date.now, expected, ownsFolder, removeFolder, waitSelfMs = 20000, waitCloseMs = 15000, waitForceMs = 10000, stepMs = 500 }) {
-  const record = { owned_seen: [], asked_to_close: [], ended_by_force: [], signals: [], errors: [], exit: 'unknown', left_running: [], not_revalidated: [], unresolved: [], not_owned_on_the_port: [], foreign: [],
+  const record = { owned_seen: [], asked_to_close: [], ended_by_force: [], signals: [], errors: [], exit: 'unknown', left_running: [], not_revalidated: [], unresolved: [], not_owned_on_the_port: [], foreign: [], children: [],
     folder: 'kept', folder_reason: null };
   const known = new Map();   // key -> the identity as it was first seen owned
   const say = (p) => ({ pid: p.pid, created: p.created });
@@ -99,7 +115,7 @@ export async function releaseOwned({ look, signal, sleep, now = Date.now, expect
       snap = await look();
       if (!Array.isArray(snap?.processes) || !Array.isArray(snap?.listen)) throw new Error('unreadable answer');
     } catch (error) { record.errors.push(`look: ${String(error?.message ?? error).slice(0, 200)}`); return null; }
-    const state = { owned: [], notRevalidated: [], unresolved: [], foreign: [], others: [] };
+    const state = { owned: [], notRevalidated: [], unresolved: [], foreign: [], children: [], others: [] };
     for (const p of snap.processes) {
       const kind = ownedKind(p, expected);
       if (kind === 'app' || kind === 'checker') {
@@ -107,6 +123,7 @@ export async function releaseOwned({ look, signal, sleep, now = Date.now, expect
         state.owned.push(known.get(key(p)));
       } else if (known.has(key(p))) state.notRevalidated.push(known.get(key(p)));   // the same process, no longer shown to be the same launch
       else if (kind === 'unresolved') state.unresolved.push(say(p));
+      else if (isChild(p)) state.children.push(p.pid);                              // never remembered, so never this check's launch: reported apart
       else state.foreign.push(p.pid);
     }
     const ownedPids = new Set(state.owned.map((p) => p.pid));
@@ -144,6 +161,7 @@ export async function releaseOwned({ look, signal, sleep, now = Date.now, expect
     record.unresolved = state.unresolved;
     record.not_owned_on_the_port = state.others;
     record.foreign = state.foreign;
+    record.children = state.children;
     record.exit = !sure || !state.sure ? 'unknown' : state.owned.length === 0 && state.others.length === 0 ? 'confirmed' : 'still_running';
   }
   if (!ownsFolder) record.folder_reason = 'this check did not make the folder: it is not this check\'s to remove';
@@ -179,6 +197,23 @@ export function readLook(output) {
   const listen = [].concat(out.listen ?? []).map(Number);
   if (!/^\d+$/.test(String(out.now)) || ![...processes.map((p) => p.pid), ...listen].every((n) => Number.isInteger(n) && n >= 0) || !processes.every((p) => p.created === null || /^\d+$/.test(p.created))) throw new Error('unreadable process list');
   return { now: String(out.now), processes, listen };
+}
+
+/**
+ * The look and the signal as the launcher runs them, from its one way to run a Windows command (`ps`: the command's text
+ * in, its output out). The look is the complete answer of `lookCommand`: nothing stands between it and `releaseOwned`.
+ */
+export function windowsCalls(ps, port) {
+  const answers = ['signalled', 'no_window', 'gone', 'stale', 'unverified'];
+  return {
+    look: async () => readLook(ps(lookCommand(port))),
+    // One exact identity, validated again by the command itself while it holds the process (signalCommand).
+    signal: async (identity, how) => {
+      const answer = ps(signalCommand(identity, how)).trim().split(/\r?\n/).at(-1);
+      if (!answers.includes(answer)) throw new Error(`unreadable answer: ${String(answer).slice(0, 80)}`);
+      return answer;
+    },
+  };
 }
 
 /**

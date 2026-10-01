@@ -26,7 +26,7 @@ import { chmodSync, existsSync, mkdirSync, readFileSync, readlinkSync, readdirSy
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { askPathCheck, compareCopy, makeCopy } from './sub_copy.mjs';
-import { argv, lookCommand, readLook, releaseOwned, signalCommand } from './signin_cleanup.mjs';
+import { launches, releaseOwned, windowsCalls } from './signin_cleanup.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 const [action, commit] = process.argv.slice(2);
@@ -91,25 +91,16 @@ if (action === 'prepare') {
   const checkName = `${launcherName}-check-${port}`;
   const checkDir = join(temp, checkName);
   const ps = (command) => execFileSync('powershell.exe', ['-NoProfile', '-NonInteractive', '-Command', command], { cwd: '/mnt/c', encoding: 'utf8', timeout: 30000 });
-  // Every electron.exe process that is not plainly a child of some Electron app (a readable command line with --type=),
-  // with its facts, and the PIDs listening on the port. It only reads. Throws if it cannot look.
-  const look = async () => {
-    const seen = readLook(ps(lookCommand(port)));
-    return { ...seen, processes: seen.processes.filter((p) => !(p.command_line && argv(p.command_line).slice(1).some((a) => a.startsWith('--type=')))) };
-  };
-  // One exact identity, validated again by the command itself while it holds the process (signalCommand).
-  const ANSWERS = ['signalled', 'no_window', 'gone', 'stale', 'unverified'];
-  const signal = async (identity, how) => {
-    const answer = ps(signalCommand(identity, how)).trim().split(/\r?\n/).at(-1);
-    if (!ANSWERS.includes(answer)) throw new Error(`unreadable answer: ${String(answer).slice(0, 80)}`);
-    return answer;
-  };
+  // The look is every electron.exe process with its facts (child processes too) and the PIDs listening on the port; it
+  // only reads, and throws if it cannot look. The signal goes to one exact identity. The cleanup gets this look whole.
+  const { look, signal } = windowsCalls(ps, port);
   // Before anything is made or started: the look must work, nothing may hold this port, and no other Electron app may
   // be open (it could be the product with the user signing in: the check does not run beside it and signals nothing).
+  // Child processes are left out of THIS question only (`launches`).
   let before;
   try { before = await look(); } catch (error) { refuse(`the processes could not be looked at (${String(error?.message ?? error).slice(0, 200)})`); }
   if (before.listen.length) refuse('the port chosen for this check is in use: run the check again');
-  if (before.processes.length) refuse('an Electron app is open (perhaps the product, with the user signing in): the check does not run beside it');
+  if (launches(before.processes).length) refuse('an Electron app is open (perhaps the product, with the user signing in): the check does not run beside it');
   const expected = { exe: `${winTemp}\\${ELECTRON}\\electron.exe`, app: [`${winTemp}\\${stageName}`, `--remote-debugging-port=${port}`, '--remote-debugging-address=127.0.0.1'],
     checker: [`${winTemp}\\${checkName}\\qa-check.js`, `--qa-check-port=${port}`], markers: [`--remote-debugging-port=${port}`, `--qa-check-port=${port}`], notBefore: before.now };
   // The checker, run on Windows by the staged Electron as plain Node: it starts the app through the start file (with a
@@ -199,7 +190,7 @@ setTimeout(() => { if (finishing) return; out.error = 'the check gave up after 1
     cleanup = made
       ? await releaseOwned({ look, signal, expected, sleep: (ms) => new Promise((ok) => setTimeout(ok, ms)), ownsFolder: true,
           removeFolder: async () => { const there = existsSync(checkDir); rmSync(checkDir, { recursive: true, force: true, maxRetries: 10, retryDelay: 300 }); return there; } })
-      : { owned_seen: [], asked_to_close: [], ended_by_force: [], signals: [], errors: [], exit: 'nothing_started', left_running: [], not_revalidated: [], unresolved: [], not_owned_on_the_port: [], foreign: [],
+      : { owned_seen: [], asked_to_close: [], ended_by_force: [], signals: [], errors: [], exit: 'nothing_started', left_running: [], not_revalidated: [], unresolved: [], not_owned_on_the_port: [], foreign: [], children: [],
           folder: 'kept', folder_reason: 'this run could not make its folder and started nothing' };
     foreignAtEnd = cleanup.foreign;
     // The connector in WSL ends within its own bound (8 s) after the app; it is only looked at, never ended here.
