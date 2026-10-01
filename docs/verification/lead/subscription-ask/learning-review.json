@@ -1,0 +1,50 @@
+{
+  "candidate": "5b4b549105969274f0b0fbcc96fc35530cffd1b1",
+  "adr_commit": "1b7c90558165c87c83564b1d6c777905923b8528",
+  "source_sha256": "3e1d52eb166ffcd83d5c9b2405bee27628faedc13f0798450d473cd5933955ae",
+  "archive_root": "/tmp/subscription-learning-5b4b549-_2la3rgm",
+  "author_tests": {
+    "passed": 180,
+    "elapsed_seconds": 0.68
+  },
+  "independent_probes": [
+    {
+      "name": "js_python_coordinate_equivalence",
+      "status": "pass",
+      "cases": 12
+    },
+    {
+      "name": "equivalent_pixels_distinct_original",
+      "status": "pass",
+      "cases": 2
+    },
+    {
+      "name": "detached_and_mutated_policy",
+      "status": "pass",
+      "cases": 5
+    },
+    {
+      "name": "unknown_binding_and_utf8",
+      "status": "pass",
+      "cases": 5
+    },
+    {
+      "name": "geometry_and_png_cross_binding",
+      "status": "pass",
+      "cases": 4
+    },
+    {
+      "name": "opaque_png_metadata_and_fixed_errors",
+      "status": "pass",
+      "cases": 2
+    }
+  ],
+  "independent_case_total": 30,
+  "elapsed_seconds": 0.051,
+  "outcome": "pass",
+  "provider_calls": 0,
+  "auth_access": false,
+  "display_access": false,
+  "setup_retry": "Initial probe could not find node in PATH; README documented pinned root Node was used. Initial observation retained separately.",
+  "scope": "pure learning seam only; no provider entitlement, semantic model quality, delivery, cancellation or UI acceptance"
+}

@@ -108,6 +108,8 @@ records unconfirmed remote interruption.
   unsupported image model, malformed/oversize image or stopped capture session.
   Return `request_id`, completed `text`, `provenance`, actual `model`,
   `auth_mode:"chatgpt"`, `latency_ms` and official thread/turn identifiers.
+  `kind:"generated_assistance"` labels the separate model output. The exact
+  identifier keys are `thread_id` and `turn_id`.
   Incomplete/error/cancelled turns never become completed answers. No retry.
 - `ask/cancel {request_id}` invalidates presentation at once and interrupts that
   turn. Cancellation racing before `turn/start` must prevent later submission;
@@ -152,6 +154,9 @@ capture dimensions. `frame_captured_at` may be null when unknown; it must not be
 invented from response time. `ink_revision` may be null only with null ink hash;
 null hash with a known revision explicitly records unavailable editable-original
 binding. Both known and unknown facts survive to the card.
+When known, `source_version` is a positive integer and `media_position` a
+nonnegative numeric position; this slice sends null when the platform has no
+such evidence. JSON integer-valued numbers remain interoperable across runtimes.
 
 Provenance shape is exactly `{request_id,question,assistance,image:{sha256,width,
 height},context}`. `context` echoes every validated field above, including nulls.

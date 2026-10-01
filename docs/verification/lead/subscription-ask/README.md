@@ -30,6 +30,15 @@ Product-owned Codex state stays separate from development-agent state; Codex
 itself performs login and manages credentials. Missing login must become a real
 user-operated official connection entry, not a request to paste credentials.
 
+Learning delivery `5b4b549` is [independently reviewed](learning-review.md) and
+integrates as `e7c696f900b4b8f0df21926f22b19e68628e28d8`. Main's focused PNG/ASK
+tests pass 180/180 (0.68s); six independent groups/30 checks also pass, including
+the archived Windows mapper versus Python crop validation. Exact PNG/provenance,
+nullable facts, mutations and separate generated-response binding are covered.
+No semantic teaching quality, model image understanding or lifecycle authority
+is inferred from this pure seam. The first independent probe's missing Node PATH
+is preserved in its report and corrected with the pinned executable.
+
 Next: integrate the actual connector/Learning/desktop deliveries, run focused
 changed-path checks and independent review, then release the exact Windows
 candidate/display/budget to QA. Acceptance requires the real image-bearing turn

@@ -22,7 +22,12 @@
       "owner": "learning",
       "accepted_assignment": "handoff_1b9d3140707feab4388c0991d9006376",
       "actual_start_reply": "handoff_43be7a0146b91f6d57315c34b3fb804a",
-      "state": "actual_start_reported"
+      "state": "pure_seam_independently_reviewed_and_integrated",
+      "actual_delivery": "handoff_f7d6aa245b7343d6aa4c9f717a3cbcaf",
+      "delivery_commit": "5b4b549105969274f0b0fbcc96fc35530cffd1b1",
+      "integrated_commit": "e7c696f900b4b8f0df21926f22b19e68628e28d8",
+      "main_focused_tests": 180,
+      "independent_checks": 30
     },
     {
       "owner": "web",
