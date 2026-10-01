@@ -4,11 +4,11 @@
   (`handoff_de323dc5105b08860c398a13b7206dbd`, driver task `handoff_16a192142160536115f6087460e33b77`).
 - **Candidate:** pushed `3e4b40654460a2dc2407f1d9be60d8e1a5b39a3e`. Its Windows app tree is the owner's `84fc56a`
   (both `5bda4761…`, compared by QA). Staged from `team/qa` at the normal merge `a9ff602`, Electron 44.5.1.
-- **QA harness:** `team/qa` `b583969`. The final runs executed exactly the bytes of the commit named for each in
+- **QA harness:** `team/qa` `0e210ed`. The final runs executed exactly the bytes of the commit named for each in
   [harness.json](p0-13-subscription-ask-windows-3e4b406/harness.json): six runs at `110c733`, the click probe at
   `9cac50b`, and one earlier probe run at `3002218`. The real turn's step list is the same at `110c733` and `9cac50b`.
-  `677323a` changes one note text of the analyzer after those runs. `85d79e6` and `b583969` correct the cleanup of the
-  start-file check (see "What happened on the way"); the corrected check was not run on the display.
+  `677323a` changes one note text of the analyzer after those runs. `85d79e6`, `b583969` and `0e210ed` correct the
+  cleanup of the start-file check (see "What happened on the way"); the corrected check was not run on the display.
 - **Plan:** [p0-13-subscription-ask-plan.md](p0-13-subscription-ask-plan.md), updated to this stage.
 - **Date and display:** 2026-10-01, 08:22–09:10 and 10:04–10:14 UTC, the Windows host (2560×1600 at scale 2 =
   1280×800 DIP), WSL2 Ubuntu.
@@ -305,10 +305,31 @@ provenance is compared before an answer is shown; answers are rendered as text o
     cannot read, its own port argument in another launch, or a failed look: nothing is signalled, nothing is removed,
     and the check says "not released" (exit 3).
   - Its folder is removed only when it made it and everything it started is confirmed gone.
-  - Verified without a window: 35 offline tests of the rule, with regressions for the lead's three observations; the
-    argument splitting equals Windows' own for 30 command lines; the two Windows commands were run on a windowless
-    process the script started itself ([result](p0-13-subscription-ask-windows-3e4b406/signin-signal-headless-check.json)):
-    a wrong creation time, command line or executable is not signalled, the exact identity is.
+  - Verified without a window, at `b583969`: 35 offline tests of the rule, with regressions for the lead's three
+    observations; the argument splitting equals Windows' own for 30 command lines; the two Windows commands were run on
+    a windowless process the script started itself
+    ([result](p0-13-subscription-ask-windows-3e4b406/signin-signal-headless-check.json)): a wrong creation time, command
+    line or executable is not signalled, the exact identity is.
+  - **One more gap at the same boundary, corrected in `0e210ed`.** The lead's probe showed that the launcher's look
+    left out every process with a readable `--type=` command line before the cleanup saw it. A process the check had
+    started and remembered, later showing such a command line under the same PID and creation time, was then taken as
+    gone: exit "confirmed" and the folder removed. This is a simulated change of the reported command line; it was not
+    observed on Windows.
+    - The cleanup now reads the complete look: every `electron.exe` process, child processes included. The launcher's
+      look and signal are one function of the tested file (`windowsCalls`), and the launcher puts nothing between the
+      look and the cleanup.
+    - Child processes are left out only of the question asked before anything is started ("is an Electron app
+      open?"), and the record names them apart from other apps (`children`). A child without a readable creation time
+      is not left out there, because the cleanup could not tell it apart later.
+    - The regression is at the caller: `signin_launcher.test.mjs` runs the launcher's own check, as written, with
+      Windows played as text (`signin_played_windows.mjs`) in a Node that may start no program. The result is unknown,
+      "not revalidated", nothing signalled, folder kept, exit code 3. The launcher of `b583969` fails this test. Two
+      more runs hold the ordinary outcomes: confirmed and folder removed beside child processes, and a refusal before
+      the start.
+    - 42 offline tests now (39 of the rule, 3 of the launcher); 24 mutants, among them the earlier launcher and every
+      mutant an independent review found to survive a first version of these tests, fail them. The two Windows
+      commands are unchanged except that the launcher reaches them through `windowsCalls`; they were not run again,
+      and no window or login was used.
   - Not shown: the corrected check itself on the display, and that Windows reports the app's launch in exactly the
     expected form. If it does not, the check reports "not released" and signals nothing. The three saved checks were
     made before these corrections, ended by themselves, and stay valid.
