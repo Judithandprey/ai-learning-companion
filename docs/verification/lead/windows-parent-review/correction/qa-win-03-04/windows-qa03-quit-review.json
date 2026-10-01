@@ -1,0 +1,330 @@
+{
+  "code_commit": "5cd0bec87db7a1f0989ab8e7f0ed702261dbccf2",
+  "evidence_commit": "70cb7e872e1cc7826d5b108ccc006b758d3cfb70",
+  "parent_commit": "5871981524140e3be986268a941d34e99af25bb9",
+  "changed_source_checks": [
+    {
+      "path": "apps/windows/scripts/link-quit-check.mjs",
+      "sha256": "7a2ff8ea48bc816503cb2d6dc5dde64a26e97bb1d7101a96af18997fe35f016f",
+      "matches_git": true
+    },
+    {
+      "path": "apps/windows/src/main/capture-link.ts",
+      "sha256": "11c2debdc8bed2ad66181f3fbaf3137b2d30f06c538b291eb5b598b999682073",
+      "matches_git": true
+    },
+    {
+      "path": "apps/windows/src/main/main.ts",
+      "sha256": "5547188bfe5e69a1eceb0b95644b6810c63dffd66ebaa9f42a3f73aea5808863",
+      "matches_git": true
+    },
+    {
+      "path": "apps/windows/src/preload/overlay.cjs",
+      "sha256": "a969708fc3e6ed0bacc0ee5968c754aa80160f4fc5182096d6ad94f74e967764",
+      "matches_git": true
+    },
+    {
+      "path": "apps/windows/src/renderer/control.ts",
+      "sha256": "328b30224b9be83b91a671886d991f640725a9182b77134702aa2a96f6a33b31",
+      "matches_git": true
+    },
+    {
+      "path": "apps/windows/src/renderer/overlay.ts",
+      "sha256": "7cc6ffa87396544af676aac3df7c9e117ac971bc30963357ae07990771f71a87",
+      "matches_git": true
+    },
+    {
+      "path": "apps/windows/tests/app-link.test.ts",
+      "sha256": "81eccd94e219ca9332013b3f25834565b353c088bc42595caac451a2b126b025",
+      "matches_git": true
+    },
+    {
+      "path": "apps/windows/tests/capture-link-record.test.ts",
+      "sha256": "2b3db30699420b19bd37dbb0e6897567620f16d2d9b06133b9eaf1f5b2ce586d",
+      "matches_git": true
+    },
+    {
+      "path": "apps/windows/tests/capture-link-rules.test.ts",
+      "sha256": "7836a7f84d26665b311a3644c9e41c74ee2a5f31ecd25e5cc01c30f4a6176b6f",
+      "matches_git": true
+    },
+    {
+      "path": "apps/windows/tests/control-link.test.ts",
+      "sha256": "eb22d92c4475e141a34034dff2eb72b7c3667e91846efb1b2fe297c3da930102",
+      "matches_git": true
+    },
+    {
+      "path": "apps/windows/tests/control-page.ts",
+      "sha256": "cd85835b5efdd950defbf580f4db9baa8104f242dcda473d61cf0935f804f215",
+      "matches_git": true
+    },
+    {
+      "path": "apps/windows/tests/link-fakes.ts",
+      "sha256": "a19240034807571297d457285a40bfac765a8073f0a1195c53c292f070281f1b",
+      "matches_git": true
+    },
+    {
+      "path": "apps/windows/tests/main-harness.ts",
+      "sha256": "1148e07d52ec05b93a1fcad279064f7c5ebeeec3dab9bddc7b07e715d6405e97",
+      "matches_git": true
+    },
+    {
+      "path": "apps/windows/tests/overlay-frames.test.ts",
+      "sha256": "4a5b469a4e0777675aa23da1af9795e9ffc888f0fd186d241b5460c0c55be0c4",
+      "matches_git": true
+    },
+    {
+      "path": "apps/windows/tests/overlay-page.ts",
+      "sha256": "810c34084075f4e99ac93f8e32eb2261038ec350fdcd4f409c8be64e169be7f5",
+      "matches_git": true
+    },
+    {
+      "path": "docs/verification/web/evidence/windows-capture-link/qa-win-03-04/after-5cd0bec.json",
+      "sha256": "5d6d2d61d02165f2f74723c0c3ed29e12e7a705e7b24fe1a4777cc060132db1e",
+      "matches_git": true
+    },
+    {
+      "path": "docs/verification/web/evidence/windows-capture-link/qa-win-03-04/before-5871981.json",
+      "sha256": "22c408c5d9adf5cc35ea008d92db62cbd77e50eebe5835111ea3b32fec4abf85",
+      "matches_git": true
+    },
+    {
+      "path": "docs/verification/web/windows-capture-link.md",
+      "sha256": "83107fcfc2f84a72deb4eb3d022439f536a7f3d74437ba143e88ef52e34c84d5",
+      "matches_git": true
+    }
+  ],
+  "all_changed_files_match_git": true,
+  "reports": [
+    {
+      "name": "before-5871981",
+      "report_sha256": "22c408c5d9adf5cc35ea008d92db62cbd77e50eebe5835111ea3b32fec4abf85",
+      "checks": 3,
+      "pass": 1,
+      "fail": 2,
+      "reported_stage_files": 56,
+      "local_stage_files": 56,
+      "reported_stage_sha256": "b9aaf734396ad8088fb17e7e0809600227abb4c3f014c0fc936dac01cf9e5107",
+      "local_stage_sha256": "b9aaf734396ad8088fb17e7e0809600227abb4c3f014c0fc936dac01cf9e5107",
+      "stage_match": true,
+      "source": {
+        "prebuilt": "5871981 (git archive of that commit, built with the same tsc)"
+      },
+      "runtime": {
+        "electron": "44.5.1",
+        "node": "24.21.0",
+        "platform": "win32-x64"
+      },
+      "driver_exit": 1,
+      "error": null,
+      "electron_left_running": false,
+      "files": {
+        "package.json": "ca62c237282a825cc36aceab1ed44e2673061369ef05694f25689dc3b574db49",
+        "dist/apps/windows/tests/uploader.test.js": "fd1d2e98473f7dd336756286b420809eb6c64e3324f0aab8f834df21a78526b4",
+        "dist/apps/windows/tests/frame-ingress.test.js": "ae6d5161ef6200fa2618543050c9b8ad3a3c723ee2817e282a2192339edc457f",
+        "dist/apps/windows/tests/retention-correction.test.js": "72dffec79a5ec00f6c0484e53de2dccbde79d5661e127f864797f93a8394a663",
+        "dist/apps/windows/tests/main-harness.js": "730ac1915cc2aa47ff8bc86132bcbd6916c26c5624226483bd99c1dfda360fc7",
+        "dist/apps/windows/tests/ink-original.test.js": "ba623a79daaac5d72f663e0ea3010f29a17622da3ba2186cea3c2f338ae5e720",
+        "dist/apps/windows/tests/retention.test.js": "2df279503af67e39f54f69dfb2ba76dcd001e6676e571b3303bc8f3e0f513dcc",
+        "dist/apps/windows/tests/app-link.test.js": "0ca2d63cfc2ebc720fbba69c43cf4bccd3ded6343f82795193609e1969361977",
+        "dist/apps/windows/tests/control-link.test.js": "2ce11c044986228d0bdfdae77b50497c5e525c0e98cd8ddd617ef24e4fb50dba",
+        "dist/apps/windows/tests/overlay-page.js": "81f8cf2a871ee9cce11fb6fb88b42a885edc66afe1df49b5dcad117a697655ad",
+        "dist/apps/windows/tests/capture-plan.test.js": "07edc042980bce152852b04ba572b873de31c2fb735412dc7eca5f424c8bafae",
+        "dist/apps/windows/tests/shared.test.js": "ee51870b784a7c7b340c18736c63612036b876b9c7ca74ade52a7c7b03a71dc0",
+        "dist/apps/windows/tests/context-pictures.test.js": "a459bdafc202406f0ff010736da6320bc98f56f1786ff34cf11dc9e59174ea40",
+        "dist/apps/windows/tests/capture-link-rules.test.js": "b0ed4884c640e6563bc65e4a240e3731a2ecbb417d6d75cf8db5eb23a9522209",
+        "dist/apps/windows/tests/capture-link-record.test.js": "93289d628b4809e745dc3b547edb740d5a79874a6ff239e19da32c7ea8b31030",
+        "dist/apps/windows/tests/owned-host-flow.test.js": "c8f9f3789b728780c0dd741c20ec8693731997ae6a9b59fa3ea8d935e6f6d0db",
+        "dist/apps/windows/tests/overlay-alignment.test.js": "95b455341fc9f9559d248cc6034d4cf7225c6070f4b6c654f6c94e5169d1131f",
+        "dist/apps/windows/tests/capture-link.test.js": "acd423f91c9ffdfa1826dc199fdb3c03bc140d0042bdd546d7f171bea94ad907",
+        "dist/apps/windows/tests/host-fixture.js": "fae4c6a61661846c199a432be8a2875e548b9abfce7d5ddd5fc2713a382d4b84",
+        "dist/apps/windows/tests/main-lifecycle.test.js": "5c059850b1134a2dcbf23204d84a458aa5f4173a5e8187ab19c4d58f5a9ab619",
+        "dist/apps/windows/tests/link-fakes.js": "eb56d1f1dd2b24bc7d76a1646bc8329fd80479d001a091874409776a66dc551f",
+        "dist/apps/windows/tests/overlay-frames.test.js": "f340fd7b5d9d5f4c11a171275451a9a8c7a46a72d7360f0106990941cf905f0b",
+        "dist/apps/windows/tests/png.js": "8f72448cefabd850931cb74a92d3e4c14c1c24885961351a90309d3fbbbde08e",
+        "dist/apps/windows/tests/source.js": "a3b346a33f1f7ef4e727bfc92a0bba5921e86048a8e8f2c6607a4391823aeec4",
+        "dist/apps/windows/tests/overlay-stop.test.js": "7f26c3376dcbc835659e77d9e572c9c54aa2e074decbb34a80ed430f4e779cfe",
+        "dist/apps/windows/tests/link-world.js": "673074f9a53fbbaabf21cd6ff0a303f28c883d06a878c57b842d43990be3a4d8",
+        "dist/apps/windows/tests/capture-host.test.js": "fe89d26c84d0e95869b66b804c66f6a9ad9cd40f95ded7ebc676e9847111b950",
+        "dist/apps/windows/tests/overlay-capture.test.js": "0822fbfedcc463ec20c15a1bd1fbded902310a9031a0cdc66d6603ba6ee68f3a",
+        "dist/apps/windows/scripts/ingress-fixtures.js": "3ca6ee305a8d8632827c9ec5c370945bf8e9da8da274987fa60657a96c616395",
+        "dist/apps/windows/scripts/ingress-harness-capture.js": "9cf9374f0aaec537d61c37a50369a4dd7e954fb99760d9cf293004fa3937f6cf",
+        "dist/apps/windows/scripts/ingress-harness-ink-capture.js": "ffd3babd1904da9ff32dd8053d8a3f523307956a7934900fb3c258f49b237cc8",
+        "dist/apps/windows/src/preload/overlay.cjs": "8f64ca59de80b3bbc2ae9974900700bcf18adb5482603c021ad6639c586a2cc7",
+        "dist/apps/windows/src/preload/control.cjs": "45b9b3668e532f48190f6c26567eeea7eb6c032f47d0a415fa1435a6529378be",
+        "dist/apps/windows/src/renderer/probe.html": "e6cbdd4b53b386fc49a8ed67d16fe8585b615121b2f5544fac733e5153ead515",
+        "dist/apps/windows/src/renderer/probe.css": "d91de633b9677107cfcee8008ac20694988871781ef04c786a252861c088fb5f",
+        "dist/apps/windows/src/renderer/overlay.html": "65fe23136ec3f753c466741498c81076224eb1cb5bd575bd1033ef4c661ee090",
+        "dist/apps/windows/src/renderer/overlay.css": "c20319aab61f7446dd4cb509e898402fa264f343d23773a3419c2501e6726fc8",
+        "dist/apps/windows/src/renderer/control.html": "32911876ddbd49f62e919c3262be980690eddb7e6fb2329dd706dd2bdb2efe34",
+        "dist/apps/windows/src/renderer/control.css": "7d523ddbd330de12bdad1b8329f2c5f70beb9bd81e122fb35f48b61f7c4110ca",
+        "dist/apps/windows/src/renderer/overlay.js": "252eeeda316a15639a634796f03d6fd632de25f23248d96d4fdc56090ca6600c",
+        "dist/apps/windows/src/renderer/control.js": "2ff125e6311ab150964a2af37e8f27d0f886cff055b0f61e6090ba8246c0ceb7",
+        "dist/apps/windows/src/renderer/probe.js": "a47f669467b32d4d2baed8a9b17afd219a4407eac5d1d87640e803995b94c08d",
+        "dist/apps/windows/src/shared/frame-ingress.js": "07a8657d591a65449a8ec0ec62e91997d70ff80b0f7d7102b2cacc042f28b63d",
+        "dist/apps/windows/src/shared/retention.js": "1a5bc8c1c0efe9b3c25817dc7208b5eb3b8795ec952412aaef0e47027cf39d82",
+        "dist/apps/windows/src/shared/capture-plan.js": "51315a5d197ce0821fb3340f2e4352166f4d7fd0d98cdcd1c69bd789e91ae7f6",
+        "dist/apps/windows/src/shared/samples.js": "58436143034e76b17de2b186769815ad77af64846bdaba49d67254a09f3ae256",
+        "dist/apps/windows/src/shared/desktop-ink.js": "ab621526d1ced3b5afcfa791688af5fb2b6b17af5e9895061e3df04a7ab4036d",
+        "dist/apps/windows/src/main/self-test.js": "81d3adab338aebfaa0d60c04ab71914c37ffe92bd6a06e668f26bbf1c9599f7c",
+        "dist/apps/windows/src/main/main.js": "8b7be3594ba4c53f52a5aef61263a2138e45cfb07c26cee84ee6cc04ee31d3d3",
+        "dist/apps/windows/src/main/capture-link.js": "4e999b3aac05b643dc42cb4f711fd9d442415514382f9fd68a55058d11ce80a8",
+        "dist/apps/windows/src/main/uploader.js": "9dfa70ddd00ca6c66460320a954e06847dfa2b2e38ece614df5a316f5feb2497",
+        "dist/apps/windows/src/main/capture-host.js": "4860bbd7090ee64bdd73817bccf3d021e69e741900f94935eda195e6bb5690d9",
+        "dist/apps/windows/src/main/self-test-course.js": "a02a8bf6832c23ef6434ceb47227517b4505ddd585979c861166b4d972034d68",
+        "dist/apps/windows/src/main/loopback-http.js": "96c4000e0f3b041730711eab16fcab1f229b662b3c7ddb57c5f77a711f345103",
+        "dist/apps/safari-extension/src/ink.js": "081e838aa457d3020ca699e1feec28494c51b88ae56ba6e2b349a01789a8d7ee",
+        "dist/apps/safari-extension/src/mode.js": "28f40e4c9d6750c40cd31ac70d458d039f34b0f995d3810cbb859dd49121037b"
+      }
+    },
+    {
+      "name": "after-5cd0bec",
+      "report_sha256": "5d6d2d61d02165f2f74723c0c3ed29e12e7a705e7b24fe1a4777cc060132db1e",
+      "checks": 7,
+      "pass": 7,
+      "fail": 0,
+      "reported_stage_files": 57,
+      "local_stage_files": 57,
+      "reported_stage_sha256": "dc2b09ebe995861c685e43fb25db9e5ab18c5b127718204a7277e214c0e55006",
+      "local_stage_sha256": "dc2b09ebe995861c685e43fb25db9e5ab18c5b127718204a7277e214c0e55006",
+      "stage_match": true,
+      "source": {
+        "commit": "5cd0bec87db7a1f0989ab8e7f0ed702261dbccf2",
+        "uncommitted_app_changes": false
+      },
+      "runtime": {
+        "electron": "44.5.1",
+        "node": "24.21.0",
+        "platform": "win32-x64"
+      },
+      "driver_exit": 0,
+      "error": null,
+      "electron_left_running": false,
+      "files": {
+        "package.json": "ca62c237282a825cc36aceab1ed44e2673061369ef05694f25689dc3b574db49",
+        "dist/apps/windows/tests/uploader.test.js": "fd1d2e98473f7dd336756286b420809eb6c64e3324f0aab8f834df21a78526b4",
+        "dist/apps/windows/tests/overlay-page.js": "f2fae6f51be299318460b2135dd71d0383f7d475ed39910f3dd4fa95259ab6f8",
+        "dist/apps/windows/tests/ink-original.test.js": "ba623a79daaac5d72f663e0ea3010f29a17622da3ba2186cea3c2f338ae5e720",
+        "dist/apps/windows/tests/frame-ingress.test.js": "ae6d5161ef6200fa2618543050c9b8ad3a3c723ee2817e282a2192339edc457f",
+        "dist/apps/windows/tests/owned-host-flow.test.js": "c8f9f3789b728780c0dd741c20ec8693731997ae6a9b59fa3ea8d935e6f6d0db",
+        "dist/apps/windows/tests/capture-plan.test.js": "07edc042980bce152852b04ba572b873de31c2fb735412dc7eca5f424c8bafae",
+        "dist/apps/windows/tests/retention-correction.test.js": "72dffec79a5ec00f6c0484e53de2dccbde79d5661e127f864797f93a8394a663",
+        "dist/apps/windows/tests/main-lifecycle.test.js": "5c059850b1134a2dcbf23204d84a458aa5f4173a5e8187ab19c4d58f5a9ab619",
+        "dist/apps/windows/tests/overlay-stop.test.js": "7f26c3376dcbc835659e77d9e572c9c54aa2e074decbb34a80ed430f4e779cfe",
+        "dist/apps/windows/tests/context-pictures.test.js": "a459bdafc202406f0ff010736da6320bc98f56f1786ff34cf11dc9e59174ea40",
+        "dist/apps/windows/tests/link-world.js": "673074f9a53fbbaabf21cd6ff0a303f28c883d06a878c57b842d43990be3a4d8",
+        "dist/apps/windows/tests/capture-link-rules.test.js": "cb6a6511048ec3dc9fe08c96a8f3d3d606ad9ba320a99de9fdd5b33e514c0f7d",
+        "dist/apps/windows/tests/capture-link-record.test.js": "ba8a8c253fa025bd4c839131a2be77b54fddec763ffbaabf78ab53e5e42ddf35",
+        "dist/apps/windows/tests/retention.test.js": "2df279503af67e39f54f69dfb2ba76dcd001e6676e571b3303bc8f3e0f513dcc",
+        "dist/apps/windows/tests/overlay-alignment.test.js": "95b455341fc9f9559d248cc6034d4cf7225c6070f4b6c654f6c94e5169d1131f",
+        "dist/apps/windows/tests/shared.test.js": "ee51870b784a7c7b340c18736c63612036b876b9c7ca74ade52a7c7b03a71dc0",
+        "dist/apps/windows/tests/overlay-frames.test.js": "32aeae73b250fabe71fe8ff8eab307791117e922d0b97018a5bba03b4d632950",
+        "dist/apps/windows/tests/control-link.test.js": "7a77e4e6ae489078eee85aedf6b4bcdc2108934dc1370720574bc52edc5c779e",
+        "dist/apps/windows/tests/capture-host.test.js": "fe89d26c84d0e95869b66b804c66f6a9ad9cd40f95ded7ebc676e9847111b950",
+        "dist/apps/windows/tests/control-page.js": "4a89d4083a20c9e0bc1ba9f2ec3ce92ab8ea7797261159e7ebf02878ccb2b376",
+        "dist/apps/windows/tests/overlay-capture.test.js": "0822fbfedcc463ec20c15a1bd1fbded902310a9031a0cdc66d6603ba6ee68f3a",
+        "dist/apps/windows/tests/app-link.test.js": "d75b9e44988a0a2e6b7c43ffebf6129b20ae84dfec2a5a9627ed7de2de3caa1d",
+        "dist/apps/windows/tests/capture-link.test.js": "acd423f91c9ffdfa1826dc199fdb3c03bc140d0042bdd546d7f171bea94ad907",
+        "dist/apps/windows/tests/link-fakes.js": "9a37720b1cfc3494892513cfaa68c5fd4f5f6f6f2077740a65efd6ed26c542b5",
+        "dist/apps/windows/tests/host-fixture.js": "fae4c6a61661846c199a432be8a2875e548b9abfce7d5ddd5fc2713a382d4b84",
+        "dist/apps/windows/tests/main-harness.js": "2c52216fea5f52c02c7db6ecbfc76a5797b79f119427ef055a2b26de819fc194",
+        "dist/apps/windows/tests/source.js": "a3b346a33f1f7ef4e727bfc92a0bba5921e86048a8e8f2c6607a4391823aeec4",
+        "dist/apps/windows/tests/png.js": "8f72448cefabd850931cb74a92d3e4c14c1c24885961351a90309d3fbbbde08e",
+        "dist/apps/windows/scripts/ingress-harness-capture.js": "9cf9374f0aaec537d61c37a50369a4dd7e954fb99760d9cf293004fa3937f6cf",
+        "dist/apps/windows/scripts/ingress-fixtures.js": "3ca6ee305a8d8632827c9ec5c370945bf8e9da8da274987fa60657a96c616395",
+        "dist/apps/windows/scripts/ingress-harness-ink-capture.js": "ffd3babd1904da9ff32dd8053d8a3f523307956a7934900fb3c258f49b237cc8",
+        "dist/apps/windows/src/preload/overlay.cjs": "a969708fc3e6ed0bacc0ee5968c754aa80160f4fc5182096d6ad94f74e967764",
+        "dist/apps/windows/src/preload/control.cjs": "45b9b3668e532f48190f6c26567eeea7eb6c032f47d0a415fa1435a6529378be",
+        "dist/apps/windows/src/shared/frame-ingress.js": "07a8657d591a65449a8ec0ec62e91997d70ff80b0f7d7102b2cacc042f28b63d",
+        "dist/apps/windows/src/shared/desktop-ink.js": "ab621526d1ced3b5afcfa791688af5fb2b6b17af5e9895061e3df04a7ab4036d",
+        "dist/apps/windows/src/shared/retention.js": "1a5bc8c1c0efe9b3c25817dc7208b5eb3b8795ec952412aaef0e47027cf39d82",
+        "dist/apps/windows/src/shared/capture-plan.js": "51315a5d197ce0821fb3340f2e4352166f4d7fd0d98cdcd1c69bd789e91ae7f6",
+        "dist/apps/windows/src/shared/samples.js": "58436143034e76b17de2b186769815ad77af64846bdaba49d67254a09f3ae256",
+        "dist/apps/windows/src/renderer/probe.html": "e6cbdd4b53b386fc49a8ed67d16fe8585b615121b2f5544fac733e5153ead515",
+        "dist/apps/windows/src/renderer/probe.css": "d91de633b9677107cfcee8008ac20694988871781ef04c786a252861c088fb5f",
+        "dist/apps/windows/src/renderer/overlay.html": "65fe23136ec3f753c466741498c81076224eb1cb5bd575bd1033ef4c661ee090",
+        "dist/apps/windows/src/renderer/overlay.css": "c20319aab61f7446dd4cb509e898402fa264f343d23773a3419c2501e6726fc8",
+        "dist/apps/windows/src/renderer/control.html": "32911876ddbd49f62e919c3262be980690eddb7e6fb2329dd706dd2bdb2efe34",
+        "dist/apps/windows/src/renderer/control.css": "7d523ddbd330de12bdad1b8329f2c5f70beb9bd81e122fb35f48b61f7c4110ca",
+        "dist/apps/windows/src/renderer/overlay.js": "89c83211be1b5c0d581c30ac94494ff044b32e3a3735181f80fb5d8d452fc8a3",
+        "dist/apps/windows/src/renderer/control.js": "e624c4950817ab3289bfb4ed052d480cb90e9b42dba96b72ccea0102d8c0d7e1",
+        "dist/apps/windows/src/renderer/probe.js": "a47f669467b32d4d2baed8a9b17afd219a4407eac5d1d87640e803995b94c08d",
+        "dist/apps/windows/src/main/capture-link.js": "e7b5c29e7ee91f7d5976422eea7bc1ddbd6734a5a82f1495970ee4d9306648f1",
+        "dist/apps/windows/src/main/main.js": "e38eb6a2e96cfca51eb33ce1b5ec5e113bb9fe7dd37bafc330b91ffe87312adb",
+        "dist/apps/windows/src/main/self-test.js": "81d3adab338aebfaa0d60c04ab71914c37ffe92bd6a06e668f26bbf1c9599f7c",
+        "dist/apps/windows/src/main/uploader.js": "9dfa70ddd00ca6c66460320a954e06847dfa2b2e38ece614df5a316f5feb2497",
+        "dist/apps/windows/src/main/capture-host.js": "4860bbd7090ee64bdd73817bccf3d021e69e741900f94935eda195e6bb5690d9",
+        "dist/apps/windows/src/main/self-test-course.js": "a02a8bf6832c23ef6434ceb47227517b4505ddd585979c861166b4d972034d68",
+        "dist/apps/windows/src/main/loopback-http.js": "96c4000e0f3b041730711eab16fcab1f229b662b3c7ddb57c5f77a711f345103",
+        "dist/apps/safari-extension/src/ink.js": "081e838aa457d3020ca699e1feec28494c51b88ae56ba6e2b349a01789a8d7ee",
+        "dist/apps/safari-extension/src/mode.js": "28f40e4c9d6750c40cd31ac70d458d039f34b0f995d3810cbb859dd49121037b"
+      }
+    }
+  ],
+  "old_stage_matches_independent_qa_build": true,
+  "probe": {
+    "candidate": "5cd0bec87db7a1f0989ab8e7f0ed702261dbccf2",
+    "evidence_commit": "70cb7e872e1cc7826d5b108ccc006b758d3cfb70",
+    "scope": "Linux exact production callback with candidate Electron-event model; no native app/host/DB/service; old failure is model observation supported separately by author runtime receipt",
+    "observations": [
+      {
+        "case": "old_5871981_idle",
+        "quit_calls": 1,
+        "n": 0,
+        "ignored": 1
+      },
+      {
+        "case": "corrected_5cd0bec_idle",
+        "quit_calls": 1,
+        "n": 1,
+        "ignored": 0
+      },
+      {
+        "case": "pending_resolve",
+        "quit_calls": 1,
+        "n": 1,
+        "ignored": 0
+      },
+      {
+        "case": "pending_reject",
+        "quit_calls": 1,
+        "n": 1,
+        "ignored": 0
+      },
+      {
+        "case": "no_link",
+        "n": 1,
+        "ignored": 0
+      },
+      {
+        "case": "unchanged_local_stop_and_ink_guards",
+        "spans": 2,
+        "byte_identical": true
+      }
+    ]
+  },
+  "verdict": "APPROVE_QA_WIN_03_BOUNDED_SOURCE_AND_EVIDENCE; QA_WIN_04_HELD_SEPARATELY",
+  "limits": [
+    "No Windows GUI, native pen, DB, service, provider or whole-suite rerun by reviewer.",
+    "Local staged bytes are freshly built by lead; author execution provenance is a committed author receipt, not independent runtime acceptance.",
+    "Six Linux callback/model and byte-preservation checks; old failed behavior is a negative control, not a passing product behavior."
+  ],
+  "focused_result": {
+    "tests": 6,
+    "passed": 6,
+    "failed": 0,
+    "skipped": 0,
+    "duration_ms": 45.747053
+  },
+  "nonblocking_findings": [
+    {
+      "id": "DIAG-P3",
+      "path": "apps/windows/scripts/link-quit-check.mjs",
+      "line": 113,
+      "issue": "Orchestrator success does not require driver result.status == 0",
+      "actual_receipt_driver_exit": 0,
+      "effect_on_supplied_evidence": "none; hypothetical future driver termination after successful report",
+      "minimal_correction": "Include result.status === 0 in success expression"
+    }
+  ]
+}

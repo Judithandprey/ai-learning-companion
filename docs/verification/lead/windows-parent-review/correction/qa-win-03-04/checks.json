@@ -1,0 +1,27 @@
+{
+  "candidate": "70cb7e872e1cc7826d5b108ccc006b758d3cfb70",
+  "code": "5cd0bec87db7a1f0989ab8e7f0ed702261dbccf2",
+  "parent": "5871981524140e3be986268a941d34e99af25bb9",
+  "tested_backend": "05465cc1d94b3d469b7e49aedcee92b226429271",
+  "focused_checks": {
+    "pass": 76,
+    "fail": 0,
+    "skip": 0,
+    "scope": "Linux Node24.21; isolated in-memory Backend child hosts, no PostgreSQL/GUI/provider"
+  },
+  "build": {
+    "typescript": "pass",
+    "copy_static": "pass",
+    "files": 57,
+    "tree_sha256": "dc2b09ebe995861c685e43fb25db9e5ab18c5b127718204a7277e214c0e55006",
+    "matches_author_actual_staged_tree": true
+  },
+  "author_actual_windows": {
+    "result": "7/7",
+    "independent_qa": false,
+    "display_released": "2026-10-01T00:54:51Z",
+    "actual_database": false,
+    "actual_provider": false
+  },
+  "source_scope": "Only two leaf commits will be considered; never merge the older whole owner branch or remove other owners code."
+}

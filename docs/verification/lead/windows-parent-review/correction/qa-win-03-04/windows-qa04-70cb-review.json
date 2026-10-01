@@ -1,0 +1,147 @@
+{
+  "verdict": "HOLD",
+  "candidate": "70cb7e872e1cc7826d5b108ccc006b758d3cfb70",
+  "code_commit": "5cd0bec87db7a1f0989ab8e7f0ed702261dbccf2",
+  "parent": "5871981524140e3be986268a941d34e99af25bb9",
+  "canonical_main": "05465cc1d94b3d469b7e49aedcee92b226429271",
+  "scope": "QA-WIN-04 only: storage status and dynamic overlay copy; quit/script independently reviewed elsewhere",
+  "findings": [
+    {
+      "id": "QA-WIN-04-C1",
+      "severity": "blocking correction acceptance",
+      "title": "Already-open ASK card retains ongoing-storage assertion after not_storing notification",
+      "paths": [
+        "apps/windows/src/renderer/overlay.ts:71",
+        "apps/windows/src/renderer/overlay.ts:723",
+        "apps/windows/src/renderer/overlay.ts:735",
+        "apps/windows/src/main/main.ts:1065"
+      ],
+      "probe_case": "open_ASK_card_remains_storing_after_real_status_notification",
+      "observed": "stalled, stored=0, unknown=1, storing=false; main sends not_storing and control updates; open card still says are also being stored; freshly opened card is correct",
+      "minimal_fix": "Avoid present-tense service assertions in an immutable selection card, or update only visible status metadata on change while preserving selected pixels/ink/frame anchors."
+    },
+    {
+      "id": "QA-WIN-04-C2",
+      "severity": "blocking correction acceptance",
+      "title": "Queue exhaustion changes stalled to storing without an answered upload",
+      "paths": [
+        "apps/windows/src/main/capture-link.ts:663",
+        "apps/windows/src/main/capture-link.ts:687",
+        "apps/windows/src/main/capture-link.ts:730",
+        "apps/windows/src/main/capture-link.ts:425",
+        "apps/windows/src/renderer/control.ts:297"
+      ],
+      "probe_case": "unanswered_stuck_job_returns_to_storing_without_new_ack",
+      "observed": "All six batch attempts returned typed 503. After removal of a copied temp original, unknown job becomes stuck; none plan sets sending/storing=true with stored=0, unknown=2. Header says are also being stored.",
+      "minimal_fix": "Do not infer answered storage state from queue emptiness; retain unconfirmed status without preventing later valid work or losing the unknown job. Recovery may follow appropriate actual answered upload evidence."
+    }
+  ],
+  "bounded_execution": {
+    "runtime": "v24.21.0",
+    "cases": 3,
+    "reproduced_findings": 2,
+    "positive_control_groups": 1,
+    "exit_code": 0,
+    "results": [
+      {
+        "case": "open_ASK_card_remains_storing_after_real_status_notification",
+        "reproduced": true,
+        "status": {
+          "mode": "development",
+          "state": "stalled",
+          "stored": 0,
+          "unknown": 1,
+          "refused": 0,
+          "not_sent": 0,
+          "detail": "the service did not answer; the same record(s) are tried again",
+          "earlier_unknown": 0,
+          "sends_stopped": false,
+          "storing": false
+        },
+        "old_card": "No AI is connected: this selection was not sent to any AI. (Development mode: the whole-display frames kept on this device are also being stored in a local test capture service; the control window shows the counts.)\nRegion 182,87 226\u00d746 DIP on Display 1 = 226\u00d746 px of frame 1 (captured 5:00:00 AM), with your ink revision 0 drawn over it.",
+        "new_card": "No AI is connected: this selection was not sent to any AI. (Development mode: the local test capture service is not storing frames now. Frames are kept on this device; they are stored there too only if the service becomes available during this capture. The control window shows its state and the latest capture's counts.)\nRegion 182,87 226\u00d746 DIP on Display 1 = 226\u00d746 px of frame 2 (captured 5:59:55 PM), with your ink revision 0 drawn over it.",
+        "control_header": "Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI."
+      },
+      {
+        "case": "Stop_retains_unknown_and_storing_false_control",
+        "pass": true,
+        "status": {
+          "mode": "development",
+          "state": "stopped",
+          "stored": 0,
+          "unknown": 1,
+          "refused": 0,
+          "not_sent": 0,
+          "detail": "stream stopped",
+          "earlier_unknown": 0,
+          "sends_stopped": false,
+          "storing": false
+        }
+      },
+      {
+        "case": "unanswered_stuck_job_returns_to_storing_without_new_ack",
+        "reproduced": true,
+        "before": {
+          "mode": "development",
+          "state": "stalled",
+          "stored": 0,
+          "unknown": 2,
+          "refused": 0,
+          "not_sent": 0,
+          "detail": "the service did not answer; the same record(s) are tried again",
+          "earlier_unknown": 0,
+          "sends_stopped": false,
+          "storing": false
+        },
+        "after": {
+          "mode": "development",
+          "state": "sending",
+          "stored": 0,
+          "unknown": 2,
+          "refused": 0,
+          "not_sent": 0,
+          "detail": "2 record(s) in doubt cannot be sent again from this device; whether they were stored stays not known",
+          "earlier_unknown": 0,
+          "sends_stopped": false,
+          "storing": true
+        },
+        "control_header": "Development mode: captured frames and ink are kept on this device and are also being stored in a local test capture service on it; the counts are below. No AI is connected; nothing is sent to any AI.",
+        "batch_attempts": 6
+      }
+    ],
+    "command": "/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node /tmp/windows-qa04-70cb-probes.mjs"
+  },
+  "positive_evidence": [
+    "Fresh ASK card uses latest not_storing notification",
+    "Control header switches to not storing on stalled status",
+    "Stop retains unknown count and leaves storing false",
+    "No observed false committed counter increment; stored remains zero",
+    "AI-disconnected copy remains explicit"
+  ],
+  "source_manifest": "/tmp/windows-qa04-70cb-source-manifest.json",
+  "source_files_exact": 66,
+  "proof_artifacts": [
+    {
+      "path": "/tmp/windows-qa04-70cb-probes.mjs",
+      "bytes": 6312,
+      "sha256": "0cae41fdbfb2de22da50fd573bf374d82ce62f3ac7b692412c4717688f652f46"
+    },
+    {
+      "path": "/tmp/windows-qa04-70cb-probes.json",
+      "bytes": 3392,
+      "sha256": "616bdd63b5d469c2f4a4964d2f0791a2b19216a16869e97d89746169e31e6a4e"
+    },
+    {
+      "path": "/tmp/windows-qa04-70cb-probes.log",
+      "bytes": 3571,
+      "sha256": "bb4211fbc95016251c9cda31d2f596c5284a2a5f2fa5b4b4e6b861530122877f"
+    }
+  ],
+  "limits": [
+    "Existing exact-source Node VM/browser/Electron, child and transport fakes only",
+    "No real Windows/Electron GUI, host process, socket, database, provider or full suite executed",
+    "Author real-Windows exit/copy evidence is owner evidence, not independent execution",
+    "No production fixes or repository writes; concurrent root untracked evidence preserved"
+  ],
+  "policy": "PONYTAIL LITE: reuse existing harness, bounded concrete probes, no new protocol/manager or requirements reduction"
+}

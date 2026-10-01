@@ -1,0 +1,41 @@
+{
+  "candidate": "5cd0bec87db7a1f0989ab8e7f0ed702261dbccf2",
+  "evidence_commit": "70cb7e872e1cc7826d5b108ccc006b758d3cfb70",
+  "scope": "Linux exact production callback with candidate Electron-event model; no native app/host/DB/service; old failure is model observation supported separately by author runtime receipt",
+  "observations": [
+    {
+      "case": "old_5871981_idle",
+      "quit_calls": 1,
+      "n": 0,
+      "ignored": 1
+    },
+    {
+      "case": "corrected_5cd0bec_idle",
+      "quit_calls": 1,
+      "n": 1,
+      "ignored": 0
+    },
+    {
+      "case": "pending_resolve",
+      "quit_calls": 1,
+      "n": 1,
+      "ignored": 0
+    },
+    {
+      "case": "pending_reject",
+      "quit_calls": 1,
+      "n": 1,
+      "ignored": 0
+    },
+    {
+      "case": "no_link",
+      "n": 1,
+      "ignored": 0
+    },
+    {
+      "case": "unchanged_local_stop_and_ink_guards",
+      "spans": 2,
+      "byte_identical": true
+    }
+  ]
+}

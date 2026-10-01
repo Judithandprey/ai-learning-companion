@@ -1,0 +1,77 @@
+(node:4) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+{
+  "candidate": "70cb7e872e1cc7826d5b108ccc006b758d3cfb70",
+  "code_commit": "5cd0bec",
+  "node": "v24.21.0",
+  "temp_directory": "/tmp/lc-qa04-review-sb0t7b",
+  "cases": 3,
+  "results": [
+    {
+      "case": "open_ASK_card_remains_storing_after_real_status_notification",
+      "reproduced": true,
+      "status": {
+        "mode": "development",
+        "state": "stalled",
+        "stored": 0,
+        "unknown": 1,
+        "refused": 0,
+        "not_sent": 0,
+        "detail": "the service did not answer; the same record(s) are tried again",
+        "earlier_unknown": 0,
+        "sends_stopped": false,
+        "storing": false
+      },
+      "old_card": "No AI is connected: this selection was not sent to any AI. (Development mode: the whole-display frames kept on this device are also being stored in a local test capture service; the control window shows the counts.)\nRegion 182,87 226×46 DIP on Display 1 = 226×46 px of frame 1 (captured 5:00:00 AM), with your ink revision 0 drawn over it.",
+      "new_card": "No AI is connected: this selection was not sent to any AI. (Development mode: the local test capture service is not storing frames now. Frames are kept on this device; they are stored there too only if the service becomes available during this capture. The control window shows its state and the latest capture's counts.)\nRegion 182,87 226×46 DIP on Display 1 = 226×46 px of frame 2 (captured 5:59:55 PM), with your ink revision 0 drawn over it.",
+      "control_header": "Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI."
+    },
+    {
+      "case": "Stop_retains_unknown_and_storing_false_control",
+      "pass": true,
+      "status": {
+        "mode": "development",
+        "state": "stopped",
+        "stored": 0,
+        "unknown": 1,
+        "refused": 0,
+        "not_sent": 0,
+        "detail": "stream stopped",
+        "earlier_unknown": 0,
+        "sends_stopped": false,
+        "storing": false
+      }
+    },
+    {
+      "case": "unanswered_stuck_job_returns_to_storing_without_new_ack",
+      "reproduced": true,
+      "before": {
+        "mode": "development",
+        "state": "stalled",
+        "stored": 0,
+        "unknown": 2,
+        "refused": 0,
+        "not_sent": 0,
+        "detail": "the service did not answer; the same record(s) are tried again",
+        "earlier_unknown": 0,
+        "sends_stopped": false,
+        "storing": false
+      },
+      "after": {
+        "mode": "development",
+        "state": "sending",
+        "stored": 0,
+        "unknown": 2,
+        "refused": 0,
+        "not_sent": 0,
+        "detail": "2 record(s) in doubt cannot be sent again from this device; whether they were stored stays not known",
+        "earlier_unknown": 0,
+        "sends_stopped": false,
+        "storing": true
+      },
+      "control_header": "Development mode: captured frames and ink are kept on this device and are also being stored in a local test capture service on it; the counts are below. No AI is connected; nothing is sent to any AI.",
+      "batch_attempts": 6
+    }
+  ],
+  "scope": "Exact exported main/renderer/coordinator through existing Node VM/browser/Electron and child/transport fakes. No real GUI/child/socket/DB/provider."
+}
