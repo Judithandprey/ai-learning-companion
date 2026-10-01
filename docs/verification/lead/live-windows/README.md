@@ -101,3 +101,16 @@ evidence keeps actual failures and scope. This checkpoint performs no real model
 request, GUI/audio capture or install and creates no user-facing replacement stage.
 The Learning consumer is integrated; the product runtime gate remains pending Backend/Windows consumers and coordinated
 independent Windows acceptance, not a new permission to restart the old app.
+
+Final reviewed implementation baseline **ed66f8e29c5060eab59a8bf5f42c98b70d6ff5a3**
+was successfully pushed to origin/main; local HEAD and origin/main matched.
+The actual continuing-owner releases were accepted as
+Backend `handoff_544e98ba6524b7805ebc710ae6976ef3`,
+Windows `handoff_d405375e9e7baeb8dd596ba01ea3352e`, and
+Learning `handoff_0a86ee9d8b7500cf025d9876ae1edb6c`.
+These final receipts were initially unread, not proof of later adoption. Backend
+was already observed implementing the transport; Web had explicitly continued
+its toolbar/caption slice after the count fix. Learning's completed pure slice now
+waits for concrete caller feedback. QA's existing changed-flow task and Native's
+Stop correction retain their dependencies; Support is on demand. No duplicate
+assignments, acknowledgement obligations or current-user runtime operations.
