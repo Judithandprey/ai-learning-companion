@@ -1,4 +1,17 @@
-# Mac parent correction: reviewed source, native checks next
+# Mac parent correction: reviewed, compiled and tested
+
+**Native result:** exact published `1a5dc062f0e781aec4bc0b79e91a2769fe1dd42c`
+passes [macOS-only run 36803694899](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36803694899).
+The complete app builds/packages and all **78 XCTest methods pass**. Actual
+fixture validators pass (83 ingress, 27 composition, 362 retained-frame and
+24 upload assertions, including their negative controls); these counts are
+separate from XCTest cases and product acceptance. The read-only
+[artifact audit](native-run/audit.json) verifies all **115 file hashes** and
+**2753 source Git blobs/modes/paths**, exact reviewed native-tree identity,
+Mach-O/plist/package and actual executed test names, with no anomalies.
+[Run receipt](native-run/run.json), [test log](native-run/tests.txt),
+[verification scope](native-verification.json). The source-review checkpoint
+below is retained; its then-pending native result is now resolved by this run.
 
 Actual [delivery](delivery.json) `handoff_cffbe3c0eeeec20ae95d45b441f5e4d4`
 contains owner correction `fb891d699cc33cde10c2a1fa25928f3c87346b3f` on the
@@ -35,7 +48,7 @@ files, all 14 correction checksum entries and unchanged app/package/FrameStore
 paths. The 11 original owner evidence hashes also match. FrameStore retains
 SHA-256 `0ba0759dde8d09c8d13cd503b6b8da9ce596a3107b4cbc5f270586a9152a19d8`.
 Current source declares **78 XCTest methods in eight files**, including 23 Link
-tests. These are upcoming native-run expectations, not 78 passed tests.
+tests. The actual hosted run above subsequently executed all 78 successfully.
 Owner Linux logs retain **74/78** with four redirect/stub failures; they are not
 silently exempted or relabeled as Mac passes.
 
@@ -48,8 +61,8 @@ requires the exact approved tree, full archive/blob/package identity, all 78
 executed tests and real retained outputs; it cannot infer success from counts
 or a workflow-dispatch receipt. The historical 55-test audit is unchanged.
 
-At this source-review checkpoint native build/test is **NOT_RUN**. Append the
-actual run/artifact result before claiming native compilation or tests. Hosted
+At the original source-review checkpoint native build/test was **NOT_RUN**;
+the actual run/artifact result above now establishes compilation and tests. Hosted
 checks cannot prove interactive Mac permission UI, screen/ink, sleep/logout,
 physical input, actual PostgreSQL, audio, AI or Notability. Both full §7.1 gates
 remain open. Missing interactive Mac access does not block this compiled-source
@@ -59,7 +72,9 @@ The tests/probes retain their actual `/tmp` interpreter/harness paths. Committed
 `probe.txt` is the exact original `probe.log`; no binaries, cache or credentials
 are included. The exact shim is retained in `link-probes/AppleShim.swift`.
 
-Next: Lead executes/audits native CI; Native fixes any concrete compile/test
-failure in the same task. Windows QA already adopted release `86d2405` through
+Next: interactive Mac permission/Start/Stop/Quit and original-screen ink need
+a usable authorized Mac route. Lead has asked the user about machine availability;
+no answer or purchase is assumed. Native owns any concrete platform repair and
+QA keeps independent acceptance. Windows QA already adopted release `86d2405` through
 `b64669f` and has owned runner edits (read-only observation); no Windows test
 result is inferred, and that role is not reassigned to a duplicate Mac campaign.

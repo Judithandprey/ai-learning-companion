@@ -1,0 +1,27 @@
+{
+  "source": "1a5dc062f0e781aec4bc0b79e91a2769fe1dd42c",
+  "approved_owner": "fb891d699cc33cde10c2a1fa25928f3c87346b3f",
+  "run_id": 36803694899,
+  "result": "success",
+  "scope": "macos-only",
+  "audit_command": ".venv/bin/python docs/verification/lead/macos-parent-review/correction/audit.py --artifact-dir /tmp/lc-macos-parent-36803694899 --commit 1a5dc062f0e781aec4bc0b79e91a2769fe1dd42c --approved fb891d699cc33cde10c2a1fa25928f3c87346b3f --run 36803694899 --output /tmp/macos-parent-36803694899-audit.json",
+  "audit_exit": 0,
+  "xctests_pass": 78,
+  "xctests_fail": 0,
+  "artifact_hashes": 115,
+  "source_git_blobs": 2753,
+  "staged_test_tree_matches_reviewed": true,
+  "limitations": [
+    "Hosted macOS app/library compile/package/XCTest and synthetic fixtures; not interactive app capture/permission/pen/audio/provider/Notability acceptance.",
+    "No actual PostgreSQL campaign; local Windows preview and Paperclip untouched."
+  ],
+  "next_owner": "Native/QA interactive Mac validation after usable authorized machine route confirmed; existing Windows QA continues.",
+  "interactive_mac_availability": "User asked via async question; answer pending, no purchase assumed.",
+  "separate_p0_ci_observation": {
+    "run_id": 36803679245,
+    "head": "1a5dc062f0e781aec4bc0b79e91a2769fe1dd42c",
+    "status": "in_progress",
+    "conclusion": "",
+    "scope": "Observation before publishing this evidence; not a P0 suite pass."
+  }
+}

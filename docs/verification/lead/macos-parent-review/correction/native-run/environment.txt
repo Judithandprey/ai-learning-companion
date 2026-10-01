@@ -1,0 +1,13 @@
+commit=1a5dc062f0e781aec4bc0b79e91a2769fe1dd42c
+platform=macos
+source=apps/macos/CompanionDesktop
+runner_image=macos26
+runner_image_version=20260907.0351.1
+run=https://github.com/Judithandprey/ai-learning-companion/actions/runs/36803694899
+attempt=1
+Darwin arm64
+f4a06e131aef698e0e410165fae1d90ec6b6a0f1
+6d6729f75c94edd6c1fcb9b5b20805b5ed400a4b
+f16e96d75958e825689130826bb070db3c38e1fb
+8f343a18cf89e0e9ed0af068e42a1e9da0bb8fdc
+aac3f9743313ffd783b1952f596589f865b7b341
