@@ -1,0 +1,339 @@
+{
+  "verdict": "APPROVE narrow correction evidence; state-fix acceptance belongs to assigned reviewer",
+  "candidate": "d295a514b531e7fae5ad35df10b4bc10b43bf742",
+  "code_commit": "44fbd503bcbc45f4f3b28ff52d78e379ddbaf8c9",
+  "parent": "10cbae629b6d7330e0da61b5668c43e338d00a97",
+  "changed_paths": [
+    "apps/windows/src/main/capture-link.ts",
+    "apps/windows/tests/capture-link-record.test.ts",
+    "docs/verification/web/evidence/windows-capture-link/qa-win-05/linux-focused-correction.json",
+    "docs/verification/web/evidence/windows-capture-link/qa-win-05/linux-focused-correction.txt",
+    "docs/verification/web/windows-capture-link.md"
+  ],
+  "code_changes": [
+    "apps/windows/src/main/capture-link.ts",
+    "apps/windows/tests/capture-link-record.test.ts"
+  ],
+  "source_receipts": {
+    "apps/windows/src/main/capture-host.ts": {
+      "expected": "ade5bec295cae637c993afa565f494d45c1588a4d9e7e23636bfb278d9171347",
+      "actual": "ade5bec295cae637c993afa565f494d45c1588a4d9e7e23636bfb278d9171347",
+      "match": true
+    },
+    "apps/windows/src/main/capture-link.ts": {
+      "expected": "a48a577d4ce1311b5f4e55e5926ccd0ac0811da0ab9b617ecfcad95938040ad1",
+      "actual": "a48a577d4ce1311b5f4e55e5926ccd0ac0811da0ab9b617ecfcad95938040ad1",
+      "match": true
+    },
+    "apps/windows/src/main/loopback-http.ts": {
+      "expected": "e473435598ad67cc801af8224f0ce954378be2130f689d60bab8057ef299ec76",
+      "actual": "e473435598ad67cc801af8224f0ce954378be2130f689d60bab8057ef299ec76",
+      "match": true
+    },
+    "apps/windows/src/main/main.ts": {
+      "expected": "f63a6aa6c8a7876a160e1be9b187faa44b62380e42f1bd921b512a2653fee60e",
+      "actual": "f63a6aa6c8a7876a160e1be9b187faa44b62380e42f1bd921b512a2653fee60e",
+      "match": true
+    },
+    "apps/windows/src/main/self-test-course.ts": {
+      "expected": "2468d0fcabe121e08b75595117ca0f2e7d6f17b87711a72fa50042eebc499326",
+      "actual": "2468d0fcabe121e08b75595117ca0f2e7d6f17b87711a72fa50042eebc499326",
+      "match": true
+    },
+    "apps/windows/src/main/self-test.ts": {
+      "expected": "9ee86b09a9f24099478707fbf74da3d52a76ade406bf676007bdb935e7492323",
+      "actual": "9ee86b09a9f24099478707fbf74da3d52a76ade406bf676007bdb935e7492323",
+      "match": true
+    },
+    "apps/windows/src/main/uploader.ts": {
+      "expected": "edab19b603978cd14d6fad5187ab7e3f54e974260718053f21b183d21eb55f6a",
+      "actual": "edab19b603978cd14d6fad5187ab7e3f54e974260718053f21b183d21eb55f6a",
+      "match": true
+    },
+    "apps/windows/src/preload/control.cjs": {
+      "expected": "45b9b3668e532f48190f6c26567eeea7eb6c032f47d0a415fa1435a6529378be",
+      "actual": "45b9b3668e532f48190f6c26567eeea7eb6c032f47d0a415fa1435a6529378be",
+      "match": true
+    },
+    "apps/windows/src/preload/overlay.cjs": {
+      "expected": "8f64ca59de80b3bbc2ae9974900700bcf18adb5482603c021ad6639c586a2cc7",
+      "actual": "8f64ca59de80b3bbc2ae9974900700bcf18adb5482603c021ad6639c586a2cc7",
+      "match": true
+    },
+    "apps/windows/src/shared/capture-plan.ts": {
+      "expected": "c7d39fe76a401dba7009f1963c7207b630b022a699bb75abf09813b00ab67c55",
+      "actual": "c7d39fe76a401dba7009f1963c7207b630b022a699bb75abf09813b00ab67c55",
+      "match": true
+    },
+    "apps/windows/src/shared/desktop-ink.ts": {
+      "expected": "fefd7452f5f1018521087bc7c9afd5650f7ad4c0b9bb8ada5a3d775bfc6ab446",
+      "actual": "fefd7452f5f1018521087bc7c9afd5650f7ad4c0b9bb8ada5a3d775bfc6ab446",
+      "match": true
+    },
+    "apps/windows/src/shared/frame-ingress.ts": {
+      "expected": "bfdba8bf7f5f2648c761547259e2a0db5c5b5d5ce8fe79ffbd171fdc35830389",
+      "actual": "bfdba8bf7f5f2648c761547259e2a0db5c5b5d5ce8fe79ffbd171fdc35830389",
+      "match": true
+    },
+    "apps/windows/src/shared/retention.ts": {
+      "expected": "e99392afa223f89dc63a8cb726cd0235d48d09e124cde682eb1bfa4645713ab1",
+      "actual": "e99392afa223f89dc63a8cb726cd0235d48d09e124cde682eb1bfa4645713ab1",
+      "match": true
+    },
+    "apps/windows/src/shared/samples.ts": {
+      "expected": "a9851c58e68b09507649fd7b024c73ad304b80e9f237d53c69da153741605946",
+      "actual": "a9851c58e68b09507649fd7b024c73ad304b80e9f237d53c69da153741605946",
+      "match": true
+    },
+    "apps/windows/src/renderer/control.css": {
+      "expected": "7d523ddbd330de12bdad1b8329f2c5f70beb9bd81e122fb35f48b61f7c4110ca",
+      "actual": "7d523ddbd330de12bdad1b8329f2c5f70beb9bd81e122fb35f48b61f7c4110ca",
+      "match": true
+    },
+    "apps/windows/src/renderer/control.html": {
+      "expected": "32911876ddbd49f62e919c3262be980690eddb7e6fb2329dd706dd2bdb2efe34",
+      "actual": "32911876ddbd49f62e919c3262be980690eddb7e6fb2329dd706dd2bdb2efe34",
+      "match": true
+    },
+    "apps/windows/src/renderer/control.ts": {
+      "expected": "a49e8536435598c54f3b91feaf2d9be4629c9d2d00d14d4417d701c8ce35b061",
+      "actual": "a49e8536435598c54f3b91feaf2d9be4629c9d2d00d14d4417d701c8ce35b061",
+      "match": true
+    },
+    "apps/windows/src/renderer/overlay.css": {
+      "expected": "c20319aab61f7446dd4cb509e898402fa264f343d23773a3419c2501e6726fc8",
+      "actual": "c20319aab61f7446dd4cb509e898402fa264f343d23773a3419c2501e6726fc8",
+      "match": true
+    },
+    "apps/windows/src/renderer/overlay.html": {
+      "expected": "65fe23136ec3f753c466741498c81076224eb1cb5bd575bd1033ef4c661ee090",
+      "actual": "65fe23136ec3f753c466741498c81076224eb1cb5bd575bd1033ef4c661ee090",
+      "match": true
+    },
+    "apps/windows/src/renderer/overlay.ts": {
+      "expected": "d10f21d8f9c582c223a442a83047136569076b49912393e920a155adc32c70e4",
+      "actual": "d10f21d8f9c582c223a442a83047136569076b49912393e920a155adc32c70e4",
+      "match": true
+    },
+    "apps/windows/src/renderer/probe.css": {
+      "expected": "d91de633b9677107cfcee8008ac20694988871781ef04c786a252861c088fb5f",
+      "actual": "d91de633b9677107cfcee8008ac20694988871781ef04c786a252861c088fb5f",
+      "match": true
+    },
+    "apps/windows/src/renderer/probe.html": {
+      "expected": "e6cbdd4b53b386fc49a8ed67d16fe8585b615121b2f5544fac733e5153ead515",
+      "actual": "e6cbdd4b53b386fc49a8ed67d16fe8585b615121b2f5544fac733e5153ead515",
+      "match": true
+    },
+    "apps/windows/src/renderer/probe.ts": {
+      "expected": "7fc9c0d88f5c0e497d4df99728ff5a292d8e8db99626e12a8c9c6a28643f37e6",
+      "actual": "7fc9c0d88f5c0e497d4df99728ff5a292d8e8db99626e12a8c9c6a28643f37e6",
+      "match": true
+    },
+    "apps/windows/tests/app-link.test.ts": {
+      "expected": "a9faaaf1887421b0a3d61eddfc4c4b1000e127cc890489d312501abdc1d70a76",
+      "actual": "a9faaaf1887421b0a3d61eddfc4c4b1000e127cc890489d312501abdc1d70a76",
+      "match": true
+    },
+    "apps/windows/tests/backend-host.py": {
+      "expected": "a9a462235e08c40abfd2d4f4680d54a860df23def9681728f0dc26001683016f",
+      "actual": "a9a462235e08c40abfd2d4f4680d54a860df23def9681728f0dc26001683016f",
+      "match": true
+    },
+    "apps/windows/tests/capture-host.test.ts": {
+      "expected": "298e9b4bdd9efec4b6b431ca88a930d71d05c61b4ccae3343b018a94f0342cf5",
+      "actual": "298e9b4bdd9efec4b6b431ca88a930d71d05c61b4ccae3343b018a94f0342cf5",
+      "match": true
+    },
+    "apps/windows/tests/capture-link-record.test.ts": {
+      "expected": "42779eeb6fdb804adf4a67232c32b9351d80f6c30e8da142791ab94e857f0f8c",
+      "actual": "42779eeb6fdb804adf4a67232c32b9351d80f6c30e8da142791ab94e857f0f8c",
+      "match": true
+    },
+    "apps/windows/tests/capture-link-rules.test.ts": {
+      "expected": "4c7be616a604b404e1f8208874aa59fa2fde885ed22aa01f509307390d8d09ac",
+      "actual": "4c7be616a604b404e1f8208874aa59fa2fde885ed22aa01f509307390d8d09ac",
+      "match": true
+    },
+    "apps/windows/tests/capture-link.test.ts": {
+      "expected": "964045fab3425230ea962dec8f142360c38fc63d658934e1897c8465490132b1",
+      "actual": "964045fab3425230ea962dec8f142360c38fc63d658934e1897c8465490132b1",
+      "match": true
+    },
+    "apps/windows/tests/capture-plan.test.ts": {
+      "expected": "e228939dbb65914bf8edd6b0c6a23fa18babc9ee42f41624914c67b76a1198d9",
+      "actual": "e228939dbb65914bf8edd6b0c6a23fa18babc9ee42f41624914c67b76a1198d9",
+      "match": true
+    },
+    "apps/windows/tests/context-pictures.test.ts": {
+      "expected": "4d0211a94f645f550c37bf0d32e41f496db4115cf242bd4babe2c22f6eb1108b",
+      "actual": "4d0211a94f645f550c37bf0d32e41f496db4115cf242bd4babe2c22f6eb1108b",
+      "match": true
+    },
+    "apps/windows/tests/control-link.test.ts": {
+      "expected": "3e458dee2de5e78f00fc183f6bca19b7e621c5bad653e0629b3c34c6bf445961",
+      "actual": "3e458dee2de5e78f00fc183f6bca19b7e621c5bad653e0629b3c34c6bf445961",
+      "match": true
+    },
+    "apps/windows/tests/control-page.ts": {
+      "expected": "cd85835b5efdd950defbf580f4db9baa8104f242dcda473d61cf0935f804f215",
+      "actual": "cd85835b5efdd950defbf580f4db9baa8104f242dcda473d61cf0935f804f215",
+      "match": true
+    },
+    "apps/windows/tests/frame-ingress.test.ts": {
+      "expected": "c85de06b0cd3262b614eac55ee9bd8645593f70c9829c603a18c392665d766e0",
+      "actual": "c85de06b0cd3262b614eac55ee9bd8645593f70c9829c603a18c392665d766e0",
+      "match": true
+    },
+    "apps/windows/tests/host-brief.py": {
+      "expected": "e07dc48f5fd784b0b64a1dbaea0a1199c1f9971ca607db35003600d5f0dca888",
+      "actual": "e07dc48f5fd784b0b64a1dbaea0a1199c1f9971ca607db35003600d5f0dca888",
+      "match": true
+    },
+    "apps/windows/tests/host-fixture.ts": {
+      "expected": "aff16ab2c397abc0e192a45fe3008d68c773bb4860f9f3cdf947ce98178c73f6",
+      "actual": "aff16ab2c397abc0e192a45fe3008d68c773bb4860f9f3cdf947ce98178c73f6",
+      "match": true
+    },
+    "apps/windows/tests/host-flood.py": {
+      "expected": "aabada3314fc52ae22902d83f7372d06dbc05f99b6aec904d49e180978187aca",
+      "actual": "aabada3314fc52ae22902d83f7372d06dbc05f99b6aec904d49e180978187aca",
+      "match": true
+    },
+    "apps/windows/tests/host-memory.py": {
+      "expected": "95c81f849100b1f6c70444cd5a05d58afbefe674e94f11527254e4851dd3e1d5",
+      "actual": "95c81f849100b1f6c70444cd5a05d58afbefe674e94f11527254e4851dd3e1d5",
+      "match": true
+    },
+    "apps/windows/tests/host-stubborn.py": {
+      "expected": "fc160cb1dd4a7f53db2e70f3972cea6964304aa23e2ffc265093787a88a59cdb",
+      "actual": "fc160cb1dd4a7f53db2e70f3972cea6964304aa23e2ffc265093787a88a59cdb",
+      "match": true
+    },
+    "apps/windows/tests/ink-original.test.ts": {
+      "expected": "45b2aee7d01f36724e3c0f26464b3c43fafda756a5345273cffa4478dce5d6ea",
+      "actual": "45b2aee7d01f36724e3c0f26464b3c43fafda756a5345273cffa4478dce5d6ea",
+      "match": true
+    },
+    "apps/windows/tests/link-fakes.ts": {
+      "expected": "ea45561e4683aec807f669f3b762b7424eff790a10285ca53b771ee36c620814",
+      "actual": "ea45561e4683aec807f669f3b762b7424eff790a10285ca53b771ee36c620814",
+      "match": true
+    },
+    "apps/windows/tests/link-world.ts": {
+      "expected": "7cf5e1292f97df5ce45f676eb62465c4e8d2795c75996a5c51da80ba6260103a",
+      "actual": "7cf5e1292f97df5ce45f676eb62465c4e8d2795c75996a5c51da80ba6260103a",
+      "match": true
+    },
+    "apps/windows/tests/main-harness.ts": {
+      "expected": "1148e07d52ec05b93a1fcad279064f7c5ebeeec3dab9bddc7b07e715d6405e97",
+      "actual": "1148e07d52ec05b93a1fcad279064f7c5ebeeec3dab9bddc7b07e715d6405e97",
+      "match": true
+    },
+    "apps/windows/tests/main-lifecycle.test.ts": {
+      "expected": "b23146650c5810a73578ff3899fe9ae255f51c90a930467b0cdd4e5d5b63b759",
+      "actual": "b23146650c5810a73578ff3899fe9ae255f51c90a930467b0cdd4e5d5b63b759",
+      "match": true
+    },
+    "apps/windows/tests/overlay-alignment.test.ts": {
+      "expected": "678eef62c782afe5f66e4bd2f0d56db6623f1bf9b642fd6e4a55f94280a1032c",
+      "actual": "678eef62c782afe5f66e4bd2f0d56db6623f1bf9b642fd6e4a55f94280a1032c",
+      "match": true
+    },
+    "apps/windows/tests/overlay-capture.test.ts": {
+      "expected": "9b1a7fdab9d30ad6ceaa27e712809b94267ee69ba19217ffc07002adf684e4dc",
+      "actual": "9b1a7fdab9d30ad6ceaa27e712809b94267ee69ba19217ffc07002adf684e4dc",
+      "match": true
+    },
+    "apps/windows/tests/overlay-frames.test.ts": {
+      "expected": "1fab71883395068bbd0bbd43f9e1096d36a70a4352c1b2b30d3e7212fc16710c",
+      "actual": "1fab71883395068bbd0bbd43f9e1096d36a70a4352c1b2b30d3e7212fc16710c",
+      "match": true
+    },
+    "apps/windows/tests/overlay-page.ts": {
+      "expected": "da3b13067ce1702b18a77cedcc9f1d2f3ab6ddaea27ce731fee9ace64f9fca2e",
+      "actual": "da3b13067ce1702b18a77cedcc9f1d2f3ab6ddaea27ce731fee9ace64f9fca2e",
+      "match": true
+    },
+    "apps/windows/tests/overlay-stop.test.ts": {
+      "expected": "967053d6ba510be548ef51c5367bb05b1c043f36984df372c3bc0c72b7c848d5",
+      "actual": "967053d6ba510be548ef51c5367bb05b1c043f36984df372c3bc0c72b7c848d5",
+      "match": true
+    },
+    "apps/windows/tests/owned-host-flow.test.ts": {
+      "expected": "0ee47eb0636bce95970713426b29e3a5e6c848d09532575eb9130dd6d74e9276",
+      "actual": "0ee47eb0636bce95970713426b29e3a5e6c848d09532575eb9130dd6d74e9276",
+      "match": true
+    },
+    "apps/windows/tests/owned-host-run.py": {
+      "expected": "38ac4f3d48c67fa51b894e6e740750c1b0be19081e39988517b0dfe442bd5322",
+      "actual": "38ac4f3d48c67fa51b894e6e740750c1b0be19081e39988517b0dfe442bd5322",
+      "match": true
+    },
+    "apps/windows/tests/png.ts": {
+      "expected": "f7c14af436148413cbb4ec07148501ec0b9e2b4f7334c780f551119428289ab1",
+      "actual": "f7c14af436148413cbb4ec07148501ec0b9e2b4f7334c780f551119428289ab1",
+      "match": true
+    },
+    "apps/windows/tests/retention-correction.test.ts": {
+      "expected": "6ef3c1c3488ee10844a7a1dff241e420a2c820619d75f45c2d637c1441e32166",
+      "actual": "6ef3c1c3488ee10844a7a1dff241e420a2c820619d75f45c2d637c1441e32166",
+      "match": true
+    },
+    "apps/windows/tests/retention.test.ts": {
+      "expected": "ed3a47bb4d7355a9a4ed5c07d74d01e63eb1c62c64724d227c67686cad70507b",
+      "actual": "ed3a47bb4d7355a9a4ed5c07d74d01e63eb1c62c64724d227c67686cad70507b",
+      "match": true
+    },
+    "apps/windows/tests/shared.test.ts": {
+      "expected": "1a586ed4e272a1ab9c7274d895db5bafe37ac7441d8a7365f63543c0ad4aa73c",
+      "actual": "1a586ed4e272a1ab9c7274d895db5bafe37ac7441d8a7365f63543c0ad4aa73c",
+      "match": true
+    },
+    "apps/windows/tests/source.ts": {
+      "expected": "d85f28ce219ca1d7473f45f842fff328b3e2ee284db5cc0a2da6eab2dfd20186",
+      "actual": "d85f28ce219ca1d7473f45f842fff328b3e2ee284db5cc0a2da6eab2dfd20186",
+      "match": true
+    },
+    "apps/windows/tests/uploader.test.ts": {
+      "expected": "6ccd3b2f914ed6a5291cea6a5f52a128489cd7842d42f40bd401caab2ad578b3",
+      "actual": "6ccd3b2f914ed6a5291cea6a5f52a128489cd7842d42f40bd401caab2ad578b3",
+      "match": true
+    }
+  },
+  "receipt_file_count": 57,
+  "all_57_hashes_match": true,
+  "correction_result": {
+    "sha256": "cc30461f2f2a4edabd733199295cbc94b800b766dcbe6fc06486086afeb10f8b",
+    "expected_sha256": "cc30461f2f2a4edabd733199295cbc94b800b766dcbe6fc06486086afeb10f8b",
+    "hash_matches": true,
+    "counts": {
+      "tests": 78,
+      "pass": 78,
+      "fail": 0,
+      "cancelled": 0,
+      "skipped": 0
+    },
+    "matches_receipt": true,
+    "named_pass_lines": 78,
+    "duration_ms": 40232.801499,
+    "runtime": "node v24.21.0 linux-x64",
+    "backend_main": "f2c883d98912744300c300245ed23824e63bbcbb"
+  },
+  "historical_evidence": {
+    "linux-focused.json": {
+      "unchanged": true,
+      "sha256": "117412248742204580b4ac611be715f66a694bb8d994ae23627c8a8cb32a94b5"
+    },
+    "linux-focused.txt": {
+      "unchanged": true,
+      "sha256": "118cbfc02fc5ce321fdc017dee91f9b26aaa6c70e627a6c87b6d87816e083475"
+    }
+  },
+  "ui_and_main_unchanged": true,
+  "code_leaf_equals_delivery_windows": true,
+  "stale_phrase_corrected": true,
+  "independent_tests_or_builds_run": false,
+  "native_windows_run": false,
+  "scope_note": "Read-only Git blobs, recorded output/count/hash checks only. No source edits or new runtime claims."
+}

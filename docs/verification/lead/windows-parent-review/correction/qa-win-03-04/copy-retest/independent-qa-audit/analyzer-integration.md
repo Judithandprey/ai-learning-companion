@@ -1,5 +1,9 @@
 # Analyzer correction integrated; next Windows candidate held
 
+**Historical checkpoint:** the Windows HOLD below is superseded by
+[the final correction integration](windows-win05-integration.md). Original
+failure evidence remains unchanged.
+
 QA `6a3611e` and correction `72bf9a3` integrate as `93645a4` and `f2c883d`.
 [Independent review](windows-qa-analyzer-72bf-review.md) closes QA-HARNESS-01/02:
 required resumed-host identity and complete expected ink comparison coverage now

@@ -9,7 +9,11 @@ Main review baseline is `bde0cb1d01dbdfd4d5486d5686d65c73f28a58d4`.
 Its retained 24 pass / two limits are not full product acceptance. The original
 13/15 report at `c4c84a5` remains historical. **Current: base and corrected analyzer are integrated as93645a4/f2c883d;
 QA-HARNESS-01/02 are closed by focused review and the delivered121-case replay.**
-See [integration and next source correction](analyzer-integration.md). The initial
+**Current Windows correction is now source-approved and integrated:**
+[final integration](windows-win05-integration.md) records 78 affected main passes,
+build success and closure of the rollback-notification finding. Actual changed-path
+Windows QA awaits exact published release; no full campaign is assigned.
+See [historical analyzer integration](analyzer-integration.md). The initial
 HOLD evidence below remains historical; do not repeat the desktop/DB run.
 The report is readable at `git show 6a3611e:docs/verification/qa/p0-13-windows-quit-copy-retest-86d2405.md`.
 
@@ -81,8 +85,9 @@ Exact task bodies and accepted receipts are in [coordination.json](coordination.
 
 QA released the display/processes at 02:30:23 UTC and separately verified its
 Edge/console cleanup at 02:43:52 UTC. Future interactive runs must check current
-occupancy; elapsed time is not release. No user-preview database, ports4173/8174,
+occupancy; elapsed time is not release. No user-preview database, ports 4173/8174,
 Paperclip or existing service was touched. Physical pen, actual AI, audio,
 Notability, interactive Mac and both complete §7.1 gates remain unverified.
 The outstanding Mac-availability question stays pending, without blocking these
-independent source fixes. Lead next reviews the three actual scoped deliveries.
+independent source fixes. Lead next publishes the corrected Windows candidate for narrow QA and reviews
+Native’s pending delivery. See the current integration link above.

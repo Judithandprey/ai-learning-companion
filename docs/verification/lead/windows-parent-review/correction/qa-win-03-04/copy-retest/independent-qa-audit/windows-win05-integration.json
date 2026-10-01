@@ -1,0 +1,39 @@
+{
+  "recorded_at": "2026-10-01T03:42:21.713289+00:00",
+  "integration_source_commit": "22d4e26d170ac2f3b5a95d989d33a7c0958ff723",
+  "owner_code": "44fbd503bcbc45f4f3b28ff52d78e379ddbaf8c9",
+  "owner_delivery": "d295a514b531e7fae5ad35df10b4bc10b43bf742",
+  "message_id": "handoff_a92a71278b769c6905a26d2c2cf50b68",
+  "message_body_sha256": "88a23eac6079e950ac2e957532953f7b0a6bc6bbd7d3799cb7be17ae124b77d5",
+  "leaves": {
+    "d6f4e20": "b336f1c",
+    "10cbae6": "fa0637c",
+    "44fbd50": "822ad0e",
+    "d295a51": "22d4e26"
+  },
+  "exact_windows_and_owner_evidence_match": true,
+  "independent_state_probes": {
+    "pass": 3,
+    "fail": 0,
+    "environment": "Node 24.21.0 Linux; fake transport and child, temporary journal fixtures"
+  },
+  "integrated_tests": {
+    "pass": 78,
+    "fail": 0,
+    "skipped": 0,
+    "duration_ms": 42154.284064,
+    "environment": "Node 24.21.0 Linux; loopback Python MemoryStore host, no PostgreSQL",
+    "log": "windows-win05-main-tests.txt",
+    "sha256": "833f39f9f790126670c8a1149b42cccba59a52a6e415d29f9823f44cd9b6e104"
+  },
+  "build": {
+    "typescript_exit": 0,
+    "copy_static_exit": 0,
+    "executed_before_context_checkpoint": true
+  },
+  "requirement_manifest_hashes": 8,
+  "actual_windows_changed_path_qa": "not_run; release after publication",
+  "provider": "disabled",
+  "mac_copy_task": "already assigned; delivery pending",
+  "protected_areas": "No user-preview database/ports, Paperclip, services, desktop input or provider touched by this integration."
+}
