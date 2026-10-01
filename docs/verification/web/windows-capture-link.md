@@ -38,8 +38,9 @@ statement bounds. The file is read at each host start and passed only in the hos
   3. every frame retained from then on, with its raw and composed PNG and its editable-ink original, is stored in
      the test service, in manifest order;
   4. gaps, frames not retained, refusals and unwritten lines are sent as coverage records.
-- **The control window** shows the link's state (not connected yet, connecting, storing, not storing now, offline,
-  stopping, stopped, not connected, ended by the service) and the latest capture's counts:
+- **The control window** shows the link's state (not connected yet, connecting, connected, sending: waiting for the
+  service to confirm, storage not confirmed now, offline, stopping, stopped, not connected, ended by the service)
+  and the latest capture's counts:
   - records stored;
   - records not known whether stored;
   - records refused;
@@ -47,11 +48,15 @@ statement bounds. The file is read at each host start and passed only in the hos
   - earlier streams whose end is not known.
 
   It always ends with "AI: not connected".
-  - The header says what is so now, never what is merely configured. Only while a Start's stream is live on the
-    service, with no send unanswered since the last answered one, does it say frames are also being stored in a
-    local test capture service. At every other time (before Start, connecting, a send not confirmed, not connected,
-    offline, stopping, stopped, ended by the service) it says the service is not storing them now, and points to
-    the link line for its state and the latest capture's counts. It is rewritten at every change.
+  - The header says what is known now, never what is merely configured, and never that frames are being stored: a
+    send's outcome is known only once the service answers it (QA-WIN-05). It is rewritten at every change.
+    - A live stream: frames are also sent to a local test capture service, and a record counts as stored only once
+      that service confirms it. While a send is out the line says "sending: waiting for the service to confirm", and
+      its records are counted as not known whether stored; that is said before the wait begins.
+    - After a send whose storage was not confirmed, or with a send still out when the stream is no longer live (at a
+      Stop, say): whether the service is storing them now is not confirmed. Never "not stored".
+    - No live stream (before Start, connecting, not connected, offline, stopping, stopped, ended by the service):
+      the service is not storing them now.
   - The overlay's ASK card stays on screen, so it never says whether frames are being stored now. With the link on
     it says that a local test capture service on this device may also store the whole-display frames kept here,
     only while it is connected and answering, and that the control window shows whether it is storing now. That
@@ -141,6 +146,10 @@ statement bounds. The file is read at each host start and passed only in the hos
 - **Sending**:
   - After each successful manifest append, one job at a time: the oldest unsettled job first, then the next lines.
   - A job is written before its first send.
+  - Before each upload leaves (its first try and every retry) the status says a send is out (`awaiting`), and
+    `storing` is false until it is answered. A job known not sent is written as being sent before it leaves again,
+    so its records are counted as not known while it is out and after a crash. A refusal by the service is said
+    before the state read that follows it.
   - A send whose storage is not confirmed (no answer, a 503, a lost answer, a missing dependency; it may have
     arrived, and its records stay counted as not known) leaves the stream live but
     `stalled`: the status says it is not storing now, until a later send is answered. Only an answered (committed)
@@ -245,7 +254,7 @@ never the token.
   - a lost host is reconnected;
   - a Stop before any host was asked makes no stream and no request;
   - a pending grant is abandoned at restart.
-- `capture-link-rules.test.ts` (16), one per rule the reviews found unproven:
+- `capture-link-rules.test.ts` (17), one per rule the reviews found unproven:
   - consent is fresh only at the Start; the lost host's startups are recorded as without consent;
   - a registration without an answer is settled by a read, stopped and never abandoned, and the next Start names it
     as its predecessor;
@@ -267,8 +276,10 @@ never the token.
   - sends that get no answer are said as not storing now, the same key throughout, and storing again from the
     answer on;
   - (in the test of a job in doubt whose original is gone) not storing while nothing was answered, then storing
-    again once later lines are answered, the earlier job still not known.
-- `capture-link-record.test.ts` (27), without the Backend (a fake host child and fake answers):
+    again once later lines are answered, the earlier job still not known;
+  - a later send slow to be answered (QA-WIN-05): said as waiting before it leaves, the confirmed count kept, and
+    the answer restores the confirmed counts.
+- `capture-link-record.test.ts` (31), without the Backend (a fake host child and fake answers):
   - a record as this app writes it is used: its live stream is reconciled with a read and one Stop, and its unknown
     job stays unknown;
   - 19 damaged records (a null job, a stream without `final`, unknown ends, statuses or grants, a missing count,
@@ -286,7 +297,12 @@ never the token.
   - a state answer the record could not read back (revision 0) is not written: the registration stays not known,
     and the record stays readable;
   - a batch not answered, then its original gone, so the job is set aside: nothing is left to send, and the link
-    stays "not storing now" with its outcome not known; the host then lost and connected again never says storing.
+    stays "not confirmed" with its outcome not known; the host then lost and connected again never says storing;
+  - a service that holds its connection (QA-WIN-05): the wait is said before the first request leaves, the texts
+    claim nothing while it lasts, and a Stop during it keeps the job's exact key and body and every count;
+  - every upload request, retries too, leaves only after the app said a send is out; between sends none is out;
+  - a job known not sent, sent again: written and counted as not known while it is out;
+  - a send the service refuses is said before the state read that follows.
 - `app-link.test.ts` (13): the real `main.ts` and overlay under the fakes. The fake app quits as Electron does: a
   quit asked for while `will-quit` is being delivered is ignored, and a prevented quit is dropped.
   - Off: nothing changes.
@@ -312,11 +328,11 @@ never the token.
   - A Stop while frames are being stored: its first status already says not storing.
   - After a record-write fault, a new Start is not said to be storing; after the Stop the control window shows the
     last recorded outcome, with further sends stopped (POSIX: it makes a folder read-only).
-- `control-link.test.ts` (5): the control line and header in the off, unavailable and development modes. The
-  header says frames are also being stored only while they are; in every other state it says the service is not
-  storing them now. The idle, stalled and offline lines promise neither a connection nor that frames are never
-  stored. After a record-write fault the counts and the unconfirmed Stop stay, and the header says further sends
-  have stopped, never that nothing is sent anywhere.
+- `control-link.test.ts` (6): the control line and header in the off, unavailable and development modes: a live
+  stream (sent; stored only once confirmed), a send out (waiting to be confirmed; never stored, never not stored),
+  storage not confirmed, a send still out when the stream is no longer live, no live stream, and a record-write
+  fault (the counts and the unconfirmed Stop stay; never "nothing is sent anywhere"). No text says frames are being
+  stored.
 - `uploader.test.ts`: the transport change adds header-exactness and not-sent cases. Its Windows lock helper is
   main's, released at `4038e41`.
 
@@ -523,6 +539,37 @@ clean. The owned `lc_p0_test` runs were not rerun.
 Noted from QA, not changed: the host writes `__pycache__` into the Backend folder it runs from, because
 `PYTHONDONTWRITEBYTECODE` does not cross `wsl.exe`; the launch stays exactly `python -m services.api.desktop_local`.
 
+## QA retest at `86d2405` (QA-WIN-03/04 closed), and QA-WIN-05
+
+Independent QA retested the release `86d2405` (`docs/verification/qa/p0-13-windows-quit-copy-retest-86d2405.md` at
+`6a3611e`): 8 app processes exited by themselves, 7 relaunches came up without a kill, and the unavailable-service
+texts claimed nothing. QA-WIN-03 and QA-WIN-04 are closed. One residual was raised, Low, and repaired in `d6f4e20`
+(lead `handoff_f11b8b54`).
+
+**QA-WIN-05: while one send to a hung service was unanswered, the header and line kept saying frames are being
+stored** (about 182 s: three tries of 60 s). The counts were right throughout.
+- Cause: the status was said only when an upload returned, and the live header and label asserted present storage.
+- Repair: the status is said before the wait (`awaiting`), and `storing` is false while a send is out. No text says
+  frames are being stored any more: the live header says they are sent and count as stored only once confirmed, and
+  the line says "sending: waiting for the service to confirm". An unconfirmed send is "not confirmed", never "not
+  stored". Retry keys and bodies, tries, pauses and timeouts, the confirmed counts, the Stop and quit fences, the
+  originals, recovery and the ASK card are unchanged.
+- An independent two-lens review (state, visible texts), each finding verified, confirmed five more points, all
+  fixed with tests: a job known not sent stayed counted "not sent" while its resend was out (now written and counted
+  as not known); a send still out at a Stop got the "not storing" header (now "not confirmed"); a refusal was not
+  said until a further state read returned; a stalled detail promised a word the window no longer shows; and the
+  new tests did not pin `awaiting` being cleared or said on retries.
+- The ASK card still reads "the control window shows whether it is storing now" (kept as required). The control
+  window answers with its state line and confirmed counts; it does not use the word "storing" for a live stream.
+
+**Results at `d6f4e20`** (`evidence/windows-capture-link/qa-win-05/`, with the SHA-256 of every source and test file
+run): the affected files on Linux against the released host at main `5dc1d52` (kept in-memory store): 94 tests, 94
+pass. The whole `apps/windows` suite: 240 tests, 235 pass, 5 skipped (the owned flows); without a Backend 195 pass,
+45 skipped. `tsc` and the build pass. Each part of the repair removed makes a named test fail.
+- Not run: the real app on Windows, a real hung host, the database. The delayed and held answers are a held
+  in-process transport (no Backend) and a delayed answer from the released host over the in-memory store. A real
+  check of the changed texts on the Windows display is the lead's to release to QA.
+
 ## Gaps and next owners
 
 - **The real app on the display.** QA ran it at `c4c84a5` with synthetic pen input (13 of 15; above). The repair's
@@ -540,5 +587,5 @@ Noted from QA, not changed: the host writes `__pycache__` into the Backend folde
   - Native pen and macOS gates are separate.
   - The Windows portability item (the uploader's unreadable-original precondition on the hosted stock Node runner)
     is closed: main `4038e41`, hosted run `36773932867`.
-- **Next owner:** the lead reviews the repair and integrates the owned commits; independent QA then retests the
-  changed paths only (exit with the link, the failure texts).
+- **Next owner:** the lead reviews the QA-WIN-05 repair and integrates the owned commit; independent QA then checks
+  the changed behavior only (the texts while a send waits, and after its answer).
