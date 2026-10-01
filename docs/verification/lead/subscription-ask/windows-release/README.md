@@ -33,3 +33,15 @@ Actual official image input, correctly identified randomized pixels/ink, visible
 app response and identical retained provenance are required. Stop/cancel/refusal
 controls remain labeled synthetic. Physical pen, ongoing whole-screen AI, audio,
 Notability, interactive Mac and complete-product acceptance remain open.
+
+
+Exact pushed release `3e4b40654460a2dc2407f1d9be60d8e1a5b39a3e` is delivered to
+QA as accepted native receipt `handoff_d548b28a9fa5613b7543be19858a5ca2`.
+Read-only QA worktree inspection at `27b942c` observes edits to its existing
+runner/scenarios and new outer fake-bridge/watch helpers. This is implementation
+activity, not evidence that the release was read or the display test started.
+The prior explicit display release and subsequent owners' no-display reports
+support allocating QA the next sole test window; QA still checks current
+occupancy/pointer and publishes cleanup. The exact release's ordinary CI
+[36834649823](https://github.com/Judithandprey/ai-learning-companion/actions/runs/36834649823)
+was observed running; no CI success is yet claimed for this revision.

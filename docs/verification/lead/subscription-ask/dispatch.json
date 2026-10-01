@@ -112,7 +112,7 @@
       "owner": "qa",
       "accepted_assignment": "handoff_de323dc5105b08860c398a13b7206dbd",
       "actual_start_reply": "handoff_bc59ff1b65e150182c353cf2bffd6142",
-      "state": "ui_driver_implementation_accepted_waiting_exact_runtime_release",
+      "state": "driver_edits_observed_exact_behavior_release_accepted",
       "preparation_delivery": "handoff_19c92201b264e2d89e0e90c4e7a8e9e6",
       "preparation_commit": "d2de2bae70fdd58266fdaf21e6b5906f1fed5839",
       "judge_correction": "handoff_7cff18da7f7c5a0424aa27acd5aeb66a",
@@ -122,7 +122,26 @@
       "judge_integration": "fad98c7",
       "judge_main_cases": 31,
       "driver_implementation": "handoff_16a192142160536115f6087460e33b77",
-      "driver_source_reference": "c977df5523b0e57d49205ec9ca691bd965854e59"
+      "driver_source_reference": "c977df5523b0e57d49205ec9ca691bd965854e59",
+      "runtime_release": {
+        "baseline": "3e4b40654460a2dc2407f1d9be60d8e1a5b39a3e",
+        "accepted_message": "handoff_d548b28a9fa5613b7543be19858a5ca2",
+        "display_allocated_to": "qa",
+        "actual_display_claim_received": false,
+        "conditional_real_attempts": 1
+      },
+      "activity_observed": {
+        "type": "read_only_worktree_status",
+        "head": "27b942c",
+        "files": [
+          "tests/e2e/windows/qa-electron-runner.ps1",
+          "tests/e2e/windows/run.mjs",
+          "tests/e2e/windows/scenarios.mjs",
+          "tests/e2e/windows/qa_fake_bridge.py",
+          "tests/e2e/windows/qa_sub_watch.py"
+        ],
+        "tests_or_display_proven": false
+      }
     }
   ],
   "isolated_support_followup": "handoff_a18e73172e84d36e9ae952c877a8c90b",
