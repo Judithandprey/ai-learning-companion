@@ -1,0 +1,11 @@
+{
+  "mode": "async_route_v1",
+  "action": "instruction",
+  "accepted": true,
+  "message_id": "handoff_b370f109454a930b6bc4a25bbbe46184",
+  "reply_to": "handoff_c0bdc96ea080b0c42e1e7394ca24f6f1",
+  "route_id": "route_8608e3d1ee5a44f7bddfe1fa43c2a202",
+  "state": "unread",
+  "execution_started": false,
+  "scope": "Same-owner wording-only correction: unknown storage outcome must not be called known not stored. Existing state logic, tests and prior quit approval retained; no new display campaign."
+}

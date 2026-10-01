@@ -1,0 +1,187 @@
+{
+  "verdict": "APPROVE",
+  "candidate": "41fd2cb2845c8139f9ec5a326d38ebf593e290f9",
+  "parent": "0bb23c46096107910dd0c121508063eb5a4f3ddf",
+  "scope": "W-COPY-01/02 and remaining W-COPY-03 wording only",
+  "reviewed_delta": "Two reason strings, comments, two exact test assertions and report wording; no changed state transitions",
+  "closed_findings": [
+    "W-COPY-01 conditional open-card copy",
+    "W-COPY-02 unknown/stuck empty-queue status",
+    "W-COPY-03 unknown outcome now described as not confirmed"
+  ],
+  "execution": {
+    "runtime": "Node v24.21.0 Linux",
+    "cases": 5,
+    "passed": 5,
+    "exit_code": 0,
+    "command": "/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node /tmp/windows-qa04-41fd-probes.mjs",
+    "results": [
+      {
+        "case": "W_COPY_01_open_card_stays_conditional_through_stall",
+        "pass": true,
+        "status": {
+          "mode": "development",
+          "state": "stalled",
+          "stored": 0,
+          "unknown": 1,
+          "refused": 0,
+          "not_sent": 0,
+          "detail": "storage of the last send is not confirmed (no answer, or the service said to send it again later); the same record(s) are tried again",
+          "earlier_unknown": 0,
+          "sends_stopped": false,
+          "storing": false
+        },
+        "old_card": "No AI is connected: this selection was not sent to any AI. (Development mode: a local test capture service on this device may also store the whole-display frames kept here, only while it is connected and answering; the control window shows whether it is storing now.)\nRegion 182,87 226\u00d746 DIP on Display 1 = 226\u00d746 px of frame 1 (captured 5:00:00 AM), with your ink revision 0 drawn over it.",
+        "new_card": "No AI is connected: this selection was not sent to any AI. (Development mode: a local test capture service on this device may also store the whole-display frames kept here, only while it is connected and answering; the control window shows whether it is storing now.)\nRegion 182,87 226\u00d746 DIP on Display 1 = 226\u00d746 px of frame 2 (captured 6:42:09 PM), with your ink revision 0 drawn over it.",
+        "control_header": "Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI."
+      },
+      {
+        "case": "Stop_retains_unknown_and_storing_false_control",
+        "pass": true,
+        "status": {
+          "mode": "development",
+          "state": "stopped",
+          "stored": 0,
+          "unknown": 1,
+          "refused": 0,
+          "not_sent": 0,
+          "detail": "stream stopped",
+          "earlier_unknown": 0,
+          "sends_stopped": false,
+          "storing": false
+        }
+      },
+      {
+        "case": "W_COPY_02_empty_queue_keeps_stalled_after_stuck_unknown",
+        "pass": true,
+        "before": {
+          "mode": "development",
+          "state": "stalled",
+          "stored": 0,
+          "unknown": 2,
+          "refused": 0,
+          "not_sent": 0,
+          "detail": "storage of the last send is not confirmed (no answer, or the service said to send it again later); the same record(s) are tried again",
+          "earlier_unknown": 0,
+          "sends_stopped": false,
+          "storing": false
+        },
+        "after": {
+          "mode": "development",
+          "state": "stalled",
+          "stored": 0,
+          "unknown": 2,
+          "refused": 0,
+          "not_sent": 0,
+          "detail": "2 record(s) in doubt cannot be sent again from this device; whether they were stored stays not known; storage of the last send is not confirmed; storing is said again once a later send is answered",
+          "earlier_unknown": 0,
+          "sends_stopped": false,
+          "storing": false
+        },
+        "control_header": "Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI.",
+        "batch_attempts": 6
+      },
+      {
+        "case": "lost_reply_remains_unknown_and_is_said_not_confirmed",
+        "pass": true,
+        "before_detail": "storage of the last send is not confirmed (no answer, or the service said to send it again later); the same record(s) are tried again",
+        "after_detail": "2 record(s) in doubt cannot be sent again from this device; whether they were stored stays not known; storage of the last send is not confirmed; storing is said again once a later send is answered",
+        "control_line": "Capture storage (development): not storing now (the frames are kept on this device). 0 record(s) stored; 2 not known whether stored. 2 record(s) in doubt cannot be sent again from this device; whether they were stored stays not known; storage of the last send is not confirmed; storing is said again once a later send is answered. AI: not connected.",
+        "transport_error": "ECONNRESET",
+        "lost_batch_attempts": 6,
+        "successful_ack_count": 0,
+        "persisted_job": {
+          "status": "unknown",
+          "in_doubt": "batch",
+          "stuck": true
+        }
+      },
+      {
+        "case": "later_exact_ACK_restores_storing_without_changing_prior_unknown",
+        "pass": true,
+        "status": {
+          "mode": "development",
+          "state": "sending",
+          "stored": 2,
+          "unknown": 2,
+          "refused": 0,
+          "not_sent": 0,
+          "detail": "2 record(s) in doubt cannot be sent again from this device; whether they were stored stays not known",
+          "earlier_unknown": 0,
+          "sends_stopped": false,
+          "storing": true
+        },
+        "successful_ack_count": 1
+      }
+    ]
+  },
+  "source_manifest": "/tmp/windows-qa04-41fd-source-manifest.json",
+  "source_files_exact": 83,
+  "proof_artifacts": [
+    {
+      "path": "/tmp/windows-qa04-41fd-probes.mjs",
+      "bytes": 8764,
+      "sha256": "87d4fcffb5baacecd7ba6afafff150b4d6252ea259d46f3b32d9bde3a5393ecc"
+    },
+    {
+      "path": "/tmp/windows-qa04-41fd-probes.json",
+      "bytes": 5275,
+      "sha256": "7711de4d197c86a447e855f2727956dab91238644cbca0bbfae0dcb4f2f5ac4f"
+    },
+    {
+      "path": "/tmp/windows-qa04-41fd-probes.log",
+      "bytes": 5454,
+      "sha256": "be1d67e8c8980615c0bf30cf4f26c96266a44ff4c5a1460a163a586a4bc2ac6f"
+    },
+    {
+      "path": "/tmp/windows-qa04-41fd-initial-export-error.log",
+      "bytes": 1117,
+      "sha256": "9b683c0b4a9c1fd1563dab26c790a33ac938326432a043761f48eb48d80f0c33"
+    },
+    {
+      "path": "/tmp/windows-qa04-0bb-probes.mjs",
+      "bytes": 8601,
+      "sha256": "7316bcb4fb1829fe912d83123f115c3b98dfcbe7aed1ab1b7e43ceb495ab0c77"
+    },
+    {
+      "path": "/tmp/windows-qa04-0bb-probes.json",
+      "bytes": 5204,
+      "sha256": "3293d3fdcdee105ec8193eb0075ef3122e02ece482f4bbb057ed449f09f5f458"
+    },
+    {
+      "path": "/tmp/windows-qa04-0bb-probes.log",
+      "bytes": 5383,
+      "sha256": "436251e9109a9568702656ea1ca437dad2d5b1541cb182cc1e37417ec78ae12d"
+    },
+    {
+      "path": "/tmp/windows-qa04-0bb-review.md",
+      "bytes": 4669,
+      "sha256": "9c965c581b02a8bda716d69e2a94cf1e0001373d108b236bcb9a0658457714df"
+    },
+    {
+      "path": "/tmp/windows-qa04-0bb-review.json",
+      "bytes": 8809,
+      "sha256": "fd9e5edfd9e3b9d7864f527d08db18f0a8af2cc3122f11def67cb2331df81df0"
+    },
+    {
+      "path": "/tmp/windows-qa04-70cb-probes.mjs",
+      "bytes": 6312,
+      "sha256": "0cae41fdbfb2de22da50fd573bf374d82ce62f3ac7b692412c4717688f652f46"
+    }
+  ],
+  "historical_evidence": [
+    "/tmp/windows-qa04-70cb-probes.mjs",
+    "/tmp/windows-qa04-0bb-review.md",
+    "/tmp/windows-qa04-0bb-review.json",
+    "/tmp/windows-qa04-0bb-probes.json",
+    "/tmp/windows-qa04-0bb-probes.log"
+  ],
+  "setup_error": "Initial narrow export lacked existing apps/safari-extension/src/ink.ts imported by the test harness; no test ran. Preserved failure log, exported full exact commit, then reran successfully. No product fix/dependency installation.",
+  "limits": [
+    "Existing source-loading Electron/browser harness and fake child/transport only",
+    "No GUI, actual Windows runtime, real child process, socket, database, provider or full suite",
+    "Recovery ACK is a contract-shaped fake checked by the actual uploader, not actual Backend evidence",
+    "No original fixture/repository edits; old failing evidence retained",
+    "Independent QA remains required for assigned real Windows changed flows; full product acceptance unclaimed"
+  ]
+}

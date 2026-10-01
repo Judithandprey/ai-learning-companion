@@ -1,0 +1,27 @@
+{
+  "received": [
+    {
+      "message_id": "handoff_c0bdc96ea080b0c42e1e7394ca24f6f1",
+      "created_at": "2026-10-01T01:33:36Z",
+      "reply_to": "handoff_15bf1ff7825def923a56731a4feed652",
+      "code": "67a1da5e6de69eabbfe6f0c1d0e80939c7077202",
+      "evidence": "0bb23c46096107910dd0c121508063eb5a4f3ddf",
+      "body_sha256": "69dcc388a09a10c63c9f8c5dd08c991c1d77be0f3dd6427548305fcd06281d96"
+    },
+    {
+      "message_id": "handoff_ab57689bda0ac3484fd8e1d57b17ec5a",
+      "created_at": "2026-10-01T01:39:46Z",
+      "reply_to": "handoff_b370f109454a930b6bc4a25bbbe46184",
+      "code": "41fd2cb2845c8139f9ec5a326d38ebf593e290f9",
+      "body_sha256": "1ea766d017f920dc2ebe810a3d20171ac56c9569a5b5b6b6a135940d242a8204",
+      "display": "Explicitly remains released; no GUI run for wording delta."
+    }
+  ],
+  "read_keys": [
+    "lead-win-copy-correction-20261001-0134",
+    "lead-win-unknown-copy-final-20261001-0140"
+  ],
+  "reply_to_route": "route_8608e3d1ee5a44f7bddfe1fa43c2a202",
+  "no_pagination": true,
+  "limits": "Actual delivery and source evidence, not independent QA acceptance."
+}

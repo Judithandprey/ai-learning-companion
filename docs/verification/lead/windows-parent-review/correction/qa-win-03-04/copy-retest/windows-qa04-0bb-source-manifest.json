@@ -1,0 +1,427 @@
+{
+  "candidate": "0bb23c46096107910dd0c121508063eb5a4f3ddf",
+  "code_commit": "67a1da5e6de69eabbfe6f0c1d0e80939c7077202",
+  "export": "/tmp/lc-win-copyfix-0bb23c4",
+  "files_checked": 66,
+  "all_exact": true,
+  "files": [
+    {
+      "path": "apps/windows/src/main/capture-host.ts",
+      "bytes": 16166,
+      "sha256": "ade5bec295cae637c993afa565f494d45c1588a4d9e7e23636bfb278d9171347",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/src/main/capture-link.ts",
+      "bytes": 57793,
+      "sha256": "90943ea3855165375dcb9a2f6e3ba9625c9dca9d05af075101db2e52d05ef1e8",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/src/main/loopback-http.ts",
+      "bytes": 2769,
+      "sha256": "e473435598ad67cc801af8224f0ce954378be2130f689d60bab8057ef299ec76",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/src/main/main.ts",
+      "bytes": 70040,
+      "sha256": "f63a6aa6c8a7876a160e1be9b187faa44b62380e42f1bd921b512a2653fee60e",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/src/main/self-test-course.ts",
+      "bytes": 5336,
+      "sha256": "2468d0fcabe121e08b75595117ca0f2e7d6f17b87711a72fa50042eebc499326",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/src/main/self-test.ts",
+      "bytes": 62113,
+      "sha256": "9ee86b09a9f24099478707fbf74da3d52a76ade406bf676007bdb935e7492323",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/src/main/uploader.ts",
+      "bytes": 31232,
+      "sha256": "edab19b603978cd14d6fad5187ab7e3f54e974260718053f21b183d21eb55f6a",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/src/preload/control.cjs",
+      "bytes": 1470,
+      "sha256": "45b9b3668e532f48190f6c26567eeea7eb6c032f47d0a415fa1435a6529378be",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/src/preload/overlay.cjs",
+      "bytes": 1350,
+      "sha256": "8f64ca59de80b3bbc2ae9974900700bcf18adb5482603c021ad6639c586a2cc7",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/src/renderer/control.css",
+      "bytes": 1689,
+      "sha256": "7d523ddbd330de12bdad1b8329f2c5f70beb9bd81e122fb35f48b61f7c4110ca",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/src/renderer/control.html",
+      "bytes": 2372,
+      "sha256": "32911876ddbd49f62e919c3262be980690eddb7e6fb2329dd706dd2bdb2efe34",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/src/renderer/control.ts",
+      "bytes": 17047,
+      "sha256": "a344ffb526169704be0df851c22ca5a4726a3ea46074abb3fa7703797a247451",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/src/renderer/overlay.css",
+      "bytes": 1785,
+      "sha256": "c20319aab61f7446dd4cb509e898402fa264f343d23773a3419c2501e6726fc8",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/src/renderer/overlay.html",
+      "bytes": 1805,
+      "sha256": "65fe23136ec3f753c466741498c81076224eb1cb5bd575bd1033ef4c661ee090",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/src/renderer/overlay.ts",
+      "bytes": 58466,
+      "sha256": "d10f21d8f9c582c223a442a83047136569076b49912393e920a155adc32c70e4",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/src/renderer/probe.css",
+      "bytes": 347,
+      "sha256": "d91de633b9677107cfcee8008ac20694988871781ef04c786a252861c088fb5f",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/src/renderer/probe.html",
+      "bytes": 364,
+      "sha256": "e6cbdd4b53b386fc49a8ed67d16fe8585b615121b2f5544fac733e5153ead515",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/src/renderer/probe.ts",
+      "bytes": 323,
+      "sha256": "7fc9c0d88f5c0e497d4df99728ff5a292d8e8db99626e12a8c9c6a28643f37e6",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/src/shared/capture-plan.ts",
+      "bytes": 6017,
+      "sha256": "c7d39fe76a401dba7009f1963c7207b630b022a699bb75abf09813b00ab67c55",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/src/shared/desktop-ink.ts",
+      "bytes": 11414,
+      "sha256": "fefd7452f5f1018521087bc7c9afd5650f7ad4c0b9bb8ada5a3d775bfc6ab446",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/src/shared/frame-ingress.ts",
+      "bytes": 36723,
+      "sha256": "bfdba8bf7f5f2648c761547259e2a0db5c5b5d5ce8fe79ffbd171fdc35830389",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/src/shared/retention.ts",
+      "bytes": 4040,
+      "sha256": "e99392afa223f89dc63a8cb726cd0235d48d09e124cde682eb1bfa4645713ab1",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/src/shared/samples.ts",
+      "bytes": 9234,
+      "sha256": "a9851c58e68b09507649fd7b024c73ad304b80e9f237d53c69da153741605946",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/tests/app-link.test.ts",
+      "bytes": 29282,
+      "sha256": "80ca3a434651b42a4108a0a555e52154c378a2f97924ce293d973aad93203d91",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/tests/backend-host.py",
+      "bytes": 3780,
+      "sha256": "a9a462235e08c40abfd2d4f4680d54a860df23def9681728f0dc26001683016f",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/tests/capture-host.test.ts",
+      "bytes": 12383,
+      "sha256": "298e9b4bdd9efec4b6b431ca88a930d71d05c61b4ccae3343b018a94f0342cf5",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/tests/capture-link-record.test.ts",
+      "bytes": 20909,
+      "sha256": "5ae8b5e05d105b698988f6de45d27afc70764108aea2feffdd6ae852a48441e4",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/tests/capture-link-rules.test.ts",
+      "bytes": 20665,
+      "sha256": "40d3f40cf9ba3d0f06eaf9524940f1d1c1d856d35b0e254a296bca312413a47c",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/tests/capture-link.test.ts",
+      "bytes": 15178,
+      "sha256": "964045fab3425230ea962dec8f142360c38fc63d658934e1897c8465490132b1",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/tests/capture-plan.test.ts",
+      "bytes": 7158,
+      "sha256": "e228939dbb65914bf8edd6b0c6a23fa18babc9ee42f41624914c67b76a1198d9",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/tests/context-pictures.test.ts",
+      "bytes": 8175,
+      "sha256": "4d0211a94f645f550c37bf0d32e41f496db4115cf242bd4babe2c22f6eb1108b",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/tests/control-link.test.ts",
+      "bytes": 5500,
+      "sha256": "a290e88dd3b2abe86aee5bb5a8f14d2857b5e8d4f20a195430a5bbc0b5a335e6",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/tests/control-page.ts",
+      "bytes": 856,
+      "sha256": "cd85835b5efdd950defbf580f4db9baa8104f242dcda473d61cf0935f804f215",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/tests/frame-ingress.test.ts",
+      "bytes": 29367,
+      "sha256": "c85de06b0cd3262b614eac55ee9bd8645593f70c9829c603a18c392665d766e0",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/tests/host-brief.py",
+      "bytes": 513,
+      "sha256": "e07dc48f5fd784b0b64a1dbaea0a1199c1f9971ca607db35003600d5f0dca888",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/tests/host-fixture.ts",
+      "bytes": 3375,
+      "sha256": "aff16ab2c397abc0e192a45fe3008d68c773bb4860f9f3cdf947ce98178c73f6",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/tests/host-flood.py",
+      "bytes": 1124,
+      "sha256": "aabada3314fc52ae22902d83f7372d06dbc05f99b6aec904d49e180978187aca",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/tests/host-memory.py",
+      "bytes": 2729,
+      "sha256": "95c81f849100b1f6c70444cd5a05d58afbefe674e94f11527254e4851dd3e1d5",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/tests/host-stubborn.py",
+      "bytes": 1100,
+      "sha256": "fc160cb1dd4a7f53db2e70f3972cea6964304aa23e2ffc265093787a88a59cdb",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/tests/ink-original.test.ts",
+      "bytes": 20400,
+      "sha256": "45b2aee7d01f36724e3c0f26464b3c43fafda756a5345273cffa4478dce5d6ea",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/tests/link-fakes.ts",
+      "bytes": 6763,
+      "sha256": "f97da101e35ac2c4dd80d4c804812805ec3f635a34b5447405069df3a0abb95d",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/tests/link-world.ts",
+      "bytes": 7868,
+      "sha256": "7cf5e1292f97df5ce45f676eb62465c4e8d2795c75996a5c51da80ba6260103a",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/tests/main-harness.ts",
+      "bytes": 11113,
+      "sha256": "1148e07d52ec05b93a1fcad279064f7c5ebeeec3dab9bddc7b07e715d6405e97",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/tests/main-lifecycle.test.ts",
+      "bytes": 17037,
+      "sha256": "b23146650c5810a73578ff3899fe9ae255f51c90a930467b0cdd4e5d5b63b759",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/tests/overlay-alignment.test.ts",
+      "bytes": 9962,
+      "sha256": "678eef62c782afe5f66e4bd2f0d56db6623f1bf9b642fd6e4a55f94280a1032c",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/tests/overlay-capture.test.ts",
+      "bytes": 4161,
+      "sha256": "9b1a7fdab9d30ad6ceaa27e712809b94267ee69ba19217ffc07002adf684e4dc",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/tests/overlay-frames.test.ts",
+      "bytes": 8623,
+      "sha256": "1fab71883395068bbd0bbd43f9e1096d36a70a4352c1b2b30d3e7212fc16710c",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/tests/overlay-page.ts",
+      "bytes": 11354,
+      "sha256": "da3b13067ce1702b18a77cedcc9f1d2f3ab6ddaea27ce731fee9ace64f9fca2e",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/tests/overlay-stop.test.ts",
+      "bytes": 6752,
+      "sha256": "967053d6ba510be548ef51c5367bb05b1c043f36984df372c3bc0c72b7c848d5",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/tests/owned-host-flow.test.ts",
+      "bytes": 13870,
+      "sha256": "0ee47eb0636bce95970713426b29e3a5e6c848d09532575eb9130dd6d74e9276",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/tests/owned-host-run.py",
+      "bytes": 9516,
+      "sha256": "38ac4f3d48c67fa51b894e6e740750c1b0be19081e39988517b0dfe442bd5322",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/tests/png.ts",
+      "bytes": 1090,
+      "sha256": "f7c14af436148413cbb4ec07148501ec0b9e2b4f7334c780f551119428289ab1",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/tests/retention-correction.test.ts",
+      "bytes": 17300,
+      "sha256": "6ef3c1c3488ee10844a7a1dff241e420a2c820619d75f45c2d637c1441e32166",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/tests/retention.test.ts",
+      "bytes": 9023,
+      "sha256": "ed3a47bb4d7355a9a4ed5c07d74d01e63eb1c62c64724d227c67686cad70507b",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/tests/shared.test.ts",
+      "bytes": 19194,
+      "sha256": "1a586ed4e272a1ab9c7274d895db5bafe37ac7441d8a7365f63543c0ad4aa73c",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/tests/source.ts",
+      "bytes": 999,
+      "sha256": "d85f28ce219ca1d7473f45f842fff328b3e2ee284db5cc0a2da6eab2dfd20186",
+      "matches_commit": true
+    },
+    {
+      "path": "apps/windows/tests/uploader.test.ts",
+      "bytes": 73651,
+      "sha256": "6ccd3b2f914ed6a5291cea6a5f52a128489cd7842d42f40bd401caab2ad578b3",
+      "matches_commit": true
+    },
+    {
+      "path": "docs/verification/web/evidence/windows-frame-ingress/harness-ink-capture/frames/062b24c9b1bf36deef6b912a8e24994f21ce9b76c02833ff4bb60815bfffb598.png",
+      "bytes": 5885,
+      "sha256": "062b24c9b1bf36deef6b912a8e24994f21ce9b76c02833ff4bb60815bfffb598",
+      "matches_commit": true
+    },
+    {
+      "path": "docs/verification/web/evidence/windows-frame-ingress/harness-ink-capture/frames/3c4c46f4e6863ae05be9f4caf37d72a713fb8d27c5734445282c2f04ea9e03aa.png",
+      "bytes": 5885,
+      "sha256": "3c4c46f4e6863ae05be9f4caf37d72a713fb8d27c5734445282c2f04ea9e03aa",
+      "matches_commit": true
+    },
+    {
+      "path": "docs/verification/web/evidence/windows-frame-ingress/harness-ink-capture/frames/47f16cacb8a36ba961ac7d8d5c8d59cfbd0eec927e43d39b46f7418ec087a180.png",
+      "bytes": 5884,
+      "sha256": "47f16cacb8a36ba961ac7d8d5c8d59cfbd0eec927e43d39b46f7418ec087a180",
+      "matches_commit": true
+    },
+    {
+      "path": "docs/verification/web/evidence/windows-frame-ingress/harness-ink-capture/frames/eb1ce1ead5dbf1302360aeac74e1145dcde380941f60eeddf5022a46a9f9fe24.png",
+      "bytes": 5885,
+      "sha256": "eb1ce1ead5dbf1302360aeac74e1145dcde380941f60eeddf5022a46a9f9fe24",
+      "matches_commit": true
+    },
+    {
+      "path": "docs/verification/web/evidence/windows-frame-ingress/harness-ink-capture/ink/211310d53a3111d769d20b02ffe688e2df7c023571e6d6b65be643ea1dc36a14.json",
+      "bytes": 7395,
+      "sha256": "211310d53a3111d769d20b02ffe688e2df7c023571e6d6b65be643ea1dc36a14",
+      "matches_commit": true
+    },
+    {
+      "path": "docs/verification/web/evidence/windows-frame-ingress/harness-ink-capture/ink/586ae7538db4adea056039a3d227676290de4ddf77dc8aa1a8259b22d1c3614e.json",
+      "bytes": 2746,
+      "sha256": "586ae7538db4adea056039a3d227676290de4ddf77dc8aa1a8259b22d1c3614e",
+      "matches_commit": true
+    },
+    {
+      "path": "docs/verification/web/evidence/windows-frame-ingress/harness-ink-capture/ink/7e2d667c44839eed6575561d25b1a9bacb901a94a90340314e730c5168d4ff49.json",
+      "bytes": 439,
+      "sha256": "7e2d667c44839eed6575561d25b1a9bacb901a94a90340314e730c5168d4ff49",
+      "matches_commit": true
+    },
+    {
+      "path": "docs/verification/web/evidence/windows-frame-ingress/harness-ink-capture/manifest.jsonl",
+      "bytes": 8743,
+      "sha256": "4a144991049fdecc17a9988bacec21b275405d4a984347cab82a64beebd4b650",
+      "matches_commit": true
+    },
+    {
+      "path": "docs/verification/web/windows-capture-link.md",
+      "bytes": 42484,
+      "sha256": "240d7f5a81b8103322726b97ef53fe692999ad2c4f6bf3649717b2112a8dddc0",
+      "matches_commit": true
+    }
+  ],
+  "probe_artifacts": [
+    {
+      "path": "/tmp/windows-qa04-0bb-probes.mjs",
+      "bytes": 8601,
+      "sha256": "7316bcb4fb1829fe912d83123f115c3b98dfcbe7aed1ab1b7e43ceb495ab0c77"
+    },
+    {
+      "path": "/tmp/windows-qa04-0bb-probes.json",
+      "bytes": 5204,
+      "sha256": "3293d3fdcdee105ec8193eb0075ef3122e02ece482f4bbb057ed449f09f5f458"
+    },
+    {
+      "path": "/tmp/windows-qa04-0bb-probes.log",
+      "bytes": 5383,
+      "sha256": "436251e9109a9568702656ea1ca437dad2d5b1541cb182cc1e37417ec78ae12d"
+    },
+    {
+      "path": "/tmp/windows-qa04-70cb-probes.mjs",
+      "bytes": 6312,
+      "sha256": "0cae41fdbfb2de22da50fd573bf374d82ce62f3ac7b692412c4717688f652f46"
+    }
+  ]
+}

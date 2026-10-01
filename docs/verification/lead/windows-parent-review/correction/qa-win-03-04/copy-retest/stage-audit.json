@@ -1,0 +1,153 @@
+{
+  "evidence_commit": "0bb23c46096107910dd0c121508063eb5a4f3ddf",
+  "code_commit": "67a1da5e6de69eabbfe6f0c1d0e80939c7077202",
+  "changed_sources": [
+    {
+      "path": "apps/windows/scripts/link-quit-check.mjs",
+      "sha256": "d9080956db79e19e6e2c9b7f5b4bdd6b582f2800c31ddcde83f4bae91e9abd1b",
+      "matches_git": true
+    },
+    {
+      "path": "apps/windows/src/main/capture-link.ts",
+      "sha256": "90943ea3855165375dcb9a2f6e3ba9625c9dca9d05af075101db2e52d05ef1e8",
+      "matches_git": true
+    },
+    {
+      "path": "apps/windows/src/main/main.ts",
+      "sha256": "f63a6aa6c8a7876a160e1be9b187faa44b62380e42f1bd921b512a2653fee60e",
+      "matches_git": true
+    },
+    {
+      "path": "apps/windows/src/preload/overlay.cjs",
+      "sha256": "8f64ca59de80b3bbc2ae9974900700bcf18adb5482603c021ad6639c586a2cc7",
+      "matches_git": true
+    },
+    {
+      "path": "apps/windows/src/renderer/control.ts",
+      "sha256": "a344ffb526169704be0df851c22ca5a4726a3ea46074abb3fa7703797a247451",
+      "matches_git": true
+    },
+    {
+      "path": "apps/windows/src/renderer/overlay.ts",
+      "sha256": "d10f21d8f9c582c223a442a83047136569076b49912393e920a155adc32c70e4",
+      "matches_git": true
+    },
+    {
+      "path": "apps/windows/tests/app-link.test.ts",
+      "sha256": "80ca3a434651b42a4108a0a555e52154c378a2f97924ce293d973aad93203d91",
+      "matches_git": true
+    },
+    {
+      "path": "apps/windows/tests/capture-link-record.test.ts",
+      "sha256": "5ae8b5e05d105b698988f6de45d27afc70764108aea2feffdd6ae852a48441e4",
+      "matches_git": true
+    },
+    {
+      "path": "apps/windows/tests/capture-link-rules.test.ts",
+      "sha256": "40d3f40cf9ba3d0f06eaf9524940f1d1c1d856d35b0e254a296bca312413a47c",
+      "matches_git": true
+    },
+    {
+      "path": "apps/windows/tests/control-link.test.ts",
+      "sha256": "a290e88dd3b2abe86aee5bb5a8f14d2857b5e8d4f20a195430a5bbc0b5a335e6",
+      "matches_git": true
+    },
+    {
+      "path": "apps/windows/tests/link-fakes.ts",
+      "sha256": "f97da101e35ac2c4dd80d4c804812805ec3f635a34b5447405069df3a0abb95d",
+      "matches_git": true
+    },
+    {
+      "path": "apps/windows/tests/overlay-frames.test.ts",
+      "sha256": "1fab71883395068bbd0bbd43f9e1096d36a70a4352c1b2b30d3e7212fc16710c",
+      "matches_git": true
+    },
+    {
+      "path": "apps/windows/tests/overlay-page.ts",
+      "sha256": "da3b13067ce1702b18a77cedcc9f1d2f3ab6ddaea27ce731fee9ace64f9fca2e",
+      "matches_git": true
+    },
+    {
+      "path": "docs/verification/web/evidence/windows-capture-link/qa-win-03-04/after-67a1da5-failure.json",
+      "sha256": "d890b73667ffd7657f1114ecc087bb2bd23888031a1957c9fc67d4e44529dbde",
+      "matches_git": true
+    },
+    {
+      "path": "docs/verification/web/windows-capture-link.md",
+      "sha256": "240d7f5a81b8103322726b97ef53fe692999ad2c4f6bf3649717b2112a8dddc0",
+      "matches_git": true
+    }
+  ],
+  "all_changed_files_match_git": true,
+  "stage_match": true,
+  "stage_files": 57,
+  "stage_sha256": "22fd88a6022a8f8fe71911485f2b09f210a46f67cf9fcea21b8bae3f5556014b",
+  "stage_manifest": {
+    "package.json": "ca62c237282a825cc36aceab1ed44e2673061369ef05694f25689dc3b574db49",
+    "dist/apps/windows/tests/uploader.test.js": "fd1d2e98473f7dd336756286b420809eb6c64e3324f0aab8f834df21a78526b4",
+    "dist/apps/windows/tests/main-lifecycle.test.js": "5c059850b1134a2dcbf23204d84a458aa5f4173a5e8187ab19c4d58f5a9ab619",
+    "dist/apps/windows/tests/ink-original.test.js": "ba623a79daaac5d72f663e0ea3010f29a17622da3ba2186cea3c2f338ae5e720",
+    "dist/apps/windows/tests/owned-host-flow.test.js": "c8f9f3789b728780c0dd741c20ec8693731997ae6a9b59fa3ea8d935e6f6d0db",
+    "dist/apps/windows/tests/frame-ingress.test.js": "ae6d5161ef6200fa2618543050c9b8ad3a3c723ee2817e282a2192339edc457f",
+    "dist/apps/windows/tests/capture-link-record.test.js": "91d98090c0986d25e41e800d4fa7d47edb87e6bd5d4df63ff667e2ac79650d39",
+    "dist/apps/windows/tests/overlay-alignment.test.js": "95b455341fc9f9559d248cc6034d4cf7225c6070f4b6c654f6c94e5169d1131f",
+    "dist/apps/windows/tests/retention-correction.test.js": "72dffec79a5ec00f6c0484e53de2dccbde79d5661e127f864797f93a8394a663",
+    "dist/apps/windows/tests/capture-link-rules.test.js": "4e190e2b13c4ff476af9e9c1446e2ec18b42c31a25d2dde51523ccab8db1450b",
+    "dist/apps/windows/tests/shared.test.js": "ee51870b784a7c7b340c18736c63612036b876b9c7ca74ade52a7c7b03a71dc0",
+    "dist/apps/windows/tests/app-link.test.js": "51d65dbd3ba2fe8413b627d8b405cbd87f8167872626618ba23d3199ec5fd320",
+    "dist/apps/windows/tests/capture-plan.test.js": "07edc042980bce152852b04ba572b873de31c2fb735412dc7eca5f424c8bafae",
+    "dist/apps/windows/tests/host-fixture.js": "fae4c6a61661846c199a432be8a2875e548b9abfce7d5ddd5fc2713a382d4b84",
+    "dist/apps/windows/tests/control-link.test.js": "fe11ee12164876859fb453abd313d08918052802761029026304ae750ae6c8e4",
+    "dist/apps/windows/tests/overlay-page.js": "40ed60288d6b8d7713d085858c19dfcd120d78f756d6c2431948534246c0e603",
+    "dist/apps/windows/tests/main-harness.js": "2c52216fea5f52c02c7db6ecbfc76a5797b79f119427ef055a2b26de819fc194",
+    "dist/apps/windows/tests/overlay-stop.test.js": "7f26c3376dcbc835659e77d9e572c9c54aa2e074decbb34a80ed430f4e779cfe",
+    "dist/apps/windows/tests/link-world.js": "673074f9a53fbbaabf21cd6ff0a303f28c883d06a878c57b842d43990be3a4d8",
+    "dist/apps/windows/tests/overlay-frames.test.js": "60999491992b37ecce6bea68c01eb52a207f0c1da1ae36494d08201d25dcd4de",
+    "dist/apps/windows/tests/capture-link.test.js": "acd423f91c9ffdfa1826dc199fdb3c03bc140d0042bdd546d7f171bea94ad907",
+    "dist/apps/windows/tests/context-pictures.test.js": "a459bdafc202406f0ff010736da6320bc98f56f1786ff34cf11dc9e59174ea40",
+    "dist/apps/windows/tests/retention.test.js": "2df279503af67e39f54f69dfb2ba76dcd001e6676e571b3303bc8f3e0f513dcc",
+    "dist/apps/windows/tests/control-page.js": "4a89d4083a20c9e0bc1ba9f2ec3ce92ab8ea7797261159e7ebf02878ccb2b376",
+    "dist/apps/windows/tests/png.js": "8f72448cefabd850931cb74a92d3e4c14c1c24885961351a90309d3fbbbde08e",
+    "dist/apps/windows/tests/source.js": "a3b346a33f1f7ef4e727bfc92a0bba5921e86048a8e8f2c6607a4391823aeec4",
+    "dist/apps/windows/tests/overlay-capture.test.js": "0822fbfedcc463ec20c15a1bd1fbded902310a9031a0cdc66d6603ba6ee68f3a",
+    "dist/apps/windows/tests/capture-host.test.js": "fe89d26c84d0e95869b66b804c66f6a9ad9cd40f95ded7ebc676e9847111b950",
+    "dist/apps/windows/tests/link-fakes.js": "8407d2373e082f9b9db6a2c3f878509382734b84d775da06f7ef0c2c6836c913",
+    "dist/apps/windows/scripts/ingress-fixtures.js": "3ca6ee305a8d8632827c9ec5c370945bf8e9da8da274987fa60657a96c616395",
+    "dist/apps/windows/scripts/ingress-harness-capture.js": "9cf9374f0aaec537d61c37a50369a4dd7e954fb99760d9cf293004fa3937f6cf",
+    "dist/apps/windows/scripts/ingress-harness-ink-capture.js": "ffd3babd1904da9ff32dd8053d8a3f523307956a7934900fb3c258f49b237cc8",
+    "dist/apps/windows/src/preload/overlay.cjs": "8f64ca59de80b3bbc2ae9974900700bcf18adb5482603c021ad6639c586a2cc7",
+    "dist/apps/windows/src/preload/control.cjs": "45b9b3668e532f48190f6c26567eeea7eb6c032f47d0a415fa1435a6529378be",
+    "dist/apps/windows/src/shared/frame-ingress.js": "07a8657d591a65449a8ec0ec62e91997d70ff80b0f7d7102b2cacc042f28b63d",
+    "dist/apps/windows/src/shared/desktop-ink.js": "ab621526d1ced3b5afcfa791688af5fb2b6b17af5e9895061e3df04a7ab4036d",
+    "dist/apps/windows/src/shared/capture-plan.js": "51315a5d197ce0821fb3340f2e4352166f4d7fd0d98cdcd1c69bd789e91ae7f6",
+    "dist/apps/windows/src/shared/samples.js": "58436143034e76b17de2b186769815ad77af64846bdaba49d67254a09f3ae256",
+    "dist/apps/windows/src/shared/retention.js": "1a5bc8c1c0efe9b3c25817dc7208b5eb3b8795ec952412aaef0e47027cf39d82",
+    "dist/apps/windows/src/main/main.js": "8c6afedbcedae9b629d9682da2ac2117a3d8d1742534c3a0ea5d67a01785ccae",
+    "dist/apps/windows/src/main/capture-link.js": "93764bf3f478ddf219027b1cee98943ef24036b7ec443dcf474e608ffdb7d1a8",
+    "dist/apps/windows/src/main/self-test.js": "81d3adab338aebfaa0d60c04ab71914c37ffe92bd6a06e668f26bbf1c9599f7c",
+    "dist/apps/windows/src/main/uploader.js": "9dfa70ddd00ca6c66460320a954e06847dfa2b2e38ece614df5a316f5feb2497",
+    "dist/apps/windows/src/main/capture-host.js": "4860bbd7090ee64bdd73817bccf3d021e69e741900f94935eda195e6bb5690d9",
+    "dist/apps/windows/src/main/self-test-course.js": "a02a8bf6832c23ef6434ceb47227517b4505ddd585979c861166b4d972034d68",
+    "dist/apps/windows/src/main/loopback-http.js": "96c4000e0f3b041730711eab16fcab1f229b662b3c7ddb57c5f77a711f345103",
+    "dist/apps/windows/src/renderer/probe.html": "e6cbdd4b53b386fc49a8ed67d16fe8585b615121b2f5544fac733e5153ead515",
+    "dist/apps/windows/src/renderer/probe.css": "d91de633b9677107cfcee8008ac20694988871781ef04c786a252861c088fb5f",
+    "dist/apps/windows/src/renderer/overlay.html": "65fe23136ec3f753c466741498c81076224eb1cb5bd575bd1033ef4c661ee090",
+    "dist/apps/windows/src/renderer/overlay.css": "c20319aab61f7446dd4cb509e898402fa264f343d23773a3419c2501e6726fc8",
+    "dist/apps/windows/src/renderer/control.html": "32911876ddbd49f62e919c3262be980690eddb7e6fb2329dd706dd2bdb2efe34",
+    "dist/apps/windows/src/renderer/control.css": "7d523ddbd330de12bdad1b8329f2c5f70beb9bd81e122fb35f48b61f7c4110ca",
+    "dist/apps/windows/src/renderer/overlay.js": "515df65e1d97a12f53eb1d1b182c06914013a7e6df2e5ff4d0f8e573c5228b54",
+    "dist/apps/windows/src/renderer/control.js": "270911fdcb8779b3e561fc9c0aea129f2fa25c3bc9dd88f175fcc049d5cdfadd",
+    "dist/apps/windows/src/renderer/probe.js": "a47f669467b32d4d2baed8a9b17afd219a4407eac5d1d87640e803995b94c08d",
+    "dist/apps/safari-extension/src/ink.js": "081e838aa457d3020ca699e1feec28494c51b88ae56ba6e2b349a01789a8d7ee",
+    "dist/apps/safari-extension/src/mode.js": "28f40e4c9d6750c40cd31ac70d458d039f34b0f995d3810cbb859dd49121037b"
+  },
+  "author_runtime_report_sha256": "d890b73667ffd7657f1114ecc087bb2bd23888031a1957c9fc67d4e44529dbde",
+  "author_pass": 4,
+  "author_fail": 0,
+  "author_driver_exit": 0,
+  "author_release": "2026-10-01T01:32:33.512Z",
+  "limits": [
+    "Fresh Linux build and source/artifact comparison only; author GUI receipt is not independent QA.",
+    "No database, real provider or real pen input used by this audit."
+  ]
+}

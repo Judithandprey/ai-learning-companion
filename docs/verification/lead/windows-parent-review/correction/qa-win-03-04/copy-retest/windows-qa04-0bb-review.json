@@ -1,0 +1,174 @@
+{
+  "verdict": "HOLD",
+  "scope": "W-COPY-01/02 continuation only; original defects resolved, one remaining outcome-wording correction required",
+  "candidate": "0bb23c46096107910dd0c121508063eb5a4f3ddf",
+  "code_commit": "67a1da5e6de69eabbfe6f0c1d0e80939c7077202",
+  "previous_candidate": "70cb7e872e1cc7826d5b108ccc006b758d3cfb70",
+  "canonical_main": "6ef0faa",
+  "original_findings": [
+    {
+      "id": "W-COPY-01",
+      "result": "PASS",
+      "evidence": "Open ASK card remains conditional and unchanged through stall; new card uses same conditional prefix. Image visibility and frame/time/ink description preserved; source selection path unchanged."
+    },
+    {
+      "id": "W-COPY-02",
+      "result": "PASS",
+      "evidence": "Unknown job becomes stuck after copied original removal; exhausted queue remains stalled/storing=false. Later fresh job receives exact fake ACK and enables storing, retaining prior unknown job."
+    }
+  ],
+  "remaining_findings": [
+    {
+      "id": "W-COPY-03",
+      "severity": "blocking correction acceptance",
+      "title": "An unknown upload is described as definitely not stored",
+      "paths": [
+        "apps/windows/src/main/capture-link.ts:664",
+        "apps/windows/src/main/capture-link.ts:773",
+        "apps/windows/src/renderer/control.ts:318"
+      ],
+      "observed": "With six batch ECONNRESET failures and no ACK, persisted job status unknown/in_doubt=batch/stuck=true is rendered as the last send was not stored; detail contradicts same line stating 2 not known whether stored.",
+      "fix": "Use unknown/unconfirmed wording at both new details and related comments, for example the last send was not confirmed as stored. Update tests that explicitly require the incorrect wording. Preserve current unknown/ACK/Stop state transitions.",
+      "impact_limit": "No false stored-counter increment, loss of journal/originals, or proof of actual remote commit demonstrated. This is a user-visible outcome misstatement."
+    }
+  ],
+  "execution": {
+    "runtime": "Node v24.21.0 Linux",
+    "exit_code": 0,
+    "observations": 5,
+    "positive_groups": 4,
+    "defect_reproductions": 1,
+    "command": "/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node /tmp/windows-qa04-0bb-probes.mjs",
+    "results": [
+      {
+        "case": "W_COPY_01_open_card_stays_conditional_through_stall",
+        "pass": true,
+        "status": {
+          "mode": "development",
+          "state": "stalled",
+          "stored": 0,
+          "unknown": 1,
+          "refused": 0,
+          "not_sent": 0,
+          "detail": "the last send was not stored (no answer, or the service said to send it again later); the same record(s) are tried again",
+          "earlier_unknown": 0,
+          "sends_stopped": false,
+          "storing": false
+        },
+        "old_card": "No AI is connected: this selection was not sent to any AI. (Development mode: a local test capture service on this device may also store the whole-display frames kept here, only while it is connected and answering; the control window shows whether it is storing now.)\nRegion 182,87 226\u00d746 DIP on Display 1 = 226\u00d746 px of frame 1 (captured 5:00:00 AM), with your ink revision 0 drawn over it.",
+        "new_card": "No AI is connected: this selection was not sent to any AI. (Development mode: a local test capture service on this device may also store the whole-display frames kept here, only while it is connected and answering; the control window shows whether it is storing now.)\nRegion 182,87 226\u00d746 DIP on Display 1 = 226\u00d746 px of frame 2 (captured 6:39:24 PM), with your ink revision 0 drawn over it.",
+        "control_header": "Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI."
+      },
+      {
+        "case": "Stop_retains_unknown_and_storing_false_control",
+        "pass": true,
+        "status": {
+          "mode": "development",
+          "state": "stopped",
+          "stored": 0,
+          "unknown": 1,
+          "refused": 0,
+          "not_sent": 0,
+          "detail": "stream stopped",
+          "earlier_unknown": 0,
+          "sends_stopped": false,
+          "storing": false
+        }
+      },
+      {
+        "case": "W_COPY_02_empty_queue_keeps_stalled_after_stuck_unknown",
+        "pass": true,
+        "before": {
+          "mode": "development",
+          "state": "stalled",
+          "stored": 0,
+          "unknown": 2,
+          "refused": 0,
+          "not_sent": 0,
+          "detail": "the last send was not stored (no answer, or the service said to send it again later); the same record(s) are tried again",
+          "earlier_unknown": 0,
+          "sends_stopped": false,
+          "storing": false
+        },
+        "after": {
+          "mode": "development",
+          "state": "stalled",
+          "stored": 0,
+          "unknown": 2,
+          "refused": 0,
+          "not_sent": 0,
+          "detail": "2 record(s) in doubt cannot be sent again from this device; whether they were stored stays not known; the last send was not stored; storing is said again once a later send is answered",
+          "earlier_unknown": 0,
+          "sends_stopped": false,
+          "storing": false
+        },
+        "control_header": "Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI.",
+        "batch_attempts": 6
+      },
+      {
+        "case": "unknown_lost_reply_is_falsely_described_as_not_stored",
+        "reproduced": true,
+        "before_detail": "the last send was not stored (no answer, or the service said to send it again later); the same record(s) are tried again",
+        "after_detail": "2 record(s) in doubt cannot be sent again from this device; whether they were stored stays not known; the last send was not stored; storing is said again once a later send is answered",
+        "control_line": "Capture storage (development): not storing now (the frames are kept on this device). 0 record(s) stored; 2 not known whether stored. 2 record(s) in doubt cannot be sent again from this device; whether they were stored stays not known; the last send was not stored; storing is said again once a later send is answered. AI: not connected.",
+        "transport_error": "ECONNRESET",
+        "lost_batch_attempts": 6,
+        "successful_ack_count": 0,
+        "persisted_job": {
+          "status": "unknown",
+          "in_doubt": "batch",
+          "stuck": true
+        }
+      },
+      {
+        "case": "later_exact_ACK_restores_storing_without_changing_prior_unknown",
+        "pass": true,
+        "status": {
+          "mode": "development",
+          "state": "sending",
+          "stored": 2,
+          "unknown": 2,
+          "refused": 0,
+          "not_sent": 0,
+          "detail": "2 record(s) in doubt cannot be sent again from this device; whether they were stored stays not known",
+          "earlier_unknown": 0,
+          "sends_stopped": false,
+          "storing": true
+        },
+        "successful_ack_count": 1
+      }
+    ]
+  },
+  "source_manifest": "/tmp/windows-qa04-0bb-source-manifest.json",
+  "source_files_exact": 66,
+  "probe_artifacts": [
+    {
+      "path": "/tmp/windows-qa04-0bb-probes.mjs",
+      "bytes": 8601,
+      "sha256": "7316bcb4fb1829fe912d83123f115c3b98dfcbe7aed1ab1b7e43ceb495ab0c77"
+    },
+    {
+      "path": "/tmp/windows-qa04-0bb-probes.json",
+      "bytes": 5204,
+      "sha256": "3293d3fdcdee105ec8193eb0075ef3122e02ece482f4bbb057ed449f09f5f458"
+    },
+    {
+      "path": "/tmp/windows-qa04-0bb-probes.log",
+      "bytes": 5383,
+      "sha256": "436251e9109a9568702656ea1ca437dad2d5b1541cb182cc1e37417ec78ae12d"
+    },
+    {
+      "path": "/tmp/windows-qa04-70cb-probes.mjs",
+      "bytes": 6312,
+      "sha256": "0cae41fdbfb2de22da50fd573bf374d82ce62f3ac7b692412c4717688f652f46"
+    }
+  ],
+  "limits": [
+    "Existing source-loading Electron/browser harness and fake child/transport only",
+    "No GUI, actual Windows runtime, real child process, socket, database or provider",
+    "Recovery ACK is a contract-shaped fake checked by the actual uploader; no real Backend commit claim",
+    "Author suite/real Windows failure-case evidence not rerun or counted as independent observation",
+    "No source/repository edits; old bug evidence preserved"
+  ],
+  "requirements_refresh": "Main 05465cc..6ef0faa canonical requirements, workflow, AGENTS/TEAM and lead role have no diff; continuation retains previous complete affected-clause reading and PONYTAIL LITE scope."
+}

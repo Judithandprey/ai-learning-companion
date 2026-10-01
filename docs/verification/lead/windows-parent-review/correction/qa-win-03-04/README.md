@@ -1,5 +1,11 @@
 # QA-WIN-03/04 correction review
 
+**Current:** follow-up `67a1da5`/`0bb23c4` and wording correction `41fd2cb`
+close the source-review findings below and integrate through `9974fdd`.
+See [the bounded retest and integration](copy-retest/README.md). Independent
+Windows QA closure is still pending its exact released candidate. The original
+review and failure evidence below are historical, retained without relabeling.
+
 Owner code `5cd0bec87db7a1f0989ab8e7f0ed702261dbccf2`, evidence
 `70cb7e872e1cc7826d5b108ccc006b758d3cfb70`, parent `5871981`.
 Actual delivery `handoff_ad2da359f7d9ade4f5ed7696c5407753` at

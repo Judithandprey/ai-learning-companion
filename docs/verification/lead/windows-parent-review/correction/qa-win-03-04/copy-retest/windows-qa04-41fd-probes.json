@@ -1,0 +1,107 @@
+{
+  "candidate": "41fd2cb2845c8139f9ec5a326d38ebf593e290f9",
+  "code_commit": "41fd2cb2845c8139f9ec5a326d38ebf593e290f9",
+  "node": "v24.21.0",
+  "temp_directory": "/tmp/lc-qa04-review-DNg4Ra",
+  "cases": 5,
+  "results": [
+    {
+      "case": "W_COPY_01_open_card_stays_conditional_through_stall",
+      "pass": true,
+      "status": {
+        "mode": "development",
+        "state": "stalled",
+        "stored": 0,
+        "unknown": 1,
+        "refused": 0,
+        "not_sent": 0,
+        "detail": "storage of the last send is not confirmed (no answer, or the service said to send it again later); the same record(s) are tried again",
+        "earlier_unknown": 0,
+        "sends_stopped": false,
+        "storing": false
+      },
+      "old_card": "No AI is connected: this selection was not sent to any AI. (Development mode: a local test capture service on this device may also store the whole-display frames kept here, only while it is connected and answering; the control window shows whether it is storing now.)\nRegion 182,87 226×46 DIP on Display 1 = 226×46 px of frame 1 (captured 5:00:00 AM), with your ink revision 0 drawn over it.",
+      "new_card": "No AI is connected: this selection was not sent to any AI. (Development mode: a local test capture service on this device may also store the whole-display frames kept here, only while it is connected and answering; the control window shows whether it is storing now.)\nRegion 182,87 226×46 DIP on Display 1 = 226×46 px of frame 2 (captured 6:42:09 PM), with your ink revision 0 drawn over it.",
+      "control_header": "Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI."
+    },
+    {
+      "case": "Stop_retains_unknown_and_storing_false_control",
+      "pass": true,
+      "status": {
+        "mode": "development",
+        "state": "stopped",
+        "stored": 0,
+        "unknown": 1,
+        "refused": 0,
+        "not_sent": 0,
+        "detail": "stream stopped",
+        "earlier_unknown": 0,
+        "sends_stopped": false,
+        "storing": false
+      }
+    },
+    {
+      "case": "W_COPY_02_empty_queue_keeps_stalled_after_stuck_unknown",
+      "pass": true,
+      "before": {
+        "mode": "development",
+        "state": "stalled",
+        "stored": 0,
+        "unknown": 2,
+        "refused": 0,
+        "not_sent": 0,
+        "detail": "storage of the last send is not confirmed (no answer, or the service said to send it again later); the same record(s) are tried again",
+        "earlier_unknown": 0,
+        "sends_stopped": false,
+        "storing": false
+      },
+      "after": {
+        "mode": "development",
+        "state": "stalled",
+        "stored": 0,
+        "unknown": 2,
+        "refused": 0,
+        "not_sent": 0,
+        "detail": "2 record(s) in doubt cannot be sent again from this device; whether they were stored stays not known; storage of the last send is not confirmed; storing is said again once a later send is answered",
+        "earlier_unknown": 0,
+        "sends_stopped": false,
+        "storing": false
+      },
+      "control_header": "Development mode: captured frames and ink are kept on this device. A local test capture service on it is not storing them now; its state, and the latest capture's counts, are below. No AI is connected; nothing is sent to any AI.",
+      "batch_attempts": 6
+    },
+    {
+      "case": "lost_reply_remains_unknown_and_is_said_not_confirmed",
+      "pass": true,
+      "before_detail": "storage of the last send is not confirmed (no answer, or the service said to send it again later); the same record(s) are tried again",
+      "after_detail": "2 record(s) in doubt cannot be sent again from this device; whether they were stored stays not known; storage of the last send is not confirmed; storing is said again once a later send is answered",
+      "control_line": "Capture storage (development): not storing now (the frames are kept on this device). 0 record(s) stored; 2 not known whether stored. 2 record(s) in doubt cannot be sent again from this device; whether they were stored stays not known; storage of the last send is not confirmed; storing is said again once a later send is answered. AI: not connected.",
+      "transport_error": "ECONNRESET",
+      "lost_batch_attempts": 6,
+      "successful_ack_count": 0,
+      "persisted_job": {
+        "status": "unknown",
+        "in_doubt": "batch",
+        "stuck": true
+      }
+    },
+    {
+      "case": "later_exact_ACK_restores_storing_without_changing_prior_unknown",
+      "pass": true,
+      "status": {
+        "mode": "development",
+        "state": "sending",
+        "stored": 2,
+        "unknown": 2,
+        "refused": 0,
+        "not_sent": 0,
+        "detail": "2 record(s) in doubt cannot be sent again from this device; whether they were stored stays not known",
+        "earlier_unknown": 0,
+        "sends_stopped": false,
+        "storing": true
+      },
+      "successful_ack_count": 1
+    }
+  ],
+  "scope": "Exact exported main/renderer/coordinator through existing Node VM/browser/Electron and child/transport fakes. No real GUI/child/socket/DB/provider."
+}
