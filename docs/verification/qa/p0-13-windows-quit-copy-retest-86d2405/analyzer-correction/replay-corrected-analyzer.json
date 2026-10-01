@@ -1,0 +1,1816 @@
+{
+ "analyzer_sha256": "17d8598082b34db2c504cec310ac5ca2922bb4e78c4ecf91e4ed7cb69761c641",
+ "evidence_summary_counts": {
+  "pass": 24,
+  "limit": 2
+ },
+ "baseline": {
+  "counts": {
+   "pass": 24,
+   "limit": 2
+  },
+  "error": null,
+  "same_statuses_as_the_committed_summary": true,
+  "checks_whose_observed_values_differ_from_the_committed_summary": [
+   "counts.final_counts_equal_the_server_once_each",
+   "fault.only_this_runs_host_paused_and_resumed",
+   "release.owned_processes_ended_by_themselves",
+   "run.shared_desktop_quiet"
+  ]
+ },
+ "cases": [
+  {
+   "case": "resumed_names_no_host",
+   "falsified": "the resumed event names no host (lead finding 1)",
+   "check": "fault.only_this_runs_host_paused_and_resumed",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 21,
+    "limit": 2,
+    "fail": 3
+   },
+   "error": null,
+   "other_checks_changed": {
+    "copy.lost_reply_is_unconfirmed_not_failed": "fail",
+    "copy.later_answer_restores_storing": "fail"
+   }
+  },
+  {
+   "case": "resumed_other_pid",
+   "falsified": "the resumed host has another PID than the paused session host",
+   "check": "fault.only_this_runs_host_paused_and_resumed",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 21,
+    "limit": 2,
+    "fail": 3
+   },
+   "error": null,
+   "other_checks_changed": {
+    "copy.lost_reply_is_unconfirmed_not_failed": "fail",
+    "copy.later_answer_restores_storing": "fail"
+   }
+  },
+  {
+   "case": "resumed_not_continued",
+   "falsified": "the resumed host is not marked continued",
+   "check": "fault.only_this_runs_host_paused_and_resumed",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 21,
+    "limit": 2,
+    "fail": 3
+   },
+   "error": null,
+   "other_checks_changed": {
+    "copy.lost_reply_is_unconfirmed_not_failed": "fail",
+    "copy.later_answer_restores_storing": "fail"
+   }
+  },
+  {
+   "case": "resumed_still_stopped",
+   "falsified": "the resumed host is still in state T",
+   "check": "fault.only_this_runs_host_paused_and_resumed",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 21,
+    "limit": 2,
+    "fail": 3
+   },
+   "error": null,
+   "other_checks_changed": {
+    "copy.lost_reply_is_unconfirmed_not_failed": "fail",
+    "copy.later_answer_restores_storing": "fail"
+   }
+  },
+  {
+   "case": "no_resumed_event",
+   "falsified": "there is no resumed event",
+   "check": "fault.only_this_runs_host_paused_and_resumed",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 21,
+    "limit": 2,
+    "fail": 3
+   },
+   "error": null,
+   "other_checks_changed": {
+    "copy.lost_reply_is_unconfirmed_not_failed": "fail",
+    "copy.later_answer_restores_storing": "fail"
+   }
+  },
+  {
+   "case": "paused_names_no_host",
+   "falsified": "the paused event names no host",
+   "check": "fault.only_this_runs_host_paused_and_resumed",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 21,
+    "limit": 2,
+    "fail": 3
+   },
+   "error": null,
+   "other_checks_changed": {
+    "copy.lost_reply_is_unconfirmed_not_failed": "fail",
+    "copy.later_answer_restores_storing": "fail"
+   }
+  },
+  {
+   "case": "paused_other_pid",
+   "falsified": "the paused host has another PID than the session host",
+   "check": "fault.only_this_runs_host_paused_and_resumed",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 21,
+    "limit": 2,
+    "fail": 3
+   },
+   "error": null,
+   "other_checks_changed": {
+    "copy.lost_reply_is_unconfirmed_not_failed": "fail",
+    "copy.later_answer_restores_storing": "fail"
+   }
+  },
+  {
+   "case": "paused_and_resumed_other_pid",
+   "falsified": "both events name the same PID, but not the session host's",
+   "check": "fault.only_this_runs_host_paused_and_resumed",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 21,
+    "limit": 2,
+    "fail": 3
+   },
+   "error": null,
+   "other_checks_changed": {
+    "copy.lost_reply_is_unconfirmed_not_failed": "fail",
+    "copy.later_answer_restores_storing": "fail"
+   }
+  },
+  {
+   "case": "no_ink_comparisons",
+   "falsified": "every ink-original comparison is removed from the readback (lead finding 2)",
+   "check": "counts.final_counts_equal_the_server_once_each",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "no_ink_comparisons_stream2",
+   "falsified": "the ink comparisons of the second stream only are removed",
+   "check": "counts.final_counts_equal_the_server_once_each",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "one_ink_comparison_missing",
+   "falsified": "one ink comparison is removed",
+   "check": "counts.final_counts_equal_the_server_once_each",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "ink_server_hash_differs",
+   "falsified": "one ink comparison's server hash differs from the local one",
+   "check": "counts.final_counts_equal_the_server_once_each",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "ink_both_hashes_wrong_but_equal",
+   "falsified": "server and local hash are equal but not the hash in the artifact's name",
+   "check": "counts.final_counts_equal_the_server_once_each",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "ink_comparison_repeated",
+   "falsified": "one ink comparison is listed twice in its job",
+   "check": "counts.final_counts_equal_the_server_once_each",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "ink_comparison_unrelated",
+   "falsified": "an ink comparison is replaced by a self-consistent one of the other stream",
+   "check": "counts.final_counts_equal_the_server_once_each",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "stored_ink_artifact_differs",
+   "falsified": "the artifact the server stores under that name has another hash",
+   "check": "counts.final_counts_equal_the_server_once_each",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "server_record_without_its_ink",
+   "falsified": "a server record no longer names its ink original (record and server disagree)",
+   "check": "counts.final_counts_equal_the_server_once_each",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "readback_job_repeated",
+   "falsified": "a readback job is listed twice",
+   "check": "counts.final_counts_equal_the_server_once_each",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "readback_job_missing",
+   "falsified": "a readback job is missing",
+   "check": "counts.final_counts_equal_the_server_once_each",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "fewer_pictures_than_frames",
+   "falsified": "fewer picture comparisons than the server holds frames",
+   "check": "counts.final_counts_equal_the_server_once_each",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "picture_mismatch",
+   "falsified": "the readback reports a raw-picture mismatch",
+   "check": "counts.final_counts_equal_the_server_once_each",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 22,
+    "fail": 2,
+    "limit": 2
+   },
+   "error": null,
+   "other_checks_changed": {
+    "quit.while_capturing_bounded_stop": "fail"
+   }
+  },
+  {
+   "case": "unavailable_streams_not_in_record",
+   "falsified": "the two unavailable streams are missing from the record",
+   "check": "counts.final_counts_equal_the_server_once_each",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 20,
+    "fail": 4,
+    "limit": 2
+   },
+   "error": null,
+   "other_checks_changed": {
+    "quit.unavailable_after_stop": "fail",
+    "quit.unavailable_while_capturing": "fail",
+    "quit.final_relaunch_close": "fail"
+   }
+  },
+  {
+   "case": "record_on_server_for_unavailable_stream",
+   "falsified": "the server holds a stream document for an unavailable stream",
+   "check": "counts.final_counts_equal_the_server_once_each",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "no_wsl_child_seen",
+   "falsified": "no wsl.exe child was ever listed",
+   "check": "release.owned_processes_ended_by_themselves",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "wsl_child_left",
+   "falsified": "a wsl.exe child is still running at the end",
+   "check": "release.owned_processes_ended_by_themselves",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "no_desktop_look_recorded",
+   "falsified": "the runner's look for other Electron apps is not in the results",
+   "check": "run.shared_desktop_quiet",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "fail": 1,
+    "pass": 23,
+    "limit": 2
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "foreign_electron_seen",
+   "falsified": "another Electron app was seen at the end",
+   "check": "run.shared_desktop_quiet",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "fail": 1,
+    "pass": 23,
+    "limit": 2
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "line_hidden_in_development_mode",
+   "falsified": "a development-mode read reports the link line as hidden",
+   "check": "copy.header_and_line_follow_the_link_state",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "header_claims_storage_in_other_words",
+   "falsified": "a not-storing header says frames 'are stored'",
+   "check": "copy.header_and_line_follow_the_link_state",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "line_says_a_record_was_not_stored",
+   "falsified": "the stalled line adds '1 not stored'",
+   "check": "copy.header_and_line_follow_the_link_state",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 21,
+    "limit": 2,
+    "fail": 3
+   },
+   "error": null,
+   "other_checks_changed": {
+    "copy.lost_reply_is_unconfirmed_not_failed": "fail",
+    "copy.later_answer_restores_storing": "fail"
+   }
+  },
+  {
+   "case": "line_says_storing_while_stopped",
+   "falsified": "a stopped read's line says 'storing.'",
+   "check": "copy.header_and_line_follow_the_link_state",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "unavailable_line_without_the_reason",
+   "falsified": "the unavailable line no longer shows the reason",
+   "check": "copy.each_state_reads_as_expected",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 22,
+    "limit": 2,
+    "fail": 2
+   },
+   "error": null,
+   "other_checks_changed": {
+    "copy.header_and_line_follow_the_link_state": "fail"
+   }
+  },
+  {
+   "case": "unavailable_stop_reads_like_a_healthy_stop",
+   "falsified": "after Stop while unavailable, detail and line say 'stream stopped'",
+   "check": "copy.each_state_reads_as_expected",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "stalled_detail_without_tried_again",
+   "falsified": "the stalled detail no longer says the record is tried again",
+   "check": "copy.lost_reply_is_unconfirmed_not_failed",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 22,
+    "limit": 2,
+    "fail": 2
+   },
+   "error": null,
+   "other_checks_changed": {
+    "copy.later_answer_restores_storing": "fail"
+   }
+  },
+  {
+   "case": "stalled_line_counts_no_unknown",
+   "falsified": "the stalled line counts 0 unknown while the status has 1",
+   "check": "copy.lost_reply_is_unconfirmed_not_failed",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 21,
+    "limit": 2,
+    "fail": 3
+   },
+   "error": null,
+   "other_checks_changed": {
+    "copy.header_and_line_follow_the_link_state": "fail",
+    "copy.later_answer_restores_storing": "fail"
+   }
+  },
+  {
+   "case": "stalled_line_says_failed",
+   "falsified": "the stalled line adds 'The last send failed.'",
+   "check": "copy.lost_reply_is_unconfirmed_not_failed",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 21,
+    "limit": 2,
+    "fail": 3
+   },
+   "error": null,
+   "other_checks_changed": {
+    "copy.header_and_line_follow_the_link_state": "fail",
+    "copy.later_answer_restores_storing": "fail"
+   }
+  },
+  {
+   "case": "stalled_read_before_the_pause",
+   "falsified": "the stalled reads are stamped before the host was paused",
+   "check": "copy.lost_reply_is_unconfirmed_not_failed",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 20,
+    "limit": 2,
+    "fail": 4
+   },
+   "error": null,
+   "other_checks_changed": {
+    "copy.header_and_line_follow_the_link_state": "fail",
+    "copy.later_answer_restores_storing": "fail",
+    "card.open_card_unchanged_through_fault_and_recovery": "fail"
+   }
+  },
+  {
+   "case": "recovered_line_still_not_storing",
+   "falsified": "the recovered line still says 'not storing now'",
+   "check": "copy.later_answer_restores_storing",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 22,
+    "limit": 2,
+    "fail": 2
+   },
+   "error": null,
+   "other_checks_changed": {
+    "copy.header_and_line_follow_the_link_state": "fail"
+   }
+  },
+  {
+   "case": "recovered_line_still_counts_unknown",
+   "falsified": "the recovered line still counts an unknown record",
+   "check": "copy.later_answer_restores_storing",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 22,
+    "limit": 2,
+    "fail": 2
+   },
+   "error": null,
+   "other_checks_changed": {
+    "copy.header_and_line_follow_the_link_state": "fail"
+   }
+  },
+  {
+   "case": "recovered_read_before_the_resume",
+   "falsified": "the recovered reads are stamped before the host was resumed",
+   "check": "copy.later_answer_restores_storing",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 22,
+    "limit": 2,
+    "fail": 2
+   },
+   "error": null,
+   "other_checks_changed": {
+    "card.open_card_unchanged_through_fault_and_recovery": "fail"
+   }
+  },
+  {
+   "case": "card_whole_text_not_read",
+   "falsified": "one card's whole text is missing",
+   "check": "copy.ask_card_conditional_in_every_state",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "card_says_frames_were_stored",
+   "falsified": "one card's whole text says frames were stored",
+   "check": "copy.ask_card_conditional_in_every_state",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "card_body_replaced_during_the_stall",
+   "falsified": "the whole card text differs at the stalled read",
+   "check": "card.open_card_unchanged_through_fault_and_recovery",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 22,
+    "limit": 2,
+    "fail": 2
+   },
+   "error": null,
+   "other_checks_changed": {
+    "copy.ask_card_conditional_in_every_state": "fail"
+   }
+  },
+  {
+   "case": "card_recovered_read_during_the_pause",
+   "falsified": "the 'recovered' card read is stamped during the pause",
+   "check": "card.open_card_unchanged_through_fault_and_recovery",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 22,
+    "limit": 2,
+    "fail": 2
+   },
+   "error": null,
+   "other_checks_changed": {
+    "copy.ask_card_conditional_in_every_state": "fail"
+   }
+  },
+  {
+   "case": "previous_process_alive_at_relaunch",
+   "falsified": "the previous process's exit is after the next start",
+   "check": "relaunch.same_profile_without_kill",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 22,
+    "fail": 2,
+    "limit": 2
+   },
+   "error": null,
+   "other_checks_changed": {
+    "quit.after_stop_page_close": "fail"
+   }
+  },
+  {
+   "case": "page_close_recorded_as_another_route",
+   "falsified": "the after-Stop close is not recorded as the page route",
+   "check": "quit.after_stop_page_close",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "fail": 1,
+    "limit": 2
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "exit_before_the_close_request",
+   "falsified": "the process exited before the close was requested",
+   "check": "quit.final_relaunch_close",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "fail": 1,
+    "limit": 2
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "children_listing_empty",
+   "falsified": "the children listing before the idle close is empty",
+   "check": "quit.idle_native_close",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "fail": 1,
+    "limit": 2
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "children_listing_of_another_process",
+   "falsified": "the children listing before the idle close is another process's",
+   "check": "quit.idle_native_close",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "fail": 1,
+    "limit": 2
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "wsl_child_before_the_relaunched_idle_close",
+   "falsified": "a wsl.exe child is listed before the relaunched idle close",
+   "check": "quit.relaunched_idle_page_close",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 22,
+    "fail": 2,
+    "limit": 2
+   },
+   "error": null,
+   "other_checks_changed": {
+    "release.owned_processes_ended_by_themselves": "fail"
+   }
+  },
+  {
+   "case": "capturing_before_the_final_close",
+   "falsified": "the read before the last close says a capture is running",
+   "check": "quit.final_relaunch_close",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "fail": 1,
+    "limit": 2
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "relaunch_reports_unknown_records",
+   "falsified": "the relaunch after Stop reports 2 unknown records",
+   "check": "relaunch.record_and_ink_kept_no_host_before_start",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 22,
+    "fail": 2,
+    "limit": 2
+   },
+   "error": null,
+   "other_checks_changed": {
+    "copy.header_and_line_follow_the_link_state": "fail"
+   }
+  },
+  {
+   "case": "final_relaunch_lists_no_ink",
+   "falsified": "the last relaunch lists no saved ink",
+   "check": "relaunch.record_and_ink_kept_no_host_before_start",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "fail": 1,
+    "limit": 2
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "listed_wsl_child_not_rechecked",
+   "falsified": "a listed wsl.exe child is missing from the end check",
+   "check": "release.owned_processes_ended_by_themselves",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "watcher_ended_before_the_last_close",
+   "falsified": "the watcher's end is before the last app exit",
+   "check": "release.owned_processes_ended_by_themselves",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "fail": 2,
+    "limit": 1
+   },
+   "error": null,
+   "other_checks_changed": {
+    "relaunch.unavailable_hosts_before_a_start_observed": "fail"
+   }
+  },
+  {
+   "case": "runner_errors_listed",
+   "falsified": "the runner's errors list names a failed step",
+   "check": "run.completed",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "fail": 1,
+    "limit": 2
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "step_record_replaced_by_its_neighbour",
+   "falsified": "one step record is missing and its neighbour is there twice",
+   "check": "run.completed",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "fail": 1,
+    "limit": 2
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "resume_logged_after_the_recovery_read",
+   "falsified": "the watcher's resume time is after the app's recovery read",
+   "check": "fault.only_this_runs_host_paused_and_resumed",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 21,
+    "limit": 2,
+    "fail": 3
+   },
+   "error": null,
+   "other_checks_changed": {
+    "copy.lost_reply_is_unconfirmed_not_failed": "fail",
+    "copy.later_answer_restores_storing": "fail"
+   }
+  },
+  {
+   "case": "watch_start_without_already_there",
+   "falsified": "the watcher's start does not say what was already in the copy",
+   "check": "fault.only_this_runs_host_paused_and_resumed",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 21,
+    "limit": 2,
+    "fail": 3
+   },
+   "error": null,
+   "other_checks_changed": {
+    "copy.lost_reply_is_unconfirmed_not_failed": "fail",
+    "copy.later_answer_restores_storing": "fail"
+   }
+  },
+  {
+   "case": "job_range_covers_a_record_twice",
+   "falsified": "a job's range covers one server record twice and another none",
+   "check": "counts.final_counts_equal_the_server_once_each",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "other_kind_of_document_for_unavailable_stream",
+   "falsified": "the server holds a control_start for an unavailable stream",
+   "check": "counts.final_counts_equal_the_server_once_each",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "second_stream_reports_not_sent",
+   "falsified": "the second stream's final status reports 1 not sent",
+   "check": "counts.final_counts_equal_the_server_once_each",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 21,
+    "fail": 3,
+    "limit": 2
+   },
+   "error": null,
+   "other_checks_changed": {
+    "relaunch.record_and_ink_kept_no_host_before_start": "fail",
+    "copy.header_and_line_follow_the_link_state": "fail"
+   }
+  },
+  {
+   "case": "mismatch_list_not_reported",
+   "falsified": "the readback reports no mismatch list for a stream",
+   "check": "counts.final_counts_equal_the_server_once_each",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "by_kind_count_differs",
+   "falsified": "the database's count by kind differs from its document list",
+   "check": "counts.final_counts_equal_the_server_once_each",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "unavailable_stream_has_server_records",
+   "falsified": "the readback says an unavailable stream has a server record",
+   "check": "counts.final_counts_equal_the_server_once_each",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "conflicting_artifact_listed_first",
+   "falsified": "a second artifact document under the same ink name has another hash",
+   "check": "counts.final_counts_equal_the_server_once_each",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "checkpoint_without_a_result",
+   "falsified": "one hash checkpoint has no result",
+   "check": "originals.kept_through_closes_and_fault",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "manifest_vanished_at_the_end",
+   "falsified": "a capture manifest is gone at the last checkpoint",
+   "check": "originals.kept_through_closes_and_fault",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "checkpoint_label_repeated",
+   "falsified": "one checkpoint step carries the label of another",
+   "check": "originals.kept_through_closes_and_fault",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 22,
+    "fail": 2,
+    "limit": 2
+   },
+   "error": null,
+   "other_checks_changed": {
+    "run.completed": "fail"
+   }
+  },
+  {
+   "case": "unchanged_flag_is_a_string",
+   "falsified": "database_unchanged_by_readback is the text 'false'",
+   "check": "database.readback_read_only",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "readback_of_another_actor",
+   "falsified": "the readback names another actor",
+   "check": "database.readback_read_only",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "pre_start_host_exit_before_appear",
+   "falsified": "a host seen before a Start is logged as exiting before it appeared",
+   "check": "relaunch.unavailable_hosts_before_a_start_observed",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "fail": 2,
+    "limit": 1
+   },
+   "error": null,
+   "other_checks_changed": {
+    "release.owned_processes_ended_by_themselves": "fail"
+   }
+  },
+  {
+   "case": "step_kind_differs_from_the_plan",
+   "falsified": "a planned stroke step is recorded as a sleep",
+   "check": "run.completed",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "fail": 1,
+    "limit": 2
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "session_host_logged_before_its_start_click",
+   "falsified": "the second session's host appears 1.3 s before the Start click",
+   "check": "relaunch.record_and_ink_kept_no_host_before_start",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "fail": 1,
+    "limit": 2
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "session_host_gone_before_the_recovery",
+   "falsified": "the paused host's exit is logged 0.1 s after the resume, before the recovery read",
+   "check": "fault.only_this_runs_host_paused_and_resumed",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 21,
+    "limit": 2,
+    "fail": 3
+   },
+   "error": null,
+   "other_checks_changed": {
+    "copy.lost_reply_is_unconfirmed_not_failed": "fail",
+    "copy.later_answer_restores_storing": "fail"
+   }
+  },
+  {
+   "case": "ended_line_after_the_process_exit",
+   "falsified": "the 'app was closed' line of the second session is stamped after that process exited",
+   "check": "quit.while_capturing_bounded_stop",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "fail": 1,
+    "limit": 2
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "unavailable_ended_line_after_the_process_exit",
+   "falsified": "the 'app was closed' line of the fourth session is stamped after that process exited",
+   "check": "quit.unavailable_while_capturing",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "fail": 1,
+    "limit": 2
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "host_exit_before_the_close_request",
+   "falsified": "the second session's host exit is logged before the close request",
+   "check": "quit.while_capturing_bounded_stop",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "fail": 1,
+    "limit": 2
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "host_exit_before_it_appeared",
+   "falsified": "a host's exit is stamped before it appeared",
+   "check": "release.owned_processes_ended_by_themselves",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "exit_time_beyond_the_bound",
+   "falsified": "the last process's exit time is 10 s after the close request",
+   "check": "quit.final_relaunch_close",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "fail": 1,
+    "limit": 2
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "close_step_reports_exit_code_1",
+   "falsified": "the last close step reports exit code 1",
+   "check": "quit.final_relaunch_close",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "fail": 1,
+    "limit": 2
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "wsl_child_in_capitals",
+   "falsified": "a child named WSL.EXE is listed before the relaunched idle close",
+   "check": "quit.relaunched_idle_page_close",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "fail": 1,
+    "limit": 2
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "children_listing_from_before_start",
+   "falsified": "the listing judged before the after-Stop close is the one taken before Start",
+   "check": "quit.after_stop_page_close",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "fail": 1,
+    "limit": 2
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "capturing_before_the_idle_close",
+   "falsified": "the read before the idle close says a capture is running",
+   "check": "quit.idle_native_close",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "fail": 1,
+    "limit": 2
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "capturing_before_the_relaunched_idle_close",
+   "falsified": "the read before the relaunched idle close says a capture is running",
+   "check": "quit.relaunched_idle_page_close",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "fail": 1,
+    "limit": 2
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "unavailable_stream_grant_consumed",
+   "falsified": "the record says the unavailable stream's grant was consumed",
+   "check": "quit.unavailable_after_stop",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "fail": 1,
+    "limit": 2
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "control_app_launched_with_the_link",
+   "falsified": "the control app is recorded as launched with the link",
+   "check": "quit.control_without_link",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "fail": 1,
+    "limit": 2
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "launch_names_an_earlier_process",
+   "falsified": "a relaunch names a process two back as its previous one",
+   "check": "relaunch.same_profile_without_kill",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "fail": 1,
+    "limit": 2
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "ink_list_reports_unreadable",
+   "falsified": "the ink list after a relaunch reports an unreadable file",
+   "check": "relaunch.record_and_ink_kept_no_host_before_start",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "fail": 1,
+    "limit": 2
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "relaunched_read_before_the_relaunch",
+   "falsified": "the 'relaunched' status read is stamped before that process started",
+   "check": "relaunch.record_and_ink_kept_no_host_before_start",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 22,
+    "fail": 2,
+    "limit": 2
+   },
+   "error": null,
+   "other_checks_changed": {
+    "copy.header_and_line_follow_the_link_state": "fail"
+   }
+  },
+  {
+   "case": "pause_step_names_two_hosts",
+   "falsified": "the runner's pause step says the watcher named 2 hosts",
+   "check": "fault.only_this_runs_host_paused_and_resumed",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 21,
+    "limit": 2,
+    "fail": 3
+   },
+   "error": null,
+   "other_checks_changed": {
+    "copy.lost_reply_is_unconfirmed_not_failed": "fail",
+    "copy.later_answer_restores_storing": "fail"
+   }
+  },
+  {
+   "case": "frame_size_differs_at_the_end",
+   "falsified": "a retained frame has another size at the last checkpoint",
+   "check": "originals.kept_through_closes_and_fault",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "header_claims_storage_with_the_link_off",
+   "falsified": "with the link off the header says frames are stored",
+   "check": "copy.header_and_line_follow_the_link_state",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "header_adds_a_storage_promise",
+   "falsified": "a not-storing header adds that every frame from now on is saved in the service",
+   "check": "copy.header_and_line_follow_the_link_state",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "header_says_an_ai_reads_the_frames",
+   "falsified": "the stalled header says the frames are read by an AI tutor",
+   "check": "copy.header_and_line_follow_the_link_state",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "storing_header_while_sends_stopped",
+   "falsified": "the status says sends have stopped while the header says storing",
+   "check": "copy.header_and_line_follow_the_link_state",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "line_adds_a_refused_record",
+   "falsified": "the stalled line adds '1 refused'",
+   "check": "copy.header_and_line_follow_the_link_state",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "status_refused_not_in_the_line",
+   "falsified": "the stalled status reports 1 refused; the line does not",
+   "check": "copy.header_and_line_follow_the_link_state",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "line_state_word_of_another_state",
+   "falsified": "a stopped read's line says 'not connected'",
+   "check": "copy.header_and_line_follow_the_link_state",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "line_without_its_detail",
+   "falsified": "the stalled line no longer shows the detail",
+   "check": "copy.header_and_line_follow_the_link_state",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "read_replaced_by_an_earlier_read",
+   "falsified": "one read is a copy of an earlier read",
+   "check": "copy.header_and_line_follow_the_link_state",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "unavailable_card_is_the_storing_card",
+   "falsified": "the unavailable card read is a copy of the card read while storing",
+   "check": "copy.ask_card_conditional_in_every_state",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "card_shows_an_ai_answer",
+   "falsified": "the card's whole text carries an 'AI answer' element",
+   "check": "copy.ask_card_conditional_in_every_state",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "card_text_with_a_storage_line",
+   "falsified": "the unavailable card gets a line saying frames are saved in the service",
+   "check": "copy.ask_card_conditional_in_every_state",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "hint_says_sent_to_the_ai",
+   "falsified": "the hint says the selection was sent to the AI",
+   "check": "copy.ask_card_conditional_in_every_state",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "card_shown_is_text",
+   "falsified": "the card's shown flag is the text 'false'",
+   "check": "copy.ask_card_conditional_in_every_state",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "waited_stalled_read_right_after_the_pause",
+   "falsified": "the waited-for stalled read is stamped 0.8 s after the pause",
+   "check": "copy.lost_reply_is_unconfirmed_not_failed",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 21,
+    "limit": 2,
+    "fail": 3
+   },
+   "error": null,
+   "other_checks_changed": {
+    "copy.later_answer_restores_storing": "fail",
+    "card.open_card_unchanged_through_fault_and_recovery": "fail"
+   }
+  },
+  {
+   "case": "record_at_the_stall_says_refused",
+   "falsified": "the record copied at the stall says the open job was refused",
+   "check": "copy.lost_reply_is_unconfirmed_not_failed",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 22,
+    "limit": 2,
+    "fail": 2
+   },
+   "error": null,
+   "other_checks_changed": {
+    "copy.later_answer_restores_storing": "fail"
+   }
+  },
+  {
+   "case": "committed_job_on_unavailable_stream",
+   "falsified": "the record holds a committed job for an unavailable stream",
+   "check": "counts.final_counts_equal_the_server_once_each",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "job_without_server_receipt",
+   "falsified": "the readback says a committed job has no receipt on the server",
+   "check": "counts.final_counts_equal_the_server_once_each",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "server_record_names_no_picture",
+   "falsified": "a server record names no picture",
+   "check": "counts.final_counts_equal_the_server_once_each",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "stored_picture_differs_from_its_name",
+   "falsified": "a picture the server stores has another hash than its name",
+   "check": "counts.final_counts_equal_the_server_once_each",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "frame_document_of_another_frame",
+   "falsified": "a server frame document is for a frame no record names",
+   "check": "counts.final_counts_equal_the_server_once_each",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "planned_beyond_the_last_job",
+   "falsified": "the record planned through a sequence its jobs never reached",
+   "check": "counts.final_counts_equal_the_server_once_each",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "readback_before_the_run_ended",
+   "falsified": "the readback is stamped during the pause",
+   "check": "counts.final_counts_equal_the_server_once_each",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "document_created_during_the_unavailable_part",
+   "falsified": "a server document was created while an unavailable stream was capturing",
+   "check": "counts.final_counts_equal_the_server_once_each",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "continued_document_ends_with_undo",
+   "falsified": "the document saved after writing on ends with an undo",
+   "check": "card.open_card_unchanged_through_fault_and_recovery",
+   "status": "fail",
+   "expected": "fail",
+   "counts": {
+    "pass": 23,
+    "limit": 2,
+    "fail": 1
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "waiting_read_flag_only",
+   "falsified": "only the status flag of the read 8 s into the pause is set false",
+   "check": "copy.says_storing_while_a_send_waits",
+   "status": "limit",
+   "expected": "limit, not established (never pass)",
+   "note": "not established: the read 8 s into the pause could not be matched with a send that was out, or the later 'not storing now' was not seen (see the observed values)",
+   "counts": {
+    "pass": 22,
+    "limit": 2,
+    "fail": 2
+   },
+   "error": null,
+   "other_checks_changed": {
+    "copy.header_and_line_follow_the_link_state": "fail",
+    "copy.ask_card_conditional_in_every_state": "fail"
+   }
+  },
+  {
+   "case": "waiting_read_is_the_stalled_read",
+   "falsified": "the read 8 s into the pause is a copy of the stalled read",
+   "check": "copy.says_storing_while_a_send_waits",
+   "status": "limit",
+   "expected": "limit, not established (never pass)",
+   "note": "not established: the read 8 s into the pause could not be matched with a send that was out, or the later 'not storing now' was not seen (see the observed values)",
+   "counts": {
+    "pass": 22,
+    "limit": 2,
+    "fail": 2
+   },
+   "error": null,
+   "other_checks_changed": {
+    "copy.header_and_line_follow_the_link_state": "fail",
+    "copy.ask_card_conditional_in_every_state": "fail"
+   }
+  },
+  {
+   "case": "record_at_8s_of_another_stream",
+   "falsified": "the record copied 8 s into the pause is of another stream",
+   "check": "copy.says_storing_while_a_send_waits",
+   "status": "limit",
+   "expected": "limit, not established (never pass)",
+   "note": "not established: the read 8 s into the pause could not be matched with a send that was out, or the later 'not storing now' was not seen (see the observed values)",
+   "counts": {
+    "pass": 24,
+    "limit": 2
+   },
+   "error": null,
+   "other_checks_changed": {}
+  },
+  {
+   "case": "cursor_readings_missing",
+   "falsified": "the runner's cursor readings at start and end are missing",
+   "check": "run.cursor_static",
+   "status": "limit",
+   "expected": "limit (never pass)",
+   "counts": {
+    "pass": 23,
+    "limit": 3
+   },
+   "error": null,
+   "other_checks_changed": {}
+  }
+ ],
+ "unexpected": []
+}

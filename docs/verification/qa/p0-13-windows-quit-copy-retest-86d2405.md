@@ -17,6 +17,10 @@
     reports storing. The ASK card never says frames are stored.
   - **QA-WIN-05 (new, Low; residual of QA-WIN-04):** while one send to a hung service is unanswered, the header and
     line keep saying frames are being stored, for about 182 s here.
+- **Analyzer corrected after the run (lead `handoff_1e29884b68d0ea9599cfdbb56faa481d`):** two checks of the analyzer
+  that judged this run could still pass with their evidence removed. The run was not repeated. Replayed through the
+  corrected analyzer, the same retained evidence still gives 24 pass and 2 limit; see
+  [Post-run analyzer correction](#post-run-analyzer-correction).
 - **The earlier `c4c84a5` result stays as it was** (13/15, with its passing capture, ink, storage and readback
   evidence): [p0-13-windows-parent-c4c84a5.md](p0-13-windows-parent-c4c84a5.md). That campaign was not rerun.
 - **One observation for the lead** (details [below](#finding-and-observation)): with an earlier never-confirmed
@@ -48,7 +52,8 @@
 - **Isolation:** a fresh `LC_USER_DATA`, app `TMP`/`TEMP`, work folder and Edge profile. The link configuration was
   set for each app process only.
 - **Harness** ([tests/e2e/windows/](../../../tests/e2e/windows/)): the executed hashes are in `run.json`, and the
-  files are committed unchanged.
+  files were committed unchanged at `6a3611e`. Only `analyze_fix.py` was changed afterwards (the correction below);
+  `run.json` keeps the hash of the file that ran.
   - New scenario `parentfix` (223 steps).
   - `closeApp` now only requests a close and waits. It records the route, the time to exit and the exit code, and it
     never ends a process. Two routes:
@@ -60,7 +65,8 @@
     - It signals only a process that appeared under this watcher and whose working folder is the private Backend
       copy. It resumes only while the start ticks are unchanged.
     - It also resumes at a time limit, when the watcher ends, and on SIGTERM/SIGHUP.
-  - New analyzer `analyze_fix.py`. A value that was never read fails its check; nothing passes on missing data.
+  - New analyzer `analyze_fix.py`. As executed, it was meant to fail a check whose value was never read. **That was not
+    true of every check**: see the correction below.
 - **Pre-run review:** four independent reviewers (safety and ownership, scenario against the app source, analyzer
   truthfulness, PowerShell 5.1) reviewed the harness before the run. Their findings were fixed first. The main ones:
   - Reviewer finding from Electron's documentation and the source, not observed in this run: a page `window.close()` in
@@ -225,8 +231,70 @@ Windows profile is `<home>`, and there are no DSN, token, frame, ink or picture 
 - `hash-checkpoints.json`, `database-readback.json`, `preflight.json`.
 - `cleanup.json`: this run's actor only, 81 documents → 0 and the row removed, after every host had exited.
 - `build.json`, `run.json`.
+- `analyzer-correction/`: the post-run replays (`replay-executed-analyzer.json`, `replay-corrected-analyzer.json`) and
+  the corrected analyzer's summary of the same evidence (`summary-corrected-analyzer.json`).
 
 Raw whole-display frames, ink documents and screenshots stay in QA's private run folder. They are not committed.
+
+## Post-run analyzer correction
+
+Added on 2026-10-01 after the lead's review of `6a3611e`. Nothing was run on Windows again: no display, service,
+database or actor was used. Everything in this section is a replay of the committed evidence.
+
+- **What was wrong.** The lead's review found two checks of the executed analyzer that still passed with their evidence
+  removed:
+  1. `fault.only_this_runs_host_paused_and_resumed` passed when the "resumed" event named no host.
+  2. `counts.final_counts_equal_the_server_once_each` passed when every ink-original comparison was removed, while its
+     note said all ink bytes matched.
+- **What this means for the result.** The retained evidence itself was complete, so the run's result is unchanged. The
+  executed analyzer simply would not have noticed if that evidence had been missing.
+- **The two corrections.**
+  - *Fault:* the paused event and the resumed event must each name exactly one host, and it must be the session's
+    host by PID. It must be stopped (state `T`) at the pause, and continued and no longer stopped at the resume. Both
+    events must sit at the runner's own pause and resume steps.
+  - *Counts:* for both streams and for every committed job, the ink originals to compare are those the app's record
+    names for the job, and they must be exactly the ones the server's own records of that job name.
+    - Each must be compared exactly once: none missing, repeated or unrelated.
+    - Server bytes = local bytes = the sha256 in the artifact's name = the artifact the server stores.
+    - A job whose records name no ink original needs none and must have none.
+- **Further hardening.** Two rounds of independent mutation hunting on the corrected analyzer (5 hunters, about 750
+  single removals or falsifications tried) found 93 more that still passed. Most stamped evidence at an impossible
+  time, named another process or stream, or reworded the app's copy. Each got one added condition. Two kinds matter
+  for reading the result:
+  - The header and the link line are now compared with the accepted texts written out in the analyzer (the ones quoted
+    in this report), no longer with patterns. Any other wording fails and would need a new acceptance.
+  - Reads, card reads, manifest lines and host events must fall where their step, process or session puts them in
+    time.
+- **Replay results** ([analyzer-correction/](p0-13-windows-quit-copy-retest-86d2405/analyzer-correction/)):
+
+| Analyzer | sha256 | Retained evidence | 121 falsified copies |
+| --- | --- | --- | --- |
+| Executed on 2026-10-01 (`6a3611e`; the hash in `run.json`) | `ba2b4209…` | 24 pass, 2 limit; reproduces the committed `summary.json` exactly | **110 pass**, 2 limit, 9 fail |
+| Corrected | `17d85980…` | 24 pass, 2 limit; the same status in all 26 checks | **0 pass**: 117 fail, 4 limit |
+
+  - Both lead findings: pass before, fail now (`resumed_names_no_host`, `no_ink_comparisons`).
+  - Wrong-PID controls now fail: the resumed host with another PID, and both events naming the same wrong PID.
+  - Hash controls now fail: server and local hash equal but not the name's hash; the stored artifact with another
+    hash; a missing, repeated or other-stream comparison. A plain server/local difference failed before too.
+  - The 4 `limit` cases are the two observation checks, which must never turn into a pass on weaker evidence: 3 on
+    `copy.says_storing_while_a_send_waits` ("not established") and 1 on `run.cursor_static`.
+  - The corrected analyzer gives the same 26 statuses on QA's private raw run folder as on the committed evidence.
+  - Four checks show additional observed fields; no observed value of the run changed.
+- **What stays historical.** `summary.json`, `run.json` and the other evidence files are the executed run's output and
+  are unchanged. The corrected analyzer's summary is a separate file, `summary-corrected-analyzer.json`. The corrected
+  `analyze_fix.py` was never executed on Windows and no hash of it is recorded as executed.
+- **Limits of this correction.**
+  - It does not prove the analyzer complete. The hunt stopped after two rounds, and the second round still found 48,
+    so more single falsifications of this kind probably remain.
+  - Evidence changed consistently in several linked places is out of scope.
+  - An input of the wrong type stops the analyzer with an error instead of a verdict; that is not a pass.
+- **Reproduce** (pure; a minute or two):
+
+```sh
+python3 tests/e2e/windows/replay_analyze_fix.py docs/verification/qa/p0-13-windows-quit-copy-retest-86d2405
+git show 6a3611e:tests/e2e/windows/analyze_fix.py > /tmp/analyze_fix_executed.py
+python3 tests/e2e/windows/replay_analyze_fix.py docs/verification/qa/p0-13-windows-quit-copy-retest-86d2405 --analyzer /tmp/analyze_fix_executed.py --no-assert
+```
 
 ## Separation and limits
 
