@@ -976,10 +976,11 @@ test('[synthetic connector] an outcome that stays unwritten is said again at eve
   await settle();
   assert.deepEqual([prevented, w.h.quits.n], [true, 0]);
   assert.match(ended()!, /^the app was closed\. How 1 question\(s\) to ChatGPT ended /);
-  // The next close is not held.
-  prevented = false;
-  (w.control as unknown as FakeWindow).emit('close', { preventDefault: () => (prevented = true) });
-  assert.equal(prevented, false);
+  // The next close is not held for it: the connector is ended first, then the window closes by itself and the
+  // app quits, once.
+  (w.control as unknown as FakeWindow).close();
+  await until('the app quit', () => w.h.quits.n === 1, 5000);
+  assert.equal((w.control as unknown as FakeWindow).destroyed, true);
   // Windows ending the user's session (no quit event then): tried, still unwritten; then written once it can be.
   (w.control as unknown as FakeWindow).emit('session-end');
   assert.equal(entry()['outcome'], null);
@@ -1021,6 +1022,191 @@ test('[synthetic connector] a question the connector ends as cancelled by itself
   assert.deepEqual(w.records()[0]!.requests.map((x) => [x['outcome'], x['shown']]), [[{ status: 'cancelled', uncertain: true }, false]]);
   await new Promise((r) => setTimeout(r, 40));
   assert.deepEqual([w.fakes.last().asks().length, w.fakes.last().count('ask/cancel'), w.fakes.made.length, w.sub().state], [1, 0, 1, 'signed_in'], 'one send, no cancel of this app, one connector');
+});
+
+// ---- the connector's end as the app closes: a small note on this device, and the next launch ------------------------
+const SHIM_ENDED = 'a connector that was ended here did not end by itself in time; its wsl.exe shim was ended, which does not show that the connector, or the Codex app server it runs, ended in WSL';
+const NOTE_LINE = /^\{"format":"lc-windows-connector-ends\/v1","ends":\[(\{"at":"\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z","shim":"(ended|not_ended)"\},?)+\],"older":\d+\}\n$/;
+/** The app with a connector that was checked and no capture session; `slow`: the connector ignores the end of its input. */
+async function launched(o: { slow?: boolean; userData?: string; check?: boolean } = {}) {
+  const fakes = fakeConnectors((c) => void (c.endDelayMs = o.slow ? 60_000 : 0));
+  const env = { LC_SUBSCRIPTION_CONNECTOR: connectorConfig() };
+  const h = harness({ env, ...(o.userData ? { userData: o.userData } : {}), subscription: { spawn: fakes.spawn, request_ms: 500, end_ms: 80 } });
+  await settle();
+  const control = h.control() as unknown as FakeWindow;
+  const sub = (): Sub => plain(h.handlers['lc:sub-state']!({ sender: control.webContents })) as Sub;
+  if (o.check !== false) {
+    h.handlers['lc:sub-check']!({ sender: control.webContents });
+    await until('signed in', () => sub().state === 'signed_in', 3000);
+  }
+  const file = path.join(h.userData, 'connector-ends.json');
+  /** What the control window was last told of the subscription. */
+  const told = (): Sub => plain(control.sent.filter((m) => m[0] === 'lc:sub').at(-1)?.[1]) as Sub;
+  return { h, fakes, control, sub, told, file, env };
+}
+const earlierText = (n: number, at: string, notEnded: number, listed: number): string =>
+  `earlier runs of this app recorded ${n} connector end(s) that were not seen (the latest at ${at}; wsl.exe shim not seen to end either: ${notEnded} of the ${listed} listed); these are past records: they do not show that anything is still running, or that it has ended since`;
+
+test('[synthetic connector] a connector that does not end by itself as the app closes: the fact and its time are written before the app goes, and the next launch says it as a past record that a clean connection does not erase', async () => {
+  const w = await launched({ slow: true });
+  const c = w.fakes.last();
+  let kills = 0;
+  const kill = c.kill.bind(c);
+  c.kill = () => (kills++, kill());
+  assert.equal(fs.existsSync(w.file), false);
+  const from = Date.now();
+  w.control.close();
+  // The window waits while the connector is ended; the app has not quit.
+  assert.deepEqual([w.control.destroyed, w.h.quits.n, w.told().detail], [false, 0, 'the app is closing: the connector is being ended']);
+  await until('the app quit', () => w.h.quits.n === 1, 5000);
+  assert.deepEqual([w.control.destroyed, c.exited, kills, w.fakes.made.length], [true, true, 1, 1], 'its shim was ended once; nothing was started');
+  // The note: one line of this format, a time and one word. Nothing else.
+  const raw = fs.readFileSync(w.file, 'utf8');
+  assert.match(raw, NOTE_LINE);
+  const note = JSON.parse(raw) as { format: string; ends: Array<{ at: string; shim: string }>; older: number };
+  assert.deepEqual([note.format, note.ends.length, note.ends[0]!.shim, note.older, Object.keys(note.ends[0]!).sort()], ['lc-windows-connector-ends/v1', 1, 'ended', 0, ['at', 'shim']]);
+  assert.equal(Date.parse(note.ends[0]!.at) >= from && Date.parse(note.ends[0]!.at) <= Date.now(), true);
+  for (const secret of [w.h.userData, 'auth', 'openai', 'LC_', 'python', 'synthetic', 'ask-', 'png']) assert.equal(raw.includes(secret), false, secret);
+  // The next launch of the app, on the same app data: said at once, as a past record; nothing is started by it.
+  const next = await launched({ userData: w.h.userData, check: false });
+  const PAST = earlierText(1, note.ends[0]!.at, 0, 1);
+  assert.deepEqual([next.sub().state, next.sub().detail, next.fakes.made.length], ['not_checked', PAST, 0]);
+  // A connection that works, and ends by itself, does not erase it: said beside the state, and the file is as it was.
+  next.h.handlers['lc:sub-check']!({ sender: next.control.webContents });
+  await until('signed in', () => next.sub().state === 'signed_in', 3000);
+  assert.equal(next.sub().detail, PAST);
+  next.control.close();
+  await until('the app quit', () => next.h.quits.n === 1, 5000);
+  assert.deepEqual([next.fakes.last().exited, fs.readFileSync(next.file, 'utf8')], [true, raw], 'ended by itself: nothing is added, nothing removed');
+  // A third launch still says it.
+  const third = await launched({ userData: w.h.userData, check: false });
+  assert.equal(third.sub().detail, PAST);
+});
+
+test('[synthetic connector] the note of an unseen end that cannot be written is not taken as saved: the window stays once and says so; it is tried again as the app quits', async () => {
+  for (const later of ['still failing', 'writable again'] as const) {
+    const w = await launched({ slow: true });
+    w.h.failWrites.only = 'connector-ends';
+    w.control.close();
+    await until('said', () => /is not written on this device/.test(w.sub().detail ?? ''), 5000);
+    await settle();
+    assert.equal(w.sub().detail, `${SHIM_ENDED}; this is not written on this device as it is said here (Error: EIO: i/o error (injected)); writing it is tried again as the app quits, and unless that works the next launch will not say it as it is said here`);
+    assert.deepEqual([w.told().detail, w.control.destroyed, w.h.quits.n, fs.existsSync(w.file)], [w.sub().detail, false, 0, false], 'the window is told, stays, and nothing is on the device');
+    // The next close is not held for it. As the app quits the write is tried once more.
+    if (later === 'writable again') w.h.failWrites.only = null;
+    w.control.close();
+    await until('the app quit', () => w.h.quits.n === 1, 5000);
+    assert.equal(w.control.destroyed, true);
+    assert.equal(fs.existsSync(w.file), later === 'writable again');
+    if (later === 'writable again') assert.match(fs.readFileSync(w.file, 'utf8'), NOTE_LINE);
+    assert.equal(w.fakes.made.length, 1);
+    // What the next launch can say follows what is on the device.
+    const next = await launched({ userData: w.h.userData, check: false });
+    assert.equal(next.sub().detail === null, later === 'still failing');
+  }
+});
+
+test('[synthetic connector] a connector that ends by itself as the app closes leaves no note; one ended while the app runs is written at once; the note is bounded and an unreadable one is left untouched', async () => {
+  // Clean: the window closes by itself, the app quits once, nothing is written.
+  const clean = await launched();
+  clean.control.close();
+  await until('the app quit', () => clean.h.quits.n === 1, 5000);
+  assert.deepEqual([clean.control.destroyed, clean.fakes.last().exited, fs.existsSync(clean.file)], [true, true, false]);
+  // No connector was ever started: the close is not held at all.
+  const idle = await launched({ check: false });
+  idle.control.close();
+  assert.equal(idle.control.destroyed, true);
+  await until('the app quit', () => idle.h.quits.n === 1, 5000);
+  assert.deepEqual([idle.fakes.made.length, fs.existsSync(idle.file)], [0, false]);
+  // Ended while the app runs (a line that is not the envelope's), not ending by itself: written then, said then.
+  const run = await launched({ slow: true });
+  run.fakes.last().stdout.write('x'.repeat(256 * 1024 + 1));
+  await until('said', () => run.sub().detail === SHIM_ENDED, 5000);
+  assert.match(fs.readFileSync(run.file, 'utf8'), NOTE_LINE);
+  run.control.close(); // nothing runs and nothing is unwritten: not held
+  assert.equal(run.control.destroyed, true);
+  // Bounded: the newest fifty are listed, older ones only counted; the next launch says how many in all.
+  const full = await launched({ slow: true });
+  const old = Array.from({ length: 50 }, (_, i) => ({ at: new Date(Date.UTC(2026, 0, 1, 0, 0, i)).toISOString(), shim: i === 49 ? 'not_ended' : 'ended' }));
+  fs.writeFileSync(full.file, `${JSON.stringify({ format: 'lc-windows-connector-ends/v1', ends: old, older: 2 })}\n`);
+  const again = await launched({ slow: true, userData: full.h.userData });
+  assert.equal(again.sub().detail, earlierText(52, old[49]!.at, 1, 50));
+  again.control.close();
+  await until('the app quit', () => again.h.quits.n === 1, 5000);
+  const kept = JSON.parse(fs.readFileSync(again.file, 'utf8')) as { ends: Array<{ at: string; shim: string }>; older: number };
+  assert.deepEqual([kept.ends.length, kept.older, kept.ends[0]!.at, kept.ends[48]!.shim, kept.ends[49]!.shim], [50, 3, old[1]!.at, 'not_ended', 'ended']);
+  // Not readable as this format: said, left as it is, and a new end is not written over it.
+  for (const bad of ['not json', '{"format":"another/v1","ends":[],"older":0}', `{"format":"lc-windows-connector-ends/v1","ends":[{"at":"2026-01-01T00:00:00.000Z","shim":"ended","path":"C:\\\\Users\\\\x"}],"older":0}`, '{"format":"lc-windows-connector-ends/v1","ends":[{"at":"yesterday","shim":"ended"}],"older":0}']) {
+    const seed = await launched({ check: false });
+    fs.writeFileSync(seed.file, bad);
+    const w = await launched({ slow: true, userData: seed.h.userData });
+    assert.equal(w.sub().detail, 'the record of connector ends from earlier runs could not be read on this device, and is left as it is', bad);
+    w.control.close();
+    await until('said', () => /is not written on this device/.test(w.sub().detail ?? ''), 5000);
+    assert.equal(w.sub().detail, `${SHIM_ENDED}; this is not written on this device as it is said here (the record of connector ends on this device is not readable, so it is left untouched); writing it is tried again as the app quits, and unless that works the next launch will not say it as it is said here; the record of connector ends from earlier runs could not be read on this device, and is left as it is`);
+    assert.deepEqual([fs.readFileSync(w.file, 'utf8'), w.control.destroyed], [bad, false]);
+  }
+});
+
+test('[synthetic connector] the close also waits for a connector that was ended earlier and is still ending; nothing is started while it waits; the lines of the note stay in the order of their times', async () => {
+  // Ended while the app runs (a line that is not the envelope's), still within its time when the window is closed,
+  // and its note cannot be written: the window is held and says so, as for one ended by the close itself.
+  const w = await launched({ slow: true });
+  w.h.failWrites.only = 'connector-ends';
+  w.fakes.last().stdout.write('x'.repeat(256 * 1024 + 1));
+  await until('ended here', () => w.sub().state === 'unavailable');
+  assert.deepEqual([w.fakes.last().exited, w.sub().detail], [false, null], 'still within its time');
+  w.control.close();
+  assert.deepEqual([w.control.destroyed, w.h.quits.n, w.told().detail], [false, 0, 'the app is closing: the connector is being ended']);
+  // While the close waits, the user's presses start nothing that the close would then end.
+  w.h.handlers['lc:sub-check']!({ sender: w.control.webContents });
+  w.h.handlers['lc:sub-login']!({ sender: w.control.webContents });
+  assert.deepEqual(plain(await w.h.handlers['lc:start']!({ sender: w.control.webContents }, 'screen:1:0')), { ok: false, reason: 'the app is closing' });
+  await until('said', () => /is not written on this device/.test(w.sub().detail ?? ''), 5000);
+  await settle();
+  assert.deepEqual([w.control.destroyed, w.h.quits.n, w.fakes.made.length, w.h.opened, w.h.current(), fs.existsSync(w.file)], [false, 0, 1, [], null, false], 'held; no second connector, no sign-in page, no session');
+  // The close was given up (the window stays for what could not be written): the presses work again.
+  w.h.failWrites.only = null;
+  w.h.handlers['lc:sub-check']!({ sender: w.control.webContents });
+  await until('a new connector, by the press', () => w.fakes.made.length === 2 && w.sub().state === 'signed_in', 3000);
+  // Closed again: this second connector does not end by itself either. Both lines are written, in the order of
+  // their times, also when the first one's shim exit is seen late.
+  const first = w.fakes.made[0]!;
+  w.control.close();
+  await until('the app quit', () => w.h.quits.n === 1, 5000);
+  const note = JSON.parse(fs.readFileSync(w.file, 'utf8')) as { ends: Array<{ at: string; shim: string }>; older: number };
+  assert.deepEqual([note.ends.length, note.ends.map((e) => e.shim), note.ends[0]!.at <= note.ends[1]!.at, first.exited], [2, ['ended', 'ended'], true, true]);
+  // The next launch names the later one as the latest.
+  const next = await launched({ userData: w.h.userData, check: false });
+  assert.equal(next.sub().detail, earlierText(2, note.ends[1]!.at, 0, 2));
+});
+
+test('[synthetic connector] a line of the note that is written again keeps its place; a launch whose connector configuration cannot be used still says the past record', async () => {
+  // Two ends in one run: the first one's shim is not seen to end, the second one's is; then the first one's exit comes.
+  const w = await launched({ slow: true });
+  const a = w.fakes.last();
+  a.kill = () => true; // the kill is taken and nothing ends
+  a.stdout.write('x'.repeat(256 * 1024 + 1));
+  await until('the first is written as not ended', () => fs.existsSync(w.file) && /not_ended/.test(fs.readFileSync(w.file, 'utf8')), 6000);
+  w.h.handlers['lc:sub-check']!({ sender: w.control.webContents });
+  await until('a second connector', () => w.fakes.made.length === 2 && w.sub().state === 'signed_in', 3000);
+  w.fakes.last().stdout.write('x'.repeat(256 * 1024 + 1));
+  await until('the second is written', () => (JSON.parse(fs.readFileSync(w.file, 'utf8')) as { ends: unknown[] }).ends.length === 2, 6000);
+  const before = JSON.parse(fs.readFileSync(w.file, 'utf8')) as { ends: Array<{ at: string; shim: string }> };
+  assert.deepEqual(before.ends.map((e) => e.shim), ['not_ended', 'ended']);
+  a.exit(0); // the first one's shim exit, late
+  await until('written again', () => !/not_ended/.test(fs.readFileSync(w.file, 'utf8')));
+  const after = JSON.parse(fs.readFileSync(w.file, 'utf8')) as { ends: Array<{ at: string; shim: string }>; older: number };
+  assert.deepEqual([after.ends.map((e) => e.at), after.ends.map((e) => e.shim), after.older], [before.ends.map((e) => e.at), ['ended', 'ended'], 0], 'the same two times, in the same order');
+  // The next launch names a connector configuration that cannot be used: the past record is still said.
+  const h = harness({ env: { LC_SUBSCRIPTION_CONNECTOR: connectorConfig({}, { kind: 'posix', python: '/p', cwd: '/b' }) }, userData: w.h.userData });
+  await settle();
+  assert.deepEqual(plain(h.handlers['lc:sub-state']!({ sender: (h.control() as unknown as FakeWindow).webContents })), { mode: 'unavailable', reason: `the subscription connector configuration is not valid; ${earlierText(2, after.ends[1]!.at, 0, 2)}` });
+  // Without any connector named the subscription is off, and the note is left as it is.
+  const off = harness({ userData: w.h.userData });
+  await settle();
+  assert.deepEqual(plain(off.handlers['lc:sub-state']!({ sender: (off.control() as unknown as FakeWindow).webContents })), { mode: 'off' });
+  assert.deepEqual(JSON.parse(fs.readFileSync(w.file, 'utf8')), JSON.parse(JSON.stringify({ format: 'lc-windows-connector-ends/v1', ...after })));
 });
 
 test('[synthetic connector] every new request is taken only from its own window', async () => {

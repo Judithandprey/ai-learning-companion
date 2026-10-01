@@ -420,12 +420,11 @@ The explicit branch is unchanged: this app's own Cancel or Stop is a confirmed s
 - A sign-in pending in a connector that is ended here is said as "the connector was ended here before the sign-in
   completed", not as "the connector ended".
 
-**Limit, not closed: the quit.** The status sentence reaches the control window only for a connector that is
-ended while the app runs (an over-long line, a refused sign-in address whose cancel is not confirmed). At the app's
-quit the windows are already closed, so an unconfirmed end is kept in the status object, shown nowhere and written
-nowhere, and is lost when the process ends. What remains in WSL after a quit is a device control for QA (the
-process watch); this app does not claim it. Reporting it at quit would need the close to be held, or a written
-note; neither is done here.
+**Limit at `0b42bbc`, closed by the next section: the quit.** At `0b42bbc` the status sentence reached the control
+window only for a connector that was ended while the app ran. At the app's quit the windows were already closed, so
+an unconfirmed end was shown nowhere and written nowhere. The lead chose a small durable note
+(`handoff_7ae38cb9`); see "The connector's end as the app closes" below. What remains in WSL after a quit is still a
+device control for QA (the process watch); this app does not claim it.
 
 **Regressions** (`tests/subscription.test.ts` 29 to 32 cases, `tests/app-ask.test.ts` 34 to 35):
 - the unsolicited `cancelled`: uncertain; no cancel or Stop sent, one send, one connector; this app's own
@@ -446,6 +445,77 @@ commit's). `tsc` and the build pass. No Windows run, no display.
 **Check of this follow-up.** A two-lens check with a second reviewer per finding: 8 findings, all confirmed. Six
 are fixed above (a later connector's end replacing an earlier unconfirmed one, reported twice; a late shim exit;
 the sign-in sentence; a test leg that could not fail, reported twice). Two are the quit limit stated above.
+
+## The connector's end as the app closes: a durable note and the next launch
+
+Lead decision `handoff_7ae38cb9`: "a small durable sanitized lifecycle note under the existing product
+LC_USER_DATA". One commit after `0b42bbc`, in `apps/windows/**` and this folder. Synthetic connector, offline only.
+
+**The note.** `<app data>\connector-ends.json`, format `lc-windows-connector-ends/v1`:
+
+```json
+{"format":"lc-windows-connector-ends/v1","ends":[{"at":"2026-10-01T12:00:00.000Z","shim":"ended"}],"older":0}
+```
+
+- One line per connector that was ended here and whose own end was not seen: the time, and whether its `wsl.exe`
+  shim's exit was seen (`ended`) or not (`not_ended`). Nothing else is ever written: no account, address, question,
+  picture, environment or path.
+- Written with the app's atomic write. The newest 50 are listed, in the order of their times; older ones are only
+  counted (`older`). A shim exit seen later writes the same line again, in its place.
+- A later connector, working or ending by itself, removes nothing. The app has no way to remove a line.
+- A file that is not exactly this shape is said as not readable, left untouched, and not written over.
+
+**When it is written.** As soon as the end is found not seen: for a connector ended while the app runs, then; for
+one ended by the app's close, before the app goes.
+
+**The close.** With a connector running, or one ended earlier and still within its time, the control window's
+close first ends the connector while the window is still open (at most 10 s, and 2 s more for the ended shim). The
+status says "the app is closing: the connector is being ended"; Check, Sign in and Start are refused meanwhile.
+Then:
+- its end was seen, or the note was written: the window closes by itself and the app quits;
+- the note could not be written: the window stays, once, and its status says so ("…; this is not written on this
+  device as it is said here (reason); writing it is tried again as the app quits, and unless that works the next
+  launch will not say it as it is said here"). The next close is not held. The write is tried again as the app
+  quits.
+
+**The next launch.** With the connector configured, the subscription's status says from the start, before any
+Check: "earlier runs of this app recorded N connector end(s) that were not seen (the latest at <time>; wsl.exe shim
+not seen to end either: K of the M listed); these are past records: they do not show that anything is still
+running, or that it has ended since". It stays beside whatever state follows. With a connector configuration that
+cannot be used it is said after the reason.
+
+**Limits.**
+- With no connector configured (the subscription off) nothing is shown; the file is left as it is.
+- When Windows signs out or shuts down, or the app is killed, nothing is written: the note is only for an end this
+  app waited for.
+- A second close while the first is still waiting is also held; the window then closes by itself as above.
+- The note says what this app saw. It is not evidence about WSL now; that stays QA's device control.
+
+**Regressions** (`tests/app-ask.test.ts` 35 to 40 cases, `tests/subscription.test.ts` 32 to 33):
+- **quit, persisted readback, next launch**: a connector that ignores the end of its input, the window closed; the
+  window waits; the shim is ended once; the file is exactly one line of the format, with a time inside the run and
+  nothing else (the app data path, addresses, names and ids are searched for); a second app on the same app data
+  says the past record before any Check, starts nothing, still says it after a working connection and a clean
+  close, and the file's bytes are unchanged; a third launch says it again;
+- **failed write**: the window stays once and says so, nothing is on the device, the next close is not held; as
+  the app quits it is tried again (still failing: no file and the next launch says nothing; writable again: the
+  file is written and the next launch says it);
+- a clean end leaves no note and no hold; no connector at all is not held; one ended while the app runs is written
+  at once; a close while that one is still ending is held too; presses during the wait start nothing; 50 listed
+  and older counted; four unreadable files left untouched and not written over; two ends in one run keep their
+  time order when the first is written late or written again; an unusable configuration still says the record.
+- 28 mutants, all killed. The two files ran four times in a row without a failure.
+
+**Runs** (focused; the whole suite was not repeated): `subscription`, `app-ask`, `main-lifecycle`, `app-link` and
+`control-link` without a Backend, 105 tests, 99 pass, 0 fail, 6 skipped
+(`evidence/windows-subscription-ask/linux-end-note.txt`; receipt `linux-end-note.json`, whose file hashes are this
+commit's). `tsc` and the build pass. No Windows run, no display.
+
+**Check of this delta.** A two-lens check with a second reviewer per finding: 11 findings, 8 confirmed, 3 refuted
+(test-coverage remarks on correct code). The 8 are fixed above: the close not held for a connector ended earlier
+and still ending (reported twice); presses accepted while the close waits (twice); the "will not be known"
+sentence, which a later retry could make false (twice); a re-written line moving to the end of the note; and the
+record not said with an unusable configuration.
 
 ## Launch steps, element ids and evidence paths (for the first real check, on the released candidate)
 

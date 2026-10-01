@@ -12,7 +12,7 @@ import * as desktopInk from '../src/shared/desktop-ink.ts';
 import { fingerprintToBase64 } from '../src/shared/samples.ts';
 import * as retention from '../src/shared/retention.ts';
 import { CaptureLink, readLinkConfig, type LinkOptions } from '../src/main/capture-link.ts';
-import { readConnectorConfig, Subscription, type SubscriptionOptions } from '../src/main/subscription.ts';
+import { earlierNotes, readConnectorConfig, Subscription, type SubscriptionOptions } from '../src/main/subscription.ts';
 import { toFramePixels } from '../src/shared/samples.ts';
 import { ASSISTANCE, contextProblem, PNG_MAX_BYTES, questionOf, questionProblem } from '../src/shared/subscription-ask.ts';
 import { appSource } from './source.ts';
@@ -76,6 +76,13 @@ export class FakeWindow extends EventEmitter {
     this.destroyed = true;
     this.emit('closed');
   }
+  /** As BrowserWindow.close(): the close can be prevented by a 'close' listener; else the window is gone. */
+  close() {
+    if (this.destroyed) return;
+    let prevented = false;
+    this.emit('close', { preventDefault: () => (prevented = true) });
+    if (!prevented) this.destroy();
+  }
   loadURL() {
     return Promise.resolve();
   }
@@ -96,10 +103,10 @@ export type Review = {
  * `env`: the app's environment (empty by default: the development capture link stays off). `link`: options added to
  * the app's own capture link (a recording transport, shorter bounds), for tests.
  */
-export function harness(options: { env?: Record<string, string>; link?: Partial<LinkOptions>; subscription?: Partial<SubscriptionOptions>; /** For one test: the subscription layer forgets to cancel (the app's own fence must still hold). */ leakySubscription?: boolean } = {}) {
+export function harness(options: { env?: Record<string, string>; /** The app data folder of an earlier harness: the next launch of the same app. */ userData?: string; link?: Partial<LinkOptions>; subscription?: Partial<SubscriptionOptions>; /** For one test: the subscription layer forgets to cancel (the app's own fence must still hold). */ leakySubscription?: boolean } = {}) {
   FakeWindow.all = [];
-  const userData = fs.mkdtempSync(path.join(os.tmpdir(), 'lc-main-test-'));
-  appData.push(userData);
+  const userData = options.userData ?? fs.mkdtempSync(path.join(os.tmpdir(), 'lc-main-test-'));
+  if (!options.userData) appData.push(userData);
   const sources: Array<Promise<unknown[]>> = [];
   const handlers: Record<string, (...a: unknown[]) => unknown> = {};
   const permission: Record<string, (...a: unknown[]) => unknown> = {};
@@ -204,6 +211,7 @@ export function harness(options: { env?: Record<string, string>; link?: Partial<
       }
     },
     readConnectorConfig,
+    earlierNotes,
     toFramePixels,
     ASSISTANCE,
     contextProblem,

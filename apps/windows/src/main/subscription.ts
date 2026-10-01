@@ -83,6 +83,8 @@ export type AskOutcome =
   /** No answer came: whether ChatGPT worked on it (and used quota) is not known. */
   | { readonly status: 'uncertain'; readonly reason: string };
 
+/** A connector that was ended here and whose own end was not seen: when, and whether its wsl.exe shim's exit was. */
+export type ConnectorEnd = { readonly at: string; readonly shim: 'ended' | 'not_ended' };
 export type SubscriptionOptions = {
   readonly config: ConnectorConfig;
   readonly notify: (s: SubscriptionStatus) => void;
@@ -96,6 +98,13 @@ export type SubscriptionOptions = {
   readonly end_ms?: number;
   /** The span in which at most CHANGE_READS_MAX reads are made because the connector said the account changed. */
   readonly change_window_ms?: number;
+  /**
+   * Writes one unconfirmed end to this device (the same `at` again when its shim's exit was seen since). Null, or
+   * why it was not written.
+   */
+  readonly recordEnd?: (end: ConnectorEnd) => string | null;
+  /** What earlier runs of this app recorded so: the kept ones, how many older ones are no longer listed, and whether the record could not be read. */
+  readonly earlier?: { readonly ends: ReadonlyArray<ConnectorEnd>; readonly older: number; readonly unreadable: boolean };
 };
 
 type Reply = { ok: true; result: unknown } | { ok: false; code: string } | { ok: false; lost: 'not_sent' | 'no_answer' };
@@ -122,6 +131,16 @@ const acknowledged = (r: Reply): boolean => r.ok && isObject(r.result) && Object
 const notHeld = (r: Reply): boolean => !r.ok && 'code' in r && r.code === 'invalid_request';
 const text = (v: unknown, max: number): string | null => (typeof v === 'string' && v.length > 0 && v.length <= max && !/[\0-\x1f\x7f]/.test(v) ? v : null);
 
+/** What earlier runs recorded of connector ends that were not seen, as it is said: past facts only. */
+export function earlierNotes(earlier: SubscriptionOptions['earlier']): string[] {
+  if (!earlier) return [];
+  const n = earlier.ends.length + earlier.older;
+  return [
+    ...(n === 0 ? [] : [`earlier runs of this app recorded ${n} connector end(s) that were not seen (the latest at ${earlier.ends.at(-1)?.at ?? 'a time no longer listed'}; wsl.exe shim not seen to end either: ${earlier.ends.filter((e) => e.shim === 'not_ended').length} of the ${earlier.ends.length} listed); these are past records: they do not show that anything is still running, or that it has ended since`]),
+    ...(earlier.unreadable ? ['the record of connector ends from earlier runs could not be read on this device, and is left as it is'] : []),
+  ];
+}
+
 export class Subscription {
   private readonly o: SubscriptionOptions;
   private child: Child | null = null;
@@ -142,7 +161,11 @@ export class Subscription {
    * Connectors ended here whose own end was not seen: their shim was ended, or not even that was seen. Kept for the
    * app's run: nothing this app sees later shows that what they ran in WSL ended.
    */
-  private readonly unconfirmedEnds = new Map<Child, 'shim_ended' | 'shim_not_ended'>();
+  private readonly unconfirmedEnds = new Map<Child, ConnectorEnd & { unsaved: string | null }>();
+  /** The app is closing: the connector is being ended. */
+  private quitting = false;
+  /** Connectors ended here whose end is still being waited for. */
+  private endings = 0;
   private readonly pending = new Map<string, (r: Reply) => void>();
   private seq = 0;
   private state: Extract<SubscriptionStatus, { mode: 'managed' }>['state'] = 'not_checked';
@@ -166,10 +189,15 @@ export class Subscription {
   status(): SubscriptionStatus {
     // What is said beside the state, derived from it: no later text wipes these, and none outlives what it says.
     const pending = this.loginState === 'waiting' && this.loginId !== null;
+    const ends = [...this.unconfirmedEnds.values()];
+    const unsaved = ends.find((e) => e.unsaved !== null);
     const notes = [
       this.detail,
-      this.unconfirmedEnds.size === 0 ? null
-        : `a connector that was ended here did not end by itself in time; ${[...this.unconfirmedEnds.values()].includes('shim_not_ended') ? 'its wsl.exe shim did not end either, so it is not known' : 'its wsl.exe shim was ended, which does not show'} that the connector, or the Codex app server it runs, ended in WSL`,
+      this.quitting ? 'the app is closing: the connector is being ended' : null,
+      ends.length === 0 ? null
+        : `a connector that was ended here did not end by itself in time; ${ends.some((e) => e.shim === 'not_ended') ? 'its wsl.exe shim did not end either, so it is not known' : 'its wsl.exe shim was ended, which does not show'} that the connector, or the Codex app server it runs, ended in WSL` +
+          (unsaved ? `; this is not written on this device as it is said here (${unsaved.unsaved}); writing it is tried again as the app quits, and unless that works the next launch will not say it as it is said here` : ''),
+      ...earlierNotes(this.o.earlier), // past facts only: nothing here shows what is so now
       this.changes.off && this.state === 'unknown' ? 'the account may have changed since it was last read, and it is not read again by itself; check again' : null,
       !pending ? null
         : this.cancelling === this.loginId ? 'the sign-in is being cancelled'
@@ -242,20 +270,24 @@ export class Subscription {
     if (child.gone) return;
     child.gone = true;
     this.lost(child, true, false);
+    this.endings += 1;
     const ending = endChild(child.proc, () => child.proc.stdin?.end(), child.exited, this.o.end_ms ?? CONNECTOR_END_MS, 'wsl').then((end) => {
+      this.endings -= 1;
       if (end.ended) return;
       // It did not end by itself in time. Ending its wsl.exe shim does not show that what it ran in WSL ended: said,
       // never assumed, and nothing is started in its place by this app.
-      this.unconfirmedEnds.set(child, end.exit ? 'shim_ended' : 'shim_not_ended');
-      this.say();
+      const at = new Date().toISOString();
+      this.noteEnd(child, { at, shim: end.exit ? 'ended' : 'not_ended' });
       if (end.exit) return;
       // The shim's own exit may still come after the bound: then that much is said (still not the connector's end).
-      void child.exited.then(() => {
-        this.unconfirmedEnds.set(child, 'shim_ended');
-        this.say();
-      });
+      void child.exited.then(() => this.noteEnd(child, { at, shim: 'ended' }));
     });
     this.closing = Promise.all([this.closing, ending]); // one before may still be ending
+  }
+  /** Keeps an end that was not seen, writes it to this device (when a place for it was given), and says it. */
+  private noteEnd(child: Child, end: ConnectorEnd): void {
+    this.unconfirmedEnds.set(child, { ...end, unsaved: this.o.recordEnd?.(end) ?? null });
+    this.say();
   }
   private line(text: string): void {
     let v: unknown;
@@ -588,10 +620,30 @@ export class Subscription {
     }
   }
 
-  /** At quit: the child is ended (bounded); resolves when it is gone or at the bound. What it still writes is not read. */
+  /** Whether a connector is running (not ended here, not gone), or one that was ended here is still ending. */
+  running(): boolean {
+    return this.live(this.child);
+  }
+  ending(): boolean {
+    return this.endings > 0;
+  }
+  /** Why an end that was not seen is not written on this device, if one is not; else null. */
+  endsUnsaved(): string | null {
+    return [...this.unconfirmedEnds.values()].find((e) => e.unsaved !== null)?.unsaved ?? null;
+  }
+  /**
+   * At quit: the child is ended (bounded); resolves when it is gone or at the bound. What it still writes is not
+   * read. An end that was not seen is written to this device before this resolves; one that could not be written
+   * before is tried once more.
+   */
   async quit(): Promise<void> {
     if (this.asking) this.asking.cancelled = true;
-    if (this.child) this.fence(this.child);
+    if (this.child || this.endings > 0) this.quitting = true;
+    if (this.child) this.fence(this.child); // (the fence says it)
+    else if (this.quitting) this.say();
     await this.closing;
+    this.quitting = false;
+    for (const [child, e] of this.unconfirmedEnds) if (e.unsaved !== null) this.unconfirmedEnds.set(child, { at: e.at, shim: e.shim, unsaved: this.o.recordEnd?.({ at: e.at, shim: e.shim }) ?? null });
+    this.say();
   }
 }

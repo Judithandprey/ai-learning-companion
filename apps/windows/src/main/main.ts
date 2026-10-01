@@ -36,7 +36,7 @@ import { toFramePixels, type DisplaySample } from '../shared/samples.ts';
 import { ASSISTANCE, contextProblem, PNG_MAX_BYTES, questionOf, questionProblem, type AskContext, type AskRequest, type Assistance } from '../shared/subscription-ask.ts';
 import { DEFAULT_RETENTION_POLICY, pngSize, RETENTION_FORMAT, type RetentionPolicy } from '../shared/retention.ts';
 import { CaptureLink, readLinkConfig, type LinkStatus } from './capture-link.ts';
-import { readConnectorConfig, Subscription, type AskOutcome, type SubscriptionStatus } from './subscription.ts';
+import { earlierNotes, readConnectorConfig, Subscription, type AskOutcome, type ConnectorEnd, type SubscriptionStatus } from './subscription.ts';
 
 const HERE = dirname(fileURLToPath(import.meta.url)); // dist/apps/windows/src/main
 const DIST = normalize(join(HERE, '..', '..', '..', '..')); // dist/
@@ -119,6 +119,9 @@ let link: CaptureLink | null = null;
 let linkStatus: LinkStatus = { mode: 'off' };
 /** The managed ChatGPT subscription (off unless explicitly configured), and what it says. */
 let subscription: Subscription | null = null;
+/** The close of the control window is waiting for the connector to end; and an unwritten end note was said at a close. */
+let endingConnector: Promise<void> | null = null;
+let endNoteSaid = false;
 let subscriptionStatus: SubscriptionStatus = { mode: 'off' };
 
 const secure = (extra: Electron.WebPreferences = {}): Electron.WebPreferences => ({ contextIsolation: true, sandbox: true, nodeIntegration: false, webviewTag: false, spellcheck: false, ...extra });
@@ -1201,11 +1204,12 @@ ipcMain.handle('lc:session-state', (e) => (fromControl(e) ? sessionInfo() : null
 ipcMain.handle('lc:link-state', (e) => (fromControl(e) ? linkStatus : null));
 // The managed ChatGPT subscription: its state, and the user's own presses (check, sign in, cancel, choose a model).
 ipcMain.handle('lc:sub-state', (e) => (fromControl(e) ? subscriptionStatus : null));
-ipcMain.on('lc:sub-check', (e) => void (fromControl(e) ? subscription?.check() : undefined));
-ipcMain.on('lc:sub-login', (e) => void (fromControl(e) ? subscription?.login() : undefined));
+// (Not while the window's close is waiting for the connector to end: nothing is started that the close would end.)
+ipcMain.on('lc:sub-check', (e) => void (fromControl(e) && !endingConnector ? subscription?.check() : undefined));
+ipcMain.on('lc:sub-login', (e) => void (fromControl(e) && !endingConnector ? subscription?.login() : undefined));
 ipcMain.on('lc:sub-login-cancel', (e) => void (fromControl(e) ? subscription?.cancelLogin() : undefined));
 ipcMain.on('lc:sub-model', (e, id: unknown) => void (fromControl(e) ? subscription?.chooseModel(id) : undefined));
-ipcMain.handle('lc:start', async (e, sourceId: unknown) => (fromControl(e) && typeof sourceId === 'string' ? start(sourceId) : { ok: false, reason: 'refused' }));
+ipcMain.handle('lc:start', async (e, sourceId: unknown) => (!fromControl(e) || typeof sourceId !== 'string' ? { ok: false, reason: 'refused' } : endingConnector ? { ok: false, reason: 'the app is closing' } : start(sourceId)));
 ipcMain.handle('lc:stop', (e) => {
   if (fromControl(e)) end('stopped by the user');
 });
@@ -1336,6 +1340,50 @@ app.on('will-quit', (e) => {
 function notifyLink(): void {
   if (control && !control.isDestroyed()) control.webContents.send('lc:link', linkStatus);
 }
+
+// ---- connector ends that were not seen: a small note on this device ------------------------------------------------
+// When a subscription connector is ended and its own end is not seen (its wsl.exe shim is ended instead), that fact
+// and its time are written here, so the next launch can say it as a past record. Only a time and one of two words
+// are ever written: nothing of an account, an address, a question, a picture, the environment or a path. Nothing
+// here shows that anything is still running, or that it has ended since; a later connector does not remove a line.
+const CONNECTOR_ENDS_FORMAT = 'lc-windows-connector-ends/v1';
+/** The newest ones are listed; older ones are only counted. */
+const CONNECTOR_ENDS_MAX = 50;
+const connectorEndsFile = (): string => join(app.getPath('userData'), 'connector-ends.json');
+type ConnectorEnds = { ends: ConnectorEnd[]; older: number };
+const isConnectorEnd = (v: unknown): v is ConnectorEnd =>
+  isObj(v) && Object.keys(v).sort().join() === 'at,shim' && typeof v['at'] === 'string' && !Number.isNaN(Date.parse(v['at'])) && new Date(v['at']).toISOString() === v['at'] && (v['shim'] === 'ended' || v['shim'] === 'not_ended');
+/** The note as it is on this device: none; its lines; or not readable as this format (it is then left untouched). */
+function readConnectorEnds(): ConnectorEnds | 'unreadable' | null {
+  if (!existsSync(connectorEndsFile())) return null;
+  try {
+    const v: unknown = JSON.parse(readFileSync(connectorEndsFile(), 'utf8'));
+    if (!isObj(v) || Object.keys(v).sort().join() !== 'ends,format,older' || v['format'] !== CONNECTOR_ENDS_FORMAT) return 'unreadable';
+    const { ends, older } = v;
+    if (!Array.isArray(ends) || ends.length > CONNECTOR_ENDS_MAX || !ends.every(isConnectorEnd) || !isCount(older)) return 'unreadable';
+    return { ends: ends.map((e) => ({ at: e.at, shim: e.shim })), older };
+  } catch {
+    return 'unreadable';
+  }
+}
+/** What this run writes on (the lines found at launch, plus its own); null when what is there cannot be read. */
+let connectorEnds: ConnectorEnds | null = { ends: [], older: 0 };
+/** Writes one end (or the same one again, by its time). Null, or why it was not written. */
+function recordConnectorEnd(end: ConnectorEnd): string | null {
+  if (!connectorEnds) return 'the record of connector ends on this device is not readable, so it is left untouched';
+  // The lines stay in the order of their times: the same end again (its shim's exit seen since) keeps its place, and
+  // one written late (its first write failed) goes where its time is.
+  const ends = [...connectorEnds.ends.filter((e) => e.at !== end.at), { at: end.at, shim: end.shim }].sort((a, b) => (a.at < b.at ? -1 : a.at > b.at ? 1 : 0));
+  const next = { ends: ends.slice(-CONNECTOR_ENDS_MAX), older: connectorEnds.older + Math.max(0, ends.length - CONNECTOR_ENDS_MAX) };
+  try {
+    mkdirSync(app.getPath('userData'), { recursive: true });
+    writeAtomic(connectorEndsFile(), `${JSON.stringify({ format: CONNECTOR_ENDS_FORMAT, ...next })}\n`);
+  } catch (error) {
+    return message(error);
+  }
+  connectorEnds = next;
+  return null;
+}
 function notifySubscription(): void {
   if (control && !control.isDestroyed()) control.webContents.send('lc:sub', subscriptionStatus);
 }
@@ -1362,7 +1410,12 @@ app.whenReady().then(async () => {
   }
   // The managed ChatGPT subscription: explicitly configured; nothing is started or asked until the user presses.
   const connector = readConnectorConfig(process.env);
-  if (connector && 'error' in connector) subscriptionStatus = { mode: 'unavailable', reason: connector.error };
+  // What earlier runs recorded of connector ends that were not seen is read once, and said as past records (also
+  // when the configuration named now cannot be used).
+  const found = connector ? readConnectorEnds() : null;
+  connectorEnds = found === 'unreadable' ? null : (found ?? { ends: [], older: 0 });
+  const earlier = { ends: found && found !== 'unreadable' ? found.ends : [], older: found && found !== 'unreadable' ? found.older : 0, unreadable: found === 'unreadable' };
+  if (connector && 'error' in connector) subscriptionStatus = { mode: 'unavailable', reason: [connector.error, ...earlierNotes(earlier)].join('; ') };
   else if (connector) {
     subscription = new Subscription({
       config: connector,
@@ -1371,6 +1424,8 @@ app.whenReady().then(async () => {
         notifySubscription();
       },
       openExternal: (url) => shell.openExternal(url),
+      recordEnd: recordConnectorEnd,
+      earlier,
     });
     subscriptionStatus = subscription.status();
   }
@@ -1451,8 +1506,23 @@ app.whenReady().then(async () => {
     }
     if (unresolved()) {
       e.preventDefault(); // kept ink is not dropped by closing: the user retries, exports or discards it
-      control?.webContents.send('lc:close-held');
+      return void control?.webContents.send('lc:close-held');
     }
+    // The subscription connector is ended while this window is still open, so that an end that was not seen is
+    // written before the app goes, and a note of it that could not be written is said here (once) instead of being
+    // taken as saved. The window then closes by itself.
+    const sub = subscription;
+    if (!sub || (endingConnector === null && !sub.running() && !sub.ending() && (sub.endsUnsaved() === null || endNoteSaid))) return;
+    e.preventDefault();
+    endingConnector ??= sub.quit().then(() => {
+      endingConnector = null;
+      if (!control || control.isDestroyed()) return;
+      if (sub.endsUnsaved() !== null && !endNoteSaid) {
+        endNoteSaid = true; // said in the subscription's status; the next close is not held for it
+        return void control.show();
+      }
+      control.close();
+    });
   });
   // Windows signing out or shutting down: keep a running session's ink and any kept ink. The end is delayed
   // while there is something to save or decide; spare copies are written in case it is forced.

@@ -1085,6 +1085,62 @@ test('a connector that does not end by itself within its time: its shim is ended
   assert.deepEqual([signing.now().login, signing.now().detail], ['failed', `the connector was ended here before the sign-in completed; ${SHIM_ENDED}`]);
 });
 
+test('an end that was not seen is handed over to be written, with its time and whether the shim\'s exit was seen; a failed write is said and tried once more at quit; earlier records are said as past', async () => {
+  const written: Array<{ at: string; shim: string }> = [];
+  let fail: string | null = null;
+  const recordEnd = (end: { at: string; shim: string }): string | null => {
+    if (fail === null) written.push({ ...end });
+    return fail;
+  };
+  // The shim ends when it is ended: one record.
+  const a = subscription(WSL, { end_ms: 60, recordEnd }, (c) => void (c.endDelayMs = 60_000));
+  await a.s.check();
+  assert.deepEqual([a.s.running(), a.s.endsUnsaved()], [true, null]);
+  const quitting = a.s.quit();
+  assert.deepEqual([a.s.running(), a.now().detail], [false, 'the app is closing: the connector is being ended']);
+  await quitting;
+  assert.deepEqual([written.length, written[0]!.shim, Object.keys(written[0]!).sort(), a.now().detail, a.s.endsUnsaved()], [1, 'ended', ['at', 'shim'], SHIM_ENDED, null]);
+  assert.equal(new Date(written[0]!.at).toISOString(), written[0]!.at);
+  // The shim does not end either; its exit comes later: the same record again, by its time.
+  written.length = 0;
+  const b = subscription(WSL, { end_ms: 60, recordEnd }, (c) => void (c.endDelayMs = 60_000));
+  await b.s.check();
+  const k = b.fakes.last();
+  k.kill = () => true;
+  await b.s.quit();
+  assert.deepEqual([written.map((e) => e.shim), b.now().detail], [['not_ended'], SHIM_NOT_ENDED]);
+  k.exit(0);
+  await until('its late exit is recorded', () => written.length === 2);
+  assert.deepEqual([written[1]!.shim, written[1]!.at, b.now().detail], ['ended', written[0]!.at, SHIM_ENDED]);
+  // It cannot be written: said, not taken as saved; tried once more at the next quit.
+  written.length = 0;
+  fail = 'EIO: injected';
+  const f = subscription(WSL, { end_ms: 60, recordEnd }, (c) => void (c.endDelayMs = 60_000));
+  await f.s.check();
+  await f.s.quit();
+  assert.deepEqual([written.length, f.s.endsUnsaved(), f.now().detail], [0, 'EIO: injected', `${SHIM_ENDED}; this is not written on this device as it is said here (EIO: injected); writing it is tried again as the app quits, and unless that works the next launch will not say it as it is said here`]);
+  fail = null;
+  await f.s.quit();
+  assert.deepEqual([written.length, f.s.endsUnsaved(), f.now().detail, f.fakes.made.length], [1, null, SHIM_ENDED, 1]);
+  // A connector that ends by itself records nothing.
+  written.length = 0;
+  const clean = subscription(WSL, { end_ms: 60, recordEnd });
+  await clean.s.check();
+  await clean.s.quit();
+  assert.deepEqual([written.length, clean.now().detail], [0, null]);
+  // What earlier runs recorded: said from the start as past records, and not removed by a connection that works.
+  const PAST = 'earlier runs of this app recorded 3 connector end(s) that were not seen (the latest at 2026-10-01T10:00:00.000Z; wsl.exe shim not seen to end either: 1 of the 2 listed); these are past records: they do not show that anything is still running, or that it has ended since';
+  const past = subscription(WSL, { earlier: { ends: [{ at: '2026-09-30T10:00:00.000Z', shim: 'not_ended' }, { at: '2026-10-01T10:00:00.000Z', shim: 'ended' }], older: 1, unreadable: false } });
+  assert.deepEqual([past.now().state, past.now().detail, past.fakes.made.length], ['not_checked', PAST, 0]);
+  await past.s.check();
+  assert.deepEqual([past.now().state, past.now().detail], ['signed_in', PAST]);
+  await past.s.quit();
+  assert.equal(past.now().detail, PAST);
+  const unreadable = subscription(WSL, { earlier: { ends: [], older: 0, unreadable: true } });
+  assert.equal(unreadable.now().detail, 'the record of connector ends from earlier runs could not be read on this device, and is left as it is');
+  assert.equal(subscription(WSL, { earlier: { ends: [], older: 0, unreadable: false } }).now().detail, null);
+});
+
 test('with the time it is given by default, a connector that takes its own full cleanup time (8 s) to end is not killed, and its end is seen', { timeout: 20_000 }, async () => {
   assert.equal(CONNECTOR_END_MS, 10_000, 'the connector\'s 8 s cleanup bound and a margin');
   const { s, fakes, now } = subscription(WSL, { end_ms: undefined }, (c) => void (c.endDelayMs = 8_200));
