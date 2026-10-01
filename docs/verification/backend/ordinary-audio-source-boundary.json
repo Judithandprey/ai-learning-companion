@@ -1,0 +1,225 @@
+{
+  "status": "source_obstruction_confirmed_no_audio_attempt",
+  "review_date_utc": "2026-10-01",
+  "project_baseline": "c7ae4e0c79164af112648e6349c442c678f3f6b8",
+  "backend_production_head": "91e72fe5c3d25b0372df79a51a6683df869d757a",
+  "scope": "Ordinary stable turn/start audio and localAudio only; evidence delivery, no adapter or shared RPC edits.",
+  "official_source": {
+    "tag": "rust-v0.158.0",
+    "annotated_tag": "54e1bd264b4122fe9471ee7d54c4d021a76bb8ff",
+    "commit": "064c6b8c737f5b41d171fdda80bd9ef10ad06eb3",
+    "hash_provenance": "Bounded reviewer fetched 15 pinned public files into memory and computed SHA-256 and Git blob IDs. Parent checked those blobs against the pre-existing non-truncated official tree, and independently hashed the existing cached turn_processor.rs; parent did not recompute the other source-file SHA-256 values.",
+    "files": [
+      {
+        "path": "codex-rs/app-server/src/request_processors/turn_processor.rs",
+        "git_blob": "e42e53de1ff20d6b2049900442dde1e783f235c9",
+        "sha256": "0a1058134accb3f9285aa940708e109704b582b8fc35d04f1dfb84e1231fc1e0",
+        "lines": [
+          "595-620",
+          "650-660"
+        ]
+      },
+      {
+        "path": "codex-rs/app-server-protocol/src/protocol/v2/turn.rs",
+        "git_blob": "f938d179e697fa116666d6673ec249805f6f614e",
+        "sha256": "43fc4673df433892f0426b0fb7bac9cf3f429001fe1e05efcd6e4ae52e41d086",
+        "lines": [
+          "445-450",
+          "478-480"
+        ]
+      },
+      {
+        "path": "codex-rs/protocol/src/user_input.rs",
+        "git_blob": "8f5f87c00a79df243ce0d8571a072f276f8c2a1c",
+        "sha256": "735e8f4f8c531dbd99d495cea5602d8f7f5f5cc77b309db9b7c6b75661e7a368",
+        "lines": [
+          "42-45"
+        ]
+      },
+      {
+        "path": "codex-rs/protocol/src/models.rs",
+        "git_blob": "318a4faa3df0d840fedcfecbea4cba4ca81096d3",
+        "sha256": "916a595e136f4d7e32ce259f50678ffe818af2ea6a92f54d8628f57bfd4d43e7",
+        "lines": [
+          "1822-1841",
+          "2051-2066"
+        ]
+      },
+      {
+        "path": "codex-rs/protocol/src/local_media.rs",
+        "git_blob": "e1b8af25cfb2d052061bb9391800e99646020b63",
+        "sha256": "d69ca85ee2a1bf5c8cbf4fea8453d0aa75e9dd75c5dd043fd69210a63c2fb857",
+        "lines": [
+          "14-17",
+          "39-46",
+          "57-91"
+        ]
+      },
+      {
+        "path": "codex-rs/utils/audio/src/lib.rs",
+        "git_blob": "0f1f53b8bbdb5c9c13677aaf8efd0e9b41053287",
+        "sha256": "e7e1472c4c6a643f31217039181f1c87a9f5ef3f04294f6959eee09a2c81fc28",
+        "lines": [
+          "92-101",
+          "124-144",
+          "147-204",
+          "207-262"
+        ]
+      },
+      {
+        "path": "codex-rs/core/src/session/turn.rs",
+        "git_blob": "4e868378314431b3c783e99ca9a9ba42645fc821",
+        "sha256": "1a435159fce55535ca57c7b2be649c52804f971835b6bac492424e921ba524c7",
+        "lines": [
+          "512-527",
+          "1614-1616"
+        ]
+      },
+      {
+        "path": "codex-rs/core/src/context_manager/history.rs",
+        "git_blob": "7e19dae6b33bd334796418a6ad195223bde5d3a4",
+        "sha256": "3d1f3c2b05fabcb25eaeb3a61843d0e195de3c1e5aa716fabb11d6e8909eafb8",
+        "lines": [
+          "525-540",
+          "878-891"
+        ]
+      },
+      {
+        "path": "codex-rs/core/src/context_manager/normalize.rs",
+        "git_blob": "7fc45ba217a3b7b733ee6225132f7c5eac99ed8c",
+        "sha256": "4340c30ef792ac40fe64aa1acebf076eafb44ed65cdcf1bab5a09239c5b73881",
+        "lines": [
+          "379-419"
+        ]
+      },
+      {
+        "path": "codex-rs/core/src/context/unsupported_media.rs",
+        "git_blob": "8b225649c0e993249dd5aa9af5df4ec6b6daef5d",
+        "sha256": "e42a0a8c430a6086a299301240bde271d84065e2ed7cf3f7cb8fa6d33067aa47",
+        "lines": [
+          "16-18"
+        ]
+      },
+      {
+        "path": "codex-rs/app-server/src/models.rs",
+        "git_blob": "b9f27205897a04f832e0344abe04478381535580",
+        "sha256": "83fc9aeec229d3aaa493a31fa7dfc1ffe90fc5c95c7987d3aa4159a32b3fd0d9",
+        "lines": [
+          "16-40"
+        ]
+      },
+      {
+        "path": "codex-rs/app-server/src/model_catalog.rs",
+        "git_blob": "54d7ff8501a73f8e385e0113283f3908758d822d",
+        "sha256": "2a40095f47b432ca1d6dc5fb4f0c6b6e4199d03a289475e0a25e74a1d7d05299",
+        "lines": [
+          "32-44"
+        ]
+      },
+      {
+        "path": "codex-rs/app-server-protocol/src/protocol/v2/model.rs",
+        "git_blob": "b6311ffd7a964b4d23d642f6f96df0ae3c6c8d49",
+        "sha256": "1cdd2d3e0d4840dd58974d3960485b6f77e649b226e0656d84890b29a92c1a81",
+        "lines": [
+          "116-133"
+        ]
+      },
+      {
+        "path": "codex-rs/protocol/src/openai_models.rs",
+        "git_blob": "cb0c9f0a94693359dcfa3c004e024579d33cf08f",
+        "sha256": "4c8b5cafd8c55db269f669e352321f787fcaf83785bce4476cb887abfce75dc6",
+        "lines": [
+          "187-192",
+          "469-471",
+          "941-974"
+        ]
+      },
+      {
+        "path": "codex-rs/models-manager/src/manager.rs",
+        "git_blob": "7b4d613be409bdd5cd60b7509c6e6c9c06dc41ae",
+        "sha256": "7cce0601fcb3abdf1d944412356ae541d0a1c30014a911ddda61a879b89e8358",
+        "lines": [
+          "121-131",
+          "168-179",
+          "229-237",
+          "782-800"
+        ]
+      },
+      {
+        "path": "codex-rs/core/src/session/step_settings.rs",
+        "git_blob": "cd00b6d216417a900c344708779fb377a908ed2a",
+        "sha256": "b583eeff726c5e06c0b6640b83d1a7b89ffa605fe62f804197bb13707751141c",
+        "lines": [
+          "249-253"
+        ]
+      }
+    ]
+  },
+  "installed_schema": {
+    "version": "0.158.0",
+    "artifact": "stable/v2/TurnStartParams.json",
+    "sha256": "2dfcf68705896fadc344ccfeb2e9fe5a6bcbbb8b9a90cf449ce232b636daf05a",
+    "generation": "Previously generated by Support from installed binary; this review read the existing artifact only.",
+    "variants": {
+      "audio": {
+        "required": [
+          "type",
+          "url"
+        ],
+        "payload_type": "string"
+      },
+      "localAudio": {
+        "required": [
+          "path",
+          "type"
+        ],
+        "payload_type": "string"
+      }
+    },
+    "runtime_acceptance": false
+  },
+  "recorded_metadata": {
+    "artifact_basename": "audio-metadata-after-user-exit-01.json",
+    "sha256": "d23d9cc6fe006b87f542ef2fcec40ef8da9b0e922dd0dbf7598cf83cea000829",
+    "created_at": "2026-10-01T14:58:18.475603+00:00",
+    "model_count": 7,
+    "modality_sets": [
+      [
+        "text",
+        "image"
+      ]
+    ],
+    "fresh_account_read": false,
+    "limit": "Historical sanitized model/list receipt, not execution of this audio candidate or proof of future catalog state.",
+    "audio_declaring_model_count": 0
+  },
+  "boundary": {
+    "condition": "Selected ModelInfo.input_modalities lacks Audio.",
+    "source_result": "for_prompt replaces InputAudio with fixed omission text before ordinary sampling.",
+    "required_official_prerequisite": "The same selected managed model must officially advertise and actually support Audio through this ordinary path without local capability overrides or model/account/config changes. Then separately verify format, lifecycle and one authorized generated-audio attempt.",
+    "sufficient_for_acoustic_acceptance": false,
+    "utility_validation_limit": "utils/audio malformed/MIME/base64/size behavior was inspected but its call from this ordinary turn was not established; it is not claimed as an ordinary-turn runtime rejection guarantee.",
+    "utility_limits": {
+      "decoded_bytes": 52428800,
+      "encoded_base64_characters": 69905068
+    }
+  },
+  "execution_this_delivery": {
+    "account_calls": 0,
+    "provider_calls": 0,
+    "model_calls": 0,
+    "device_calls": 0,
+    "audio_requests": 0,
+    "production_files_changed": 0,
+    "new_adapter": false,
+    "automatic_retry": false
+  },
+  "verification": {
+    "git_blob_mappings": "passed",
+    "schema_hash_and_variants": "passed",
+    "recorded_metadata_hash_and_summary": "passed",
+    "json_parse": "passed",
+    "production_source_unchanged": "passed",
+    "whitespace": "passed"
+  }
+}
