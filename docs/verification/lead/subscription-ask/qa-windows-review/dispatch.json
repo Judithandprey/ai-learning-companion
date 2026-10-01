@@ -1,0 +1,35 @@
+[
+  {
+    "owner": "backend",
+    "message_id": "handoff_ed1e57220ac00498f6bb1423c5c64217",
+    "scope": "QA-SUB-02/03 explicit fatal recovery and bounded streaming",
+    "accepted": true,
+    "execution_started_at_send": false,
+    "actual_start": {
+      "message_id": "handoff_ff4b6ad678fb46b29bf20675cb7c1d24",
+      "created_at": "2026-10-01T10:42:13Z",
+      "evidence": "Owner read exact QA; confirms four connector files equal released3e4b406; implementing QA-SUB-02/03 after red reproductions, no real provider operations."
+    }
+  },
+  {
+    "owner": "web",
+    "message_id": "handoff_5aecf0fe936e98eaa249b82911eed1ad",
+    "scope": "QA-SUB-01/04/05/06 correction; bounded07/08 assessment",
+    "accepted": true,
+    "execution_started_at_send": false
+  },
+  {
+    "owner": "qa",
+    "message_id": "handoff_1d22cacea8942c35870ca6cd44e0cc7c",
+    "scope": "real-turn hold/allocation decision and launcher cleanup correction, no GUI rerun",
+    "accepted": true,
+    "execution_started_at_send": false
+  },
+  {
+    "owner": "ios",
+    "message_id": "handoff_3e51ed9e8e80df874f924515e5098d62",
+    "scope": "same macOS consumer dependency update, no duplicate task",
+    "accepted": true,
+    "execution_started_at_send": false
+  }
+]

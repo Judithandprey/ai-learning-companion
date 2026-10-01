@@ -1,0 +1,704 @@
+{
+  "verdict": "APPROVE historical evidence; launcher-check failure cleanup is a separate bounded source caveat",
+  "candidate": "3e4b40654460a2dc2407f1d9be60d8e1a5b39a3e",
+  "qa_commit": "9abf58797c7c779266651eca333424846c7a04dd",
+  "baseline_main": "250f8290cc0a16f8a203b698aa8f2d349b8f0187",
+  "integration_leaves": [
+    "d6ecc9884c92edd60db15e1aea01ceae6a83e24b",
+    "f97217628fe933b7f3c57a614211caca35b7df66",
+    "3002218cc36c13d2328bd2f49f90217f2f1e6eca",
+    "110c733786395d5262e1c8b06fa6c5d49d9a2297",
+    "4167ab5ebd58eb952269a936f9dc17f22b34bea7",
+    "9cac50b7051d375f276c0a31ba1130c5b38a860d",
+    "677323a58f3a91f9eba391d461c29e5851a5fc79",
+    "9abf58797c7c779266651eca333424846c7a04dd"
+  ],
+  "exclude_merges_and_other_ancestry": [
+    "27b942c",
+    "a9ff602",
+    "older already integrated QA/production history"
+  ],
+  "source": {
+    "candidate_windows_tree": "5bda4761eaef62814a7f376a6e1147246d48bf3f",
+    "owner_windows_tree": "5bda4761eaef62814a7f376a6e1147246d48bf3f",
+    "candidate_vs_qa_production_equal": true,
+    "candidate_backend_tree_file_count": 268
+  },
+  "evidence_files": {
+    "docs/verification/qa/p0-13-subscription-ask-plan.md": {
+      "sha256": "790ee73eba97dd75a3cf09d2e4ca3c507b63dfe6e6d5d432f426138b62cef583",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406.md": {
+      "sha256": "26b9107d1a5f2f4937c4ee62623bb531861dd81675a67ecf3f9830dfc0b22489",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/harness.json": {
+      "sha256": "bc48fd7d75bd3859e72dd9c4007222e385845585a9ed5f3769e87179d350e5f3",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/launcher-check.json": {
+      "sha256": "61125a64ceb8acc9270dd5cbca883995e172bc7691fdedbb72457ee051c13d41",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/launcher-prepare.json": {
+      "sha256": "5116b6a1dbf09e3e39bd71831459440086a60b6de36659769951c1ac9a7500f9",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/prerun-review.json": {
+      "sha256": "f05d8c5f4f88c2427d676c569dd97223c82380c29eb6cc9e3b2fcc9a0d76a131",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/qa-sub-01-timing.json": {
+      "sha256": "ff9cf418a4eec316d6293a26c7fa2bcdb95ce24581eb853583eca426a661dad4",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/smoke.json": {
+      "sha256": "9d1deb4f6c4cbc714782e6620bfb0f74872bc862eee1354e11b7b1086b2e0770",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/source-review.json": {
+      "sha256": "cd82972e5719f3b3a2c70465f5a3e8e826e85b5cdaf1c6489bbe1b82ff307a56",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subcheck/connector-watch.json": {
+      "sha256": "01578b52e56d9fb7f2d538a34a91a7156c2dfc1a0f05f0d9a351aa2cfadcf7f4",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subcheck/hash-checkpoints.json": {
+      "sha256": "aaee48a6153029f7859f7a7dcdf833387928233afb0c0962d25c00d38d014d01",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subcheck/receipts.json": {
+      "sha256": "3c9f97c5b793bc6c3ab12ff7ab9e69b083cd3c1836a8c2e23d4ba2ab79168d12",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subcheck/run.json": {
+      "sha256": "64a667fbc30f9dd6aed2a6254ba97f6ebc6f0296d4bd68d765f3d9bf6ce09f7c",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subcheck/runner-results.json": {
+      "sha256": "1bddeb2ebf17d518962721c57826c14f975b1e6c9e1eab2f377196b051cd40dc",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subcheck/selection-records.json": {
+      "sha256": "c19fd0e740bce99e5d4562f267ce8c6066f2e088700ef2ff7e8e6d0a4c89e866",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subcheck/steps.json": {
+      "sha256": "f45e7f2a4a13455b72dd869e7a8696a8bf814b7f35424afa837d192c887b1a37",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subcheck/summary.json": {
+      "sha256": "d32e3fc1a2b1059480f5686d8decbe4bfe2a30f818b13447ab9f9cece1f80c47",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subcontrols/bridge-log.json": {
+      "sha256": "84859145f8f28811a62e667d0154dd1489c3842a30cf001023ecb36e9f92f3d6",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subcontrols/bridge-script.json": {
+      "sha256": "ce12dcea23b1d6d1326698f7071f4a9208a00666dea35b298b08cf9bc131d7d9",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subcontrols/connector-watch.json": {
+      "sha256": "6531fe93d3e0ec0de2c5ae03dc22a7cee9b08fc3e46b71ef1eb9417946828e79",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subcontrols/hash-checkpoints.json": {
+      "sha256": "5354da28a63b994869ef8a96f6a09f46cbe3b98d659aaa934307dbcb56587af4",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subcontrols/run.json": {
+      "sha256": "506bf0315a21b78cf1b6fe63a9c2e85230ccde53d6f6eb39cfd164e0bc24120a",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subcontrols/runner-results.json": {
+      "sha256": "68103d0815ee9561b92942e56ce2971eaddfc8101137419cc42f1c666bd72cfb",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subcontrols/selection-records.json": {
+      "sha256": "e649758890c58944f88e0ad24759ba3fde8d381b881447976f8e482594b49f5f",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subcontrols/steps.json": {
+      "sha256": "0ef9fd7993f3e52d2895fbc8896ad0e74a90a375fba7cb2ea2aa1b6eb569edfe",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subcontrols/summary.json": {
+      "sha256": "aa3a60d0e7a905c599769b99244712dadeaf41008830c33d8f4c3f9f02274bf8",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subrehearsal/bridge-log.json": {
+      "sha256": "143d29a925edc53b960540b40cbf443bf9001dd5cbcbd0ec91444c9badd1d1fb",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subrehearsal/bridge-script.json": {
+      "sha256": "ce3b8bdf25e1349384b0b23bd0875089a8dbbffa47bf19dcbe58727b0178f3c5",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subrehearsal/connector-watch.json": {
+      "sha256": "a391ba9580ed5bc5c768ae5f7731aa5747c936e6828127624a163556364beb5d",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subrehearsal/hash-checkpoints.json": {
+      "sha256": "5643048fd8b44e32a7aad5d9f685534fd9c56ef9e47362724bfa36df1821e9d6",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subrehearsal/run.json": {
+      "sha256": "9a20e14b898f04a17b3bc9512223a0ccb25c5000a1b39b1bd1fe16908f2a0f20",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subrehearsal/runner-results.json": {
+      "sha256": "dec8842421b9fa9ed6ea09cd2d07bd916b276c6c30ede8db5ceb3f2967bb7d35",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subrehearsal/selection-records.json": {
+      "sha256": "216436eae1ed0958378048ab0c00c153650f8feb93ad379a6318949de60162f2",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subrehearsal/steps.json": {
+      "sha256": "4dac8207d798ad665081fde0b3d415657d7a061b91695629a2596d540a501a7f",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subrehearsal/summary.json": {
+      "sha256": "c9c087a4584f8608a6fdbaf5bedf80f30bc05370fd1c0b626f599ea35a277e93",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subselect-at-3002218/bridge-log.json": {
+      "sha256": "4409747eb41fb170e18bc24f27e2ab62890a665c4a14f9eff1f8af974a4ffda1",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subselect-at-3002218/bridge-script.json": {
+      "sha256": "ce12dcea23b1d6d1326698f7071f4a9208a00666dea35b298b08cf9bc131d7d9",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subselect-at-3002218/connector-watch.json": {
+      "sha256": "029ef98e8a5cdcbca8da1571c8c651724c55972ad2ff35de1d2d3ec598b50b16",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subselect-at-3002218/hash-checkpoints.json": {
+      "sha256": "756b79abdd37f7e07c00b8ff9723e0405255ca68d0c1f46de788c52f9a41e065",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subselect-at-3002218/run.json": {
+      "sha256": "41807c639894a46dae5ec0e9728d6214e1bc54703d86f20a0d672589ea3f11de",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subselect-at-3002218/runner-results.json": {
+      "sha256": "01fddd484a940ea28bad2ed6a03a89e8e193484f1005eba318452f0af7e4b764",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subselect-at-3002218/selection-records.json": {
+      "sha256": "c006d1e98242a9df1bc0a1d359ff3b136c11320c41dc69e033d968375f0a4df9",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subselect-at-3002218/steps.json": {
+      "sha256": "e961dcc153812b324a6923ee0971dd6c63a9853997ae37b56312a55b8e31fc5f",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subselect-at-3002218/summary.json": {
+      "sha256": "d5bd5cfcfe77d2e59453f37ef994fae7c2a6183ed1ebec1b21bde923e83806b4",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subselect/bridge-log.json": {
+      "sha256": "de2f773dc14d774f450cb6a0b2413336c967a93581d911f19d4d44dbaf7ce2b8",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subselect/bridge-script.json": {
+      "sha256": "ce12dcea23b1d6d1326698f7071f4a9208a00666dea35b298b08cf9bc131d7d9",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subselect/connector-watch.json": {
+      "sha256": "2892f591f11d094dbdbac56499bd1c164205b88a7bdff516339f2e15937c6d85",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subselect/hash-checkpoints.json": {
+      "sha256": "3c3be8f8db12d8b55cde34189b4734a8707aada26ae031afc2bfe57a0e6fd9ce",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subselect/run.json": {
+      "sha256": "1d1ffcf376bc5467c5d67c8b87358ef94c6dceae23ce4ba5f4bedf10c3f61757",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subselect/runner-results.json": {
+      "sha256": "1c6ae4277b4a6ccac3db7ec2650135b66549779286e8c8f847def14d511ac106",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subselect/selection-records.json": {
+      "sha256": "8afedecc506c59e51f44c4f625ced8e03a736c76e6fd3e60bdf586f0069b9530",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subselect/steps.json": {
+      "sha256": "2692272f82bdad27144137290237d91bd3ac708f1667552efddd0f9a52d58dc8",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subselect/summary.json": {
+      "sha256": "d454fdeef7f200e1d79afa13876e2912ac15b919f752f64d9c10599d76036b50",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subtype/bridge-log.json": {
+      "sha256": "6e31aebf38a12331e1fabab246b8e77eb1d6b372f4b9b21e9cfeb60066a85fa0",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subtype/bridge-script.json": {
+      "sha256": "ce12dcea23b1d6d1326698f7071f4a9208a00666dea35b298b08cf9bc131d7d9",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subtype/connector-watch.json": {
+      "sha256": "ac0169c886f69e4c28eb2106c7aa9bb851a1bdda7144d8f5f4d92f7de8d025fd",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subtype/hash-checkpoints.json": {
+      "sha256": "8a9de8b9131193ffde65137d898c369fc990f82ae86d5f8f419f03d21d4d7baa",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subtype/run.json": {
+      "sha256": "79947aa1a8a54b0827c74fbe69cea66b110916bbcaec6f2c5a0c82ff35cd9d8b",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subtype/runner-results.json": {
+      "sha256": "9ed57b8a87c01f46883767ad478846f3972073efc808e4bb1534623d95636095",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subtype/selection-records.json": {
+      "sha256": "555da7bc8803037da0f7fe7a00b5355cebe7ed589f09b5665d0e0fc129cf2280",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subtype/steps.json": {
+      "sha256": "2d16198cd8a86ed4a53c6c051ca01917eb341186a8c1d47067047c4cf89b6227",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/subtype/summary.json": {
+      "sha256": "35aaa45c874fe4f16614286a3094e6784e7bc7ed02c92e9a7897a5249466ab6a",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/surfacecheck-covered-incident.json": {
+      "sha256": "ee86ab3456e45ee5d45e45a4993e2c52aa2fbe01d210126257c5e276fc10dfa6",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/surfacecheck/connector-watch.json": {
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/surfacecheck/hash-checkpoints.json": {
+      "sha256": "a56ee2d68d2f1793e62c428b7780869a21f4f66486236744229fef92eb47657f",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/surfacecheck/run.json": {
+      "sha256": "cd16aad016d702601bb8e07fdb932e6c41408ead07ccd44da20bfd87b934f1c6",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/surfacecheck/runner-results.json": {
+      "sha256": "a30e2eb1b717d208d3498775d7d95d7922dee566ef2e58be0d2df658fd7ebba8",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/surfacecheck/selection-records.json": {
+      "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/surfacecheck/steps.json": {
+      "sha256": "247957fd023ace7b1815ae1d992350c69a857db15ee1f20a756969233b653a3f",
+      "raw_git_exact": true
+    },
+    "docs/verification/qa/p0-13-subscription-ask-windows-3e4b406/surfacecheck/summary.json": {
+      "sha256": "2e9f0f77bc37f49db0ef3566d9468e3790c6742cfb9f394c82e37ec3b45aa926",
+      "raw_git_exact": true
+    }
+  },
+  "runs": {
+    "surfacecheck": {
+      "executed_commit": "110c733786395d5262e1c8b06fa6c5d49d9a2297",
+      "hashes_checked": 21,
+      "all_match": true,
+      "run_start_end_match": true,
+      "summary_counts": {
+        "pass": 4
+      },
+      "planned_steps": 53,
+      "actual_steps": 53,
+      "failed_steps": [],
+      "errors": [],
+      "app_exits": {
+        "app": {
+          "exited": true,
+          "exit_code": 0,
+          "killed": null,
+          "closed_in_finally": null,
+          "exit_ms": 159
+        }
+      },
+      "watched_processes_reaped": 0,
+      "cursor_restored": true
+    },
+    "smoke": {
+      "executed_commit": "110c733786395d5262e1c8b06fa6c5d49d9a2297",
+      "hashes_checked": 21,
+      "all_match": true,
+      "run_start_end_match": true,
+      "steps": 20
+    },
+    "subcontrols": {
+      "executed_commit": "110c733786395d5262e1c8b06fa6c5d49d9a2297",
+      "hashes_checked": 21,
+      "all_match": true,
+      "run_start_end_match": true,
+      "summary_counts": {
+        "pass": 18
+      },
+      "planned_steps": 235,
+      "actual_steps": 235,
+      "failed_steps": [],
+      "errors": [],
+      "app_exits": {
+        "app": {
+          "exited": true,
+          "exit_code": 0,
+          "killed": null,
+          "closed_in_finally": null,
+          "exit_ms": 118
+        },
+        "app-fake": {
+          "exited": true,
+          "exit_code": 0,
+          "killed": null,
+          "closed_in_finally": null,
+          "exit_ms": 199
+        }
+      },
+      "watched_processes_reaped": 2,
+      "cursor_restored": true
+    },
+    "subselect": {
+      "executed_commit": "110c733786395d5262e1c8b06fa6c5d49d9a2297",
+      "hashes_checked": 21,
+      "all_match": true,
+      "run_start_end_match": true,
+      "summary_counts": {
+        "pass": 6
+      },
+      "planned_steps": 183,
+      "actual_steps": 183,
+      "failed_steps": [],
+      "errors": [],
+      "app_exits": {
+        "app": {
+          "exited": true,
+          "exit_code": 0,
+          "killed": null,
+          "closed_in_finally": null,
+          "exit_ms": 129
+        },
+        "app-fake": {
+          "exited": true,
+          "exit_code": 0,
+          "killed": null,
+          "closed_in_finally": null,
+          "exit_ms": 196
+        }
+      },
+      "watched_processes_reaped": 1,
+      "cursor_restored": true
+    },
+    "subrehearsal": {
+      "executed_commit": "110c733786395d5262e1c8b06fa6c5d49d9a2297",
+      "hashes_checked": 21,
+      "all_match": true,
+      "run_start_end_match": true,
+      "summary_counts": {
+        "pass": 6,
+        "limit": 10
+      },
+      "planned_steps": 81,
+      "actual_steps": 81,
+      "failed_steps": [],
+      "errors": [],
+      "app_exits": {
+        "app": {
+          "exited": true,
+          "exit_code": 0,
+          "killed": null,
+          "closed_in_finally": null,
+          "exit_ms": 101
+        },
+        "app-fake": {
+          "exited": true,
+          "exit_code": 0,
+          "killed": null,
+          "closed_in_finally": null,
+          "exit_ms": 193
+        }
+      },
+      "watched_processes_reaped": 1,
+      "cursor_restored": true
+    },
+    "subcheck": {
+      "executed_commit": "110c733786395d5262e1c8b06fa6c5d49d9a2297",
+      "hashes_checked": 21,
+      "all_match": true,
+      "run_start_end_match": true,
+      "summary_counts": {
+        "pass": 10
+      },
+      "planned_steps": 76,
+      "actual_steps": 76,
+      "failed_steps": [],
+      "errors": [],
+      "app_exits": {
+        "app": {
+          "exited": true,
+          "exit_code": 0,
+          "killed": null,
+          "closed_in_finally": null,
+          "exit_ms": 124
+        },
+        "app-real": {
+          "exited": true,
+          "exit_code": 0,
+          "killed": null,
+          "closed_in_finally": null,
+          "exit_ms": 228
+        }
+      },
+      "watched_processes_reaped": 3,
+      "cursor_restored": true
+    },
+    "subtype": {
+      "executed_commit": "9cac50b7051d375f276c0a31ba1130c5b38a860d",
+      "hashes_checked": 21,
+      "all_match": true,
+      "run_start_end_match": true,
+      "summary_counts": {
+        "pass": 7
+      },
+      "planned_steps": 103,
+      "actual_steps": 103,
+      "failed_steps": [],
+      "errors": [],
+      "app_exits": {
+        "app": {
+          "exited": true,
+          "exit_code": 0,
+          "killed": null,
+          "closed_in_finally": null,
+          "exit_ms": 111
+        },
+        "app-fake": {
+          "exited": true,
+          "exit_code": 0,
+          "killed": null,
+          "closed_in_finally": null,
+          "exit_ms": 257
+        }
+      },
+      "watched_processes_reaped": 1,
+      "cursor_restored": true
+    },
+    "subselect-at-3002218": {
+      "executed_commit": "3002218cc36c13d2328bd2f49f90217f2f1e6eca",
+      "hashes_checked": 19,
+      "all_match": true,
+      "run_start_end_match": true,
+      "summary_counts": {
+        "pass": 4,
+        "fail": 2
+      },
+      "planned_steps": 183,
+      "actual_steps": 183,
+      "failed_steps": [
+        97
+      ],
+      "errors": [
+        "step 97: waitEval timed out: (() => { const g = (id) => document.getElementById(id); return !g('card').hidden && !g('askForm').hidden && g('question').value.length > 0 && !g('askSubmit').disabled; })()"
+      ],
+      "app_exits": {
+        "app": {
+          "exited": true,
+          "exit_code": 0,
+          "killed": null,
+          "closed_in_finally": null,
+          "exit_ms": 156
+        },
+        "app-fake": {
+          "exited": true,
+          "exit_code": 0,
+          "killed": null,
+          "closed_in_finally": null,
+          "exit_ms": 262
+        }
+      },
+      "watched_processes_reaped": 1,
+      "cursor_restored": true
+    }
+  },
+  "executed_harness_hashes_checked": 166,
+  "connector_hashes": {
+    "services/worker/connectors/chatgpt_local.py": true,
+    "services/worker/connectors/chatgpt_rpc.py": true,
+    "services/worker/connectors/chatgpt_launch.py": true,
+    "services/worker/connectors/chatgpt_receipts.py": true,
+    "services/learning/subscription_ask.py": true
+  },
+  "real_check": {
+    "state": "signed_out",
+    "login": "none",
+    "selected_model": "gpt-6-astra",
+    "catalog_image_models": 7,
+    "requests": 0,
+    "receipts": 0,
+    "real_turn_allowed": false,
+    "sign_in_started": false,
+    "runtime_calls": "Only saved real Check run independently audited; six total historical Check starts are QA report attribution"
+  },
+  "synthetic_controls": {
+    "checks": 18,
+    "ask_presses": 18,
+    "bridge_asks": 16,
+    "recorded_requests": 16,
+    "request_hash_and_image_metadata_linkage": true,
+    "real_codex_or_model": false
+  },
+  "keyboard": {
+    "os_clicks": 6,
+    "two_digit_input_cases": 6,
+    "text_preserved": 6,
+    "physical_input": false,
+    "synthetic_windows_OS_input": true
+  },
+  "selection_original_metadata_links": [
+    [
+      "subcheck",
+      "ask-bab5ed436f4508a1.json",
+      "image",
+      "487658afc6a49fd681270402b9d70528689a735c4ff1fdaec5e8cbda0e160081"
+    ],
+    [
+      "subcheck",
+      "ask-bab5ed436f4508a1.json",
+      "ink_original",
+      "89a9d167d9554e190812e8b524a49f7f89e46e47c5d7278095b8395812b34387"
+    ],
+    [
+      "subcontrols",
+      "ask-1b136e74ddeec9a6.json",
+      "image",
+      "2db13e90336ce122646cd701137837e21688138d9510b9fb747fea36a459697a"
+    ],
+    [
+      "subcontrols",
+      "ask-1b136e74ddeec9a6.json",
+      "ink_original",
+      "46ccdb6dbd3b4e3f2d84049d6aa92580d8637582ff2f35ae9997abdd95716cbd"
+    ],
+    [
+      "subcontrols",
+      "ask-dc97ceba4314ad86.json",
+      "image",
+      "2db13e90336ce122646cd701137837e21688138d9510b9fb747fea36a459697a"
+    ],
+    [
+      "subcontrols",
+      "ask-dc97ceba4314ad86.json",
+      "ink_original",
+      "46ccdb6dbd3b4e3f2d84049d6aa92580d8637582ff2f35ae9997abdd95716cbd"
+    ],
+    [
+      "subcontrols",
+      "ask-2242b552643c0958.json",
+      "image",
+      "f8cfc867775bf0911289c6f1fe96067a13e9e9c308e81fabe355b738660a5048"
+    ],
+    [
+      "subcontrols",
+      "ask-2242b552643c0958.json",
+      "ink_original",
+      "4feefe69a2cbf0efb75b68561730adedd0b59cb3dbde179db1d9b5ab5e2a966e"
+    ],
+    [
+      "subcontrols",
+      "ask-a2eb13287526932d.json",
+      "image",
+      "95537f73c39dd6a78e93024a6610e0b8e806ddf14c39c6d5716b6cc8c54c5185"
+    ],
+    [
+      "subcontrols",
+      "ask-a2eb13287526932d.json",
+      "ink_original",
+      "37af18d041efa51418b2a73c551ae687d23a1926e4d2e2e83ae362eaa21001a7"
+    ],
+    [
+      "subtype",
+      "ask-cc770c2cc4975efd.json",
+      "image",
+      "d52fb4d7df91adcd78315367bcdf9f44c3d105d60cdb8f3001ce262f3518f438"
+    ],
+    [
+      "subtype",
+      "ask-cc770c2cc4975efd.json",
+      "ink_original",
+      "85ba6d0762a1039a97ce699442a11179f4b593f70860e7d1e9d3009ebcfc0ea4"
+    ],
+    [
+      "subrehearsal",
+      "ask-2195fa4d0f793130.json",
+      "image",
+      "3d57a39c30d9870b3509a951256fdfa4b84ea934353e61b4cdc6dcbfc5b9731c"
+    ],
+    [
+      "subrehearsal",
+      "ask-2195fa4d0f793130.json",
+      "ink_original",
+      "2d00f26322b90b8755b52e235fe59d7b3b8614e403cff15544e28bd70063e90d"
+    ]
+  ],
+  "private_original_bytes_read_or_rehashed": false,
+  "launcher_saved_result": {
+    "check_signed_out": true,
+    "sign_in_pressed": false,
+    "closed_reported": true,
+    "copy_files": 268,
+    "copy_prepare_pass": true,
+    "raw_launcher_hash_recomputed": false
+  },
+  "note_only_commit": "677323a changes only the answer-judge note expression; status predicate unchanged. Actual old/new Git bytes inspected.",
+  "finding": {
+    "id": "QA-LAUNCHER-CLEANUP",
+    "severity": "P2 reusable check helper, not historical evidence failure",
+    "path": "tests/e2e/windows/signin_launcher.mjs",
+    "lines": [
+      87,
+      90,
+      93,
+      96,
+      118,
+      122,
+      125,
+      128
+    ],
+    "trigger": "After app spawn, DevTools connection rejects or evaluate hangs until outer 150s timeout",
+    "result": "Detached app has no finally-owned close/reap; profile is removed before checking child status/closure. Helper may print error JSON or app_closed_itself:false and return shell success.",
+    "source_reproduction_only": true,
+    "minimal_fix": "Track owned app exit, use finally bounded owned cleanup, preserve profile unless exit confirmed, nonzero check exit for error/timeout/not closed; keep prepared user launcher unchanged."
+  },
+  "limits": [
+    "No GUI/connector/login/inference/tests rerun",
+    "Historical evidence approved, not all reused driver failure paths certified",
+    "Stage app/runtime identity and execution attribution QA-reported; no committed per-file stage manifest or rebuild in this review",
+    "Original screenshots/PNGs withheld: verified hash/size linkage, not raw private pixels",
+    "One observed final real Check plus launcher receipt does not independently reproduce all six historical starts",
+    "No actual image turn, physical keyboard/pen, login callback or interactive Mac acceptance"
+  ],
+  "privacy": {
+    "sanitized_json_files": 68,
+    "raw_pixel_token_credential_pattern_hits": {
+      "png_base64_payload": [],
+      "data_image_payload": [],
+      "jwt_shape": [],
+      "api_key_shape": [],
+      "postgres_credential_uri": []
+    },
+    "nonempty_sensitive_fields": [],
+    "scope": "Bounded content inspection/scans; not a proof that arbitrary text cannot contain secrets. No private state or raw images accessed."
+  },
+  "lead_followup": "Lead reports actual prepared launcher/config hashes separately verified; same QA owner has one no-rerun launcher-cleanup/report-wording correction. Historical evidence approval stands."
+}

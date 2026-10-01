@@ -1,0 +1,67 @@
+{
+  "head": "91c7367976a6e41f75c1ea52c0ce6f828d93d9ff",
+  "checks": [
+    {
+      "path": "tests/e2e/windows/analyze_sub.py",
+      "check": "Python AST syntax",
+      "exit_code": 0
+    },
+    {
+      "path": "tests/e2e/windows/judge_surface_answer.py",
+      "check": "Python AST syntax",
+      "exit_code": 0
+    },
+    {
+      "path": "tests/e2e/windows/qa_fake_bridge.py",
+      "check": "Python AST syntax",
+      "exit_code": 0
+    },
+    {
+      "path": "tests/e2e/windows/qa_sub_copy_check.py",
+      "check": "Python AST syntax",
+      "exit_code": 0
+    },
+    {
+      "path": "tests/e2e/windows/qa_sub_watch.py",
+      "check": "Python AST syntax",
+      "exit_code": 0
+    },
+    {
+      "path": "tests/e2e/windows/run.mjs",
+      "check": "node --check",
+      "exit_code": 0
+    },
+    {
+      "path": "tests/e2e/windows/scenarios.mjs",
+      "check": "node --check",
+      "exit_code": 0
+    },
+    {
+      "path": "tests/e2e/windows/signin_launcher.mjs",
+      "check": "node --check",
+      "exit_code": 0
+    },
+    {
+      "path": "tests/e2e/windows/sub_copy.mjs",
+      "check": "node --check",
+      "exit_code": 0
+    },
+    {
+      "check": "changed judge self-test",
+      "exit_code": 0,
+      "result": {
+        "cases": 31,
+        "failed": []
+      }
+    },
+    {
+      "check": "git diff --check 250f829..HEAD",
+      "exit_code": 0
+    },
+    {
+      "check": "git diff --exit-code 9abf587 HEAD -- tests/e2e/windows docs/verification/qa/p0-13-subscription-ask-plan.md docs/verification/qa/p0-13-subscription-ask-windows-3e4b406.md docs/verification/qa/p0-13-subscription-ask-windows-3e4b406",
+      "exit_code": 0
+    }
+  ],
+  "gui_or_provider_replayed": false
+}

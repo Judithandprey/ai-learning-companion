@@ -8,5 +8,11 @@
   "api_key_fallback": false,
   "account_status_is_inference": false,
   "next_release_owner": "lead",
-  "allocation_condition": "One attempt only after exact released Windows build, generated safe surface, verified managed login/image model and review/display prerequisites. Stop on missing login, quota, capability or tool issue; no automatic retry."
+  "allocation_condition": "One attempt only after exact released Windows build, generated safe surface, verified managed login/image model and review/display prerequisites. Stop on missing login, quota, capability or tool issue; no automatic retry.",
+  "allocation_id": "handoff_d548b28a9fa5613b7543be19858a5ca2",
+  "allocation_status": "held_for_source_corrections_and_user_login",
+  "attempt_counting": "Every actual real Ask press consumes the one allocation, including proven not_submitted; unknown also counts. A new attempt requires explicit lead reallocation within the unchanged initial bound. This is an engineering request limit, not a claim about billed allowance.",
+  "test_assistance": "full_solution only for the generated nonsensitive two-card recognition question, two-line answer; product hint default and learner disclosure scope unchanged.",
+  "last_actual_qa_delivery": "9abf58797c7c779266651eca333424846c7a04dd",
+  "confirmed_real_asks": 0
 }
