@@ -1,0 +1,42 @@
+{
+  "trace": [
+    {
+      "event": "image_line_queued_before_delivery"
+    },
+    {
+      "event": "local_stop_and_presentation_fence"
+    },
+    {
+      "event": "delivered",
+      "method": "ask/start"
+    },
+    {
+      "event": "synthetic_inference_started",
+      "after_local_stop": true
+    },
+    {
+      "event": "delivered",
+      "method": "ask/cancel"
+    },
+    {
+      "event": "connector_received_interrupt"
+    }
+  ],
+  "emitted": [
+    {
+      "id": "c2",
+      "result": {
+        "cancelled": true,
+        "uncertain": false
+      }
+    },
+    {
+      "id": "c1",
+      "error": {
+        "code": "cancelled",
+        "message": "The request was cancelled; no answer will be displayed."
+      }
+    }
+  ],
+  "scope": "actual Backend 39620fa bridge; synthetic desktop write schedule; no native/provider execution"
+}

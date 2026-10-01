@@ -1,0 +1,44 @@
+{
+  "qa_combined_release": {
+    "ok": true,
+    "route_id": "route_6fd5946d12ac46e98ef15d2140c7261f",
+    "action": "instruction",
+    "accepted": true,
+    "mode": "async_route_v1",
+    "delivery_mode": "mailbox",
+    "message_id": "handoff_8f88fafe46123912b38fbd3c432e322f",
+    "duplicate": false,
+    "state": "unread",
+    "execution_started": false
+  },
+  "web_followup": {
+    "ok": true,
+    "route_id": "route_8608e3d1ee5a44f7bddfe1fa43c2a202",
+    "action": "instruction",
+    "accepted": true,
+    "mode": "async_route_v1",
+    "delivery_mode": "mailbox",
+    "message_id": "handoff_7e0d37a203408a6079c1deef1f6efcfd",
+    "duplicate": false,
+    "state": "unread",
+    "execution_started": false
+  },
+  "native_correction": {
+    "message_id": "handoff_bf09e0c95b1b43bd3b31fa2718625abd",
+    "accepted": true,
+    "state": "unread",
+    "execution_started": false,
+    "source": "actual native send receipt this turn"
+  },
+  "qa_caller_correction": {
+    "message_id": "handoff_204025ac01183a994f617e627788d256",
+    "accepted": true,
+    "state": "unread",
+    "execution_started": false,
+    "source": "actual native send receipt this turn"
+  },
+  "source_baseline": "8eac9fc02ebf10e2e2fca7c164b6c33c2f99698b",
+  "push_confirmed": true,
+  "real_image_attempts_spent": 0,
+  "display_released": false
+}

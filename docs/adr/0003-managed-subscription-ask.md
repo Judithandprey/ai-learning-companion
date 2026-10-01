@@ -153,7 +153,7 @@ assistance: hint | explain | full_solution
 image: {png_base64, sha256, width, height}
 context: {
   capture_session_id, frame_seq, frame_captured_at, frame_width, frame_height,
-  display: {id, bounds:{x,y,width,height}, scale_factor},
+  display: {id:string, bounds:{x,y,width,height}, scale_factor},
   region_dip:{x,y,width,height}, region_px:{x,y,width,height},
   ink_revision, ink_sha256,
   source_url, source_version, media_position
@@ -178,6 +178,10 @@ capture dimensions. `frame_captured_at` may be null when unknown; it must not be
 invented from response time. `ink_revision` may be null only with null ink hash;
 null hash with a known revision explicitly records unavailable editable-original
 binding. Both known and unknown facts survive to the card.
+`display.id` follows the existing bounded identifier rule (nonempty text, up to
+128 characters, without control characters). Native numeric display identifiers
+must be represented as text; this documents the released validator, not a new
+wire version or field conversion in the shared connector.
 When known, `source_version` is a positive integer and `media_position` a
 nonnegative numeric position; this slice sends null when the platform has no
 such evidence. JSON integer-valued numbers remain interoperable across runtimes.

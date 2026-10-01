@@ -1,0 +1,69 @@
+{
+  "code": "b583969",
+  "scope": "pure exact-source helper and extracted caller filter; no Windows/process/filesystem cleanup operations",
+  "results": [
+    {
+      "case": "prior1_pid_reuse",
+      "fixed": true,
+      "signals_to_replacement": 0,
+      "signal_identity_has_creation": true,
+      "exit": "confirmed",
+      "removed": true
+    },
+    {
+      "case": "prior2_remembered_unreadable",
+      "fixed": true,
+      "exit": "unknown",
+      "removed": false,
+      "signals": 0
+    },
+    {
+      "case": "never_seen_unreadable",
+      "fixed": true,
+      "exit": "unknown",
+      "removed": false,
+      "signals": 0
+    },
+    {
+      "case": "prior3_exact_executable_and_argv_boundary",
+      "fixed": true,
+      "longer_port": "foreign",
+      "same_port_other_executable": "unresolved"
+    },
+    {
+      "case": "held_handle_then_ordinal_reread",
+      "passed": true,
+      "order": [
+        408,
+        455,
+        895,
+        951
+      ],
+      "runtime_executed": false
+    },
+    {
+      "case": "caller_drops_remembered_identity_on_changed_type_argument",
+      "reproduced": true,
+      "simulated_process_still_alive": true,
+      "same_pid_and_creation": true,
+      "actual_launcher_filter": {
+        "exit": "confirmed",
+        "removed": true,
+        "signals": 0,
+        "not_revalidated": []
+      },
+      "helper_with_full_snapshot": {
+        "exit": "unknown",
+        "removed": false,
+        "signals": 0,
+        "not_revalidated": [
+          {
+            "pid": 741,
+            "created": "2000"
+          }
+        ]
+      },
+      "process_metadata_mutation_simulated": true
+    }
+  ]
+}

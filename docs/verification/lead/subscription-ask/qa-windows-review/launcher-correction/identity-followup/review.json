@@ -1,0 +1,56 @@
+{
+  "decision": "hold_qa_cleanup_harness_only",
+  "candidate": "b5839698c6199c3d8ac6d190fc5bae9032adc414",
+  "report_candidate": "87c15998a73d9e1d69ea0fd0200304c904d1fc45",
+  "base": "4d5c81f4e754aab369bd9406ef92b5b261c86412",
+  "archive": "/tmp/qa-launcher-b583969-29vnve7i",
+  "source_sha256": {
+    "tests/e2e/windows/signin_cleanup.mjs": "88df6693c1bd537ffffa8e2335d9c637aa8708776517d5e24114d14fb87b4482",
+    "tests/e2e/windows/signin_launcher.mjs": "87eead591fc79aabfa715a355fcba505a7bcfd7ae87b0e41e89958f8c263f0d5",
+    "tests/e2e/windows/signin_cleanup.test.mjs": "1e0af9e3f42756e61f3e458d12f974dc0b27e885265e4a356eb90873649d4067",
+    "tests/e2e/windows/signin_signal_check.mjs": "f52fd506fdfb7664ec5a89cb97b91cd6f623a40692432f3522ad624f6ac1c930"
+  },
+  "prior_findings": {
+    "PID_reuse": "closed by full identity plus held-handle revalidation",
+    "remembered_unreadable": "closed in direct helper and normal unreadable caller path",
+    "longer_port_substring": "closed by exact executable and argv matching"
+  },
+  "checks": {
+    "owner_pure_tests": {
+      "passed": 35,
+      "failed": 0,
+      "total": 35
+    },
+    "independent_observations": {
+      "prior_controls_pass": 5,
+      "new_wiring_regression_reproduced": 1,
+      "evidence": "/tmp/qa-launcher-identity-correction-probe.json"
+    },
+    "scoped_diff_check": "passed",
+    "headless_windows_30_argv_and_sleeper": "owner report/source reviewed only; not rerun",
+    "mutation_tests": "owner reports 18; not rerun or claimed as independent evidence"
+  },
+  "findings": [
+    {
+      "id": "QA-LAUNCHER-IDENTITY-04",
+      "priority": 2,
+      "blocking_harness_reuse": true,
+      "path": "tests/e2e/windows/signin_launcher.mjs",
+      "line": 98,
+      "issue": "pre-filtered --type= row hides a remembered live identity from releaseOwned, producing false confirmed exit and folder removal",
+      "reproduction": "/tmp/qa-launcher-identity-correction-probe.mjs",
+      "simulation_limit": "changed command-line metadata on same PID+creation; no claim observed on Windows",
+      "minimal_fix": "pass complete image-name snapshot to cleanup; restrict child filtering to preflight policy if desired",
+      "owner": "existing QA owner"
+    }
+  ],
+  "repo_edits": false,
+  "windows_runtime_calls": 0,
+  "process_inspection_operations": 0,
+  "process_signals": 0,
+  "gui_operations": 0,
+  "auth_provider_operations": 0,
+  "actual_folder_removals": 0,
+  "display_or_inference_released": false,
+  "report": "/tmp/qa-launcher-identity-correction-review.md"
+}
