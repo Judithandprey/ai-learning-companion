@@ -99,12 +99,23 @@ export type SubscriptionOptions = {
 type Reply = { ok: true; result: unknown } | { ok: false; code: string } | { ok: false; lost: 'not_sent' | 'no_answer' };
 type Child = { proc: ChildProcess; exited: Promise<HostExit>; gone: boolean };
 /** A question that is out. `interrupts`: what its cancel or its session's Stop was answered (each bounded). */
-type Asking = { readonly id: string; readonly session: string; cancelled: boolean; interrupts: Array<Promise<Reply>> };
+type Asking = { readonly id: string; readonly session: string; cancelled: boolean; interrupts: Array<Promise<boolean>> };
+/** How many times in a row the account is read because it changed while it was being read. */
+const READS_MAX = 4;
+const isObject = (v: unknown): v is Record<string, unknown> => typeof v === 'object' && v !== null && !Array.isArray(v);
+/** Whether a cancel's answer says the turn was interrupted for certain: exactly {cancelled: true, uncertain: false}. */
+const cancelConfirmed = (r: Reply): boolean => r.ok && isObject(r.result) && Object.keys(r.result).sort().join() === 'cancelled,uncertain' && r.result['cancelled'] === true && r.result['uncertain'] === false;
+/** Whether a Stop's answer is its acknowledgement: exactly {}. (An unconfirmed interruption is its error.) */
+const stopConfirmed = (r: Reply): boolean => r.ok && isObject(r.result) && Object.keys(r.result).length === 0;
 const text = (v: unknown, max: number): string | null => (typeof v === 'string' && v.length > 0 && v.length <= max && !/[\0-\x1f\x7f]/.test(v) ? v : null);
 
 export class Subscription {
   private readonly o: SubscriptionOptions;
   private child: Child | null = null;
+  /** The end of a child that was fenced here (the quit waits for it too). */
+  private closing: Promise<unknown> = Promise.resolve();
+  /** The account changed, or a sign-in completed, while a read was out: it is read once more after it. */
+  private readAgain = false;
   private readonly pending = new Map<string, (r: Reply) => void>();
   private seq = 0;
   private state: Extract<SubscriptionStatus, { mode: 'managed' }>['state'] = 'not_checked';
@@ -154,9 +165,9 @@ export class Subscription {
     proc.stdin.on('error', () => undefined);
     const child: Child = { proc, gone: false, exited: new Promise<HostExit>((resolve) => {
       const over = (code: number | null, signal: string | null, started: boolean): void => {
+        resolve({ code, signal, error: null }); // its real end, also when it was already fenced here
         if (child.gone) return;
         child.gone = true;
-        resolve({ code, signal, error: null });
         this.lost(child, started);
       };
       proc.once('exit', (code, signal) => over(code, signal, true));
@@ -188,7 +199,7 @@ export class Subscription {
     if (child.gone) return;
     child.gone = true;
     this.lost(child);
-    void endChild(child.proc, () => child.proc.stdin?.end(), child.exited, this.o.end_ms ?? 5_000, 'wsl');
+    this.closing = Promise.all([this.closing, endChild(child.proc, () => child.proc.stdin?.end(), child.exited, this.o.end_ms ?? 5_000, 'wsl')]); // one before may still be ending
   }
   private line(text: string): void {
     let v: unknown;
@@ -209,7 +220,7 @@ export class Subscription {
     }
     if (m['method'] === 'connection/login/completed') this.loginCompleted(m['params']);
     // The connector says the account changed (signed in or out elsewhere in this product's state): read again.
-    if (m['method'] === 'connection/changed' && this.state !== 'not_checked' && this.state !== 'checking') void this.check();
+    if (m['method'] === 'connection/changed' && this.state !== 'not_checked') void this.check();
   }
   /** The child is gone: what was out gets no answer (or, if it never started, was not sent). */
   private lost(child: Child, started = true): void {
@@ -266,28 +277,39 @@ export class Subscription {
   // ---- the connection ------------------------------------------------------------------------------------------
   /** Reads the sign-in state, the plan, the quota windows and the models (the connector's handshake). */
   async check(): Promise<void> {
-    if (this.state === 'checking') return;
+    // A read is out: what it returns may be older than the change that asked for this one, so it is read once more.
+    if (this.state === 'checking') return void (this.readAgain = true);
     this.state = 'checking';
     this.detail = null;
     this.say();
-    const r = await this.request('connection/read', {}, this.o.request_ms ?? 30_000);
+    // Only reads: no sign-in and no question is ever started by this. Bounded, so a connector that says "changed" at
+    // every read cannot keep this app reading; the last read then stands until the user checks again.
+    let r: Reply;
+    let reads = 0;
+    do {
+      this.readAgain = false;
+      r = await this.request('connection/read', {}, this.o.request_ms ?? 30_000);
+    } while (this.readAgain && r.ok && ++reads < READS_MAX);
+    const changedSince = this.readAgain && r.ok; // it changed again during the last read: what was read may be older
+    this.readAgain = false;
     const account = r.ok ? readAccount(r.result) : null;
     if (!account) {
       this.state = 'unavailable';
       this.detail = r.ok ? 'the connector answered in a form this app does not read' : 'lost' in r ? (r.lost === 'not_sent' ? 'the connector could not be started' : 'the connector did not answer') : ERROR_TEXT[r.code]!;
       return this.say();
     }
-    this.state = account.state;
+    this.state = changedSince ? 'unknown' : account.state; // not said as signed in (or out) from a read older than the change
     this.plan = account.plan;
     this.limits = account.rate_limits;
     this.models = account.models;
     // The chosen model is kept if it is still there and takes pictures; else the catalog's default that does.
     const usable = account.models.filter((m) => m.image_input);
     if (!usable.some((m) => m.id === this.model)) this.model = (usable.find((m) => m.default) ?? usable[0])?.id ?? null;
-    if (account.state === 'signed_in' && this.loginState !== 'none') {
+    if (this.state === 'signed_in' && this.loginState !== 'none') {
       this.loginState = 'none';
       this.loginId = null;
     }
+    if (changedSince) this.detail = 'the account changed again while it was being read; check again';
     this.say();
   }
   /** The model questions are sent to: one of the catalog's that takes pictures. */
@@ -394,8 +416,8 @@ export class Subscription {
     // working on it is what the cancel or the Stop was answered (each bounded); anything else is not confirmed.
     let outcome: AskOutcome | null = null;
     if (a.cancelled || this.stopped.has(session)) {
-      const replies = await Promise.all(a.interrupts);
-      const confirmed = !r.ok && 'code' in r && r.code === 'cancelled' && replies.length > 0 && replies.every((x) => x.ok && (x.result as { uncertain?: unknown } | null)?.uncertain !== true);
+      const interrupted = await Promise.all(a.interrupts);
+      const confirmed = !r.ok && 'code' in r && r.code === 'cancelled' && interrupted.length > 0 && interrupted.every(Boolean);
       outcome = { status: 'cancelled', uncertain: !confirmed };
     }
     this.asking = null;
@@ -420,7 +442,7 @@ export class Subscription {
     if (!a || a.id !== requestId || a.cancelled) return;
     a.cancelled = true;
     this.say();
-    a.interrupts.push(this.request('ask/cancel', { request_id: requestId }, this.o.request_ms ?? 30_000, true));
+    a.interrupts.push(this.request('ask/cancel', { request_id: requestId }, this.o.request_ms ?? 30_000, true).then(cancelConfirmed));
   }
   /** The capture session ended: it can never ask again, and its question that is out is cancelled. */
   stopSession(captureSession: string): void {
@@ -431,7 +453,7 @@ export class Subscription {
     const told = this.request('session/stop', { capture_session_id: captureSession }, this.o.request_ms ?? 30_000, true);
     if (a && a.session === captureSession) {
       a.cancelled = true;
-      a.interrupts.push(told);
+      a.interrupts.push(told.then(stopConfirmed));
       this.say();
     }
   }
@@ -440,5 +462,6 @@ export class Subscription {
   async quit(): Promise<void> {
     if (this.asking) this.asking.cancelled = true;
     await this.end();
+    await this.closing;
   }
 }

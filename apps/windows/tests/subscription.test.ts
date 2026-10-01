@@ -10,7 +10,7 @@ import { EventEmitter } from 'node:events';
 import * as path from 'node:path';
 import { readConnectorConfig, Subscription, type AskOutcome, type ConnectorConfig, type SubscriptionStatus } from '../src/main/subscription.ts';
 import { ANSWER_MAX, contextProblem, officialLoginUrl, provenanceOf, questionOf, readAccount, readAnswer, type AskRequest } from '../src/shared/subscription-ask.ts';
-import { ACCOUNT, fakeConnectors, LOGIN_URL } from './subscription-fakes.ts';
+import { ACCOUNT, fakeConnectors, LOGIN_URL, type FakeConnector } from './subscription-fakes.ts';
 
 const made: Subscription[] = [];
 after(async () => void (await Promise.all(made.map((s) => s.quit()))));
@@ -387,6 +387,147 @@ test('what the connector cannot make this app do: an error code named like a bui
   const none = subscription(WSL, { spawn: (() => Object.assign(new (await_emitter())(), { pid: undefined, stdin: null, stdout: null, kill: () => true })) as never });
   await none.s.check();
   assert.deepEqual([none.now().state, none.now().detail], ['unavailable', 'the connector could not be started']);
+});
+
+test('a change, or a completed sign-in, said while the account is being read is read once more: the newer state stands, and nothing but reads is sent', async () => {
+  const SIGNED_OUT = { auth: { state: 'signed_out', mode: null, plan: null }, rate_limits: null, models: [] };
+  // The sign-in completes while a read that already saw "signed out" is still out (the released connector's order).
+  const { s, fakes, now, opened } = subscription();
+  await s.login();
+  const c = fakes.last();
+  c.account = null; // answered by hand
+  const checking = s.check();
+  const read = c.calls.at(-1)!;
+  assert.equal(read.method, 'connection/read');
+  c.event('connection/changed', {});
+  c.event('connection/login/completed', { login_id: 'login-1', success: true, error: null });
+  await until('the events are read', () => now().login === 'none');
+  assert.equal(c.count('connection/read'), 1, 'coalesced: no second read while the first is out');
+  c.account = ACCOUNT;
+  c.reply(read.id, SIGNED_OUT); // the older state
+  await checking;
+  assert.deepEqual([now().state, c.count('connection/read')], ['signed_in', 2], 'read once more, and the newer state is what is said');
+  assert.deepEqual(c.calls.map((x) => x.method), ['connection/login/start', 'connection/read', 'connection/read'], 'no sign-in and no question was started by it');
+  assert.equal(opened.length, 1, 'only the page the user\'s own press opened');
+  // A change during a read after a plain Check: the same, whichever way it changed.
+  const out = subscription();
+  await out.s.check();
+  assert.equal(out.now().state, 'signed_in');
+  out.fakes.last().account = null;
+  const again = out.s.check();
+  const first = out.fakes.last().calls.at(-1)!;
+  out.fakes.last().event('connection/changed', {});
+  out.fakes.last().event('connection/changed', {});
+  await new Promise((r) => setTimeout(r, 20));
+  out.fakes.last().account = SIGNED_OUT;
+  out.fakes.last().reply(first.id, ACCOUNT);
+  await again;
+  assert.deepEqual([out.now().state, out.fakes.last().count('connection/read')], ['signed_out', 3], 'two changes during one read are one more read');
+  // A read that fails is not repeated; and a connector that says "changed" at every read is read a bounded number of times.
+  const lost = subscription(WSL, {}, (k) => void (k.account = null));
+  const failing = lost.s.check();
+  await until('read', () => lost.fakes.made.length === 1 && lost.fakes.last().count('connection/read') === 1);
+  lost.fakes.last().event('connection/changed', {});
+  await new Promise((r) => setTimeout(r, 20));
+  lost.fakes.last().fail(lost.fakes.last().calls[0]!.id, 'unavailable');
+  await failing;
+  assert.deepEqual([lost.now().state, lost.fakes.last().count('connection/read')], ['unavailable', 1]);
+  const noisy = subscription(WSL, {}, (k) => void (k.onCall = (call) => (call.method === 'connection/read' ? k.event('connection/changed', {}) : undefined)));
+  await noisy.s.check();
+  assert.deepEqual([noisy.now().state, noisy.now().detail, noisy.fakes.last().count('connection/read')], ['unknown', 'the account changed again while it was being read; check again', 4], 'a change it did not read: the state is not said as known');
+  await new Promise((r) => setTimeout(r, 30));
+  assert.equal(noisy.fakes.last().count('connection/read'), 4, 'and it stops there until the user checks again');
+  assert.deepEqual(await noisy.s.ask(request()), { status: 'refused', code: 'local', reason: 'the sign-in state of the ChatGPT subscription is not known (check it in the control window)' });
+  noisy.fakes.last().onCall = () => undefined;
+  await noisy.s.check();
+  assert.deepEqual([noisy.now().state, noisy.now().detail, noisy.fakes.last().count('connection/read'), noisy.fakes.last().asks().length], ['signed_in', null, 5, 0]);
+  assert.deepEqual([out.now().state, out.now().detail], ['signed_out', null], 'a change that was read leaves nothing to say');
+  // Before the user's first Check a change reads nothing (nothing is started for it).
+  const idle = subscription();
+  await idle.s.login();
+  idle.fakes.last().event('connection/changed', {});
+  await new Promise((r) => setTimeout(r, 20));
+  assert.equal(idle.fakes.last().count('connection/read'), 0);
+});
+
+test('a cancel or a Stop is a confirmed interruption only by its own exact receipt; anything else, cancelled:false included, stays not confirmed', async () => {
+  const outcomeOf = async (set: (c: FakeConnector) => void, by: 'cancel' | 'stop'): Promise<AskOutcome> => {
+    const { s, fakes } = subscription();
+    await s.check();
+    set(fakes.last());
+    const sent = request();
+    const done = s.ask(sent);
+    await until('sent', () => fakes.last().asks().length === 1);
+    if (by === 'cancel') s.cancel(sent.request_id);
+    else s.stopSession(sent.context.capture_session_id);
+    return done; // the question itself ends as `cancelled`, as the released connector ends it
+  };
+  for (const result of [{}, null, [], 'cancelled', { uncertain: 'unknown' }, { cancelled: true, uncertain: 'unknown' }, { cancelled: true }, { uncertain: false }, { cancelled: 'true', uncertain: false }, { cancelled: true, uncertain: false, more: 1 }, { cancelled: false, uncertain: false }, { cancelled: true, uncertain: true }]) {
+    assert.deepEqual(await outcomeOf((c) => void (c.cancelReceipt = { result }), 'cancel'), { status: 'cancelled', uncertain: true }, `ask/cancel answered ${JSON.stringify(result)}`);
+  }
+  assert.deepEqual(await outcomeOf((c) => void (c.cancelReceipt = { result: { cancelled: true, uncertain: false } }), 'cancel'), { status: 'cancelled', uncertain: false });
+  // session/stop has its own acknowledgement: exactly {}. A cancel's receipt is not a Stop's, nor the reverse.
+  for (const result of [null, [], 'stopped', { stopped: true }, { cancelled: true, uncertain: false }]) {
+    assert.deepEqual(await outcomeOf((c) => void (c.stopReceipt = { result }), 'stop'), { status: 'cancelled', uncertain: true }, `session/stop answered ${JSON.stringify(result)}`);
+  }
+  assert.deepEqual(await outcomeOf((c) => void (c.stopReceipt = { result: {} }), 'stop'), { status: 'cancelled', uncertain: false });
+  // Both were said (Cancel, then Stop): confirmed only if each was.
+  const both = subscription();
+  await both.s.check();
+  both.fakes.last().onCancel = 'silent';
+  both.fakes.last().stopReceipt = { result: { ok: true } };
+  const sent = request();
+  const done = both.s.ask(sent);
+  await until('sent', () => both.fakes.last().asks().length === 1);
+  both.s.cancel(sent.request_id);
+  both.s.stopSession(sent.context.capture_session_id);
+  await until('both told', () => both.fakes.last().count('session/stop') === 1);
+  both.fakes.last().fail(both.fakes.last().asks()[0]!.id, 'cancelled');
+  assert.deepEqual(await done, { status: 'cancelled', uncertain: true });
+});
+
+test('a connector ended here for a line that is not the envelope\'s: its real end is seen, it is not killed after it ended, and quitting does not wait on it', async () => {
+  const { s, fakes, now } = subscription(WSL, { end_ms: 150 });
+  await s.check();
+  const c = fakes.last();
+  let kills = 0;
+  const kill = c.kill.bind(c);
+  c.kill = () => (kills++, kill());
+  c.stdout.write('x'.repeat(256 * 1024 + 1)); // over the bound, with no line end
+  await until('ended at the end of its input', () => c.exited);
+  assert.equal(now().state, 'unavailable');
+  await new Promise((r) => setTimeout(r, 300)); // past the bound on its end
+  assert.equal(kills, 0, 'it had ended: nothing is killed');
+  const from = Date.now();
+  await s.quit();
+  assert.equal(Date.now() - from < 100, true, 'nothing is waited for');
+  // One that does not end at the end of its input is still waited for by the quit, then killed, once.
+  const slow = subscription(WSL, { end_ms: 80 }, (k) => void (k.endDelayMs = 60_000));
+  await slow.s.check();
+  const k = slow.fakes.last();
+  let killed = 0;
+  const end = k.kill.bind(k);
+  k.kill = () => (killed++, end());
+  k.stdout.write('x'.repeat(256 * 1024 + 1));
+  await until('fenced', () => slow.now().state === 'unavailable');
+  assert.equal(k.exited, false);
+  await slow.s.quit();
+  assert.deepEqual([k.exited, killed], [true, 1], 'the quit returns only once the fenced child has really ended');
+  // Two fenced one after the other, the first still ending: the quit waits for both.
+  const two = subscription(WSL, { end_ms: 80 });
+  await two.s.check();
+  const first = two.fakes.last();
+  first.endDelayMs = 60_000;
+  first.stdout.write('x'.repeat(256 * 1024 + 1));
+  await until('the first is fenced', () => two.now().state === 'unavailable');
+  await two.s.check(); // the user's own Check starts another
+  const second = two.fakes.last();
+  assert.notEqual(second, first);
+  second.stdout.write('x'.repeat(256 * 1024 + 1));
+  await until('the second ended', () => second.exited);
+  assert.equal(first.exited, false);
+  await two.s.quit();
+  assert.deepEqual([first.exited, second.exited], [true, true]);
 });
 
 test('a real child process over real pipes: lines both ways, and the end of its input ends it', async () => {

@@ -34,6 +34,11 @@ export class FakeConnector extends EventEmitter {
    * (`uncertain`), or the Stop's (`interrupt_unconfirmed`). `silent`: the cancel is answered, the question is not.
    */
   onCancel: 'confirmed' | 'unconfirmed' | 'silent' = 'confirmed';
+  /** When set, what ask/cancel (or session/stop) is answered instead, whatever it is: a test's malformed receipt. */
+  cancelReceipt: { result: unknown } | null = null;
+  stopReceipt: { result: unknown } | null = null;
+  /** A test's hook on every request received, before it is answered. */
+  onCall: (call: Call) => void = () => undefined;
   /** How long after the end of its input it takes to end (the released connector closes its Codex child first). */
   endDelayMs = 0;
   exited = false;
@@ -48,18 +53,21 @@ export class FakeConnector extends EventEmitter {
         this.receive(JSON.parse(line) as Call & { version: string });
       }
     });
-    this.stdin.on('end', () => (this.endDelayMs ? void setTimeout(() => this.exit(0), this.endDelayMs) : this.exit(0))); // the end of its input ends it
+    this.stdin.on('end', () => (this.endDelayMs ? void setTimeout(() => this.exit(0), this.endDelayMs).unref() : this.exit(0))); // the end of its input ends it
     process.nextTick(() => this.emit('spawn'));
   }
   private receive(m: Call & { version: string }): void {
     if (m.version !== 'lc-subscription-ask/1') return this.fail(m.id, 'invalid_request');
     this.calls.push({ id: m.id, method: m.method, params: m.params });
+    this.onCall(this.calls.at(-1)!);
     if (m.method === 'connection/read') return this.account === null ? undefined : this.reply(m.id, this.account); // null: the test answers by hand
     if (m.method === 'connection/login/start') return this.reply(m.id, { login_id: 'login-1', auth_url: this.loginUrl });
     if (m.method === 'connection/login/cancel') return this.reply(m.id, {});
     if (m.method === 'ask/cancel' || m.method === 'session/stop') {
       const ask = this.held();
-      if (m.method === 'ask/cancel') this.reply(m.id, { cancelled: ask !== null, uncertain: ask !== null && this.onCancel === 'unconfirmed' });
+      const receipt = m.method === 'ask/cancel' ? this.cancelReceipt : this.stopReceipt;
+      if (receipt) this.reply(m.id, receipt.result);
+      else if (m.method === 'ask/cancel') this.reply(m.id, { cancelled: ask !== null, uncertain: ask !== null && this.onCancel === 'unconfirmed' });
       else if (ask && this.onCancel === 'unconfirmed') this.fail(m.id, 'interrupt_unconfirmed');
       else this.reply(m.id, {});
       if (ask && this.onCancel !== 'silent') this.fail(ask.id, 'cancelled');

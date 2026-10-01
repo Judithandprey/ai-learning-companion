@@ -9,7 +9,7 @@ import assert from 'node:assert/strict';
 import * as crypto from 'node:crypto';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
-import { harness, plain, quitLinks, running, settle, type FakeWindow } from './main-harness.ts';
+import { deferred, harness, plain, quitLinks, running, settle, type FakeWindow } from './main-harness.ts';
 import { overlayPage, until } from './overlay-page.ts';
 import { controlPage } from './control-page.ts';
 import { DEFAULT_RETENTION_POLICY } from '../src/shared/retention.ts';
@@ -408,6 +408,12 @@ test('[synthetic connector] what cannot be written is not asked: a selection tha
   w.page.click('askSubmit');
   await until('refused', () => /^Not sent:/.test(w.page.ask().status ?? ''));
   assert.match(w.page.ask().status ?? '', /^Not sent: the question could not be written to this device \(.*\), so it was not sent\.$/);
+  // Nothing was asked, so nothing of a question is left unwritten: the session's end does not say there is.
+  w.page.click('close');
+  w.h.end('stopped by the test');
+  const ended = (): string | null => (plain(w.press('lc:session-state')) as { ended?: string | null }).ended ?? null;
+  await until('ended', () => ended() !== null, 5000);
+  assert.equal(ended(), 'stopped by the test');
   w.h.failWrites.on = false;
   assert.equal(w.fakes.last().asks().length, 0, 'nothing was sent');
   assert.deepEqual(w.records().find((r) => r['selection_id'] === id)!.requests, [], 'and no request is recorded as made');
@@ -451,7 +457,7 @@ test('[synthetic connector] the help chosen is per selection, and Cancel pressed
   const selection = w.records()[0]!['selection_id'];
   const request = (w.fakes.last().asks()[0]!.params as { request: AskRequest }).request.request_id;
   w.page.click('askCancel');
-  w.s.overlay.webContents.send('lc:ask-result', selection, request, { status: 'answered', answer: { text: 'An answer that crosses the Cancel.', model: 'vision-model', latency_ms: 5 } });
+  w.s.overlay.webContents.send('lc:ask-result', selection, request, { status: 'answered', answer: { text: 'An answer that crosses the Cancel.', model: 'vision-model', latency_ms: 5 } }, { saved: true, reason: null });
   await settle();
   await new Promise((r) => setTimeout(r, 20));
   assert.deepEqual([w.page.ask().answer, w.page.ask().status], [null, 'Cancelled: no answer is shown. Whether ChatGPT stopped working on it is not confirmed; it may still have counted against your usage.'], 'said it would not be shown, and it is not');
@@ -462,6 +468,440 @@ test('[synthetic connector] the help chosen is per selection, and Cancel pressed
   w.page.click('askSubmit');
   await until('sent', () => w.fakes.last().asks().length === 2);
   assert.equal((w.fakes.last().asks()[1]!.params as { request: AskRequest }).request.assistance, 'hint');
+});
+
+test('[synthetic connector] how a question ended, said before the overlay has the submit\'s acknowledgement, is still shown: an answer, a refusal and a cancel; a result for another request is not', async () => {
+  const w = await app({ configure: (c) => void (c.onCancel = 'silent') });
+  const entries = (): Array<Record<string, unknown>> => w.records().at(-1)!.requests;
+  const idOf = (i: number): string => (w.fakes.last().asks()[i]!.params as { request: AskRequest }).request.request_id;
+  // An immediate refusal (the connector says ChatGPT is not signed in at once).
+  await w.select();
+  let release = w.page.holdSubmitAck();
+  w.page.click('askSubmit');
+  await until('sent', () => w.fakes.last().asks().length === 1);
+  w.fakes.last().fail(w.fakes.last().asks()[0]!.id, 'unauthenticated');
+  await until('recorded by the main process', () => entries()[0]!['outcome'] !== null);
+  await settle();
+  assert.equal(w.page.ask().status, 'Sending this picture and your question to ChatGPT…', 'not acknowledged yet');
+  release();
+  await until('shown', () => /^No answer/.test(w.page.ask().status ?? ''));
+  assert.deepEqual([w.page.ask().status, w.page.ask().badge, w.page.ask().submit, w.page.ask().cancel], ['No answer: ChatGPT is not signed in (sign in from the control window). It was not sent again.', 'Selection · asked: no answer shown', true, false]);
+  await new Promise((r) => setTimeout(r, 30));
+  assert.equal(/Waiting for the answer/.test(w.page.ask().status ?? ''), false, 'never left waiting');
+  assert.equal(w.sub().state, 'signed_out', 'as the connector said');
+  w.press('lc:sub-check'); // the user checks again (the stand-in's account is signed in)
+  await until('signed in', () => w.sub().state === 'signed_in');
+  // An answer, with a result for another request of this selection in between: only this request's is shown.
+  release = w.page.holdSubmitAck();
+  w.page.click('askSubmit');
+  await until('sent', () => w.fakes.last().asks().length === 2);
+  const selection = w.records()[0]!['selection_id'];
+  w.s.overlay.webContents.send('lc:ask-result', selection, `${String(selection)}.7`, { status: 'answered', answer: { text: 'For a request this card never made.', model: 'vision-model', latency_ms: 5 } }, { saved: true, reason: null });
+  await settle();
+  release();
+  await until('acknowledged', () => /Waiting for the answer…$/.test(w.page.ask().status ?? ''));
+  assert.deepEqual([w.page.ask().answer, w.page.ask().cancel, w.page.ask().badge], [null, true, 'Selection · asked: being sent to ChatGPT'], 'the other request\'s answer is not accepted');
+  assert.equal(idOf(1), `${String(selection)}.2`);
+  w.fakes.last().answer('The answer to the question that was asked.');
+  await until('answered', () => w.page.ask().answer !== null);
+  assert.equal(w.page.ask().answer, 'The answer to the question that was asked.');
+  assert.deepEqual(entries().map((x) => [(x['outcome'] as { status: string }).status, x['shown']]), [['refused', false], ['answered', true]]);
+});
+
+test('[synthetic connector] an answer said before the acknowledgement is shown once acknowledged and only then recorded as shown; a Cancel pressed before it shows none', async () => {
+  const w = await app({ configure: (c) => void (c.onCancel = 'silent') });
+  const entries = (): Array<Record<string, unknown>> => w.records().at(-1)!.requests;
+  await w.select();
+  let release = w.page.holdSubmitAck();
+  w.page.click('askSubmit');
+  await until('sent', () => w.fakes.last().asks().length === 1);
+  w.fakes.last().answer('Answered before the acknowledgement.');
+  await until('recorded', () => entries()[0]!['outcome'] !== null);
+  await settle();
+  assert.deepEqual([w.page.ask().answer, entries()[0]!['shown']], [null, false]);
+  release();
+  await until('shown', () => w.page.ask().answer !== null);
+  await until('recorded as shown', () => entries()[0]!['shown'] === true);
+  assert.deepEqual([w.page.ask().answer, w.page.ask().status, w.page.ask().badge, w.page.ask().save], ['Answered before the acknowledgement.', 'Answered by ChatGPT (vision-model) in 1.2 s, about the picture above and your question only.', 'Selection · answered by ChatGPT below', false]);
+  // Cancel pressed while the submit is still unacknowledged; the cancelled outcome arrives before the acknowledgement.
+  release = w.page.holdSubmitAck();
+  w.page.click('askSubmit');
+  await until('sent', () => w.fakes.last().asks().length === 2);
+  w.page.click('askCancel');
+  await until('the cancel is told', () => w.fakes.last().count('ask/cancel') === 1);
+  w.fakes.last().fail(w.fakes.last().asks()[1]!.id, 'cancelled');
+  await until('recorded', () => entries()[1]!['outcome'] !== null);
+  await settle();
+  release();
+  await until('said', () => /^Cancelled: no answer is shown\./.test(w.page.ask().status ?? ''));
+  assert.deepEqual([w.page.ask().answer, w.page.ask().submit, w.page.ask().cancel, w.page.ask().badge], [null, true, false, 'Selection · asked: no answer shown']);
+  // An answer that had already left the main process when Cancel was pressed before the acknowledgement: not shown,
+  // and the record says it was not (its text is not kept).
+  release = w.page.holdSubmitAck();
+  w.page.click('askSubmit');
+  await until('sent', () => w.fakes.last().asks().length === 3);
+  w.fakes.last().answer('An answer the user cancelled before seeing.');
+  await until('recorded', () => entries()[2]!['outcome'] !== null);
+  await settle();
+  w.page.click('askCancel');
+  release();
+  await until('said', () => /^Cancelled: no answer is shown\./.test(w.page.ask().status ?? ''));
+  await until('the record follows', () => (entries()[2]!['outcome'] as { status: string }).status === 'cancelled');
+  assert.deepEqual([w.page.ask().answer, entries()[2]!['shown'], entries()[2]!['outcome'], JSON.stringify(w.records()).includes('cancelled before seeing')], [null, false, { status: 'cancelled', uncertain: true }, false]);
+  assert.equal(w.fakes.last().asks().length, 3, 'three presses, three sends');
+  // The card is closed while an answer is still held back from it: it was never shown, and its text is not kept.
+  release = w.page.holdSubmitAck();
+  w.page.click('askSubmit');
+  await until('sent', () => w.fakes.last().asks().length === 4);
+  w.fakes.last().answer('An answer for a card that closed first.');
+  await until('recorded', () => entries()[3]!['outcome'] !== null);
+  await settle();
+  w.page.click('close');
+  release();
+  await settle();
+  await new Promise((r) => setTimeout(r, 20));
+  assert.deepEqual([w.page.review.card(), entries()[3]!['shown'], entries()[3]!['outcome'], JSON.stringify(w.records()).includes('closed first')], [null, false, { status: 'cancelled', uncertain: true }, false]);
+});
+
+test('[synthetic connector] an answer whose record cannot be written is said as NOT saved, kept in the app, and written by Save; it is recorded as shown only once the overlay showed it', async () => {
+  const w = await app();
+  await w.select();
+  w.page.click('askSubmit');
+  await until('sent', () => w.fakes.last().asks().length === 1);
+  const png = fs.readFileSync(path.join(w.folder(), w.records()[0]!.image.file));
+  w.h.failWrites.on = true;
+  w.fakes.last().answer('SYNTHETIC assistance that must not vanish.');
+  await until('shown', () => w.page.ask().answer !== null);
+  await until('said', () => /NOT saved/.test(w.page.ask().status ?? ''));
+  assert.equal(w.page.ask().status, 'Answered by ChatGPT (vision-model) in 1.2 s, about the picture above and your question only. This is NOT saved on this device yet: it could not be written (Error: EIO: i/o error (injected)). It is kept in the app and tried again when this card closes; press Save to try now.');
+  assert.deepEqual([w.page.ask().answer, w.page.ask().save], ['SYNTHETIC assistance that must not vanish.', true]);
+  assert.equal(w.records()[0]!.requests[0]!['outcome'], null, 'the device has the question, not yet how it ended');
+  // Save while it still cannot be written: still said; nothing is asked again.
+  w.page.click('askSave');
+  await settle();
+  await new Promise((r) => setTimeout(r, 20));
+  assert.deepEqual([w.page.ask().save, /NOT saved/.test(w.page.ask().status ?? '')], [true, true]);
+  w.h.failWrites.on = false;
+  w.page.click('askSave');
+  await until('saved', () => !w.page.ask().save);
+  assert.equal(w.page.ask().status, 'Answered by ChatGPT (vision-model) in 1.2 s, about the picture above and your question only.');
+  const entry = w.records()[0]!.requests[0]!;
+  assert.deepEqual([(entry['outcome'] as { status: string; answer: { text: string } }).status, (entry['outcome'] as { answer: { text: string } }).answer.text, entry['shown']], ['answered', 'SYNTHETIC assistance that must not vanish.', true]);
+  assert.deepEqual([w.fakes.last().asks().length, fs.readFileSync(path.join(w.folder(), w.records()[0]!.image.file)).equals(png)], [1, true], 'asked once; the original picture is untouched');
+  // A refusal whose record cannot be written is said the same way.
+  w.page.click('askSubmit');
+  await until('sent', () => w.fakes.last().asks().length === 2);
+  w.h.failWrites.on = true;
+  w.fakes.last().fail(w.fakes.last().asks()[1]!.id, 'quota');
+  await until('said', () => /NOT saved/.test(w.page.ask().status ?? ''));
+  assert.match(w.page.ask().status ?? '', /^No answer: the subscription's usage limit was reached\. It was not sent again\. This is NOT saved on this device yet: /);
+  w.h.failWrites.on = false;
+  w.page.click('askSave');
+  await until('saved', () => !w.page.ask().save);
+  assert.equal(w.page.ask().status, 'No answer: the subscription\'s usage limit was reached. It was not sent again.', 'the status of this outcome, not of the one before');
+  assert.deepEqual(w.records()[0]!.requests.map((x) => (x['outcome'] as { status: string }).status), ['answered', 'refused']);
+  // A refusal that is NOT saved, then the capture ends: the card goes on saying so, with Save.
+  w.page.click('askSubmit');
+  await until('sent', () => w.fakes.last().asks().length === 3);
+  w.h.failWrites.on = true;
+  w.fakes.last().fail(w.fakes.last().asks()[2]!.id, 'quota');
+  await until('said', () => /NOT saved/.test(w.page.ask().status ?? ''));
+  w.page.review.endCapture('the capture ended in this test');
+  assert.deepEqual([/^No answer: .* This is NOT saved on this device yet: /.test(w.page.ask().status ?? ''), w.page.ask().save, w.page.ask().form], [true, true, false]);
+  w.h.failWrites.on = false;
+});
+
+test('[synthetic connector] while an outcome is NOT saved, an Ask that is refused leaves the card saying so with Save and the answer; a late Save answer never replaces a newer question\'s status', async () => {
+  const w = await app();
+  const NOT_SAVED = 'NOT saved on this device yet: it could not be written (Error: EIO: i/o error (injected)). It is kept in the app and tried again when this card closes; press Save to try now.';
+  await w.select();
+  w.page.click('askSubmit');
+  await until('sent', () => w.fakes.last().asks().length === 1);
+  w.h.failWrites.on = true;
+  w.fakes.last().answer('An answer the device has not written.');
+  await until('said', () => /NOT saved/.test(w.page.ask().status ?? ''));
+  // Ask again while it still cannot be written: refused, and the card still says what is not saved.
+  w.page.click('askSubmit');
+  await until('refused', () => /^Not sent:/.test(w.page.ask().status ?? ''));
+  assert.equal(w.page.ask().status, `Not sent: the question could not be written to this device (Error: EIO: i/o error (injected)), so it was not sent. How the question before ended is ${NOT_SAVED}`);
+  assert.deepEqual([w.page.ask().save, w.page.ask().answer, w.page.ask().submit], [true, 'An answer the device has not written.', true]);
+  w.page.click('askSave'); // still cannot be written: said again, about the question before
+  await settle();
+  await new Promise((r) => setTimeout(r, 20));
+  assert.equal(w.page.ask().status, `Not sent: the question could not be written to this device (Error: EIO: i/o error (injected)), so it was not sent. How the question before ended is ${NOT_SAVED}`);
+  assert.deepEqual([w.page.ask().save, w.page.ask().answer], [true, 'An answer the device has not written.']);
+  // Refused for another reason, the device writable again: the same; nothing is written until Save (or the card's end).
+  w.h.failWrites.on = false;
+  w.page.question('   ');
+  w.page.click('askSubmit');
+  await until('refused', () => /^Not sent: the question is empty/.test(w.page.ask().status ?? ''));
+  assert.equal(w.page.ask().status, `Not sent: the question is empty or too long. How the question before ended is ${NOT_SAVED}`);
+  assert.deepEqual([w.page.ask().save, w.page.ask().answer, w.records()[0]!.requests[0]!['outcome']], [true, 'An answer the device has not written.', null]);
+  // Save, and at once Ask (its acknowledgement held back): the Save's answer does not replace "Sending…".
+  w.page.question('And now?');
+  const release = w.page.holdSubmitAck();
+  w.page.click('askSave');
+  w.page.click('askSubmit');
+  await until('sent', () => w.fakes.last().asks().length === 2);
+  await settle();
+  await new Promise((r) => setTimeout(r, 20));
+  assert.deepEqual([w.page.ask().status, w.page.ask().save], ['Sending this picture and your question to ChatGPT…', false]);
+  release();
+  await until('acknowledged', () => /^Asked at/.test(w.page.ask().status ?? ''));
+  assert.deepEqual(w.records()[0]!.requests.map((x) => [(x['outcome'] as { status: string } | null)?.status ?? null, x['shown']]), [['answered', true], [null, false]]);
+  // That question is refused; nothing is unsaved now, so nothing says so.
+  w.fakes.last().fail(w.fakes.last().asks()[1]!.id, 'quota');
+  await until('refused', () => /^No answer/.test(w.page.ask().status ?? ''));
+  w.page.question('');
+  w.page.click('askSubmit');
+  await until('refused', () => /^Not sent/.test(w.page.ask().status ?? ''));
+  assert.deepEqual([w.page.ask().status, w.page.ask().save], ['Not sent: the question is empty or too long.', false]);
+  assert.equal(w.fakes.last().asks().length, 2, 'two accepted presses, two sends');
+});
+
+test('[synthetic connector] an Ask refused while the outcome before is unwritten leaves it held as unwritten: Save then writes it; a Save answered while an Ask is out is still taken', async () => {
+  const w = await app();
+  await w.select();
+  w.page.click('askSubmit');
+  await until('sent', () => w.fakes.last().asks().length === 1);
+  w.h.failWrites.on = true;
+  w.fakes.last().answer('An answer the device has not written.');
+  await until('said', () => /NOT saved/.test(w.page.ask().status ?? ''));
+  w.page.click('askSubmit');
+  await until('refused', () => /^Not sent:/.test(w.page.ask().status ?? ''));
+  w.h.failWrites.on = false;
+  w.page.click('askSave');
+  await until('saved', () => !w.page.ask().save);
+  const entry = w.records()[0]!.requests[0]!;
+  assert.deepEqual([(entry['outcome'] as { status: string } | null)?.status ?? null, entry['shown'], w.records()[0]!.requests.length, w.fakes.last().asks().length], ['answered', true, 1, 1], 'really written, and nothing asked again');
+  assert.equal(w.page.ask().status, 'Not sent: the question could not be written to this device (Error: EIO: i/o error (injected)), so it was not sent.');
+  // Unwritten again; Save (it is written now) and at once an Ask that is refused: the Save's answer was taken, so
+  // nothing is said to be unsaved.
+  w.page.click('askSubmit');
+  await until('sent', () => w.fakes.last().asks().length === 2);
+  w.h.failWrites.on = true;
+  w.fakes.last().answer('A second answer.');
+  await until('said', () => /NOT saved/.test(w.page.ask().status ?? ''));
+  w.h.failWrites.on = false;
+  w.page.question('   ');
+  const release = w.page.holdSubmitAck();
+  w.page.click('askSave');
+  w.page.click('askSubmit');
+  await settle();
+  await new Promise((r) => setTimeout(r, 20));
+  assert.equal(w.page.ask().status, 'Sending this picture and your question to ChatGPT…');
+  release();
+  await until('refused', () => /^Not sent:/.test(w.page.ask().status ?? ''));
+  assert.deepEqual([w.page.ask().status, w.page.ask().save, w.page.ask().answer], ['Not sent: the question is empty or too long.', false, 'A second answer.']);
+  assert.deepEqual(w.records()[0]!.requests.map((x) => [(x['outcome'] as { status: string }).status, x['shown']]), [['answered', true], ['answered', true]]);
+});
+
+test('[synthetic connector] what the overlay says it did with an answer is taken only from the overlay, for the current selection and that request, and once', async () => {
+  const w = await app();
+  await w.select();
+  const id = w.records()[0]!['selection_id'] as string;
+  const overlay = { sender: w.s.overlay.webContents };
+  const release = w.page.holdSubmitAck();
+  w.page.click('askSubmit');
+  await until('sent', () => w.fakes.last().asks().length === 1);
+  const request = `${id}.1`;
+  w.fakes.last().answer('An answer not yet shown.');
+  await until('recorded', () => w.records()[0]!.requests[0]!['outcome'] !== null);
+  await settle();
+  const before = JSON.stringify(w.records());
+  assert.equal(w.records()[0]!.requests[0]!['shown'], false);
+  for (const from of [{ sender: w.control.webContents }, { sender: {} }]) {
+    assert.deepEqual(plain(await w.h.handlers['lc:ask-presented']!(from, id, request, true)), { saved: false, reason: 'refused' });
+    assert.deepEqual(plain(await w.h.handlers['lc:ask-presented']!(from, id, request, false)), { saved: false, reason: 'refused' });
+    assert.deepEqual(plain(await w.h.handlers['lc:ask-save']!(from, id)), { saved: false, reason: 'refused' });
+  }
+  // From the overlay, but for another selection or another request: nothing changes.
+  await w.h.handlers['lc:ask-presented']!(overlay, 'ask-0000000000000000', request, true);
+  await w.h.handlers['lc:ask-presented']!(overlay, id, `${id}.9`, true);
+  await w.h.handlers['lc:ask-presented']!(overlay, id, `${id}.9`, false);
+  assert.equal(JSON.stringify(w.records()), before);
+  assert.deepEqual(plain(await w.h.handlers['lc:ask-save']!(overlay, 'ask-0000000000000000')), { saved: false, reason: 'this is no longer the current selection' });
+  // Shown, then said as not shown: what was recorded as shown stays, with its text.
+  release();
+  await until('shown', () => w.records()[0]!.requests[0]!['shown'] === true);
+  assert.deepEqual(plain(await w.h.handlers['lc:ask-presented']!(overlay, id, request, false)), { saved: true, reason: null });
+  const entry = w.records()[0]!.requests[0]!;
+  assert.deepEqual([(entry['outcome'] as { status: string; answer: { text: string } }).answer.text, entry['shown']], ['An answer not yet shown.', true]);
+});
+
+test('[synthetic connector] an outcome still unwritten when its card goes is written when it can be: at the card\'s end, at the session\'s end (said there if not), and at the next Start', async () => {
+  const w = await app();
+  const said = (): string | null => (plain(w.press('lc:session-state')) as { ended?: string | null }).ended ?? null;
+  await w.select();
+  const folder = w.folder();
+  const entry = (): Record<string, unknown> => (JSON.parse(fs.readFileSync(path.join(folder, 'asks', fs.readdirSync(path.join(folder, 'asks')).find((f) => f.endsWith('.json'))!), 'utf8')) as { requests: Array<Record<string, unknown>> }).requests[0]!;
+  w.page.click('askSubmit');
+  await until('sent', () => w.fakes.last().asks().length === 1);
+  w.h.failWrites.on = true;
+  w.fakes.last().answer('Shown, and written late.');
+  await until('said', () => /NOT saved/.test(w.page.ask().status ?? ''));
+  // The card is closed while it still cannot be written, then the session is stopped while it still cannot.
+  w.page.click('close');
+  await settle();
+  assert.equal(entry()['outcome'], null);
+  w.h.end('stopped by the test');
+  await until('ended', () => said() !== null, 5000);
+  assert.match(said()!, /^stopped by the test\. How 1 question\(s\) to ChatGPT ended \(an answer included, if one was shown\) could not be written to this device \(Error: EIO: i\/o error \(injected\)\); the selections and their pictures are kept, without that outcome, and writing it is tried again at the next Start and when the app closes$/);
+  assert.equal(entry()['outcome'], null);
+  // The device can be written again: the next Start writes it, exactly as it was held.
+  w.h.failWrites.on = false;
+  await running(w.h);
+  assert.deepEqual([(entry()['outcome'] as { status: string }).status, (entry()['outcome'] as { answer: { text: string } }).answer.text, entry()['shown']], ['answered', 'Shown, and written late.', true]);
+  assert.equal(w.fakes.made.reduce((n, c) => n + c.asks().length, 0), 1, 'never asked again to repair the record');
+});
+
+test('[synthetic connector] an unwritten outcome is written at its card\'s end, or at the session\'s end, when the device can be written then: nothing is said, and nothing is asked again', async () => {
+  for (const at of ['card', 'session'] as const) {
+    const w = await app();
+    const ended = (): string | null => (plain(w.press('lc:session-state')) as { ended?: string | null }).ended ?? null;
+    await w.select();
+    w.page.click('askSubmit');
+    await until('sent', () => w.fakes.last().asks().length === 1);
+    w.h.failWrites.on = true;
+    w.fakes.last().answer(`Written at the ${at}'s end.`);
+    await until('said', () => /NOT saved/.test(w.page.ask().status ?? ''));
+    if (at === 'card') w.h.failWrites.on = false;
+    w.page.click('close');
+    await settle();
+    const entry = (): Record<string, unknown> => w.records()[0]!.requests[0]!;
+    if (at === 'card') {
+      assert.deepEqual([(entry()['outcome'] as { status: string; answer: { text: string } }).answer.text, entry()['shown']], ['Written at the card\'s end.', true]);
+    } else {
+      assert.equal(entry()['outcome'], null);
+      w.h.failWrites.on = false;
+    }
+    w.h.end('stopped by the test');
+    await until('ended', () => ended() !== null, 5000);
+    assert.equal(ended(), 'stopped by the test', 'nothing is left unwritten, so nothing says so');
+    assert.deepEqual([(entry()['outcome'] as { status: string; answer: { text: string } }).answer.text, entry()['shown'], w.fakes.last().asks().length], [`Written at the ${at}'s end.`, true, 1]);
+  }
+});
+
+test('[synthetic connector] an outcome that comes after its session ended and cannot be written is said where the session\'s end is said, counted with what is already held, and written at the next Start', async () => {
+  const w = await app({ configure: (c) => void (c.onCancel = 'silent') });
+  const ended = (): string | null => (plain(w.press('lc:session-state')) as { ended?: string | null }).ended ?? null;
+  const told = (): string | null => (plain(w.control.sent.filter((m) => m[0] === 'lc:session').at(-1)?.[1]) as { ended?: string | null } | undefined)?.ended ?? null;
+  const folder = (): string => w.folder();
+  const all = (): Array<{ selection_id: string; requests: Array<Record<string, unknown>> }> => w.records() as never;
+  // A first selection whose answer is shown but cannot be written; a second selection then replaces its card.
+  await w.select();
+  const first = all()[0]!.selection_id;
+  w.page.click('askSubmit');
+  await until('sent', () => w.fakes.last().asks().length === 1);
+  w.h.failWrites.only = `${first}.json`;
+  w.fakes.last().answer('Shown on the first card.');
+  await until('said', () => /NOT saved/.test(w.page.ask().status ?? ''));
+  await w.select(600, 120);
+  const dir = folder();
+  const entryOf = (id: string): Record<string, unknown> => (JSON.parse(fs.readFileSync(path.join(dir, 'asks', `${id}.json`), 'utf8')) as { requests: Array<Record<string, unknown>> }).requests[0]!;
+  const second = all().map((r) => r.selection_id).find((id) => id !== first)!;
+  w.page.click('askSubmit');
+  await until('sent', () => w.fakes.last().asks().length === 2);
+  w.h.end('stopped by the test');
+  await until('ended', () => ended() !== null, 5000);
+  assert.match(ended()!, /^stopped by the test\. How 1 question\(s\) to ChatGPT ended /, 'the first, held since its card was replaced');
+  assert.equal(w.sub().asking, true, 'the second question is still out');
+  // The second question ends after the session, and cannot be written either.
+  w.h.failWrites.only = null;
+  w.h.failWrites.on = true;
+  w.fakes.last().answer('An answer after the Stop.');
+  await until('the question ended', () => w.sub().asking === false);
+  assert.deepEqual([entryOf(first)['outcome'], entryOf(second)['outcome']], [null, null]);
+  assert.equal(ended(), 'stopped by the test. How 2 question(s) to ChatGPT ended (an answer included, if one was shown) could not be written to this device (Error: EIO: i/o error (injected)); the selections and their pictures are kept, without that outcome, and writing it is tried again at the next Start and when the app closes');
+  assert.equal(told(), ended(), 'the control window is told, with one notice and the count as it is now');
+  // A Start that is cancelled while it is still listing the displays says it again (the records are still held).
+  const listing = deferred<unknown[]>();
+  w.h.sources.push(listing.promise);
+  const starting = w.h.start('screen:1:0');
+  w.h.end('stopped during Start');
+  listing.resolve([w.h.source]);
+  await starting;
+  assert.match(ended()!, /^stopped during Start\. How 2 question\(s\) to ChatGPT ended /);
+  assert.deepEqual([entryOf(first)['outcome'], entryOf(second)['outcome']], [null, null]);
+  // The device can be written again: the next Start writes both, as they were held.
+  w.h.failWrites.on = false;
+  await running(w.h);
+  assert.deepEqual([(entryOf(first)['outcome'] as { answer: { text: string } }).answer.text, entryOf(first)['shown']], ['Shown on the first card.', true]);
+  assert.deepEqual([entryOf(second)['outcome'], entryOf(second)['shown'], JSON.stringify(entryOf(second)).includes('after the Stop')], [{ status: 'cancelled', uncertain: true }, false, false], 'never shown, its text not kept');
+  assert.equal(w.fakes.made.reduce((n, c) => n + c.asks().length, 0), 2, 'two presses, two sends');
+  // The pictures on this device are as they were.
+  for (const r of all()) assert.equal(sha(fs.readFileSync(path.join(dir, (r as unknown as { image: { file: string } }).image.file))), (r as unknown as { image: { sha256: string } }).image.sha256);
+});
+
+test('[synthetic connector] an outcome that stays unwritten is said again at every later session\'s end (not in that session\'s manifest), holds the app\'s close once, and is tried as Windows ends the session and as the app quits', async () => {
+  const w = await app();
+  const ended = (): string | null => (plain(w.press('lc:session-state')) as { ended?: string | null }).ended ?? null;
+  const NOTICE = /^stopped by the test\. How 1 question\(s\) to ChatGPT ended .* and writing it is tried again at the next Start and when the app closes$/;
+  await w.select();
+  const folder = w.folder();
+  const entry = (): Record<string, unknown> => (JSON.parse(fs.readFileSync(path.join(folder, 'asks', fs.readdirSync(path.join(folder, 'asks')).find((f) => f.endsWith('.json'))!), 'utf8')) as { requests: Array<Record<string, unknown>> }).requests[0]!;
+  w.page.click('askSubmit');
+  await until('sent', () => w.fakes.last().asks().length === 1);
+  w.h.failWrites.on = true;
+  w.fakes.last().answer('Shown, and still unwritten.');
+  await until('said', () => /NOT saved/.test(w.page.ask().status ?? ''));
+  w.h.end('stopped by the test');
+  await until('ended', () => ended() !== null, 5000);
+  assert.match(ended()!, NOTICE);
+  // A new session while that record still cannot be written: tried at the Start, and its end says it again.
+  w.h.failWrites.on = false;
+  w.h.failWrites.only = `${path.sep}asks${path.sep}`;
+  const next = async () => overlayPage(w.h, await running(w.h), { ...DEFAULT_RETENTION_POLICY, min_interval_ms: 0 });
+  const page = await next();
+  assert.deepEqual([ended(), entry()['outcome']], [null, null], 'tried at the Start, and still unwritten');
+  await page.review.sample();
+  await page.review.retention().queue;
+  const captures = path.join(w.h.userData, 'captures');
+  const later = fs.readdirSync(captures).map((d) => path.join(captures, d)).find((d) => d !== folder)!;
+  w.h.end('stopped by the test');
+  await until('ended again', () => ended() !== null, 5000);
+  assert.match(ended()!, NOTICE);
+  const lines = fs.readFileSync(path.join(later, 'manifest.jsonl'), 'utf8').trim().split('\n').map((l) => JSON.parse(l) as { kind: string; reason?: string });
+  assert.deepEqual([lines.at(-1)!.kind, lines.at(-1)!.reason], ['ended', 'stopped by the test'], 'that session\'s own manifest says only how it ended');
+  // Closing the app during a session: its end says it, and the window stays once instead of quitting.
+  await next();
+  let prevented = false;
+  (w.control as unknown as FakeWindow).emit('close', { preventDefault: () => (prevented = true) });
+  await until('ended by the close', () => ended() !== null, 5000);
+  await settle();
+  assert.deepEqual([prevented, w.h.quits.n], [true, 0]);
+  assert.match(ended()!, /^the app was closed\. How 1 question\(s\) to ChatGPT ended /);
+  // The next close is not held.
+  prevented = false;
+  (w.control as unknown as FakeWindow).emit('close', { preventDefault: () => (prevented = true) });
+  assert.equal(prevented, false);
+  // Windows ending the user's session (no quit event then): tried, still unwritten; then written once it can be.
+  (w.control as unknown as FakeWindow).emit('session-end');
+  assert.equal(entry()['outcome'], null);
+  w.h.failWrites.only = null;
+  (w.control as unknown as FakeWindow).emit('query-session-end', { preventDefault: () => undefined });
+  assert.deepEqual([(entry()['outcome'] as { status: string; answer: { text: string } }).answer.text, entry()['shown']], ['Shown, and still unwritten.', true]);
+  assert.equal(w.fakes.made.reduce((n, c) => n + c.asks().length, 0), 1, 'never asked again');
+});
+
+test('[synthetic connector] a record held unwritten is tried a last time as the app quits, and as Windows ends the session', async () => {
+  for (const by of ['before-quit', 'session-end'] as const) {
+    const w = await app();
+    await w.select();
+    const entry = (): Record<string, unknown> => w.records()[0]!.requests[0]!;
+    w.page.click('askSubmit');
+    await until('sent', () => w.fakes.last().asks().length === 1);
+    w.h.failWrites.on = true;
+    w.fakes.last().answer(`Written at ${by}.`);
+    await until('said', () => /NOT saved/.test(w.page.ask().status ?? ''));
+    w.h.end('stopped by the test');
+    await until('ended', () => (plain(w.press('lc:session-state')) as { ended?: string | null }).ended != null, 5000);
+    assert.equal(entry()['outcome'], null);
+    w.h.failWrites.on = false;
+    if (by === 'before-quit') w.h.app.emit('before-quit');
+    else (w.control as unknown as FakeWindow).emit('session-end');
+    assert.deepEqual([(entry()['outcome'] as { answer: { text: string } }).answer.text, entry()['shown'], w.fakes.last().asks().length], [`Written at ${by}.`, true, 1]);
+  }
 });
 
 test('[synthetic connector] every new request is taken only from its own window', async () => {

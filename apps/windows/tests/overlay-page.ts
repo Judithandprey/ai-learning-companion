@@ -162,9 +162,15 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
     onLoadDoc: (f: (...a: unknown[]) => void) => events.set('load', f),
     // ASK with the subscription: as over IPC (bytes cross as Uint8Array, the rest as plain data).
     askSelection: async (facts: unknown, png: Uint8Array, inkBytes: Uint8Array) => plain(await h.handlers['lc:ask-selection']!({ sender: s.overlay.webContents }, plain(facts), Uint8Array.from(png), Uint8Array.from(inkBytes))),
-    askSubmit: async (id: string, question: string, assistance: string) => plain(await h.handlers['lc:ask-submit']!({ sender: s.overlay.webContents }, id, question, assistance)),
+    askSubmit: async (id: string, question: string, assistance: string) => {
+      const answer = plain(await h.handlers['lc:ask-submit']!({ sender: s.overlay.webContents }, id, question, assistance));
+      await submitAck; // the main process has answered; a test may hold its answer back on the way to the overlay
+      return answer;
+    },
     askCancel: (id: string) => void h.handlers['lc:ask-cancel']!({ sender: s.overlay.webContents }, id),
     askClosed: () => void h.handlers['lc:ask-closed']!({ sender: s.overlay.webContents }),
+    askPresented: async (id: string, request: string, shown: boolean) => plain(await h.handlers['lc:ask-presented']!({ sender: s.overlay.webContents }, id, request, shown)),
+    askSave: async (id: string) => plain(await h.handlers['lc:ask-save']!({ sender: s.overlay.webContents }, id)),
     onAskResult: (f: (...a: unknown[]) => void) => events.set('ask-result', f),
     loadResult() {},
   };
@@ -209,6 +215,13 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
   );
   const review = (sandbox as unknown as { review: Review }).review;
   review.frame({ bitmap: frame, seq: 1, at: '2026-09-30T12:00:00.000Z', presented: 1, presentedAt: performance.now() });
+  let submitAck: Promise<void> = Promise.resolve();
+  /** Holds the answers to lc:ask-submit back from the overlay until the returned function is called. */
+  const holdSubmitAck = (): (() => void) => {
+    let release = (): void => undefined;
+    submitAck = new Promise((r) => (release = r));
+    return release;
+  };
   review.mode('WRITE');
   // lc:stop from the main process reaches the overlay's Stop handler, as over IPC.
   const send = s.overlay.webContents.send;
@@ -221,10 +234,10 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
   const pointer = (name: string, id = 1, x = 10, y = 10): void => node('ink').handlers.get(name)!({ pointerId: id, isPrimary: true, pointerType: 'pen', button: 0, buttons: 1, clientX: x, clientY: y, timeStamp: (t += 10), pressure: 0.5 });
   const click = (id: string): void => node(id).handlers.get('click')!({});
   /** The card's ASK parts, as shown. */
-  const ask = () => ({ badge: node('badge').textContent, form: !node('askForm').hidden, submit: !node('askSubmit').disabled, cancel: !node('askCancel').hidden, status: node('askStatus').hidden ? null : node('askStatus').textContent, answer: node('answerBox').hidden ? null : node('answer').textContent });
+  const ask = () => ({ badge: node('badge').textContent, form: !node('askForm').hidden, submit: !node('askSubmit').disabled, cancel: !node('askCancel').hidden, status: node('askStatus').hidden ? null : node('askStatus').textContent, answer: node('answerBox').hidden ? null : node('answer').textContent, save: !node('askSave').hidden });
   /** A press on a mode button, as the user's (the mode before is remembered, as in the app). */
   const press = (m: string): void => buttons.find((b) => b.dataset.mode === m)!.handlers.get('click')!({});
   const choose = (assistance: string): void => radios.forEach((r) => void (r.checked = r.value === assistance));
-  return { review, scene, acks, saves, encoding, pointer, click, hint: () => node('hint').textContent, undoDisabled: () => node('undo').disabled, userData: h.userData, captureId: s.doc.id, ask, choose, press, question: (text: string) => void (node('question').value = text) };
+  return { review, scene, acks, saves, encoding, pointer, click, hint: () => node('hint').textContent, undoDisabled: () => node('undo').disabled, userData: h.userData, captureId: s.doc.id, ask, choose, press, holdSubmitAck, question: (text: string) => void (node('question').value = text) };
 }
 

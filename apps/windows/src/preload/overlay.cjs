@@ -21,5 +21,7 @@ contextBridge.exposeInMainWorld('lc', {
   askSubmit: (selectionId, question, assistance) => ipcRenderer.invoke('lc:ask-submit', String(selectionId), String(question), String(assistance)),
   askCancel: (selectionId) => ipcRenderer.send('lc:ask-cancel', String(selectionId)),
   askClosed: () => ipcRenderer.send('lc:ask-closed'),
-  onAskResult: (fn) => ipcRenderer.on('lc:ask-result', (_e, selectionId, requestId, outcome) => fn(selectionId, requestId, outcome)),
+  askPresented: (selectionId, requestId, shown) => ipcRenderer.invoke('lc:ask-presented', String(selectionId), String(requestId), shown === true),
+  askSave: (selectionId) => ipcRenderer.invoke('lc:ask-save', String(selectionId)),
+  onAskResult: (fn) => ipcRenderer.on('lc:ask-result', (_e, selectionId, requestId, outcome, record) => fn(selectionId, requestId, outcome, record)),
 });

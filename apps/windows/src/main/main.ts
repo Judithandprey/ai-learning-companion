@@ -223,6 +223,7 @@ export function end(reason: string): void {
     starting.cancelled = reason;
     starting = null; // a new Start need not wait for the cancelled one's display listing
     lastEnd = reason;
+    sayUnrecordedAsks(); // a record still held is said again here: no session's end will say it
     notifyControl();
     return;
   }
@@ -286,6 +287,9 @@ function finish(s: Session, reason: string): void {
   link?.stopSending(s.retention.id); // however the session ended
   stopAsking(s);
   lastEnd ??= reason;
+  // Records of questions that could not be written are written now; what still cannot be is said, not dropped silently.
+  if (s.ask) retireSelection(s, s.ask);
+  writeUnrecordedAsks();
   s.opening?.resolve({ ok: false, reason: 'the session ended' });
   s.opening = null;
   if (!s.overlay.isDestroyed()) s.overlay.destroy();
@@ -294,6 +298,7 @@ function finish(s: Session, reason: string): void {
     s.retention.endRecorded = appendRetention(s, endLine, false);
     if (!s.retention.endRecorded) endedUnrecorded.set(s.retention.id, { s, line: endLine }); // kept, shown, and written later if it can be
   }
+  sayUnrecordedAsks(); // every one still held, an earlier session's included (said in the window, not in this session's manifest)
   notifyRetention(s);
   notifyControl();
   if (unresolved()) writeSpareCopies();
@@ -413,9 +418,11 @@ function removeSpare(key: string): void {
 /** Quits after a session ended on close, unless kept ink awaits the user's choice (then the control window says so). */
 function quitIfNothingUnsaved(): void {
   quitting = false;
-  if (!unresolved()) return void app.quit();
+  // How a question ended that is still unwritten is said by the session's end: the window stays once, saying so (the
+  // next close is not held; writing it is tried a last time as the app quits).
+  if (!unresolved() && asksUnrecorded.size === 0) return void app.quit();
   if (control && !control.isDestroyed()) {
-    control.webContents.send('lc:close-held');
+    if (unresolved()) control.webContents.send('lc:close-held');
     control.show();
   }
 }
@@ -500,6 +507,7 @@ function writeUnrecordedEnds(): void {
     endedUnrecorded.delete(id);
     if (!current) notifyRetention(s); // a running session's own record stays shown
   }
+  writeUnrecordedAsks();
 }
 function notifyRetention(s: Session): void {
   const r = s.retention;
@@ -750,6 +758,8 @@ type Selection = {
   readonly record: { format: 'lc-windows-ask/v1'; selection_id: string; selected_at: string; image: unknown; context: AskContext; ink_original: unknown; requests: AskEntry[] };
   /** The question that is out, or the last one. */
   request: { id: string; state: 'asking' | 'cancelled' | 'done' } | null;
+  /** Why the record on this device is behind what is held here (its last write failed), or null. */
+  unsaved: string | null;
 };
 const askFile = (id: string, name: string): string => join(captureDir(id), 'asks', name);
 const isRectValue = (v: unknown): v is { x: number; y: number; width: number; height: number } => isObj(v) && ['x', 'y', 'width', 'height'].every((k) => typeof v[k] === 'number' && Number.isFinite(v[k]));
@@ -825,7 +835,7 @@ function retainSelection(s: Session, factsValue: unknown, pngValue: unknown, ink
   } catch (error) {
     return { ok: false, reason: error instanceof NotItsBytes ? error.message : `the selection could not be written to this device (${message(error)})` };
   }
-  s.ask = { id, image, context, record, request: null };
+  s.ask = { id, image, context, record, request: null, unsaved: null };
   s.progress += 1;
   notifyRetention(s);
   return { ok: true, selection_id: id };
@@ -853,11 +863,12 @@ function submitAsk(s: Session, selectionId: unknown, questionValue: unknown, ass
   };
   const entry: AskEntry = { request_id: request.request_id, question, assistance: request.assistance, model, submitted_at: new Date().toISOString(), ended_at: null, outcome: null, shown: false };
   sel.record.requests.push(entry);
-  try {
-    writeAtomic(askFile(s.retention.id, `${sel.id}.json`), `${JSON.stringify(sel.record)}\n`); // written before it is sent
-  } catch (error) {
+  const before = sel.unsaved;
+  const unwritten = saveAsk(s, sel); // written before it is sent
+  if (unwritten) {
     sel.record.requests.pop();
-    return { ok: false, reason: `the question could not be written to this device (${message(error)}), so it was not sent` };
+    sel.unsaved = before; // nothing was asked: the record is as it was, written or not
+    return { ok: false, reason: `the question could not be written to this device (${unwritten}), so it was not sent` };
   }
   const mine = { id: request.request_id, state: 'asking' as 'asking' | 'cancelled' | 'done' };
   sel.request = mine;
@@ -865,7 +876,44 @@ function submitAsk(s: Session, selectionId: unknown, questionValue: unknown, ass
   return { ok: true, request_id: request.request_id, model };
 }
 
-/** How a question ended: recorded, and shown only if it is still the current selection's live question. */
+/** Writes the selection's record. Null, or why it could not be written (it is then held here, and tried again). */
+function saveAsk(s: Session, sel: Selection): string | null {
+  try {
+    writeAtomic(askFile(s.retention.id, `${sel.id}.json`), `${JSON.stringify(sel.record)}\n`);
+    sel.unsaved = null;
+    asksUnrecorded.delete(sel);
+  } catch (error) {
+    sel.unsaved = message(error);
+  }
+  return sel.unsaved;
+}
+/**
+ * Selections that left their card with a record this device could not write (how a question ended, an answer that
+ * was shown included): held in the app, said where the session's end is said, and written again when the session
+ * ends, at the next Start and when the app closes. The question itself is never asked again for this.
+ */
+const asksUnrecorded = new Map<Selection, Session>();
+function holdUnrecorded(s: Session, sel: Selection): void {
+  asksUnrecorded.set(sel, s);
+  sel.image.data = new Uint8Array(0); // only its record is held: it is never asked about again, and its picture is on this device
+}
+function writeUnrecordedAsks(): void {
+  for (const [sel, s] of [...asksUnrecorded]) saveAsk(s, sel);
+}
+/** Says, where the session's end is said, how many records are still held unwritten (once, with the count as it is now). */
+function sayUnrecordedAsks(): void {
+  const held = [...asksUnrecorded.keys()];
+  if (lastEnd === null || held.length === 0) return;
+  const notice = askNotice(held.length, held.at(-1)!.unsaved);
+  lastEnd = /How \d+ question\(s\) to ChatGPT ended /.test(lastEnd) ? lastEnd.replace(/How \d+ question\(s\) to ChatGPT ended .*$/, notice) : `${lastEnd.replace(/\.$/, '')}. ${notice}`;
+}
+const askNotice = (count: number, reason: string | null): string =>
+  `How ${count} question(s) to ChatGPT ended (an answer included, if one was shown) could not be written to this device (${reason ?? 'unknown'}); the selections and their pictures are kept, without that outcome, and writing it is tried again at the next Start and when the app closes`;
+/**
+ * How a question ended: recorded, and said to the overlay only if it is still the current selection's live question.
+ * An outcome that could not be written is held here and said as not saved (it is written again at the user's press,
+ * when its card goes, and when the session ends); a question is never asked again to repair the record.
+ */
 function askEnded(s: Session, sel: Selection, mine: NonNullable<Selection['request']>, entry: AskEntry, outcome: AskOutcome): void {
   // Checked again here, whatever the connector checked: the session, the selection and the request are still these.
   const live = current === s && !s.ending && s.ask === sel && sel.request === mine && mine.state === 'asking';
@@ -873,19 +921,49 @@ function askEnded(s: Session, sel: Selection, mine: NonNullable<Selection['reque
   mine.state = 'done';
   entry.ended_at = new Date().toISOString();
   entry.outcome = view; // an answer's text is kept only when it is this selection's live answer; apart from the originals
-  entry.shown = live && outcome.status === 'answered';
-  try {
-    writeAtomic(askFile(s.retention.id, `${sel.id}.json`), `${JSON.stringify(sel.record)}\n`);
-  } catch {
-    // The outcome could not be written; what is shown below says how it ended.
-  }
+  entry.shown = false; // until the overlay says it showed it
+  const unwritten = saveAsk(s, sel);
   // Said to the overlay only while this is still the selection on its card.
-  if (current === s && s.ask === sel && sel.request === mine && !s.overlay.isDestroyed()) s.overlay.webContents.send('lc:ask-result', sel.id, mine.id, view);
+  if (current === s && s.ask === sel && sel.request === mine && !s.overlay.isDestroyed()) return void s.overlay.webContents.send('lc:ask-result', sel.id, mine.id, view, { saved: unwritten === null, reason: unwritten });
+  if (unwritten === null || (current === s && s.ask === sel)) return;
+  // Its card is gone: no window is left to say it on but the control window's, where the session's end is said.
+  holdUnrecorded(s, sel);
+  if (current !== null) return; // said when that session ends
+  sayUnrecordedAsks();
+  notifyControl();
+}
+/** The overlay says what it did with an answer: showed it, or (cancelled or ended meanwhile) did not. */
+function askPresented(s: Session, selectionId: unknown, requestId: unknown, shown: unknown): { saved: boolean; reason: string | null } {
+  const sel = s.ask;
+  const entry = sel && sel.id === selectionId ? sel.record.requests.find((r) => r.request_id === requestId) : undefined;
+  if (!sel || !entry || entry.shown || (entry.outcome as AskOutcome | null)?.status !== 'answered') return { saved: sel ? sel.unsaved === null : true, reason: sel?.unsaved ?? null };
+  if (shown === true) entry.shown = true;
+  else entry.outcome = { status: 'cancelled', uncertain: true }; // not shown after all: its text is not kept
+  const unwritten = saveAsk(s, sel);
+  return { saved: unwritten === null, reason: unwritten };
+}
+/** The user's press on Save: the selection's record, held here since a write failed, is written again. */
+function saveAskAgain(s: Session, selectionId: unknown): { saved: boolean; reason: string | null } {
+  const sel = s.ask;
+  if (!sel || sel.id !== selectionId) return { saved: false, reason: 'this is no longer the current selection' };
+  const unwritten = sel.unsaved === null ? null : saveAsk(s, sel);
+  return { saved: unwritten === null, reason: unwritten };
+}
+/** A selection that leaves the card with its record still unwritten: written once more, else kept for the session's end. */
+function retireSelection(s: Session, sel: Selection): void {
+  if (sel.unsaved !== null && saveAsk(s, sel) !== null) holdUnrecorded(s, sel);
 }
 
 /** The card of the current selection is gone (closed, or replaced): its question out is cancelled, and it is no longer asked about. */
 function dropSelection(s: Session): void {
-  if (s.ask) cancelAsk(s, s.ask.id);
+  const sel = s.ask;
+  if (!sel) return;
+  cancelAsk(s, sel.id);
+  // An answer the overlay never said it showed (its messages come in order) was not shown on this card: not kept.
+  const unshown = sel.record.requests.filter((r) => !r.shown && (r.outcome as AskOutcome | null)?.status === 'answered');
+  for (const r of unshown) r.outcome = { status: 'cancelled', uncertain: true };
+  if (unshown.length > 0) saveAsk(s, sel);
+  retireSelection(s, sel);
   s.ask = null;
 }
 /** Cancels the question that is out for this selection: from now its answer is never shown. */
@@ -1156,6 +1234,8 @@ ipcMain.handle('lc:overlay-ready', (e) => {
 ipcMain.handle('lc:ask-selection', (e, facts: unknown, png: unknown, ink: unknown) => (fromOverlay(e) && current ? retainSelection(current, facts, png, ink ?? null) : { ok: false, reason: 'refused' }));
 ipcMain.handle('lc:ask-submit', (e, selectionId: unknown, question: unknown, assistance: unknown) => (fromOverlay(e) && current ? submitAsk(current, selectionId, question, assistance) : { ok: false, reason: 'refused' }));
 ipcMain.on('lc:ask-cancel', (e, selectionId: unknown) => void (fromOverlay(e) && current ? cancelAsk(current, selectionId) : undefined));
+ipcMain.handle('lc:ask-presented', (e, selectionId: unknown, requestId: unknown, shown: unknown) => (fromOverlay(e) && current ? askPresented(current, selectionId, requestId, shown) : { saved: false, reason: 'refused' }));
+ipcMain.handle('lc:ask-save', (e, selectionId: unknown) => (fromOverlay(e) && current ? saveAskAgain(current, selectionId) : { saved: false, reason: 'refused' }));
 ipcMain.on('lc:ask-closed', (e) => void (fromOverlay(e) && current ? dropSelection(current) : undefined)); // the card was closed or replaced
 // Retained frames keep arriving while a Stop waits for the overlay: they were observed before the end.
 ipcMain.handle('lc:retain-frame', (e, facts: unknown, raw: unknown, composed: unknown, ink: unknown): RetainAnswer => (fromOverlay(e) && current ? retainFrame(current, facts, raw, composed, ink ?? null) : { ok: false, reason: 'refused' }));
@@ -1365,6 +1445,7 @@ app.whenReady().then(async () => {
   // Windows signing out or shutting down: keep a running session's ink and any kept ink. The end is delayed
   // while there is something to save or decide; spare copies are written in case it is forced.
   control.on('query-session-end', (e) => {
+    writeUnrecordedEnds(); // what is held unwritten is tried now: Windows may end the app without its quit
     if (starting && !current) end('Windows is signing out or shutting down');
     if (!current && !unresolved()) return;
     e.preventDefault();
@@ -1376,7 +1457,10 @@ app.whenReady().then(async () => {
     control?.show();
     control?.webContents.send('lc:close-held');
   });
-  control.on('session-end', () => writeSpareCopies());
+  control.on('session-end', () => {
+    writeUnrecordedEnds();
+    writeSpareCopies();
+  });
   control.on('closed', () => {
     control = null;
     app.quit();

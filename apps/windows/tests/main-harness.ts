@@ -104,7 +104,8 @@ export function harness(options: { env?: Record<string, string>; link?: Partial<
   const handlers: Record<string, (...a: unknown[]) => unknown> = {};
   const permission: Record<string, (...a: unknown[]) => unknown> = {};
   /** on: every write fails; reads: context pictures cannot be read; partialAppend: the next append writes N bytes, then fails; truncate: truncating fails. */
-  const failWrites = { on: false, reads: false, partialAppend: 0, truncate: false };
+  /** `only`: when set, writes of files whose path contains it fail (the others go on). */
+  const failWrites = { on: false, only: null as string | null, reads: false, partialAppend: 0, truncate: false };
   const timers: Array<{ f: () => void; ms: number }> = [];
   const display = { id: 1, bounds: { x: 0, y: 0, width: 1280, height: 800 }, scaleFactor: 1 };
   const source = { id: 'screen:1:0', display_id: '1', name: 'Display 1', thumbnail: { toDataURL: () => '' } };
@@ -136,7 +137,7 @@ export function harness(options: { env?: Record<string, string>; link?: Partial<
   const sandbox = {
     ...fs,
     writeFileSync: (...a: Parameters<typeof fs.writeFileSync>) => {
-      if (failWrites.on && String(a[0]).startsWith(userData)) throw new Error('EIO: i/o error (injected)');
+      if ((failWrites.on || (failWrites.only !== null && String(a[0]).includes(failWrites.only))) && String(a[0]).startsWith(userData)) throw new Error('EIO: i/o error (injected)');
       return fs.writeFileSync(...a);
     },
     readFileSync: (...a: Parameters<typeof fs.readFileSync>) => {

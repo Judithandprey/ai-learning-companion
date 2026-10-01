@@ -50,8 +50,12 @@ type Api = {
   askSubmit(selectionId: string, question: string, assistance: string): Promise<{ ok: true; request_id: string; model: string | null } | { ok: false; reason: string }>;
   askCancel(selectionId: string): void;
   askClosed(): void;
-  onAskResult(fn: (selectionId: string, requestId: string, outcome: AskOutcome) => void): void;
+  askPresented(selectionId: string, requestId: string, shown: boolean): Promise<Saved>;
+  askSave(selectionId: string): Promise<Saved>;
+  onAskResult(fn: (selectionId: string, requestId: string, outcome: AskOutcome, record: Saved) => void): void;
 };
+/** Whether the selection's record (the question and how it ended) is written on this device; if not, why. */
+type Saved = { saved: boolean; reason: string | null };
 /** How a question to ChatGPT ended, as the main process says it (an answer only for the request that was sent). */
 type AskOutcome =
   | { status: 'answered'; answer: { text: string; model: string; latency_ms: number } }
@@ -83,7 +87,19 @@ const development = info.development === true;
  */
 const subscription = info.subscription === true;
 /** The card's selection, as the main process retained it for a question (only with the subscription configured). */
-let asked: { card: number; selection: string | null; request: string | null; submitting: boolean; cancelling: boolean } | null = null;
+let asked: {
+  card: number;
+  selection: string | null;
+  request: string | null;
+  submitting: boolean;
+  cancelling: boolean;
+  /** How the question ended, said by the main process before its submit was acknowledged here. */
+  early: { request: string; outcome: AskOutcome; record: Saved } | null;
+  /** Why how a question of this card ended is not written on this device yet (the main process said so), or null. */
+  unsaved: string | null;
+  /** The status last said with that, and what it is about: said again with the answer to Save. */
+  said: { text: string; what: string } | null;
+} | null = null;
 let cardSeq = 0;
 let doc: DesktopInk = info.doc;
 let mode: ModeState = INITIAL_MODE_STATE;
@@ -207,7 +223,7 @@ function endCapture(reason: string): void {
     if (asked.request || asked.submitting) {
       asked.cancelling = true;
       askStatus('The capture ended: the question that was out is cancelled, and no answer to it is shown.');
-    } else if ($('answerBox').hidden) askStatus('The capture ended: nothing more is asked.');
+    } else if ($('answerBox').hidden && asked.unsaved === null) askStatus('The capture ended: nothing more is asked.'); // what is not saved stays said
   }
   render();
 }
@@ -741,6 +757,7 @@ function resetAsk(): void {
   for (const el of document.querySelectorAll<HTMLInputElement>('input[name="assistance"]')) el.checked = el.value === 'hint'; // the help is chosen per selection
   askForm('hidden');
   askStatus(null);
+  $('askSave').hidden = true;
   $('answerBox').hidden = true;
   $('answer').textContent = '';
   $('badge').textContent = subscription ? 'Selection · not sent to any AI' : 'Selection · no AI connected';
@@ -794,7 +811,7 @@ async function finishAsk(points: ReadonlyArray<InkPoint>): Promise<void> {
   if (!subscription || !held || !r || !png || !inkBytes) return;
   // Retained by the main process as the exact picture, the facts of its frame and the ink drawn into it. Nothing is
   // sent to any AI by this; only the Ask button below does that.
-  asked = { card, selection: null, request: null, submitting: false, cancelling: false };
+  asked = { card, selection: null, request: null, submitting: false, cancelling: false, early: null, unsaved: null, said: null };
   askStatus('Keeping this selection on this device…');
   const x0 = Math.max(0, region.x);
   const y0 = Math.max(0, region.y);
@@ -821,12 +838,21 @@ async function finishAsk(points: ReadonlyArray<InkPoint>): Promise<void> {
   askStatus(ended ? 'The capture ended: nothing is asked.' : null);
   askForm(ended ? 'hidden' : 'ready');
 }
+/** The outcome said before the submit's acknowledgement, if any (it is taken once). */
+function takeEarly(a: NonNullable<typeof asked>): NonNullable<typeof asked>['early'] {
+  const early = a.early;
+  a.early = null;
+  return early;
+}
 /** The user pressed Ask: this selection's picture and the question go to ChatGPT, once. */
 async function submitAsk(): Promise<void> {
   const a = asked;
   if (ended || !a || !a.selection || a.request || a.submitting) return;
   a.submitting = true;
   a.cancelling = false;
+  a.early = null;
+  const answerShown = !$('answerBox').hidden;
+  $('askSave').hidden = true;
   const question = $<HTMLTextAreaElement>('question').value;
   const assistance = document.querySelector<HTMLInputElement>('input[name="assistance"]:checked')?.value ?? 'hint';
   askForm('asking');
@@ -841,12 +867,17 @@ async function submitAsk(): Promise<void> {
   a.submitting = false;
   if (asked !== a) return;
   if (!sent.ok) {
+    // Nothing was asked: the card is as it was, the answer before and what is still not saved of it included.
     askForm(ended ? 'hidden' : 'ready');
-    return askStatus(`Not sent: ${sent.reason}.`);
+    $('answerBox').hidden = !answerShown;
+    return saved(a, `Not sent: ${sent.reason}.`, { saved: a.unsaved === null, reason: a.unsaved }, 'How the question before ended');
   }
   a.request = sent.request_id;
   // Handed to the connector: whether ChatGPT took it is known only when an answer, or a refusal, comes.
   $('badge').textContent = 'Selection · asked: being sent to ChatGPT';
+  // How it ended may have been said before this acknowledgement came: it is this request's only if it names it.
+  const early = takeEarly(a);
+  if (early && early.request === sent.request_id) return showOutcome(a, early.outcome, early.record);
   if (a.cancelling) return; // cancelled while it was being sent: the status already says so
   askStatus(`Asked at ${new Date().toLocaleTimeString()}${sent.model ? ` (${sent.model})` : ''}: this picture and your question are being sent to ChatGPT. Waiting for the answer…`);
 }
@@ -859,25 +890,63 @@ function cancelAsk(): void {
   $('askCancel').hidden = true;
   askStatus('Cancelling: an answer that still arrives is not shown.');
 }
-lc.onAskResult((selectionId, requestId, outcome) => {
+lc.onAskResult((selectionId, requestId, outcome, record) => {
   const a = asked;
-  if (!a || a.selection !== selectionId || a.request !== requestId) return; // not this card's question: never shown
+  if (!a || a.selection !== selectionId) return; // not this card's selection: never shown
+  // Said before the submit was acknowledged here (the main process answers both): kept until the acknowledgement
+  // names its request. Nothing is shown for a request this card did not make.
+  if (a.submitting && a.request === null) return void (a.early = { request: requestId, outcome, record });
+  if (a.request !== requestId) return;
+  showOutcome(a, outcome, record);
+});
+/** How this card's question ended. An answer is shown as text; what was not written on this device is said. */
+function showOutcome(a: NonNullable<typeof asked>, outcome: AskOutcome, record: Saved): void {
+  const request = a.request!;
   a.request = null;
   // Cancelled here after the answer had already left the main process: it is still not shown.
-  const out: AskOutcome = (a.cancelling || ended) && outcome.status === 'answered' ? { status: 'cancelled', uncertain: true } : outcome;
+  const suppressed = (a.cancelling || ended) && outcome.status === 'answered';
+  const out: AskOutcome = suppressed ? { status: 'cancelled', uncertain: true } : outcome;
   a.cancelling = false;
   askForm(ended ? 'hidden' : 'ready');
+  let text: string;
   if (out.status === 'answered') {
     // Text only, apart from the selection above; never markup.
     $('answer').textContent = out.answer.text;
     $('answerBox').hidden = false;
     $('badge').textContent = 'Selection · answered by ChatGPT below';
-    return askStatus(`Answered by ChatGPT (${out.answer.model}) in ${(out.answer.latency_ms / 1000).toFixed(1)} s, about the picture above and your question only.`);
+    text = `Answered by ChatGPT (${out.answer.model}) in ${(out.answer.latency_ms / 1000).toFixed(1)} s, about the picture above and your question only.`;
+  } else {
+    $('badge').textContent = 'Selection · asked: no answer shown';
+    text = out.status === 'cancelled'
+      ? `Cancelled: no answer is shown.${out.uncertain ? ' Whether ChatGPT stopped working on it is not confirmed; it may still have counted against your usage.' : ''}`
+      : out.status === 'refused' ? `No answer: ${out.reason}. It was not sent again.` : `No answer: ${out.reason}. It is not sent again automatically.`;
   }
-  $('badge').textContent = 'Selection · asked: no answer shown';
-  if (out.status === 'cancelled') return askStatus(`Cancelled: no answer is shown.${out.uncertain ? ' Whether ChatGPT stopped working on it is not confirmed; it may still have counted against your usage.' : ''}`);
-  askStatus(out.status === 'refused' ? `No answer: ${out.reason}. It was not sent again.` : `No answer: ${out.reason}. It is not sent again automatically.`);
-});
+  saved(a, text, record);
+  // The main process is told what was done with an answer (shown, or not after all); its record follows that.
+  if (outcome.status === 'answered' && a.selection) void lc.askPresented(a.selection, request, !suppressed).then((r) => saved(a, text, r), () => undefined);
+}
+/** Says when how a question ended is not written on this device, and offers to write it again. */
+function saved(a: NonNullable<typeof asked>, text: string, record: Saved, what = 'This'): void {
+  if (asked !== a) return;
+  a.unsaved = record.saved ? null : (record.reason ?? 'unknown');
+  if (a.submitting || a.request) return; // a question is out again since: the card says that one's state
+  a.said = { text, what };
+  $('askSave').hidden = record.saved;
+  askStatus(a.unsaved === null ? text : `${text} ${what} is NOT saved on this device yet: it could not be written (${a.unsaved}). It is kept in the app and tried again when this card closes; press Save to try now.`);
+}
+/** The user's press on Save: the main process tries to write the record again (nothing is asked again). */
+async function saveOutcome(): Promise<void> {
+  const a = asked;
+  const said = a?.said;
+  if (!a?.selection || !said) return;
+  let r: Saved;
+  try {
+    r = await lc.askSave(a.selection);
+  } catch {
+    r = { saved: false, reason: 'the app did not answer' };
+  }
+  saved(a, said.text, r, said.what);
+}
 
 // ---- modes, input and toolbar ----------------------------------------------------------------------------------
 let interactive = false;
@@ -1004,6 +1073,7 @@ control($('redo'), () => commit(redo(doc.ink, now()), null));
 control($('placement'), () => ((placement = placement === 'screen' ? 'content' : 'screen'), render()));
 control($('cancel'), () => setMode(reduceMode(mode, { type: 'ask_cancelled' }).state));
 control($('askSubmit'), () => void submitAsk());
+$('askSave').addEventListener('click', () => void saveOutcome());
 $('askCancel').addEventListener('click', cancelAsk);
 $('close').addEventListener('click', () => {
   resetAsk(); // a question still out is cancelled with its card
