@@ -690,7 +690,8 @@ elif SCENARIO in ("subask", "subrehearsal"):
           {"verdict": verdict, "answer_verbatim": answer},
           NOT_REACHED if not_reached else
           "REHEARSAL: the text is the stand-in's own SYNTHETIC sentence, which names no card by design; nothing is judged" if SCENARIO == "subrehearsal" and not (verdict and verdict["pass"]) else
-          "MATCHER PASS, pending the reading of the full answer by QA and the lead: the answer names exactly the two circled cards" if verdict and verdict["pass"] else
+          "MATCHER PASS, pending the reading of the full answer by QA and the lead: the answer names exactly the two circled cards"
+          + ("" if verdict["outcome"] == "identified" else "; shape or colour not confirmed (not stated for a card: see the verdict)") if verdict and verdict["pass"] else
           "HELD: the numbers match but the answer negates, refuses or hedges; a person must read it. Not a pass" if verdict and verdict["outcome"] == "held" else
           "both numbers are named, but a stated shape or colour does not match the card: read the answer" if verdict and verdict["outcome"] == "contradicted" else
           f"the answer does not name exactly the two circled cards ({verdict['outcome']})" if verdict else "no answer to judge")
