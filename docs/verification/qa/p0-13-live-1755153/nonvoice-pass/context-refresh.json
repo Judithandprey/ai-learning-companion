@@ -1,0 +1,50 @@
+{
+  "assigned_baseline": "471461578cf81a45060bbb9587c7c1374f5643ba",
+  "qa_merge": "f9e6ededa59ccb58beb9a3ab3cc8b36ece3b509f",
+  "policy_requirement_paths_changed_since_offline_delivery": [],
+  "translation_hashes": [
+    {
+      "path": "docs/requirements.md",
+      "sha256": "3796691c2e433e846051087d5857c40224c4e1995e9d01151378253bb2508cae",
+      "matches_manifest": true
+    },
+    {
+      "path": "docs/requirements.en.md",
+      "sha256": "4c8f69a6d51367d35eba28596d5310f165374728ad73ef656c03f1713b4e76e2",
+      "matches_manifest": true
+    },
+    {
+      "path": "docs/requirements/problem-solving-companion.md",
+      "sha256": "bcb94929cf216094972b945d14b0282fb94c9e45f2a4875333a0ac7658deb4dd",
+      "matches_manifest": true
+    },
+    {
+      "path": "docs/requirements/problem-solving-companion.en.md",
+      "sha256": "4b368b4b1118139c10227f8f585bdcea754171ffbd9b3812bf0e280b49bd037a",
+      "matches_manifest": true
+    },
+    {
+      "path": "docs/requirements/intent-and-decisions.md",
+      "sha256": "4b21d391cc6bf4e0fe0dad1a81ff5c20a34e47cc6291ab3c997486cef284dce3",
+      "matches_manifest": true
+    },
+    {
+      "path": "docs/requirements/intent-and-decisions.en.md",
+      "sha256": "37de474da6aacbc3f02411b319ba17af812893b2d39c98cd83c6138d99b980ac",
+      "matches_manifest": true
+    },
+    {
+      "path": "docs/requirements/original-goal-verification.md",
+      "sha256": "20cbea365337a8a046c443a9fe9536ec9fbec0c42a365c69a9c6ecf7068c5986",
+      "matches_manifest": true
+    },
+    {
+      "path": "docs/requirements/original-goal-verification.en.md",
+      "sha256": "d7b589605f4bfbbefbaedf0b9d9bfd214f1722cdf3f6f8ccec8118bf4e79fd62",
+      "matches_manifest": true
+    }
+  ],
+  "migration_is_development_model_only": true,
+  "scope": "same frozen1755153 Windows pass; nonvoice max4/60s/60s; preflight blocker prevents real Start",
+  "source_records_are_authority": true
+}

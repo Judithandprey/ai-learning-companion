@@ -1,0 +1,3 @@
+# Preserve the original decoded native diagnostics, including CRLF.
+visible-01/runner.stdout.txt -text -whitespace
+visible-01/runner.stderr.txt -text -whitespace

@@ -1,0 +1,4 @@
+�޷������ļ� C:\Users\ROG\AppData\Local\Temp\lc-qa-visible-drag-4abc3b21defe455b8a42a2751a9a77e0\runner.ps1����Ϊ�ڴ�ϵ
+ͳ�Ͻ�ֹ���нű����й���ϸ��Ϣ������� https:/go.microsoft.com/fwlink/?LinkID=135170 �е� about_Execution_Policies��
+    + CategoryInfo          : SecurityError: (:) []��ParentContainsErrorRecordException
+    + FullyQualifiedErrorId : UnauthorizedAccess

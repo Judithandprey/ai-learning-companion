@@ -1,7 +1,8 @@
 # Managed-subscription ASK on Windows: QA acceptance plan
 
 - **Status (2026-10-01): driver ready after one correction (the connector copy); controls and the real Check connection
-  run; the real image turn NOT run and HELD.** 0 of the 1 allocated attempt is used. Results at the first candidate:
+  run; the real selected-image turn was NOT run.** Its one attempt was never used and is now retired by the lead in
+  favour of the changed-flow pass (section 7). Results at the first candidate:
   [p0-13-subscription-ask-windows-3e4b406.md](p0-13-subscription-ask-windows-3e4b406.md).
 - **Changed paths (later the same day):** the corrected source `c44e620` was retested offline, 86 tests, with the first
   candidate as the negative control:
@@ -16,7 +17,8 @@
   and G4, R04/R42/R52/R57, and the lead's
   [release note](../lead/subscription-ask/windows-release/README.md).
 - **Budget:** exactly one real image submission, reserved by the lead for QA, conditional on the managed sign-in, a
-  picture model, the generated surface and valid source and ink evidence. No automatic retry.
+  picture model, the generated surface and valid source and ink evidence. No automatic retry. (Retired unused on
+  2026-10-01; see section 7 for the current ceiling.)
 - **What exists** (in [tests/e2e/windows/](../../../tests/e2e/windows/), harness `0e210ed`):
   - `surface.html`, `judge_surface_answer.py` (rule fixed before any call; 31 self-test cases);
   - `qa_fake_bridge.py`: QA's stand-in connector for the deterministic controls; `qa_sub_watch.py`: a read-only
@@ -243,6 +245,10 @@ None of this is acceptance evidence for the real turn.
 
 ## 5. What the real turn still needs
 
+**Superseded on 2026-10-01 by the lead's decision (`handoff_fd794043a20068a1b52853cbb6ff884e`):** the selected-image
+attempt is retired unused, so no `subask` run is made on its account. Sections 1 to 5 stay as the record of what was
+prepared and why; the real requests of this task are now those of section 7.
+
 - **The corrected source**: combined `8eac9fc` was actually adopted by QA as `75fa327` for offline changed-path preparation. Backend02/03 and Web01/04–08 have source/synthetic corrections; independent changed-path display acceptance is still pending. Further reviewed Windows lifecycle source integrates as `ba30b46`, with quit-report persistence still assigned to Web. Use the Lead’s next exact released candidate, preserving completed preparation rather than repeating the18 controls. QA stages that exact commit and makes its Backend copy from it. The harness checks
   the copy before any real run (file-for-file comparison, and the connector's own preparation of a question run
   offline).
@@ -266,7 +272,7 @@ None of this is acceptance evidence for the real turn.
 Amended in place by the lead's `handoff_a6d4a4baf7e368565b8de52e935a3d91`, `handoff_795e97b1731ce5bc73182d8a90f07082`
 (baseline `9b33a7675fe98ab30e5c79952668906ff7ef232a`) and `handoff_b2436c62d2d68f07d104e3f0bbd917f2` (main
 `c3afc6dc8b45e2979c0a74a01b03b8972c903e04`, merged into `team/qa`). This is the same acceptance task, not a second
-campaign. The runtime pass waits for the exact integrated release; a Backend candidate still in review is not it.
+campaign. The exact package is released; the real pass remains subject to its actual launch/display/account prerequisites.
 
 - **Read for these cases:** [ADR 0004](../../adr/0004-live-desktop-companion.md) (`lc-subscription-live/1`), main
   specification §3.8, §7.1 and §7.3 with their English text, the
@@ -274,22 +280,27 @@ campaign. The runtime pass waits for the exact integrated release; a Backend can
   cases changed in the same commit, and the lead's [checkpoint](../lead/live-windows/README.md).
 - **Current exact-candidate checkpoint (2026-10-02):** lead released evidence commit
   `24c48c38aee660b606ebff5285acbd2ccb300392`, production `175515308f509fb8c0f531dbdb10e57313fcde5a`, and the frozen
-  `lc-windows-live-1755153` stage for bounded hidden-window synthetic rehearsal only. The
+  `lc-windows-live-1755153` stage, initially for bounded hidden-window synthetic rehearsal only. The
   [offline readiness receipt](p0-13-live-1755153/README.md) records 14 lifecycle passes, 10 final controls passes with
   small within-handle movement, earlier typed-follow-up assertions, exact hashes and failed diagnostics. Cross-handle
   pointer capture remains blocked in that harness; real voice/audio and every real acceptance case below remain
-  NOT_RUN. At that readiness snapshot, no real request or account/display/audio lease had been spent or released. This supersedes the earlier
+  NOT_RUN at that offline checkpoint. It acquired no real account/display/audio resources. This supersedes the earlier
   no-candidate dependency, while preserving its task scope and the separate real release requirement.
-- **Lead continuation, exact pushed `4714615`:** native message `handoff_1f988a3723e6232b44c29d5cfc9d2c4c` now
-  conditionally assigns QA the exclusive generated-display/same-managed-account nonvoice pass after actual safe
-  prerequisites; at most four all-counted attempts with one 60-second session / 60-second unattended interval. The
-  [reviewed release](../lead/live-windows/consumer-review/correction/qa-readiness/README.md) and existing ledger
-  govern it. Delivery was accepted unread, not proof of acquisition or execution. No audio or TTS release.
+- **Same-task nonvoice continuation (2026-10-02):** Lead's `handoff_1f988a3723e6232b44c29d5cfc9d2c4c` explicitly
+  coordinates the normal `4714615` baseline merge and one exclusive conditional four-action Windows pass on this
+  unchanged package. QA merged it as `f9e6ede`. The [prerequisite receipt](p0-13-live-1755153/nonvoice-pass/README.md)
+  reproduces `isolation_unverified`: the current official launcher resolves to 0.160.0 bytes outside the released gate; the
+  released gate pins measured 0.158.0. No real session, assigned real action or account query ran; **0/4 attempts**.
+  Real cases remain NOT_RUN, with no launcher/hash/account/model workaround or retry. Normal PowerShell `-File`
+  also refused the AI-disabled visible diagnostic before launch. Its refusal and exact unused resource release are
+  recorded in that receipt. Lead has independently verified that the still-installed versioned0.158 binary passes
+  the unchanged gate. Lead owns the corrected driver review, explicit script permission and renewed coordination;
+  no additional Backend compatibility assignment or current display/account/audio lease follows.
 - **The old `3e4b406` package:** the lead reports that the user has exited it (`handoff_b080a2157724229207b627a489610c1d`).
   Its stage folder, profile, sign-in and connector copy are still kept as they are; the new candidate gets its own
   stage folder and its own connector copy. The lead alone coordinates the account, the display and the audio route.
-  QA starts nothing on its own, uses no microphone, speaker, account or account file, and observes whether the display
-  and the sign-in are really available at the time instead of taking a report for it.
+  QA uses only the explicitly coordinated own test windows/flow, no microphone, speaker or account file, and verifies
+  actual availability rather than taking a report as proof of ownership or sign-in.
 - **The journey to be shown, on the one launched package** ([tasks](../../tasks.md#current-runnable-delivery-and-one-changed-flow-acceptance),
   [user journeys](../../requirements-traceability.md#user-journeys)): Start → fresh whole screen while navigating and
   switching supported apps → circle a focus and get a contextual response without typing or a second Ask → optional
@@ -304,14 +315,29 @@ campaign. The runtime pass waits for the exact integrated release; a Backend can
   `handoff_fd794043a20068a1b52853cbb6ff884e` reserves at most **five** ordinary image/text test actions: one unattended
   whole-screen observation, one automatic focus response, one typed direction-changing follow-up, one supported
   spoken-follow-up response, and one Stop/fence attempt. See the current [ledger](../lead/subscription-ask/request-budget.json).
-  The original reservation was **not an active account/display/audio lease**; the conditional nonvoice release above now applies. Unknown and proven-not-submitted test actions still count;
+  The ceiling alone is **not an account/display/audio lease**. The later nonvoice coordination assignment above does
+  not establish an OS or managed-state lock. Unknown and proven-not-submitted test actions still count;
   no automatic retry or adding the retired slot. No raw-audio provider attempts are included. An unavailable voice
   case stays NOT_RUN and its slot is not reassigned. Use stand-ins for additional cancellation/history variants.
   The product's visible configured policy is separate; 12 calls/5 minutes is a QA preset, not its final study default.
   The released candidate now defaults to 60 submissions in 30 minutes with a 30-second unattended interval. These
   engineering defaults do not expand the five-attempt ceiling. The readiness receipt proposes a four-attempt,
-  one-minute/60-second-interval policy for the currently voice-unconnected candidate; its coordinated conditional release is now recorded above. The second typed LIVE-05 variant and additional LIVE-08 race permutations remain
+  one-minute/60-second-interval policy for the currently voice-unconnected candidate; its actual prerequisites now
+  block execution despite the Lead's coordinated assignment. The second typed LIVE-05 variant and additional LIVE-08 race permutations remain
   NOT_RUN, and an expired session is not restarted for extra real attempts.
+- **Lead decisions on the offline observations** (same message; the
+  [offline report](p0-13-subscription-changed-paths-c44e620.md) is kept as it is for `c44e620`):
+  - QA-SUB-09: the facts must be consistent, not the same words in different fields; why a request was refused is
+    separate from whether it was sent and from a missing completion. Backend reproduces and corrects 09, 10 and 11 on
+    the current version.
+  - QA-SUB-16: the user's Check may start a connector through the unchanged exclusive lock of the managed state, with
+    no bypass and no retry, and the doubt about the old one is kept. QA's stand-in does not test that lock: the real
+    Windows boundary stays unverified.
+  - QA-SUB-17: the bounded automatic read with a visible "unknown" and the user's Check is kept. It is not read as a
+    usage refusal and is not widened without evidence of real traffic.
+  - Web folds 12, 15 and 18 (and the wording of 13 and 14) into its current live work.
+  - The offline tests are not adopted to every new main and no campaign is repeated; they are adopted once, to the
+    exact integrated candidate.
 - **When it runs:** only on the exact released candidate, on a generated non-sensitive screen, with the display and
   the audio route coordinated by the lead. Each real case is judged by a person reading the whole answer, as in
   section 1.

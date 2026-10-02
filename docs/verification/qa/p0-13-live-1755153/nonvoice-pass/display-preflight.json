@@ -1,0 +1,49 @@
+{
+  "kind": "read-only-windows-prerequisite-observation",
+  "observed_at": "2026-10-02T11:00:37.2766578Z",
+  "screens": {
+    "count": 1,
+    "primary_bounds": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 800
+    },
+    "primary_work_area": {
+      "x": 0,
+      "y": 0,
+      "width": 1280,
+      "height": 752
+    },
+    "coordinate_units": "as returned to this helper; physical-pixel identity not established"
+  },
+  "foreground": {
+    "pid": 29248,
+    "process_name": "AgentsDock",
+    "visible": true,
+    "visible_screen_rectangle": {
+      "x": 11,
+      "y": 0,
+      "width": 2538,
+      "height": 1493
+    },
+    "rectangle_source": "DWM extended frame bounds",
+    "coordinate_units": "physical pixels",
+    "stable_during_read": true,
+    "uncertainty": []
+  },
+  "dpi": {
+    "helper_awareness": "unaware",
+    "system_for_helper": 96,
+    "foreground_window": 192,
+    "changed": false
+  },
+  "cached_paths": {
+    "electron_available": true,
+    "edge_available": true,
+    "file_identity_verified": false
+  },
+  "errors": [],
+  "capture_admission": "not_assessed",
+  "limitation": "Point-in-time metadata only. No approved-surface ownership, unobscured pixels, exclusive display/account lease, executable authenticity or capture permission is established."
+}

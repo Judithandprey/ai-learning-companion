@@ -1,0 +1,50 @@
+{
+  "actual_payload_files": 70,
+  "actual_regular_files_including_manifest": 71,
+  "app_launched": false,
+  "complete_payload_tree_sha256": "3387824a0dee70013104388d4acec2b810475e98953e7c3f196063a8781fd154",
+  "dependencies": [],
+  "differing_files": [],
+  "display_audio_microphone_account_access": false,
+  "electron_runtime": {
+    "expected_version_from_receipt": "44.5.1",
+    "file_sha256": {
+      "electron.exe": "49b61a030a520fc36a4b8fa5cce53fb4e935a7bdbbe4b80e9222f598e49cc7fa",
+      "resources/default_app.asar": "0eb2491b0a9ac94790389d39c09dd5005c6c1f0665842943829bbd0193f6cc4f",
+      "version": "d6a753840246d37b3b1450cce3259a0d1a1954d8d196276e11fdf094a6a04652"
+    },
+    "hashes_compared_to_trusted_distribution": false,
+    "version_file_value": "44.5.1",
+    "version_source": "existing runtime/version file; binary not executed"
+  },
+  "entrypoint": {
+    "app_version": "0.1.0",
+    "package_main": "dist/apps/windows/src/main/main.js",
+    "path": "dist/apps/windows/src/main/main.js",
+    "sha256": "581d42c430941f3b5d7b8aaa86ee3588ca1e4b4976a7de6a6dcbb7a00f3d4df5"
+  },
+  "evidence_commit": "24c48c38aee660b606ebff5285acbd2ccb300392",
+  "expected_payload_files": 70,
+  "expected_tree_sha256": "3387824a0dee70013104388d4acec2b810475e98953e7c3f196063a8781fd154",
+  "kind": "static-file-identity-only",
+  "limitation": "File identity only; no launch, device, provider, UI, speech, audio or product acceptance.",
+  "manifest_path": "docs/verification/lead/live-windows/consumer-review/correction/stage-manifest.json",
+  "manifest_sha256": "24f642370fa8ab3d25a5661cb28d66efe5a0f7995b3bc19e42623cf4a51608e2",
+  "matching_payload_files": 70,
+  "missing_files": [],
+  "nonregular_entries": [],
+  "observed_expected_payload_tree_sha256": "3387824a0dee70013104388d4acec2b810475e98953e7c3f196063a8781fd154",
+  "passed": true,
+  "provider_requests": 0,
+  "runtime": "/mnt/c/Users/ROG/AppData/Local/Temp/lc-electron-44.5.1-win32-x64",
+  "runtime_files_and_recorded_version_present": true,
+  "sidecar_manifest_sha256": "24f642370fa8ab3d25a5661cb28d66efe5a0f7995b3bc19e42623cf4a51608e2",
+  "sidecar_matches_committed_bytes": true,
+  "source_commit_as_recorded": "175515308f509fb8c0f531dbdb10e57313fcde5a",
+  "stage": "/mnt/c/Users/ROG/AppData/Local/Temp/lc-windows-live-1755153",
+  "stage_or_runtime_modified": false,
+  "stage_payload_identity_passed": true,
+  "status": "passed",
+  "tree_sha256_algorithm": "SHA256(UTF8(sorted relative POSIX path + NUL + file SHA256 hex + LF))",
+  "unexpected_files": []
+}

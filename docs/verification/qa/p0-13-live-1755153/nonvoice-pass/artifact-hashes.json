@@ -1,0 +1,105 @@
+{
+  "algorithm": "SHA256 of exact stored bytes; excludes this index",
+  "files": [
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/.gitattributes",
+      "bytes": 162,
+      "sha256": "9e0bda1ab01a092b7676db020900cc4d13c497c0698a174d045a197347b81192"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/README.md",
+      "bytes": 7932,
+      "sha256": "8ca616039120519dbfeed11060412bc47c29ddd27ab8216cc4c997932bffb5dd"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/binary-admission.json",
+      "bytes": 1017,
+      "sha256": "1ff5043120b17a5e7bb6fb7fe316fb4eceddad74807cc02d084f4097b6304596"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/context-refresh.json",
+      "bytes": 1906,
+      "sha256": "06fa5b163c330a3902100df1e34e803581a9c821302680422164175998c1130f"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/display-preflight.json",
+      "bytes": 1299,
+      "sha256": "49766a172684d9c0e02931628f255ee5ec4ebe9e9eed67942ac16b291027c600"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/execution-policy.json",
+      "bytes": 424,
+      "sha256": "c823edc0c45552f703e7b5de7cd1bd2c1f45e50cb9fe387848b41cf1e9bcc1cf"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/real-attempts.json",
+      "bytes": 2029,
+      "sha256": "d045b4c2a67cbddf8814430e59248fec5dc5158a5c87c33f56c53f26cb59a184"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/stage-after.json",
+      "bytes": 2517,
+      "sha256": "8228de69ab11a269ff22d81cc232e94467efc71b8f83f3e374042ece00e91c01"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/stage-before.json",
+      "bytes": 2517,
+      "sha256": "8228de69ab11a269ff22d81cc232e94467efc71b8f83f3e374042ece00e91c01"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/visible-01/classification-and-release.json",
+      "bytes": 1721,
+      "sha256": "791167d8ce9a8959c5f8a170d7807b2b529e82ae9c212c2e47fbf58adcf67be0"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/visible-01/driver.mjs",
+      "bytes": 21075,
+      "sha256": "5087c64e931ad6d751eaeb879fd2c684df3ff1b7c2cb07b0bf4990ba5d07a99c"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/visible-01/run.json",
+      "bytes": 4874,
+      "sha256": "19e3da7f3a534f907fed422d4a85ab2b1b9f75c8dc86cea4504d8de433162f82"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/visible-01/runner.ps1",
+      "bytes": 57703,
+      "sha256": "473b7997c20b6f92f44c4748dc86a2b46136320fbf3e32d0e8460639efcd4006"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/visible-01/runner.stderr.txt",
+      "bytes": 459,
+      "sha256": "ae51dc430ecacb76ba16157fb2569e4b755ecb191d655bea69fa992e1fc4b5b8"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/visible-01/runner.stdout.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/visible-01/steps.json",
+      "bytes": 11088,
+      "sha256": "21b092c11e200ed660d12a82a70ab212db9b726bc8a349fd98d4d22e1b344b9f"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/visible-01/surface.html",
+      "bytes": 6526,
+      "sha256": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2"
+    },
+    {
+      "path": "tests/e2e/windows/qa_binary_admission.py",
+      "bytes": 1624,
+      "sha256": "e1354db627bc792c4e47d9fed419079fe9dd8611b4d2f0442e419311100a849c"
+    },
+    {
+      "path": "tests/e2e/windows/qa_live_preflight.ps1",
+      "bytes": 6374,
+      "sha256": "894f0b197fa5297c5e5d4519a6bbe7f1927ed3dfe1443ca5b76ea28197050bc2"
+    },
+    {
+      "path": "tests/e2e/windows/qa_visible_drag.mjs",
+      "bytes": 21292,
+      "sha256": "045211e3068a808b98bb88e385bfa66380512edf9b6c4943e114e363a76fa6e1"
+    }
+  ]
+}
