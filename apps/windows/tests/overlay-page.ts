@@ -74,7 +74,7 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
    * `luma`, that grayscale 1280×800 screen: each frame taken keeps its own pixels, and canvases read back the area
    * average of what was drawn into them, so local changes and separately pinned frames are real.
    */
-  const scene = { shade: 20, luma: null as Uint8Array | null, exactPng: false, /** Encoding a picture fails from now (a test's fault). */ encodingFails: false };
+  const scene = { shade: 20, luma: null as Uint8Array | null, exactPng: false, grabs: 0, /** Encoding a picture fails from now (a test's fault). */ encodingFails: false };
   if (policy) (s as unknown as { retention: { policy: retention.RetentionPolicy } }).retention.policy = policy; // the main process enforces the same
   const nodes = new Map<string, FakeNode>();
   const events = new Map<string, (...a: unknown[]) => void>();
@@ -119,6 +119,8 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
       this.revealed.push(o?.block ?? 'start');
     }
     style = { setProperty: (k: string, v: string) => void this.vars.set(k, v), getPropertyValue: (k: string) => this.vars.get(k) ?? '' };
+    readonly classes = new Set<string>();
+    classList = { toggle: (name: string, on: boolean) => void (on ? this.classes.add(name) : this.classes.delete(name)) };
     hidden = true;
     disabled = false;
     textContent = '';
@@ -177,7 +179,7 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
     }
     /** As the style sheet lays a surface out: its corner at the fractions of the free room in the usable area. */
     getBoundingClientRect() {
-      const px = (k: string): number => Number.parseFloat(root.vars.get(k) ?? '0');
+      const px = (k: string): number => Number.parseFloat(this.vars.get(k) ?? root.vars.get(k) ?? '0'); // (the card has its own room)
       const f = (k: string): number => Number(this.vars.get(k) ?? '0');
       // (a surface is never larger than the area: max-width and max-height in the style sheet)
       const width = Math.min(this.boxWidth, px('--aw'));
@@ -210,6 +212,19 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
   node('toolbar').hidden = false;
   Object.assign(node('card'), { boxWidth: 360, boxHeight: 200 });
   const documentHandlers = new Map<string, (e: unknown) => void>();
+  const windowHandlers: Array<[string, () => void]> = [];
+  const windowSize = { innerWidth: 1280, innerHeight: 800 };
+  const resized = new Map<FakeNode, () => void>();
+  /** A surface's laid-out size changes (the toolbar's, with what it says and shows): its observer is told, as in the browser. */
+  const resize = (id: string, width: number, height: number): void => {
+    Object.assign(node(id), { boxWidth: width, boxHeight: height });
+    resized.get(node(id))?.();
+  };
+  /** The window's own size changes (its `resize` event). */
+  const resizeWindow = (width: number, height: number): void => {
+    Object.assign(windowSize, { innerWidth: width, innerHeight: height });
+    for (const [name, told] of windowHandlers) if (name === 'resize') told();
+  };
   /** The surface under a point, as the page would find it (the toolbar, or the card when it is shown). */
   const surfaceAt = (x: number, y: number): FakeNode | null =>
     [node('toolbar'), node('card')].find((n) => {
@@ -245,19 +260,25 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
     onStop: (f: (...a: unknown[]) => void) => events.set('stop', f),
     onLoadDoc: (f: (...a: unknown[]) => void) => events.set('load', f),
     // ASK with the subscription: as over IPC (bytes cross as Uint8Array, the rest as plain data).
-    askSelection: async (facts: unknown, png: Uint8Array, inkBytes: Uint8Array) => {
-      const answer = plain(await h.handlers['lc:ask-selection']!({ sender: s.overlay.webContents }, plain(facts), Uint8Array.from(png), Uint8Array.from(inkBytes)));
+    askSelection: async (facts: unknown, png: Uint8Array, inkBytes: Uint8Array, during: string | null) => {
+      const answer = plain(await h.handlers['lc:ask-selection']!({ sender: s.overlay.webContents }, plain(facts), Uint8Array.from(png), Uint8Array.from(inkBytes), during));
       await submitAck; // the main process has answered; a test may hold its answer back on the way to the overlay
       return answer;
     },
-    askSubmit: async (id: string, question: string, assistance: string, facts: unknown, png: Uint8Array, inkBytes: Uint8Array) => {
-      const answer = plain(await h.handlers['lc:ask-submit']!({ sender: s.overlay.webContents }, id, question, assistance, plain(facts), Uint8Array.from(png), Uint8Array.from(inkBytes)));
+    askSubmit: async (id: string, question: string, assistance: string, facts: unknown, png: Uint8Array, inkBytes: Uint8Array, during: string | null) => {
+      const answer = plain(await h.handlers['lc:ask-submit']!({ sender: s.overlay.webContents }, id, question, assistance, plain(facts), Uint8Array.from(png), Uint8Array.from(inkBytes), during));
       await submitAck;
       return answer;
     },
     onLive: (f: (...a: unknown[]) => void) => events.set('live', f),
     askCancel: (id: string) => void h.handlers['lc:ask-cancel']!({ sender: s.overlay.webContents }, id),
     askClosed: () => void h.handlers['lc:ask-closed']!({ sender: s.overlay.webContents }),
+    askPresent: async (id: string, request: string) => {
+      const answer = plain(await h.handlers['lc:ask-present']!({ sender: s.overlay.webContents }, id, request));
+      await presentAck; // (a test may hold the main process's go-ahead back on its way to the overlay)
+      return answer;
+    },
+    lookFrame: async (facts: unknown, png: Uint8Array, inkBytes: Uint8Array) => plain(await h.handlers['lc:look-frame']!({ sender: s.overlay.webContents }, plain(facts), Uint8Array.from(png), Uint8Array.from(inkBytes))),
     askPresented: async (id: string, request: string, shown: boolean) => plain(await h.handlers['lc:ask-presented']!({ sender: s.overlay.webContents }, id, request, shown)),
     askSave: async (id: string) => plain(await h.handlers['lc:ask-save']!({ sender: s.overlay.webContents }, id)),
     onAskResult: (f: (...a: unknown[]) => void) => events.set('ask-result', f),
@@ -286,9 +307,19 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
     console,
     performance,
     OffscreenCanvas: FakeNode,
-    createImageBitmap: async () => frame(),
+    createImageBitmap: async () => { scene.grabs += 1; return frame(); },
     document: { getElementById: node, createElement: () => ({ videoWidth: 1280, requestVideoFrameCallback() {} }), querySelectorAll: (q: string) => (q.includes('assistance') ? radios : buttons), querySelector: (q: string) => (q.includes('assistance') ? radios.find((r) => r.checked) ?? null : null), addEventListener: (n: string, f: (e: unknown) => void) => void documentHandlers.set(n, f), elementFromPoint: surfaceAt, documentElement: root },
-    window: { innerWidth: 1280, innerHeight: 800, devicePixelRatio: 1, addEventListener() {} },
+    window: Object.assign(windowSize, { devicePixelRatio: 1, addEventListener: (n: string, f: () => void) => void windowHandlers.push([n, f]) }),
+    // (as the browser's: told when an observed element's laid-out size changes; here, when a test changes it)
+    ResizeObserver: class {
+      readonly told: () => void;
+      constructor(told: () => void) {
+        this.told = told;
+      }
+      observe(el: FakeNode) {
+        resized.set(el, this.told);
+      }
+    },
     setTimeout() {},
     FileReader: class {
       result = 'data:image/png;base64,';
@@ -308,6 +339,13 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
   const review = (sandbox as unknown as { review: Review }).review;
   review.frame({ bitmap: frame(), seq: 1, at: '2026-09-30T12:00:00.000Z', presented: 1, presentedAt: performance.now() });
   let submitAck: Promise<void> = Promise.resolve();
+  let presentAck: Promise<void> = Promise.resolve();
+  /** Holds the main process's go-ahead for showing an answer (lc:ask-present) back from the overlay until the returned function is called. */
+  const holdPresentAck = (): (() => void) => {
+    let release = (): void => undefined;
+    presentAck = new Promise((r) => (release = r));
+    return release;
+  };
   /** Holds the answers to lc:ask-selection and lc:ask-submit back from the overlay until the returned function is called. */
   const holdSubmitAck = (): (() => void) => {
     let release = (): void => undefined;
@@ -343,6 +381,5 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
   const box = (id: string) => node(id).getBoundingClientRect();
   const talkLabel = (): string | null => node('talk').getAttribute('aria-label');
   const talkState = () => ({ controls: !node('talkControls').hidden, talk: node('talk').getAttribute('aria-pressed') === 'true', muted: node('mute').getAttribute('aria-pressed') === 'true', mute: !node('mute').hidden, interrupt: !node('interrupt').hidden, rate: node('rate').hidden ? null : node('rate').textContent, status: node('talkStatus').hidden ? null : node('talkStatus').textContent });
-  return { on, mouseMove, box, node, root, interactive, voice, talkState, talkLabel, /** From now the stand-in voice throws when asked to say or to stop. */ breakVoice: () => void (voice.broken = true), review, scene, acks, saves, encoding, pointer, click, hint: () => node('hint').textContent, undoDisabled: () => node('undo').disabled, userData: h.userData, captureId: s.doc.id, ask, choose, press, holdSubmitAck, question: (text: string) => void (node('question').value = text) };
+  return { on, mouseMove, box, node, root, interactive, voice, talkState, talkLabel, /** From now the stand-in voice throws when asked to say or to stop. */ breakVoice: () => void (voice.broken = true), review, scene, acks, saves, encoding, pointer, click, hint: () => node('hint').textContent, undoDisabled: () => node('undo').disabled, userData: h.userData, captureId: s.doc.id, ask, choose, press, holdSubmitAck, holdPresentAck, resize, resizeWindow, question: (text: string) => void (node('question').value = text) };
 }
-

@@ -1,0 +1,14 @@
+✔ a sample reports the held image's own frame count and age; frames arriving while it is hashed are stream progress only (3.292892ms)
+✔ an ASK card keeps the uncertainty drawn into its picture, even if alignment changes while the picture is encoded (11.027585ms)
+✔ the overlay sends pictures in bounded batches and lets go only of those named as received or invalid (2.211824ms)
+✔ pictures the main process does not receive stay in the overlay, and the ink stays marked not saved (0.880302ms)
+(node:9) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+ℹ tests 4
+ℹ suites 0
+ℹ pass 4
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 78.782795

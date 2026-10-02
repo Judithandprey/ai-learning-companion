@@ -1,0 +1,32 @@
+(node:9) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✖ [released bridge, synthetic provider] a whole session as the app really writes it is taken by the released bridge: Start, looks one at a time, a circle's hint, a follow-up on the same frame and on a later one, each bound by Learning and read back as bound here (15013.071667ms)
+✖ [released bridge, synthetic provider] the bridge's own scheduling and the app's agree: a circle while a look is out, the reserve for the user's requests, a confirmed interruption, and an interruption that is not confirmed (15108.153421ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 0
+ℹ fail 2
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 39235.759174
+
+✖ failing tests:
+
+test at tests/live-bridge.test.ts:81:1
+✖ [released bridge, synthetic provider] a whole session as the app really writes it is taken by the released bridge: Start, looks one at a time, a circle's hint, a follow-up on the same frame and on a later one, each bound by Learning and read back as bound here (15013.071667ms)
+  Error: timed out waiting for signed in, as the released bridge reads the account
+      at until (file:///home/agentsdock/Projects/learning-companion/wt-web/apps/windows/tests/overlay-page.ts:23:34)
+      at async app (file:///home/agentsdock/Projects/learning-companion/wt-web/apps/windows/tests/live-bridge.test.ts:44:3)
+      at async TestContext.<anonymous> (file:///home/agentsdock/Projects/learning-companion/wt-web/apps/windows/tests/live-bridge.test.ts:82:13)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+
+test at tests/live-bridge.test.ts:129:1
+✖ [released bridge, synthetic provider] the bridge's own scheduling and the app's agree: a circle while a look is out, the reserve for the user's requests, a confirmed interruption, and an interruption that is not confirmed (15108.153421ms)
+  Error: timed out waiting for the AI is on
+      at until (file:///home/agentsdock/Projects/learning-companion/wt-web/apps/windows/tests/overlay-page.ts:23:34)
+      at async app (file:///home/agentsdock/Projects/learning-companion/wt-web/apps/windows/tests/live-bridge.test.ts:46:3)
+      at async TestContext.<anonymous> (file:///home/agentsdock/Projects/learning-companion/wt-web/apps/windows/tests/live-bridge.test.ts:132:11)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)

@@ -29,7 +29,7 @@ import { addStroke, erase, redo, stacks, undo, type InkDisplay, type InkDocument
 import { INITIAL_MODE_STATE, reduceMode, type Mode, type ModeState } from '../../../safari-extension/src/mode.ts';
 import { contextImages, forkDesktopInk, MAX_CONTEXTS, NOT_OBSERVED, PICTURE_BYTES_PER_SAVE, PICTURES_PER_SAVE, type DesktopDisplay, type DesktopInk, type PixelEvidence, type StrokeContext } from '../shared/desktop-ink.ts';
 import { decideRetention, DEFAULT_RETENTION_POLICY, type Retained, type RetentionPolicy } from '../shared/retention.ts';
-import { clampRate, DEFAULT_PLACE, placeAt, RATE_DEFAULT, RATE_STEP, SURFACES, usableArea, type DisplayPlaces, type Place, type Rect, type Surface } from '../shared/placement.ts';
+import { clampRate, DEFAULT_PLACE, placeAt, RATE_DEFAULT, RATE_STEP, roomBeside, steadyRoom, SURFACES, usableArea, type DisplayPlaces, type Place, type Rect, type Surface } from '../shared/placement.ts';
 import { speechPieces } from '../shared/voice.ts';
 import { alignmentOf, DETAIL_DELTA, detailChange, detailGrid, fingerprintFromBase64, fingerprintToBase64, lumaChange, luminance, sampleState, toFramePixels, type Alignment, type Detail, type DisplaySample, type InkMarks } from '../shared/samples.ts';
 
@@ -55,13 +55,15 @@ type Api = {
   onLoadDoc(fn: (doc: DesktopInk) => void): void;
   onStop(fn: (reason: string) => void): void;
   /** A circle: the WHOLE composed frame, the circle's rectangle among its facts, and the ink drawn into it. Kept; and, with the AI running, a small hint is asked for at once. */
-  askSelection(facts: unknown, png: Uint8Array, ink: Uint8Array): Promise<{ ok: true; selection_id: string; request: Submitted } | { ok: false; reason: string }>;
+  askSelection(facts: unknown, png: Uint8Array, ink: Uint8Array, during: string | null): Promise<{ ok: true; selection_id: string; request: Submitted } | { ok: false; reason: string }>;
   /** A follow-up in the user's words, with a fresh whole frame. */
-  askSubmit(selectionId: string, question: string, assistance: string, facts: unknown, png: Uint8Array, ink: Uint8Array): Promise<Submitted>;
+  askSubmit(selectionId: string, question: string, assistance: string, facts: unknown, png: Uint8Array, ink: Uint8Array, during: string | null): Promise<Submitted>;
   onLive(fn: (live: Live) => void): void;
   askCancel(selectionId: string): void;
   askClosed(): void;
+  askPresent(selectionId: string, requestId: string): Promise<{ ok: true } | { ok: false; reason: string; saved?: boolean; unsaved?: string | null }>;
   askPresented(selectionId: string, requestId: string, shown: boolean): Promise<Saved>;
+  lookFrame(facts: unknown, png: Uint8Array, ink: Uint8Array): Promise<{ ok: boolean; retry?: true }>;
   askSave(selectionId: string): Promise<Saved>;
   onAskResult(fn: (selectionId: string, requestId: string, outcome: AskOutcome, record: Saved) => void): void;
 };
@@ -77,7 +79,7 @@ type Live =
   | { state: 'none' }
   | { state: 'off'; reason: string | null }
   | { state: 'starting' }
-  | { state: 'on' | 'used_up' | 'ended'; model: string; max_submissions: number; used: number; reserve: number; expires_at: string; paused: string | null; missed: string | null; ended: string | null; seen: { at: string; frame_seq: number } | null; frames: number; out: number; unwritten: number };
+  | { state: 'on' | 'used_up' | 'ended'; id: string; since: string; model: string; max_submissions: number; used: number; reserve: number; expires_at: string; paused: string | null; missed: string | null; ended: string | null; seen: { at: string; frame_seq: number } | null; frames: number; out: number; unwritten: number };
 /** Whether the selection's record (each request and how it ended) is written on this device; if not, why. `speak`: this response may be read aloud. */
 type Saved = { saved: boolean; reason: string | null; speak?: boolean };
 /** How a request to ChatGPT ended, as the main process says it (a response only for the turn that was sent). */
@@ -111,6 +113,20 @@ const development = info.development === true;
  */
 const subscription = info.subscription === true;
 let live: Live = info.live ?? { state: 'none' };
+/** The unique AI session id that has been offered its first picture, or needs none; and whether an offer is on its way. */
+let lookGiven: string | null = null;
+let lookOut = false;
+/** Offers of a first picture that could not be made or sent, for one session: after LOOK_TRIES it is given up, and that is said. */
+let lookTries = { session: '', failed: 0 };
+const LOOK_TRIES = 3;
+/** Why the running session was given no first picture by this window (it could not be made or sent), or ''. */
+let lookNote = '';
+/** The unique AI session id that runs now as this window was told, or null: said with every request, which is sent only in the session it was made in. */
+const sessionNow = (): string | null => (live.state === 'on' || live.state === 'used_up' ? live.id : null);
+/** When the running session was started, while it is still owed its first picture (see "the AI's first look"); else null. */
+const lookOwed = (): string | null => (!ended && live.state === 'on' && !lookOut && live.id !== lookGiven ? live.since : null);
+/** Counts every time this page is told that no AI session runs (stopped, ended, being started): an answer let through before that is not shown after it. */
+let liveFence = 0;
 /** The card's selection, as the main process retained it (only with the subscription configured). */
 let asked: {
   card: number;
@@ -142,23 +158,50 @@ let mouseWrites = false;
 // place is kept per display by the main process and restored at the next Start, inside whatever the work area is
 // then (the style sheet keeps the whole surface inside it).
 let area: Rect = usableArea(info.work_area ?? { x: 0, y: 0, width: window.innerWidth, height: window.innerHeight });
+/** The card's own room: the usable area beside the toolbar, so neither surface covers the other (roomBeside). */
+let room: Rect = area;
+/** A usable area smaller than this is tight: smaller controls and a two-line hint leave the card its room (style sheet). */
+const TIGHT = { width: 560, height: 480 };
 const surfaces: Record<Surface, { el: HTMLElement; handle: HTMLElement; place: Place; label: string }> = {
   toolbar: { el: $('toolbar'), handle: $('toolbarHandle'), place: info.places?.toolbar ?? DEFAULT_PLACE.toolbar, label: 'toolbar' },
   caption: { el: $('card'), handle: $('cardHandle'), place: info.places?.caption ?? DEFAULT_PLACE.caption, label: 'card' },
 };
 /** The surface being moved by a pointer, and where on the surface the pointer took hold. */
 let drag: { surface: Surface; pointerId: number; dx: number; dy: number; moved: boolean } | null = null;
+const setArea = (style: CSSStyleDeclaration, r: Rect): void => {
+  style.setProperty('--ax', `${r.x}px`);
+  style.setProperty('--ay', `${r.y}px`);
+  style.setProperty('--aw', `${r.width}px`);
+  style.setProperty('--ah', `${r.height}px`);
+};
 function applyArea(): void {
-  const root = document.documentElement.style;
-  root.setProperty('--ax', `${area.x}px`);
-  root.setProperty('--ay', `${area.y}px`);
-  root.setProperty('--aw', `${area.width}px`);
-  root.setProperty('--ah', `${area.height}px`);
+  setArea(document.documentElement.style, area);
+  document.documentElement.classList.toggle('tight', area.width < TIGHT.width || area.height < TIGHT.height);
+  fitCard(true);
 }
 function applyPlace(name: Surface): void {
   const s = surfaces[name];
   s.el.style.setProperty('--fx', String(s.place.fx));
   s.el.style.setProperty('--fy', String(s.place.fy));
+  if (name === 'toolbar') fitCard();
+}
+/** What the card was last fitted to (its room, and the window's height: the card is no taller than a part of it). */
+let fitted = '';
+/**
+ * The card is placed and sized inside its room, worked out from where the toolbar is and how large it is now (a
+ * toolbar that only became a little lower moves nothing: steadyRoom). When that changes what the card can show, the
+ * response on it is brought back into view if the display itself changed (`display`: its work area, or the window's
+ * size), or if the response is being read aloud: what is read stays visible as its caption. A change of the toolbar
+ * alone leaves the card scrolled where the user has it.
+ */
+function fitCard(display = false): void {
+  const t = surfaces.toolbar.el.getBoundingClientRect();
+  room = steadyRoom(room, roomBeside(area, { x: t.left, y: t.top, width: t.width, height: t.height }));
+  const fit = [room.x, room.y, room.width, room.height, window.innerHeight].join();
+  if (fit === fitted) return;
+  fitted = fit;
+  setArea(surfaces.caption.el.style, room);
+  if (!$('card').hidden && !$('answerBox').hidden && (display || speaking !== null)) $('answerBox').scrollIntoView({ block: 'start' });
 }
 /** The place is kept by the main process; when it cannot be written it holds for this session, and that is said. */
 async function keepPlace(name: Surface): Promise<void> {
@@ -175,7 +218,10 @@ async function keepPlace(name: Surface): Promise<void> {
 function moveTo(name: Surface, left: number, top: number): void {
   const s = surfaces[name];
   const box = s.el.getBoundingClientRect();
-  s.place = placeAt(left, top, { width: box.width, height: box.height }, area);
+  const within = name === 'caption' ? room : area;
+  const to = placeAt(left, top, { width: box.width, height: box.height }, within);
+  // (a surface as wide or as high as its room cannot move that way: its kept place on that axis stays the user's)
+  s.place = { fx: within.width > box.width ? to.fx : s.place.fx, fy: within.height > box.height ? to.fy : s.place.fy };
   applyPlace(name);
 }
 function endDrag(): { surface: Surface; moved: boolean } | null {
@@ -232,6 +278,9 @@ lc.onWorkArea((next) => {
   area = usableArea(next);
   applyArea();
 });
+// The toolbar's own size changes with what it says and shows, and the window's with its display: the card is fitted again.
+new ResizeObserver(() => fitCard()).observe(surfaces.toolbar.el);
+window.addEventListener('resize', () => fitCard(true));
 
 // ---- talk: a response read aloud ------------------------------------------------------------------------------
 // Silent unless the user turns Talk on: a response is shown as text on its card, and is read aloud only while Talk
@@ -371,7 +420,7 @@ let presentedSeen = 0;
  * The frame held: taken in sample `seq`, when `presented` frames had been presented, the newest of them at
  * `presentedAt` (performance time of its callback). The image is that frame, or one presented just after it.
  */
-type HeldFrame = { bitmap: ImageBitmap; seq: number; at: string; presented: number; presentedAt: number };
+type HeldFrame = { bitmap: ImageBitmap; seq: number; at: string; liveSession: string | null; presented: number; presentedAt: number };
 let raw: HeldFrame | null = null;
 /** The latest composed frame with what it was made from. */
 /**
@@ -524,18 +573,22 @@ async function takeSample(lateMs: number): Promise<void> {
   presentedSeen = presented;
   const { state, gap_ms } = sampleState({ ended, newFrame, lateMs, periodMs: PERIOD_MS });
   const mySeq = ++seq;
-  if (!ended && video.videoWidth > 0 && (newFrame || !raw)) {
+  // (a session started since the held picture was taken is owed one taken after its Start, even with no new frame
+  // of the stream: the picture is taken again from the stream as it is now, and its time is this one)
+  if (!ended && video.videoWidth > 0 && (newFrame || !raw || (lookOwed() !== null && (raw.liveSession !== sessionNow() || Date.parse(raw.at) < Date.parse(lookOwed()!))))) {
+    const liveSession = sessionNow(); // binds acquisition before awaiting: a later Start cannot make this picture its own
+    const at = now(); // (when it is taken from the stream: never later than the picture itself)
     const bitmap = await createImageBitmap(video);
     if (ended) {
       if (startsWaiting === 0) return bitmap.close();
       // Taken before the end for a stroke that began just before it: held for that stroke's starting context.
       const previous = raw;
-      raw = { bitmap, seq: mySeq, at: now(), presented: presentedNow, presentedAt: presentedAtNow };
+      raw = { bitmap, seq: mySeq, at, liveSession, presented: presentedNow, presentedAt: presentedAtNow };
       if (previous) release(previous.bitmap);
       return;
     }
     const previous = raw;
-    raw = { bitmap, seq: mySeq, at: now(), presented: presentedNow, presentedAt: presentedAtNow };
+    raw = { bitmap, seq: mySeq, at, liveSession, presented: presentedNow, presentedAt: presentedAtNow };
     if (previous) release(previous.bitmap); // unless a stroke in progress was written over it
     recheckAlignment();
     noteContextChange();
@@ -605,7 +658,8 @@ async function takeSample(lateMs: number): Promise<void> {
   };
   // A known gap is kept in the retention record as measured, whatever the pixels or the ink did.
   if (sample.state === 'gap' && sample.gap_ms !== null) lc.observationGap({ sample_seq: sample.seq, gap_ms: sample.gap_ms, sampled_at: sample.sampled_at, monotonic_ms: sample.monotonic_ms });
-  if (held && heldGrid && made && rawSha && sample.raw && sample.composed) considerRetention(sample, held, heldGrid, made, rawSha);
+  const kept = held && heldGrid && made && rawSha && sample.raw && sample.composed ? considerRetention(sample, held, heldGrid, made, rawSha) : false;
+  if (held) offerLook(held, kept, newFrame);
   samples.push(sample);
   if (samples.length > 60) samples.shift();
   lc.sample(sample);
@@ -1027,6 +1081,7 @@ function wholeFrame(): { canvas: OffscreenCanvas; facts: { frame_seq: number; fr
 }
 async function finishAsk(points: ReadonlyArray<InkPoint>): Promise<void> {
   const epoch = mode.askEpoch;
+  const during = sessionNow(); // (the circle is asked about only in the AI session it was made in)
   const region = regionOf(points);
   // The whole frame is composed now from the frame held and the ink as it is, and labelled with exactly those.
   const held = ended ? null : raw;
@@ -1092,7 +1147,7 @@ async function finishAsk(points: ReadonlyArray<InkPoint>): Promise<void> {
   askStatus('Keeping this on this device…');
   let kept: Awaited<ReturnType<Api['askSelection']>>;
   try {
-    kept = await lc.askSelection(facts, png, whole.ink);
+    kept = await lc.askSelection(facts, png, whole.ink, during);
   } catch {
     kept = { ok: false, reason: 'the app did not answer' };
   }
@@ -1133,6 +1188,7 @@ async function submitAsk(): Promise<void> {
   a.early = null;
   const answerShown = !$('answerBox').hidden;
   $('askSave').hidden = true;
+  const during = sessionNow(); // (sent only in the AI session that ran when Send was pressed)
   const question = $<HTMLTextAreaElement>('question').value;
   const assistance = document.querySelector<HTMLInputElement>('input[name="assistance"]:checked')?.value ?? 'hint';
   askForm('asking');
@@ -1162,7 +1218,7 @@ async function submitAsk(): Promise<void> {
   }
   let sent: Submitted;
   try {
-    sent = await lc.askSubmit(a.selection, question, assistance, whole.facts, png, whole.ink);
+    sent = await lc.askSubmit(a.selection, question, assistance, whole.facts, png, whole.ink, during);
   } catch {
     sent = { ok: false, reason: 'the app did not answer' };
   }
@@ -1193,6 +1249,7 @@ function cancelAsk(): void {
 }
 lc.onLive((next) => {
   live = next;
+  if (next.state !== 'on' && next.state !== 'used_up') liveFence += 1;
   render();
 });
 lc.onAskResult((selectionId, requestId, outcome, record) => {
@@ -1202,15 +1259,35 @@ lc.onAskResult((selectionId, requestId, outcome, record) => {
   // acknowledgement names its selection and request. Nothing is shown for a request this card did not make.
   if (a.submitting && a.request === null && (a.selection === null || a.selection === selectionId)) return void (a.early = { selection: selectionId, request: requestId, outcome, record });
   if (a.selection !== selectionId || a.request !== requestId) return; // not this card's request: never shown
-  showOutcome(a, outcome, record);
+  void showOutcome(a, outcome, record);
 });
-/** How this card's question ended. An answer is shown as text; what was not written on this device is said. */
-function showOutcome(a: NonNullable<typeof asked>, outcome: AskOutcome, record: Saved): void {
+/**
+ * How this card's question ended. An answer is shown as text; what was not written on this device is said.
+ * An answer may have waited here (for its selection's acknowledgement, say) while the AI was stopped or started
+ * again: so the main process is asked, at this moment, whether it is still this card's to show, and what it refuses
+ * is never put on the card. Until it has answered, the request counts as still out (Cancel still withdraws it).
+ */
+async function showOutcome(a: NonNullable<typeof asked>, outcome: AskOutcome, record: Saved): Promise<void> {
   const request = a.request!;
+  const answered = outcome.status === 'answered';
+  let refused: string | null = null; // why the main process, asked now, does not let this answer be shown
+  const fence = liveFence;
+  if (answered && a.selection && !a.cancelling && !ended) {
+    const may = await lc.askPresent(a.selection, request).catch((): Awaited<ReturnType<Api['askPresent']>> => ({ ok: false, reason: 'the app did not answer' }));
+    if (asked !== a) return; // its card went meanwhile: the main process keeps it as not shown
+    if (!may.ok) {
+      refused = may.reason;
+      // (the record no longer holds the text: whether that is written on this device is said, with Save when it is not)
+      if (may.saved !== undefined) record = { saved: may.saved, reason: may.unsaved ?? null };
+    }
+  }
   a.request = null;
-  // Cancelled here after the answer had already left the main process: it is still not shown.
-  const suppressed = (a.cancelling || ended) && outcome.status === 'answered';
-  const out: AskOutcome = suppressed ? { status: 'cancelled', uncertain: true } : outcome;
+  // Let through, and then cancelled here, or the capture ended, or this page was told that the AI stopped: still
+  // not shown, and the main process is told so.
+  const stopped = liveFence !== fence;
+  const suppressed = answered && refused === null && (a.cancelling || ended || stopped);
+  const unshown = refused ?? (suppressed && !a.cancelling && !ended ? 'the AI was stopped before it was shown' : null);
+  const out: AskOutcome = suppressed || refused !== null ? { status: 'cancelled', uncertain: true } : outcome;
   a.cancelling = false;
   askForm(ended ? 'hidden' : 'ready');
   let text: string;
@@ -1226,7 +1303,8 @@ function showOutcome(a: NonNullable<typeof asked>, outcome: AskOutcome, record: 
     text = `From ChatGPT (${out.answer.model}) in ${(out.answer.latency_ms / 1000).toFixed(1)} s, about the whole display as it was${when}.${circle}`;
   } else {
     $('badge').textContent = 'Your focus · asked: no response shown';
-    text = out.status === 'cancelled'
+    text = unshown !== null ? `Not shown: ${unshown}. ChatGPT had answered; its response is not shown here and not kept, and it may have counted against your usage.`
+      : out.status === 'cancelled'
       ? `Cancelled: no answer is shown.${out.uncertain ? ' Whether ChatGPT stopped working on it is not confirmed; it may still have counted against your usage.' : ''}`
       : out.status === 'refused' ? `No answer: ${out.reason}. ${out.submission === 'not_submitted' ? 'It did not reach ChatGPT' : out.submission === 'submitted' ? 'It had reached ChatGPT' : 'Whether it reached ChatGPT is not known'}; it is not sent again.` : `No answer: ${out.reason}. It is not sent again automatically.`;
   }
@@ -1235,7 +1313,7 @@ function showOutcome(a: NonNullable<typeof asked>, outcome: AskOutcome, record: 
   // What came is brought into view: the card may be scrolled to its form, with the response below what is visible.
   (out.status === 'answered' ? $('answerBox') : $('askStatus')).scrollIntoView({ block: out.status === 'answered' ? 'start' : 'nearest' });
   // The main process is told what was done with an answer (shown, or not after all); its record follows that.
-  if (outcome.status === 'answered' && a.selection) void lc.askPresented(a.selection, request, !suppressed).then((r) => saved(a, text, r), () => undefined);
+  if (answered && a.selection && refused === null) void lc.askPresented(a.selection, request, !suppressed).then((r) => saved(a, text, r), () => undefined);
   // Read aloud only when this response was asked for with Talk on (the main process says so), and only what is shown
   // here (asked of the main process after "shown", in that order; it checks again before every piece).
   if (out.status === 'answered' && a.selection && record.speak === true) speak(a.selection, request, out.answer.text);
@@ -1406,8 +1484,9 @@ function liveText(): string {
   const left = Math.max(0, live.max_submissions - live.used);
   const minutes = Math.max(0, Math.ceil((Date.parse(live.expires_at) - Date.now()) / 60_000));
   const seen = live.seen ? `it last looked at ${new Date(live.seen.at).toLocaleTimeString()}` : 'it has not looked yet';
+  const note = lookNote && lookTries.session === live.id && live.seen === null ? ` ${lookNote}` : '';
   return (live.paused !== null ? `ChatGPT now looks only when you circle or ask (${live.paused})` : 'ChatGPT observes this whole display as it changes') +
-    `: ${left} of ${live.max_submissions} requests and about ${minutes} min left in this session (its own bounds, not ChatGPT's quota); ${seen}${live.missed ? `; the newest look was not made (${live.missed})` : ''}.`;
+    `: ${left} of ${live.max_submissions} requests and about ${minutes} min left in this session (its own bounds, not ChatGPT's quota); ${seen}${live.missed ? `; the newest look was not made (${live.missed})` : ''}.${note}`;
 }
 function captureText(): string {
   if (ended) return `Capture ended: ${endReason}. Nothing is being observed now, and this overlay takes no new input.`;
@@ -1443,7 +1522,8 @@ function renderToolbar(): void {
   const modeText = mode.mode === 'NAV' ? 'Clicks go to your apps.' : mode.mode === 'ASK' ? 'Circle a region. Esc or Cancel returns.' : `${mouseWrites ? 'Pen and mouse write' : 'Pen writes; mouse writing off'}; ${placement === 'screen' ? 'new ink fixed on the screen' : 'following content is not established here: ink stays where written'}.`;
   // (what Talk does is said here too: its controls are in the toolbar, and the card that shows a reading's status may be closed)
   const talkText = !talk || !subscription ? '' : !voice ? `Talk is on, but ${NO_VOICE}.` : muted ? 'Talk is on, muted.' : 'Talk is on: the responses you ask for from now are read aloud.';
-  $('hint').textContent = [transientHint || modeText, captureText(), liveText(), talkText, saveText, ...marks].filter(Boolean).join(' ');
+  // (ink that is not saved is said first: in a small work area the hint shows two lines and scrolls for the rest)
+  $('hint').textContent = [unsaved !== null ? saveText : '', transientHint || modeText, captureText(), liveText(), talkText, unsaved !== null ? '' : saveText, ...marks].filter(Boolean).join(' ');
 }
 
 // ---- whole-display retention ------------------------------------------------------------------------------
@@ -1479,7 +1559,7 @@ async function pngBytes(canvas: OffscreenCanvas): Promise<Uint8Array> {
  * Decides whether this sample's whole-display frame is retained. If it is, the held image and this sample's
  * composed canvas are kept (with the facts pinned here) and encoded as PNGs after the sample, in order.
  */
-function considerRetention(sample: DisplaySample, held: HeldFrame, heldGrid: Uint8Array, made: NonNullable<typeof composed>, rawSha: string): void {
+function considerRetention(sample: DisplaySample, held: HeldFrame, heldGrid: Uint8Array, made: NonNullable<typeof composed>, rawSha: string): boolean {
   const c = sample.composed!;
   const now: Retained = { pixels_sha256: rawSha, grid: heldGrid, ink_key: `${c.ink_session}:${c.ink_revision}:${JSON.stringify(c.ink_marks)}`, at_ms: sample.monotonic_ms };
   const decided = decideRetention(lastRetained, now, deferredSeqs.length > 0, retentionPolicy);
@@ -1490,16 +1570,16 @@ function considerRetention(sample: DisplaySample, held: HeldFrame, heldGrid: Uin
     deferredSeqs = [];
     lastRetained = now;
     addNotRetained(seqs, `a material step, not retained: ${retentionClosed}`);
-    return;
+    return false;
   }
   if (decided.retain && retentionQueued >= MAX_RETENTION_QUEUE) {
     deferredSeqs.push(sample.seq); // earlier frames are still being encoded and written: this step waits
-    return;
+    return false;
   }
   if (!decided.retain) {
     if (decided.reason === 'deferred') deferredSeqs.push(sample.seq);
     if (decided.reason === 'below_threshold') addNotRetained([sample.seq], 'pixels changed less than the material threshold since the last retained frame');
-    return;
+    return false;
   }
   flushNotRetained();
   const coalesced = deferredSeqs;
@@ -1513,6 +1593,7 @@ function considerRetention(sample: DisplaySample, held: HeldFrame, heldGrid: Uin
     deferred_samples_not_retained: coalesced,
     sampled_at: sample.sampled_at,
     taken_at: held.at,
+    live_session_id: held.liveSession,
     monotonic_ms: sample.monotonic_ms,
     state: sample.state,
     gap_ms: sample.gap_ms,
@@ -1562,6 +1643,43 @@ function considerRetention(sample: DisplaySample, held: HeldFrame, heldGrid: Uin
       retentionPending.delete(sample.seq);
     }
   });
+  return true;
+}
+
+// ---- the AI's first look ----------------------------------------------------------------------------------------
+// What an AI session is given to look at by itself are the frames kept as material steps of the display. A session
+// started on a screen that then does not change would be given none. So the first picture taken AFTER its Start is
+// offered to it once, as it is, whatever it shows: taken anew (never the picture held from before the Start under a
+// newer time), kept by the main process, and counted there like any other look. The same holds for every later
+// Start of the AI.
+/**
+ * After a sample: `kept` says its frame goes to the main process as a kept frame anyway (which is then the look);
+ * `newFrame`, whether the stream had presented a new frame for it (a still screen presents none: the picture is then
+ * the stream's newest frame read again now, and its age is said with it).
+ */
+function offerLook(held: HeldFrame, kept: boolean, newFrame: boolean): void {
+  const since = lookOwed();
+  if (since === null || held.liveSession !== sessionNow() || Date.parse(held.at) < Date.parse(since)) return; // (a picture from before the Start is taken anew at the next sample)
+  const session = sessionNow()!;
+  if (lookTries.session !== session) lookTries = { session, failed: 0 };
+  if (kept) return void (lookGiven = session);
+  const whole = wholeFrame();
+  if (!whole) return;
+  lookOut = true;
+  const facts = { ...whole.facts, live_session_id: session, stream_new_frame: newFrame, stream_frame_age_ms: held.presented > 0 ? Math.max(0, Math.round(performance.now() - held.presentedAt)) : null };
+  /** It could not be made or sent: the next sample offers again, a few times; then this session is offered none, and that is said. */
+  const failed = (error: unknown): void => {
+    if (lookTries.session !== session || (lookTries.failed += 1) < LOOK_TRIES) return;
+    lookGiven = session;
+    lookNote = `Its first picture of this display could not be made (${why(error)}): it looks when the display changes.`;
+    render();
+  };
+  void pngBytes(whole.canvas)
+    .then((png) => lc.lookFrame(facts, png, whole.ink))
+    .then((r) => {
+      if (!r.retry) lookGiven = session; // taken, not needed, or refused for good (the main process says why); else the next sample offers again
+    }, failed)
+    .finally(() => (lookOut = false));
 }
 /** Adds samples to the current run of not-retained samples with this reason (reported when the run ends). */
 function addNotRetained(seqs: number[], reason: string): void {

@@ -2,7 +2,7 @@
 // (src/shared/placement.ts, src/shared/voice.ts).
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { clampRate, cornerOf, DEFAULT_PLACE, DISPLAYS_MAX, isPlace, NO_PREFERENCES, placeAt, PLACEMENT_FORMAT, placesOf, readPreferences, storedPreferences, usableArea, withPlace, type Rect } from '../src/shared/placement.ts';
+import { clampRate, cornerOf, DEFAULT_PLACE, DISPLAYS_MAX, isPlace, NO_PREFERENCES, placeAt, PLACEMENT_FORMAT, placesOf, readPreferences, ROOM_MIN, ROOM_SLACK, roomBeside, steadyRoom, storedPreferences, SURFACE_GAP, usableArea, withPlace, type Rect } from '../src/shared/placement.ts';
 import { HAN_COST, PIECE_MAX, speechCulture, speechCultures, speechPieces } from '../src/shared/voice.ts';
 
 const AREA: Rect = { x: 10, y: 10, width: 1260, height: 740 };
@@ -39,6 +39,74 @@ test('the same place fits any work area and scale: restored on a smaller, larger
   assert.deepEqual([cornerOf(DEFAULT_PLACE.toolbar, SIZE, AREA), cornerOf(DEFAULT_PLACE.caption, { width: 360, height: 200 }, AREA)], [{ left: 970, top: 10 }, { left: 910, top: 550 }]);
   // The usable area is the work area less a margin (smaller on a tiny one), relative to the display's own corner.
   assert.deepEqual([usableArea({ x: 0, y: 0, width: 1280, height: 760 }), usableArea({ x: 0, y: 40, width: 1280, height: 760 }), usableArea({ x: 0, y: 0, width: 24, height: 24 })], [AREA, { x: 10, y: 50, width: 1260, height: 740 }, { x: 6, y: 6, width: 12, height: 12 }]);
+});
+
+test('the card\'s room is beside the toolbar, never under it: below or above it, whichever is higher; left or right only when neither can hold a card; the whole area only when nothing beside it can', () => {
+  const apart = (room: Rect, taken: Rect): boolean => room.x >= taken.x + taken.width + SURFACE_GAP || room.x + room.width <= taken.x - SURFACE_GAP || room.y >= taken.y + taken.height + SURFACE_GAP || room.y + room.height <= taken.y - SURFACE_GAP;
+  const within = (room: Rect): boolean => room.x >= AREA.x && room.y >= AREA.y && room.x + room.width <= AREA.x + AREA.width && room.y + room.height <= AREA.y + AREA.height;
+  // The toolbar where it starts (the top right): the room is everything below it, less the gap, as wide as the area.
+  const top: Rect = { x: 970, y: 10, width: 300, height: 50 };
+  assert.deepEqual(roomBeside(AREA, top), { x: 10, y: 66, width: 1260, height: 684 });
+  // Taller (it wraps, or says more): the room starts lower. Wider or narrower: the same room.
+  assert.deepEqual(roomBeside(AREA, { ...top, height: 165 }), { x: 10, y: 181, width: 1260, height: 569 });
+  assert.deepEqual(roomBeside(AREA, { x: 510, y: 10, width: 760, height: 50 }), roomBeside(AREA, top));
+  // At the bottom: the room is above it. In between: the higher part (equal parts: below).
+  assert.deepEqual(roomBeside(AREA, { x: 970, y: 700, width: 300, height: 50 }), { x: 10, y: 10, width: 1260, height: 684 });
+  assert.deepEqual(roomBeside(AREA, { x: 400, y: 500, width: 300, height: 50 }), { x: 10, y: 10, width: 1260, height: 484 });
+  assert.deepEqual(roomBeside(AREA, { x: 400, y: 200, width: 300, height: 50 }), { x: 10, y: 256, width: 1260, height: 494 });
+  assert.deepEqual(roomBeside(AREA, { x: 400, y: 355, width: 300, height: 50 }), { x: 10, y: 411, width: 1260, height: 339 }, 'equal parts: below');
+  // Neither above nor below can hold a card (the toolbar is nearly as high as the area): the wider part beside it.
+  const high: Rect = { x: 970, y: 10, width: 300, height: 700 };
+  assert.deepEqual(roomBeside(AREA, high), { x: 10, y: 10, width: 954, height: 740 });
+  assert.deepEqual(roomBeside(AREA, { ...high, x: 10 }), { x: 316, y: 10, width: 954, height: 740 });
+  // Nothing beside it can: the whole area (the style sheet keeps the toolbar on top there).
+  assert.equal(roomBeside(AREA, { x: 10, y: 10, width: 1260, height: 700 }), AREA);
+  assert.equal(roomBeside(AREA, AREA), AREA);
+  // The least room that counts, exactly; one pixel less does not.
+  assert.equal(roomBeside(AREA, { x: 10, y: 10, width: 1260, height: 740 - SURFACE_GAP - ROOM_MIN.height }).height, ROOM_MIN.height);
+  assert.equal(roomBeside(AREA, { x: 10, y: 10, width: 1260, height: 740 - SURFACE_GAP - ROOM_MIN.height + 1 }), AREA);
+  assert.equal(roomBeside(AREA, { x: 10 + ROOM_MIN.width + SURFACE_GAP, y: 10, width: 1260 - ROOM_MIN.width - SURFACE_GAP, height: 740 }).width, ROOM_MIN.width);
+  assert.equal(roomBeside(AREA, { x: 10 + ROOM_MIN.width + SURFACE_GAP - 1, y: 10, width: 1260 - ROOM_MIN.width - SURFACE_GAP + 1, height: 740 }), AREA);
+  // Whatever the toolbar's place and size (also partly outside the area, as a stale measure might be): a room beside
+  // it is inside the area and apart from it by the gap; else it is the area itself.
+  for (const x of [-200, 10, 400, 970, 1400]) for (const y of [-100, 10, 300, 700, 900]) for (const [width, height] of [[300, 50], [760, 165], [1260, 250], [420, 700]] as const) {
+    const taken: Rect = { x, y, width, height };
+    const room = roomBeside(AREA, taken);
+    assert.ok(room === AREA || (within(room) && apart(room, taken) && room.width >= ROOM_MIN.width && room.height >= ROOM_MIN.height), JSON.stringify({ taken, room }));
+  }
+  // A small work area (440×320, its usable part): with the toolbar across its top, the card has what is under it.
+  const small = usableArea({ x: 0, y: 0, width: 440, height: 320 });
+  assert.deepEqual(roomBeside(small, { x: 10, y: 10, width: 420, height: 119 }), { x: 10, y: 135, width: 420, height: 175 });
+});
+
+test('the card\'s room does not follow every line of the toolbar\'s hint: a room that only grew a little at the edge facing the toolbar stays; every other change is taken', () => {
+  const below: Rect = { x: 10, y: 197, width: 1260, height: 553 };
+  // The toolbar became a line lower (15.6px): the room would grow at its top; it stays.
+  assert.equal(steadyRoom(below, { ...below, y: 181, height: 569 }), below);
+  assert.equal(steadyRoom(below, { ...below, y: 197 - ROOM_SLACK + 1, height: 553 + ROOM_SLACK - 1 }), below);
+  // By the slack or more: taken. A toolbar that became higher (less room): taken at once, whatever the amount.
+  const more = { ...below, y: 197 - ROOM_SLACK, height: 553 + ROOM_SLACK };
+  assert.equal(steadyRoom(below, more), more);
+  const less = { ...below, y: 198, height: 552 };
+  assert.equal(steadyRoom(below, less), less);
+  // The same above the toolbar (the room's bottom edge faces it).
+  const above: Rect = { x: 10, y: 10, width: 1260, height: 400 };
+  assert.equal(steadyRoom(above, { ...above, height: 416 }), above);
+  const lower = { ...above, height: 399 };
+  assert.equal(steadyRoom(above, lower), lower);
+  const muchMore = { ...above, height: 400 + ROOM_SLACK };
+  assert.equal(steadyRoom(above, muchMore), muchMore);
+  // Another work area, another side of the toolbar, or the whole area: taken.
+  for (const next of [{ ...below, width: 1000 }, { ...below, x: 0 }, above, { x: 10, y: 181, width: 1260, height: 500 }, AREA]) assert.equal(steadyRoom(below, next), next, JSON.stringify(next));
+  // Small steps add up against the room that was kept, not against the step before: a toolbar dragged away slowly
+  // gives the room back once it has gone the slack.
+  let room = below;
+  const tops: number[] = [];
+  for (let y = 192; y >= 137; y -= 5) {
+    room = steadyRoom(room, { ...below, y, height: 750 - y });
+    tops.push(room.y);
+  }
+  assert.deepEqual(tops, [197, 197, 197, 197, 197, 197, 197, 197, 197, 147, 147, 147]);
 });
 
 test('the kept preferences are read only in their exact shape, per display, bounded; the speech rate stays inside its bounds', () => {

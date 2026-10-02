@@ -1,0 +1,46 @@
+{
+  "source_root": "/home/agentsdock/Projects/learning-companion/wt-web",
+  "head": "9622b517b74020b2d9e8ffbb03f8d615ff32341d",
+  "snapshot_kind": "stable read-only snapshot of current corrected working tree; HEAD 9622b51 plus uncommitted corrections",
+  "at": "2026-10-02T09:05:47.440Z",
+  "compiler": "Node 24.21.0 stripTypeScriptTypes",
+  "kind": "type-erasure and relative import extension rewrite only; no product typecheck",
+  "source_stable_during_snapshot": true,
+  "source_sha256": {
+    "apps/windows/src/renderer/overlay.ts": "7434d5560e3c9219c0248e4f11a3993ab3024045515bdbe65a432b8a2c06950c",
+    "apps/safari-extension/src/ink.ts": "d02c97ae1a5e00b6544b58f765dd86baa55c61beb0e10ca4776218fec4f324dc",
+    "apps/safari-extension/src/mode.ts": "76503344903e8720796e83e4bd67dea8a1164cb64673bf09506fabf1231cbec8",
+    "apps/windows/src/shared/desktop-ink.ts": "fefd7452f5f1018521087bc7c9afd5650f7ad4c0b9bb8ada5a3d775bfc6ab446",
+    "apps/windows/src/shared/samples.ts": "a9851c58e68b09507649fd7b024c73ad304b80e9f237d53c69da153741605946",
+    "apps/windows/src/shared/retention.ts": "e99392afa223f89dc63a8cb726cd0235d48d09e124cde682eb1bfa4645713ab1",
+    "apps/windows/src/shared/placement.ts": "9b6bfadad9b51700ce28f8eba2259e196e70331b9c00b089b0c86c8e27778567",
+    "apps/windows/src/shared/voice.ts": "df12ade8a22588c97a019ed51c6e71543fbccbc5044bd17617be33df4d27618d",
+    "apps/windows/src/renderer/overlay.html": "d7b84d4dbd06615f4a598e2b8072a34b92e9c6d0b39d8576fb53ceb421c8516e",
+    "apps/windows/src/renderer/overlay.css": "3767d3a02032588556cffdf1681010071661ff5dcdf898032a32296e2ba5a733"
+  },
+  "source_after_sha256": {
+    "apps/windows/src/renderer/overlay.ts": "7434d5560e3c9219c0248e4f11a3993ab3024045515bdbe65a432b8a2c06950c",
+    "apps/safari-extension/src/ink.ts": "d02c97ae1a5e00b6544b58f765dd86baa55c61beb0e10ca4776218fec4f324dc",
+    "apps/safari-extension/src/mode.ts": "76503344903e8720796e83e4bd67dea8a1164cb64673bf09506fabf1231cbec8",
+    "apps/windows/src/shared/desktop-ink.ts": "fefd7452f5f1018521087bc7c9afd5650f7ad4c0b9bb8ada5a3d775bfc6ab446",
+    "apps/windows/src/shared/samples.ts": "a9851c58e68b09507649fd7b024c73ad304b80e9f237d53c69da153741605946",
+    "apps/windows/src/shared/retention.ts": "e99392afa223f89dc63a8cb726cd0235d48d09e124cde682eb1bfa4645713ab1",
+    "apps/windows/src/shared/placement.ts": "9b6bfadad9b51700ce28f8eba2259e196e70331b9c00b089b0c86c8e27778567",
+    "apps/windows/src/shared/voice.ts": "df12ade8a22588c97a019ed51c6e71543fbccbc5044bd17617be33df4d27618d",
+    "apps/windows/src/renderer/overlay.html": "d7b84d4dbd06615f4a598e2b8072a34b92e9c6d0b39d8576fb53ceb421c8516e",
+    "apps/windows/src/renderer/overlay.css": "3767d3a02032588556cffdf1681010071661ff5dcdf898032a32296e2ba5a733"
+  },
+  "emitted_sha256": {
+    "apps/windows/src/renderer/overlay.js": "5900a7830d005aebbc4bc4e95bd90288908f611ba6d0f57b7812aa1c283bcab1",
+    "apps/safari-extension/src/ink.js": "e5a1867db9e72df7cecb43de48bc10e45d4f0bbc2936dd131075ba218cac7dd9",
+    "apps/safari-extension/src/mode.js": "4f6dcba7bd5fff78442a5b1a0631fc9e44f3e3935f0dd8e8b89b8574a5d6c27e",
+    "apps/windows/src/shared/desktop-ink.js": "48278d040e0fcb21c43523be24be7f741611f26cf8d35e7d5b9962e3d5cdd5f6",
+    "apps/windows/src/shared/samples.js": "4df4654aa44791ead0c1381f42368208a568714e199fbb345d9506fcad44e6fd",
+    "apps/windows/src/shared/retention.js": "5e446c2878bc3686733ce86bf8ae2c5d65089912dc707e657e759a16135bc595",
+    "apps/windows/src/shared/placement.js": "9f1fa21dd48026c8fd654a8df341bd8bc91df6b95383ac4fbb05f7530f238a09",
+    "apps/windows/src/shared/voice.js": "d8f4fba3d661544ba270b3da9346125d9a7683ebade92f0abc4bde4444580b32",
+    "apps/windows/src/renderer/overlay.html": "d7b84d4dbd06615f4a598e2b8072a34b92e9c6d0b39d8576fb53ceb421c8516e",
+    "apps/windows/src/renderer/overlay.css": "3767d3a02032588556cffdf1681010071661ff5dcdf898032a32296e2ba5a733"
+  },
+  "worktree_status": "uncommitted retained Windows corrections reviewed read-only"
+}

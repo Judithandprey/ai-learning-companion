@@ -1,0 +1,14 @@
+(node:4) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+UNCHANGED_START {"live":{"state":"on","id":"live-33cf073237e50900","since":"2026-10-02T09:10:21.104Z","model":"vision-model","max_submissions":12,"used":0,"reserve":3,"expires_at":"2026-10-02T09:20:21.105Z","min_observation_interval_ms":500,"paused":null,"missed":null,"ended":null,"seen":null,"frames":1,"out":1,"unwritten":0},"observations":1,"retained":1}
+✔ review: explicit AI Start on unchanged current screen must deliver a fresh first observation (83.656096ms)
+LATE_PRESENTATION {"live":{"state":"ended","id":"live-950b3b50e1648007","since":"2026-10-02T09:10:21.131Z","model":"vision-model","max_submissions":12,"used":1,"reserve":3,"expires_at":"2026-10-02T09:20:21.132Z","min_observation_interval_ms":500,"paused":null,"missed":null,"ended":"stopped by you","seen":null,"frames":1,"out":0,"unwritten":0},"card":{"badge":"Your focus · asked: no response shown","form":true,"submit":true,"cancel":false,"status":"Not shown: the AI was stopped before it was shown. ChatGPT had answered; its response is not shown here and not kept, and it may have counted against your usage.","answer":null,"save":false}}
+✔ review: AI Stop fences an early result buffered until the selection acknowledgement (44.421837ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 247.569626

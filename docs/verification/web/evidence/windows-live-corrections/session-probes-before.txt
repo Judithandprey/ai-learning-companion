@@ -1,0 +1,73 @@
+(node:4) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✖ [synthetic connector] distinct AI sessions with the same wall-clock Start each get their own first look on an unchanged screen (63.903872ms)
+✖ [synthetic connector] a material frame encoded across an AI restart remains retained without becoming the new session's first look (43.416486ms)
+✖ [synthetic connector] a repeated wall-clock Start does not give a queued circle or follow-up authority in a distinct AI session (22.276967ms)
+ℹ tests 3
+ℹ suites 0
+ℹ pass 0
+ℹ fail 3
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 236.039749
+
+✖ failing tests:
+
+test at ../../../../../tmp/lc-web-corrections-probe/apps/windows/tests/app-live.test.ts:1028:1
+✖ [synthetic connector] distinct AI sessions with the same wall-clock Start each get their own first look on an unchanged screen (63.903872ms)
+  AssertionError [ERR_ASSERTION]: read the source again for the new session; a cached bitmap from the old session is not its first picture
+  
+  1 !== 2
+  
+      at TestContext.<anonymous> (file:///tmp/lc-web-corrections-probe/apps/windows/tests/app-live.test.ts:1057:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 1,
+    expected: 2,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at ../../../../../tmp/lc-web-corrections-probe/apps/windows/tests/app-live.test.ts:1070:1
+✖ [synthetic connector] a material frame encoded across an AI restart remains retained without becoming the new session's first look (43.416486ms)
+  AssertionError [ERR_ASSERTION]: keep the capture's original frame, but an old encoding grants no authority to observe in the new AI session
+  + actual - expected
+  
+    [
+      1,
+  +   1,
+  +   1
+  -   0,
+  -   0
+    ]
+  
+      at TestContext.<anonymous> (file:///tmp/lc-web-corrections-probe/apps/windows/tests/app-live.test.ts:1103:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: [Array],
+    expected: [Array],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at ../../../../../tmp/lc-web-corrections-probe/apps/windows/tests/overlay-surfaces.test.ts:1312:1
+✖ [synthetic connector] a repeated wall-clock Start does not give a queued circle or follow-up authority in a distinct AI session (22.276967ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /^Kept on this device\. The AI was not asked: the AI was started or started again while this circle was being kept/. Input:
+  
+  'Asked at 2:12:06 AM (vision-model): the whole display with this part as your focus, for a small hint. Waiting for the response…'
+  
+      at TestContext.<anonymous> (file:///tmp/lc-web-corrections-probe/apps/windows/tests/overlay-surfaces.test.ts:1350:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Asked at 2:12:06 AM (vision-model): the whole display with this part as your focus, for a small hint. Waiting for the response…',
+    expected: /^Kept on this device\. The AI was not asked: the AI was started or started again while this circle was being kept/,
+    operator: 'match',
+    diff: 'simple'
+  }

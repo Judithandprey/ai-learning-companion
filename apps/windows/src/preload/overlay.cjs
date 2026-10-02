@@ -18,11 +18,16 @@ contextBridge.exposeInMainWorld('lc', {
   onStop: (fn) => ipcRenderer.on('lc:stop', (_e, reason) => fn(reason)),
   // ASK with the AI's session: a circle is kept with the whole frame it is on (and a small hint asked for at once,
   // when the session runs); a follow-up is sent only by askSubmit, with a fresh whole frame.
-  askSelection: (facts, png, ink) => ipcRenderer.invoke('lc:ask-selection', facts, png, ink ?? null),
-  askSubmit: (selectionId, question, assistance, facts, png, ink) => ipcRenderer.invoke('lc:ask-submit', String(selectionId), String(question), String(assistance), facts, png, ink ?? null),
+  // (`during`: the unique AI session id that ran when the user made the circle or pressed Send; null: none)
+  askSelection: (facts, png, ink, during) => ipcRenderer.invoke('lc:ask-selection', facts, png, ink ?? null, typeof during === 'string' ? during : null),
+  askSubmit: (selectionId, question, assistance, facts, png, ink, during) => ipcRenderer.invoke('lc:ask-submit', String(selectionId), String(question), String(assistance), facts, png, ink ?? null, typeof during === 'string' ? during : null),
+  // The first picture taken after the AI was started, for a session that has none of its own yet.
+  lookFrame: (facts, png, ink) => ipcRenderer.invoke('lc:look-frame', facts, png, ink ?? null),
   onLive: (fn) => ipcRenderer.on('lc:live', (_e, live) => fn(live)),
   askCancel: (selectionId) => ipcRenderer.send('lc:ask-cancel', String(selectionId)),
   askClosed: () => ipcRenderer.send('lc:ask-closed'),
+  // Asked just before an answer is put on the card: the main process says, then, whether it is still this card's to show.
+  askPresent: (selectionId, requestId) => ipcRenderer.invoke('lc:ask-present', String(selectionId), String(requestId)),
   askPresented: (selectionId, requestId, shown) => ipcRenderer.invoke('lc:ask-presented', String(selectionId), String(requestId), shown === true),
   askSave: (selectionId) => ipcRenderer.invoke('lc:ask-save', String(selectionId)),
   // A response read aloud: the page says only which piece of the current response is next. The main process owns

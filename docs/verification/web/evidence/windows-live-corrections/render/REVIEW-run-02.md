@@ -1,0 +1,9 @@
+# Post-session-identity correction renderer review
+
+Result: same 14 focused checks PASS, 0 FAIL, no fatal or renderer errors and no network attempts. Actual hidden Windows Electron44.5.1 / Chromium152.0.7977.130 run completed 2026-10-02T09:06:17.237Z -> 09:06:21.508Z (4.271s). Window never shown; generated canvas, fake main/IPC, pending fake voice only. No voice imports, accounts or capture/audio devices.
+
+The exact fresh build-02 snapshot includes the retained Windows corrections on HEAD9622b517b74020b2d9e8ffbb03f8d615ff32341d. Only apps/windows/src/renderer/overlay.ts changed since run-01. Current overlay.ts SHA-256 is 7434d5560e3c9219c0248e4f11a3993ab3024045515bdbe65a432b8a2c06950c. All10 renderer snapshot hashes remained stable during build and matched the working tree after run. The fake ready callback now supplies a generated unique session id separately from since; source contains live.id and held-frame liveSession provenance. This layout review does not itself verify session fencing behavior; root owns its feature tests.
+
+The identical wide1000x700 -> narrow440x320 flow passes current-speaking caption visibility, all six Talk center hit tests, actual CDP Stop reading hush0->1, fresh narrow response, actual toolbar drag retaining caption/both handles and mode/ink-history/request counts, plus idle geometry stability. No remaining confirmed F1/F2 reproduction defect in this scope.
+
+Evidence: build-02/source-manifest.json; run-02/result.json, four screenshots and executed harness/build/preload snapshots; launch-run-02.stdout.txt/stderr.txt. run-01 and its build remain unchanged. Nonfatal UNC cache/network-context ACL diagnostics are retained; no renderer error or network request resulted. Real audible voice, target-device capture/pen/DPI/multi-monitor and broader/full-product acceptance remain unverified. No production source was edited or committed by this reviewer.

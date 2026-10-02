@@ -9,6 +9,7 @@ import { after, test } from 'node:test';
 import assert from 'node:assert/strict';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import vm from 'node:vm';
 import { spawnSync } from 'node:child_process';
 import { harness, plain, quitLinks, running, settle as started, type FakeWindow } from './main-harness.ts';
 import { overlayPage, until } from './overlay-page.ts';
@@ -20,7 +21,7 @@ after(quitLinks);
 after(removeConfigs);
 const POLICY: Policy = { max_submissions: 60, max_session_ms: 1_800_000, min_observation_interval_ms: 30_000 };
 const settle = (): Promise<void> => new Promise((done) => setImmediate(done));
-type Live = { state: string; reason?: string | null; model?: string; max_submissions?: number; used?: number; reserve?: number; paused?: string | null; missed?: string | null; ended?: string | null; seen?: { at: string; frame_seq: number } | null; frames?: number; out?: number; unwritten?: number };
+type Live = { state: string; since?: string; reason?: string | null; model?: string; max_submissions?: number; used?: number; reserve?: number; paused?: string | null; missed?: string | null; ended?: string | null; seen?: { at: string; frame_seq: number } | null; frames?: number; out?: number; unwritten?: number };
 
 /**
  * The app with the subscription configured; by default checked (signed in) and the capture started with the AI's
@@ -788,4 +789,325 @@ json.dump(out, sys.stdout)
 `], { cwd: BACKEND!, input: JSON.stringify(calls), encoding: 'utf8', env: { ...process.env, PYTHONDONTWRITEBYTECODE: '1' }, maxBuffer: 256 * 1024 * 1024 });
   assert.equal(r.status, 0, r.stderr.slice(-2000));
   assert.deepEqual((JSON.parse(r.stdout) as unknown[]).filter((x) => x !== null), [['observation', false, true], ['focus', true, true], ['text_followup', true, true], ['observation', false, true], ['text_followup', true, true]], 'each turn is accepted and prepared: an observation allows no response, the user\'s own requests do');
+});
+
+test('[synthetic connector] an AI started on a screen that then does not change is still given its first look: a picture taken after that Start, kept, and looked at once; never one from before it; and the same at every later Start', async () => {
+  const policy: Policy = { ...POLICY, min_observation_interval_ms: 500 };
+  const w = await app({ ai: false, policy });
+  const overlay = { sender: w.s.overlay.webContents };
+  const frames = (): string[] => fs.readdirSync(path.join(w.h.userData, 'captures', fs.readdirSync(path.join(w.h.userData, 'captures'))[0]!, 'frames')).sort();
+  /** A sample with no new frame of the stream (the screen is still). */
+  const still = async (): Promise<void> => {
+    await w.page.review.sameFrameLate(0);
+    await w.page.review.pending();
+    await settle();
+  };
+  // What the overlay offers as a first picture, as it crosses to the main process.
+  const offered: unknown[][] = [];
+  const take = w.h.handlers['lc:look-frame']!;
+  w.h.handlers['lc:look-frame'] = (e: unknown, ...args: unknown[]) => {
+    offered.push(args);
+    return take(e, ...args);
+  };
+  // The capture alone: the screen is kept once, and no AI is there to look at it.
+  await w.change(90);
+  await still();
+  assert.deepEqual([w.page.review.retention().retained, frames().length, offered.length, w.c().count('companion/turn')], [1, 1, 0, 0]);
+  const kept = frames()[0]!;
+  // The AI is started. Nothing on the screen changes, and the stream presents no new frame.
+  assert.deepEqual(plain(await w.press('lc:live-start', policy)), { ok: true });
+  const since = Date.parse(w.live().since!);
+  assert.equal(w.looks().length, 0, 'nothing kept from before the Start is given to it');
+  await still();
+  await until('the first look', () => w.looks().length === 1);
+  const first = w.looks()[0]!;
+  assert.deepEqual([first.trigger, first.context.frame_seq, first.allowed_assistance, first.presentation, first.focus, first.user_text], ['observation', 1, 'none', 'none', null, null]);
+  const at = (t: Turn): number => Date.parse(t.context.frame_captured_at!);
+  assert.ok(at(first) >= since, 'taken after the Start: the picture held from before it was taken anew');
+  // It is the picture already kept (the same bytes at their address): nothing is written twice, and the capture's
+  // own record of the display has no new step.
+  assert.deepEqual([frames(), `${first.image.sha256}.png`, w.page.review.retention().retained], [[kept], kept, 1]);
+  const look = w.lines().find((l) => l['kind'] === 'look')!;
+  assert.deepEqual([look['frame_seq'], (look['image'] as { file: string }).file, look['frame_captured_at']], [1, `frames/${kept}`, first.context.frame_captured_at]);
+  // Offered once: the samples that follow on the still screen offer nothing and are not looked at.
+  w.c().see('A page of notes.');
+  await until('looked', () => w.live().seen?.frame_seq === 1);
+  for (let i = 0; i < 3; i += 1) await still();
+  await w.change(90);
+  w.h.fire(500);
+  await settle();
+  assert.deepEqual([offered.length, w.looks().length, w.live().frames, w.live().used], [1, 1, 1, 1]);
+  // The screen changes: that frame is kept as a step, and looked at as before (one at a time, in its turn).
+  await w.change(140);
+  await until('the second look', () => w.looks().length === 2);
+  assert.deepEqual([w.looks()[1]!.context.frame_seq, offered.length, w.page.review.retention().retained], [2, 1, 2]);
+  w.c().see('The notes moved on.');
+  await until('looked', () => w.live().seen?.frame_seq === 2);
+
+  // Stopped and started again, the screen still as it was: the new session is given a picture taken after ITS Start.
+  w.press('lc:live-stop');
+  await until('stopped', () => w.live().state === 'ended');
+  await still();
+  assert.equal(offered.length, 1, 'no AI: nothing is offered');
+  await new Promise((later) => setTimeout(later, 5)); // (the clock moves on: the first session's picture is from before this Start)
+  assert.deepEqual(plain(await w.press('lc:live-start', policy)), { ok: true });
+  const again = Date.parse(w.live().since!);
+  // The picture offered to the session before is not this one's: the main process itself refuses it, and asks for another.
+  assert.deepEqual(plain(await take(overlay, ...offered[0]!)), { ok: false, retry: true });
+  await still();
+  await until('the new session\'s first look', () => w.looks().length === 3);
+  const third = w.looks()[2]!;
+  assert.ok(at(third) >= again && third.session_id !== first.session_id);
+  assert.deepEqual([third.context.frame_seq, third.trigger, w.live().frames], [1, 'observation', 1]);
+  // Only the overlay offers one; with a frame of its own the session takes no other; a malformed one is said and not taken.
+  assert.deepEqual(plain(await take({ sender: w.control.webContents }, ...offered[0]!)), { ok: false });
+  assert.deepEqual(plain(await take(overlay, ...offered.at(-1)!)), { ok: true });
+  assert.equal(w.looks().length, 3);
+  w.press('lc:live-stop');
+  assert.deepEqual(plain(await take(overlay, ...offered.at(-1)!)), { ok: false }, 'no session: nothing is taken');
+});
+
+test('[synthetic connector] the first look is one look: a frame kept anyway after the Start is that look and nothing is offered beside it; with the looks stopped none is taken; a first picture that cannot be read is said', async () => {
+  const policy: Policy = { ...POLICY, min_observation_interval_ms: 500 };
+  // The screen changes right after the AI was started: the kept frame is the first look, and the only one.
+  const w = await app({ ai: false, policy });
+  let offered = 0;
+  const take = w.h.handlers['lc:look-frame']!;
+  w.h.handlers['lc:look-frame'] = (e: unknown, ...args: unknown[]) => {
+    offered += 1;
+    return take(e, ...args);
+  };
+  await w.change(90);
+  assert.deepEqual(plain(await w.press('lc:live-start', policy)), { ok: true });
+  await w.change(140);
+  await until('the first look', () => w.looks().length === 1);
+  await w.change(140);
+  await w.change(140);
+  w.h.fire(500);
+  await settle();
+  assert.deepEqual([offered, w.looks().length, w.live().frames, w.page.review.retention().retained], [0, 1, 1, 2]);
+
+  // Started with the capture, as usual: the first kept frame is the first look (nothing is offered beside it).
+  const usual = await app({ policy });
+  let beside = 0;
+  const usualTake = usual.h.handlers['lc:look-frame']!;
+  usual.h.handlers['lc:look-frame'] = (e: unknown, ...args: unknown[]) => {
+    beside += 1;
+    return usualTake(e, ...args);
+  };
+  await usual.change(90);
+  await usual.change(90);
+  await until('the first look', () => usual.looks().length === 1);
+  assert.deepEqual([beside, usual.live().frames], [0, 1]);
+
+  // The capture keeps no further frame: the AI's looks are stopped (said), and no first picture is taken either.
+  const full = await app({ ai: false, policy, max_frames: 1 });
+  await full.change(90);
+  await full.change(140); // (refused: the limit; the capture keeps nothing more)
+  assert.deepEqual(plain(await full.press('lc:live-start', policy)), { ok: true });
+  assert.match(full.live().paused ?? '', /^no further frame of this capture is kept on this device/);
+  await full.change(140);
+  await full.change(200);
+  await settle();
+  assert.deepEqual([full.looks().length, full.live().frames], [0, 0]);
+
+  // A first picture that is not a picture of this display: said as the look that was not made, never sent.
+  const bad = await app({ ai: false, policy });
+  await bad.change(90);
+  assert.deepEqual(plain(await bad.press('lc:live-start', policy)), { ok: true });
+  const overlay = { sender: bad.s.overlay.webContents };
+  assert.deepEqual(plain(await bad.h.handlers['lc:look-frame']!(overlay, null, new Uint8Array(4), null)), { ok: false });
+  assert.equal(bad.live().missed, 'the first picture\'s facts are malformed');
+  assert.deepEqual(plain(await bad.h.handlers['lc:look-frame']!(overlay, { frame_seq: 1, frame_captured_at: new Date().toISOString(), frame_width: 1280, frame_height: 800, ink_session: '0'.repeat(16), ink_revision: 0, visible_strokes: 0 }, new Uint8Array(4), null)), { ok: false });
+  assert.equal(bad.live().missed, 'the first picture\'s facts are malformed', 'how the picture relates to the stream must be said with it');
+  assert.deepEqual(plain(await bad.h.handlers['lc:look-frame']!(overlay, { frame_seq: 1, frame_captured_at: new Date().toISOString(), frame_width: 1280, frame_height: 800, ink_session: '0'.repeat(16), ink_revision: 0, visible_strokes: 0, stream_new_frame: false, stream_frame_age_ms: 12 }, new Uint8Array(4), null)), { ok: false });
+  assert.match(bad.live().missed ?? '', /^the display's picture is /);
+  assert.deepEqual([bad.looks().length, bad.live().frames], [0, 0]);
+});
+
+test('[synthetic connector] the first look is owed until a picture was taken for the AI by itself: a circle made first does not stand in for it; a picture that cannot be kept or made is said and not tried without end; what was kept is named in the session\'s record with how it relates to the stream', async () => {
+  const policy: Policy = { ...POLICY, min_observation_interval_ms: 500 };
+  const still = async (w: Awaited<ReturnType<typeof app>>): Promise<void> => {
+    await w.page.review.sameFrameLate(0);
+    await w.page.review.pending();
+    await settle();
+  };
+  const counted = (w: Awaited<ReturnType<typeof app>>): { n: number } => {
+    const offered = { n: 0 };
+    const take = w.h.handlers['lc:look-frame']!;
+    w.h.handlers['lc:look-frame'] = (e: unknown, ...args: unknown[]) => {
+      offered.n += 1;
+      return take(e, ...args);
+    };
+    return offered;
+  };
+  const frames = (w: Awaited<ReturnType<typeof app>>): string[] => fs.readdirSync(path.join(w.h.userData, 'captures', fs.readdirSync(path.join(w.h.userData, 'captures'))[0]!, 'frames')).sort();
+
+  // The user circles before the first sample after the Start: the circle's own request goes with the frame it was
+  // made on (taken before the Start, and said as that). The session's first look is still owed, and is made after it.
+  const w = await app({ ai: false, policy });
+  await w.change(90);
+  assert.deepEqual(plain(await w.press('lc:live-start', policy)), { ok: true });
+  const since = Date.parse(w.live().since!);
+  await w.select();
+  const focus = w.c().asks()[0]!.params as unknown as Turn;
+  assert.ok(Date.parse(focus.context.frame_captured_at!) < since && focus.context.frame_seq === 1, 'the circle is about the frame it was drawn on');
+  await still(w);
+  assert.equal(w.looks().length, 0, 'one request at a time: the look waits for the circle\'s');
+  w.c().answer('A hint.');
+  await until('the first look', () => w.looks().length === 1);
+  assert.ok(Date.parse(w.looks()[0]!.context.frame_captured_at!) >= since && w.looks()[0]!.context.frame_seq === 2);
+  // Its record: the picture that was kept, named before the look, with how it relates to the stream (no new frame
+  // was presented: the stream's newest frame read again, with its age).
+  const first = w.lines().find((l) => l['kind'] === 'first_picture')!;
+  assert.deepEqual([first['frame_seq'], first['stream_new_frame'], typeof first['stream_frame_age_ms'], fs.existsSync(path.join(w.h.userData, 'captures', fs.readdirSync(path.join(w.h.userData, 'captures'))[0]!, (first['image'] as { file: string }).file))], [2, false, 'number', true]);
+  assert.deepEqual(w.lines().filter((l) => ['first_picture', 'look'].includes(l['kind'] as string)).map((l) => [l['kind'], l['frame_seq'], (l['image'] as { sha256: string }).sha256]), [['first_picture', 2, w.looks()[0]!.image.sha256], ['look', 2, w.looks()[0]!.image.sha256]]);
+  // A circle that was cancelled leaves the look owed too (the session would else have seen nothing).
+  const x = await app({ ai: false, policy });
+  await x.change(90);
+  assert.deepEqual(plain(await x.press('lc:live-start', policy)), { ok: true });
+  await x.select();
+  x.page.click('askCancel');
+  await until('cancelled', () => /^Cancelled/.test(x.page.ask().status ?? ''));
+  await still(x);
+  await until('the first look', () => x.looks().length === 1);
+  // With a new frame of the stream the record says so.
+  const moving = await app({ ai: false, policy });
+  await moving.change(90);
+  assert.deepEqual(plain(await moving.press('lc:live-start', policy)), { ok: true });
+  await moving.change(90);
+  await until('the first look', () => moving.looks().length === 1);
+  assert.equal(moving.lines().find((l) => l['kind'] === 'first_picture')!['stream_new_frame'], true);
+
+  // The looks have no request left (all are kept for the user): the first picture is kept and named in the record,
+  // and not sent: a gap.
+  const none = await app({ ai: false, policy: { ...policy, max_submissions: 1 } });
+  await none.change(90);
+  assert.deepEqual(plain(await none.press('lc:live-start', { ...policy, max_submissions: 1 })), { ok: true });
+  await still(none);
+  await settle();
+  assert.deepEqual([none.looks().length, none.lines().map((l) => [l['kind'], l['frame_seq'] ?? null, l['reason'] ?? null])], [0, [['started', null, null], ['first_picture', 1, null], ['gap', 1, 'budget']]]);
+
+  // A first picture that cannot be kept (a write that fails) is said as the look that was not made, and not offered
+  // again and again: the next look is the next step of the display.
+  const full = await app({ ai: false, policy });
+  const offers = counted(full);
+  await full.change(90);
+  assert.deepEqual(plain(await full.press('lc:live-start', policy)), { ok: true });
+  full.h.failWrites.only = `${path.sep}frames${path.sep}`;
+  await full.change(91); // (less than a step of the display: not kept by the capture; a picture of its own for the look)
+  for (let i = 0; i < 4; i += 1) await still(full);
+  assert.deepEqual([offers.n, full.looks().length, frames(full).length], [1, 0, 1]);
+  assert.match(full.live().missed ?? '', /^its first picture could not be kept on this device \(it could not be written to this device \(.*EIO.*\)\), and only a kept picture is given to ChatGPT by itself$/);
+  full.h.failWrites.only = null;
+  await full.change(200);
+  await until('the next step is looked at', () => full.looks().length === 1);
+
+  // A first picture that cannot be made (the encoder fails) is tried at three samples, then given up, and that is
+  // said in the toolbar; nothing is tried without end.
+  const broken = await app({ ai: false, policy });
+  const tried = counted(broken);
+  await broken.change(90);
+  assert.deepEqual(plain(await broken.press('lc:live-start', policy)), { ok: true });
+  broken.page.scene.encodingFails = true;
+  await still(broken);
+  await still(broken);
+  assert.doesNotMatch(broken.page.hint() ?? '', /Its first picture/);
+  await still(broken);
+  assert.match(broken.page.hint() ?? '', /it has not looked yet\. Its first picture of this display could not be made \(the encoder failed \(injected\)\): it looks when the display changes\./);
+  broken.page.scene.encodingFails = false;
+  for (let i = 0; i < 3; i += 1) await still(broken);
+  assert.deepEqual([tried.n, broken.looks().length], [0, 0], 'given up: nothing is offered for this session any more');
+  await broken.change(200);
+  await until('the next step is looked at', () => broken.looks().length === 1);
+  broken.c().see('Seen.');
+  await until('looked', () => broken.live().seen !== null);
+  assert.doesNotMatch(broken.page.hint() ?? '', /Its first picture/);
+});
+
+test('[synthetic connector] distinct AI sessions with the same wall-clock Start each get their own first look on an unchanged screen', async () => {
+  const policy: Policy = { ...POLICY, min_observation_interval_ms: 500 };
+  const fixed = Date.now();
+  const evaluate = vm.runInContext;
+  let creating!: ReturnType<typeof app>;
+  // Only this main-process VM has a fixed clock. Harness creation is synchronous; restore the evaluator before
+  // awaiting anything, so the host clock and the overlay's fresh picture timestamps are untouched.
+  try {
+    vm.runInContext = (source, context, options) => evaluate(`Date.now = () => ${fixed};\n${source}`, context, options);
+    creating = app({ policy });
+  } finally {
+    vm.runInContext = evaluate;
+  }
+  const w = await creating;
+  await w.change(90);
+  await until('the first session\'s look', () => w.looks().length === 1);
+  const first = w.looks()[0]!;
+  const since = w.live().since;
+  w.c().see('Synthetic notes.');
+  await until('the first session looked', () => w.live().seen?.frame_seq === 1);
+  const grabs = w.page.scene.grabs;
+  w.press('lc:live-stop');
+  assert.deepEqual(plain(await w.press('lc:live-start', policy)), { ok: true });
+  assert.equal(w.live().since, since, 'a wall-clock timestamp may repeat; it is not the AI session\'s identity');
+  const starts = w.c().calls.filter((c) => c.method === 'companion/start');
+  assert.notEqual(starts[0]!.params['session_id'], starts[1]!.params['session_id']);
+  await w.page.review.sameFrameLate(0);
+  await w.page.review.pending();
+  await settle();
+  assert.equal(w.page.scene.grabs, grabs + 1, 'read the source again for the new session; a cached bitmap from the old session is not its first picture');
+  assert.equal(w.looks().length, 2, 'the new session gets its own first picture even when its Start time repeats');
+  const second = w.looks()[1]!;
+  assert.deepEqual([second.session_id, second.context.frame_seq, w.live().frames, w.page.review.retention().retained], [starts[1]!.params['session_id'], 1, 1, 1]);
+  assert.notEqual(second.session_id, first.session_id);
+  assert.ok(Date.parse(second.context.frame_captured_at!) >= fixed);
+  await w.page.review.sameFrameLate(0);
+  await w.page.review.pending();
+  await settle();
+  assert.equal(w.page.scene.grabs, grabs + 1, 'later still samples reuse the picture already taken for this session');
+  assert.equal(w.looks().length, 2, 'offered once for each distinct session');
+});
+
+test('[synthetic connector] a material frame encoded across an AI restart remains retained without becoming the new session\'s first look', async () => {
+  const policy: Policy = { ...POLICY, min_observation_interval_ms: 500 };
+  const fixed = Date.now();
+  const evaluate = vm.runInContext;
+  let creating!: ReturnType<typeof app>;
+  try {
+    vm.runInContext = (source, context, options) => evaluate(`Date.now = () => ${fixed};\n${source}`, context, options);
+    creating = app({ policy });
+  } finally {
+    vm.runInContext = evaluate;
+  }
+  const w = await creating;
+  const since = w.live().since;
+  const oldSession = w.c().calls.find((c) => c.method === 'companion/start')!.params['session_id'];
+  let release!: () => void;
+  w.page.encoding.gate = new Promise<void>((r) => (release = r));
+  const changing = w.change(90);
+  try {
+    await until('the frame is sampled while its encoding waits', () => w.page.review.samples().length === 1);
+    assert.deepEqual([w.page.scene.grabs, w.looks().length, w.page.review.retention().retained], [1, 0, 0]);
+    w.press('lc:live-stop');
+    assert.deepEqual(plain(await w.press('lc:live-start', policy)), { ok: true });
+    assert.equal(w.live().since, since, 'the old acquisition cannot be recognized by time alone when the Start clock repeats');
+  } finally {
+    w.page.encoding.gate = null;
+    release();
+    await changing;
+    await w.page.review.retention().queue;
+    await settle();
+  }
+  const starts = w.c().calls.filter((c) => c.method === 'companion/start');
+  const newSession = starts[1]!.params['session_id'];
+  assert.notEqual(newSession, oldSession);
+  assert.deepEqual([w.page.review.retention().retained, w.looks().length, w.live().frames], [1, 0, 0], 'keep the capture\'s original frame, but an old encoding grants no authority to observe in the new AI session');
+  const captures = path.join(w.h.userData, 'captures');
+  const folder = path.join(captures, fs.readdirSync(captures)[0]!);
+  const retained = fs.readFileSync(path.join(folder, 'manifest.jsonl'), 'utf8').trim().split('\n').map((l) => JSON.parse(l) as { kind: string; raw?: { file: string; sha256: string } }).find((l) => l.kind === 'retained')!;
+  assert.ok(fs.existsSync(path.join(folder, retained.raw!.file)), 'the original named by the capture manifest remains on disk');
+  await w.page.review.sameFrameLate(0);
+  await w.page.review.pending();
+  await settle();
+  assert.deepEqual([w.page.scene.grabs, w.looks().length, w.live().frames, w.page.review.retention().retained], [2, 1, 1, 1], 'the current session takes its own first picture without writing the same material step twice');
+  assert.deepEqual([w.looks()[0]!.session_id, w.looks()[0]!.image.sha256], [newSession, retained.raw!.sha256]);
 });

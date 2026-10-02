@@ -47,6 +47,45 @@ export function cornerOf(place: Place, size: { width: number; height: number }, 
   return { left: area.x + place.fx * Math.max(0, area.width - size.width), top: area.y + place.fy * Math.max(0, area.height - size.height) };
 }
 
+/** Kept free between the toolbar and the card. */
+export const SURFACE_GAP = 6;
+/** A room smaller than this holds no usable card. */
+export const ROOM_MIN = { width: 120, height: 64 };
+/**
+ * The room for the card: the part of the area below the toolbar or above it, whichever is higher (the toolbar is a
+ * strip across; the card stays under or over it, where it is, whatever the strip's height becomes). Only when
+ * neither can hold a card: the wider of the parts left and right of it. The card is placed and sized inside its room,
+ * so the card never covers the toolbar's controls and the toolbar never covers the card. With no usable room beside
+ * the toolbar at all, the whole area (the style sheet then keeps the toolbar on top).
+ */
+export function roomBeside(area: Rect, taken: Rect): Rect {
+  const right = area.x + area.width;
+  const bottom = area.y + area.height;
+  const within = (v: number, lo: number, hi: number): number => Math.min(hi, Math.max(lo, v));
+  const t = { left: within(taken.x - SURFACE_GAP, area.x, right), top: within(taken.y - SURFACE_GAP, area.y, bottom), right: within(taken.x + taken.width + SURFACE_GAP, area.x, right), bottom: within(taken.y + taken.height + SURFACE_GAP, area.y, bottom) };
+  const below: Rect = { x: area.x, y: t.bottom, width: area.width, height: bottom - t.bottom };
+  const above: Rect = { x: area.x, y: area.y, width: area.width, height: t.top - area.y };
+  const leftOf: Rect = { x: area.x, y: area.y, width: t.left - area.x, height: area.height };
+  const rightOf: Rect = { x: t.right, y: area.y, width: right - t.right, height: area.height };
+  const usable = (r: Rect): boolean => r.width >= ROOM_MIN.width && r.height >= ROOM_MIN.height;
+  const upDown = above.height > below.height ? above : below;
+  const beside = rightOf.width > leftOf.width ? rightOf : leftOf;
+  return usable(upDown) ? upDown : usable(beside) ? beside : area;
+}
+/** A toolbar that became lower by less than this gives the card no room back. */
+export const ROOM_SLACK = 48;
+/**
+ * The room the card keeps when the toolbar's size changed a little: the toolbar's height follows what its hint says
+ * (a line more, a line less, every few seconds), and the card's edge does not follow that. A room that only grew by
+ * less than the slack at the edge facing the toolbar stays as it was; any other change is taken.
+ */
+export function steadyRoom(was: Rect, next: Rect): Rect {
+  if (next.x !== was.x || next.width !== was.width) return next;
+  const grewAtTop = next.y + next.height === was.y + was.height && next.y < was.y && was.y - next.y < ROOM_SLACK; // (below the toolbar)
+  const grewAtBottom = next.y === was.y && next.height > was.height && next.height - was.height < ROOM_SLACK; // (above it)
+  return grewAtTop || grewAtBottom ? was : next;
+}
+
 export type DisplayPlaces = Partial<Record<Surface, Place>>;
 /**
  * The key a display's places are kept under. Never a bare number: an object lists number-like keys in numeric order,

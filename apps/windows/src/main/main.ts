@@ -723,7 +723,46 @@ function retainFrame(s: Session, factsValue: unknown, rawValue: unknown, compose
   notifyRetention(s);
   // A frame kept as a material step is also what the AI is given to look at, when a session runs (as it is on this
   // device: the composed picture when there is ink, else the raw one).
-  lookAt(s, composed ?? raw, new Date(f['taken_at'] as string).toISOString(), composed && f.composed ? { revision: f.composed['ink_revision'] as number, sha256: inkData?.sha256 ?? null } : { revision: null, sha256: null });
+  // Kept even if its encoding crossed a Stop/Start; it is observed only in the session that acquired its pixels.
+  if (f['live_session_id'] === s.live?.id) lookAt(s, composed ?? raw, new Date(f['taken_at'] as string).toISOString(), composed && f.composed ? { revision: f.composed['ink_revision'] as number, sha256: inkData?.sha256 ?? null } : { revision: null, sha256: null });
+  return { ok: true };
+}
+/**
+ * The first picture the overlay took after the AI was started, for a session that has no frame of its own yet: a
+ * session's looks are the frames kept as material steps, and a screen that does not change after the Start gives it
+ * none. The picture is taken as it is, whatever it shows, but never one from before the Start; it is kept at its
+ * content address like every frame the AI is given by itself (the very picture already kept is that file), and from
+ * there it is a look like any other: one at a time, within the session's bounds, a gap when it is not sent. A frame
+ * of the user's own circle or follow-up does not stand in for it: the look is owed until one was taken by itself.
+ * `retry`: the overlay offers the next sample's picture; without it this session is offered no first picture again.
+ */
+function lookFrame(s: Session, factsValue: unknown, pngValue: unknown, inkValue: unknown): { ok: boolean; retry?: true } {
+  const live = s.live;
+  if (!subscription || !live || live.ended !== null || s.ending) return { ok: false };
+  if (live.looked || live.paused !== null) return { ok: true }; // a frame was taken for it since its Start, or it looks at none by itself
+  const f = factsValue;
+  const missed = (reason: string): { ok: false } => {
+    live.missed = reason;
+    notifyLive(s);
+    return { ok: false };
+  };
+  // How the picture relates to the stream is said with it: a still screen presents no new frame, and the picture is
+  // then the stream's newest frame read again at this time (its age is recorded; it is never said to be newer).
+  if (!isObj(f) || typeof f['stream_new_frame'] !== 'boolean' || !(f['stream_frame_age_ms'] === null || isMs(f['stream_frame_age_ms']))) return missed('the first picture\'s facts are malformed');
+  const read = readFrame(s, f, pngValue, inkValue, live.frames + 1);
+  if (typeof read === 'string') return missed(read);
+  const at = new Date(f['frame_captured_at'] as string).toISOString(); // (a time: readFrame checked it)
+  if (f['live_session_id'] !== live.id || Date.parse(at) < live.since) return { ok: false, retry: true }; // from before the Start: never taken as its first look
+  const { image, context } = read.frame;
+  const file = `frames/${image.sha256}.png`;
+  // Kept before it is given, and named in the session's own record whatever becomes of the look (no retention line
+  // names it: it is not a step of the display). Not kept (the capture's limit, other bytes at its address, a write
+  // that failed): said as the look that was not made, and not tried again for this session.
+  const unstored = storeOriginals(s, [{ name: file, file: frameFile(s.retention.id, image.sha256), sha: image.sha256, data: image.data }, ...read.originals.slice(1)]);
+  if (unstored !== null) return missed(`its first picture could not be kept on this device (${unstored}), and only a kept picture is given to ChatGPT by itself`);
+  notifyRetention(s); // (what is kept of this capture grew, or not: said as it is now)
+  appendLive(s, live, { kind: 'first_picture', session_id: live.id, frame_seq: live.frames + 1, frame_captured_at: at, image: { file, sha256: image.sha256 }, ink_revision: context.ink_revision, ink_sha256: context.ink_sha256, stream_new_frame: f['stream_new_frame'], stream_frame_age_ms: f['stream_frame_age_ms'] });
+  lookAt(s, image, at, { revision: context.ink_revision, sha256: context.ink_sha256 });
   return { ok: true };
 }
 /** Samples observed but not retained (a run of them, with the reason), as the overlay reports them. */
@@ -809,6 +848,8 @@ type Live = {
   gaps: Gap[];
   /** The newest frame waiting to be looked at (an older one waiting is a gap). */
   waiting: Frame | null;
+  /** A frame taken after the Start was taken for the AI to look at by itself (until then its first look is owed: a circle's or a follow-up's own frame is not that). */
+  looked: boolean;
   /** A look was sent less than the least time between two looks ago: the next one waits. */
   cooling: boolean;
   /** The last look the AI completed. */
@@ -853,7 +894,7 @@ function liveInfo(s: Session): unknown {
   const max = l.policy.max_submissions;
   // used_up: every request of the session is used. It sends nothing more, but it has not ended: its last response is
   // still shown (and read) until its time is over, the user stops it, or the user starts the AI again.
-  return { state: l.ended !== null ? 'ended' : l.used >= max ? 'used_up' : 'on', model: l.model, max_submissions: max, used: l.used, reserve: reserveOf(max), expires_at: new Date(l.expiresAt).toISOString(), min_observation_interval_ms: l.policy.min_observation_interval_ms, paused: l.paused, missed: l.missed, ended: l.ended, seen: l.seen, frames: l.frames, out: l.out, unwritten: s.liveUnwritten };
+  return { state: l.ended !== null ? 'ended' : l.used >= max ? 'used_up' : 'on', id: l.id, since: new Date(l.since).toISOString(), model: l.model, max_submissions: max, used: l.used, reserve: reserveOf(max), expires_at: new Date(l.expiresAt).toISOString(), min_observation_interval_ms: l.policy.min_observation_interval_ms, paused: l.paused, missed: l.missed, ended: l.ended, seen: l.seen, frames: l.frames, out: l.out, unwritten: s.liveUnwritten };
 }
 function notifyLive(s: Session): void {
   if (current !== s) return;
@@ -886,7 +927,7 @@ async function startLive(s: Session, policy: Policy): Promise<void> {
     appendLive(s, null, { kind: 'not_started', session_id: id, code: r.code, reason: r.reason });
     return notifyLive(s);
   }
-  const live: Live = { id, model: r.start.model, policy, expiresAt: Date.now() + r.expires_in_ms, since, used: policy.max_submissions - r.remaining_submissions, frames: 0, latest: null, history: [], gaps: [], waiting: null, cooling: false, seen: null, paused: null, missed: null, ended: null, out: 0 };
+  const live: Live = { id, model: r.start.model, policy, expiresAt: Date.now() + r.expires_in_ms, since, used: policy.max_submissions - r.remaining_submissions, frames: 0, latest: null, history: [], gaps: [], waiting: null, looked: false, cooling: false, seen: null, paused: null, missed: null, ended: null, out: 0 };
   s.live = live;
   setTimeout(() => endLive(s, live, 'this session\'s time is over'), r.expires_in_ms);
   appendLive(s, live, { kind: 'started', session_id: id, model: live.model, policy, remaining_submissions: r.remaining_submissions, expires_in_ms: r.expires_in_ms });
@@ -967,6 +1008,7 @@ function lookAt(s: Session, picture: Picture, capturedAt: string, ink: { revisio
   const live = s.live;
   if (!subscription || !live || live.ended !== null || s.ending || current !== s) return;
   if (Date.parse(capturedAt) < live.since) return; // taken before the user started this session: not its to look at, and not a frame of it
+  live.looked = true;
   const seq = (live.frames += 1);
   if (live.paused !== null) return void gap(s, live, seq, 'budget');
   if (live.waiting) gap(s, live, live.waiting.context.frame_seq, 'coalesced');
@@ -1156,7 +1198,7 @@ function storeOriginals(s: Session, originals: Original[], more: () => void = ()
  * and, with the AI's session running, a small hint about it is asked for at once. A request out for the selection
  * before is interrupted.
  */
-function retainSelection(s: Session, factsValue: unknown, pngValue: unknown, inkValue: unknown): AskAnswer {
+function retainSelection(s: Session, factsValue: unknown, pngValue: unknown, inkValue: unknown, during: unknown): AskAnswer {
   if (!subscription) return { ok: false, reason: 'no AI is connected' };
   // A new selection replaces the card: the one before can no longer be asked about, and a request still out about
   // it is interrupted, whether or not this one is retained.
@@ -1180,11 +1222,18 @@ function retainSelection(s: Session, factsValue: unknown, pngValue: unknown, ink
   s.ask = sel;
   s.progress += 1;
   notifyRetention(s);
-  const request = submitTurn(s, sel, 'focus', null, 'hint', frame, kept);
+  // (kept whatever the AI's session is now; asked only in the session the circle was made in)
+  const request: Submitted = notSendable(s) === null && otherSession(s, during) ? { ok: false, reason: 'the AI was started or started again while this circle was being kept, so it was not asked by itself; send a follow-up to ask in the session that runs now' } : submitTurn(s, sel, 'focus', null, 'hint', frame, kept);
   if (!request.ok && live && live.ended === null) gap(s, live, frame.context.frame_seq, 'not_observed'); // a frame of the session the AI was not given
   return { ok: true, selection_id: id, request };
 }
 
+/**
+ * The AI session a request was made in, as the overlay knew it when the user acted (its unique session id;
+ * null: none ran then), is not the one that runs now: the AI was stopped, started, or started again while the
+ * request's picture was being made. What was asked for then is not sent in a session it was not asked in.
+ */
+const otherSession = (s: Session, during: unknown): boolean => (typeof during === 'string' ? during : null) !== (s.live && s.live.ended === null ? s.live.id : null);
 /** Why nothing can be sent to the AI now, or null. */
 function notSendable(s: Session): string | null {
   if (s.liveStarting) return 'the AI is being started';
@@ -1198,7 +1247,7 @@ function notSendable(s: Session): string | null {
  * The same picture and ink as the selection's own frame, with nothing newer sent since, IS that frame: the circle is
  * still its focus. Anything else is a later frame: the circle stays on its own frame and is only named.
  */
-function submitAsk(s: Session, selectionId: unknown, questionValue: unknown, assistanceValue: unknown, factsValue: unknown, pngValue: unknown, inkValue: unknown): Submitted {
+function submitAsk(s: Session, selectionId: unknown, questionValue: unknown, assistanceValue: unknown, factsValue: unknown, pngValue: unknown, inkValue: unknown, during: unknown): Submitted {
   const sel = s.ask;
   if (!subscription) return { ok: false, reason: 'no AI is connected' };
   if (!sel || sel.id !== selectionId) return { ok: false, reason: 'this is no longer the current selection' };
@@ -1209,6 +1258,7 @@ function submitAsk(s: Session, selectionId: unknown, questionValue: unknown, ass
   if (!ASSISTANCE.includes(assistanceValue as Assistance)) return { ok: false, reason: 'the kind of help is not chosen' };
   const off = notSendable(s);
   if (off) return { ok: false, reason: off };
+  if (otherSession(s, during)) return { ok: false, reason: 'the AI was started or started again after you pressed Send, so this was not sent in a session you did not ask it in; press Send again to ask in the session that runs now' };
   const live = s.live!;
   if (!isObj(factsValue)) return { ok: false, reason: 'the frame facts are malformed' };
   const read = readFrame(s, factsValue, pngValue, inkValue, live.frames + 1);
@@ -1366,6 +1416,27 @@ function askEnded(s: Session, live: Live, sel: Selection, mine: NonNullable<Sele
 }
 /** The conversation's own entry for an answer, by its record's entry: how it was presented is said there too. */
 const presented = new WeakMap<AskEntry, HistoryEntry>();
+/**
+ * The overlay asks, just before it puts an answer on the card, whether it is still this card's to show. Checked at
+ * that moment, whatever was true when the answer left this process (it may have waited in the overlay since): the
+ * capture is not ending, the AI session it was asked in is still this capture's running one (not stopped, not ended,
+ * not started again), and it is still the newest request of the selection on the card. Refused, its text is not kept
+ * and is never shown or read. (An answer already shown stays what it is: this is asked before showing only.)
+ */
+function askPresentable(s: Session, selectionId: unknown, requestId: unknown): { ok: true } | { ok: false; reason: string; saved?: boolean; unsaved?: string | null } {
+  const sel = s.ask;
+  const entry = sel && sel.id === selectionId ? sel.record.requests.find((r) => r.request_id === requestId) : undefined;
+  if (!sel || !entry || entry.outcome?.status !== 'answered') return { ok: false, reason: 'it is no longer this card\'s response' };
+  const reason = s.ending ? 'the capture was ending before it was shown'
+    : !s.live || s.live.id !== entry.live_session_id || s.live.ended !== null ? 'the AI was stopped before it was shown'
+    : sel.request?.id !== requestId ? 'a newer request was made from this card before it was shown' : null;
+  if (reason === null) return { ok: true };
+  if (entry.shown) return { ok: false, reason }; // (already shown: it stays what it is)
+  notShown(entry);
+  // Whether the record now says so on this device is said with the refusal (a write that failed is held, and offered on the card).
+  const unwritten = saveAsk(s, sel);
+  return { ok: false, reason, saved: unwritten === null, unsaved: unwritten };
+}
 /** The overlay says what it did with an answer: showed it, or (cancelled or ended meanwhile) did not. */
 function askPresented(s: Session, selectionId: unknown, requestId: unknown, shown: unknown): { saved: boolean; reason: string | null } {
   const sel = s.ask;
@@ -1865,9 +1936,10 @@ ipcMain.handle('lc:overlay-ready', (e) => {
 });
 // ASK: a circle is retained with the whole display it is on, and (with the AI's session running) a small hint about
 // it is asked for at once; a follow-up is sent only by lc:ask-submit, the user's own press.
-ipcMain.handle('lc:ask-selection', (e, facts: unknown, png: unknown, ink: unknown) => (fromOverlay(e) && current ? retainSelection(current, facts, png, ink ?? null) : { ok: false, reason: 'refused' }));
-ipcMain.handle('lc:ask-submit', (e, selectionId: unknown, question: unknown, assistance: unknown, facts: unknown, png: unknown, ink: unknown) => (fromOverlay(e) && current ? submitAsk(current, selectionId, question, assistance, facts, png, ink ?? null) : { ok: false, reason: 'refused' }));
+ipcMain.handle('lc:ask-selection', (e, facts: unknown, png: unknown, ink: unknown, during: unknown) => (fromOverlay(e) && current ? retainSelection(current, facts, png, ink ?? null, during) : { ok: false, reason: 'refused' }));
+ipcMain.handle('lc:ask-submit', (e, selectionId: unknown, question: unknown, assistance: unknown, facts: unknown, png: unknown, ink: unknown, during: unknown) => (fromOverlay(e) && current ? submitAsk(current, selectionId, question, assistance, facts, png, ink ?? null, during) : { ok: false, reason: 'refused' }));
 ipcMain.on('lc:ask-cancel', (e, selectionId: unknown) => void (fromOverlay(e) && current ? cancelAsk(current, selectionId) : undefined));
+ipcMain.handle('lc:ask-present', (e, selectionId: unknown, requestId: unknown) => (fromOverlay(e) && current ? askPresentable(current, selectionId, requestId) : { ok: false, reason: 'refused' }));
 ipcMain.handle('lc:ask-presented', (e, selectionId: unknown, requestId: unknown, shown: unknown) => (fromOverlay(e) && current ? askPresented(current, selectionId, requestId, shown) : { saved: false, reason: 'refused' }));
 // Talk: the user's own setting in the overlay, kept here so that it is checked before every piece.
 ipcMain.on('lc:talk', (e, on: unknown, muted: unknown) => {
@@ -1880,6 +1952,7 @@ ipcMain.on('lc:hush', (e) => void (fromOverlay(e) && current ? hush(current) : u
 ipcMain.handle('lc:ask-save', (e, selectionId: unknown) => (fromOverlay(e) && current ? saveAskAgain(current, selectionId) : { saved: false, reason: 'refused' }));
 ipcMain.on('lc:ask-closed', (e) => void (fromOverlay(e) && current ? dropSelection(current) : undefined)); // the card was closed or replaced
 // Retained frames keep arriving while a Stop waits for the overlay: they were observed before the end.
+ipcMain.handle('lc:look-frame', (e, facts: unknown, png: unknown, ink: unknown) => (fromOverlay(e) && current ? lookFrame(current, facts, png, ink ?? null) : { ok: false }));
 ipcMain.handle('lc:retain-frame', (e, facts: unknown, raw: unknown, composed: unknown, ink: unknown): RetainAnswer => (fromOverlay(e) && current ? retainFrame(current, facts, raw, composed, ink ?? null) : { ok: false, reason: 'refused' }));
 ipcMain.on('lc:not-retained', (e, run: unknown) => {
   if (fromOverlay(e) && current) notRetained(current, run);

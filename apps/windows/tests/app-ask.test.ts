@@ -26,7 +26,9 @@ after(removeConfigs);
 const sha = (b: Uint8Array | string): string => crypto.createHash('sha256').update(b).digest('hex');
 type Sub = { mode: string; state?: string; login?: string; model?: string | null; asking?: boolean; detail?: string | null };
 /** The AI's session, as the control window is told (main.ts, liveInfo). */
-type Live = { state: string; reason?: string | null; used?: number; ended?: string | null; out?: number; frames?: number };
+/** The AI session that runs, by when it was started: what the overlay says with every request it makes in it. */
+const during = (w: { live(): { id?: string } }): string => w.live().id!;
+type Live = { id?: string; since?: string; state: string; reason?: string | null; used?: number; ended?: string | null; out?: number; frames?: number };
 type Kept = { file: string; sha256: string; bytes: number; width: number; height: number };
 type Outcome = { status: string; answer?: { request_id: string; text: string; model: string; latency_ms: number }; code?: string; reason?: string; uncertain?: boolean };
 /** One request of a selection's record (asks/<selection>.json). */
@@ -363,7 +365,7 @@ test('[synthetic connector] a circle alone never asks for more than a hint, what
   // A page that claims more with the circle itself gets a hint: the main process takes no kind of help from it.
   const doc = w.page.review.state().doc;
   const facts = { region_dip: CIRCLE, frame_seq: 1, frame_captured_at: '2026-09-30T12:00:00.000Z', frame_width: 1280, frame_height: 800, ink_session: doc.id, ink_revision: doc.ink.revision, visible_strokes: doc.ink.visible.length, assistance: 'full_solution', allowed_assistance: 'full_solution', trigger: 'text_followup', user_text: 'Solve it.' };
-  const kept = plain(await w.h.handlers['lc:ask-selection']!({ sender: w.s.overlay.webContents }, facts, Uint8Array.from(pngOf(1280, 800, 20)), new TextEncoder().encode(JSON.stringify(doc)), 'full_solution')) as { ok: boolean; request?: { ok: boolean } };
+  const kept = plain(await w.h.handlers['lc:ask-selection']!({ sender: w.s.overlay.webContents }, facts, Uint8Array.from(pngOf(1280, 800, 20)), new TextEncoder().encode(JSON.stringify(doc)), during(w), 'full_solution')) as { ok: boolean; request?: { ok: boolean } };
   assert.deepEqual([kept.ok, kept.request?.ok], [true, true]);
   await until('sent', () => w.asks().length === 3);
   assert.deepEqual([w.asks()[2]!.trigger, w.asks()[2]!.allowed_assistance, w.asks()[2]!.user_text], ['focus', 'hint', null]);
@@ -557,7 +559,8 @@ test('[synthetic connector] what a page claims is checked by the main process: a
   const w = await app();
   const id = await w.select();
   const from = { sender: w.s.overlay.webContents };
-  const submit = async (...a: unknown[]): Promise<unknown> => plain(await w.h.handlers['lc:ask-submit']!(from, ...a));
+  // (a follow-up's six own arguments, then the AI session it is made in)
+  const submit = async (...a: unknown[]): Promise<unknown> => plain(await w.h.handlers['lc:ask-submit']!(from, ...a, ...Array.from({ length: 6 - a.length }, () => undefined), during(w)));
   assert.deepEqual(await submit('ask-0000000000000000', 'q', 'hint'), { ok: false, reason: 'this is no longer the current selection' });
   assert.deepEqual(await submit(id, 'q', 'hint'), { ok: false, reason: 'this selection\'s request is still being answered' });
   w.c().answer('A hint.');
@@ -808,7 +811,7 @@ test('[synthetic connector] the main process works the circle\'s pixels out itse
   const session = (w.s as unknown as { doc: { id: string } }).doc.id;
   const facts = { region_dip: { x: 10.4, y: 10.6, width: 20.2, height: 10.1 }, frame_seq: 1, frame_captured_at: '2026-09-30T12:00:00.000Z', frame_width: 1280, frame_height: 800, ink_session: session, ink_revision: 0, visible_strokes: 0 };
   const ink = new TextEncoder().encode(JSON.stringify(w.page.review.state().doc));
-  const send = async (width: number, height: number, f: object = facts) => plain(await w.h.handlers['lc:ask-selection']!(from, f, Uint8Array.from(pngOf(width, height, 20)), ink)) as { ok: boolean; reason?: string; selection_id?: string };
+  const send = async (width: number, height: number, f: object = facts) => plain(await w.h.handlers['lc:ask-selection']!(from, f, Uint8Array.from(pngOf(width, height, 20)), ink, during(w))) as { ok: boolean; reason?: string; selection_id?: string };
   // The circle's own pixels are not the picture: what is kept and sent is the whole frame.
   assert.deepEqual(await send(21, 11), { ok: false, reason: 'the display\'s picture is a 21×11 PNG for a 1280×800 frame' });
   const whole = await send(1280, 800);

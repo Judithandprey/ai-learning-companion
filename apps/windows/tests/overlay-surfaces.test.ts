@@ -10,6 +10,7 @@ import { after, test } from 'node:test';
 import assert from 'node:assert/strict';
 import * as fs from 'node:fs';
 import * as path from 'node:path';
+import vm from 'node:vm';
 import { harness, plain, quitLinks, running, settle as started, type FakeWindow, type Session } from './main-harness.ts';
 import { overlayPage, until } from './overlay-page.ts';
 import { DEFAULT_RETENTION_POLICY } from '../src/shared/retention.ts';
@@ -300,7 +301,8 @@ test('[synthetic connector] the card has a handle too: it moves with its selecti
   dragBy(page, 'cardHandle', { x: 918, y: 558 }, { x: 108, y: 108 });
   await settle();
   assert.deepEqual([round(page.box('card')), page.ask().form, page.review.card() !== null, w.fakes.last().calls.length, w.records()[0]!.requests.length], [[100, 100], true, true, sent, 1], 'moved; the card is as it was, and nothing more was sent or asked than the circle\'s own request');
-  assert.deepEqual(w.stored().displays['display:1'], { caption: { fx: (100 - 10) / (1260 - 360), fy: (100 - 10) / (740 - 200) } });
+  // (a place in the card's own room: the usable area below the toolbar, which ends at 60, and the gap of 6)
+  assert.deepEqual(w.stored().displays['display:1'], { caption: { fx: (100 - 10) / (1260 - 360), fy: (100 - 66) / (684 - 200) } });
   // The card's own controls work where it is: the response, a follow-up, another card in the same place.
   await w.ask('A response on the moved card.');
   assert.deepEqual(round(page.box('card')), [100, 100]);
@@ -982,4 +984,386 @@ test('[synthetic connector, stand-in voice] a response is read only if it was as
   hold();
   await until('the second is acknowledged', () => /^Asked at/.test(d.page.ask().status ?? ''));
   assert.deepEqual([d.page.ask().answer, d.page.review.card()?.text.includes('Region 412,87 ')], [null, true], 'the card of the second circle waits for its own response');
+});
+
+test('[synthetic connector] the card is given the room beside the toolbar, so neither covers the other, whatever the toolbar\'s size and place become; a small work area makes the controls smaller; a change of the room or of the window brings the response back into view', async () => {
+  const w = await app();
+  const { page } = w;
+  const boxes = () => ({ toolbar: page.box('toolbar'), card: page.box('card') });
+  /** The two surfaces are apart by the gap at least, and both inside the usable area. */
+  const apart = (area: { x: number; y: number; width: number; height: number }): boolean => {
+    const { toolbar: t, card: c } = boxes();
+    return inside(t, area) && inside(c, area) && (c.top >= t.bottom + 6 || c.bottom <= t.top - 6 || c.left >= t.right + 6 || c.right <= t.left - 6);
+  };
+  const WIDE = { x: 10, y: 10, width: 1260, height: 740 };
+  await w.select();
+  await w.ask('The response on the card.');
+  const revealed = (): number => page.node('answerBox').revealed.length;
+  assert.deepEqual([round(page.box('card')), apart(WIDE), page.root.classes.has('tight')], [[910, 550], true, false], 'where it starts: the bottom right, under the toolbar; the controls at their full size');
+  // The toolbar grows (it says more, or its controls wrap): the card keeps to what is under it, and is no higher
+  // than that. The toolbar changed, not the display: the card stays scrolled where the user has it.
+  let before = revealed();
+  page.resize('toolbar', 760, 600);
+  assert.deepEqual([round(page.box('toolbar')), round(page.box('card')), page.box('card').height, apart(WIDE)], [[510, 10], [910, 616], 134, true]);
+  page.resize('toolbar', 700, 600);
+  page.resize('toolbar', 300, 50);
+  assert.deepEqual([round(page.box('card')), page.box('card').height, apart(WIDE), revealed()], [[910, 550], 200, true, before]);
+  // A card as high as its room, and a hint that is a line longer, then a line shorter (as it is every few seconds):
+  // the card's edge moves down once and does not follow the toolbar back; only a real change gives room back.
+  Object.assign(page.node('card'), { boxHeight: 669 });
+  page.resize('toolbar', 760, 165);
+  assert.deepEqual([round(page.box('card')), page.box('card').height], [[910, 181], 569]);
+  page.resize('toolbar', 760, 181);
+  assert.deepEqual([round(page.box('card')), page.box('card').height], [[910, 197], 553]);
+  for (const height of [165, 181, 165]) {
+    page.resize('toolbar', 760, height);
+    assert.deepEqual([round(page.box('card')), page.box('card').height, apart(WIDE)], [[910, 197], 553, true], `toolbar ${height} high`);
+  }
+  assert.equal(revealed(), before);
+  // That card cannot move up or down (it is as high as its room): dragged, it moves sideways, and where the user
+  // keeps it vertically (the bottom) is not rewritten.
+  dragBy(page, 'cardHandle', { x: 918, y: 205 }, { x: 728, y: 135 });
+  await settle();
+  assert.deepEqual([round(page.box('card')), w.stored().displays['display:1']], [[720, 197], { caption: { fx: (720 - 10) / (1260 - 360), fy: 1 } }]);
+  page.on('cardHandle', 'keydown', { key: 'Home' });
+  page.resize('toolbar', 760, 120);
+  assert.deepEqual([round(page.box('card')), page.box('card').height], [[910, 136], 614], 'a toolbar much lower gives its room back');
+  Object.assign(page.node('card'), { boxHeight: 200 });
+  page.resize('toolbar', 300, 50);
+  assert.deepEqual([round(page.box('card')), apart(WIDE), revealed()], [[910, 550], true, before]);
+  // The toolbar moved to the bottom (by its handle, then by a key): the card is above it at once, never under it.
+  dragBy(page, 'toolbarHandle', { x: 978, y: 18 }, { x: 978, y: 400 }, OVER);
+  await settle();
+  assert.deepEqual([round(page.box('toolbar')), page.box('card').bottom, apart(WIDE)], [[970, 700], 694, true]);
+  page.on('toolbarHandle', 'keydown', { key: 'Home' });
+  assert.deepEqual([round(page.box('toolbar')), round(page.box('card')), apart(WIDE)], [[970, 10], [910, 550], true]);
+  // The card is moved inside its room only: dragged up over the toolbar, it stops under it.
+  dragBy(page, 'cardHandle', { x: 918, y: 558 }, { x: 918, y: 0 });
+  await settle();
+  assert.deepEqual([round(page.box('card')), apart(WIDE)], [[910, 66], true]);
+  page.on('cardHandle', 'keydown', { key: 'Home' });
+  // A small work area (440×320): the controls are smaller (the style sheet), and the toolbar, as high as it is then,
+  // leaves the card what is under it. The response is brought back into view.
+  const SMALL = { x: 10, y: 10, width: 420, height: 300 };
+  before = revealed();
+  w.h.display.workArea = { x: 0, y: 0, width: 440, height: 320 };
+  w.h.screen.emit('display-metrics-changed', {}, w.h.display, ['workArea']);
+  await settle();
+  page.resize('toolbar', 420, 119);
+  assert.deepEqual([page.root.classes.has('tight'), round(page.box('toolbar')), round(page.box('card')), page.box('card').height, apart(SMALL)], [true, [10, 10], [70, 135], 175, true]);
+  assert.ok(revealed() >= before + 1, 'the response is in view again after the work area changed');
+  // The same work area told again, and a toolbar that keeps its size: nothing is scrolled (the user may be reading elsewhere on the card).
+  before = revealed();
+  w.h.screen.emit('display-metrics-changed', {}, w.h.display, ['workArea']);
+  await settle();
+  page.resize('toolbar', 420, 119);
+  assert.equal(revealed(), before);
+  // The window itself changes its height (the card is no higher than a part of it): brought back into view.
+  page.resizeWindow(440, 320);
+  assert.equal(revealed(), before + 1);
+  page.resizeWindow(440, 320);
+  assert.equal(revealed(), before + 1);
+  // A toolbar that leaves no room at all: the card has the whole area (and the style sheet keeps the toolbar on top).
+  page.resize('toolbar', 420, 290);
+  assert.deepEqual([round(page.box('card')), inside(page.box('card'), SMALL)], [[70, 110], true]);
+  // Back to a large work area: the controls are at their full size again.
+  w.h.display.workArea = { x: 0, y: 0, width: 1280, height: 760 };
+  w.h.screen.emit('display-metrics-changed', {}, w.h.display, ['workArea']);
+  await settle();
+  page.resize('toolbar', 300, 50);
+  assert.deepEqual([page.root.classes.has('tight'), round(page.box('card')), apart(WIDE)], [false, [910, 550], true]);
+  // With no response on the card, or no card, nothing is scrolled, whatever changes.
+  page.click('close');
+  before = revealed();
+  page.resizeWindow(1280, 800);
+  await w.select();
+  page.resizeWindow(1280, 760);
+  assert.equal(revealed(), before);
+
+  // A response that is being read aloud stays in view as its caption when the toolbar takes room from the card; once
+  // the reading is over, the toolbar moves nothing on the card again.
+  const read = await app({ voice: true });
+  read.page.click('talk');
+  await read.select();
+  await read.ask('Read aloud. While the toolbar grows.');
+  const shown = (): number => read.page.node('answerBox').revealed.length;
+  assert.equal(read.page.talkState().interrupt, true, 'being read');
+  let was = shown();
+  read.page.resize('toolbar', 760, 300);
+  assert.equal(shown(), was + 1);
+  read.page.click('interrupt');
+  await settle();
+  was = shown();
+  read.page.resize('toolbar', 760, 400);
+  assert.equal(shown(), was);
+
+  // Ink that could not be saved is said first in the hint: in a small work area only its first two lines show.
+  const ink = await app({ subscription: false });
+  ink.h.failWrites.on = true;
+  ink.page.pointer('pointerdown', 1, 200, 300);
+  for (const x of [240, 280]) ink.page.pointer('pointermove', 1, x, 300);
+  ink.page.pointer('pointerup', 1, 280, 300);
+  await ink.page.review.pending();
+  await settle();
+  assert.match(ink.page.hint() ?? '', /^Not saved: /);
+  ink.h.failWrites.on = false;
+  ink.page.pointer('pointerdown', 1, 300, 300);
+  ink.page.pointer('pointermove', 1, 340, 300);
+  ink.page.pointer('pointerup', 1, 340, 300);
+  await ink.page.review.pending();
+  await settle();
+  assert.match(ink.page.hint() ?? '', /^Pen and mouse write|^Pen writes/);
+  assert.match(ink.page.hint() ?? '', /Saved on this device at /);
+});
+
+test('[synthetic connector, stand-in voice] an answer is put on the card only if the main process says, at that moment, that it is still this card\'s to show: the AI stopped, or started again, while it waited in the overlay, and it is never shown, read or kept; one already shown stays', async () => {
+  /** A circle whose acknowledgement is held back while its request is answered: the answer waits in the overlay. */
+  const waiting = async (text: string) => {
+    const w = await app({ voice: true });
+    w.page.click('talk'); // (asked for as spoken: a response that is shown would be read)
+    const release = w.page.holdSubmitAck();
+    w.circle();
+    await until('sent', () => w.fakes.last().asks().length === 1);
+    w.fakes.last().answer(text);
+    await until('answered in the main process', () => w.records()[0]?.requests[0]?.['outcome'] != null);
+    await settle();
+    assert.deepEqual([w.page.ask().answer, w.records()[0]!.requests[0]!['shown']], [null, false], 'not on the card yet');
+    const id = (w.records()[0] as unknown as { selection_id: string }).selection_id;
+    const overlay = { sender: w.s.overlay.webContents };
+    return { ...w, release, id, overlay };
+  };
+  const NOT_SHOWN = 'Not shown: the AI was stopped before it was shown. ChatGPT had answered; its response is not shown here and not kept, and it may have counted against your usage.';
+  const unshown = (w: Awaited<ReturnType<typeof waiting>>) => [w.page.ask().answer, w.page.ask().status, w.page.voice.spoken.length, w.records()[0]!.requests[0]!['shown'], (w.records()[0]!.requests[0]!['outcome'] as { status: string }).status, JSON.stringify(w.records()[0]).includes('WAITED')];
+
+  // The AI is stopped (the capture goes on) while the answer waits: when the acknowledgement comes, it is not shown.
+  const stop = await waiting('WAITED while the AI was stopped.');
+  stop.h.handlers['lc:live-stop']!({ sender: stop.control.webContents });
+  await until('stopped', () => stop.live().state === 'ended');
+  stop.release();
+  await until('said', () => stop.page.ask().status !== null && /^Not shown/.test(stop.page.ask().status!));
+  await settle();
+  assert.deepEqual(unshown(stop), [null, NOT_SHOWN, 0, false, 'cancelled', false]);
+  assert.deepEqual(plain(await stop.h.handlers['lc:say']!(stop.overlay, stop.id, `${stop.id}.1`, 0)), { spoken: false }, 'and never read');
+
+  // The AI is stopped and started again meanwhile: the new session does not make the old answer showable.
+  const again = await waiting('WAITED across a restart.');
+  again.h.handlers['lc:live-stop']!({ sender: again.control.webContents });
+  assert.deepEqual(plain(await again.h.handlers['lc:live-start']!({ sender: again.control.webContents }, AI.policy)), { ok: true });
+  assert.equal(again.live().state, 'on');
+  again.release();
+  await until('said', () => /^Not shown/.test(again.page.ask().status ?? ''));
+  await settle();
+  assert.deepEqual(unshown(again), [null, NOT_SHOWN, 0, false, 'cancelled', false]);
+  // The card still works in the new session: a follow-up is answered and shown.
+  await again.ask('Shown in the new session.');
+  assert.deepEqual([again.page.ask().answer, again.records()[0]!.requests[1]!['shown']], ['Shown in the new session.', true]);
+
+  // The main process let it through, and the AI is stopped before that reaches the overlay: still not shown, and
+  // the main process is told so.
+  const late = await app({ voice: true });
+  late.page.click('talk');
+  await late.select();
+  const go = late.page.holdPresentAck();
+  late.fakes.last().answer('WAITED behind the go-ahead.');
+  await until('answered in the main process', () => late.records()[0]!.requests[0]!['outcome'] !== null);
+  await settle();
+  late.h.handlers['lc:live-stop']!({ sender: late.control.webContents });
+  await settle();
+  go();
+  await until('said', () => /^Not shown/.test(late.page.ask().status ?? ''));
+  await settle();
+  assert.deepEqual([late.page.ask().answer, late.page.ask().status, late.page.voice.spoken.length, late.records()[0]!.requests[0]!['shown'], (late.records()[0]!.requests[0]!['outcome'] as { status: string }).status, JSON.stringify(late.records()[0]).includes('WAITED')], [null, NOT_SHOWN, 0, false, 'cancelled', false]);
+
+  // Cancel pressed while the go-ahead is on its way: not shown, said as cancelled.
+  const cancelled = await app();
+  await cancelled.select();
+  const hold = cancelled.page.holdPresentAck();
+  cancelled.fakes.last().answer('WAITED behind a Cancel.');
+  await until('answered in the main process', () => cancelled.records()[0]!.requests[0]!['outcome'] !== null);
+  await settle();
+  cancelled.page.click('askCancel');
+  hold();
+  await until('said', () => /^Cancelled/.test(cancelled.page.ask().status ?? ''));
+  await settle();
+  assert.deepEqual([cancelled.page.ask().answer, cancelled.records()[0]!.requests[0]!['shown'], JSON.stringify(cancelled.records()[0]).includes('WAITED')], [null, false, false]);
+
+  // An answer that was shown before the AI was stopped stays on the card, and stays recorded as shown.
+  const shown = await app();
+  await shown.select();
+  await shown.ask('Shown, then the AI is stopped.');
+  shown.h.handlers['lc:live-stop']!({ sender: shown.control.webContents });
+  await settle();
+  assert.deepEqual([shown.page.ask().answer, shown.records()[0]!.requests[0]!['shown']], ['Shown, then the AI is stopped.', true]);
+  // Only the overlay asks, and only for the card's own newest answer.
+  const id = (shown.records()[0] as unknown as { selection_id: string }).selection_id;
+  assert.deepEqual(plain(await shown.h.handlers['lc:ask-present']!({ sender: shown.control.webContents }, id, `${id}.1`)), { ok: false, reason: 'refused' });
+  assert.deepEqual(plain(await shown.h.handlers['lc:ask-present']!({ sender: shown.s.overlay.webContents }, id, `${id}.9`)), { ok: false, reason: 'it is no longer this card\'s response' });
+  assert.deepEqual(plain(await shown.h.handlers['lc:ask-present']!({ sender: shown.s.overlay.webContents }, 'another', `${id}.1`)), { ok: false, reason: 'it is no longer this card\'s response' });
+  assert.deepEqual([shown.page.ask().answer, shown.records()[0]!.requests[0]!['shown']], ['Shown, then the AI is stopped.', true], 'asking again changes nothing of what was shown');
+});
+
+test('[synthetic connector] nothing queued gains authority from a Stop or a new Start of the AI: a delayed follow-up\'s answer is not shown, a request whose picture was still being made is not sent in another session, and a refusal that cannot be written says so', async () => {
+  const stopAi = (w: Awaited<ReturnType<typeof app>>): void => void w.h.handlers['lc:live-stop']!({ sender: w.control.webContents });
+  const startAi = async (w: Awaited<ReturnType<typeof app>>): Promise<unknown> => plain(await w.h.handlers['lc:live-start']!({ sender: w.control.webContents }, AI.policy));
+  /** The encoder is held: a picture being made is not finished until the returned function is called. */
+  const holdEncoding = (w: Awaited<ReturnType<typeof app>>): (() => void) => {
+    let release = (): void => undefined;
+    w.page.encoding.gate = new Promise((r) => (release = r));
+    return () => {
+      w.page.encoding.gate = null;
+      release();
+    };
+  };
+
+  // A follow-up whose acknowledgement is delayed, answered, and the AI stopped before the acknowledgement arrives:
+  // its answer is not shown. The circle's own answer, shown before, stays in the record as shown.
+  const f = await app();
+  await f.select();
+  await f.ask('The hint, shown.');
+  const release = f.page.holdSubmitAck();
+  f.page.question('And then?');
+  f.page.click('askSubmit');
+  await until('sent', () => f.fakes.last().asks().length === 2);
+  f.fakes.last().answer('WAITED behind the follow-up\'s acknowledgement.');
+  await until('answered in the main process', () => f.records()[0]!.requests[1]?.['outcome'] != null);
+  await settle();
+  stopAi(f);
+  release();
+  await until('said', () => /^Not shown/.test(f.page.ask().status ?? ''));
+  await settle();
+  assert.deepEqual([f.page.ask().answer, f.records()[0]!.requests.map((r) => [r['shown'], (r['outcome'] as { status: string }).status]), JSON.stringify(f.records()[0]).includes('WAITED')], [null, [[true, 'answered'], [false, 'cancelled']], false]);
+
+  // Send is pressed; while the picture is being made the AI is stopped and started again: the follow-up is not sent
+  // in the new session, and that is said. Pressed again, it is asked there.
+  const s = await app();
+  await s.select();
+  await s.ask('The hint.');
+  let encoded = holdEncoding(s);
+  s.page.question('Asked before the Stop.');
+  s.page.click('askSubmit');
+  await settle();
+  stopAi(s);
+  assert.deepEqual(await startAi(s), { ok: true });
+  encoded();
+  await until('said', () => /^Not sent/.test(s.page.ask().status ?? ''));
+  assert.match(s.page.ask().status!, /^Not sent: the AI was started or started again after you pressed Send, so this was not sent in a session you did not ask it in; press Send again to ask in the session that runs now\./);
+  assert.deepEqual([s.fakes.last().asks().length, s.records()[0]!.requests.length], [1, 1], 'nothing was sent or recorded as asked');
+  s.page.click('askSubmit');
+  await until('sent in the new session', () => s.fakes.last().asks().length === 2);
+  assert.equal(s.fakes.last().asks()[1]!.params['user_text'], 'Asked before the Stop.');
+  // Stopped only (no new Start): said as the session having ended, as before.
+  const t = await app();
+  await t.select();
+  await t.ask('The hint.');
+  encoded = holdEncoding(t);
+  t.page.question('Asked before the Stop.');
+  t.page.click('askSubmit');
+  await settle();
+  stopAi(t);
+  encoded();
+  await until('said', () => /^Not sent: the AI session has ended \(stopped by you\)/.test(t.page.ask().status ?? ''));
+  assert.equal(t.fakes.last().asks().length, 1);
+
+  // A circle whose picture was still being made across a Stop and a new Start is kept, and not asked by itself.
+  const c = await app();
+  encoded = holdEncoding(c);
+  c.circle();
+  await settle();
+  stopAi(c);
+  assert.deepEqual(await startAi(c), { ok: true });
+  encoded();
+  await until('kept', () => /^Kept on this device/.test(c.page.ask().status ?? ''));
+  assert.equal(c.page.ask().status, 'Kept on this device. The AI was not asked: the AI was started or started again while this circle was being kept, so it was not asked by itself; send a follow-up to ask in the session that runs now.');
+  assert.deepEqual([c.fakes.last().asks().length, c.records().length, c.records()[0]!.requests.length, c.page.ask().form], [0, 1, 0, true]);
+  // Made with no AI running, and the AI started meanwhile: the same.
+  const n = await app();
+  stopAi(n);
+  await until('stopped', () => n.live().state === 'ended');
+  encoded = holdEncoding(n);
+  n.circle();
+  await settle();
+  assert.deepEqual(await startAi(n), { ok: true });
+  encoded();
+  await until('kept', () => /^Kept on this device/.test(n.page.ask().status ?? ''));
+  assert.deepEqual([n.fakes.last().asks().length, n.records().length], [0, 1]);
+
+  // A refusal at the gate that cannot be written on this device says so and offers Save: the card never says "not
+  // kept" over a record that still holds the text.
+  const r = await app();
+  const ack = r.page.holdSubmitAck();
+  r.circle();
+  await until('sent', () => r.fakes.last().asks().length === 1);
+  r.fakes.last().answer('WAITED, and the record cannot be rewritten.');
+  await until('answered in the main process', () => r.records()[0]?.requests[0]?.['outcome'] != null);
+  await settle();
+  stopAi(r);
+  r.h.failWrites.only = `${path.sep}asks${path.sep}`;
+  ack();
+  await until('said', () => /^Not shown/.test(r.page.ask().status ?? ''));
+  await settle();
+  assert.match(r.page.ask().status!, /^Not shown: the AI was stopped before it was shown\. .* This is NOT saved on this device yet: it could not be written \(.*EIO.*\)\./);
+  assert.deepEqual([r.page.ask().answer, r.page.ask().save], [null, true]);
+  r.h.failWrites.only = null;
+  r.page.click('askSave');
+  await until('saved', () => r.page.ask().save === false);
+  assert.deepEqual([(r.records()[0]!.requests[0]!['outcome'] as { status: string }).status, JSON.stringify(r.records()[0]).includes('WAITED')], ['cancelled', false]);
+});
+
+test('[synthetic connector] a repeated wall-clock Start does not give a queued circle or follow-up authority in a distinct AI session', async () => {
+  const fixed = Date.now();
+  const evaluate = vm.runInContext;
+  let creating!: ReturnType<typeof app>;
+  // Freeze this main-process VM only, during synchronous harness creation. No host/global clock is changed.
+  try {
+    vm.runInContext = (source, context, options) => evaluate(`Date.now = () => ${fixed};\n${source}`, context, options);
+    creating = app();
+  } finally {
+    vm.runInContext = evaluate;
+  }
+  const w = await creating;
+  const control = { sender: w.control.webContents };
+  const since = (): string => (plain(w.h.handlers['lc:session-state']!(control)) as { live: { since: string } }).live.since;
+  const startId = (): unknown => w.fakes.last().calls.filter((c) => c.method === 'companion/start').at(-1)!.params['session_id'];
+  const again = async (): Promise<void> => {
+    const before = startId();
+    const at = since();
+    w.h.handlers['lc:live-stop']!(control);
+    assert.deepEqual(plain(await w.h.handlers['lc:live-start']!(control, AI.policy)), { ok: true });
+    assert.equal(since(), at, 'the wall clock repeats');
+    assert.notEqual(startId(), before, 'the AI session is still distinct');
+  };
+  const hold = (): (() => void) => {
+    let release!: () => void;
+    w.page.encoding.gate = new Promise<void>((r) => (release = r));
+    return () => {
+      w.page.encoding.gate = null;
+      release();
+    };
+  };
+
+  let encoded = hold();
+  w.circle();
+  await settle();
+  await again();
+  encoded();
+  await until('the queued circle is kept', () => w.page.ask().form);
+  assert.match(w.page.ask().status!, /^Kept on this device\. The AI was not asked: the AI was started or started again while this circle was being kept/);
+  assert.deepEqual([w.fakes.last().asks().length, w.records().length, w.records()[0]!.requests.length], [0, 1, 0]);
+
+  encoded = hold();
+  w.page.question('Asked before this session ended.');
+  w.page.click('askSubmit');
+  await settle();
+  await again();
+  encoded();
+  await until('the queued follow-up is refused', () => /^Not sent/.test(w.page.ask().status ?? ''));
+  assert.match(w.page.ask().status!, /^Not sent: the AI was started or started again after you pressed Send/);
+  assert.deepEqual([w.fakes.last().asks().length, w.records()[0]!.requests.length], [0, 0]);
+
+  // A fresh press in the session that now runs is authorized, even though the clock still reads the same Start.
+  w.page.click('askSubmit');
+  await until('the fresh press is sent', () => w.fakes.last().asks().length === 1);
+  assert.equal(w.fakes.last().asks()[0]!.params['session_id'], startId());
+  w.fakes.last().answer('Synthetic hint in the current session.');
+  await until('the current session\'s answer is shown', () => w.page.ask().answer === 'Synthetic hint in the current session.');
 });
