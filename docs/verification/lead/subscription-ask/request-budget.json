@@ -20,7 +20,7 @@
   "live_changed_flow_allocation": {
     "allocation_id": "handoff_fd794043a20068a1b52853cbb6ff884e",
     "status": "reserved_not_released",
-    "candidate_commit": null,
+    "candidate_commit": "24c48c38aee660b606ebff5285acbd2ccb300392",
     "maximum_potential_submissions": 5,
     "purpose_slots": [
       "unattended whole-screen observation",
@@ -48,6 +48,10 @@
       "account/model/billing change",
       "automatic restart or retry"
     ],
-    "next_owner": "Lead releases exact candidate and lease; QA executes one changed-flow pass; no execution now."
+    "next_owner": "QA executes existing bounded offline rehearsal/readiness; Lead then coordinates exact generated-display/account lease. Real allowance still reserved, not released.",
+    "production_source_commit": "175515308f509fb8c0f531dbdb10e57313fcde5a",
+    "stage_name": "lc-windows-live-1755153",
+    "stage_tree_sha256": "3387824a0dee70013104388d4acec2b810475e98953e7c3f196063a8781fd154",
+    "offline_readiness_handoff": "handoff_b37638ed3ce7fd94a4f62226fa9596fa"
   }
 }

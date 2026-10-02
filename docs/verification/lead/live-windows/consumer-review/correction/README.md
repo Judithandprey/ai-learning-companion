@@ -91,3 +91,19 @@ generated-surface safety checks. Actual display/account use requires Lead's
 exclusive release; the five reserved ordinary image/text actions are not yet
 released and no unsupported voice slot may be reassigned. Native's existing Mac
 live consumer continues; no duplicate task or mobile campaign.
+
+## Publication and actual continuation
+
+Ordinary `origin/main` push succeeded at **24c48c38aee660b606ebff5285acbd2ccb300392**;
+its production source is the staged `1755153` tree. The native QA route accepted
+`handoff_b37638ed3ce7fd94a4f62226fa9596fa` for the existing changed-flow rehearsal
+and concrete readiness report. The Web reply route accepted
+`handoff_1e32a5fc2fb7510219cd8f3ff946e68a` with the integration, evidence qualification
+and next defect-owner boundary. Both initially returned unread /
+execution_started:false: delivery is not worker adoption or a test pass.
+
+QA write scope remains `tests/e2e/**` and `docs/verification/qa/**`; current action
+is the exact package's offline production-entrypoint rehearsal and automatic
+submission accounting. No actual display/account/audio lease is released by these
+messages. Lead coordinates that next phase after concrete readiness; no duplicate
+worker or acknowledgment loop.
