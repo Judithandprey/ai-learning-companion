@@ -1,0 +1,24 @@
+{
+  "release_baseline": "471461578cf81a45060bbb9587c7c1374f5643ba",
+  "push": {
+    "remote": "origin",
+    "branch": "main",
+    "result": "3fc3268..4714615 main -> main"
+  },
+  "reply_to": "handoff_a26dec5655a61b506dca1eb4fc6dd002",
+  "native_receipt": {
+    "ok": true,
+    "route_id": "route_5930b6eb6cb842a891763391fadd766e",
+    "action": "instruction",
+    "accepted": true,
+    "mode": "async_route_v1",
+    "delivery_mode": "mailbox",
+    "message_id": "handoff_1f988a3723e6232b44c29d5cfc9d2c4c",
+    "duplicate": false,
+    "state": "unread",
+    "execution_started": false
+  },
+  "scope": "same QA assignment; one conditional exclusive generated-display/account nonvoice pass; four all-counted attempts maximum, no audio",
+  "observed_account_or_display_acquisition": false,
+  "actual_attempts_reported": []
+}

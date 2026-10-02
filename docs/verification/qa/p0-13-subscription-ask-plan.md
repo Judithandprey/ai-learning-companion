@@ -278,8 +278,13 @@ campaign. The runtime pass waits for the exact integrated release; a Backend can
   [offline readiness receipt](p0-13-live-1755153/README.md) records 14 lifecycle passes, 10 final controls passes with
   small within-handle movement, earlier typed-follow-up assertions, exact hashes and failed diagnostics. Cross-handle
   pointer capture remains blocked in that harness; real voice/audio and every real acceptance case below remain
-  NOT_RUN. No real request or account/display/audio lease has been spent or released. This supersedes the earlier
+  NOT_RUN. At that readiness snapshot, no real request or account/display/audio lease had been spent or released. This supersedes the earlier
   no-candidate dependency, while preserving its task scope and the separate real release requirement.
+- **Lead continuation, exact pushed `4714615`:** native message `handoff_1f988a3723e6232b44c29d5cfc9d2c4c` now
+  conditionally assigns QA the exclusive generated-display/same-managed-account nonvoice pass after actual safe
+  prerequisites; at most four all-counted attempts with one 60-second session / 60-second unattended interval. The
+  [reviewed release](../lead/live-windows/consumer-review/correction/qa-readiness/README.md) and existing ledger
+  govern it. Delivery was accepted unread, not proof of acquisition or execution. No audio or TTS release.
 - **The old `3e4b406` package:** the lead reports that the user has exited it (`handoff_b080a2157724229207b627a489610c1d`).
   Its stage folder, profile, sign-in and connector copy are still kept as they are; the new candidate gets its own
   stage folder and its own connector copy. The lead alone coordinates the account, the display and the audio route.
@@ -299,14 +304,13 @@ campaign. The runtime pass waits for the exact integrated release; a Backend can
   `handoff_fd794043a20068a1b52853cbb6ff884e` reserves at most **five** ordinary image/text test actions: one unattended
   whole-screen observation, one automatic focus response, one typed direction-changing follow-up, one supported
   spoken-follow-up response, and one Stop/fence attempt. See the current [ledger](../lead/subscription-ask/request-budget.json).
-  This is **not an active account/display/audio lease**. Unknown and proven-not-submitted test actions still count;
+  The original reservation was **not an active account/display/audio lease**; the conditional nonvoice release above now applies. Unknown and proven-not-submitted test actions still count;
   no automatic retry or adding the retired slot. No raw-audio provider attempts are included. An unavailable voice
   case stays NOT_RUN and its slot is not reassigned. Use stand-ins for additional cancellation/history variants.
   The product's visible configured policy is separate; 12 calls/5 minutes is a QA preset, not its final study default.
   The released candidate now defaults to 60 submissions in 30 minutes with a 30-second unattended interval. These
   engineering defaults do not expand the five-attempt ceiling. The readiness receipt proposes a four-attempt,
-  one-minute/60-second-interval policy for the currently voice-unconnected candidate; it still awaits the Lead's
-  coordinated exclusive release. The second typed LIVE-05 variant and additional LIVE-08 race permutations remain
+  one-minute/60-second-interval policy for the currently voice-unconnected candidate; its coordinated conditional release is now recorded above. The second typed LIVE-05 variant and additional LIVE-08 race permutations remain
   NOT_RUN, and an expired session is not restarted for extra real attempts.
 - **When it runs:** only on the exact released candidate, on a generated non-sensitive screen, with the display and
   the audio route coordinated by the lead. Each real case is judged by a person reading the whole answer, as in

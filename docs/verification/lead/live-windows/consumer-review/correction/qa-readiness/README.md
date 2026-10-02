@@ -97,3 +97,13 @@ QA must end with actual per-action facts, attempts used/remaining, scoped child/
 window cleanup and explicit release of its own display/account use. Lead then
 reviews the real outcome and routes concrete defects to Web/Backend/Learning;
 no extra reading acknowledgment or duplicated full campaign is needed.
+
+## Actual release delivery
+
+Main `471461578cf81a45060bbb9587c7c1374f5643ba` was pushed normally.
+The native reply route accepted the same-task conditional release as
+`handoff_1f988a3723e6232b44c29d5cfc9d2c4c`, initially `unread` and
+`execution_started:false`; [receipt](handoff-receipt.json). QA is now the sole
+coordinated owner of that bounded display/account use. Reading, actual acquisition
+and request execution have not yet been observed. Lead and other owners continue
+offline work; elapsed time alone does not release QA's assigned resource.
