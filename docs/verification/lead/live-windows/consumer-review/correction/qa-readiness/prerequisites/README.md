@@ -2,8 +2,9 @@
 
 2026-10-02. Actual `handoff_37659c18217cb9a3e3ba8ca6d642b069` delivers
 `d91a326455c01847df8b6b2230fa715bd9ea1318`, after QA's normal `4714615` merge
-`f9e6ede`. Lead reviewed it against main `ee1fc22`. The leaf remains unintegrated
-pending the bounded driver correction below. Original evidence is readable with
+`f9e6ede`. Lead reviewed it against main `ee1fc22`. The report is now integrated as `91eb068`; the actual `bcb2b55` correction
+integrates as `e74d5b5`. [Current review and exact permission request](pre01-review/README.md)
+supersede the former source HOLD below; original failure evidence remains history. Original evidence is readable with
 `git show d91a326:docs/verification/qa/p0-13-live-1755153/nonvoice-pass/README.md`.
 
 ## Actual result and released resources
@@ -11,9 +12,9 @@ pending the bounded driver correction below. Original evidence is readable with
 [Independent audit](independent-hash-audit.json) matches 20/20 exact artifacts,
 8/8 source/English hashes, the 280/280-file private source copy and 70/70 staged
 files. [Changed-helper review](independent-review.md) establishes PRE-01 below.
-The QA plan has three merge conflicts and retirement notices present only in its
-parent; integrate those carefully after the correction, retaining all-attempt
-counting and the retired old slot. No campaign was rerun.
+The QA plan had three merge conflicts and retirement notices present only in its
+parent; integration resolves them while retaining all-attempt counting and the
+retired old slot. No campaign was rerun.
 
 QA reached neither product Start nor the generated-page test browser. All four
 assigned real actions are **NOT_RUN / zero attempts**, with no account query,
@@ -52,7 +53,7 @@ credentials. This selects the already-supported dependency; it does not validate
 0.160 or prove current login/inference. No Backend compatibility rewrite is needed
 for this bounded next pass.
 
-## QA-LIVE-PRE-01: guard every visible display before thumbnail startup
+## Historical QA-LIVE-PRE-01 finding, now corrected in source
 
 This is the same single finding labeled `QA-PREREQ-01` in the preserved
 independent report; it is not an additional defect. Scratch artifact names in
@@ -89,11 +90,13 @@ execution request; it does not run the refused payload by `-Command`, another
 engine, or an execution-policy override. Lead reviews the corrected candidate
 and obtains any required explicit process-scoped script permission before a new
 display/account allocation. No machine-wide or persistent permission change is
-proposed. The current helper is not ready for such execution while PRE-01 is open.
+proposed. PRE-01 is now closed for source/offline scope; actual execution still awaits
+explicit process-scoped permission and fresh coordination.
 
-Next owner: QA for this one offline preparation; Lead for review/permission and
-resource coordination; then the same QA task runs only the remaining bounded
-acceptance. Native separately retains MAC-LIVE-03. Native TTS approval, actual
+Next owner: Lead for the reviewed exact permission request and resource
+coordination; then the same QA task runs only its assigned bounded acceptance.
+The separate Mac correction now has successful hosted build evidence, without
+interactive Mac acceptance. Native TTS approval, actual
 audio input and interactive Mac gates remain unchanged. Old app/profile/user
 preview data and Paperclip are untouched.
 

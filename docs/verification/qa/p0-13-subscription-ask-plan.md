@@ -296,6 +296,12 @@ campaign. The exact package is released; the real pass remains subject to its ac
   recorded in that receipt. Lead has independently verified that the still-installed versioned0.158 binary passes
   the unchanged gate. Lead owns the corrected driver review, explicit script permission and renewed coordination;
   no additional Backend compatibility assignment or current display/account/audio lease follows.
+- **PRE-01 source correction reviewed:** actual `bcb2b55` / `handoff_ac69e954a91c3abad3e4e8ef3ccd1c12`
+  integrates as `e74d5b5` after the blocked report `91eb068`. Fresh non-pixel admission precedes product startup and
+  capture Start. Lead reproduces 32 offline controls; seven independent stubbed-wrapper controls pass. Exact native
+  execution is still NOT_RUN. [Review and narrow script request](../lead/live-windows/consumer-review/correction/qa-readiness/prerequisites/pre01-review/README.md)
+  specify one AI-disabled display diagnostic only, pending explicit process-only RemoteSigned permission and a fresh
+  display allocation. No account/audio lease or real protocol release; the unused four-action allocation remains closed.
 - **The old `3e4b406` package:** the lead reports that the user has exited it (`handoff_b080a2157724229207b627a489610c1d`).
   Its stage folder, profile, sign-in and connector copy are still kept as they are; the new candidate gets its own
   stage folder and its own connector copy. The lead alone coordinates the account, the display and the audio route.

@@ -1,0 +1,89 @@
+{
+  "decision": "APPROVE bounded PRE-01 source correction and evidence integration; no new source blocker found",
+  "commit": "bcb2b55142ce382c713e5651a9fce13f38f61019",
+  "parent": "d91a326455c01847df8b6b2230fa715bd9ea1318",
+  "scope": "Read-only exact-source review, portable tests and stubbed wrapper. No native Windows/PowerShell execution, no candidate runner evaluation, no provider/account/display/capture/policy activity, no external network and no repository writes by reviewer.",
+  "ordering": [
+    "Initialization executes before the step loop; native snapshot is fresh and non-pixel, requires one primary physical rectangle [0,0,2560,1600] and system DPI192, and pins identity/work area.",
+    "Fresh native topology guard precedes Edge Start-Process. Start-App contains fresh owned-surface/native admission immediately before Electron Start-Process, after the existing 1500 ms launch-step delay.",
+    "captureStart resolves and caches the control websocket and encodes its expression before final surface admission; Invoke-Cdp uses that same socket immediately after admission.",
+    "Each rejection throws before its corresponding launch or capture action; runner abort handling and exact-identity outer cleanup are retained. Explicit redundant listDisplays was removed."
+  ],
+  "independent_checks": {
+    "author_offline_controls": {
+      "passed": 32,
+      "failed": 0,
+      "byte_identical_to_delivery": true,
+      "path": "/tmp/lc-lead-qa-pre01-bcb2b55/offline-controls.json"
+    },
+    "stub_wrapper_controls": {
+      "passed": 7,
+      "failed": 0,
+      "path": "/tmp/lc-lead-qa-pre01-bcb2b55/stub-wrapper-controls.json",
+      "limitations": "Node VM evaluates exact JS wrapper. Child processes, writes and cleanup are stubs; PowerShell code is never evaluated."
+    },
+    "node_syntax": {
+      "passed": 4,
+      "path": "/tmp/lc-lead-qa-pre01-bcb2b55/node-syntax.json"
+    },
+    "hash_audit": {
+      "all_passed": true,
+      "artifact_files": 9,
+      "candidate_payloads": 3,
+      "source_files": 6,
+      "prior_artifacts_unchanged": 19,
+      "old_index_entries_valid_at_parent": 20,
+      "old_index_unchanged": true,
+      "source_translation_hashes": 8,
+      "path": "/tmp/lc-lead-qa-pre01-bcb2b55/hash-audit.json"
+    }
+  },
+  "limits": [
+    "Admission is point in time. Renderer startup and capture click trigger asynchronous product thumbnail enumeration; a later OS hotplug/window change can occur before pixel acquisition. No atomic topology/window isolation is claimed.",
+    "Sixteen point ownership checks do not prove every pixel unobstructed; a documented exclusive controlled display allocation remains required.",
+    "Native C# compilation, Win32/DPI behavior and GUI/capture/input remain NOT_RUN. Delivered PowerShell parser evidence is retained, not independently rerun.",
+    "The driver is AI-disabled only. It does not make the four-action real-provider protocol executable or renew any resource allocation. Prior blocked evidence and real ledger 0/4 remain valid.",
+    "An initial reviewer-only VM assertion compared arrays across VM realms with deepStrictEqual and failed despite equal values; changed the scratch harness comparison to JSON equality. This was no candidate defect and preceded the successful 7-case run."
+  ],
+  "permission_request": {
+    "execution_authorized": false,
+    "entrypoint": "/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node tests/e2e/windows/qa_visible_drag.mjs docs/verification/qa/p0-13-live-1755153/pre01-execution docs/verification/qa/p0-13-live-1755153/pre01-correction/candidate/candidate.json",
+    "payload_sha256": {
+      "runner.ps1": "0f6d0b28b7a7bf92adf437dc4d679ea3e53daea73e56c450a5cf34bd7b1f10ec",
+      "steps.json": "68f86fe275d5a1efaeb8e531848444e166e9aad11dfb7897987d5a94ca84fdae",
+      "surface.html": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2"
+    },
+    "native_invocation_after_explicit_permission": {
+      "executable": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "arguments": [
+        "-NoProfile",
+        "-NonInteractive",
+        "-ExecutionPolicy",
+        "RemoteSigned",
+        "-File",
+        "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-visible-pre01-6eada7a925a94308895331ed6cf7465a\\runner.ps1",
+        "-Electron",
+        "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-electron-44.5.1-win32-x64\\electron.exe",
+        "-Stage",
+        "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-windows-live-1755153",
+        "-UserData",
+        "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-visible-pre01-6eada7a925a94308895331ed6cf7465a\\userdata",
+        "-StepsFile",
+        "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-visible-pre01-6eada7a925a94308895331ed6cf7465a\\steps.json",
+        "-OutDir",
+        "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-visible-pre01-6eada7a925a94308895331ed6cf7465a\\out",
+        "-Edge",
+        "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+        "-AppTemp",
+        "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-visible-pre01-6eada7a925a94308895331ed6cf7465a\\apptemp"
+      ],
+      "status": "REQUEST_ONLY_NOT_EXECUTED",
+      "permission_owner": "Lead obtains explicit approval before any renewed lease",
+      "persistent_policy_changes": false
+    },
+    "scope": "One invocation of exact AI-disabled visible-drag diagnostic on owned generated surface, existing frozen1755153 package, exact scratch/userData/ports, synthetic CDP and guarded Win32 input, local capture and exact-process cleanup. Process-only RemoteSigned, inherited by that session children; no persistent policy/account/auth/provider/audio changes. Fresh exclusive display allocation required.",
+    "followup_patch": "Apply approved -ExecutionPolicy RemoteSigned argument in wrapper rather than running runner directly; regenerate/check wrapper source digest in candidate manifest and affected evidence hashes. Keep runner/steps/surface bytes fixed unless separately reviewed.",
+    "stop_if_denied": "If script is marked/downloaded or Group Policy still refuses, stop. No Unblock-File, Bypass, persistent policy change, alternate execution engine or direct runner bypass."
+  },
+  "operator_file_unchanged_by_review": true
+}

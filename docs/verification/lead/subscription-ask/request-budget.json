@@ -19,7 +19,7 @@
   "allocation_retired_reason": "QA actual handoff_ec31e85d736c7661fbb4022aa0d2cb52 confirms 0 of 1 used. This selected-image allocation is not additive to the next changed-flow allocation.",
   "live_changed_flow_allocation": {
     "allocation_id": "handoff_fd794043a20068a1b52853cbb6ff884e",
-    "status": "blocked_prerequisites_qa_released_unused",
+    "status": "driver_source_reviewed_explicit_script_permission_pending",
     "candidate_commit": "24c48c38aee660b606ebff5285acbd2ccb300392",
     "maximum_potential_submissions": 5,
     "purpose_slots": [
@@ -49,7 +49,7 @@
       "account/model/billing change",
       "automatic restart or retry"
     ],
-    "next_owner": "QA corrects the pre-launch display guard offline and prepares the exact driver for permission review; Lead coordinates permitted execution and a fresh conditional resource release. Existing reviewed0.158 binary still passes unchanged admission. No retry or live lease now.",
+    "next_owner": "Lead obtains explicit process-scoped permission for reviewed AI-disabled PRE-01 driver, then patches only approved argv/pins and coordinates bounded display diagnostic. Later real protocol needs a separate substantive release. No active resource lease or retry; existing 0.158 binary remains the reviewed dependency.",
     "production_source_commit": "175515308f509fb8c0f531dbdb10e57313fcde5a",
     "stage_name": "lc-windows-live-1755153",
     "stage_tree_sha256": "3387824a0dee70013104388d4acec2b810475e98953e7c3f196063a8781fd154",
@@ -82,6 +82,12 @@
     "actual_release_message": "handoff_37659c18217cb9a3e3ba8ca6d642b069",
     "prerequisite_review": "docs/verification/lead/live-windows/consumer-review/correction/qa-readiness/prerequisites/README.md",
     "attempts_used": 0,
-    "offline_correction_message": "handoff_3ee7bb7a7da20aff2325e7f83a77336f"
+    "offline_correction_message": "handoff_3ee7bb7a7da20aff2325e7f83a77336f",
+    "offline_correction_delivery_message": "handoff_ac69e954a91c3abad3e4e8ef3ccd1c12",
+    "offline_correction_commit": "bcb2b55142ce382c713e5651a9fce13f38f61019",
+    "offline_correction_integrated_as": "e74d5b5e8211e84da00b705ce102810ac6c0dcbe",
+    "offline_correction_review": "docs/verification/lead/live-windows/consumer-review/correction/qa-readiness/prerequisites/pre01-review/README.md",
+    "script_permission": "pending_explicit_process_only_RemoteSigned_for_reviewed_AI_disabled_driver",
+    "reviewed_driver_sha256": "0f6d0b28b7a7bf92adf437dc4d679ea3e53daea73e56c450a5cf34bd7b1f10ec"
   }
 }

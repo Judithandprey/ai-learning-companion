@@ -1,0 +1,22 @@
+[
+  {
+    "path": "qa_visible_candidate.mjs",
+    "exit": 0,
+    "stderr": ""
+  },
+  {
+    "path": "qa_visible_drag.mjs",
+    "exit": 0,
+    "stderr": ""
+  },
+  {
+    "path": "qa_prepare_visible.mjs",
+    "exit": 0,
+    "stderr": ""
+  },
+  {
+    "path": "test_qa_visible_pre01.mjs",
+    "exit": 0,
+    "stderr": ""
+  }
+]
