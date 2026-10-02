@@ -1,0 +1,14 @@
+# DesktopCapture library built as its own module against stub Apple modules on Linux (-enable-testing); NOT a macOS compile
+== DesktopCapture module (Swift 5, -enable-testing)
+== module ok
+module build exit 0
+# LiveController's class (the app's non-view part) type-checked against that module's PUBLIC interface, with stand-ins for the few AppKit/SwiftUI names it uses
+controller class typecheck exit 0
+# App target sources: syntax-only parse (swiftc -parse); the views and the other controllers are NOT type-checked anywhere
+parse CaptureController.swift exit 0
+parse CaptureRun.swift exit 0
+parse CompanionDesktopApp.swift exit 0
+parse ContentView.swift exit 0
+parse InkController.swift exit 0
+parse InkViews.swift exit 0
+parse LiveController.swift exit 0

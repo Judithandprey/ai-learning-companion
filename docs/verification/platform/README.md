@@ -574,3 +574,27 @@ shows it handling no request after the local Cancel or Stop.
 Lifetime correction (the lead's review of `704894f`): the link keeps hold of every connector
 that was lost or replaced until it has ended. Quit returns only then, and a new Connect starts
 the next connector only then.
+
+## macOS bounded subscription live session (2026-10-02 UTC)
+
+Continuation of the lead's `handoff_0f6c7eb731ba62d9ea3ed600c84b10ca`, recovered intact at
+`5d8d121` after the user-authorized provider migration.
+[`macos-subscription-live.md`](macos-subscription-live.md) records explicit Start → fresh whole
+display plus editable ink → automatic selection focus → optional text follow-up → silent card
+→ cancellation/Stop. The released `lc-subscription-live/1` connector is reused with finite
+session bounds, kept requests for explicit help, serialized turns and no unattended help
+presentation or automatic renewal. Stale queued/rendering inputs, unlocatable focus,
+reopened ink, late results, retired children, malformed latency and context omission are
+corrected; original records remain intact.
+
+Linux Apple-stand-in checks: final source type-check/module pass; live 23/24 and broad approved
+118/124 tests pass (six recorded platform/harness failures, not a suite pass); released validator
+211 checks pass; real connector plus a local inner-client stand-in passes 1/1 with zero model or
+account calls; eight bounded correction mutants are caught. Earlier failed and interrupted
+evidence remains labeled separately. Final source/check manifests and raw logs are linked from
+the record. The earlier ASK baseline's hosted macOS pass does not certify these new live changes.
+
+This delivery is uncompiled on macOS and unverified on an interactive Mac. Voice/system audio,
+spoken answers/captions, content anchoring, full per-OS §7.1 real-AI gates and actual Notability
+import remain open. Lead owns exact-source integration/hosted macOS build and the separately
+authorized real-Mac acceptance path; native mobile work remains deferred and preserved.

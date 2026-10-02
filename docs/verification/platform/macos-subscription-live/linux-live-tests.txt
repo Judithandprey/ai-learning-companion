@@ -1,0 +1,68 @@
+src/AskLinkTests.swift:955:36: warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 953 |             ending.connection = FakeConnector.connection(state: "signed_out", mode: NSNull())
+ 954 |             // In the first round the exit is reported only after the sign-in start has returned.
+ 955 |             ending.afterLoginStart = round == 0 ? { $0.endChildUnreported() } : { $0.exitChild() }
+     |                                    `- warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 956 |             let endingLink = askLink(ending)
+ 957 |             await endingLink.connect()
+
+Test Suite 'All tests' started at 2026-10-02 02:14:41.415
+Test Suite 'bin.xctest' started at 2026-10-02 02:14:41.417
+Test Suite 'DesktopCaptureTests' started at 2026-10-02 02:14:41.417
+Test Case 'DesktopCaptureTests.testLiveEnvelopePolicyAndStrictAnswers' started at 2026-10-02 02:14:41.417
+Test Case 'DesktopCaptureTests.testLiveEnvelopePolicyAndStrictAnswers' passed (0.002 seconds)
+Test Case 'DesktopCaptureTests.testLiveUsageIsShownAsReportedAndNeverGuessed' started at 2026-10-02 02:14:41.419
+Test Case 'DesktopCaptureTests.testLiveUsageIsShownAsReportedAndNeverGuessed' passed (0.002 seconds)
+Test Case 'DesktopCaptureTests.testLiveSessionNumbersLooksReserveAndGaps' started at 2026-10-02 02:14:41.420
+Test Case 'DesktopCaptureTests.testLiveSessionNumbersLooksReserveAndGaps' passed (0.013 seconds)
+Test Case 'DesktopCaptureTests.testLiveContextIsWholeEntriesWithinBoundsAndStatedGaps' started at 2026-10-02 02:14:41.433
+Test Case 'DesktopCaptureTests.testLiveContextIsWholeEntriesWithinBoundsAndStatedGaps' passed (0.013 seconds)
+Test Case 'DesktopCaptureTests.testLivePictureIsTheWholeKeptFrameAndASelectionIsAFocusInIt' started at 2026-10-02 02:14:41.446
+Test Case 'DesktopCaptureTests.testLivePictureIsTheWholeKeptFrameAndASelectionIsAFocusInIt' passed (0.032 seconds)
+Test Case 'DesktopCaptureTests.testLivePictureDrawsTheVisibleInkOverTheWholeFrame' started at 2026-10-02 02:14:41.478
+src/LiveLinkTests.swift:854: error: DesktopCaptureTests.testLivePictureDrawsTheVisibleInkOverTheWholeFrame : XCTAssertTrue failed - the stroke, in the ink colour: [128, 128, 128]
+Test Case 'DesktopCaptureTests.testLivePictureDrawsTheVisibleInkOverTheWholeFrame' failed (0.028 seconds)
+Test Case 'DesktopCaptureTests.testLiveSessionLinesForTheReleasedValidator' started at 2026-10-02 02:14:41.506
+Test Case 'DesktopCaptureTests.testLiveSessionLinesForTheReleasedValidator' passed (0.125 seconds)
+Test Case 'DesktopCaptureTests.testLiveNothingIsSentBeforeAnExplicitStartAndASessionIsNeverRenewed' started at 2026-10-02 02:14:41.630
+Test Case 'DesktopCaptureTests.testLiveNothingIsSentBeforeAnExplicitStartAndASessionIsNeverRenewed' passed (1.019 seconds)
+Test Case 'DesktopCaptureTests.testLiveStartRefusalsAndAStartThatIsStoppedOrNotConfirmed' started at 2026-10-02 02:14:42.650
+Test Case 'DesktopCaptureTests.testLiveStartRefusalsAndAStartThatIsStoppedOrNotConfirmed' passed (0.067 seconds)
+Test Case 'DesktopCaptureTests.testLiveLooksGiveWholeFramesAtTheIntervalAndAreNeverShown' started at 2026-10-02 02:14:42.717
+Test Case 'DesktopCaptureTests.testLiveLooksGiveWholeFramesAtTheIntervalAndAreNeverShown' passed (0.078 seconds)
+Test Case 'DesktopCaptureTests.testLiveLooksWaitForTheirTurnAndStopAtTheRequestsKeptForTheUser' started at 2026-10-02 02:14:42.795
+Test Case 'DesktopCaptureTests.testLiveLooksWaitForTheirTurnAndStopAtTheRequestsKeptForTheUser' passed (0.614 seconds)
+Test Case 'DesktopCaptureTests.testLiveSelectionIsSentAtOnceAsAFocusAndAFollowUpKeepsOrNamesIt' started at 2026-10-02 02:14:43.409
+Test Case 'DesktopCaptureTests.testLiveSelectionIsSentAtOnceAsAFocusAndAFollowUpKeepsOrNamesIt' passed (0.067 seconds)
+Test Case 'DesktopCaptureTests.testLiveSelectionMadeBeforeStartKeepsItsOwnPictureAsFocusWhenAsked' started at 2026-10-02 02:14:43.476
+Test Case 'DesktopCaptureTests.testLiveSelectionMadeBeforeStartKeepsItsOwnPictureAsFocusWhenAsked' passed (0.028 seconds)
+Test Case 'DesktopCaptureTests.testLiveMalformedLatencyIsRefusedWithoutIntegerOverflow' started at 2026-10-02 02:14:43.504
+Test Case 'DesktopCaptureTests.testLiveMalformedLatencyIsRefusedWithoutIntegerOverflow' passed (0.013 seconds)
+Test Case 'DesktopCaptureTests.testLiveMissingCurrentPictureDropsWaitingLooksAndSurvivesLateResults' started at 2026-10-02 02:14:43.516
+Test Case 'DesktopCaptureTests.testLiveMissingCurrentPictureDropsWaitingLooksAndSurvivesLateResults' passed (0.74 seconds)
+Test Case 'DesktopCaptureTests.testLiveExplicitFocusJoinsAnInterruptedObservationBeforeSending' started at 2026-10-02 02:14:44.256
+Test Case 'DesktopCaptureTests.testLiveExplicitFocusJoinsAnInterruptedObservationBeforeSending' passed (0.066 seconds)
+Test Case 'DesktopCaptureTests.testLiveFocusAndStopCannotBeOvertakenByAnOlderRenderingLook' started at 2026-10-02 02:14:44.322
+Test Case 'DesktopCaptureTests.testLiveFocusAndStopCannotBeOvertakenByAnOlderRenderingLook' passed (0.234 seconds)
+Test Case 'DesktopCaptureTests.testLiveQuitAndConnectJoinTheRetiringChild' started at 2026-10-02 02:14:44.556
+Test Case 'DesktopCaptureTests.testLiveQuitAndConnectJoinTheRetiringChild' passed (0.708 seconds)
+Test Case 'DesktopCaptureTests.testLiveCancelNewSelectionStopAndQuitFenceARequestOnItsWay' started at 2026-10-02 02:14:45.264
+Test Case 'DesktopCaptureTests.testLiveCancelNewSelectionStopAndQuitFenceARequestOnItsWay' passed (0.27 seconds)
+Test Case 'DesktopCaptureTests.testLiveTakesBackARequestThatHasNotReachedTheConnector' started at 2026-10-02 02:14:45.534
+Test Case 'DesktopCaptureTests.testLiveTakesBackARequestThatHasNotReachedTheConnector' passed (0.17 seconds)
+Test Case 'DesktopCaptureTests.testLiveTypedRefusalsSpendAndEndTheSessionAsTheConnectorDoes' started at 2026-10-02 02:14:45.704
+Test Case 'DesktopCaptureTests.testLiveTypedRefusalsSpendAndEndTheSessionAsTheConnectorDoes' passed (1.275 seconds)
+Test Case 'DesktopCaptureTests.testLiveConnectorLossEndsTheSessionAndNothingStartsAgainByItself' started at 2026-10-02 02:14:46.979
+Test Case 'DesktopCaptureTests.testLiveConnectorLossEndsTheSessionAndNothingStartsAgainByItself' passed (0.111 seconds)
+Test Case 'DesktopCaptureTests.testLiveConnectionSignInAndUsageAreReadOnlyWhenAsked' started at 2026-10-02 02:14:47.091
+Test Case 'DesktopCaptureTests.testLiveConnectionSignInAndUsageAreReadOnlyWhenAsked' passed (0.107 seconds)
+Test Case 'DesktopCaptureTests.testLiveChildTakesLinesUpToThisVersionsBound' started at 2026-10-02 02:14:47.198
+2026-10-02 02:14:47.199 swift-frontend[498:451a46c0] *** Could not create wakeup socket pair for CFSocket!!!
+Test Case 'DesktopCaptureTests.testLiveChildTakesLinesUpToThisVersionsBound' passed (15.815 seconds)
+Test Suite 'DesktopCaptureTests' failed at 2026-10-02 02:15:03.013
+	 Executed 24 tests, with 1 failure (0 unexpected) in 21.596 (21.596) seconds
+Test Suite 'bin.xctest' failed at 2026-10-02 02:15:03.013
+	 Executed 24 tests, with 1 failure (0 unexpected) in 21.596 (21.596) seconds
+Test Suite 'All tests' failed at 2026-10-02 02:15:03.013
+	 Executed 24 tests, with 1 failure (0 unexpected) in 21.596 (21.596) seconds
+live exit 1

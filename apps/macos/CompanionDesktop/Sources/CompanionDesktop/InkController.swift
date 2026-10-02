@@ -22,8 +22,10 @@ final class InkController: ObservableObject {
     @Published private(set) var unsavedWarning: String?
 
     weak var capture: CaptureController?
-    /// Gets each confirmed region, for its card. Nothing is sent by confirming.
-    weak var ask: AskController?
+    /// Gets each confirmed region, for its card; it is sent only while the AI observes.
+    weak var live: LiveController?
+    /// Why the frame pinned to the pending ASK region does not show what was on screen, or nil.
+    private var pinnedFrameProblem: String?
     private var session: InkSession?
     private var store: InkStore?
     private var displayID: CGDirectDisplayID?
@@ -146,6 +148,13 @@ final class InkController: ObservableObject {
                                    pendingAskRegion: self.session?.pendingSelection != nil)
     }
 
+    /// `frame` with the ink committed and visible now, frozen for the AI's session.
+    func liveInput(frame: FrameReference, captureSession: URL, captureSessionID: String, display: DisplayFacts) -> LiveFrameInput {
+        LiveFrameInput.freeze(frame: frame, document: session?.document, captureSession: captureSession,
+                              captureSessionID: captureSessionID, display: display,
+                              geometryProblem: geometry == nil ? "no display geometry was recorded for this capture" : geometry?.problem)
+    }
+
     /// Before the app quits (capture has already ended): unsaved ink is saved again, and if that
     /// still fails Quit waits while the user saves again, exports it to a chosen folder, or
     /// explicitly discards it. Returns whether quitting may go on.
@@ -227,19 +236,26 @@ final class InkController: ObservableObject {
 
     func undo() {
         guard let session else { return }
-        if case .refused(let reason) = session.undo(host: HostClock.now()) { message = reason } else { save("Undone") }
+        if case .refused(let reason) = session.undo(host: HostClock.now()) { message = reason } else {
+            save("Undone")
+            capture?.pictureChanged()
+        }
         refresh()
     }
 
     func redo() {
         guard let session else { return }
-        if case .refused(let reason) = session.redo(host: HostClock.now()) { message = reason } else { save("Redone") }
+        if case .refused(let reason) = session.redo(host: HostClock.now()) { message = reason } else {
+            save("Redone")
+            capture?.pictureChanged()
+        }
         refresh()
     }
 
     /// Keeps the region with the retained frame pinned when it was drawn, never a later one, and
     /// an actual crop of it when the mapping is still valid. The previous mode is back at once.
-    /// Nothing is sent: the selection's card opens, and a question leaves only on its Submit.
+    /// The selection's card opens; while the AI observes this display, the selection is sent at
+    /// once as the user's focus in the whole picture, and otherwise nothing is sent.
     func finishAsk() {
         guard let session, let store else { return }
         if let selection = session.finishAsk(geometryProblem: geometry?.problem,
@@ -252,12 +268,15 @@ final class InkController: ObservableObject {
             } else {
                 frozen = nil
             }
-            // A card opens only when the ChatGPT connector is set up on this Mac.
-            let opensCard = frozen != nil && ask?.status.connection.opensCards == true
+            // A region whose pixels cannot be found in the pinned frame is kept and never sent as a focus.
+            let unlocated = selection.framePixelRect == nil ? selection.pixelMapping : pinnedFrameProblem
+            // Sent only while the AI observes this display (the user's own Start AI).
+            let sends = frozen != nil && live?.isObserving == true && unlocated == nil
             save("Selection \(selection.id) kept" + (selection.crop == nil ? " without a crop (\(selection.cropProblem ?? "unknown"))" : " with a crop of \(selection.frame?.file ?? "")")
-                + (opensCard ? "; nothing is sent unless you submit a question on its card" : "; nothing is sent"))
+                + (sends ? "; while the AI observes, it goes to ChatGPT as your focus (its card says what was sent)"
+                    : unlocated != nil ? "; not sent as a focus (\(unlocated ?? ""))" : "; nothing is sent (the AI is not started)"))
             if let frozen {
-                ask?.selectionConfirmed(frozen)
+                live?.selectionConfirmed(frozen, unlocated: unlocated, geometryProblem: geometry?.problem)
             }
         }
         refresh()
@@ -305,6 +324,7 @@ final class InkController: ObservableObject {
             spans.append(InkSpan(document: reopened.document, file: Self.spanFile(earlier.fileURL), opened: host))
             let name = found.deletingLastPathComponent().deletingLastPathComponent().lastPathComponent + "/ink/" + found.lastPathComponent
             save("Reopened ink from \(name)")
+            capture?.pictureChanged()
         } catch {
             message = "The earlier ink could not be opened, and it is left unchanged: \(error.localizedDescription)"
         }
@@ -376,6 +396,7 @@ final class InkController: ObservableObject {
                 message = "Region selected: Finish keeps it, Cancel drops it."
             } else {
                 save("Saved")
+                capture?.pictureChanged()
             }
         case .refused(let reason):
             if reason != "no gesture in progress" { message = reason }
@@ -405,6 +426,8 @@ final class InkController: ObservableObject {
         let status = capture?.status
         let frame = status?.lastKept.map(FrameReference.init)
         var freshness = capture.map { String(describing: $0.currentFreshness()) } ?? "unknown"
+        pinnedFrameProblem = frame != nil && frame?.sequence != status?.lastNewPixelsSequence
+            ? "the frame on record when you drew it was older than what was on screen (newer pixels were not kept)" : nil
         if let frame, frame.sequence != status?.lastNewPixelsSequence {
             freshness = "the frame is older than the current pixels (newer pixels were not kept), so this verdict does not apply to it: " + freshness
         }

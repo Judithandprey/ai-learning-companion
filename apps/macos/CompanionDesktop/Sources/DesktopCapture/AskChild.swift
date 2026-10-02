@@ -170,16 +170,20 @@ public protocol AskChildLauncher: Sendable {
 public struct ProcessAskLauncher: AskChildLauncher {
     public var sendTimeout: TimeInterval
     public var endGrace: TimeInterval
+    /// The longest line the child may write: the bound of the interface version it is spoken to in.
+    public var maxIncomingLine: Int
 
     /// Engineering defaults: 30 s to hand a request to the child, 8 s for it to end after EOF.
-    public init(sendTimeout: TimeInterval = 30, endGrace: TimeInterval = 8) {
+    public init(sendTimeout: TimeInterval = 30, endGrace: TimeInterval = 8, maxIncomingLine: Int = AskWire.maxIncomingLine) {
         self.sendTimeout = sendTimeout
         self.endGrace = endGrace
+        self.maxIncomingLine = maxIncomingLine
     }
 
     public func launch(_ config: AskConnectorConfig, onLine: @escaping @Sendable (Data) -> Void,
                        onExit: @escaping @Sendable () -> Void) -> (any AskChild)? {
-        AskProcess.launch(config, sendTimeout: sendTimeout, endGrace: endGrace, onLine: onLine, onExit: onExit)
+        AskProcess.launch(config, sendTimeout: sendTimeout, endGrace: endGrace, maxIncomingLine: maxIncomingLine, onLine: onLine,
+                          onExit: onExit)
     }
 }
 
@@ -190,6 +194,7 @@ final class AskProcess: AskChild, @unchecked Sendable {
     private let errors = Pipe()
     private let sendTimeout: TimeInterval
     private let endGrace: TimeInterval
+    private let maxIncomingLine: Int
     private let onLine: @Sendable (Data) -> Void
     private let onExit: @Sendable () -> Void
     private let lock = NSLock()
@@ -204,17 +209,20 @@ final class AskProcess: AskChild, @unchecked Sendable {
     private var cutOff = false
     private var exitWaiters: [OneShot<Bool>] = []
 
-    private init(sendTimeout: TimeInterval, endGrace: TimeInterval, onLine: @escaping @Sendable (Data) -> Void,
-                 onExit: @escaping @Sendable () -> Void) {
+    private init(sendTimeout: TimeInterval, endGrace: TimeInterval, maxIncomingLine: Int,
+                 onLine: @escaping @Sendable (Data) -> Void, onExit: @escaping @Sendable () -> Void) {
         self.sendTimeout = sendTimeout
         self.endGrace = endGrace
+        self.maxIncomingLine = maxIncomingLine
         self.onLine = onLine
         self.onExit = onExit
     }
 
     static func launch(_ config: AskConnectorConfig, sendTimeout: TimeInterval, endGrace: TimeInterval,
+                       maxIncomingLine: Int = AskWire.maxIncomingLine,
                        onLine: @escaping @Sendable (Data) -> Void, onExit: @escaping @Sendable () -> Void) -> (any AskChild)? {
-        let child = AskProcess(sendTimeout: sendTimeout, endGrace: endGrace, onLine: onLine, onExit: onExit)
+        let child = AskProcess(sendTimeout: sendTimeout, endGrace: endGrace, maxIncomingLine: maxIncomingLine, onLine: onLine,
+                               onExit: onExit)
         let process = child.process
         process.executableURL = config.python
         // Exactly the module: no option, path or secret in argv.
@@ -259,7 +267,7 @@ final class AskProcess: AskChild, @unchecked Sendable {
                 lines.append(Data(buffer[buffer.startIndex..<newline]))
                 buffer = Data(buffer[buffer.index(after: newline)...])
             }
-            guard buffer.count > AskWire.maxIncomingLine || lines.contains(where: { $0.count > AskWire.maxIncomingLine }) else {
+            guard buffer.count > maxIncomingLine || lines.contains(where: { $0.count > maxIncomingLine }) else {
                 return false
             }
             violated = true

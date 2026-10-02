@@ -1,0 +1,23 @@
+Test Suite 'All tests' started at 2026-10-02 02:19:27.892
+Test Suite 'bin.xctest' started at 2026-10-02 02:19:27.893
+Test Suite 'DesktopCaptureTests' started at 2026-10-02 02:19:27.893
+Test Case 'DesktopCaptureTests.testLiveExplicitFocusJoinsAnInterruptedObservationBeforeSending' started at 2026-10-02 02:19:27.893
+src/LiveLinkTests.swift:1544: error: DesktopCaptureTests.testLiveExplicitFocusJoinsAnInterruptedObservationBeforeSending : XCTAssertEqual failed: ("[Optional("observation")]") is not equal to ("[Optional("observation"), Optional("focus")]") -
+src/LiveLinkTests.swift:1546: error: DesktopCaptureTests.testLiveExplicitFocusJoinsAnInterruptedObservationBeforeSending : XCTUnwrap failed: expected non-nil value of type "Int" -
+src/LiveLinkTests.swift:1546: error: DesktopCaptureTests.testLiveExplicitFocusJoinsAnInterruptedObservationBeforeSending : XCTAssertLessThan threw error "XCTestErrorWhileUnwrappingOptional()" -
+src/LiveLinkTests.swift:1549: error: DesktopCaptureTests.testLiveExplicitFocusJoinsAnInterruptedObservationBeforeSending : XCTAssertEqual failed: ("Optional(LCRun.LiveCard.Phase.idle)") is not equal to ("Optional(LCRun.LiveCard.Phase.answered)") -
+src/LiveLinkTests.swift:1551: error: DesktopCaptureTests.testLiveExplicitFocusJoinsAnInterruptedObservationBeforeSending : XCTAssertEqual failed: ("1") is not equal to ("2") - an interrupted submitted observation still uses its slot
+Test Case 'DesktopCaptureTests.testLiveExplicitFocusJoinsAnInterruptedObservationBeforeSending' failed (20.024 seconds)
+Test Suite 'DesktopCaptureTests' failed at 2026-10-02 02:19:47.917
+	 Executed 1 test, with 5 failures (1 unexpected) in 20.024 (20.024) seconds
+Test Suite 'bin.xctest' failed at 2026-10-02 02:19:47.917
+	 Executed 1 test, with 5 failures (1 unexpected) in 20.024 (20.024) seconds
+Test Suite 'All tests' failed at 2026-10-02 02:19:47.917
+	 Executed 1 test, with 5 failures (1 unexpected) in 20.024 (20.024) seconds
+src/AskLinkTests.swift:955:36: warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 953 |             ending.connection = FakeConnector.connection(state: "signed_out", mode: NSNull())
+ 954 |             // In the first round the exit is reported only after the sign-in start has returned.
+ 955 |             ending.afterLoginStart = round == 0 ? { $0.endChildUnreported() } : { $0.exitChild() }
+     |                                    `- warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 956 |             let endingLink = askLink(ending)
+ 957 |             await endingLink.connect()

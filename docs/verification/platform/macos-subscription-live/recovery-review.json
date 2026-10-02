@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "recovery": "Same team/ios branch, HEAD and dirty sources preserved. Current runtime route used; no historic child IDs or archived mail replayed.",
+  "historical_reviews": [
+    {
+      "workflow": "wf_b5a53f7b-76f",
+      "confirmed_app_findings": [
+        "Do not present stale kept frame as current pixels",
+        "Do not send unlocatable selection as a focus",
+        "Notify live session when saved editable ink is reopened"
+      ]
+    },
+    {
+      "workflow": "wf_3bef1058-219",
+      "saved_state": "completed with empty result",
+      "reason": "Four reviewers exhausted provider weekly quota",
+      "approval": false
+    }
+  ],
+  "current_reviews": [
+    "review-wire.md",
+    "review-lifecycle.md"
+  ],
+  "current_correction_execution": "See verification-results.json and raw logs; Linux stand-ins only.",
+  "untrusted_native_voice_import": "Pending original decision; not integrated or bypassed."
+}

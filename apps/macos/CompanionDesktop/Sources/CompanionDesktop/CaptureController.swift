@@ -59,8 +59,8 @@ final class CaptureController: ObservableObject {
     let ink = InkController()
     /// Links each explicit Start to the local capture service, when it is configured.
     let link = CaptureLink(config: CaptureHostConfig.load())
-    /// The ChatGPT subscription connection and the card of a confirmed selection.
-    let ask = AskController()
+    /// The ChatGPT subscription connection, the AI's session and the card of a confirmed selection.
+    let live = LiveController()
     private var active: CaptureRun?
     private var shown: CaptureRun?
     /// The gate of a Start that has no session yet; nil once the session exists.
@@ -94,7 +94,8 @@ final class CaptureController: ObservableObject {
         RunLoop.main.add(ticker, forMode: .common)
         self.ticker = ticker
         ink.capture = self
-        ink.ask = ask
+        ink.live = live
+        live.newest = { [weak self] in self?.liveInput() }
         // Earlier unsettled streams are read, and Stopped if still live; nothing is resent and no
         // capture starts.
         let link = link
@@ -331,8 +332,8 @@ final class CaptureController: ObservableObject {
         // Sending already stopped with the gate; the server Stop follows.
         let link = link
         Task { await link.stop() }
-        // Nothing more is asked from this capture, and a question on its way is fenced.
-        ask.captureStopped(run.recorder.directory.lastPathComponent)
+        // The AI session of this capture ends with it, and a request on its way is fenced.
+        live.captureStopped(run.recorder.directory.lastPathComponent)
         Task {
             let problem = await Self.stopStream(run)
             // Frames kept before the gate closed get their composition request before the ending.
@@ -370,11 +371,45 @@ final class CaptureController: ObservableObject {
         }
         if run === active, run.gate.isOpen {
             link.framesChanged()
+            // While the AI observes, new pixels are offered to it with the ink as it is now; pixels
+            // that were not kept are said as not given.
+            if let pixels = status.lastNewPixelsSequence, pixels > run.lastOfferedToAI {
+                run.lastOfferedToAI = pixels
+                pictureChanged()
+            }
         }
         if ended, run === active {
             active = nil
             let ending = status.ending
             phase = .ended("Stopped: \(ending?.reason ?? "unknown")" + (ending?.detail.map { " — \($0)" } ?? ""))
+        }
+    }
+
+    // MARK: - The AI session
+
+    /// The user's Start AI: only for the capture that is running now.
+    func startAI() {
+        guard let run = active, run === shown, run.gate.isOpen, let status, let sessionDirectory else { return }
+        live.start(captureSession: sessionDirectory, captureSessionID: status.session)
+    }
+
+    /// The current picture of the running capture: its newest kept frame with the ink as it is
+    /// now. Nil when no capture runs, nothing is kept yet, or the newest pixels were not kept (the
+    /// kept frame is then older than the screen, and is never given as the current picture).
+    private func liveInput() -> LiveFrameInput? {
+        guard let run = active, run === shown, run.gate.isOpen, let status, let kept = status.lastKept,
+              kept.sequence == status.lastNewPixelsSequence, let sessionDirectory else { return nil }
+        return ink.liveInput(frame: FrameReference(kept), captureSession: sessionDirectory, captureSessionID: status.session,
+                             display: status.display)
+    }
+
+    /// New pixels, or a committed change of the visible ink: offered to the AI while it observes.
+    func pictureChanged() {
+        guard live.isObserving else { return }
+        if let input = liveInput() {
+            live.changed(input)
+        } else if let status, let kept = status.lastKept, kept.sequence != status.lastNewPixelsSequence {
+            live.noPicture("the newest pixels of this display were not kept on this Mac, so there is no current picture to give")
         }
     }
 
@@ -387,7 +422,7 @@ final class CaptureController: ObservableObject {
             run.pendingEndingDetail = reason.summary
             let link = link
             Task { await link.stop() }
-            ask.captureStopped(run.recorder.directory.lastPathComponent)
+            live.captureStopped(run.recorder.directory.lastPathComponent)
             Task {
                 await run.settleCompositions()
                 run.finish(detail: reason.summary)
@@ -450,7 +485,7 @@ final class CaptureController: ObservableObject {
         // The link's Stop starts now, also when Quit is then held for unsaved ink; Quit joins it.
         let link = link
         Task { await link.stop() }
-        ask.captureStopped(run.recorder.directory.lastPathComponent)
+        live.captureStopped(run.recorder.directory.lastPathComponent)
         // Also when a stream error closed the gate off the main thread and its main-thread report
         // has not arrived yet: ink input closes and saves now, and a failed save holds Quit.
         ink.captureEnding(reason: run.gate.closure?.reason ?? "app_quit")

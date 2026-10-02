@@ -110,9 +110,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         guard capture.quitRequested() else { return .terminateCancel }
         quitPending = true
         let link = capture.link
-        let ask = capture.ask.link
+        let live = capture.live.link
         Task { @MainActor in
-            async let connector: Void = ask.shutdown()
+            async let connector: Void = live.shutdown()
             await link.quit(within: 10)
             await connector
             self.quitPending = false

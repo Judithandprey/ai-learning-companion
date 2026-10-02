@@ -1,0 +1,1 @@
+C02: CAUGHT; test=testLiveMissingCurrentPictureDropsWaitingLooksAndSurvivesLateResults; exit=1; ('1', '4')

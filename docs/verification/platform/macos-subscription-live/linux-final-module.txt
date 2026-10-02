@@ -1,0 +1,2 @@
+== DesktopCapture module (Swift 5, -enable-testing)
+== module ok

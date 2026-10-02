@@ -1,0 +1,100 @@
+{
+  "schema_version": 1,
+  "recorded_date_utc": "2026-10-02",
+  "source_manifest_sha256": "12cad267691575a348626704a83fed9d78106e5c7ee541e2c268db8fc808e52b",
+  "final_harness_source_comparison": {
+    "matching_library_and_test_files": 38,
+    "changes_only_in_harness": [
+      "Apple/Darwin import replacement with Foundation/FoundationNetworking/Glibc",
+      "corelibs waitsForConnectivity unavailable property commented out",
+      "Linux SIGPIPE ignored in harness main",
+      "synthetic Apple framework implementations; no rasterization"
+    ]
+  },
+  "compiled": {
+    "linux_library_and_tests_typecheck": true,
+    "linux_separate_library_module": true,
+    "linux_controller_class_with_UI_stubs": true,
+    "app_views_syntax_parse_only": true,
+    "native_macos_app": false
+  },
+  "tests": {
+    "final_approved_broad": {
+      "total_methods": 124,
+      "passed_methods": 118,
+      "failed_methods": 6,
+      "failed_assertions": 14,
+      "unexpected_failures": 1,
+      "exit": 1,
+      "log": "linux-all-tests-approved.txt",
+      "failed_names": [
+        "testAskImageDrawsTheInkVisibleWhenTheRegionWasDrawn",
+        "testLoopbackTransportOnARealSocket",
+        "testFrameStoreIsTheReviewedScreenObserverCopy",
+        "testMapsRetainedFramesToDesktopFrames",
+        "testComposedImagesDrawTheInkCommittedWhenThePixelsWereOnScreen",
+        "testLivePictureDrawsTheVisibleInkOverTheWholeFrame"
+      ]
+    },
+    "live": {
+      "total_methods": 24,
+      "passed_methods": 23,
+      "failed_methods": 1,
+      "exit": 1,
+      "log": "linux-live-tests.txt",
+      "snapshot": "Before the final context-test fixture clarification; all exact final live methods also executed in the final approved broad run."
+    },
+    "earlier_restricted_broad": {
+      "total_methods": 124,
+      "passed_methods": 91,
+      "failed_methods": 33,
+      "failed_assertions": 54,
+      "exit": 1,
+      "log": "linux-all-tests.txt"
+    },
+    "owned_child_approved": {
+      "total_methods": 1,
+      "passed_methods": 1,
+      "exit": 0,
+      "log": "linux-owned-child-approved.txt"
+    },
+    "released_validator": {
+      "lines": 10,
+      "turns": 6,
+      "checks": 211,
+      "exit": 0,
+      "log": "linux-released-validator.txt",
+      "synthetic_png": true
+    },
+    "real_connector_local_stand_in_approved": {
+      "total_methods": 1,
+      "passed_methods": 1,
+      "synthetic_inner_client_calls": 18,
+      "interrupts": 2,
+      "exit": 0,
+      "log": "linux-real-connector-probe-approved.txt"
+    },
+    "correction_mutants": {
+      "selected": 8,
+      "caught": 8,
+      "log": "linux-mutations.txt",
+      "snapshot": "Private copies of the recovered harness; selected production correction paths unchanged through final delivery. C08 predates the final stronger context fixture; exact final unmutated tests ran in the broad suite.",
+      "first_C02": "A narrower redundant-guard deletion survived; retained in mutation-first-summary.txt and mutations/C02-redundant-guard.txt. Original defect recreation caught by unchanged assertions.",
+      "prepared_51_mutant_campaign": "Interrupted; not executed or claimed as completed."
+    }
+  },
+  "execution": {
+    "platform": "Linux / WSL",
+    "toolchain": "Swift 6.3.3 Ubuntu24.04, Swift 5 language mode",
+    "real_frameworks": false,
+    "connector_stream_bridge_and_learning_validation": true,
+    "inner_client": "local stand-in",
+    "model_calls": 0,
+    "account_or_sign_in_calls": 0,
+    "paid_experiments": 0,
+    "interactive_device": false,
+    "hosted_macos_build_for_this_source": false,
+    "approval": "Only exact toolchain/header and local process/socket check commands; unchanged project scope and permission policy."
+  },
+  "remaining_owner": "Lead: exact-source native build/package/XCTest and separately coordinated interactive-Mac acceptance. Voice/audio, content anchoring and completed Notability import remain open."
+}

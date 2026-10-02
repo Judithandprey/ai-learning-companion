@@ -1,0 +1,19 @@
+src/AskLinkTests.swift:955:36: warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 953 |             ending.connection = FakeConnector.connection(state: "signed_out", mode: NSNull())
+ 954 |             // In the first round the exit is reported only after the sign-in start has returned.
+ 955 |             ending.afterLoginStart = round == 0 ? { $0.endChildUnreported() } : { $0.exitChild() }
+     |                                    `- warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 956 |             let endingLink = askLink(ending)
+ 957 |             await endingLink.connect()
+
+Test Suite 'All tests' started at 2026-10-02 02:21:34.583
+Test Suite 'bin.xctest' started at 2026-10-02 02:21:34.586
+Test Suite 'DesktopCaptureTests' started at 2026-10-02 02:21:34.586
+Test Case 'DesktopCaptureTests.testAskConnectorChildGetsAPrivatePipeAndAMinimalEnvironment' started at 2026-10-02 02:21:34.586
+Test Case 'DesktopCaptureTests.testAskConnectorChildGetsAPrivatePipeAndAMinimalEnvironment' passed (6.219 seconds)
+Test Suite 'DesktopCaptureTests' passed at 2026-10-02 02:21:40.805
+	 Executed 1 test, with 0 failures (0 unexpected) in 6.219 (6.219) seconds
+Test Suite 'bin.xctest' passed at 2026-10-02 02:21:40.805
+	 Executed 1 test, with 0 failures (0 unexpected) in 6.219 (6.219) seconds
+Test Suite 'All tests' passed at 2026-10-02 02:21:40.805
+	 Executed 1 test, with 0 failures (0 unexpected) in 6.219 (6.219) seconds

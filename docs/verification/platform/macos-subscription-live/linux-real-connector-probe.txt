@@ -1,0 +1,30 @@
+src/AskLinkTests.swift:955:36: warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 953 |             ending.connection = FakeConnector.connection(state: "signed_out", mode: NSNull())
+ 954 |             // In the first round the exit is reported only after the sign-in start has returned.
+ 955 |             ending.afterLoginStart = round == 0 ? { $0.endChildUnreported() } : { $0.exitChild() }
+     |                                    `- warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 956 |             let endingLink = askLink(ending)
+ 957 |             await endingLink.connect()
+
+Test Suite 'All tests' started at 2026-10-02 02:22:59.416
+Test Suite 'bin.xctest' started at 2026-10-02 02:22:59.417
+Test Suite 'DesktopCaptureTests' started at 2026-10-02 02:22:59.417
+Test Case 'DesktopCaptureTests.testProbeRealLiveConnector' started at 2026-10-02 02:22:59.418
+2026-10-02 02:22:59.427 swift-frontend[1084:d2fef6c0] *** Could not create wakeup socket pair for CFSocket!!!
+PROBE connection=signedIn plan=stand-in-plan models=["stand-in-vision"]
+PROBE usage=["Usage as ChatGPT reported it at <read time> (the account\'s, not this app\'s session bounds; Check Again reads it again): included usage was allowed then.", "stand-in-bucket: first window 7% used (5-hour); credits not reported."]
+PROBE start state=off(Optional("the connector did not confirm the start")) used=0
+src/ZRealLiveConnectorProbe.swift:42: error: DesktopCaptureTests.testProbeRealLiveConnector : XCTAssertEqual failed: ("off(Optional("the connector did not confirm the start"))") is not equal to ("on") -
+PROBE look-1 used=0 seenFrame=-1 missed=nil card=none
+src/ZRealLiveConnectorProbe.swift:48: error: DesktopCaptureTests.testProbeRealLiveConnector : XCTAssertEqual failed: ("[0, -1]") is not equal to ("[1, 1]") -
+PROBE focus phase=idle answer=nil detail=Kept on this Mac. The AI was not asked: the AI is not started for this display. focus=none
+src/ZRealLiveConnectorProbe.swift:54: error: DesktopCaptureTests.testProbeRealLiveConnector : XCTAssertEqual failed: ("idle") is not equal to ("answered") -
+src/ZRealLiveConnectorProbe.swift:55: error: DesktopCaptureTests.testProbeRealLiveConnector : XCTUnwrap failed: expected non-nil value of type "String" -
+Test Case 'DesktopCaptureTests.testProbeRealLiveConnector' failed (40.165 seconds)
+Test Suite 'DesktopCaptureTests' failed at 2026-10-02 02:23:39.583
+	 Executed 1 test, with 4 failures (0 unexpected) in 40.165 (40.165) seconds
+Test Suite 'bin.xctest' failed at 2026-10-02 02:23:39.583
+	 Executed 1 test, with 4 failures (0 unexpected) in 40.165 (40.165) seconds
+Test Suite 'All tests' failed at 2026-10-02 02:23:39.583
+	 Executed 1 test, with 4 failures (0 unexpected) in 40.165 (40.165) seconds
+probe exit 1

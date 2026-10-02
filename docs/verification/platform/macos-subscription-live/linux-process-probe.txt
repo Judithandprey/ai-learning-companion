@@ -1,0 +1,6 @@
+2026-10-02 02:19:37.072 swift-frontend[4:686ee880] *** Could not create wakeup socket pair for CFSocket!!!
+owned pid 8
+kill returned 0 errno 9
+termination handler called
+running after kill false alive -1
+wait returned 9

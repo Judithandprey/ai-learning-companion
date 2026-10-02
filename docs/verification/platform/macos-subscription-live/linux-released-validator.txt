@@ -1,0 +1,5 @@
+# The lines one synthetic session writes to the connector, made by the Swift test on the Linux harness (PNG written by the stand-in encoder), checked by checks/validate_live_session.py with the released contract and request check
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.141 (0.141) seconds
+PASS: 10 lines, 6 companion/turn requests (observation, focus, text_followup, observation, text_followup, focus); the focus was kept on 1 follow-up(s) and named as an earlier one on 1; 211 checks
+checker exit 0
+fixture: 10 lines, 653328 bytes; bound results: 6

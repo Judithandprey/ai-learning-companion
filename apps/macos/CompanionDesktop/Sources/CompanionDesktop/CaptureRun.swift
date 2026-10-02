@@ -19,6 +19,8 @@ final class CaptureRun: NSObject, SCStreamOutput, SCStreamDelegate {
     /// composition was requested; main thread only.
     let composesInk: Bool
     var lastCompositionRequested = 0
+    /// The last new pixels offered to the AI's session, or said as not given; main thread only.
+    var lastOfferedToAI = 0
     /// The detail of an ending that is waiting for `settleCompositions`, so a Quit meanwhile keeps
     /// it; main thread only.
     var pendingEndingDetail: String?

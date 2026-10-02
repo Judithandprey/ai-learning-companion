@@ -1,0 +1,8 @@
+C01: CAUGHT; test=testLiveMalformedLatencyIsRefusedWithoutIntegerOverflow; exit=-4; integer-overflow trap
+C02: CAUGHT; test=testLiveMissingCurrentPictureDropsWaitingLooksAndSurvivesLateResults; exit=1; ('1', '4')
+C03: CAUGHT; test=testLiveMissingCurrentPictureDropsWaitingLooksAndSurvivesLateResults; exit=1; ('1', '1')
+C04: CAUGHT; test=testLiveFocusAndStopCannotBeOvertakenByAnOlderRenderingLook; exit=1; ('1', '2')
+C05: CAUGHT; test=testLiveExplicitFocusJoinsAnInterruptedObservationBeforeSending; exit=1; ('1', '5')
+C06: CAUGHT; test=testLiveExplicitFocusJoinsAnInterruptedObservationBeforeSending; exit=1; ('1', '1')
+C07: CAUGHT; test=testLiveQuitAndConnectJoinTheRetiringChild; exit=1; ('1', '1')
+C08: CAUGHT; test=testLiveContextIsWholeEntriesWithinBoundsAndStatedGaps; exit=1; ('1', '1')

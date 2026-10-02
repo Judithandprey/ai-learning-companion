@@ -1,0 +1,19 @@
+Test Suite 'All tests' started at 2026-10-02 02:20:46.694
+Test Suite 'bin.xctest' started at 2026-10-02 02:20:46.696
+Test Suite 'DesktopCaptureTests' started at 2026-10-02 02:20:46.696
+Test Case 'DesktopCaptureTests.testLiveContextIsWholeEntriesWithinBoundsAndStatedGaps' started at 2026-10-02 02:20:46.696
+src/LiveLinkTests.swift:715: error: DesktopCaptureTests.testLiveContextIsWholeEntriesWithinBoundsAndStatedGaps : XCTUnwrap failed: expected non-nil value of type "LiveHistoryEntry" -
+Test Case 'DesktopCaptureTests.testLiveContextIsWholeEntriesWithinBoundsAndStatedGaps' failed (0.018 seconds)
+Test Suite 'DesktopCaptureTests' failed at 2026-10-02 02:20:46.714
+	 Executed 1 test, with 1 failure (0 unexpected) in 0.018 (0.018) seconds
+Test Suite 'bin.xctest' failed at 2026-10-02 02:20:46.714
+	 Executed 1 test, with 1 failure (0 unexpected) in 0.018 (0.018) seconds
+Test Suite 'All tests' failed at 2026-10-02 02:20:46.714
+	 Executed 1 test, with 1 failure (0 unexpected) in 0.018 (0.018) seconds
+src/AskLinkTests.swift:955:36: warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 953 |             ending.connection = FakeConnector.connection(state: "signed_out", mode: NSNull())
+ 954 |             // In the first round the exit is reported only after the sign-in start has returned.
+ 955 |             ending.afterLoginStart = round == 0 ? { $0.endChildUnreported() } : { $0.exitChild() }
+     |                                    `- warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 956 |             let endingLink = askLink(ending)
+ 957 |             await endingLink.connect()

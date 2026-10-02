@@ -221,7 +221,7 @@ public enum AskWire {
     public static let version = "lc-subscription-ask/1"
     /// A line to the connector is at most 12 MiB, and one from it at most 256 KiB (ADR 0003).
     static let maxRequestLine = 12 * 1024 * 1024
-    static let maxIncomingLine = 256 * 1024
+    public static let maxIncomingLine = 256 * 1024
     /// The connector's closed error codes.
     static let errorCodes: Set<String> = ["busy", "unauthenticated", "unsupported_model", "invalid_request", "session_stopped",
                                           "cancelled", "interrupt_unconfirmed", "quota", "failed", "unavailable"]

@@ -1,0 +1,36 @@
+src/AskLinkTests.swift:955:36: warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 953 |             ending.connection = FakeConnector.connection(state: "signed_out", mode: NSNull())
+ 954 |             // In the first round the exit is reported only after the sign-in start has returned.
+ 955 |             ending.afterLoginStart = round == 0 ? { $0.endChildUnreported() } : { $0.exitChild() }
+     |                                    `- warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 956 |             let endingLink = askLink(ending)
+ 957 |             await endingLink.connect()
+
+Test Suite 'All tests' started at 2026-10-02 02:26:15.351
+Test Suite 'bin.xctest' started at 2026-10-02 02:26:15.353
+Test Suite 'DesktopCaptureTests' started at 2026-10-02 02:26:15.353
+Test Case 'DesktopCaptureTests.testProbeRealLiveConnector' started at 2026-10-02 02:26:15.353
+PROBE connection=signedIn plan=stand-in-plan models=["stand-in-vision"]
+PROBE usage=["Usage as ChatGPT reported it at <read time> (the account\'s, not this app\'s session bounds; Check Again reads it again): included usage was allowed then.", "stand-in-bucket: first window 7% used (5-hour); credits not reported."]
+PROBE start state=on used=0
+PROBE look-1 used=1 seenFrame=1 missed=nil card=none
+PROBE focus phase=answered answer=Stand-in text: nothing here came from a model. detail=nil focus=onThisPicture
+PROBE follow-up-same-picture phase=answered detail=nil focus=onThisPicture
+PROBE look-2 used=4 seenFrame=3 missed=nil
+PROBE follow-up-later-picture phase=answered detail=nil focus=onAnEarlierPicture
+PROBE cancel phase=cancelled detail=Cancelled (cancelled). Its answer, if one comes, is not shown. session=on used=6 connector_answer=cancelled/submitted interrupt=cancelled
+PROBE focus-over-look phase=answered detail=nil session=on used=8 missed=nil
+PROBE allowance phase=refused detail=No answer: ChatGPT says the account's allowance is used up. It had reached ChatGPT; it is not sent again. session=ended("ChatGPT says the account\'s allowance is used up; nothing more is sent by itself") used=9
+PROBE after-end detail=Not sent: the AI session has ended; start it again.
+PROBE start-again state=on used=0
+PROBE reserve used=9 paused=the requests left in this session are kept for your own selections and questions missed=nil state=on
+PROBE end reason=stopped by you stop=confirmed used=9
+PROBE end reason=ChatGPT says the account's allowance is used up; nothing more is sent by itself stop=confirmed used=9
+PROBE connector-log asks=18 pngs=18 interrupts=2 finished=[(key: "client.finish_request cancelled", value: 2), (key: "client.finish_request completed", value: 15), (key: "client.finish_request failed", value: 1)] touched=[] last=["client.close", "exit 0"]
+Test Case 'DesktopCaptureTests.testProbeRealLiveConnector' passed (7.394 seconds)
+Test Suite 'DesktopCaptureTests' passed at 2026-10-02 02:26:22.747
+	 Executed 1 test, with 0 failures (0 unexpected) in 7.394 (7.394) seconds
+Test Suite 'bin.xctest' passed at 2026-10-02 02:26:22.747
+	 Executed 1 test, with 0 failures (0 unexpected) in 7.394 (7.394) seconds
+Test Suite 'All tests' passed at 2026-10-02 02:26:22.747
+	 Executed 1 test, with 0 failures (0 unexpected) in 7.394 (7.394) seconds

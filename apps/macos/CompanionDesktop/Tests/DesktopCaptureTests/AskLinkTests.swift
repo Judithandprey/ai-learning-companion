@@ -9,7 +9,18 @@ import XCTest
 // as scripted. It is not the connector, Codex, a login or a model: nothing here reaches a network,
 // and every identity, URL and answer is synthetic.
 
-final class FakeConnector: AskChildLauncher, @unchecked Sendable {
+/// What a stand-in child needs of the connector stand-in that owns it.
+protocol FakeChildOwner: AnyObject, Sendable {
+    var failsWrites: Set<String> { get }
+    var holdsWrites: Set<String> { get }
+    var heldWritesAreInPart: Bool { get }
+    var endDelay: TimeInterval { get }
+    func emitRaw(_ line: String)
+    func received(_ line: Data)
+    func childEnded()
+}
+
+final class FakeConnector: AskChildLauncher, FakeChildOwner, @unchecked Sendable {
     enum AskMode {
         /// Answers with the request's own provenance and this text.
         case answer(String)
@@ -21,7 +32,7 @@ final class FakeConnector: AskChildLauncher, @unchecked Sendable {
     }
 
     final class Child: AskChild, @unchecked Sendable {
-        weak var owner: FakeConnector?
+        weak var owner: (any FakeChildOwner)?
         private let lock = NSLock()
         private var exited = false
         var hasExited: Bool { lock.withLock { exited } }
@@ -256,7 +267,7 @@ final class FakeConnector: AskChildLauncher, @unchecked Sendable {
         onExit?()
     }
 
-    fileprivate func childEnded() {
+    func childEnded() {
         let onExit = lock.withLock { () -> (@Sendable () -> Void)? in
             endCount += 1
             return self.onExit
@@ -283,7 +294,7 @@ final class FakeConnector: AskChildLauncher, @unchecked Sendable {
         emit(["id": held.id, "result": Self.honest(held.params, text: text)])
     }
 
-    fileprivate func received(_ line: Data) {
+    func received(_ line: Data) {
         guard line.last == 0x0A, let object = (try? JSONSerialization.jsonObject(with: line.dropLast())) as? [String: Any],
               object["version"] as? String == "lc-subscription-ask/1", Set(object.keys) == ["version", "id", "method", "params"],
               let id = object["id"] as? String, let method = object["method"] as? String,
@@ -345,8 +356,8 @@ extension DesktopCaptureTests {
                            repository: URL(fileURLWithPath: "/nonexistent-synthetic/repo"))
     }
 
-    /// A BGRA buffer: mid-grey, or fixed pseudo-random pixels that no PNG encoder can make small.
-    func greyBuffer(width: Int = 200, height: Int = 100, noise: Bool = false) throws -> CVPixelBuffer {
+    /// A BGRA buffer: one grey (`shade`), or fixed pseudo-random pixels that no PNG encoder can make small.
+    func greyBuffer(width: Int = 200, height: Int = 100, noise: Bool = false, shade: UInt8 = 128) throws -> CVPixelBuffer {
         var created: CVPixelBuffer?
         let attributes = [kCVPixelBufferIOSurfacePropertiesKey as String: [String: Any]()] as CFDictionary
         XCTAssertEqual(CVPixelBufferCreate(nil, width, height, kCVPixelFormatType_32BGRA, attributes, &created), kCVReturnSuccess)
@@ -360,7 +371,7 @@ extension DesktopCaptureTests {
             for x in 0..<width {
                 for channel in 0..<4 {
                     state = state &* 1_664_525 &+ 1_013_904_223
-                    let value: UInt8 = channel == 3 ? 255 : (noise ? UInt8(truncatingIfNeeded: state >> 24) : 128)
+                    let value: UInt8 = channel == 3 ? 255 : (noise ? UInt8(truncatingIfNeeded: state >> 24) : shade)
                     base[y * rowBytes + x * 4 + channel] = value
                 }
             }

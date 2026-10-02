@@ -74,8 +74,10 @@ struct ContentView: View {
                     .foregroundStyle(.secondary)
             }
 
-            Section("Ask ChatGPT about a selection (your subscription)") {
-                AskConnectionView(ask: controller.ask)
+            Section("AI on this display (ChatGPT, your subscription)") {
+                LiveConnectionView(live: controller.live, capturing: controller.phase == .capturing, now: controller.now) {
+                    controller.startAI()
+                }
             }
         }
         .formStyle(.grouped)
