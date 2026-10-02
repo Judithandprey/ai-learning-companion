@@ -1,0 +1,14 @@
+import Foundation
+import XCTest
+import Glibc
+signal(SIGPIPE, SIG_IGN)
+typealias Entry = (String, (DesktopCaptureTests) -> () throws -> Void)
+let tests: [Entry] = [
+    ("testLeadQueuedAnswerIsNotAcceptedAsShownAfterStop", asyncTest(DesktopCaptureTests.testLeadQueuedAnswerIsNotAcceptedAsShownAfterStop)),
+    ("testControllerDeferredAnswerCannotAppearAfterSynchronousStop", asyncTest(DesktopCaptureTests.testControllerDeferredAnswerCannotAppearAfterSynchronousStop)),
+    ("testControllerExplicitRestartRejectsQueuedOldAnswerAndDisplaysNewSessionAnswer", asyncTest(DesktopCaptureTests.testControllerExplicitRestartRejectsQueuedOldAnswerAndDisplaysNewSessionAnswer)),
+    ("testControllerAlreadyShownAnswerKeepsItsFirstReceiptAfterStop", asyncTest(DesktopCaptureTests.testControllerAlreadyShownAnswerKeepsItsFirstReceiptAfterStop)),
+    ("testControllerHiddenAnswerCanBecomeVisibleWithoutFalseReceipt", asyncTest(DesktopCaptureTests.testControllerHiddenAnswerCanBecomeVisibleWithoutFalseReceipt)),
+    ("testControllerFinalUsedUpAnswerCanBeDisplayed", asyncTest(DesktopCaptureTests.testControllerFinalUsedUpAnswerCanBeDisplayed)),
+]
+XCTMain([testCase(tests)])

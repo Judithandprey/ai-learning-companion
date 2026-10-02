@@ -1,0 +1,14 @@
+{
+  "candidate": "4f6c327018d46604b21c57ab4ebf2b0e45278f70",
+  "passed": 16,
+  "failed": 0,
+  "expected_count": 16,
+  "all_expected_finished": true,
+  "completion": true,
+  "log_sha256": "aecedcbc5e91058b5bb3c84f40527ab74b8bbf5ecf0cf60cca4492f261dd9f6f",
+  "manifest_sha256": "3064241f2b2ed067a038fa9ae1b9cc44b6e286bdbaf3a8aed1d88b31dadd0308",
+  "runtime": "Swift6.3.3 Linux interpreter, Swift5 mode, existing Apple stand-ins",
+  "native_or_real_device": false,
+  "full_suite_rerun": false,
+  "exit_status": "Not retained by initial tool-output projection; completed XCTest suite summary retained."
+}

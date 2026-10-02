@@ -1,0 +1,8 @@
+test_mac_owner_bundle_fixture_and_release_reuse (tests.probes.support.test_desktop_checks.DesktopChecks.test_mac_owner_bundle_fixture_and_release_reuse) ... ok
+test_mac_missing_bad_live_or_validator_failure_remains_failure (tests.probes.support.test_desktop_checks.DesktopChecks.test_mac_missing_bad_live_or_validator_failure_remains_failure) ... ok
+test_owner_test_failure_retains_each_platform_package (tests.probes.support.test_desktop_checks.DesktopChecks.test_owner_test_failure_retains_each_platform_package) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 3.398s
+
+OK

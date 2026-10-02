@@ -1,0 +1,85 @@
+{
+  "commit": "4f6c327018d46604b21c57ab4ebf2b0e45278f70",
+  "predecessor": "3147291f449105c06255cfc0ea2056f1b2582437",
+  "released_baseline": "c9177096c99c2562e4474bcbb2f4ffc8beb43c18",
+  "counts": {
+    "owned_sources": 57,
+    "released_read_only_inputs": 9,
+    "translation_files": 8,
+    "SHA256SUMS": 127,
+    "interface-SHA256SUMS": 22,
+    "validator_shared_inputs": 13,
+    "validator_native_adapters": 1,
+    "final_review_sources": 14,
+    "focused-final-source-manifest.json": {
+      "source_hashes": 44,
+      "owned_source_hashes": 42,
+      "derived_harness_hashes": 44
+    },
+    "interface-fixture-source-manifest.json": {
+      "source_hashes": 43,
+      "owned_source_hashes": 42,
+      "derived_harness_hashes": 42
+    },
+    "controller-final-source-manifest.json": {
+      "source_hashes": 44,
+      "actually_owned_source_hashes": 43,
+      "derived_harness_hashes": 47
+    },
+    "interface-source-manifest.json": {
+      "source_hashes": 45,
+      "owned_source_hashes": 33,
+      "derived_harness_hashes": 30,
+      "external_inputs_mapped_to_committed_evidence": 12
+    },
+    "unchanged_lead_probe": 1,
+    "preserved_restricted_harness_hashes": 44
+  },
+  "notes": {
+    "historical_source_snapshots": [
+      {
+        "manifest": "focused-preliminary-source-manifest.json",
+        "recorded_source_count": 44,
+        "current_source_differences": [
+          "apps/macos/CompanionDesktop/Sources/DesktopCapture/AskChild.swift",
+          "apps/macos/CompanionDesktop/Sources/DesktopCapture/LivePresentation.swift",
+          "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/LiveLinkTests.swift",
+          "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/LiveSourceDispatchTests.swift"
+        ],
+        "classification": "historical_snapshot_not_current_binding"
+      },
+      {
+        "manifest": "focused-emission-failure-source-manifest.json",
+        "recorded_source_count": 44,
+        "current_source_differences": [
+          "apps/macos/CompanionDesktop/Sources/DesktopCapture/AskChild.swift",
+          "apps/macos/CompanionDesktop/Sources/DesktopCapture/LivePresentation.swift",
+          "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/LiveLinkTests.swift"
+        ],
+        "classification": "historical_snapshot_not_current_binding"
+      },
+      {
+        "manifest": "focused-restricted-41-source-manifest.json",
+        "recorded_source_count": 44,
+        "current_source_differences": [
+          "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/LiveLinkTests.swift"
+        ],
+        "classification": "historical_snapshot_not_current_binding"
+      },
+      {
+        "manifest": "controller-initial-six-source-manifest.json",
+        "recorded_source_count": 44,
+        "current_source_differences": [],
+        "classification": "historical_snapshot_not_current_binding"
+      }
+    ],
+    "predecessor_evidence_files_preserved": 55,
+    "count_label_precision": "final-binding-check reports controller owned_sources_checked=44; 43 are app-owned sources and 1 is the committed Apple stand-in. All 44 hashes match."
+  },
+  "issues": [],
+  "limitations": [
+    "Hash/mapping audit only; no suite, compilation, fixture producer or validator execution.",
+    "No native/device/provider/account/display/audio/TTS acceptance.",
+    "No source or Git writes; scratch artifact only."
+  ]
+}

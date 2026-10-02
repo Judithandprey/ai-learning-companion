@@ -1,0 +1,52 @@
+/tmp/mac-live-wire-review-4f6c327/independent-source/src/AskLinkTests.swift:955:36: warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 953 |             ending.connection = FakeConnector.connection(state: "signed_out", mode: NSNull())
+ 954 |             // In the first round the exit is reported only after the sign-in start has returned.
+ 955 |             ending.afterLoginStart = round == 0 ? { $0.endChildUnreported() } : { $0.exitChild() }
+     |                                    `- warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 956 |             let endingLink = askLink(ending)
+ 957 |             await endingLink.connect()
+
+Test Suite 'All tests' started at 2026-10-02 04:03:33.481
+Test Suite 'bin.xctest' started at 2026-10-02 04:03:33.482
+Test Suite 'DesktopCaptureTests' started at 2026-10-02 04:03:33.482
+Test Case 'DesktopCaptureTests.testRecoveredSourceRefusalDoesNotBecomeTransportFailure' started at 2026-10-02 04:03:33.482
+Test Case 'DesktopCaptureTests.testRecoveredSourceRefusalDoesNotBecomeTransportFailure' passed (0.13 seconds)
+Test Case 'DesktopCaptureTests.testOldOrReplacementDispatchGateCannotAuthorizeTheActiveSession' started at 2026-10-02 04:03:33.613
+Test Case 'DesktopCaptureTests.testOldOrReplacementDispatchGateCannotAuthorizeTheActiveSession' passed (0.018 seconds)
+Test Case 'DesktopCaptureTests.testSameFrameRecoveryClearsSourceLossWithoutAnotherSubmission' started at 2026-10-02 04:03:33.631
+Test Case 'DesktopCaptureTests.testSameFrameRecoveryClearsSourceLossWithoutAnotherSubmission' passed (0.022 seconds)
+Test Case 'DesktopCaptureTests.testClosedCaptureRefusesStartBeforeAndAfterConnectorAwait' started at 2026-10-02 04:03:33.653
+Test Case 'DesktopCaptureTests.testClosedCaptureRefusesStartBeforeAndAfterConnectorAwait' passed (0.003 seconds)
+Test Case 'DesktopCaptureTests.testPermanentGateClosureAndFinalByteAreAtomicallyOrdered' started at 2026-10-02 04:03:33.656
+Test Case 'DesktopCaptureTests.testPermanentGateClosureAndFinalByteAreAtomicallyOrdered' passed (0.051 seconds)
+Test Case 'DesktopCaptureTests.testCurrentSourceLossDuringRenderRefusesThenRecoversWithoutRestart' started at 2026-10-02 04:03:33.707
+Test Case 'DesktopCaptureTests.testCurrentSourceLossDuringRenderRefusesThenRecoversWithoutRestart' passed (0.025 seconds)
+Test Case 'DesktopCaptureTests.testCurrentSourceLossWhileFollowupWaitsInWriterDropsTheLine' started at 2026-10-02 04:03:33.731
+Test Case 'DesktopCaptureTests.testCurrentSourceLossWhileFollowupWaitsInWriterDropsTheLine' passed (0.072 seconds)
+Test Case 'DesktopCaptureTests.testSourceAdmissionRechecksFinalByteAndPermanentSessionStop' started at 2026-10-02 04:03:33.803
+Test Case 'DesktopCaptureTests.testSourceAdmissionRechecksFinalByteAndPermanentSessionStop' passed (0.0 seconds)
+Test Suite 'DesktopCaptureTests' passed at 2026-10-02 04:03:33.803
+	 Executed 8 tests, with 0 failures (0 unexpected) in 0.321 (0.321) seconds
+Test Suite 'LiveFreshnessTests' started at 2026-10-02 04:03:33.803
+Test Case 'LiveFreshnessTests.testHealthyIdleConfirmsOldPixelsWithoutChangingTheirSequence' started at 2026-10-02 04:03:33.803
+Test Case 'LiveFreshnessTests.testHealthyIdleConfirmsOldPixelsWithoutChangingTheirSequence' passed (0.002 seconds)
+Test Case 'LiveFreshnessTests.testCallbackSilenceLosesCurrentInputAndValidIdleRestoresTheSameFrame' started at 2026-10-02 04:03:33.805
+Test Case 'LiveFreshnessTests.testCallbackSilenceLosesCurrentInputAndValidIdleRestoresTheSameFrame' passed (0.001 seconds)
+Test Case 'LiveFreshnessTests.testBlankSuspendedAndMissingImageNeedNewPixelsToRecover' started at 2026-10-02 04:03:33.806
+Test Case 'LiveFreshnessTests.testBlankSuspendedAndMissingImageNeedNewPixelsToRecover' passed (0.003 seconds)
+Test Case 'LiveFreshnessTests.testMissingCallbackStatusCannotReuseTheRetainedFrame' started at 2026-10-02 04:03:33.810
+Test Case 'LiveFreshnessTests.testMissingCallbackStatusCannotReuseTheRetainedFrame' passed (0.001 seconds)
+Test Case 'LiveFreshnessTests.testMissingZeroAndInvalidFutureSourceTimeRefuseThenIdleCanConfirmPixels' started at 2026-10-02 04:03:33.811
+Test Case 'LiveFreshnessTests.testMissingZeroAndInvalidFutureSourceTimeRefuseThenIdleCanConfirmPixels' passed (0.002 seconds)
+Test Case 'LiveFreshnessTests.testRecentCallbackDoesNotMakeStaleSourcePixelsCurrent' started at 2026-10-02 04:03:33.813
+Test Case 'LiveFreshnessTests.testRecentCallbackDoesNotMakeStaleSourcePixelsCurrent' passed (0.001 seconds)
+Test Case 'LiveFreshnessTests.testStopGateRefusesBeforeEndingAndLaterCallbacksCannotRestoreIt' started at 2026-10-02 04:03:33.815
+Test Case 'LiveFreshnessTests.testStopGateRefusesBeforeEndingAndLaterCallbacksCannotRestoreIt' passed (0.001 seconds)
+Test Case 'LiveFreshnessTests.testFreshnessAloneCannotAuthorizeAMismatchedRetainedSequence' started at 2026-10-02 04:03:33.816
+Test Case 'LiveFreshnessTests.testFreshnessAloneCannotAuthorizeAMismatchedRetainedSequence' passed (0.001 seconds)
+Test Suite 'LiveFreshnessTests' passed at 2026-10-02 04:03:33.817
+	 Executed 8 tests, with 0 failures (0 unexpected) in 0.014 (0.014) seconds
+Test Suite 'bin.xctest' passed at 2026-10-02 04:03:33.817
+	 Executed 16 tests, with 0 failures (0 unexpected) in 0.335 (0.335) seconds
+Test Suite 'All tests' passed at 2026-10-02 04:03:33.817
+	 Executed 16 tests, with 0 failures (0 unexpected) in 0.335 (0.335) seconds
