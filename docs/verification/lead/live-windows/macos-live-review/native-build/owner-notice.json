@@ -1,0 +1,12 @@
+{
+  "ok": true,
+  "route_id": "route_8441b804c2a340168c6853cf975064c1",
+  "action": "instruction",
+  "accepted": true,
+  "mode": "async_route_v1",
+  "delivery_mode": "mailbox",
+  "message_id": "handoff_5aba66f888bcdb79068bc35328870df6",
+  "duplicate": false,
+  "state": "unread",
+  "execution_started": false
+}
