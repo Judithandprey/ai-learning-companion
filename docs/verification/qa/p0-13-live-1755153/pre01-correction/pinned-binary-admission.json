@@ -1,0 +1,23 @@
+{
+  "kind": "released-binary-admission-only",
+  "observed_at": "2026-10-02T11:56:46.784490+00:00",
+  "source_commit": "471461578cf81a45060bbb9587c7c1374f5643ba",
+  "source_only_copy": "/tmp/lc-qa-live-admission-egZ3Gl",
+  "source_copy_verification": "Inherited exact280-file copy; see preserved nonvoice-pass/binary-admission.json and lead55312b5 prerequisite audit. No new copy or account state was made.",
+  "launcher": "/home/agentsdock/.codex/packages/standalone/releases/0.158.0-x86_64-unknown-linux-musl/bin/codex",
+  "resolved_executable": "/home/agentsdock/.codex/packages/standalone/releases/0.158.0-x86_64-unknown-linux-musl/bin/codex",
+  "actual_sha256": "167c0148a849d2444f1b5a7fb5f8bb2de1de5ae13a2a504b833fc765980f5cd9",
+  "supported_version": "codex-cli 0.158.0",
+  "expected_linux_x86_64_sha256": "167c0148a849d2444f1b5a7fb5f8bb2de1de5ae13a2a504b833fc765980f5cd9",
+  "client_created": false,
+  "codex_executed": false,
+  "managed_state_or_credentials_read": false,
+  "account_lock_acquired": false,
+  "provider_requests": 0,
+  "identity": {
+    "executable": "/home/agentsdock/.codex/packages/standalone/releases/0.158.0-x86_64-unknown-linux-musl/bin/codex",
+    "version": "codex-cli 0.158.0",
+    "sha256": "167c0148a849d2444f1b5a7fb5f8bb2de1de5ae13a2a504b833fc765980f5cd9"
+  },
+  "admission": "accepted"
+}

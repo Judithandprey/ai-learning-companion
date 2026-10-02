@@ -1,0 +1,62 @@
+{
+  "kind": "offline-source-and-evidence-identity",
+  "node": "v24.21.0",
+  "node_syntax": [
+    {
+      "path": "tests/e2e/windows/qa_visible_candidate.mjs",
+      "exit": 0,
+      "sha256": "505ed53900060d1cd2c3c6394f2ca4b288cc0058ff6bbc4e4cd892e4c2a14e50"
+    },
+    {
+      "path": "tests/e2e/windows/qa_visible_drag.mjs",
+      "exit": 0,
+      "sha256": "ca134fbda6b1c89e4371795820e252d5381cfa4ae5245f71aceb8e89449843b1"
+    },
+    {
+      "path": "tests/e2e/windows/qa_prepare_visible.mjs",
+      "exit": 0,
+      "sha256": "844321b61b510b190ae4ee0d302b37a688e69fb99263d091873817fed182a80d"
+    },
+    {
+      "path": "tests/e2e/windows/test_qa_visible_pre01.mjs",
+      "exit": 0,
+      "sha256": "bf72ce03c97544eb26be295e69a62441734817a65d072b2bc8b23c7208c69d29"
+    }
+  ],
+  "candidate_payload_hashes_matched": 3,
+  "candidate_source_hashes_matched": 6,
+  "original_d91_indexed_files_unchanged": 19,
+  "original_d91_paths": [
+    "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/.gitattributes",
+    "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/README.md",
+    "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/binary-admission.json",
+    "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/context-refresh.json",
+    "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/display-preflight.json",
+    "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/execution-policy.json",
+    "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/real-attempts.json",
+    "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/stage-after.json",
+    "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/stage-before.json",
+    "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/visible-01/classification-and-release.json",
+    "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/visible-01/driver.mjs",
+    "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/visible-01/run.json",
+    "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/visible-01/runner.ps1",
+    "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/visible-01/runner.stderr.txt",
+    "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/visible-01/runner.stdout.txt",
+    "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/visible-01/steps.json",
+    "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/visible-01/surface.html",
+    "tests/e2e/windows/qa_binary_admission.py",
+    "tests/e2e/windows/qa_live_preflight.ps1"
+  ],
+  "assigned_helper_revisions": [
+    {
+      "path": "tests/e2e/windows/qa_visible_drag.mjs",
+      "reason": "Explicitly assigned PRE-01 helper correction",
+      "original_exact_bytes_preserved_at": "d91a326455c01847df8b6b2230fa715bd9ea1318",
+      "original_sha256": "045211e3068a808b98bb88e385bfa66380512edf9b6c4943e114e363a76fa6e1"
+    }
+  ],
+  "original_d91_index_modified": false,
+  "all_passed": true,
+  "native_payload_executed": false,
+  "provider_requests": 0
+}

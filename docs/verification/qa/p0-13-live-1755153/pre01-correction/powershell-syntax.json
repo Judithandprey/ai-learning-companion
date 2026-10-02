@@ -1,0 +1,27 @@
+{
+  "kind": "PowerShell-5.1-parser-only",
+  "operation": "Parser.ParseInput on source text supplied on stdin; no Add-Type, dot-sourcing, helpers or payload execution",
+  "results": [
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-correction/candidate/runner.ps1",
+      "host_exit": 0,
+      "parser": {
+        "ok": true,
+        "errors": [],
+        "payload_executed": false
+      }
+    },
+    {
+      "path": "tests/e2e/windows/qa_display_admission.ps1",
+      "host_exit": 0,
+      "parser": {
+        "ok": true,
+        "errors": [],
+        "payload_executed": false
+      }
+    }
+  ],
+  "native_payload_executed": false,
+  "display_capture_input_browser_product_account_audio_access": false,
+  "provider_requests": 0
+}

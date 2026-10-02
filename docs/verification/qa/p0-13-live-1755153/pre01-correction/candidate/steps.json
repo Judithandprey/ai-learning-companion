@@ -1,0 +1,496 @@
+[
+  {
+    "edgeStart": "file:///C:/Users/ROG/AppData/Local/Temp/lc-qa-visible-pre01-6eada7a925a94308895331ed6cf7465a/surface.html",
+    "profile": "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-visible-pre01-6eada7a925a94308895331ed6cf7465a\\edge-profile",
+    "as": "edge",
+    "fullscreen": true
+  },
+  {
+    "window": "edge",
+    "show": "raise"
+  },
+  {
+    "edgeFullscreen": true
+  },
+  {
+    "target": "edge",
+    "eval": "(() => { const t = JSON.parse(window.__qaSurfaceTruth()); if (!t.fits || !t.full_screen || t.viewport.dpr !== 2 || t.viewport.screen[0] !== 1280 || t.viewport.screen[1] !== 800) throw Error('generated surface geometry unavailable'); return JSON.stringify(t); })()",
+    "as": "surface_before"
+  },
+  {
+    "onTop": "edge",
+    "points": [
+      [
+        270,
+        330
+      ],
+      [
+        690,
+        330
+      ],
+      [
+        1110,
+        330
+      ],
+      [
+        1530,
+        330
+      ],
+      [
+        270,
+        670
+      ],
+      [
+        690,
+        670
+      ],
+      [
+        1110,
+        670
+      ],
+      [
+        1530,
+        670
+      ],
+      [
+        270,
+        1010
+      ],
+      [
+        690,
+        1010
+      ],
+      [
+        1110,
+        1010
+      ],
+      [
+        1530,
+        1010
+      ],
+      [
+        20,
+        20
+      ],
+      [
+        2540,
+        20
+      ],
+      [
+        20,
+        1580
+      ],
+      [
+        2540,
+        1580
+      ]
+    ]
+  },
+  {
+    "launchApp": true,
+    "as": "app"
+  },
+  {
+    "target": "control",
+    "waitEval": "document.querySelectorAll(\"#displays li[role=option]\").length === 1",
+    "timeoutMs": 15000
+  },
+  {
+    "target": "control",
+    "eval": "(async () => { const s = await lc.sessionState(), a = await lc.subState(), l = await lc.linkState(); if (a.mode !== 'off' || l.mode !== 'off' || s.running && !['none','off'].includes(s.live.state)) throw Error('AI or development connector unexpectedly enabled'); return JSON.stringify({session:s,subscription:a.mode,link:l.mode}); })()",
+    "as": "before_capture"
+  },
+  {
+    "window": "edge",
+    "show": "raise"
+  },
+  {
+    "target": "edge",
+    "eval": "(() => { const t = JSON.parse(window.__qaSurfaceTruth()); if (!t.fits || !t.full_screen || t.viewport.dpr !== 2 || t.viewport.screen[0] !== 1280 || t.viewport.screen[1] !== 800) throw Error('generated surface geometry unavailable'); return JSON.stringify(t); })()",
+    "as": "surface_at_start"
+  },
+  {
+    "onTop": "edge",
+    "points": [
+      [
+        270,
+        330
+      ],
+      [
+        690,
+        330
+      ],
+      [
+        1110,
+        330
+      ],
+      [
+        1530,
+        330
+      ],
+      [
+        270,
+        670
+      ],
+      [
+        690,
+        670
+      ],
+      [
+        1110,
+        670
+      ],
+      [
+        1530,
+        670
+      ],
+      [
+        270,
+        1010
+      ],
+      [
+        690,
+        1010
+      ],
+      [
+        1110,
+        1010
+      ],
+      [
+        1530,
+        1010
+      ],
+      [
+        20,
+        20
+      ],
+      [
+        2540,
+        20
+      ],
+      [
+        20,
+        1580
+      ],
+      [
+        2540,
+        1580
+      ]
+    ]
+  },
+  {
+    "captureStart": "(() => { const items = document.querySelectorAll('#displays li[role=option]'); if (items.length !== 1) throw Error('display selection is ambiguous'); items[0].click(); const box = document.getElementById('aiOn'); box.checked = false; if (document.getElementById('start').disabled) throw Error('capture Start unavailable'); document.getElementById('start').click(); return true; })()",
+    "as": "capture_start"
+  },
+  {
+    "target": "control",
+    "waitEval": "(async () => { const s = await lc.sessionState(); return s.running && !s.starting; })()",
+    "timeoutMs": 15000
+  },
+  {
+    "target": "overlay",
+    "waitEval": "typeof __lcOverlay !== \"undefined\" && __lcOverlay.state().frame !== null",
+    "timeoutMs": 15000
+  },
+  {
+    "target": "control",
+    "eval": "(async () => { const s = await lc.sessionState(), a = await lc.subState(), l = await lc.linkState(); if (a.mode !== 'off' || l.mode !== 'off' || s.running && !['none','off'].includes(s.live.state)) throw Error('AI or development connector unexpectedly enabled'); return JSON.stringify({session:s,subscription:a.mode,link:l.mode}); })()",
+    "as": "capture_only"
+  },
+  {
+    "target": "overlay",
+    "eval": "(() => {\n  window.__qaDragEvents = [];\n  for (const type of ['pointerdown','pointermove','pointerup','pointercancel','gotpointercapture','lostpointercapture']) document.addEventListener(type, e => {\n    if (__qaDragEvents.length < 1000) __qaDragEvents.push({type,target:e.target.id,pointerId:e.pointerId,x:e.clientX,y:e.clientY,at:performance.now()});\n  }, true);\n  window.__qaDragRead = async id => {\n    const h = document.getElementById(id), surface = document.getElementById(id === 'toolbarHandle' ? 'toolbar' : 'card');\n    const r = h.getBoundingClientRect(), p = surface.getBoundingClientRect(), top = document.elementFromPoint(r.x+r.width/2,r.y+r.height/2);\n    const rect = r => ({x:r.x,y:r.y,width:r.width,height:r.height});\n    const st = __lcOverlay.state(), src = document.getElementById('crop').src;\n    const hash = [...new Uint8Array(await crypto.subtle.digest('SHA-256',new TextEncoder().encode(src)))].map(x=>x.toString(16).padStart(2,'0')).join('');\n    return JSON.stringify({handle:rect(r),surface:rect(p),uncovered:top===h||h.contains(top),dpr:devicePixelRatio,doc:st.doc,pinned:st.pinned,mode:st.mode,crop_source_sha256:hash,events:__qaDragEvents.slice()});\n  };\n  return true;\n})()",
+    "as": "drag_hook"
+  },
+  {
+    "dragHandle": "toolbarHandle"
+  },
+  {
+    "target": "overlay",
+    "eval": "document.querySelector('[data-mode=ASK]').click(), true"
+  },
+  {
+    "stroke": [
+      [
+        225,
+        165
+      ],
+      [
+        223.8919506535624,
+        175.168240227615
+      ],
+      [
+        220.59508646656383,
+        185.08610463437157
+      ],
+      [
+        215.1905871769531,
+        194.50938248307054
+      ],
+      [
+        207.81152949374527,
+        203.20604139901076
+      ],
+      [
+        198.63961030678928,
+        210.9619407771256
+      ],
+      [
+        187.90067270632258,
+        217.5861046343716
+      ],
+      [
+        175.8591449765592,
+        222.91542407224392
+      ],
+      [
+        162.81152949374527,
+        226.818673559185
+      ],
+      [
+        149.07910185362078,
+        229.19974213868397
+      ],
+      [
+        135,
+        230
+      ],
+      [
+        120.92089814637924,
+        229.19974213868397
+      ],
+      [
+        107.18847050625473,
+        226.818673559185
+      ],
+      [
+        94.14085502344079,
+        222.91542407224392
+      ],
+      [
+        82.09932729367742,
+        217.5861046343716
+      ],
+      [
+        71.36038969321072,
+        210.9619407771256
+      ],
+      [
+        62.188470506254745,
+        203.20604139901076
+      ],
+      [
+        54.8094128230469,
+        194.50938248307054
+      ],
+      [
+        49.404913533436186,
+        185.0861046343716
+      ],
+      [
+        46.10804934643761,
+        175.168240227615
+      ],
+      [
+        45,
+        165
+      ],
+      [
+        46.108049346437596,
+        154.831759772385
+      ],
+      [
+        49.40491353343616,
+        144.91389536562846
+      ],
+      [
+        54.809412823046884,
+        135.49061751692946
+      ],
+      [
+        62.18847050625473,
+        126.79395860098926
+      ],
+      [
+        71.3603896932107,
+        119.03805922287441
+      ],
+      [
+        82.0993272936774,
+        112.41389536562842
+      ],
+      [
+        94.14085502344078,
+        107.08457592775609
+      ],
+      [
+        107.18847050625472,
+        103.18132644081501
+      ],
+      [
+        120.9208981463792,
+        100.80025786131606
+      ],
+      [
+        134.99999999999997,
+        100
+      ],
+      [
+        149.07910185362076,
+        100.80025786131604
+      ],
+      [
+        162.81152949374524,
+        103.18132644081501
+      ],
+      [
+        175.8591449765592,
+        107.08457592775608
+      ],
+      [
+        187.90067270632255,
+        112.4138953656284
+      ],
+      [
+        198.63961030678925,
+        119.03805922287441
+      ],
+      [
+        207.81152949374524,
+        126.79395860098923
+      ],
+      [
+        215.1905871769531,
+        135.49061751692943
+      ],
+      [
+        220.59508646656383,
+        144.9138953656284
+      ],
+      [
+        223.8919506535624,
+        154.83175977238497
+      ],
+      [
+        225,
+        164.99999999999997
+      ]
+    ],
+    "pointerType": "pen"
+  },
+  {
+    "target": "overlay",
+    "waitEval": "!document.getElementById(\"card\").hidden",
+    "timeoutMs": 10000
+  },
+  {
+    "dragHandle": "cardHandle"
+  },
+  {
+    "target": "control",
+    "eval": "(async () => { const s = await lc.sessionState(), a = await lc.subState(), l = await lc.linkState(); if (a.mode !== 'off' || l.mode !== 'off' || s.running && !['none','off'].includes(s.live.state)) throw Error('AI or development connector unexpectedly enabled'); return JSON.stringify({session:s,subscription:a.mode,link:l.mode}); })()",
+    "as": "after_drags"
+  },
+  {
+    "target": "overlay",
+    "eval": "document.getElementById('close').click(); document.querySelector('[data-mode=NAV]').click(); true"
+  },
+  {
+    "window": "edge",
+    "show": "raise"
+  },
+  {
+    "target": "edge",
+    "eval": "(() => { const t = JSON.parse(window.__qaSurfaceTruth()); if (!t.fits || !t.full_screen || t.viewport.dpr !== 2 || t.viewport.screen[0] !== 1280 || t.viewport.screen[1] !== 800) throw Error('generated surface geometry unavailable'); return JSON.stringify(t); })()",
+    "as": "surface_after"
+  },
+  {
+    "onTop": "edge",
+    "points": [
+      [
+        270,
+        330
+      ],
+      [
+        690,
+        330
+      ],
+      [
+        1110,
+        330
+      ],
+      [
+        1530,
+        330
+      ],
+      [
+        270,
+        670
+      ],
+      [
+        690,
+        670
+      ],
+      [
+        1110,
+        670
+      ],
+      [
+        1530,
+        670
+      ],
+      [
+        270,
+        1010
+      ],
+      [
+        690,
+        1010
+      ],
+      [
+        1110,
+        1010
+      ],
+      [
+        1530,
+        1010
+      ],
+      [
+        20,
+        20
+      ],
+      [
+        2540,
+        20
+      ],
+      [
+        20,
+        1580
+      ],
+      [
+        2540,
+        1580
+      ]
+    ]
+  },
+  {
+    "target": "control",
+    "eval": "document.getElementById('stop').click(), true",
+    "as": "stop_pressed"
+  },
+  {
+    "target": "control",
+    "waitEval": "(async () => !(await lc.sessionState()).running)()",
+    "timeoutMs": 12000
+  },
+  {
+    "closeApp": true,
+    "via": "wm_close",
+    "waitMs": 3000,
+    "required": false
+  },
+  {
+    "edgeClose": true,
+    "required": false
+  }
+]

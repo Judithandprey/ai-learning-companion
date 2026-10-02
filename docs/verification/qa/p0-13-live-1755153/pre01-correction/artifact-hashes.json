@@ -1,0 +1,50 @@
+{
+  "algorithm": "SHA256 of exact bytes; excludes this index",
+  "files": [
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-correction/README.md",
+      "bytes": 8484,
+      "sha256": "4df3403c2146887a52ef341f12da31a7de75a75015092290e074fc9a1c4ff76a"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-correction/candidate/candidate.json",
+      "bytes": 5442,
+      "sha256": "6c8aaabd93308ca46a83bc59f6a7685d6bcf7e39168cf1684b21c37ce29e9373"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-correction/candidate/runner.ps1",
+      "bytes": 71118,
+      "sha256": "0f6d0b28b7a7bf92adf437dc4d679ea3e53daea73e56c450a5cf34bd7b1f10ec"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-correction/candidate/steps.json",
+      "bytes": 10872,
+      "sha256": "68f86fe275d5a1efaeb8e531848444e166e9aad11dfb7897987d5a94ca84fdae"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-correction/candidate/surface.html",
+      "bytes": 6526,
+      "sha256": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-correction/offline-controls.json",
+      "bytes": 2627,
+      "sha256": "2324ca1258aefc8f0ecf8796c8d9022b65ea228ff716d4b1769e9ba1b142e6f9"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-correction/pinned-binary-admission.json",
+      "bytes": 1324,
+      "sha256": "813ea848d7232963db5487f268f08a2440f437ba9f758011a8bf0df44f4180cf"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-correction/powershell-syntax.json",
+      "bytes": 750,
+      "sha256": "8d3382975861a4b0c8cd181e1e5982ff03aeda9a19d1e1ebe8df30fc3ad68fc6"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-correction/source-and-preservation.json",
+      "bytes": 2923,
+      "sha256": "f02b112fe379837e4ffd3503ec5cfe976a11d6282d181c6174e2fac00c51f053"
+    }
+  ]
+}
