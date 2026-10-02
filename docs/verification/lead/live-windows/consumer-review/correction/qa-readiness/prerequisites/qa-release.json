@@ -1,0 +1,47 @@
+{
+  "classification": "BLOCKED_SETUP_BEFORE_WINDOWS_APP_OR_TEST_BROWSER",
+  "reason": "PowerShell file execution refused by current OS execution policy",
+  "error_id": "UnauthorizedAccess",
+  "native_parse": {
+    "errors": [],
+    "ok": true
+  },
+  "driver_sha256": "5087c64e931ad6d751eaeb879fd2c684df3ff1b7c2cb07b0bf4990ba5d07a99c",
+  "adapted_runner_sha256": "473b7997c20b6f92f44c4748dc86a2b46136320fbf3e32d0e8460639efcd4006",
+  "app_launched": false,
+  "test_browser_launched": false,
+  "capture_started": false,
+  "cdp_or_os_drag_executed": false,
+  "display_pixel_evidence_saved": false,
+  "provider_attempts": 0,
+  "account_lock_acquired": false,
+  "resources_acquired": [],
+  "release": "QA is off the assigned display/account; no own windows/children left, no account lock held",
+  "cleanup": {
+    "electron": {
+      "exit": "confirmed",
+      "owned_seen": [],
+      "signals": [],
+      "left_running": [],
+      "unresolved": [],
+      "not_revalidated": [],
+      "not_owned_on_the_port": [],
+      "foreign_processes_untouched": []
+    },
+    "edge": {
+      "exit": "confirmed",
+      "owned_seen": [],
+      "signals": [],
+      "left_running": [],
+      "unresolved": [],
+      "not_revalidated": [],
+      "not_owned_on_the_port": [],
+      "foreign_processes_untouched": [
+        23092
+      ]
+    }
+  },
+  "scratch_preserved": "/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-visible-drag-4abc3b21defe455b8a42a2751a9a77e0",
+  "original_evidence_preserved": true,
+  "stderr_limitation": "PowerShell stderr was decoded as UTF-8 by the original wrapper; Chinese OEM bytes contain replacement characters. ASCII SecurityError/UnauthorizedAccess fields remain. This is not original raw native stderr bytes."
+}

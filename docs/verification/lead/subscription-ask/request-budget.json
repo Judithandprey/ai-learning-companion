@@ -19,7 +19,7 @@
   "allocation_retired_reason": "QA actual handoff_ec31e85d736c7661fbb4022aa0d2cb52 confirms 0 of 1 used. This selected-image allocation is not additive to the next changed-flow allocation.",
   "live_changed_flow_allocation": {
     "allocation_id": "handoff_fd794043a20068a1b52853cbb6ff884e",
-    "status": "released_to_qa_with_prerequisites",
+    "status": "blocked_prerequisites_qa_released_unused",
     "candidate_commit": "24c48c38aee660b606ebff5285acbd2ccb300392",
     "maximum_potential_submissions": 5,
     "purpose_slots": [
@@ -30,7 +30,7 @@
       "Stop/fence attempt"
     ],
     "authority": "Existing later Windows live-experience directive permits bounded real verification through the same subscription. Five is this phase engineering ceiling, not a user spending budget or account entitlement.",
-    "exclusive_lease_active": true,
+    "exclusive_lease_active": false,
     "actual_attempts": [],
     "attempt_rule": "Every real test action assigned a slot counts, including proven not_submitted and unknown. No automatic retry or reallocation of unavailable voice slots. Stop on auth/quota/capability/tool failure.",
     "release_requirements": [
@@ -49,7 +49,7 @@
       "account/model/billing change",
       "automatic restart or retry"
     ],
-    "next_owner": "QA: existing same-task conditional pass actually delivered. Verify exact build and safe display/account prerequisites; at most four all-counted nonvoice attempts. Lead/others stay off those resources until explicit scoped release. No actual attempt yet reported.",
+    "next_owner": "QA corrects the pre-launch display guard offline and prepares the exact driver for permission review; Lead coordinates permitted execution and a fresh conditional resource release. Existing reviewed0.158 binary still passes unchanged admission. No retry or live lease now.",
     "production_source_commit": "175515308f509fb8c0f531dbdb10e57313fcde5a",
     "stage_name": "lc-windows-live-1755153",
     "stage_tree_sha256": "3387824a0dee70013104388d4acec2b810475e98953e7c3f196063a8781fd154",
@@ -63,7 +63,7 @@
     ],
     "spoken_slot_status": "not_released_not_reassignable",
     "lease_owner": "QA sess_104c8bc82d94481a",
-    "lease_state": "exclusively_assigned_actual_acquisition_unobserved",
+    "lease_state": "released_unused_actual_qa_receipt",
     "coordination_not_os_lock": true,
     "qa_readiness_commit": "85edcacde1d55ef3a382b7fc4c78bc574328e020",
     "qa_readiness_integrated_as": "0fd810e",
@@ -76,6 +76,11 @@
     "review": "docs/verification/lead/live-windows/consumer-review/correction/qa-readiness/README.md",
     "release_message_id": "handoff_1f988a3723e6232b44c29d5cfc9d2c4c",
     "release_baseline": "471461578cf81a45060bbb9587c7c1374f5643ba",
-    "actual_acquisition_observed": false
+    "actual_acquisition_observed": false,
+    "prerequisite_delivery_commit": "d91a326455c01847df8b6b2230fa715bd9ea1318",
+    "prerequisite_delivery_message": "handoff_37659c18217cb9a3e3ba8ca6d642b069",
+    "actual_release_message": "handoff_37659c18217cb9a3e3ba8ca6d642b069",
+    "prerequisite_review": "docs/verification/lead/live-windows/consumer-review/correction/qa-readiness/prerequisites/README.md",
+    "attempts_used": 0
   }
 }

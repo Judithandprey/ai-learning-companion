@@ -1,0 +1,48 @@
+{
+  "commit": "d91a326455c01847df8b6b2230fa715bd9ea1318",
+  "decision": "hold unchanged helper integration; prerequisite evidence is consistent and hash-valid",
+  "findings": [
+    {
+      "id": "QA-PREREQ-01",
+      "severity": "P1 before future execution",
+      "path": "tests/e2e/windows/qa_visible_drag.mjs",
+      "line": 144,
+      "issue": "Electron launches before native all-display metadata admission; startup thumbnails every display before subsequent one-display assertion",
+      "counterexample": "Expected 1280x800 DPR2 generated fullscreen Edge on primary display, private second display: Edge truth and sampled onTop checks pass; launch at line144 requests all screen thumbnails; count check at145 only then aborts.",
+      "source_proof": [
+        "tests/e2e/windows/qa_visible_drag.mjs:51",
+        "tests/e2e/windows/qa_visible_drag.mjs:122-125",
+        "tests/e2e/windows/qa_visible_drag.mjs:143-148",
+        "1755153:apps/windows/src/renderer/control.ts:101-111",
+        "1755153:apps/windows/src/main/main.ts:150-151"
+      ],
+      "minimal_correction": "QA owner adds fail-closed native display count and expected-geometry metadata admission before first Electron launch, rechecks immediately before capture, retains later app checks and coordinated exclusive display ownership. No production or policy bypass needed.",
+      "recorded_run_effect": "none; native -File refusal happened before any app, browser, input, or capture"
+    }
+  ],
+  "evidence_conclusion": {
+    "hash_index": "20/20 exact committed bytes and lengths match",
+    "requirements": "8/8 recorded source/English and manifest hashes match; relevant policy files unchanged from85edcac to4714615",
+    "source_copy": "280/280 current scratch source files match4714615; zero extra files; directory mode0700 independently observed",
+    "stage": "70/70 current payload files match committed manifest; manifest hash and tree digest match; before/after receipts identical",
+    "limits": "Read-only current filesystem observations corroborate stored claims; git hashes alone do not prove directory mode or historical native execution. Native parse/cleanup/process-state receipts were reviewed, not independently replayed.",
+    "status": "BLOCKED_SETUP / real actions0 of4; all4 actual slots NOT_RUN; spoken slot unused; account status/model/quota NOT_READ; no real acceptance claimed"
+  },
+  "helper_scope": {
+    "binary_admission": "Reads executable bytes and released _binary_identity only; released create_client checks binary before state prep/lock/client creation",
+    "preflight": "Native metadata only; capture_admission=not_assessed; no title/commandline/pixel collection",
+    "visible_drag": "Active diagnostic, not read-only: generated local Edge, own Electron, capture-only Start, synthetic CDP/guarded Win32 inputs, identity-revalidated cleanup. AI connector env cleared and mode/off checks present; no execution-policy override.",
+    "validation": "Python AST parsed without execution; no Windows/provider/Codex/account/capture script executed"
+  },
+  "plan_integration": {
+    "threeway_conflicts": 3,
+    "base": "f9e6ededa59ccb58beb9a3ab3cc8b36ece3b509f",
+    "main_at_review": "ee1fc22b040de730d80be107db66b9a40776a8fd",
+    "note": "Candidate preserves newer all-counted rule and retired selected-image allocation. Current main first sections still describe the old selected-image slot as HELD; ordinary cherry-pick does not transfer untouched retirement text inherited in QA parent. Resolve three overlapping continuation/budget hunks and preserve candidate retirement notices in initial Status/Budget and section5 plus main ledger. Do not overwrite the ledger or assign voice slot.",
+    "preview": "/tmp/lc-qa-prereq-review-d91a326/plan-threeway-result.md"
+  },
+  "later_parent_observation": "Lead independently found unchanged gate accepts existing installed0.158 explicit absolute path. This later fact can resolve launch configuration separately; it does not invalidate QA default-symlink0.160 rejection or authorize rerun.",
+  "repository_writes_by_reviewer": [],
+  "audit_path": "/tmp/lc-qa-prereq-review-d91a326/hash-audit.json",
+  "helper_review_path": "/tmp/lc-qa-prereq-review-d91a326/helper-source-review.md"
+}

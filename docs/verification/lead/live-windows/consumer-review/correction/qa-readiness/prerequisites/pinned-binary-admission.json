@@ -1,0 +1,18 @@
+{
+  "kind": "read-only-admission-of-existing-reviewed-binary",
+  "observed_at": "2026-10-02T11:32:02.647304+00:00",
+  "main_commit": "ee1fc22b040de730d80be107db66b9a40776a8fd",
+  "identity": {
+    "executable": "/home/agentsdock/.codex/packages/standalone/releases/0.158.0-x86_64-unknown-linux-musl/bin/codex",
+    "version": "codex-cli 0.158.0",
+    "sha256": "167c0148a849d2444f1b5a7fb5f8bb2de1de5ae13a2a504b833fc765980f5cd9"
+  },
+  "gate": "services.worker.connectors.chatgpt_launch._binary_identity (unchanged)",
+  "codex_executed": false,
+  "client_created": false,
+  "managed_state_or_credentials_read": false,
+  "account_lock_acquired": false,
+  "provider_requests": 0,
+  "launcher_symlink_changed": false,
+  "next_config": "Existing trusted product config codex_bin can name this exact versioned path; recheck its digest before next use. This does not admit0.160 or prove current managed login/inference."
+}

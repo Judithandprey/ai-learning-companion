@@ -1,0 +1,2068 @@
+{
+  "commit": "d91a326455c01847df8b6b2230fa715bd9ea1318",
+  "review_main_head": "ee1fc22b040de730d80be107db66b9a40776a8fd",
+  "authority": "exact git object bytes, plus explicitly separated current filesystem observations; no candidate scripts executed",
+  "artifact_index": {
+    "file_count": 20,
+    "all_match": true,
+    "rows": [
+      {
+        "path": "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/.gitattributes",
+        "bytes": 162,
+        "sha256": "9e0bda1ab01a092b7676db020900cc4d13c497c0698a174d045a197347b81192",
+        "actual_bytes": 162,
+        "actual_sha256": "9e0bda1ab01a092b7676db020900cc4d13c497c0698a174d045a197347b81192",
+        "bytes_match": true,
+        "sha256_matches": true,
+        "git_tree_entry": "100644 blob 5b9f8cced24be3caed001bc6db6c3bfeeef3e9ab\tdocs/verification/qa/p0-13-live-1755153/nonvoice-pass/.gitattributes",
+        "main_workspace_present": false
+      },
+      {
+        "path": "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/README.md",
+        "bytes": 7932,
+        "sha256": "8ca616039120519dbfeed11060412bc47c29ddd27ab8216cc4c997932bffb5dd",
+        "actual_bytes": 7932,
+        "actual_sha256": "8ca616039120519dbfeed11060412bc47c29ddd27ab8216cc4c997932bffb5dd",
+        "bytes_match": true,
+        "sha256_matches": true,
+        "git_tree_entry": "100644 blob 6f740f2658e096797074086f8098e3cdd500c29d\tdocs/verification/qa/p0-13-live-1755153/nonvoice-pass/README.md",
+        "main_workspace_present": false
+      },
+      {
+        "path": "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/binary-admission.json",
+        "bytes": 1017,
+        "sha256": "1ff5043120b17a5e7bb6fb7fe316fb4eceddad74807cc02d084f4097b6304596",
+        "actual_bytes": 1017,
+        "actual_sha256": "1ff5043120b17a5e7bb6fb7fe316fb4eceddad74807cc02d084f4097b6304596",
+        "bytes_match": true,
+        "sha256_matches": true,
+        "git_tree_entry": "100644 blob 2dad1e29664b9db0c9597250b63c864f78a44ffa\tdocs/verification/qa/p0-13-live-1755153/nonvoice-pass/binary-admission.json",
+        "main_workspace_present": false
+      },
+      {
+        "path": "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/context-refresh.json",
+        "bytes": 1906,
+        "sha256": "06fa5b163c330a3902100df1e34e803581a9c821302680422164175998c1130f",
+        "actual_bytes": 1906,
+        "actual_sha256": "06fa5b163c330a3902100df1e34e803581a9c821302680422164175998c1130f",
+        "bytes_match": true,
+        "sha256_matches": true,
+        "git_tree_entry": "100644 blob ca19ec46b5fa3d92d4de8190c3bcf938f40bb675\tdocs/verification/qa/p0-13-live-1755153/nonvoice-pass/context-refresh.json",
+        "main_workspace_present": false
+      },
+      {
+        "path": "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/display-preflight.json",
+        "bytes": 1299,
+        "sha256": "49766a172684d9c0e02931628f255ee5ec4ebe9e9eed67942ac16b291027c600",
+        "actual_bytes": 1299,
+        "actual_sha256": "49766a172684d9c0e02931628f255ee5ec4ebe9e9eed67942ac16b291027c600",
+        "bytes_match": true,
+        "sha256_matches": true,
+        "git_tree_entry": "100644 blob 41f8238bd2917ffaa8d94c8d1e241f2645f60ee5\tdocs/verification/qa/p0-13-live-1755153/nonvoice-pass/display-preflight.json",
+        "main_workspace_present": false
+      },
+      {
+        "path": "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/execution-policy.json",
+        "bytes": 424,
+        "sha256": "c823edc0c45552f703e7b5de7cd1bd2c1f45e50cb9fe387848b41cf1e9bcc1cf",
+        "actual_bytes": 424,
+        "actual_sha256": "c823edc0c45552f703e7b5de7cd1bd2c1f45e50cb9fe387848b41cf1e9bcc1cf",
+        "bytes_match": true,
+        "sha256_matches": true,
+        "git_tree_entry": "100644 blob cd677ce495e17e82b6fb2c75cacf758d9f6a6bb6\tdocs/verification/qa/p0-13-live-1755153/nonvoice-pass/execution-policy.json",
+        "main_workspace_present": false
+      },
+      {
+        "path": "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/real-attempts.json",
+        "bytes": 2029,
+        "sha256": "d045b4c2a67cbddf8814430e59248fec5dc5158a5c87c33f56c53f26cb59a184",
+        "actual_bytes": 2029,
+        "actual_sha256": "d045b4c2a67cbddf8814430e59248fec5dc5158a5c87c33f56c53f26cb59a184",
+        "bytes_match": true,
+        "sha256_matches": true,
+        "git_tree_entry": "100644 blob 42885d49d176adf1b3b7b353ad50325431be66e7\tdocs/verification/qa/p0-13-live-1755153/nonvoice-pass/real-attempts.json",
+        "main_workspace_present": false
+      },
+      {
+        "path": "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/stage-after.json",
+        "bytes": 2517,
+        "sha256": "8228de69ab11a269ff22d81cc232e94467efc71b8f83f3e374042ece00e91c01",
+        "actual_bytes": 2517,
+        "actual_sha256": "8228de69ab11a269ff22d81cc232e94467efc71b8f83f3e374042ece00e91c01",
+        "bytes_match": true,
+        "sha256_matches": true,
+        "git_tree_entry": "100644 blob 1e9ead5d220dd9b2a05db3b4b681f40bedd0cbbd\tdocs/verification/qa/p0-13-live-1755153/nonvoice-pass/stage-after.json",
+        "main_workspace_present": false
+      },
+      {
+        "path": "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/stage-before.json",
+        "bytes": 2517,
+        "sha256": "8228de69ab11a269ff22d81cc232e94467efc71b8f83f3e374042ece00e91c01",
+        "actual_bytes": 2517,
+        "actual_sha256": "8228de69ab11a269ff22d81cc232e94467efc71b8f83f3e374042ece00e91c01",
+        "bytes_match": true,
+        "sha256_matches": true,
+        "git_tree_entry": "100644 blob 1e9ead5d220dd9b2a05db3b4b681f40bedd0cbbd\tdocs/verification/qa/p0-13-live-1755153/nonvoice-pass/stage-before.json",
+        "main_workspace_present": false
+      },
+      {
+        "path": "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/visible-01/classification-and-release.json",
+        "bytes": 1721,
+        "sha256": "791167d8ce9a8959c5f8a170d7807b2b529e82ae9c212c2e47fbf58adcf67be0",
+        "actual_bytes": 1721,
+        "actual_sha256": "791167d8ce9a8959c5f8a170d7807b2b529e82ae9c212c2e47fbf58adcf67be0",
+        "bytes_match": true,
+        "sha256_matches": true,
+        "git_tree_entry": "100644 blob 4945268253ed01ff8b1b55398a197fbc54e16003\tdocs/verification/qa/p0-13-live-1755153/nonvoice-pass/visible-01/classification-and-release.json",
+        "main_workspace_present": false
+      },
+      {
+        "path": "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/visible-01/driver.mjs",
+        "bytes": 21075,
+        "sha256": "5087c64e931ad6d751eaeb879fd2c684df3ff1b7c2cb07b0bf4990ba5d07a99c",
+        "actual_bytes": 21075,
+        "actual_sha256": "5087c64e931ad6d751eaeb879fd2c684df3ff1b7c2cb07b0bf4990ba5d07a99c",
+        "bytes_match": true,
+        "sha256_matches": true,
+        "git_tree_entry": "100644 blob bb1712696658e99712947571b65d0344eb3b9d3c\tdocs/verification/qa/p0-13-live-1755153/nonvoice-pass/visible-01/driver.mjs",
+        "main_workspace_present": false
+      },
+      {
+        "path": "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/visible-01/run.json",
+        "bytes": 4874,
+        "sha256": "19e3da7f3a534f907fed422d4a85ab2b1b9f75c8dc86cea4504d8de433162f82",
+        "actual_bytes": 4874,
+        "actual_sha256": "19e3da7f3a534f907fed422d4a85ab2b1b9f75c8dc86cea4504d8de433162f82",
+        "bytes_match": true,
+        "sha256_matches": true,
+        "git_tree_entry": "100644 blob 154426ea8e2fe523d9c4b7b9f94cbe39c95328cf\tdocs/verification/qa/p0-13-live-1755153/nonvoice-pass/visible-01/run.json",
+        "main_workspace_present": false
+      },
+      {
+        "path": "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/visible-01/runner.ps1",
+        "bytes": 57703,
+        "sha256": "473b7997c20b6f92f44c4748dc86a2b46136320fbf3e32d0e8460639efcd4006",
+        "actual_bytes": 57703,
+        "actual_sha256": "473b7997c20b6f92f44c4748dc86a2b46136320fbf3e32d0e8460639efcd4006",
+        "bytes_match": true,
+        "sha256_matches": true,
+        "git_tree_entry": "100644 blob bde1c9b93e94f74b91a6408a72c37774cb576432\tdocs/verification/qa/p0-13-live-1755153/nonvoice-pass/visible-01/runner.ps1",
+        "main_workspace_present": false
+      },
+      {
+        "path": "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/visible-01/runner.stderr.txt",
+        "bytes": 459,
+        "sha256": "ae51dc430ecacb76ba16157fb2569e4b755ecb191d655bea69fa992e1fc4b5b8",
+        "actual_bytes": 459,
+        "actual_sha256": "ae51dc430ecacb76ba16157fb2569e4b755ecb191d655bea69fa992e1fc4b5b8",
+        "bytes_match": true,
+        "sha256_matches": true,
+        "git_tree_entry": "100644 blob 6bb5597906ef5267520f56985c8ad66e845c307d\tdocs/verification/qa/p0-13-live-1755153/nonvoice-pass/visible-01/runner.stderr.txt",
+        "main_workspace_present": false
+      },
+      {
+        "path": "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/visible-01/runner.stdout.txt",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "actual_bytes": 0,
+        "actual_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "bytes_match": true,
+        "sha256_matches": true,
+        "git_tree_entry": "100644 blob e69de29bb2d1d6434b8b29ae775ad8c2e48c5391\tdocs/verification/qa/p0-13-live-1755153/nonvoice-pass/visible-01/runner.stdout.txt",
+        "main_workspace_present": false
+      },
+      {
+        "path": "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/visible-01/steps.json",
+        "bytes": 11088,
+        "sha256": "21b092c11e200ed660d12a82a70ab212db9b726bc8a349fd98d4d22e1b344b9f",
+        "actual_bytes": 11088,
+        "actual_sha256": "21b092c11e200ed660d12a82a70ab212db9b726bc8a349fd98d4d22e1b344b9f",
+        "bytes_match": true,
+        "sha256_matches": true,
+        "git_tree_entry": "100644 blob 373e7770f8a215a95ec486a8f80c9f31f8a59edb\tdocs/verification/qa/p0-13-live-1755153/nonvoice-pass/visible-01/steps.json",
+        "main_workspace_present": false
+      },
+      {
+        "path": "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/visible-01/surface.html",
+        "bytes": 6526,
+        "sha256": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2",
+        "actual_bytes": 6526,
+        "actual_sha256": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2",
+        "bytes_match": true,
+        "sha256_matches": true,
+        "git_tree_entry": "100644 blob 2be9d1ef4d48a342b900a69bdb3ca317a49b375e\tdocs/verification/qa/p0-13-live-1755153/nonvoice-pass/visible-01/surface.html",
+        "main_workspace_present": false
+      },
+      {
+        "path": "tests/e2e/windows/qa_binary_admission.py",
+        "bytes": 1624,
+        "sha256": "e1354db627bc792c4e47d9fed419079fe9dd8611b4d2f0442e419311100a849c",
+        "actual_bytes": 1624,
+        "actual_sha256": "e1354db627bc792c4e47d9fed419079fe9dd8611b4d2f0442e419311100a849c",
+        "bytes_match": true,
+        "sha256_matches": true,
+        "git_tree_entry": "100644 blob 64b6792c3745ea4dbc9926bf0da09db2eb14b1be\ttests/e2e/windows/qa_binary_admission.py",
+        "main_workspace_present": false
+      },
+      {
+        "path": "tests/e2e/windows/qa_live_preflight.ps1",
+        "bytes": 6374,
+        "sha256": "894f0b197fa5297c5e5d4519a6bbe7f1927ed3dfe1443ca5b76ea28197050bc2",
+        "actual_bytes": 6374,
+        "actual_sha256": "894f0b197fa5297c5e5d4519a6bbe7f1927ed3dfe1443ca5b76ea28197050bc2",
+        "bytes_match": true,
+        "sha256_matches": true,
+        "git_tree_entry": "100644 blob 00c7afc7c3d38129ce0a57a906b190887025ec1a\ttests/e2e/windows/qa_live_preflight.ps1",
+        "main_workspace_present": false
+      },
+      {
+        "path": "tests/e2e/windows/qa_visible_drag.mjs",
+        "bytes": 21292,
+        "sha256": "045211e3068a808b98bb88e385bfa66380512edf9b6c4943e114e363a76fa6e1",
+        "actual_bytes": 21292,
+        "actual_sha256": "045211e3068a808b98bb88e385bfa66380512edf9b6c4943e114e363a76fa6e1",
+        "bytes_match": true,
+        "sha256_matches": true,
+        "git_tree_entry": "100644 blob ad447dc999d67804c60d5662f2e71a62d1856602\ttests/e2e/windows/qa_visible_drag.mjs",
+        "main_workspace_present": false
+      }
+    ],
+    "changed_paths_not_indexed": [
+      "docs/verification/qa/p0-13-live-1755153/nonvoice-pass/artifact-hashes.json",
+      "docs/verification/qa/p0-13-subscription-ask-plan.md"
+    ]
+  },
+  "requirements": {
+    "all_eight_match": true,
+    "rows": [
+      {
+        "path": "docs/requirements.md",
+        "committed_sha256": "3796691c2e433e846051087d5857c40224c4e1995e9d01151378253bb2508cae",
+        "record_matches": true,
+        "manifest_matches": true
+      },
+      {
+        "path": "docs/requirements.en.md",
+        "committed_sha256": "4c8f69a6d51367d35eba28596d5310f165374728ad73ef656c03f1713b4e76e2",
+        "record_matches": true,
+        "manifest_matches": true
+      },
+      {
+        "path": "docs/requirements/problem-solving-companion.md",
+        "committed_sha256": "bcb94929cf216094972b945d14b0282fb94c9e45f2a4875333a0ac7658deb4dd",
+        "record_matches": true,
+        "manifest_matches": true
+      },
+      {
+        "path": "docs/requirements/problem-solving-companion.en.md",
+        "committed_sha256": "4b368b4b1118139c10227f8f585bdcea754171ffbd9b3812bf0e280b49bd037a",
+        "record_matches": true,
+        "manifest_matches": true
+      },
+      {
+        "path": "docs/requirements/intent-and-decisions.md",
+        "committed_sha256": "4b21d391cc6bf4e0fe0dad1a81ff5c20a34e47cc6291ab3c997486cef284dce3",
+        "record_matches": true,
+        "manifest_matches": true
+      },
+      {
+        "path": "docs/requirements/intent-and-decisions.en.md",
+        "committed_sha256": "37de474da6aacbc3f02411b319ba17af812893b2d39c98cd83c6138d99b980ac",
+        "record_matches": true,
+        "manifest_matches": true
+      },
+      {
+        "path": "docs/requirements/original-goal-verification.md",
+        "committed_sha256": "20cbea365337a8a046c443a9fe9536ec9fbec0c42a365c69a9c6ecf7068c5986",
+        "record_matches": true,
+        "manifest_matches": true
+      },
+      {
+        "path": "docs/requirements/original-goal-verification.en.md",
+        "committed_sha256": "d7b589605f4bfbbefbaedf0b9d9bfd214f1722cdf3f6f8ccec8118bf4e79fd62",
+        "record_matches": true,
+        "manifest_matches": true
+      }
+    ]
+  },
+  "source_copy_current_observation": {
+    "path": "/tmp/lc-qa-live-admission-egZ3Gl",
+    "exists": true,
+    "directory_mode": "0o700",
+    "git_source_paths": 280,
+    "all_present_match": true,
+    "extra_regular_files": [],
+    "rows": [
+      {
+        "path": "packages/contracts/HTTP.md",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/README.md",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/__init__.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/capture_frame/README.md",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/capture_frame/__init__.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/capture_frame/generate.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/capture_frame/generated/contracts.ts",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/capture_frame/generated/schema.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/capture_ingress/README.md",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/capture_ingress/__init__.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/capture_ingress/examples.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/capture_ingress/generate.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/capture_ingress/generated/contracts.ts",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/capture_ingress/generated/openapi.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/capture_ingress/generated/schema.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/desktop_capture_ingress/README.md",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/desktop_capture_ingress/__init__.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/desktop_capture_ingress/generate.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/desktop_capture_ingress/generated/contracts.ts",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/desktop_capture_ingress/generated/openapi.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/desktop_capture_ingress/generated/schema.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/desktop_frame/README.md",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/desktop_frame/__init__.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/desktop_frame/examples/macos-synthetic.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/desktop_frame/generate.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/desktop_frame/generated/contracts.ts",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/desktop_frame/generated/schema.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/display_source/README.md",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/display_source/__init__.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/display_source/generate.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/display_source/generated/contracts.ts",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/display_source/generated/schema.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/document_preview/README.md",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/document_preview/__init__.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/document_preview/examples.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/document_preview/generate.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/document_preview/generated/contracts.ts",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/document_preview/generated/openapi.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/document_preview/generated/schema.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/document_preview/schema.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/document_preview/validation.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/examples/core.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/examples/frame.svg",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/examples/http.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/generate_openapi.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/generate_types.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/generated/contracts.ts",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/generated/openapi.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/live_companion/__init__.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/live_companion/examples/focus.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/live_companion/focus.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/live_companion/schema.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/macos_capture_ingress/README.md",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/macos_capture_ingress/__init__.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/macos_capture_ingress/examples/provenance.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/macos_capture_ingress/examples/retained-batch.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/macos_capture_ingress/generate.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/macos_capture_ingress/generated/contracts.ts",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/macos_capture_ingress/generated/openapi.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/macos_capture_ingress/generated/schema.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/macos_frame/README.md",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/macos_frame/__init__.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/macos_frame/examples/macos-retained.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/macos_frame/examples/producer-events.jsonl",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/macos_frame/examples/producer-status.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/macos_frame/examples/provenance.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/macos_frame/generate.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/macos_frame/generated/contracts.ts",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/macos_frame/generated/schema.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/original_artifact/README.md",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/original_artifact/__init__.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/original_artifact/generate.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/original_artifact/generated/contracts.ts",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/original_artifact/generated/schema.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/process_control/README.md",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/process_control/__init__.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/process_control/examples/stop.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/process_control/generate.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/process_control/generated/contracts.ts",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/process_control/generated/openapi.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/process_control/generated/schema.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/process_control/schema.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/process_control/validation.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/process_v2/README.md",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/process_v2/__init__.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/process_v2/examples/capture.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/process_v2/generate.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/process_v2/generated/contracts.ts",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/process_v2/generated/openapi.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/process_v2/generated/schema.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/process_v2/schema.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/process_v2/validation.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/raw_capture_ingress/README.md",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/raw_capture_ingress/__init__.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/raw_capture_ingress/generate.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/raw_capture_ingress/generated/contracts.ts",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/raw_capture_ingress/generated/openapi.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/raw_capture_ingress/generated/schema.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/schema.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/tests/fixtures/process-control-compatibility.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/tests/test_capture_frame.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/tests/test_capture_frame_binding.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/tests/test_capture_ingress.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/tests/test_contracts.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/tests/test_desktop_capture_ingress.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/tests/test_desktop_frame.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/tests/test_display_source.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/tests/test_document_preview.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/tests/test_http_contracts.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/tests/test_json_depth.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/tests/test_live_companion.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/tests/test_live_focus.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/tests/test_macos_capture_ingress.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/tests/test_macos_frame.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/tests/test_numeric_timezone_guards.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/tests/test_original_artifact.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/tests/test_process_control.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/tests/test_process_v2.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/tests/test_raw_capture_ingress.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/tests/test_windows_capture_ingress.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/tests/test_windows_frame.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/validation.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/windows_capture_ingress/README.md",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/windows_capture_ingress/__init__.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/windows_capture_ingress/generate.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/windows_capture_ingress/generated/contracts.ts",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/windows_capture_ingress/generated/openapi.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/windows_capture_ingress/generated/schema.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/windows_frame/README.md",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/windows_frame/__init__.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/windows_frame/examples/producer-manifest.jsonl",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/windows_frame/examples/windows-retained.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/windows_frame/generate.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/windows_frame/generated/contracts.ts",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "packages/contracts/windows_frame/generated/schema.json",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/.env.example",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/PREVIEW.md",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/README.md",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/app.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/auth.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/capture.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/capture_app.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/capture_runtime.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/control.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/control_app.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/desktop_local.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/display_sources.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/domain.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/errors.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/frame_variants.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/image_resolver.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/ingress_app.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/learning_snapshot.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/local.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/migrations/0001_documents.down.sql",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/migrations/0001_documents.up.sql",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/migrations/0002_capture_immutability.down.sql",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/migrations/0002_capture_immutability.up.sql",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/migrations/0003_raw_capture_frame.down.sql",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/migrations/0003_raw_capture_frame.up.sql",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/migrations/__init__.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/migrations/__main__.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/original_artifacts.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/preview.env.example",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/preview.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/preview_app.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/preview_local.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/process_context.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/storage.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/macos_fixtures.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/postgres_capture_check.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/postgres_check.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/postgres_control_check.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/postgres_desktop_local_check.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/postgres_desktop_runtime_check.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/postgres_http_check.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/postgres_ingress_http_check.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/postgres_library_check.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/postgres_original_artifact_check.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/postgres_preview_check.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/postgres_producer_admission_check.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/postgres_raw_frame_check.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/postgres_snapshot_check.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_archive.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_budget_jobs.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_capture.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_capture_app.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_capture_app_dispatch.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_capture_frames.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_capture_replay_presence.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_capture_replay_witness.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_capture_runtime.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_control.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_control_http.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_desktop_capture_runtime.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_desktop_frame_ingress.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_desktop_frame_readers.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_desktop_gaps.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_desktop_ingress_http.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_desktop_local.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_display_jobs.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_display_sources.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_frame_tombstone_presence.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_http.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_image_resolver.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_ingress_http.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_ingress_mounts.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_learning_snapshot.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_local.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_macos_capture_runtime.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_macos_consistency_dependencies.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_macos_consistency_scope.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_macos_cross_family_identity.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_macos_frame_ingress.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_macos_frame_lifecycle.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_macos_frame_readers.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_macos_http_learning.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_macos_image_identity.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_macos_ingress_http.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_macos_ingress_transport.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_original_artifact_capture.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_original_artifacts.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_postgres_capture_check.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_postgres_check.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_postgres_desktop_local_guard.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_postgres_desktop_runtime_check.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_postgres_ingress_http_check.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_postgres_windows_runtime_check.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_preview.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_preview_http.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_preview_library.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_preview_library_http.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_preview_local.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_process_context_reader.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_producer_admission.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_raw_frame_ingress.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_raw_frame_readers.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_raw_frame_storage.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_raw_ingress_http.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_raw_ingress_http_limits.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_raw_replay_integrity.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_source_deletion.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_storage.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_windows_capture_runtime.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_windows_frame_ingress.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_windows_frame_lifecycle.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_windows_frame_readers.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_windows_http_learning.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_windows_identity_readers.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_windows_image_identity.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_windows_ingress_http.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/api/tests/test_windows_ingress_transport.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/learning/README.md",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/learning/__init__.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/learning/archive.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/learning/context.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/learning/evaluate.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/learning/images.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/learning/live_session.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/learning/process_context.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/learning/retrieval.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/learning/subscription_ask.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/learning/timestamps.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/worker/connectors/chatgpt_launch.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/worker/connectors/chatgpt_live.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/worker/connectors/chatgpt_local.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/worker/connectors/chatgpt_receipts.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/worker/connectors/chatgpt_rpc.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/worker/connectors/disabled.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/worker/connectors/tests/check_subscription_configuration.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/worker/connectors/tests/test_chatgpt_failure_outcomes.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/worker/connectors/tests/test_chatgpt_launch.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/worker/connectors/tests/test_chatgpt_live.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/worker/connectors/tests/test_chatgpt_live_stream.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/worker/connectors/tests/test_chatgpt_local.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/worker/connectors/tests/test_chatgpt_receipts.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/worker/connectors/tests/test_chatgpt_request_ledger.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/worker/connectors/tests/test_chatgpt_rpc.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/worker/core/budget.py",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "services/worker/core/jobs.py",
+        "present": true,
+        "sha256_matches": true
+      }
+    ],
+    "note": "Git stores executable bit separately from bytes; directory mode is filesystem metadata, not proven by artifact content hashes. All comparisons use recorded source commit."
+  },
+  "stage_current_observation": {
+    "manifest_matches_record": true,
+    "manifest_tree_matches": true,
+    "git_manifest_payload_files": 70,
+    "stage_exists": true,
+    "all_payload_files_match": true,
+    "rows": [
+      {
+        "path": "dist/apps/safari-extension/src/ink.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/safari-extension/src/mode.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/scripts/ingress-fixtures.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/scripts/ingress-harness-capture.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/scripts/ingress-harness-ink-capture.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/src/main/capture-host.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/src/main/capture-link.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/src/main/loopback-http.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/src/main/main.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/src/main/self-test-course.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/src/main/self-test.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/src/main/subscription.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/src/main/uploader.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/src/preload/control.cjs",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/src/preload/overlay.cjs",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/src/renderer/control.css",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/src/renderer/control.html",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/src/renderer/control.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/src/renderer/overlay.css",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/src/renderer/overlay.html",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/src/renderer/overlay.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/src/renderer/probe.css",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/src/renderer/probe.html",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/src/renderer/probe.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/src/shared/capture-plan.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/src/shared/desktop-ink.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/src/shared/frame-ingress.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/src/shared/live.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/src/shared/placement.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/src/shared/retention.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/src/shared/samples.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/src/shared/voice.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/tests/app-ask.test.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/tests/app-link.test.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/tests/app-live.test.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/tests/capture-host.test.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/tests/capture-link-record.test.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/tests/capture-link-rules.test.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/tests/capture-link.test.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/tests/capture-plan.test.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/tests/context-pictures.test.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/tests/control-link.test.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/tests/control-live.test.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/tests/control-page.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/tests/frame-ingress.test.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/tests/host-fixture.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/tests/ink-original.test.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/tests/link-fakes.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/tests/link-world.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/tests/live-bridge.test.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/tests/live.test.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/tests/main-harness.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/tests/main-lifecycle.test.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/tests/overlay-alignment.test.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/tests/overlay-capture.test.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/tests/overlay-frames.test.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/tests/overlay-page.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/tests/overlay-stop.test.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/tests/overlay-surfaces.test.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/tests/owned-host-flow.test.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/tests/placement.test.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/tests/png.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/tests/retention-correction.test.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/tests/retention.test.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/tests/shared.test.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/tests/source.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/tests/subscription-fakes.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/tests/subscription.test.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "dist/apps/windows/tests/uploader.test.js",
+        "present": true,
+        "sha256_matches": true
+      },
+      {
+        "path": "package.json",
+        "present": true,
+        "sha256_matches": true
+      }
+    ],
+    "before_after_exact_equal": true
+  },
+  "syntax": {
+    "qa_binary_admission_python_ast": "passed_without_execution"
+  },
+  "plan_threeway": {
+    "exit_code": 3,
+    "result_path": "/tmp/lc-qa-prereq-review-d91a326/plan-threeway-result.md",
+    "stderr": ""
+  },
+  "prohibited_actions_executed": []
+}

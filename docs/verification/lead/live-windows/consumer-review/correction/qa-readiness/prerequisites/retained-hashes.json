@@ -1,0 +1,11 @@
+{
+  "README.md": "b67821464c9fe46d56cb4d56ab2df13e301fd5785393843a017f85495ddb50f0",
+  "independent-hash-audit.json": "a47770380d78e43bc9e5adc9b50d52b92cbb89af049699b22ee4deeecc2d1b68",
+  "independent-review.json": "a6dd5dc8102c6b25eb9fc5aa46300818cc2f1ac4dd0f314d38c87e1271977480",
+  "independent-review.md": "06e52e0344d097e0fda9e702624a8d1529ed86dcee07e4f42c65d26a30ccd69a",
+  "pinned-binary-admission.json": "9d749ccbe48511dffd2548d71cdc943ce671e0b38488f6f3df429236389f1011",
+  "qa-binary-admission.json": "1ff5043120b17a5e7bb6fb7fe316fb4eceddad74807cc02d084f4097b6304596",
+  "qa-execution-policy.json": "c823edc0c45552f703e7b5de7cd1bd2c1f45e50cb9fe387848b41cf1e9bcc1cf",
+  "qa-real-attempts.json": "d045b4c2a67cbddf8814430e59248fec5dc5158a5c87c33f56c53f26cb59a184",
+  "qa-release.json": "791167d8ce9a8959c5f8a170d7807b2b529e82ae9c212c2e47fbf58adcf67be0"
+}

@@ -1,0 +1,49 @@
+{
+  "kind": "all-assigned-real-action-ledger",
+  "assignment_message": "handoff_1f988a3723e6232b44c29d5cfc9d2c4c",
+  "existing_allocation_id": "handoff_fd794043a20068a1b52853cbb6ff884e",
+  "maximum_released_attempts": 4,
+  "saved_ceiling": 5,
+  "attempts_used": 0,
+  "attempts": [],
+  "slots": [
+    {
+      "purpose": "unattended whole-screen observation",
+      "state": "NOT_RUN",
+      "reason": "released binary admission fails before any real session or assigned action"
+    },
+    {
+      "purpose": "automatic focus response",
+      "state": "NOT_RUN",
+      "reason": "released binary admission fails before any real session or assigned action"
+    },
+    {
+      "purpose": "typed follow-up after controlled screen change",
+      "state": "NOT_RUN",
+      "reason": "released binary admission fails before any real session or assigned action"
+    },
+    {
+      "purpose": "Stop/fence attempt",
+      "state": "NOT_RUN",
+      "reason": "released binary admission fails before any real session or assigned action"
+    }
+  ],
+  "spoken_slot": "not released; not reassigned",
+  "policy_if_prerequisites_passed": {
+    "max_submissions": 4,
+    "max_session_ms": 60000,
+    "min_observation_interval_ms": 60000
+  },
+  "actual_ui_real_policy": "NOT_RUN",
+  "real_session_started": false,
+  "account_lock_acquired": false,
+  "official_account_status": "NOT_READ",
+  "official_selected_image_model": "NOT_READ",
+  "ui_refusal_observed": false,
+  "provider_receipts": [],
+  "no_automatic_retry_or_restart": true,
+  "next_owner": "Lead/Backend/Support: coordinate a verified compatible launch without weakening the gate; a fresh bounded assignment must precede any resumed real pass.",
+  "coordination_allocation_state": "QA released unused display/account use after prerequisite blockers; no own resources acquired",
+  "account_display_release_receipt": "visible-01/classification-and-release.json",
+  "visible_drag_state": "NOT_RUN; native -File entry rejected by Restricted execution policy before any app/browser launch"
+}

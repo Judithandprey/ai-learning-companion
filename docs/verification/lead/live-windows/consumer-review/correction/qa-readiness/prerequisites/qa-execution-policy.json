@@ -1,0 +1,26 @@
+{
+  "scopes": [
+    {
+      "policy": "Undefined",
+      "scope": "MachinePolicy"
+    },
+    {
+      "policy": "Undefined",
+      "scope": "UserPolicy"
+    },
+    {
+      "policy": "Undefined",
+      "scope": "Process"
+    },
+    {
+      "policy": "Undefined",
+      "scope": "CurrentUser"
+    },
+    {
+      "policy": "Undefined",
+      "scope": "LocalMachine"
+    }
+  ],
+  "effective": "Restricted",
+  "modified": false
+}

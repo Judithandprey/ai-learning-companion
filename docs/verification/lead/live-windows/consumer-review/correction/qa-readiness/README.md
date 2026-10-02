@@ -5,6 +5,8 @@
 The production package remains **175515308f509fb8c0f531dbdb10e57313fcde5a**;
 no application source or staged payload changed. [QA receipt](../../../../../qa/p0-13-live-1755153/README.md).
 
+**Current continuation:** Actual `d91a326` reports two startup prerequisite refusals, zero of four real actions and an explicit unused resource release. [Review, existing supported binary and required driver correction](prerequisites/README.md). No current QA display/account lease or real GUI/AI pass. The following readiness and original dispatch remain historical evidence.
+
 ## Reviewed result, with the evidence limits retained
 
 The [independent audit](independent-audit.json) verifies all 71 original delivery
