@@ -97,3 +97,14 @@ native leaves and patch, then runs the existing macOS-only build/package/native
 suite and live fixture validator. Actual Mac interaction/provider/audio/pen gates
 remain separate. QA retains the previously assigned Windows display/account
 lease; this review used neither. Native-TTS approval hold is unchanged.
+
+## Actual follow-up dispatch
+
+The review was committed and pushed as
+`8467e0a55113455f62067d97a8774dca889c3d88`. Native's same-task correction was
+accepted as `handoff_f04a502dc53e26990b7036dce646a84d`, replying to its actual
+delivery `handoff_877ce934ef1115842166b16b50dbcf6e` through the granted native
+route. The [receipt](dispatch-receipt.json) is unread with
+`execution_started: false`; delivery is established, adoption/execution is not.
+Native next fixes MAC-LIVE-03, then Lead reviews and runs the native build on the
+accepted source. No repeated assignment or Windows resource change was made.
