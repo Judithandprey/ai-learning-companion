@@ -1,0 +1,140 @@
+diff --git a/.github/workflows/desktop-checks.yml b/.github/workflows/desktop-checks.yml
+index 370ec84..28e1725 100644
+--- a/.github/workflows/desktop-checks.yml
++++ b/.github/workflows/desktop-checks.yml
+@@ -75,6 +75,7 @@ jobs:
+             ${{ runner.temp }}/desktop-evidence/macos-retained-frame-fixture/**
+             ${{ runner.temp }}/desktop-evidence/macos-upload-fixture/**
+             ${{ runner.temp }}/desktop-evidence/macos-ask-fixture/**
++            ${{ runner.temp }}/desktop-evidence/macos-live-fixture/**
+             !${{ runner.temp }}/desktop-evidence/work/**
+           if-no-files-found: error
+           retention-days: 14
+diff --git a/scripts/desktop-checks.sh b/scripts/desktop-checks.sh
+index e412deb..e82a650 100644
+--- a/scripts/desktop-checks.sh
++++ b/scripts/desktop-checks.sh
+@@ -49,7 +49,8 @@ with (out / "SHA256SUMS").open("w", encoding="utf-8") as hashes:
+                 + list((out / "macos-composed-fixture").rglob("*"))
+                 + list((out / "macos-retained-frame-fixture").rglob("*"))
+                 + list((out / "macos-upload-fixture").rglob("*"))
+-                + list((out / "macos-ask-fixture").rglob("*")))
++                + list((out / "macos-ask-fixture").rglob("*"))
++                + list((out / "macos-live-fixture").rglob("*")))
+     for path in sorted(evidence):
+         if path.is_file() and path.name != "SHA256SUMS":
+             digest = hashlib.sha256()
+@@ -219,12 +220,14 @@ PY
+     mac_frame_fixture="$out/macos-retained-frame-fixture"
+     mac_upload_fixture="$out/macos-upload-fixture"
+     mac_ask_fixture="$out/macos-ask-fixture"
++    mac_live_fixture="$out/macos-live-fixture"
+     run_logged tests env COMPANION_DESKTOP_FIXTURE_DIR="$fixture" \
+         COMPANION_DESKTOP_INGRESS_FIXTURE_DIR="$ingress_fixture" \
+         COMPANION_DESKTOP_COMPOSED_FIXTURE_DIR="$composed_fixture" \
+         COMPANION_DESKTOP_MAC_FRAME_FIXTURE_DIR="$mac_frame_fixture" \
+         COMPANION_DESKTOP_MAC_UPLOAD_FIXTURE_DIR="$mac_upload_fixture" \
+-        COMPANION_DESKTOP_ASK_FIXTURE_DIR="$mac_ask_fixture" swift test --configuration release
++        COMPANION_DESKTOP_ASK_FIXTURE_DIR="$mac_ask_fixture" \
++        COMPANION_DESKTOP_LIVE_FIXTURE_DIR="$mac_live_fixture" swift test --configuration release
+     run_logged fixture "$python_bin" - "$fixture" <<'PY'
+ import json
+ from pathlib import Path
+@@ -250,6 +253,7 @@ PY
+     run_logged mac-frame-fixture "$python_bin" checks/validate_mac_retained_frames.py "$mac_frame_fixture"
+     run_logged mac-upload-fixture "$python_bin" checks/validate_mac_upload.py "$mac_upload_fixture"
+     run_logged mac-ask-fixture "$python_bin" checks/validate_ask_request.py "$mac_ask_fixture"
++    run_logged mac-live-fixture "$python_bin" checks/validate_live_session.py "$mac_live_fixture"
+ fi
+ phase=complete
+ state=checks-completed
+diff --git a/tests/probes/support/test_desktop_checks.py b/tests/probes/support/test_desktop_checks.py
+index 8a8fbbf..15c49d7 100644
+--- a/tests/probes/support/test_desktop_checks.py
++++ b/tests/probes/support/test_desktop_checks.py
+@@ -128,6 +128,13 @@ elif name == 'swift':
+             (ask / 'ask-start.jsonl').write_text(json.dumps({'synthetic': True}) + '\n')
+             if os.environ.get('FIXTURE_CASE') == 'bad-mac-ask-fixture':
+                 (ask / 'ask-start.jsonl').write_text('invalid JSON')
++        if os.environ.get('FIXTURE_CASE') != 'missing-mac-live-fixture':
++            live = pathlib.Path(os.environ['COMPANION_DESKTOP_LIVE_FIXTURE_DIR'])
++            assert not live.exists(), 'the live producer requires a new output directory'
++            live.mkdir(parents=True)
++            (live / 'live-session.jsonl').write_text(json.dumps({'synthetic': True}) + '\n')
++            if os.environ.get('FIXTURE_CASE') == 'bad-mac-live-fixture':
++                (live / 'live-session.jsonl').write_text('invalid JSON')
+         if failed:
+             print('injected test failure after fixture write', file=sys.stderr)
+             sys.exit(17)
+@@ -229,6 +236,22 @@ print('stub Mac ASK validator invoked; not Swift, image or provider acceptance')
+ '''
+ 
+ 
++MAC_LIVE_CHECK = r'''import json, os, pathlib, sys
++with open(os.environ['PROBE_TRACE'], 'a') as trace:
++    trace.write(json.dumps({'tool': 'mac-live-validator', 'args': sys.argv[1:],
++        'cwd': str(pathlib.Path.cwd()), 'python': sys.executable, 'source': __file__}) + '\n')
++if os.environ.get('FAIL_COMMAND') == 'mac-live-validator':
++    print('injected Mac live validator failure', file=sys.stderr)
++    sys.exit(43)
++root = pathlib.Path(sys.argv[1])
++lines = (root / 'live-session.jsonl').read_text().splitlines()
++assert lines
++for line in lines:
++    json.loads(line)
++print('stub Mac live validator invoked; not Swift, image or provider acceptance')
++'''
++
++
+ class DesktopChecks(unittest.TestCase):
+     def setUp(self):
+         if not shutil.which("node"):
+@@ -290,6 +313,7 @@ class DesktopChecks(unittest.TestCase):
+             (source / "checks/validate_mac_retained_frames.py").write_text(MAC_FRAME_CHECK)
+             (source / "checks/validate_mac_upload.py").write_text(MAC_UPLOAD_CHECK)
+             (source / "checks/validate_ask_request.py").write_text(MAC_ASK_CHECK)
++            (source / "checks/validate_live_session.py").write_text(MAC_LIVE_CHECK)
+             # Byte-for-byte owner package-app.sh at 7efa46a. Execute it against
+             # stub Swift/plutil here; it remains the owner's production script.
+             shutil.copyfile(ROOT / "tests/probes/support/fixtures/macos-package-app.sh", source / "package-app.sh")
+@@ -553,6 +577,31 @@ class DesktopChecks(unittest.TestCase):
+                          self.out / "work/source/apps/macos/CompanionDesktop/checks/validate_ask_request.py")
+         self.assertGreater(trace.index(asked[0]), trace.index(uploaded[0]))
+         self.assertIn("macos-ask-fixture/ask-start.jsonl", (self.out / "SHA256SUMS").read_text())
++        live = [call for call in trace if call["tool"] == "mac-live-validator"]
++        self.assertEqual(len(live), 1)
++        self.assertEqual(live[0]["args"], [str(self.out / "macos-live-fixture")])
++        self.assertEqual(live[0]["python"], str(self.root / ".venv/bin/python"))
++        self.assertEqual(Path(live[0]["source"]).resolve(),
++                         self.out / "work/source/apps/macos/CompanionDesktop/checks/validate_live_session.py")
++        self.assertGreater(trace.index(live[0]), trace.index(asked[0]))
++        self.assertIn("macos-live-fixture/live-session.jsonl", (self.out / "SHA256SUMS").read_text())
++
++    def test_mac_missing_bad_live_or_validator_failure_remains_failure(self):
++        self.source("macos")
++        self.commit()
++        for case, failure in [("missing-mac-live-fixture", ""), ("bad-mac-live-fixture", ""),
++                              ("validator-failure", "mac-live-validator")]:
++            with self.subTest(case=case):
++                self.out = Path(self.temp.name) / case
++                result, status = self.run_checks("macos", failure, case)
++                self.assertNotEqual(result.returncode, 0)
++                self.assertEqual(status["last_phase"], "mac-live-fixture")
++                self.assertTrue((self.out / "MacDesktop.zip").is_file())
++                self.assertTrue((self.out / "mac-live-fixture.log").read_text())
++                if case != "missing-mac-live-fixture":
++                    self.assertIn("macos-live-fixture/live-session.jsonl", (self.out / "SHA256SUMS").read_text())
++                if failure:
++                    self.assertEqual(result.returncode, 43)
+ 
+     def test_mac_missing_bad_ask_or_validator_failure_remains_failure(self):
+         self.source("macos")
+@@ -707,6 +756,8 @@ class DesktopChecks(unittest.TestCase):
+                     self.assertFalse((self.out / "mac-upload-fixture.log").exists())
+                     self.assertIn("macos-ask-fixture/ask-start.jsonl", (self.out / "SHA256SUMS").read_text())
+                     self.assertFalse((self.out / "mac-ask-fixture.log").exists())
++                    self.assertIn("macos-live-fixture/live-session.jsonl", (self.out / "SHA256SUMS").read_text())
++                    self.assertFalse((self.out / "mac-live-fixture.log").exists())
+ 
+     def test_mac_toolchain_failure_is_not_hidden_by_later_command(self):
+         self.source("macos")

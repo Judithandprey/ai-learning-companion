@@ -1,0 +1,5 @@
+blank: Freshness=unavailable(status: "blank", callbackAge: 0.0); new-liveInput-predicate=true; new-pixel-event=false
+suspended: Freshness=unavailable(status: "suspended", callbackAge: 0.0); new-liveInput-predicate=true; new-pixel-event=false
+complete_without_image: Freshness=unavailable(status: "complete", callbackAge: 0.0); new-liveInput-predicate=true; new-pixel-event=false
+no_callbacks: Freshness=unknown(silentFor: 2.9000000000000057); new-liveInput-predicate=true; new-pixel-event=false
+CONFIRMED: four unavailable/stale states still pass the candidate retained-frame equality guard. Not native app execution.

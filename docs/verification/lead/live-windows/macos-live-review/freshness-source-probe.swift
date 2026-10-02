@@ -1,0 +1,81 @@
+struct Settings { var silenceLimit: Double = 2 }
+struct Ending { var reason: String }
+public struct SessionStatus {
+ var ending: Ending? = nil
+ var settings = Settings()
+ var startedHost: Double = 100
+ var streamStartedHost: Double? = 100
+ var lastCallbackHost: Double? = 100.1
+ var lastCallbackStatus: String? = "complete"
+ var pixelsCurrent: Bool = true
+ var lastNewPixelsHost: Double? = 100.1
+ var screenStateAsOfHost: Double? = 100.1
+ var lastNewPixelsSourceHost: Double? = 100.1
+}
+/// What may be claimed about the screen right now. Only `live` allows presenting the last new
+/// pixels as the current screen; every other case says why not.
+///
+/// Callback responsiveness and pixel age are judged separately. A callback's host time is when it
+/// was processed, which can be long after its pixels were on screen when the queue is busy, so
+/// pixel age comes only from validated source time (`displayTime`).
+public enum Freshness: Equatable, Sendable {
+    /// Not capturing, or live claims have ended (the reason is the ending's or the gate's).
+    case notLive(reason: String)
+    /// Capturing, but there has been no callback within the silence limit (or none yet): the
+    /// screen may be unchanged or frames may have stopped; the current screen is unknown.
+    case unknown(silentFor: Double)
+    /// A recent callback, but no usable current pixels: blank, suspended, a missing or unknown
+    /// status, a status-only callback, or no new pixels yet.
+    case unavailable(status: String, callbackAge: Double)
+    /// A recent callback, and the system reports the pixels current, but no validated source time
+    /// says when they were on screen: their age is unknown.
+    case pixelAgeUnknown(callbackAge: Double)
+    /// A recent callback, but the pixels were last confirmed on screen longer ago than the limit,
+    /// for example a sample that waited in a busy queue.
+    case stale(pixelAge: Double, callbackAge: Double)
+    /// A recent callback, and the pixels were confirmed on screen within the limit by source time.
+    /// `newPixelsAge` is how long ago these pixels were new, when known.
+    case live(callbackAge: Double, pixelAge: Double, newPixelsAge: Double?)
+
+    /// `capturing` must be false as soon as live claims end, even before `status` shows an ending.
+    public static func judge(_ status: SessionStatus?, capturing: Bool, now: Double) -> Freshness {
+        guard let status else { return .notLive(reason: "not started") }
+        if let ending = status.ending { return .notLive(reason: ending.reason) }
+        guard capturing else { return .notLive(reason: "not capturing") }
+        let limit = status.settings.silenceLimit
+        guard let last = status.lastCallbackHost else {
+            return .unknown(silentFor: max(0, now - (status.streamStartedHost ?? status.startedHost)))
+        }
+        let age = now - last
+        guard age >= 0, age <= limit else { return .unknown(silentFor: max(0, age)) }
+        guard status.pixelsCurrent, status.lastNewPixelsHost != nil else {
+            let reported = status.lastCallbackStatus ?? "missing"
+            return .unavailable(status: status.lastNewPixelsHost == nil ? "no new pixels yet (\(reported))" : reported,
+                                callbackAge: age)
+        }
+        guard let asOf = status.screenStateAsOfHost else { return .pixelAgeUnknown(callbackAge: age) }
+        // A source time up to the lead tolerance after now counts as age zero.
+        let pixelAge = max(0, now - asOf)
+        guard pixelAge <= limit else { return .stale(pixelAge: pixelAge, callbackAge: age) }
+        return .live(callbackAge: age, pixelAge: pixelAge,
+                     newPixelsAge: status.lastNewPixelsSourceHost.map { max(0, now - $0) })
+    }
+}
+
+// The exact retained-frame predicate in candidate CaptureController.liveInput, with all
+// unrelated guards true. This is an isolated source-state probe, not an AppKit/native test.
+func currentInputAllowed(kept: Int?, lastNewPixels: Int?) -> Bool {
+ guard let kept, kept == lastNewPixels else { return false }; return true
+}
+var blank = SessionStatus(); blank.lastCallbackHost = 101; blank.lastCallbackStatus = "blank"; blank.pixelsCurrent = false; blank.screenStateAsOfHost = nil
+var suspended = blank; suspended.lastCallbackStatus = "suspended"
+var missing = blank; missing.lastCallbackStatus = "complete"
+let cases: [(String,SessionStatus,Double)] = [("blank",blank,101), ("suspended",suspended,101), ("complete_without_image",missing,101), ("no_callbacks",SessionStatus(),103)]
+for (name,state,now) in cases {
+ let verdict = Freshness.judge(state, capturing: true, now: now)
+ let allowed = currentInputAllowed(kept: 1, lastNewPixels: 1)
+ print("\(name): Freshness=\(verdict); new-liveInput-predicate=\(allowed); new-pixel-event=false")
+ if case .live = verdict { fatalError("The probe requires loss of freshness") }
+ precondition(allowed)
+}
+print("CONFIRMED: four unavailable/stale states still pass the candidate retained-frame equality guard. Not native app execution.")
