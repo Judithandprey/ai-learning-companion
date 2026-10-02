@@ -1,0 +1,30 @@
+realchild-main.swift:6:1: error: expressions are not allowed at the top level
+ 4 | 
+ 5 | // Same unmodified local-process regression, separated because restricted CFSocket failed.
+ 6 | signal(SIGPIPE, SIG_IGN)
+   | `- error: expressions are not allowed at the top level
+ 7 | let desktopTests: [(String, (DesktopCaptureTests) -> () throws -> Void)] = [
+ 8 |     ("testAskRealChildNeverGetsARequestTakenBackInThePipe", asyncTest(DesktopCaptureTests.testAskRealChildNeverGetsARequestTakenBackInThePipe)),
+
+realchild-main.swift:10:1: error: expressions are not allowed at the top level
+ 8 |     ("testAskRealChildNeverGetsARequestTakenBackInThePipe", asyncTest(DesktopCaptureTests.testAskRealChildNeverGetsARequestTakenBackInThePipe)),
+ 9 | ]
+10 | XCTMain([testCase(desktopTests)])
+   | `- error: expressions are not allowed at the top level
+11 | 
+
+src/AskLinkTests.swift:955:36: warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 953 |             ending.connection = FakeConnector.connection(state: "signed_out", mode: NSNull())
+ 954 |             // In the first round the exit is reported only after the sign-in start has returned.
+ 955 |             ending.afterLoginStart = round == 0 ? { $0.endChildUnreported() } : { $0.exitChild() }
+     |                                    `- warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 956 |             let endingLink = askLink(ending)
+ 957 |             await endingLink.connect()
+
+src/MacIngressUploadTests.swift:400:14: warning: concurrently-executed local function 'alteredAck' must be marked as '@Sendable'; this is an error in the Swift 6 language mode
+398 |         let userID = macSource.userID
+399 |         /// The honest ACK with one change.
+400 |         func alteredAck(_ change: (inout [String: Any]) -> Void) -> MacHTTPReply {
+    |              `- warning: concurrently-executed local function 'alteredAck' must be marked as '@Sendable'; this is an error in the Swift 6 language mode
+401 |             var ack = Self.ackObject(prepared, userID: userID)
+402 |             change(&ack)

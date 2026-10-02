@@ -1,0 +1,5 @@
+Exact isolated local-child control command (Root submits normal exact-command approval):
+
+bash /tmp/lc-live-correction-focused/replay.sh realchild > /home/agentsdock/Projects/learning-companion/wt-platform/docs/verification/platform/macos-subscription-live/correction-01/focused-realchild-tests.txt 2>&1
+
+Selection: testAskRealChildNeverGetsARequestTakenBackInThePipe only. Same source snapshot as focused40. Local shell/fifo/child transport; no provider, account, model or device. No assertions or time budgets changed. Restricted41 diagnostic and all 41 actual outcomes preserved separately.

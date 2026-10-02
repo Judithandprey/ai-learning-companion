@@ -17,9 +17,15 @@ final class LiveController: ObservableObject {
     @Published var words = ""
     @Published var assistance: LiveAssistance = .hint
 
-    let link = LiveLink(config: AskConnectorConfig.load())
+    let link: LiveLink
     /// The newest kept frame of the running capture with the ink as it is now, or nil.
     var newest: (() -> LiveFrameInput?)?
+    var captureGate: LiveGate?
+    private var presentationGate = LiveGate()
+    private var dispatchGate = LiveGate()
+    private var presentationEpoch = 0
+    private var refreshTicket = 0
+    private var stoppedLocally = false
     private var card: NSPanel?
     /// The request whose answer was last reported as displayed.
     private var reported: String?
@@ -30,16 +36,20 @@ final class LiveController: ObservableObject {
     }
     private let frames: AsyncStream<PictureChange>.Continuation
 
-    init() {
+    init(link: LiveLink = LiveLink(config: AskConnectorConfig.load()),
+         scheduleStatus: @escaping @Sendable (@escaping @MainActor () -> Void) -> Void = { work in
+             DispatchQueue.main.async { MainActor.assumeIsolated { work() } }
+         }) {
+        self.link = link
         let (stream, continuation) = AsyncStream<PictureChange>.makeStream()
         frames = continuation
         let link = link
         Task { [weak self] in
             // In order: a later status is never replaced by an earlier one.
-            await link.setStatusHandler { status in
-                DispatchQueue.main.async {
-                    MainActor.assumeIsolated { self?.show(status) }
-                }
+            // A copied status is only a refresh trigger. First display is checked against the
+            // current actor state and the same revocable command gate after the await.
+            await link.setStatusHandler { _ in
+                scheduleStatus { Task { @MainActor in await self?.refreshStatus() } }
             }
             for await change in stream {
                 switch change {
@@ -51,7 +61,7 @@ final class LiveController: ObservableObject {
     }
 
     /// The AI observes the captured display now.
-    var isObserving: Bool { status.session.isRunning }
+    var isObserving: Bool { !stoppedLocally && status.session.isRunning }
 
     /// A session exists that Stop AI ends: observing, with all its requests used, or being started.
     var canStop: Bool {
@@ -103,11 +113,18 @@ final class LiveController: ObservableObject {
     /// The user's Start AI for the capture kept in `captureSession`: one session with exactly the
     /// bounds set, and then the picture that is on record now.
     func start(captureSession: URL, captureSessionID: String) {
+        beginPresentation()
+        dispatchGate.close("a new AI Start replaced this authority")
+        dispatchGate = LiveGate()
+        stoppedLocally = false
         let policy = LivePolicy(maxSubmissions: requests, maxSessionMS: minutes * 60_000, minObservationIntervalMS: seconds * 1_000)
-        let (link, model) = (self.link, self.model)
+        let (link, model, captureGate, dispatchGate) = (self.link, self.model, self.captureGate, self.dispatchGate)
         Task { @MainActor in
-            await link.startSession(policy: policy, captureSession: captureSession, captureSessionID: captureSessionID, model: model)
-            if let input = self.newest?() {
+            await link.startSession(policy: policy, captureSession: captureSession, captureSessionID: captureSessionID, model: model,
+                                    captureGate: captureGate, dispatchGate: dispatchGate)
+            guard self.dispatchGate === dispatchGate, !self.stoppedLocally else { return }
+            if var input = self.newest?() {
+                input.dispatchGate = dispatchGate
                 await link.enqueue(input)
             }
         }
@@ -115,12 +132,18 @@ final class LiveController: ObservableObject {
 
     /// The user's Stop AI: the capture goes on, and nothing more is sent.
     func stop() {
+        dispatchGate.close("stopped by you")
+        fencePresentation()
+        stoppedLocally = true
         let link = link
         Task { await link.stopSession() }
     }
 
     /// A newly kept frame, or new ink over the newest one, while the AI observes.
     func changed(_ input: LiveFrameInput) {
+        guard !stoppedLocally else { return }
+        var input = input
+        input.dispatchGate = dispatchGate
         frames.yield(.picture(input))
     }
 
@@ -130,11 +153,14 @@ final class LiveController: ObservableObject {
     /// at once as the user's focus in the whole picture it was pinned to. `unlocated` says why the
     /// region cannot be found in that picture; it is then kept and not sent as a focus.
     func selectionConfirmed(_ input: AskSelectionInput, unlocated: String?, geometryProblem: String?) {
-        guard let frozen = LiveFrameInput(selection: input, geometryProblem: geometryProblem) else { return }
+        guard var frozen = LiveFrameInput(selection: input, geometryProblem: geometryProblem) else { return }
+        beginPresentation()
+        frozen.captureGate = captureGate
         words = ""
         assistance = .hint
         let (link, rect, id) = (self.link, input.selection.rect, input.selection.id)
-        Task { await link.selected(frozen, rect: rect, selectionID: id, unlocated: unlocated) }
+        let presentationGate = self.presentationGate
+        Task { await link.selected(frozen, rect: rect, selectionID: id, unlocated: unlocated, presentationGate: presentationGate) }
     }
 
     /// New pixels or ink that cannot be given, with the reason, for the session line.
@@ -145,13 +171,18 @@ final class LiveController: ObservableObject {
     /// The user's typed words about the card's selection, with the picture that is on record now.
     func send() {
         guard canSend else { return }
-        let (link, words, assistance, fresh) = (self.link, self.words, self.assistance, newest?())
+        beginPresentation()
+        var fresh = newest?()
+        fresh?.dispatchGate = dispatchGate
+        let (link, words, assistance) = (self.link, self.words, self.assistance)
         self.words = ""
-        Task { await link.followUp(words, assistance: assistance, fresh: fresh) }
+        let presentationGate = self.presentationGate
+        Task { await link.followUp(words, assistance: assistance, fresh: fresh, presentationGate: presentationGate) }
     }
 
     /// Cancels a request on its way, or closes a card with nothing on its way.
     func cancel() {
+        fencePresentation()
         let link = link
         Task { await link.cancelCard() }
     }
@@ -160,11 +191,58 @@ final class LiveController: ObservableObject {
 
     /// The capture ended: the AI session ends with it, and a request on its way is fenced.
     func captureStopped(_ session: String) {
+        dispatchGate.close("the capture ended")
+        fencePresentation()
+        stoppedLocally = true
         let link = link
         Task { await link.captureStopped(session) }
     }
 
-    private func show(_ status: LiveStatus) {
+    private func fencePresentation() {
+        presentationGate.close("presentation permission changed")
+        presentationEpoch += 1
+        if status.card?.answer != nil, status.card?.presentation?.shownAt == nil {
+            status.card?.answer = nil
+            status.card?.phase = .cancelled
+        }
+    }
+
+    private func beginPresentation() {
+        fencePresentation()
+        presentationGate = LiveGate()
+    }
+
+    /// Internal seam also used by the delayed-status controller checks. No old payload is used.
+    func refreshStatus() async {
+        let epoch = presentationEpoch
+        refreshTicket += 1
+        let ticket = refreshTicket
+        let current = await link.currentStatus()
+        guard presentationEpoch == epoch, refreshTicket == ticket else { return }
+        show(current)
+    }
+
+    private func show(_ incoming: LiveStatus) {
+        var incoming = incoming
+        if incoming.card?.answer != nil {
+            if let permit = incoming.card?.presentation, permit.whileAllowed({
+                self.render(incoming)
+                return self.card?.isVisible == true
+            }) {
+                if permit.requestID != reported {
+                    reported = permit.requestID
+                    let link = link
+                    Task { await link.answerShown(permit.requestID, presentation: permit) }
+                }
+                return
+            }
+            incoming.card?.answer = nil
+            if incoming.card?.phase == .answered { incoming.card?.phase = .cancelled }
+        }
+        render(incoming)
+    }
+
+    private func render(_ status: LiveStatus) {
         self.status = status
         if let model, !status.usableModels.contains(where: { $0.id == model }) {
             self.model = nil
@@ -175,13 +253,6 @@ final class LiveController: ObservableObject {
         } else if card == nil {
             card = Self.panel(LiveCardView().environmentObject(self))
             card?.orderFrontRegardless()
-        }
-        // An answer on a panel that is on screen is reported as displayed, once, apart from the answer.
-        if let shown = status.card, shown.phase == .answered, let request = shown.requestID, request != reported,
-           card?.isVisible == true {
-            reported = request
-            let link = link
-            Task { await link.answerShown(request) }
         }
     }
 

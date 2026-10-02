@@ -1,0 +1,91 @@
+{
+  "kind": "Linux actual LiveController bounded runtime replay",
+  "exit_code": 0,
+  "passed": [
+    "testControllerDeferredAnswerCannotAppearAfterSynchronousStop",
+    "testControllerDeferredAnswerCannotAppearAfterSynchronousCancel",
+    "testControllerCaptureGateBlocksDeferredAnswerBeforeNotification",
+    "testControllerNewSelectionRejectsQueuedOldAnswerAndDisplaysItsOwn",
+    "testControllerExplicitRestartRejectsQueuedOldAnswerAndDisplaysNewSessionAnswer",
+    "testControllerAlreadyShownAnswerKeepsItsFirstReceiptAfterStop",
+    "testControllerHiddenAnswerCanBecomeVisibleWithoutFalseReceipt",
+    "testControllerFinalUsedUpAnswerCanBeDisplayed"
+  ],
+  "test_count": 8,
+  "failure_count": 0,
+  "runtime_seconds": 1.939,
+  "source_files_changed_since_copy": [],
+  "production_source_hashes": {
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/AskChild.swift": "860fe9d6a19fe7d7c5baf4235ce08a99453fd44cc4e8938ed1b1c94c6241c1bf",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/LiveGate.swift": "94e937e6d7061fb53f7990be0a2451d18c791d2fd30a8d73affec52256edfaec",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/LiveLink.swift": "3adf120e20158e3e7e32379fca52803de45b3559e146c16b3153c2df438f868d",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/LivePresentation.swift": "e64d2a0ecc444e52619eaef8c3c04b47f478d12f9a7101cca6405a679de4383c",
+    "apps/macos/CompanionDesktop/Sources/CompanionDesktop/LiveController.swift": "4b6f619454aeac3201428d06f8c5bcebb6e302ea0940e8bc32a0be594f1b2021"
+  },
+  "publications_by_scenario": {
+    "controller-stop": {
+      "status_publications": 5,
+      "answer_publications": 0,
+      "visible_control_answer_publications": 0
+    },
+    "controller-cancel": {
+      "status_publications": 5,
+      "answer_publications": 0,
+      "visible_control_answer_publications": 0
+    },
+    "controller-capture-gate": {
+      "status_publications": 4,
+      "answer_publications": 0,
+      "visible_control_answer_publications": 0
+    },
+    "controller-replacement": {
+      "status_publications": 4,
+      "answer_publications": 1,
+      "visible_control_answer_publications": 1
+    },
+    "controller-restart": {
+      "status_publications": 6,
+      "answer_publications": 1,
+      "visible_control_answer_publications": 1
+    },
+    "controller-already-shown": {
+      "status_publications": 5,
+      "answer_publications": 4,
+      "visible_control_answer_publications": 4
+    },
+    "controller-hidden-visible": {
+      "status_publications": 4,
+      "answer_publications": 2,
+      "visible_control_answer_publications": 1
+    },
+    "controller-final-used-up": {
+      "status_publications": 2,
+      "answer_publications": 1,
+      "visible_control_answer_publications": 1
+    }
+  },
+  "toolchain": {
+    "version": "Swift 6.3.3 (swift-6.3.3-RELEASE)",
+    "target": "x86_64-unknown-linux-gnu",
+    "language_mode": "Swift 5",
+    "runtime": "swift-frontend -interpret",
+    "sdk": "/tmp/lc-review-0212/sysroot",
+    "native_frameworks": "Linux stand-ins"
+  },
+  "commands": [
+    "python3 docs/verification/platform/macos-subscription-live/correction-01/controller-prepare.py",
+    "bash docs/verification/platform/macos-subscription-live/correction-01/controller-run.sh > /tmp/lc-live-controller-correction/runtime.txt 2>&1"
+  ],
+  "harness_file_hashes": {
+    "controller-prepare.py": "0b32953ab132d8c58bfe1ccdefac0bec7e823c0484f3793cd23f5048a52d490d",
+    "controller-run.sh": "40693d4e1713d98bf0e8129518a3df60ab03992ee03022350fb5244defa957cb",
+    "controller-probe.swift": "969626f033de34c7efc7ea227a6cb0e081b7d79cd8f9c75b326e9932a8d7f631",
+    "controller-ui-stand-ins.swift": "78c87c02820ccc62be76850fcab77129cd8291cb088d7617daef53987db968e3"
+  },
+  "limits": [
+    "No native AppKit/SwiftUI/ScreenCaptureKit execution",
+    "No real pixels or connector/model/account/network",
+    "Reverse-ordered status continuations source-reviewed only",
+    "Only eight custom controller methods registered; copied library tests supply helper declarations"
+  ]
+}

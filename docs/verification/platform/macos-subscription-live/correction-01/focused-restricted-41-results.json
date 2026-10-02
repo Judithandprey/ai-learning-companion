@@ -1,0 +1,15 @@
+{
+  "exit_code": 1,
+  "selected_methods": 41,
+  "finished_methods": 41,
+  "failed_methods": [
+    "testLiveLooksWaitForTheirTurnAndStopAtTheRequestsKeptForTheUser",
+    "testLiveSelectionIsSentAtOnceAsAFocusAndAFollowUpKeepsOrNamesIt",
+    "testLiveSelectionMadeBeforeStartKeepsItsOwnPictureAsFocusWhenAsked",
+    "testAskRealChildNeverGetsARequestTakenBackInThePipe"
+  ],
+  "assertion_failures": 12,
+  "restricted_environment_diagnostic": "Could not create wakeup socket pair for CFSocket!!!",
+  "terminated": false,
+  "reason_for_next_replay": "Root corrected three legitimate-display history preconditions; heldpipe method separated for exact-command approval, assertions/time budgets preserved."
+}

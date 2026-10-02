@@ -1,0 +1,7 @@
+{
+  "exit_code": 1,
+  "methods_started": 0,
+  "methods_finished": 0,
+  "cause": "-interpret requires executable top-level expressions in a file named main.swift; generated realchild-main.swift was rejected before any test.",
+  "correction": "Move single-method entrypoint to isolated realchild/main.swift; production/assertions/budgets unchanged."
+}

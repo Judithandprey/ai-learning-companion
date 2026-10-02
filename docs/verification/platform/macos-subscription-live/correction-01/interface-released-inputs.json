@@ -1,0 +1,107 @@
+{
+  "baseline": "c9177096c99c2562e4474bcbb2f4ffc8beb43c18",
+  "python": "/home/agentsdock/Projects/learning-companion/repo/.venv/bin/python",
+  "python_version": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+  "inputs": [
+    {
+      "path": "apps/macos/CompanionDesktop/checks/validate_live_session.py",
+      "sha256": "c5d1eb95377ba00470ef2a8b6b3ddc9d39f0e821215147dd65e0cc394d1d44ec",
+      "reference_commit": "3147291f449105c06255cfc0ea2056f1b2582437",
+      "matches_reference": true,
+      "matches_released_c917": false
+    },
+    {
+      "path": "packages/contracts/__init__.py",
+      "sha256": "65a772b67c6e6d266864a2cc80d44349492708100d529b8846d99cb1258c9e93",
+      "reference_commit": "c9177096c99c2562e4474bcbb2f4ffc8beb43c18",
+      "matches_reference": true,
+      "matches_released_c917": true
+    },
+    {
+      "path": "packages/contracts/live_companion/__init__.py",
+      "sha256": "68226d193c3f7755b056ee05dcb590102e760686071ce55f6a44a51859b7e880",
+      "reference_commit": "c9177096c99c2562e4474bcbb2f4ffc8beb43c18",
+      "matches_reference": true,
+      "matches_released_c917": true
+    },
+    {
+      "path": "packages/contracts/live_companion/focus.py",
+      "sha256": "1438a063d12bf50c866d9ce5fe9c947ec247dc2ee7d96e4c98bd47eeedcfab2e",
+      "reference_commit": "c9177096c99c2562e4474bcbb2f4ffc8beb43c18",
+      "matches_reference": true,
+      "matches_released_c917": true
+    },
+    {
+      "path": "packages/contracts/live_companion/schema.json",
+      "sha256": "3b1eedfaa70299b2f23fbbd2cd9a7b6f30ab220c00dc69f7be2f28bd371a5786",
+      "reference_commit": "c9177096c99c2562e4474bcbb2f4ffc8beb43c18",
+      "matches_reference": true,
+      "matches_released_c917": true
+    },
+    {
+      "path": "packages/contracts/schema.json",
+      "sha256": "befd60fb968fc976eeba8f38f182e10d9a45145b48f03cbe1c27d4bfbb4d93ff",
+      "reference_commit": "c9177096c99c2562e4474bcbb2f4ffc8beb43c18",
+      "matches_reference": true,
+      "matches_released_c917": true
+    },
+    {
+      "path": "packages/contracts/validation.py",
+      "sha256": "f3e2c3e7926865896a7dae6e56585b68cd72f84d498df9b6864f2fe613a1f254",
+      "reference_commit": "c9177096c99c2562e4474bcbb2f4ffc8beb43c18",
+      "matches_reference": true,
+      "matches_released_c917": true
+    },
+    {
+      "path": "services/learning/__init__.py",
+      "sha256": "fb69e1c6dec85cdac78383037b37e222533a42da505350be12460be18ee14023",
+      "reference_commit": "c9177096c99c2562e4474bcbb2f4ffc8beb43c18",
+      "matches_reference": true,
+      "matches_released_c917": true
+    },
+    {
+      "path": "services/learning/archive.py",
+      "sha256": "28defd382ad70ddf11c6d48be2921d9dc4043dfa805cb1673df0d019e01cb49c",
+      "reference_commit": "c9177096c99c2562e4474bcbb2f4ffc8beb43c18",
+      "matches_reference": true,
+      "matches_released_c917": true
+    },
+    {
+      "path": "services/learning/context.py",
+      "sha256": "61727338291ddf1dec25770ed2369bd3620de9ec43612040554394bd4a93bebd",
+      "reference_commit": "c9177096c99c2562e4474bcbb2f4ffc8beb43c18",
+      "matches_reference": true,
+      "matches_released_c917": true
+    },
+    {
+      "path": "services/learning/images.py",
+      "sha256": "cddefd2d8be348c32637bc7af9bae7bbfba848353b5e5b6db3b579abc635aa65",
+      "reference_commit": "c9177096c99c2562e4474bcbb2f4ffc8beb43c18",
+      "matches_reference": true,
+      "matches_released_c917": true
+    },
+    {
+      "path": "services/learning/live_session.py",
+      "sha256": "94f5e4f82259419b7ff6f5f5f640b3961bfbba48834e4afcae0e43f30ccb43f2",
+      "reference_commit": "c9177096c99c2562e4474bcbb2f4ffc8beb43c18",
+      "matches_reference": true,
+      "matches_released_c917": true
+    },
+    {
+      "path": "services/learning/subscription_ask.py",
+      "sha256": "3e1d52eb166ffcd83d5c9b2405bee27628faedc13f0798450d473cd5933955ae",
+      "reference_commit": "c9177096c99c2562e4474bcbb2f4ffc8beb43c18",
+      "matches_reference": true,
+      "matches_released_c917": true
+    },
+    {
+      "path": "services/learning/timestamps.py",
+      "sha256": "362566bff201545bbdebe6d21d37b83632c37c9566e0f536013e14009607ac5e",
+      "reference_commit": "c9177096c99c2562e4474bcbb2f4ffc8beb43c18",
+      "matches_reference": true,
+      "matches_released_c917": true
+    }
+  ],
+  "native_or_real_ai": false,
+  "fixture_sha256": "d0a87050f1d3f7a5f14c0c6072d6ffbba08fe21052c0ad0eac8678490f61f6ea"
+}

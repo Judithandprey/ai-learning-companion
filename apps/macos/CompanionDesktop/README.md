@@ -17,6 +17,11 @@ loopback only); this storage path sends no AI request
 local, source-only loop ([record](../../../docs/verification/platform/macos-original-screen-ink.md)). Evidence and limits are in
 [the verification record](../../../docs/verification/platform/macos-desktop-capture.md).
 
+The live-session review correction fences delayed first display and complete request writes at
+Stop, and refuses retained frames as current unless the capture freshness verdict permits them.
+Focused Linux replays and their native limitations are recorded
+[here](../../../docs/verification/platform/macos-subscription-live/correction-01/README.md).
+
 ## Layout
 
 | Path | Content |
@@ -38,7 +43,7 @@ COMPANION_DESKTOP_FIXTURE_DIR="$RUNNER_TEMP/companion-desktop-fixture" \
 COMPANION_DESKTOP_INGRESS_FIXTURE_DIR="$RUNNER_TEMP/companion-desktop-ingress-fixture" \
 COMPANION_DESKTOP_ASK_FIXTURE_DIR="$RUNNER_TEMP/companion-desktop-ask-fixture" \
 COMPANION_DESKTOP_LIVE_FIXTURE_DIR="$RUNNER_TEMP/companion-desktop-live-fixture" \
-  swift test --package-path apps/macos/CompanionDesktop                         # 124 tests; keeps fixtures
+  swift test --package-path apps/macos/CompanionDesktop                         # 151 tests; keeps fixtures
 .venv/bin/python apps/macos/CompanionDesktop/checks/validate_desktop_ingress.py "$RUNNER_TEMP/companion-desktop-ingress-fixture"
 .venv/bin/python apps/macos/CompanionDesktop/checks/validate_ask_request.py "$RUNNER_TEMP/companion-desktop-ask-fixture"
 .venv/bin/python apps/macos/CompanionDesktop/checks/validate_live_session.py "$RUNNER_TEMP/companion-desktop-live-fixture"

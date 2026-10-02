@@ -111,6 +111,8 @@ public struct LiveCard: Equatable, Sendable {
     public var answer: String?
     public var model: String?
     public var latencyMS: Int?
+    /// Local display authority; never serialized to the connector or original source records.
+    public var presentation: LiveAnswerPresentation? = nil
 
     /// What the request was, in fixed words.
     public var askedLine: String? {
@@ -164,6 +166,7 @@ public actor LiveLink {
         let line: AskRevocation
         let directory: URL
         let cardID: String?
+        let source: LiveFrameInput
         /// Fenced: its answer is never shown. With the reason, in fixed words.
         var fenced: String?
         var interrupted = false
@@ -204,6 +207,8 @@ public actor LiveLink {
         var originSession: String?
         var requests = 0
         var requestID: String?
+        var presentationGate: LiveGate?
+        var answerSource: LiveFrameInput?
     }
 
     private let config: Result<AskConnectorConfig, CaptureHostProblem>
@@ -239,6 +244,8 @@ public actor LiveLink {
     // The session.
     private var session: LiveSession?
     private var sessionDirectory: URL?
+    private var sessionCaptureGate: LiveGate?
+    private var sessionDispatchGate: LiveGate?
     private var starting: String?
     /// Stop, Quit or the capture's end came while the Start was on its way.
     private var startFenced = false
@@ -247,6 +254,7 @@ public actor LiveLink {
     private var lookTimer = false
     /// Capture sessions that stopped: no session is started for them.
     private var stopped: Set<String> = []
+    private let presentationOwner = UUID()
 
     public init(config: Result<AskConnectorConfig, CaptureHostProblem>,
                 launcher: any AskChildLauncher = ProcessAskLauncher(maxIncomingLine: LiveWire.maxIncomingLine),
@@ -476,8 +484,10 @@ public actor LiveLink {
     /// pictures; nil takes the default). Nothing is clamped, and nothing is started when the bounds
     /// are not valid, the account is not signed in, or a session already runs. A session whose
     /// requests are all used is ended first: this is the user's own new Start.
-    public func startSession(policy: LivePolicy, captureSession: URL, captureSessionID: String, model: String? = nil) async {
+    public func startSession(policy: LivePolicy, captureSession: URL, captureSessionID: String, model: String? = nil,
+                             captureGate: LiveGate? = nil, dispatchGate: LiveGate? = nil) async {
         guard !closed, starting == nil, session?.isRunning != true || session?.isUsedUp == true else { return }
+        status.card?.presentation?.revoke()
         func refuse(_ reason: String) {
             if session?.isRunning == true {
                 status.detail = "the AI was not started again: " + reason
@@ -487,6 +497,8 @@ public actor LiveLink {
             publish()
         }
         if let problem = policy.problem { return refuse(problem) }
+        if dispatchGate?.isOpen == false { return refuse("this Start was stopped before it began") }
+        if captureGate?.isOpen == false { return refuse("this capture has stopped") }
         guard !stopped.contains(captureSessionID), AskWire.isIdentifier(captureSessionID) else {
             return refuse("this capture has stopped")
         }
@@ -522,6 +534,7 @@ public actor LiveLink {
         defer { _ = AskFiles.writeNew(.object(record), to: directory.appending(path: id + ".session.json")) }
         // Stop, Quit or the capture's end came while it was starting: it is never used.
         let fenced = startFenced || closed || stopped.contains(captureSessionID)
+            || dispatchGate?.isOpen == false || captureGate?.isOpen == false
         starting = nil
         startFenced = false
         guard case .result(_, let result)? = reply,
@@ -549,6 +562,8 @@ public actor LiveLink {
         session = LiveSession(id: id, captureSessionID: captureSessionID, model: chosen.id, policy: policy,
                               remaining: granted.remaining, expiresHost: began + Double(granted.expiresInMS) / 1_000)
         sessionDirectory = directory
+        sessionCaptureGate = captureGate
+        sessionDispatchGate = dispatchGate
         publishSession()
         let wait = max(0, began + Double(granted.expiresInMS) / 1_000 - clock())
         Task { [weak self] in
@@ -588,7 +603,13 @@ public actor LiveLink {
     /// Ends the session, once: every request on its way is fenced and, if it has not reached the
     /// connector whole, taken back; the connector is told to stop; nothing is sent afterwards.
     private func endSession(_ reason: String, timeout: TimeInterval? = nil) async {
-        guard var ending = session, ending.isRunning else { return }
+        guard session?.isRunning == true else { return }
+        if let permit = status.card?.presentation, permit.shownAt != nil {
+            answerShown(permit.requestID, presentation: permit)
+        }
+        guard var ending = session else { return }
+        sessionDispatchGate?.close(reason)
+        status.card?.presentation?.revoke()
         ending.end(reason)
         session = ending
         for id in out.keys {
@@ -634,13 +655,25 @@ public actor LiveLink {
     /// kept): said on the session line, so the AI is not shown as observing what it is not given.
     public func noPicture(_ reason: String) {
         guard var current = session, current.isRunning else { return }
+        if current.recordSourceLoss(reason, at: LiveWire.utc(Date())) {
+            if let directory = sessionDirectory {
+                _ = AskFiles.writeNew(.object(["format": .string("lc-macos-live-source-loss/v1"),
+                    "session_id": .string(current.id), "noticed_at": .string(LiveWire.utc(Date())),
+                    "reason": .string(reason), "what": .string("local source-state loss; no current pixels claimed")]),
+                    to: directory.appending(path: "\(current.id).source-loss-\(current.history.count).json"))
+            }
+        }
         current.pictureUnavailable(reason)
         session = current
         // A completed line may already be a useful historical observation. Only withdraw a line
         // that has not reached the connector whole; the writer keeps its partial-line fence.
-        for (id, request) in out where request.turn.trigger == .observation {
-            if request.line.revoke() { fence(id, reason: reason) }
+        for (id, request) in out where request.turn.trigger == .observation || request.source.currentSourceProblem != nil {
+            if request.turn.presents, request.source.currentSourceProblem != nil {
+                fence(id, reason: reason)
+                Task { await self.interrupt(id) }
+            } else if request.line.revoke() { fence(id, reason: reason) }
         }
+        if card?.answerSource?.currentSourceProblem != nil { status.card?.presentation?.revoke() }
         publishSession()
     }
 
@@ -651,8 +684,18 @@ public actor LiveLink {
         Task { await self.pump() }
     }
 
+    /// A frame from an earlier local Start is refused without declaring a source loss in the
+    /// replacement session. An input cannot substitute its own open gate for the session's gate.
+    private func dispatchAuthorityMatches(_ input: LiveFrameInput) -> Bool {
+        guard sessionDispatchGate?.isOpen != false, input.dispatchGate?.isOpen != false else { return false }
+        if let supplied = input.dispatchGate, let active = sessionDispatchGate, supplied !== active { return false }
+        return true
+    }
+
     private func take(_ input: LiveFrameInput) -> Bool {
         guard var current = session, current.isRunning, current.captureSessionID == input.captureSessionID else { return false }
+        guard dispatchAuthorityMatches(input) else { return false }
+        if let problem = input.dispatchProblem { noPicture(problem); return false }
         current.offer(input)
         session = current
         publishSession()
@@ -661,7 +704,8 @@ public actor LiveLink {
 
     /// Sends the waiting frame as an unattended look when the session's rules allow it now.
     private func pump() async {
-        guard var current = session, !closed, status.card?.phase != .asking else { return }
+        guard var current = session, !closed, sessionDispatchGate?.isOpen != false,
+              status.card?.phase != .asking else { return }
         let now = clock()
         guard let next = current.nextLook(nowHost: now) else {
             session = current
@@ -693,8 +737,14 @@ public actor LiveLink {
             publishSession()
         }
         guard session.isRunning else { return missed("the session ended", .notObserved) }
+        guard dispatchAuthorityMatches(next.input) else { return missed("the AI session authority ended", .notObserved) }
         guard session.canObserve(next.seq) else {
             return missed(session.missed ?? "an explicit request took priority over this look", .notObserved)
+        }
+        if let problem = next.input.dispatchProblem {
+            missed(problem, .notObserved)
+            noPicture(problem)
+            return
         }
         guard case .success(let made) = rendered else {
             if case .failure(let refusal) = rendered { missed(refusal.reason, .notObserved) }
@@ -704,6 +754,7 @@ public actor LiveLink {
         // so no request is used on it.
         if session.hasSeen(made.picture) {
             session.out -= 1
+            session.missed = nil
             session.gap(next.seq, .coalesced)
             self.session = session
             publishSession()
@@ -719,7 +770,7 @@ public actor LiveLink {
             return await pump()
         }
         self.session = session
-        let sent = await send(turn, made: made, cardID: nil, alreadyCounted: true)
+        let sent = await send(turn, made: made, source: next.input, cardID: nil, alreadyCounted: true)
         guard var after = self.session, after.id == id else { return }
         switch sent.outcome {
         case .answered(let answer):
@@ -758,13 +809,14 @@ public actor LiveLink {
     /// `unlocated` says why the region cannot be found in that frame's pixels (the display changed,
     /// or the frame was older than what was on screen): such a selection is kept and never sent as
     /// a focus, and words about it go with the newest picture alone.
-    public func selected(_ input: LiveFrameInput, rect: RecordedRect, selectionID: String, unlocated: String? = nil) async {
+    public func selected(_ input: LiveFrameInput, rect: RecordedRect, selectionID: String, unlocated: String? = nil,
+                         presentationGate: LiveGate? = nil) async {
         guard case .success = config, !closed else { return }
         dropCard(reason: "a new selection was made")
         let id = "focus-" + selectionID + "-" + CaptureLink.randomHex(4)
         let directory = input.captureSession.appending(path: "live", directoryHint: .isDirectory)
         card = Card(id: id, selectionID: selectionID, captureSessionID: input.captureSessionID, directory: directory,
-                    input: input, rect: rect, unlocated: unlocated)
+                    input: input, rect: rect, unlocated: unlocated, presentationGate: presentationGate)
         status.card = LiveCard(cardID: id, selectionID: selectionID, captureSessionID: input.captureSessionID, phase: .idle,
                                frameFile: input.frame.file)
         publish()
@@ -776,13 +828,20 @@ public actor LiveLink {
     /// (the newest pixels were not kept). On the unchanged picture the selection stays the focus;
     /// after the screen changed the request carries the new picture, and says where the selection
     /// was without its pixels. A selection the model was not given yet goes with its own picture.
-    public func followUp(_ words: String, assistance: LiveAssistance, fresh: LiveFrameInput?) async {
+    public func followUp(_ words: String, assistance: LiveAssistance, fresh: LiveFrameInput?,
+                         presentationGate: LiveGate? = nil) async {
         guard let card, status.card?.phase != .asking else { return }
+        self.card?.presentationGate = presentationGate
         await ask(cardID: card.id, words: words, assistance: assistance, fresh: fresh)
     }
 
     private func ask(cardID: String, words: String?, assistance: LiveAssistance, fresh: LiveFrameInput?) async {
         guard let card, card.id == cardID else { return }
+        status.card?.presentation?.revoke()
+        if status.card?.presentation?.shownAt == nil {
+            status.card?.answer = nil
+            status.card?.presentation = nil
+        }
         func idle(_ detail: String) {
             guard self.card?.id == cardID else { return }
             let phase: LiveCard.Phase = status.card?.answer == nil ? .idle : .answered
@@ -791,7 +850,8 @@ public actor LiveLink {
             publish()
         }
         let notAsked = words == nil ? "Kept on this Mac. The AI was not asked: " : "Not sent: "
-        guard let current = session, current.isRunning, current.captureSessionID == card.captureSessionID else {
+        guard let current = session, current.isRunning, sessionDispatchGate?.isOpen != false,
+              current.captureSessionID == card.captureSessionID else {
             let reason = starting != nil ? "the AI is being started"
                 : session.map { $0.captureSessionID == card.captureSessionID ? "the AI session has ended; start it again"
                     : "the AI observes another capture" } ?? "the AI is not started for this display"
@@ -824,7 +884,8 @@ public actor LiveLink {
             try? await Task.sleep(nanoseconds: 1_000_000)
         }
         guard self.card?.id == cardID, status.card?.phase == .asking else { return }
-        guard var reserved = self.session, reserved.id == id, reserved.isRunning else {
+        guard var reserved = self.session, reserved.id == id, reserved.isRunning,
+              sessionDispatchGate?.isOpen != false else {
             return idle("Not sent: the AI session ended.")
         }
         guard !reserved.isUsedUp else {
@@ -846,15 +907,22 @@ public actor LiveLink {
         // that a follow-up carries the newest picture.
         let origin = card.originSession == id ? card.origin : nil
         let ownPicture = origin == nil && card.unlocated == nil
-        guard let input = ownPicture ? card.input : fresh else {
+        guard var input = ownPicture ? card.input : fresh else {
             // Never an older picture in the place of the current one.
             return idle("Not sent: there is no current picture of this display on record (its newest pixels were not kept).")
         }
+        if ownPicture { input.dispatchGate = sessionDispatchGate }
+        guard dispatchAuthorityMatches(input) else { return idle("Not sent: this AI request authority has ended.") }
         let makePicture = self.makePicture
         let rendered = await Task.detached(priority: .userInitiated) { makePicture(input) }.value
         // Only if this is still the card, and the session, it was pressed in.
         guard self.card?.id == cardID, status.card?.phase == .asking else { return }
         guard var session = self.session, session.id == id, session.isRunning else { return idle("Not sent: the AI session ended.") }
+        guard dispatchAuthorityMatches(input) else { return idle("Not sent: this AI request authority has ended.") }
+        if let problem = input.dispatchProblem {
+            if input.currentSourceProblem != nil { noPicture(problem) }
+            return idle("Not sent: \(problem).")
+        }
         guard case .success(let made) = rendered else {
             if case .failure(let refusal) = rendered { idle("Not sent: " + refusal.reason + ".") }
             return
@@ -899,6 +967,7 @@ public actor LiveLink {
         self.session = session
         self.card?.requests = number
         self.card?.requestID = turn.requestID
+        self.card?.answerSource = input
         let askedAt = LiveWire.utc(Date())
         status.card?.requestID = turn.requestID
         status.card?.question = words
@@ -913,7 +982,7 @@ public actor LiveLink {
         publish()
 
         ownsReservation = false
-        let sent = await send(turn, made: made, cardID: cardID, alreadyCounted: true)
+        let sent = await send(turn, made: made, source: input, cardID: cardID, alreadyCounted: true)
         show(sent.outcome, of: turn, askedAt: askedAt)
         publishSession()
         await conclude(sent)
@@ -942,6 +1011,10 @@ public actor LiveLink {
             status.card?.phase = .answered
             status.card?.answer = answer.text
             status.card?.latencyMS = answer.latencyMS
+            status.card?.presentation = LiveAnswerPresentation(turn: turn, captureSessionID: card.captureSessionID,
+                owner: presentationOwner, directory: card.directory, generation: card.presentationGate,
+                capture: card.answerSource?.captureGate ?? sessionCaptureGate, sourceProblem: card.answerSource?.currentSourceProblem,
+                expiresHost: current.expiresHost, clock: clock)
         case .refused(let error):
             status.card?.phase = .refused
             status.card?.detail = "No answer: \(error.words). \(error.submission.words); it is not sent again."
@@ -962,20 +1035,29 @@ public actor LiveLink {
 
     /// The card reports that the answer of `requestID` is displayed. Recorded apart from the answer
     /// itself: an answer that was put on a card is not thereby one the user saw.
-    public func answerShown(_ requestID: String) {
-        guard let card, card.requestID == requestID, status.card?.phase == .answered else { return }
-        session?.presented(requestID, shown: true)
+    public func answerShown(_ requestID: String, presentation supplied: LiveAnswerPresentation? = nil) {
+        guard let permit = supplied ?? status.card?.presentation,
+              permit.owner == presentationOwner, permit.requestID == requestID else { return }
+        if permit.shownAt == nil {
+            guard let card, card.requestID == requestID, status.card?.phase == .answered,
+                  let current = session, current.isRunning, current.id == permit.sessionID,
+                  current.captureSessionID == permit.captureSessionID, !stopped.contains(permit.captureSessionID),
+                  permit.whileAllowed({ true }) else { return }
+        }
+        guard let shownAt = permit.shownAt else { return }
+        if session?.id == permit.sessionID { session?.presented(requestID, shown: true) }
         _ = AskFiles.writeNew(.object(["format": .string("lc-macos-live-shown/v1"), "request_id": .string(requestID),
-                                        "shown_at": .string(LiveWire.utc(Date())),
+                                        "shown_at": .string(shownAt),
                                         "what": .string("the app put this answer on its card panel while the panel was on screen; "
                                             + "that it was read is not recorded")]),
-                              to: card.directory.appending(path: requestID + ".shown.json"))
+                              to: permit.directory.appending(path: requestID + ".shown.json"))
     }
 
     /// The user's Cancel: a request on its way is fenced at once, taken back if it has not reached
     /// the connector, and interrupted there otherwise. A card with nothing on its way is closed.
     public func cancelCard() async {
         guard let card else { return }
+        status.card?.presentation?.revoke()
         guard status.card?.phase == .asking, let requestID = card.requestID, out[requestID] != nil else {
             if status.card?.phase == .asking {
                 // Its picture is still being made: nothing was sent.
@@ -1001,6 +1083,10 @@ public actor LiveLink {
     /// card and never reported as displayed is recorded as not presented.
     private func dropCard(reason: String) {
         guard let dropped = card else { return }
+        if let permit = status.card?.presentation, permit.shownAt != nil {
+            answerShown(permit.requestID, presentation: permit)
+        }
+        status.card?.presentation?.revoke()
         if let requestID = dropped.requestID {
             if out[requestID] != nil {
                 fence(requestID, reason: reason)
@@ -1058,12 +1144,23 @@ public actor LiveLink {
 
     /// Keeps the request beside the originals, writes it, waits for its one answer, keeps the
     /// outcome, and accounts for it in the session. Nothing is retried.
-    private func send(_ turn: LiveTurn, made: LiveRendered, cardID: String?, alreadyCounted: Bool) async -> Sent {
+    private func send(_ turn: LiveTurn, made: LiveRendered, source: LiveFrameInput, cardID: String?, alreadyCounted: Bool) async -> Sent {
         guard var current = session, current.id == turn.sessionID, let directory = sessionDirectory else {
             return Sent(outcome: .notKept, ends: nil)
         }
+        guard current.isRunning, dispatchAuthorityMatches(source), clock() < current.expiresHost else {
+            if alreadyCounted { current.out -= 1; session = current; publishSession() }
+            return Sent(outcome: .notDelivered, ends: nil)
+        }
         if !alreadyCounted { current.out += 1 }
         session = current
+        var source = source
+        if source.captureGate == nil { source.captureGate = sessionCaptureGate }
+        if source.dispatchGate == nil { source.dispatchGate = sessionDispatchGate }
+        let admittedSource = source
+        let activeSessionGate = sessionDispatchGate
+        let expiry = current.expiresHost
+        let dispatchClock = clock
         // Kept before anything is sent.
         let record: JSONValue = .object([
             "format": .string("lc-macos-live-request/v1"), "turn": turn.json(includingImage: false),
@@ -1079,12 +1176,18 @@ public actor LiveLink {
            let line = LiveWire.request(id: "c\(nextCall)", method: "companion/turn", params: turn.json(includingImage: true)) {
             let callID = "c\(nextCall)"
             nextCall += 1
-            let handle = AskRevocation()
-            out[turn.requestID] = Out(turn: turn, line: handle, directory: directory, cardID: cardID)
+            let handle = AskRevocation(allowed: {
+                admittedSource.dispatchProblem == nil && activeSessionGate?.isOpen != false && dispatchClock() < expiry
+            }, gates: [activeSessionGate, admittedSource.captureGate].compactMap { $0 })
+            out[turn.requestID] = Out(turn: turn, line: handle, directory: directory, cardID: cardID, source: source)
             let answer = OneShot<LiveWire.Incoming?>()
             waiting[callID] = answer
             publishSession()
             outcome = .notDelivered
+            if let problem = source.dispatchProblem {
+                fence(turn.requestID, reason: problem)
+                if source.currentSourceProblem != nil { noPicture(problem) }
+            }
             if await running.send(line, revocation: handle) {
                 if var session = self.session, session.id == turn.sessionID {
                     session.sent(turn, nowHost: clock())
@@ -1099,6 +1202,13 @@ public actor LiveLink {
                 default:
                     outcome = .noAnswer
                 }
+            }
+            if handle.isRevoked, out[turn.requestID]?.fenced == nil {
+                // A temporary source refusal remains a refusal even if fresh callbacks recover
+                // before the writer returns. It is not a new connector transport failure.
+                let problem = source.dispatchProblem ?? "request authority was withdrawn before complete delivery"
+                fence(turn.requestID, reason: problem)
+                if source.currentSourceProblem != nil, source.dispatchProblem != nil { noPicture(problem) }
             }
             waiting[callID] = nil
             request = out.removeValue(forKey: turn.requestID)

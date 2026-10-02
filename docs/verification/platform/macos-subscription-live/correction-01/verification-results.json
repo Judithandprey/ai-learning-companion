@@ -1,0 +1,62 @@
+{
+  "binding": "Correction commit containing this record and source-sha256.json",
+  "predecessor_candidate": "3147291f449105c06255cfc0ea2056f1b2582437",
+  "assigned_review_baseline": "c9177096c99c2562e4474bcbb2f4ffc8beb43c18",
+  "scope": "MAC-LIVE-01/02 only; existing P0-03/11 to P1-02/ADR0004",
+  "checks": [
+    {
+      "kind": "focused library/source replay",
+      "tests": 40,
+      "failures": 0,
+      "exit_code": 0,
+      "includes_unchanged_lead_probe": true,
+      "record": "focused-results.json"
+    },
+    {
+      "kind": "actual extracted controller + recording UI stand-ins",
+      "tests": 8,
+      "failures": 0,
+      "exit_code": 0,
+      "record": "controller-final-result.json"
+    },
+    {
+      "kind": "exact-command approved local held-pipe/partial-line check",
+      "tests": 1,
+      "failures": 0,
+      "exit_code": 0,
+      "record": "focused-realchild-result.json"
+    },
+    {
+      "kind": "separate library module emit/public controller interface/app syntax",
+      "exit_code": 0,
+      "record": "interface-results.json"
+    },
+    {
+      "kind": "existing synthetic fixture producer",
+      "tests": 1,
+      "failures": 0,
+      "record": "interface-results.json"
+    },
+    {
+      "kind": "released fixture validation",
+      "checks": 211,
+      "lines": 10,
+      "turns": 6,
+      "exit_code": 0,
+      "record": "interface-results.json"
+    }
+  ],
+  "source_bindings": "final-binding-check.json",
+  "native_test_declarations": 151,
+  "full_native_or_linux_151_suite_run": false,
+  "full_mutation_campaign_run": false,
+  "native_macos_compiled_or_device_verified": false,
+  "actual_provider_account_model_audio_or_paid_call": false,
+  "initial_failed_runs": [
+    "focused-emission-failure-tests.txt",
+    "focused-restricted-41-tests.txt",
+    "focused-realchild-entrypoint-failure.txt",
+    "interface-validator-preliminary.txt"
+  ],
+  "remaining": "Lead exact-source integration/CI/native macOS build and separately coordinated interactive acceptance. NativeSpeech/native-voice import remains pending."
+}

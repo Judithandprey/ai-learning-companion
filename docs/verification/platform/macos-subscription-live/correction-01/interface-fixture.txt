@@ -1,0 +1,36 @@
+Prepared 42 library/test source files; one selected fixture method under /tmp/lc-interface-fixture.YNTsHM.
+src/AskLinkTests.swift:955:36: warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 953 |             ending.connection = FakeConnector.connection(state: "signed_out", mode: NSNull())
+ 954 |             // In the first round the exit is reported only after the sign-in start has returned.
+ 955 |             ending.afterLoginStart = round == 0 ? { $0.endChildUnreported() } : { $0.exitChild() }
+     |                                    `- warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 956 |             let endingLink = askLink(ending)
+ 957 |             await endingLink.connect()
+
+Test Suite 'All tests' started at 2026-10-02 03:45:55.463
+Test Suite 'bin.xctest' started at 2026-10-02 03:45:55.465
+Test Suite 'DesktopCaptureTests' started at 2026-10-02 03:45:55.465
+Test Case 'DesktopCaptureTests.testLiveSessionLinesForTheReleasedValidator' started at 2026-10-02 03:45:55.465
+Test Case 'DesktopCaptureTests.testLiveSessionLinesForTheReleasedValidator' passed (0.137 seconds)
+Test Suite 'DesktopCaptureTests' passed at 2026-10-02 03:45:55.602
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.137 (0.137) seconds
+Test Suite 'bin.xctest' passed at 2026-10-02 03:45:55.602
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.137 (0.137) seconds
+Test Suite 'All tests' passed at 2026-10-02 03:45:55.602
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.137 (0.137) seconds
+fatal: path 'apps/macos/CompanionDesktop/checks/validate_live_session.py' exists on disk, but not in 'c9177096c99c2562e4474bcbb2f4ffc8beb43c18'
+Traceback (most recent call last):
+  File "/home/agentsdock/Projects/learning-companion/wt-platform/docs/verification/platform/macos-subscription-live/correction-01/interface-fixture-validate.py", line 44, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/home/agentsdock/Projects/learning-companion/wt-platform/docs/verification/platform/macos-subscription-live/correction-01/interface-fixture-validate.py", line 31, in main
+    released = subprocess.check_output(["git", "show", f"{BASELINE}:{path}"], cwd=WORKTREE)
+  File "/usr/lib/python3.14/subprocess.py", line 473, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+           ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+               **kwargs).stdout
+               ^^^^^^^^^
+  File "/usr/lib/python3.14/subprocess.py", line 578, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['git', 'show', 'c9177096c99c2562e4474bcbb2f4ffc8beb43c18:apps/macos/CompanionDesktop/checks/validate_live_session.py']' returned non-zero exit status 128.

@@ -1,0 +1,22 @@
+{
+  "harnesses": {
+    "focused-final-source-manifest.json": {
+      "owned_sources_checked": 42,
+      "source_drift": []
+    },
+    "controller-final-source-manifest.json": {
+      "owned_sources_checked": 44,
+      "source_drift": []
+    },
+    "interface-source-manifest.json": {
+      "owned_sources_checked": 33,
+      "source_drift": []
+    },
+    "interface-fixture-source-manifest.json": {
+      "owned_sources_checked": 42,
+      "source_drift": []
+    }
+  },
+  "lead_counterexample_unchanged": true,
+  "native_or_real_ai_acceptance": false
+}

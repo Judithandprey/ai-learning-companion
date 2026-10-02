@@ -15,7 +15,7 @@ public final class LiveGate: @unchecked Sendable {
         public let host: Double
     }
 
-    private let lock = NSLock()
+    private let lock = NSRecursiveLock()
     private var closed: Closure?
 
     public init() {}
@@ -38,6 +38,15 @@ public final class LiveGate: @unchecked Sendable {
         lock.lock()
         defer { lock.unlock() }
         return closed == nil ? clock() : nil
+    }
+
+    /// A short synchronous action admitted before closure, with no suspension. The recursive
+    /// lock permits synchronous UI observers to read the gate while presentation holds it.
+    public func whileOpen<T>(_ action: () -> T) -> T? {
+        lock.lock()
+        defer { lock.unlock() }
+        guard closed == nil else { return nil }
+        return action()
     }
 
     /// Returns true if this call closed the gate, false if it was already closed.

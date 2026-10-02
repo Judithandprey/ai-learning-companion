@@ -178,6 +178,16 @@ struct LiveSession {
         }
     }
 
+    /// A source gap without new pixels still belongs in later model context. This records only
+    /// the local judgment and its time; it is explicitly not fabricated screen evidence.
+    mutating func recordSourceLoss(_ reason: String, at: String) -> Bool {
+        let notice = "Current screen unavailable: \(reason). This is source-status metadata, not an observed picture."
+        guard history.last?.text != notice else { return false }
+        history.append(LiveHistoryEntry(kind: .observation, text: notice, at: at, frameSeq: nil,
+                                       requestID: nil, presentation: "not_presented"))
+        return true
+    }
+
     func canObserve(_ seq: Int) -> Bool {
         ended == nil && seq > unavailableThroughFrame
     }

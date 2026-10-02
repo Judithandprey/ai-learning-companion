@@ -1,0 +1,54 @@
+{
+  "kind": "MAC-LIVE-01/02 correction independent Linux interface and fixture check",
+  "recorded_utc": "2026-10-02T10:49:07.534202+00:00",
+  "worker_head": "3147291f449105c06255cfc0ea2056f1b2582437",
+  "source_state": "dirty final correction snapshot; see exact source manifests",
+  "language": "Swift 6.3.3 toolchain in Swift 5 language mode",
+  "native_compiled": false,
+  "real_device_verified": false,
+  "real_ai_connected": false,
+  "provider_model_account_network_calls": 0,
+  "production_or_git_mutations": 0,
+  "checks": [
+    {
+      "stage": "public module emit",
+      "exit_code": 0,
+      "production_library_source_count": 29,
+      "log": "interface-module.txt"
+    },
+    {
+      "stage": "LiveController class against separate public module + changed app syntax parses",
+      "exit_code": 0,
+      "syntax_source_count": 4,
+      "log": "interface-app.txt"
+    },
+    {
+      "stage": "single existing synthetic fixture XCTest",
+      "tests": 1,
+      "failures": 0,
+      "log": "interface-fixture.txt",
+      "pipeline_exit_code": 1,
+      "pipeline_reason": "initial provenance lookup for native adapter absent in c917; the XCTest itself passed"
+    },
+    {
+      "stage": "corrected unchanged released-input proof + existing fixture validator",
+      "exit_code": 0,
+      "shared_inputs_identical_to_c917": 13,
+      "candidate_native_adapter_identical_to_worker_head": true,
+      "request_lines": 10,
+      "turns": 6,
+      "validator_checks": 211,
+      "log": "interface-validator.txt"
+    }
+  ],
+  "source_snapshot_drift_at_completion": [],
+  "warnings": [
+    "Existing Swift default-platform/sysroot libc-not-found warnings in version/parse output",
+    "Existing AskLinkTests.swift:955 conversion to Sendable callback warning during fixture compile"
+  ],
+  "preserved_provenance_errors": [
+    "Initial checker lookup attempted c917 for the candidate native validator (absent in c917); raw failure retained in interface-fixture.txt",
+    "Next provenance scan mistakenly included its own verification __main__ script (not a released input); raw failure retained in interface-validator-preliminary.txt"
+  ],
+  "next_owner_action": "Root/lead binds correction commit and integrates evidence; exact-source macOS-native build and separately coordinated interactive-device acceptance remain outstanding."
+}

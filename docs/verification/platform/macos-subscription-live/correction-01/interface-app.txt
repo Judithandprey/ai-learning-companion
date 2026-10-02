@@ -1,0 +1,9 @@
+PASS: LiveController class typechecks against separate DesktopCapture public module (no @testable import).
+<unknown>:0: warning: libc not found for 'x86_64-unknown-linux-gnu'; C stdlib may be unavailable
+PASS: syntax parse CaptureController.swift
+<unknown>:0: warning: libc not found for 'x86_64-unknown-linux-gnu'; C stdlib may be unavailable
+PASS: syntax parse CaptureRun.swift
+<unknown>:0: warning: libc not found for 'x86_64-unknown-linux-gnu'; C stdlib may be unavailable
+PASS: syntax parse InkController.swift
+<unknown>:0: warning: libc not found for 'x86_64-unknown-linux-gnu'; C stdlib may be unavailable
+PASS: syntax parse LiveController.swift

@@ -108,8 +108,13 @@ public final class AskRevocation: @unchecked Sendable {
     private var revoked = false
     private var delivered = false
     private var inPart = false
+    private let allowed: @Sendable () -> Bool
+    private let gates: [LiveGate]
 
-    public init() {}
+    public init(allowed: @escaping @Sendable () -> Bool = { true }, gates: [LiveGate] = []) {
+        self.allowed = allowed
+        self.gates = gates
+    }
 
     /// Takes the line back. False when it was already delivered whole.
     @discardableResult
@@ -130,15 +135,34 @@ public final class AskRevocation: @unchecked Sendable {
     /// taken back (then nil). `write` must not block; it returns the bytes it wrote, or less than
     /// one. Writing the last byte and marking the line delivered are one step.
     func attempt(remaining: Int, started: Bool, _ write: () -> Int) -> Int? {
-        lock.withLock {
-            guard !revoked else {
-                inPart = inPart || started
+        // A source check may synchronously read its capture queue. Do it before taking a gate,
+        // since that queue also admits callbacks through the capture gate.
+        let sourceAllowed = allowed()
+        func refuse() -> Int? {
+            lock.withLock {
+                if !delivered { revoked = true; inPart = inPart || started }
                 return nil
             }
-            let written = write()
-            if written == remaining { delivered = true }
-            return written
         }
+        guard sourceAllowed else { return refuse() }
+        func admitted(_ index: Int) -> Int? {
+            if index < gates.count {
+                guard let result = gates[index].whileOpen({ admitted(index + 1) }) else { return refuse() }
+                return result
+            }
+            return lock.withLock {
+                guard !revoked else {
+                    inPart = inPart || started
+                    return nil
+                }
+                let written = write()
+                if written == remaining { delivered = true }
+                return written
+            }
+        }
+        // Closure of a permanent capture/session gate and the nonblocking final-byte write are
+        // ordered by the same lock. There is no check-then-write gap after Stop completes.
+        return admitted(0)
     }
 }
 

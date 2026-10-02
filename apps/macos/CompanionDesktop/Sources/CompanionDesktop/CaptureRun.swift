@@ -10,6 +10,7 @@ final class CaptureRun: NSObject, SCStreamOutput, SCStreamDelegate {
     let displayID: CGDirectDisplayID
     let gate: LiveGate
     let queue = DispatchQueue(label: "CompanionDesktop.capture")
+    private let recorderQueueKey = DispatchSpecificKey<Bool>()
     let recorder: CaptureRecorder
     weak var controller: CaptureController?
     var scStream: SCStream?
@@ -19,8 +20,11 @@ final class CaptureRun: NSObject, SCStreamOutput, SCStreamDelegate {
     /// composition was requested; main thread only.
     let composesInk: Bool
     var lastCompositionRequested = 0
-    /// The last new pixels offered to the AI's session, or said as not given; main thread only.
+    /// The last current frame frozen for an AI request or observation; main thread only.
     var lastOfferedToAI = 0
+    /// A temporary current-picture loss; main thread only. Recovery may reuse the same pixels
+    /// when a valid idle callback confirms that they are still displayed.
+    var lastAIProblem: String?
     /// The detail of an ending that is waiting for `settleCompositions`, so a Quit meanwhile keeps
     /// it; main thread only.
     var pendingEndingDetail: String?
@@ -32,6 +36,21 @@ final class CaptureRun: NSObject, SCStreamOutput, SCStreamDelegate {
         self.recorder = recorder
         self.composesInk = composesInk
         self.controller = controller
+        super.init()
+        queue.setSpecific(key: recorderQueueKey, value: true)
+    }
+
+    /// The current capture authority at input/dispatch time. The recorder is read only on its
+    /// owning queue, including when a caller is already there. A pinned historical selection
+    /// (`sequence == nil`) needs the open capture gate but makes no current-pixel claim.
+    func currentSourceProblem(sequence: Int?) -> String? {
+        guard gate.isOpen else { return "the capture has stopped; nothing more is sent from it" }
+        guard let sequence else { return nil }
+        let read = {
+            Freshness.currentFrameProblem(self.recorder.status, capturing: self.gate.isOpen,
+                                          sequence: sequence, now: HostClock.now())
+        }
+        return DispatchQueue.getSpecific(key: recorderQueueKey) == true ? read() : queue.sync(execute: read)
     }
 
     // MARK: - ScreenCaptureKit (on `queue` or a system queue)

@@ -1240,6 +1240,9 @@ extension DesktopCaptureTests {
         status = await link.currentStatus()
         XCTAssertEqual(status.session.state, .usedUp)
         XCTAssertEqual(status.card?.phase, .answered)
+        // History retention below applies to an answer actually displayed, not a queued answer
+        // whose first-display permission the new explicit action revokes.
+        await link.answerShown(try XCTUnwrap(status.card?.requestID))
         // Used up: nothing more is sent, and the card says why.
         await link.followUp("One more?", assistance: .hint, fresh: liveInput(capture, frames[5]))
         XCTAssertEqual(bounded.turns.count, 5)
@@ -1388,6 +1391,7 @@ extension DesktopCaptureTests {
         XCTAssertEqual(rows[2]["presentation"] as? String, "unconfirmed", "an answer not reported as displayed")
 
         // Words that cannot be sent leave the answer on the card.
+        await link.answerShown(try XCTUnwrap(card.requestID))
         await link.followUp("   ", assistance: .hint, fresh: liveInput(stand, second))
         card = try await liveCard(link)
         XCTAssertEqual([card.phase.rawValue, card.detail], ["answered", "Not sent: the question is empty."])
@@ -1436,6 +1440,7 @@ extension DesktopCaptureTests {
 
         // No current picture (the newest pixels were not kept): an older picture is never sent in
         // its place, and the session line says what is not given.
+        await link.answerShown(try XCTUnwrap(card.requestID))
         await link.followUp("And now?", assistance: .hint, fresh: nil)
         var later = try await liveCard(link)
         XCTAssertEqual([later.phase.rawValue, later.detail],

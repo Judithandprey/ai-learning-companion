@@ -1,0 +1,10 @@
+{
+  "kind": "separate-local-heldpipe-control",
+  "groups": {
+    "legacy": [
+      "testAskRealChildNeverGetsARequestTakenBackInThePipe"
+    ]
+  },
+  "selected_methods": 1,
+  "provider_or_account_calls": false
+}

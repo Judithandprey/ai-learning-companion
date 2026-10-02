@@ -1,0 +1,59 @@
+src/AskLinkTests.swift:955:36: warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 953 |             ending.connection = FakeConnector.connection(state: "signed_out", mode: NSNull())
+ 954 |             // In the first round the exit is reported only after the sign-in start has returned.
+ 955 |             ending.afterLoginStart = round == 0 ? { $0.endChildUnreported() } : { $0.exitChild() }
+     |                                    `- warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 956 |             let endingLink = askLink(ending)
+ 957 |             await endingLink.connect()
+
+Test Suite 'All tests' started at 2026-10-02 03:45:09.803
+Test Suite 'bin.xctest' started at 2026-10-02 03:45:09.805
+Test Suite 'DesktopCaptureTests' started at 2026-10-02 03:45:09.805
+Test Case 'DesktopCaptureTests.testControllerDeferredAnswerCannotAppearAfterSynchronousStop' started at 2026-10-02 03:45:09.805
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"asking","request":"focus-a1-bfe29b2b.1","scenario":"controller-stop","session":"on"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"cancelled","request":"focus-a1-bfe29b2b.1","scenario":"controller-stop","session":"ended(\"stopped by you\")"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"cancelled","request":"focus-a1-bfe29b2b.1","scenario":"controller-stop","session":"ended(\"stopped by you\")"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"cancelled","request":"focus-a1-bfe29b2b.1","scenario":"controller-stop","session":"ended(\"stopped by you\")"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"cancelled","request":"focus-a1-bfe29b2b.1","scenario":"controller-stop","session":"ended(\"stopped by you\")"}
+CONTROLLER_PROBE stop deferred_answer=true published_answers=0 shown_receipt=false
+Test Case 'DesktopCaptureTests.testControllerDeferredAnswerCannotAppearAfterSynchronousStop' passed (0.174 seconds)
+Test Case 'DesktopCaptureTests.testControllerDeferredAnswerCannotAppearAfterSynchronousCancel' started at 2026-10-02 03:45:09.979
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"asking","request":"focus-a1-3878e40b.1","scenario":"controller-cancel","session":"on"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":null,"request":null,"scenario":"controller-cancel","session":"on"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":null,"request":null,"scenario":"controller-cancel","session":"on"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":null,"request":null,"scenario":"controller-cancel","session":"on"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":null,"request":null,"scenario":"controller-cancel","session":"on"}
+CONTROLLER_PROBE cancel deferred_answer=true published_answers=0 shown_receipt=false
+Test Case 'DesktopCaptureTests.testControllerDeferredAnswerCannotAppearAfterSynchronousCancel' passed (0.167 seconds)
+Test Case 'DesktopCaptureTests.testControllerCaptureGateBlocksDeferredAnswerBeforeNotification' started at 2026-10-02 03:45:10.145
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"asking","request":"focus-a1-5e2e7c21.1","scenario":"controller-capture-gate","session":"on"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"cancelled","request":"focus-a1-5e2e7c21.1","scenario":"controller-capture-gate","session":"on"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"cancelled","request":"focus-a1-5e2e7c21.1","scenario":"controller-capture-gate","session":"on"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"cancelled","request":"focus-a1-5e2e7c21.1","scenario":"controller-capture-gate","session":"ended(\"the capture was stopped\")"}
+CONTROLLER_PROBE capture_gate_closed=true actor_notification_initially=false published_answers=0 shown_receipt=false
+Test Case 'DesktopCaptureTests.testControllerCaptureGateBlocksDeferredAnswerBeforeNotification' passed (0.166 seconds)
+Test Case 'DesktopCaptureTests.testControllerAlreadyShownAnswerKeepsItsFirstReceiptAfterStop' started at 2026-10-02 03:45:10.311
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"asking","request":"focus-a1-516eef57.1","scenario":"controller-already-shown","session":"on"}
+CONTROLLER_TRACE {"answer":"Synthetic controller hint: check the sign.","event":"published","panel_visibility_control":true,"phase":"answered","request":"focus-a1-516eef57.1","scenario":"controller-already-shown","session":"on"}
+CONTROLLER_TRACE {"answer":"Synthetic controller hint: check the sign.","event":"published","panel_visibility_control":true,"phase":"answered","request":"focus-a1-516eef57.1","scenario":"controller-already-shown","session":"ended(\"stopped by you\")"}
+CONTROLLER_PROBE already_shown=true first_shown_at_preserved=true historical_answer_retained=true
+CONTROLLER_TRACE {"answer":"Synthetic controller hint: check the sign.","event":"published","panel_visibility_control":true,"phase":"answered","request":"focus-a1-516eef57.1","scenario":"controller-already-shown","session":"ended(\"stopped by you\")"}
+Test Case 'DesktopCaptureTests.testControllerAlreadyShownAnswerKeepsItsFirstReceiptAfterStop' passed (0.167 seconds)
+Test Case 'DesktopCaptureTests.testControllerHiddenAnswerCanBecomeVisibleWithoutFalseReceipt' started at 2026-10-02 03:45:10.478
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"asking","request":"focus-a1-4fb1d9c9.1","scenario":"controller-hidden-visible","session":"on"}
+CONTROLLER_TRACE {"answer":"Synthetic controller hint: check the sign.","event":"published","panel_visibility_control":false,"phase":"answered","request":"focus-a1-4fb1d9c9.1","scenario":"controller-hidden-visible","session":"on"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":false,"phase":"cancelled","request":"focus-a1-4fb1d9c9.1","scenario":"controller-hidden-visible","session":"on"}
+CONTROLLER_TRACE {"answer":"Synthetic controller hint: check the sign.","event":"published","panel_visibility_control":true,"phase":"answered","request":"focus-a1-4fb1d9c9.1","scenario":"controller-hidden-visible","session":"on"}
+CONTROLLER_PROBE hidden_receipt=false later_visible_receipt=true
+Test Case 'DesktopCaptureTests.testControllerHiddenAnswerCanBecomeVisibleWithoutFalseReceipt' passed (0.216 seconds)
+Test Case 'DesktopCaptureTests.testControllerFinalUsedUpAnswerCanBeDisplayed' started at 2026-10-02 03:45:10.694
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"asking","request":"focus-a1-6d141ee4.1","scenario":"controller-final-used-up","session":"on"}
+CONTROLLER_TRACE {"answer":"Synthetic controller hint: check the sign.","event":"published","panel_visibility_control":true,"phase":"answered","request":"focus-a1-6d141ee4.1","scenario":"controller-final-used-up","session":"usedUp"}
+CONTROLLER_PROBE final_used_up=true answer_visible=true shown_receipt=true
+Test Case 'DesktopCaptureTests.testControllerFinalUsedUpAnswerCanBeDisplayed' passed (0.216 seconds)
+Test Suite 'DesktopCaptureTests' passed at 2026-10-02 03:45:10.910
+	 Executed 6 tests, with 0 failures (0 unexpected) in 1.105 (1.105) seconds
+Test Suite 'bin.xctest' passed at 2026-10-02 03:45:10.910
+	 Executed 6 tests, with 0 failures (0 unexpected) in 1.105 (1.105) seconds
+Test Suite 'All tests' passed at 2026-10-02 03:45:10.910
+	 Executed 6 tests, with 0 failures (0 unexpected) in 1.105 (1.105) seconds

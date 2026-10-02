@@ -1,0 +1,116 @@
+src/AskLinkTests.swift:955:36: warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 953 |             ending.connection = FakeConnector.connection(state: "signed_out", mode: NSNull())
+ 954 |             // In the first round the exit is reported only after the sign-in start has returned.
+ 955 |             ending.afterLoginStart = round == 0 ? { $0.endChildUnreported() } : { $0.exitChild() }
+     |                                    `- warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 956 |             let endingLink = askLink(ending)
+ 957 |             await endingLink.connect()
+
+Test Suite 'All tests' started at 2026-10-02 03:42:29.981
+Test Suite 'bin.xctest' started at 2026-10-02 03:42:29.982
+Test Suite 'DesktopCaptureTests' started at 2026-10-02 03:42:29.982
+Test Case 'DesktopCaptureTests.testLiveQueuedUnshownAnswerCannotAcquireReceiptAfterStop' started at 2026-10-02 03:42:29.982
+Test Case 'DesktopCaptureTests.testLiveQueuedUnshownAnswerCannotAcquireReceiptAfterStop' passed (0.023 seconds)
+Test Case 'DesktopCaptureTests.testLiveClosingAnUnshownAnswerRevokesItsQueuedDisplay' started at 2026-10-02 03:42:30.005
+Test Case 'DesktopCaptureTests.testLiveClosingAnUnshownAnswerRevokesItsQueuedDisplay' passed (0.117 seconds)
+Test Case 'DesktopCaptureTests.testLiveNewSelectionRejectsTheOldQueuedAnswerAndDisplaysItsOwn' started at 2026-10-02 03:42:30.123
+Test Case 'DesktopCaptureTests.testLiveNewSelectionRejectsTheOldQueuedAnswerAndDisplaysItsOwn' passed (0.024 seconds)
+Test Case 'DesktopCaptureTests.testLiveFollowUpRevokesAnUnshownAnswerOnTheSameCard' started at 2026-10-02 03:42:30.147
+Test Case 'DesktopCaptureTests.testLiveFollowUpRevokesAnUnshownAnswerOnTheSameCard' passed (0.025 seconds)
+Test Case 'DesktopCaptureTests.testLiveExplicitRestartDoesNotAuthorizeAnEarlierUnshownAnswer' started at 2026-10-02 03:42:30.172
+Test Case 'DesktopCaptureTests.testLiveExplicitRestartDoesNotAuthorizeAnEarlierUnshownAnswer' passed (0.023 seconds)
+Test Case 'DesktopCaptureTests.testLiveCaptureEndRevokesAnUnshownAnswerWithoutDiscardingItsOriginal' started at 2026-10-02 03:42:30.195
+Test Case 'DesktopCaptureTests.testLiveCaptureEndRevokesAnUnshownAnswerWithoutDiscardingItsOriginal' passed (0.015 seconds)
+Test Case 'DesktopCaptureTests.testLiveActuallyShownAnswerKeepsItsOriginalReceiptAfterStopAndClose' started at 2026-10-02 03:42:30.210
+Test Case 'DesktopCaptureTests.testLiveActuallyShownAnswerKeepsItsOriginalReceiptAfterStopAndClose' passed (0.015 seconds)
+Test Case 'DesktopCaptureTests.testLiveFinalUsedUpAnswerStillHasFirstDisplayAuthority' started at 2026-10-02 03:42:30.225
+Test Case 'DesktopCaptureTests.testLiveFinalUsedUpAnswerStillHasFirstDisplayAuthority' passed (0.017 seconds)
+Test Case 'DesktopCaptureTests.testLiveHiddenPanelDoesNotBecomeShownAndCanBeDisplayedLater' started at 2026-10-02 03:42:30.242
+Test Case 'DesktopCaptureTests.testLiveHiddenPanelDoesNotBecomeShownAndCanBeDisplayedLater' passed (0.016 seconds)
+Test Case 'DesktopCaptureTests.testLiveCaptureGateCloseBlocksDisplayBeforeItsActorNotification' started at 2026-10-02 03:42:30.257
+Test Case 'DesktopCaptureTests.testLiveCaptureGateCloseBlocksDisplayBeforeItsActorNotification' passed (0.016 seconds)
+Test Case 'DesktopCaptureTests.testLiveLocalGenerationCloseBlocksDisplayBeforeTheStopTask' started at 2026-10-02 03:42:30.273
+Test Case 'DesktopCaptureTests.testLiveLocalGenerationCloseBlocksDisplayBeforeTheStopTask' passed (0.018 seconds)
+Test Case 'DesktopCaptureTests.testRecoveredSourceRefusalDoesNotBecomeTransportFailure' started at 2026-10-02 03:42:30.291
+Test Case 'DesktopCaptureTests.testRecoveredSourceRefusalDoesNotBecomeTransportFailure' passed (0.023 seconds)
+Test Case 'DesktopCaptureTests.testOldOrReplacementDispatchGateCannotAuthorizeTheActiveSession' started at 2026-10-02 03:42:30.314
+Test Case 'DesktopCaptureTests.testOldOrReplacementDispatchGateCannotAuthorizeTheActiveSession' passed (0.017 seconds)
+Test Case 'DesktopCaptureTests.testSameFrameRecoveryClearsSourceLossWithoutAnotherSubmission' started at 2026-10-02 03:42:30.332
+Test Case 'DesktopCaptureTests.testSameFrameRecoveryClearsSourceLossWithoutAnotherSubmission' passed (0.02 seconds)
+Test Case 'DesktopCaptureTests.testClosedCaptureRefusesStartBeforeAndAfterConnectorAwait' started at 2026-10-02 03:42:30.352
+Test Case 'DesktopCaptureTests.testClosedCaptureRefusesStartBeforeAndAfterConnectorAwait' passed (0.002 seconds)
+Test Case 'DesktopCaptureTests.testPermanentGateClosureAndFinalByteAreAtomicallyOrdered' started at 2026-10-02 03:42:30.354
+Test Case 'DesktopCaptureTests.testPermanentGateClosureAndFinalByteAreAtomicallyOrdered' passed (0.051 seconds)
+Test Case 'DesktopCaptureTests.testCurrentSourceLossDuringRenderRefusesThenRecoversWithoutRestart' started at 2026-10-02 03:42:30.405
+Test Case 'DesktopCaptureTests.testCurrentSourceLossDuringRenderRefusesThenRecoversWithoutRestart' passed (0.023 seconds)
+Test Case 'DesktopCaptureTests.testCurrentSourceLossWhileFollowupWaitsInWriterDropsTheLine' started at 2026-10-02 03:42:30.428
+Test Case 'DesktopCaptureTests.testCurrentSourceLossWhileFollowupWaitsInWriterDropsTheLine' passed (0.069 seconds)
+Test Case 'DesktopCaptureTests.testSourceAdmissionRechecksFinalByteAndPermanentSessionStop' started at 2026-10-02 03:42:30.498
+Test Case 'DesktopCaptureTests.testSourceAdmissionRechecksFinalByteAndPermanentSessionStop' passed (0.0 seconds)
+Test Case 'DesktopCaptureTests.testLeadQueuedAnswerIsNotAcceptedAsShownAfterStop' started at 2026-10-02 03:42:30.498
+PROBE queued_answer=true; session=ended("stopped by you"); card=Optional(LCRun.LiveCard.Phase.answered); shown_receipt_after_Stop=false
+Test Case 'DesktopCaptureTests.testLeadQueuedAnswerIsNotAcceptedAsShownAfterStop' passed (0.016 seconds)
+Test Case 'DesktopCaptureTests.testLiveGateKeepsTheFirstClosureAndAdmitsNothingAfterIt' started at 2026-10-02 03:42:30.514
+Test Case 'DesktopCaptureTests.testLiveGateKeepsTheFirstClosureAndAdmitsNothingAfterIt' passed (0.0 seconds)
+Test Case 'DesktopCaptureTests.testFrameAdmittedBeforeStopIsKeptAndNothingAfter' started at 2026-10-02 03:42:30.515
+Test Case 'DesktopCaptureTests.testFrameAdmittedBeforeStopIsKeptAndNothingAfter' passed (0.002 seconds)
+Test Case 'DesktopCaptureTests.testStopWhileListingDisplaysCreatesNothing' started at 2026-10-02 03:42:30.517
+Test Case 'DesktopCaptureTests.testStopWhileListingDisplaysCreatesNothing' passed (0.001 seconds)
+Test Case 'DesktopCaptureTests.testStopWhileTheStreamStartsStopsIt' started at 2026-10-02 03:42:30.518
+Test Case 'DesktopCaptureTests.testStopWhileTheStreamStartsStopsIt' passed (0.001 seconds)
+Test Case 'DesktopCaptureTests.testLiveStartRefusalsAndAStartThatIsStoppedOrNotConfirmed' started at 2026-10-02 03:42:30.518
+Test Case 'DesktopCaptureTests.testLiveStartRefusalsAndAStartThatIsStoppedOrNotConfirmed' passed (0.068 seconds)
+Test Case 'DesktopCaptureTests.testLiveLooksWaitForTheirTurnAndStopAtTheRequestsKeptForTheUser' started at 2026-10-02 03:42:30.586
+src/LiveLinkTests.swift:1251: error: DesktopCaptureTests.testLiveLooksWaitForTheirTurnAndStopAtTheRequestsKeptForTheUser : XCTAssertEqual failed: ("idle") is not equal to ("answered") - the answer stays
+Test Case 'DesktopCaptureTests.testLiveLooksWaitForTheirTurnAndStopAtTheRequestsKeptForTheUser' failed (0.627 seconds)
+Test Case 'DesktopCaptureTests.testLiveSelectionIsSentAtOnceAsAFocusAndAFollowUpKeepsOrNamesIt' started at 2026-10-02 03:42:31.214
+src/LiveLinkTests.swift:1392: error: DesktopCaptureTests.testLiveSelectionIsSentAtOnceAsAFocusAndAFollowUpKeepsOrNamesIt : XCTAssertEqual failed: ("[Optional("idle"), Optional("Not sent: the question is empty.")]") is not equal to ("[Optional("answered"), Optional("Not sent: the question is empty.")]") - 
+Test Case 'DesktopCaptureTests.testLiveSelectionIsSentAtOnceAsAFocusAndAFollowUpKeepsOrNamesIt' failed (0.071 seconds)
+Test Case 'DesktopCaptureTests.testLiveSelectionMadeBeforeStartKeepsItsOwnPictureAsFocusWhenAsked' started at 2026-10-02 03:42:31.284
+src/LiveLinkTests.swift:1440: error: DesktopCaptureTests.testLiveSelectionMadeBeforeStartKeepsItsOwnPictureAsFocusWhenAsked : XCTAssertEqual failed: ("[Optional("idle"), Optional("Not sent: there is no current picture of this display on record (its newest pixels were not kept).")]") is not equal to ("[Optional("answered"), Optional("Not sent: there is no current picture of this display on record (its newest pixels were not kept).")]") - 
+Test Case 'DesktopCaptureTests.testLiveSelectionMadeBeforeStartKeepsItsOwnPictureAsFocusWhenAsked' failed (0.03 seconds)
+Test Case 'DesktopCaptureTests.testLiveMissingCurrentPictureDropsWaitingLooksAndSurvivesLateResults' started at 2026-10-02 03:42:31.314
+Test Case 'DesktopCaptureTests.testLiveMissingCurrentPictureDropsWaitingLooksAndSurvivesLateResults' passed (0.745 seconds)
+Test Case 'DesktopCaptureTests.testLiveExplicitFocusJoinsAnInterruptedObservationBeforeSending' started at 2026-10-02 03:42:32.059
+Test Case 'DesktopCaptureTests.testLiveExplicitFocusJoinsAnInterruptedObservationBeforeSending' passed (0.067 seconds)
+Test Case 'DesktopCaptureTests.testLiveFocusAndStopCannotBeOvertakenByAnOlderRenderingLook' started at 2026-10-02 03:42:32.126
+Test Case 'DesktopCaptureTests.testLiveFocusAndStopCannotBeOvertakenByAnOlderRenderingLook' passed (0.236 seconds)
+Test Case 'DesktopCaptureTests.testLiveCancelNewSelectionStopAndQuitFenceARequestOnItsWay' started at 2026-10-02 03:42:32.362
+Test Case 'DesktopCaptureTests.testLiveCancelNewSelectionStopAndQuitFenceARequestOnItsWay' passed (0.272 seconds)
+Test Case 'DesktopCaptureTests.testAskRealChildNeverGetsARequestTakenBackInThePipe' started at 2026-10-02 03:42:32.634
+2026-10-02 03:42:32.635 swift-frontend[3:651246c0] *** Could not create wakeup socket pair for CFSocket!!!
+src/AskLinkTests.swift:2333: error: DesktopCaptureTests.testAskRealChildNeverGetsARequestTakenBackInThePipe : XCTAssertTrue failed - 
+src/AskLinkTests.swift:2365: error: DesktopCaptureTests.testAskRealChildNeverGetsARequestTakenBackInThePipe : XCTAssertTrue failed - stop
+src/AskLinkTests.swift:2367: error: DesktopCaptureTests.testAskRealChildNeverGetsARequestTakenBackInThePipe : XCTAssertTrue failed - stop: the connector did not confirm that the capture stopped; this app sends nothing more for it
+src/AskLinkTests.swift:2383: error: DesktopCaptureTests.testAskRealChildNeverGetsARequestTakenBackInThePipe : XCTAssertEqual failed: ("unknown") is not equal to ("signedIn") - stop
+src/AskLinkTests.swift:2384: error: DesktopCaptureTests.testAskRealChildNeverGetsARequestTakenBackInThePipe : XCTAssertEqual failed: ("5") is not equal to ("6") - stop
+src/AskLinkTests.swift:2365: error: DesktopCaptureTests.testAskRealChildNeverGetsARequestTakenBackInThePipe : XCTAssertTrue failed - cancel
+src/AskLinkTests.swift:2367: error: DesktopCaptureTests.testAskRealChildNeverGetsARequestTakenBackInThePipe : XCTAssertTrue failed - cancel: 
+src/AskLinkTests.swift:2383: error: DesktopCaptureTests.testAskRealChildNeverGetsARequestTakenBackInThePipe : XCTAssertEqual failed: ("unknown") is not equal to ("signedIn") - cancel
+src/AskLinkTests.swift:2384: error: DesktopCaptureTests.testAskRealChildNeverGetsARequestTakenBackInThePipe : XCTAssertEqual failed: ("6") is not equal to ("7") - cancel
+Test Case 'DesktopCaptureTests.testAskRealChildNeverGetsARequestTakenBackInThePipe' failed (96.647 seconds)
+Test Suite 'DesktopCaptureTests' failed at 2026-10-02 03:44:09.281
+	 Executed 33 tests, with 12 failures (0 unexpected) in 99.297 (99.297) seconds
+Test Suite 'LiveFreshnessTests' started at 2026-10-02 03:44:09.281
+Test Case 'LiveFreshnessTests.testHealthyIdleConfirmsOldPixelsWithoutChangingTheirSequence' started at 2026-10-02 03:44:09.281
+Test Case 'LiveFreshnessTests.testHealthyIdleConfirmsOldPixelsWithoutChangingTheirSequence' passed (0.002 seconds)
+Test Case 'LiveFreshnessTests.testCallbackSilenceLosesCurrentInputAndValidIdleRestoresTheSameFrame' started at 2026-10-02 03:44:09.283
+Test Case 'LiveFreshnessTests.testCallbackSilenceLosesCurrentInputAndValidIdleRestoresTheSameFrame' passed (0.002 seconds)
+Test Case 'LiveFreshnessTests.testBlankSuspendedAndMissingImageNeedNewPixelsToRecover' started at 2026-10-02 03:44:09.284
+Test Case 'LiveFreshnessTests.testBlankSuspendedAndMissingImageNeedNewPixelsToRecover' passed (0.005 seconds)
+Test Case 'LiveFreshnessTests.testMissingCallbackStatusCannotReuseTheRetainedFrame' started at 2026-10-02 03:44:09.289
+Test Case 'LiveFreshnessTests.testMissingCallbackStatusCannotReuseTheRetainedFrame' passed (0.001 seconds)
+Test Case 'LiveFreshnessTests.testMissingZeroAndInvalidFutureSourceTimeRefuseThenIdleCanConfirmPixels' started at 2026-10-02 03:44:09.290
+Test Case 'LiveFreshnessTests.testMissingZeroAndInvalidFutureSourceTimeRefuseThenIdleCanConfirmPixels' passed (0.002 seconds)
+Test Case 'LiveFreshnessTests.testRecentCallbackDoesNotMakeStaleSourcePixelsCurrent' started at 2026-10-02 03:44:09.292
+Test Case 'LiveFreshnessTests.testRecentCallbackDoesNotMakeStaleSourcePixelsCurrent' passed (0.001 seconds)
+Test Case 'LiveFreshnessTests.testStopGateRefusesBeforeEndingAndLaterCallbacksCannotRestoreIt' started at 2026-10-02 03:44:09.294
+Test Case 'LiveFreshnessTests.testStopGateRefusesBeforeEndingAndLaterCallbacksCannotRestoreIt' passed (0.001 seconds)
+Test Case 'LiveFreshnessTests.testFreshnessAloneCannotAuthorizeAMismatchedRetainedSequence' started at 2026-10-02 03:44:09.295
+Test Case 'LiveFreshnessTests.testFreshnessAloneCannotAuthorizeAMismatchedRetainedSequence' passed (0.001 seconds)
+Test Suite 'LiveFreshnessTests' passed at 2026-10-02 03:44:09.296
+	 Executed 8 tests, with 0 failures (0 unexpected) in 0.015 (0.015) seconds
+Test Suite 'bin.xctest' failed at 2026-10-02 03:44:09.296
+	 Executed 41 tests, with 12 failures (0 unexpected) in 99.312 (99.312) seconds
+Test Suite 'All tests' failed at 2026-10-02 03:44:09.296
+	 Executed 41 tests, with 12 failures (0 unexpected) in 99.312 (99.312) seconds

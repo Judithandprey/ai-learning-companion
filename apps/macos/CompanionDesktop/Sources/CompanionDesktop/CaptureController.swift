@@ -89,7 +89,10 @@ final class CaptureController: ObservableObject {
             MainActor.assumeIsolated { self?.systemWillSleep() }
         })
         let ticker = Timer(timeInterval: 1, repeats: true) { [weak self] _ in
-            MainActor.assumeIsolated { self?.now = HostClock.now() }
+            MainActor.assumeIsolated {
+                self?.now = HostClock.now()
+                self?.reconcileLivePicture()
+            }
         }
         RunLoop.main.add(ticker, forMode: .common)
         self.ticker = ticker
@@ -371,12 +374,8 @@ final class CaptureController: ObservableObject {
         }
         if run === active, run.gate.isOpen {
             link.framesChanged()
-            // While the AI observes, new pixels are offered to it with the ink as it is now; pixels
-            // that were not kept are said as not given.
-            if let pixels = status.lastNewPixelsSequence, pixels > run.lastOfferedToAI {
-                run.lastOfferedToAI = pixels
-                pictureChanged()
-            }
+            // Every callback can lose or restore source freshness, even without new pixels.
+            reconcileLivePicture()
         }
         if ended, run === active {
             active = nil
@@ -390,6 +389,7 @@ final class CaptureController: ObservableObject {
     /// The user's Start AI: only for the capture that is running now.
     func startAI() {
         guard let run = active, run === shown, run.gate.isOpen, let status, let sessionDirectory else { return }
+        live.captureGate = run.gate
         live.start(captureSession: sessionDirectory, captureSessionID: status.session)
     }
 
@@ -398,19 +398,39 @@ final class CaptureController: ObservableObject {
     /// kept frame is then older than the screen, and is never given as the current picture).
     private func liveInput() -> LiveFrameInput? {
         guard let run = active, run === shown, run.gate.isOpen, let status, let kept = status.lastKept,
-              kept.sequence == status.lastNewPixelsSequence, let sessionDirectory else { return nil }
-        return ink.liveInput(frame: FrameReference(kept), captureSession: sessionDirectory, captureSessionID: status.session,
-                             display: status.display)
+              Freshness.currentFrameProblem(status, capturing: phase == .capturing, sequence: kept.sequence,
+                                            now: HostClock.now()) == nil, let sessionDirectory else { return nil }
+        var input = ink.liveInput(frame: FrameReference(kept), captureSession: sessionDirectory, captureSessionID: status.session,
+                                  display: status.display)
+        input.currentSourceProblem = { run.currentSourceProblem(sequence: kept.sequence) }
+        input.captureGate = run.gate
+        // Start and typed follow-ups also obtain their picture here. A later healthy idle/tick
+        // must not offer that same snapshot again merely because no change callback offered it.
+        run.lastOfferedToAI = max(run.lastOfferedToAI, kept.sequence)
+        return input
     }
 
     /// New pixels, or a committed change of the visible ink: offered to the AI while it observes.
     func pictureChanged() {
-        guard live.isObserving else { return }
-        if let input = liveInput() {
-            live.changed(input)
-        } else if let status, let kept = status.lastKept, kept.sequence != status.lastNewPixelsSequence {
-            live.noPicture("the newest pixels of this display were not kept on this Mac, so there is no current picture to give")
+        reconcileLivePicture(inkChanged: true)
+    }
+
+    /// Temporary loss never closes the capture gate. A fresh callback can recover this same
+    /// still-authorized session; ordinary healthy idle callbacks do not repeat the same offer.
+    private func reconcileLivePicture(inkChanged: Bool = false) {
+        guard let run = active, run === shown, run.gate.isOpen, let status else { return }
+        if let problem = Freshness.currentFrameProblem(status, capturing: phase == .capturing,
+                                                       sequence: status.lastKept?.sequence ?? 0, now: HostClock.now()) {
+            run.lastAIProblem = problem
+            live.noPicture(problem)
+            return
         }
+        let recovered = run.lastAIProblem != nil
+        run.lastAIProblem = nil
+        guard live.isObserving, let pixels = status.lastNewPixelsSequence,
+              pixels > run.lastOfferedToAI || recovered || inkChanged, let input = liveInput() else { return }
+        run.lastOfferedToAI = pixels
+        live.changed(input)
     }
 
     func streamStopped(_ run: CaptureRun, reason: StopReason, closedHere: Bool) {

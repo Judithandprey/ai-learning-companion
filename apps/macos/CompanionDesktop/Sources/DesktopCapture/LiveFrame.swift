@@ -33,6 +33,17 @@ public struct LiveFrameInput: Sendable {
     /// Why this capture's frames no longer map to display points (its size or rotation changed);
     /// the ink is then not drawn, and whether the pixels hold it is said as not known.
     public var geometryProblem: String?
+    /// Local dispatch authority, never part of the public wire. Current inputs recheck the
+    /// recorder's source state; pinned selections need only their still-open capture gate.
+    public var currentSourceProblem: (@Sendable () -> String?)? = nil
+    public var captureGate: LiveGate? = nil
+    public var dispatchGate: LiveGate? = nil
+
+    public var dispatchProblem: String? {
+        if captureGate?.isOpen == false { return "this capture has stopped" }
+        if dispatchGate?.isOpen == false { return "this AI session has stopped" }
+        return currentSourceProblem?()
+    }
 
     /// Freezes `document` now, at `revision` (its current one when nil). A document that cannot be
     /// encoded is treated as no document: nothing is drawn, and no ink is claimed.

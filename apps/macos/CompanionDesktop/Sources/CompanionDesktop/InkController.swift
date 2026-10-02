@@ -428,6 +428,11 @@ final class InkController: ObservableObject {
         var freshness = capture.map { String(describing: $0.currentFreshness()) } ?? "unknown"
         pinnedFrameProblem = frame != nil && frame?.sequence != status?.lastNewPixelsSequence
             ? "the frame on record when you drew it was older than what was on screen (newer pixels were not kept)" : nil
+        if pinnedFrameProblem == nil, let capture, case .live = capture.currentFreshness() {
+            // The existing freshness verdict permits this frame as the screen at pen-down.
+        } else if pinnedFrameProblem == nil, frame != nil {
+            pinnedFrameProblem = "the source was not live when you drew it; its retained frame cannot locate what was on screen"
+        }
         if let frame, frame.sequence != status?.lastNewPixelsSequence {
             freshness = "the frame is older than the current pixels (newer pixels were not kept), so this verdict does not apply to it: " + freshness
         }

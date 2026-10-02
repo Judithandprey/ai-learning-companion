@@ -1,0 +1,16 @@
+{
+  "Sources/DesktopCapture/AskChild.swift": "860fe9d6a19fe7d7c5baf4235ce08a99453fd44cc4e8938ed1b1c94c6241c1bf",
+  "Sources/DesktopCapture/LiveGate.swift": "94e937e6d7061fb53f7990be0a2451d18c791d2fd30a8d73affec52256edfaec",
+  "Sources/DesktopCapture/LiveFrame.swift": "e98ecef0273ca29613e3dda9b834d7d71ba380f480103798876ce169eeacfa32",
+  "Sources/DesktopCapture/LiveLink.swift": "3adf120e20158e3e7e32379fca52803de45b3559e146c16b3153c2df438f868d",
+  "Sources/DesktopCapture/LiveSession.swift": "30c8d8e048c4cb953b0d9645d2b31b06a53c3167e13ce88258aebe50e43b6873",
+  "Sources/DesktopCapture/LivePresentation.swift": "e64d2a0ecc444e52619eaef8c3c04b47f478d12f9a7101cca6405a679de4383c",
+  "Sources/DesktopCapture/Freshness.swift": "55db6f67fcb2925245575cc97ab5e18c0550e3feecc662375ba585c8aa071edc",
+  "Sources/CompanionDesktop/CaptureRun.swift": "21e6f73dacfbb8fa5e1e1ddd3adfec0587d6ba2d133ae30c9ce964f83064f138",
+  "Sources/CompanionDesktop/CaptureController.swift": "7a720eb18548a594d48d67ac32d30959f070db832e1cdc0b1667dcf5a2ab42de",
+  "Sources/CompanionDesktop/LiveController.swift": "4b6f619454aeac3201428d06f8c5bcebb6e302ea0940e8bc32a0be594f1b2021",
+  "Tests/DesktopCaptureTests/LiveFreshnessTests.swift": "f0566bfa3c934df1795e6cff128d8d6d73a4a493e7eec7c1913cdfed80921f6f",
+  "Tests/DesktopCaptureTests/LivePresentationTests.swift": "e24fe21955082191e9e3919efc115a1fc3cf5873517873c43381fc84e12c9a22",
+  "Tests/DesktopCaptureTests/LiveSourceDispatchTests.swift": "ee3f042e91446e2322c5d0538a586d89cf4d15e387b2f23c05cd95684bfd26d8",
+  "Tests/DesktopCaptureTests/LiveLinkTests.swift": "0c561a554456c31e5e12482611dc24c9bde3355b52ec53997526b881562a0497"
+}

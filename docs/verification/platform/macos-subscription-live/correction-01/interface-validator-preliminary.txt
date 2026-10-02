@@ -1,0 +1,16 @@
+fatal: path 'docs/verification/platform/macos-subscription-live/correction-01/interface-fixture-validate.py' exists on disk, but not in 'c9177096c99c2562e4474bcbb2f4ffc8beb43c18'
+Traceback (most recent call last):
+  File "/home/agentsdock/Projects/learning-companion/wt-platform/docs/verification/platform/macos-subscription-live/correction-01/interface-fixture-validate.py", line 50, in <module>
+    raise SystemExit(main())
+                     ~~~~^^
+  File "/home/agentsdock/Projects/learning-companion/wt-platform/docs/verification/platform/macos-subscription-live/correction-01/interface-fixture-validate.py", line 35, in main
+    released = subprocess.check_output(["git", "show", f"{reference}:{path}"], cwd=WORKTREE)
+  File "/usr/lib/python3.14/subprocess.py", line 473, in check_output
+    return run(*popenargs, stdout=PIPE, timeout=timeout, check=True,
+           ~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+               **kwargs).stdout
+               ^^^^^^^^^
+  File "/usr/lib/python3.14/subprocess.py", line 578, in run
+    raise CalledProcessError(retcode, process.args,
+                             output=stdout, stderr=stderr)
+subprocess.CalledProcessError: Command '['git', 'show', 'c9177096c99c2562e4474bcbb2f4ffc8beb43c18:docs/verification/platform/macos-subscription-live/correction-01/interface-fixture-validate.py']' returned non-zero exit status 128.

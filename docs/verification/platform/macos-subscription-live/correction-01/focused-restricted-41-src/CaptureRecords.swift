@@ -1,0 +1,251 @@
+import Foundation
+import FoundationNetworking
+import Glibc
+import Foundation
+
+/// Engineering defaults for one capture session, recorded with it. They are starting points to
+/// be measured on a real Mac, not accepted coverage.
+public struct CaptureSettings: Codable, Equatable, Sendable {
+    /// Requested `SCStreamConfiguration.minimumFrameInterval`, in seconds.
+    public var minimumFrameInterval: Double
+    /// Most bytes of kept PNG per session. The first new pixels that do not fit end retention for
+    /// the session.
+    public var byteCap: Int
+    /// A longer silence between callbacks is recorded as a gap, and without a callback for this
+    /// long the current screen is unknown. Current pixels last confirmed by source time longer ago
+    /// than this are stale, not live.
+    public var silenceLimit: Double
+    public var showsCursor: Bool
+    /// How much later than its callback a `displayTime` may be and still count as source time.
+    public var sourceTimeLeadTolerance = 0.1
+
+    public static let engineeringDefaults = CaptureSettings(
+        minimumFrameInterval: 2, byteCap: 2 * 1024 * 1024 * 1024, silenceLimit: 6, showsCursor: true)
+}
+
+/// The display chosen for one session, as the system described it when capture started.
+public struct DisplayFacts: Codable, Equatable, Sendable {
+    /// `CGDirectDisplayID`. It is not guaranteed to be stable across reconnections or restarts.
+    public var displayID: UInt32
+    /// AppKit's localized screen name, or nil if no screen matched the display.
+    public var name: String?
+    /// `SCDisplay.frame`, in points in the global display space.
+    public var frame: RecordedRect
+    /// `SCShareableContentInfo.pointPixelScale` for the whole-display filter.
+    public var pointPixelScale: Double
+    /// The requested output size, in pixels. Each kept frame records its delivered size.
+    public var requestedWidth: Int
+    public var requestedHeight: Int
+    /// `CGDisplayRotation`, in degrees. Recorded; kept pixels are never rotated.
+    public var rotationDegrees: Double
+    public var isMain: Bool
+    /// What the filter includes, in words.
+    public var scope: String
+
+    public init(displayID: UInt32, name: String?, frame: RecordedRect, pointPixelScale: Double, requestedWidth: Int,
+                requestedHeight: Int, rotationDegrees: Double, isMain: Bool, scope: String) {
+        self.displayID = displayID
+        self.name = name
+        self.frame = frame
+        self.pointPixelScale = pointPixelScale
+        self.requestedWidth = requestedWidth
+        self.requestedHeight = requestedHeight
+        self.rotationDegrees = rotationDegrees
+        self.isMain = isMain
+        self.scope = scope
+    }
+
+    /// The start of the scope a whole-display capture records while this app's ink overlay and
+    /// palette may be on the display.
+    public static let inkOverlayScopePrefix = "whole display, SCContentFilter(display:excludingWindows: []) with no window excluded; "
+        + "this app's ink overlay and palette panels request NSWindow.SharingType.none, which Apple calls legacy "
+        + "and says not to rely on to omit content, so whether kept frames contain them is unknown"
+
+    /// That scope in full. The released 0.2.7 scope values cannot describe it, so the ingress
+    /// mapper refuses sessions that record it. Kept frames of such a session are not composed.
+    public static func inkOverlayScope(showsCursor: Bool) -> String {
+        inkOverlayScopePrefix + "; this app's other windows are not excluded; cursor " + (showsCursor ? "shown" : "hidden")
+            + "; BGRA buffers requested in sRGB; no audio"
+    }
+
+    /// The start of the scope of a whole-display capture that excludes this app.
+    public static let appExcludedScopePrefix = "whole display, SCContentFilter(display:excludingApplications: [this app], exceptingWindows: []); "
+        + "every window of this app (main window, ink overlay, palette, menu bar item, menus and alerts) is excluded"
+
+    /// That scope in full. Other applications' windows on the display are included; the pixels
+    /// under this app's windows are whatever ScreenCaptureKit renders there. The released 0.2.7
+    /// scope values cannot describe it, so the ingress mapper refuses sessions that record it.
+    public static func appExcludedScope(showsCursor: Bool) -> String {
+        appExcludedScopePrefix + ", as far as ScreenCaptureKit's documented application exclusion applies, including to "
+            + "windows it creates after the filter (unverified on a Mac); all other applications' windows on the display are "
+            + "included; cursor " + (showsCursor ? "shown" : "hidden") + "; BGRA buffers requested in sRGB; no audio"
+    }
+}
+
+/// One kept frame: the delivered buffer at its own size, not rotated, as lossless PNG.
+/// `pixelFormat` is the delivered buffer's; `encoding`, `mediaType`, `byteLength` and `sha256`
+/// describe the file actually written. Local only; not a wire contract or an original binding.
+public struct KeptFrame: Codable, Equatable, Sendable {
+    /// Path relative to the session directory.
+    public var file: String
+    /// The callback's position in the session, from 1.
+    public var sequence: Int
+    /// `HostClock` seconds when the callback was admitted, which may be later than the pixels.
+    public var callbackHost: Double
+    /// The validated `displayTime` in `HostClock` seconds: when the pixels were on screen. Nil
+    /// when it is missing or fails validation, so the pixels' age is unknown.
+    public var sourceHost: Double?
+    public var facts: FrameFacts
+    public var width: Int
+    public var height: Int
+    public var pixelFormat: String
+    public var mediaType: String
+    public var encoding: String
+    public var byteLength: Int
+    /// Lowercase hexadecimal SHA-256 of the file's bytes.
+    public var sha256: String
+}
+
+/// Callbacks of one kind that arrived consecutively.
+public struct CallbackRun: Codable, Equatable, Sendable {
+    /// idle, blank, suspended, a `missing`/`unknown_<raw>` status, or `not_retained_<reason>`.
+    public var kind: String
+    /// Whether the screen is unknown for this run.
+    public var isGap: Bool
+    public var firstSequence: Int
+    public var lastSequence: Int
+    public var firstHost: Double
+    public var lastHost: Double
+}
+
+/// How and when a session ended.
+public struct Ending: Codable, Equatable, Sendable {
+    /// user_stop, display_disconnected, system_sleep, start_failed, app_quit, a `StopReason` kind,
+    /// or unknown.
+    public var reason: String
+    public var detail: String?
+    /// `HostClock` seconds when live claims ended (the gate closed).
+    public var liveEndedHost: Double
+    /// `HostClock` seconds and wall time when the session was closed, after the stream had
+    /// stopped where that could be awaited.
+    public var host: Double
+    public var wall: Date
+}
+
+/// The latest state of one session, rewritten atomically as `status.json`.
+public struct SessionStatus: Codable, Equatable, Sendable {
+    public var session: String
+    /// Wall time and `HostClock` seconds read together when the session was created. Other host
+    /// times convert to an estimated wall time only through this pair; none is a measured
+    /// capture time.
+    public var startedWall: Date
+    public var startedHost: Double
+    public var updatedWall: Date
+    public var display: DisplayFacts
+    public var settings: CaptureSettings
+    /// `CGPreflightScreenCaptureAccess()` just before the session was created.
+    public var permissionPreflightAtStart: Bool
+    /// When `SCStream.startCapture` returned, if it did.
+    public var streamStartedHost: Double?
+    /// Callbacks accepted while live, by `FrameFacts.status`.
+    public var callbacks = 0
+    public var callbacksByStatus: [String: Int] = [:]
+    public var lastCallbackHost: Double?
+    public var lastCallbackStatus: String?
+    /// When the last callback that delivered new pixels (complete, with an image) was admitted.
+    /// This is processing time, not the pixels' time.
+    public var lastNewPixelsHost: Double?
+    public var lastNewPixelsSequence: Int?
+    /// The validated source time (`displayTime`) of those pixels; nil when unknown.
+    public var lastNewPixelsSourceHost: Double?
+    /// Whether, by the system's report, the last new pixels are still the screen's content: set
+    /// by new pixels, kept by `idle`, cleared by any callback without usable pixels.
+    public var pixelsCurrent = false
+    /// The latest validated source time at which the current pixels were on screen: from the new
+    /// pixels, or from a later `idle`. Nil when current pixels have no validated source time.
+    public var screenStateAsOfHost: Double?
+    /// Complete callbacks with an image, and idle callbacks, whose `displayTime` could not be used,
+    /// by reason: missing, zero or after_callback.
+    public var sourceTimeUnknown: [String: Int] = [:]
+    public var keptFrames = 0
+    public var bytesKept = 0
+    public var lastKept: KeptFrame?
+    /// New pixels that were not kept, by reason.
+    public var notRetained: [String: Int] = [:]
+    public var gaps = 0
+    /// The run still being counted; its event is written when it ends.
+    public var openRun: CallbackRun?
+    /// Nonzero means events.jsonl is incomplete.
+    public var eventWriteFailures = 0
+    public var statusWriteFailures = 0
+    /// Why keeping stopped, if a failed candidate could not be removed.
+    public var storeStoppedReason: String?
+    /// Callbacks that were not admitted because live claims had ended. They are never kept. A
+    /// callback admitted before Stop may still be kept after it.
+    public var callbacksAfterLiveEnded = 0
+    public var ending: Ending?
+    /// In sessions that compose ink: kept frames composed, bytes of composed PNGs written (their
+    /// own cap equals `settings.byteCap`; frames without strokes reference the raw PNG and add
+    /// none), kept frames not composed by reason, and requests that came after a frame's outcome.
+    /// Nil until the first of each.
+    public var composedFrames: Int?
+    public var composedBytes: Int?
+    /// Ink originals written, their bytes, and composed frames whose original is unavailable. Nil
+    /// until the first of each.
+    public var inkOriginalFiles: Int?
+    public var inkOriginalBytes: Int?
+    public var inkOriginalsUnavailable: Int?
+    public var notComposed: [String: Int]?
+    public var lateCompositionRequests: Int?
+}
+
+/// One line of `events.jsonl`.
+public struct CaptureEvent: Codable, Equatable, Sendable {
+    /// session_created, stream_started, kept, run, gap, stream_status, ended, callback_after_end,
+    /// composed, not_composed, or a named note (capture_filter, display_parameters_changed,
+    /// stream_error_after_live_ended, stream_stopped_after_start_returned,
+    /// composition_request_ignored).
+    public var event: String
+    public var host: Double
+    public var wall: Date?
+    public var detail: [String: String]?
+    public var frame: KeptFrame?
+    public var run: CallbackRun?
+    public var composed: ComposedFrame?
+
+    public init(event: String, host: Double, wall: Date? = nil, detail: [String: String]? = nil,
+                frame: KeptFrame? = nil, run: CallbackRun? = nil, composed: ComposedFrame? = nil) {
+        self.event = event
+        self.host = host
+        self.wall = wall
+        self.detail = detail
+        self.frame = frame
+        self.run = run
+        self.composed = composed
+    }
+}
+
+/// JSON for the local session files: sorted keys, wall times as UTC ISO 8601 with milliseconds.
+/// An unknown (nil) value is omitted, not written as null.
+public enum CaptureFiles {
+    static let wallFormat = Date.ISO8601FormatStyle(includingFractionalSeconds: true)
+
+    public static let encoder: JSONEncoder = {
+        let encoder = JSONEncoder()
+        encoder.outputFormatting = [.sortedKeys]
+        encoder.dateEncodingStrategy = .custom { date, encoder in
+            var container = encoder.singleValueContainer()
+            try container.encode(wallFormat.format(date))
+        }
+        return encoder
+    }()
+
+    public static let decoder: JSONDecoder = {
+        let decoder = JSONDecoder()
+        decoder.dateDecodingStrategy = .custom { decoder in
+            let text = try decoder.singleValueContainer().decode(String.self)
+            return try wallFormat.parse(text)
+        }
+        return decoder
+    }()
+}

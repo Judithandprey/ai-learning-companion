@@ -1,0 +1,20 @@
+{
+  "exit_code": 0,
+  "tests": 1,
+  "failures": 0,
+  "test_runtime_seconds": 14.928,
+  "method": "testAskRealChildNeverGetsARequestTakenBackInThePipe",
+  "approval": "normal exact-command require_escalated review; accepted",
+  "command": "bash /tmp/lc-live-correction-focused/replay.sh realchild",
+  "snapshot": "focused-final-source-manifest.json",
+  "entrypoint": "focused-realchild-main.swift",
+  "log": "focused-realchild-tests.txt",
+  "log_sha256": "2b5340e8905d7ed3c6a1e333324e16bcb0cc55b56dcf44e3e4516fb652531d6e",
+  "real_local_child": true,
+  "real_provider_account_model_or_device": false,
+  "earlier_wrong_basename_attempt": {
+    "exit_code": 1,
+    "tests_executed": 0,
+    "log": "focused-realchild-entrypoint-failure.txt"
+  }
+}

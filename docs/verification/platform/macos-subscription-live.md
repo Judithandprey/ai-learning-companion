@@ -1,5 +1,10 @@
 # macOS: a bounded live AI session on the captured display, through the user's subscription
 
+**Current delivery status:** the lead held candidate `3147291` for MAC-LIVE-01/02 at
+`c9177096c99c2562e4474bcbb2f4ffc8beb43c18`. The bounded follow-up and its new results are
+in [correction-01](macos-subscription-live/correction-01/README.md). The original candidate's
+checks and failures below remain historical evidence; they do not certify the corrected source.
+
 Task: the lead's `handoff_0f6c7eb731ba62d9ea3ed600c84b10ca` (existing P0-03/11 → P1-02; the
 released continuation of the approved subscription ASK). Baseline: main `fe0156c`, merged normally
 into `team/ios` as `5d8d121`; the hosted macOS run `36902046846` on `fe0156c` passed before this

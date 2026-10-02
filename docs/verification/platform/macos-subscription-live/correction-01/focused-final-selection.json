@@ -1,0 +1,60 @@
+{
+  "kind": "bounded-correction-selection",
+  "groups": {
+    "LivePresentationTests.swift": [
+      "testLiveQueuedUnshownAnswerCannotAcquireReceiptAfterStop",
+      "testLiveClosingAnUnshownAnswerRevokesItsQueuedDisplay",
+      "testLiveNewSelectionRejectsTheOldQueuedAnswerAndDisplaysItsOwn",
+      "testLiveFollowUpRevokesAnUnshownAnswerOnTheSameCard",
+      "testLiveExplicitRestartDoesNotAuthorizeAnEarlierUnshownAnswer",
+      "testLiveCaptureEndRevokesAnUnshownAnswerWithoutDiscardingItsOriginal",
+      "testLiveActuallyShownAnswerKeepsItsOriginalReceiptAfterStopAndClose",
+      "testLiveFinalUsedUpAnswerStillHasFirstDisplayAuthority",
+      "testLiveHiddenPanelDoesNotBecomeShownAndCanBeDisplayedLater",
+      "testLiveCaptureGateCloseBlocksDisplayBeforeItsActorNotification",
+      "testLiveLocalGenerationCloseBlocksDisplayBeforeTheStopTask"
+    ],
+    "LiveSourceDispatchTests.swift": [
+      "testRecoveredSourceRefusalDoesNotBecomeTransportFailure",
+      "testOldOrReplacementDispatchGateCannotAuthorizeTheActiveSession",
+      "testSameFrameRecoveryClearsSourceLossWithoutAnotherSubmission",
+      "testClosedCaptureRefusesStartBeforeAndAfterConnectorAwait",
+      "testPermanentGateClosureAndFinalByteAreAtomicallyOrdered",
+      "testCurrentSourceLossDuringRenderRefusesThenRecoversWithoutRestart",
+      "testCurrentSourceLossWhileFollowupWaitsInWriterDropsTheLine",
+      "testSourceAdmissionRechecksFinalByteAndPermanentSessionStop"
+    ],
+    "LeadQueuedPresentationProbe.swift": [
+      "testLeadQueuedAnswerIsNotAcceptedAsShownAfterStop"
+    ],
+    "LiveFreshnessTests.swift": [
+      "testHealthyIdleConfirmsOldPixelsWithoutChangingTheirSequence",
+      "testCallbackSilenceLosesCurrentInputAndValidIdleRestoresTheSameFrame",
+      "testBlankSuspendedAndMissingImageNeedNewPixelsToRecover",
+      "testMissingCallbackStatusCannotReuseTheRetainedFrame",
+      "testMissingZeroAndInvalidFutureSourceTimeRefuseThenIdleCanConfirmPixels",
+      "testRecentCallbackDoesNotMakeStaleSourcePixelsCurrent",
+      "testStopGateRefusesBeforeEndingAndLaterCallbacksCannotRestoreIt",
+      "testFreshnessAloneCannotAuthorizeAMismatchedRetainedSequence"
+    ],
+    "legacy": [
+      "testLiveGateKeepsTheFirstClosureAndAdmitsNothingAfterIt",
+      "testFrameAdmittedBeforeStopIsKeptAndNothingAfter",
+      "testStopWhileListingDisplaysCreatesNothing",
+      "testStopWhileTheStreamStartsStopsIt",
+      "testLiveStartRefusalsAndAStartThatIsStoppedOrNotConfirmed",
+      "testLiveLooksWaitForTheirTurnAndStopAtTheRequestsKeptForTheUser",
+      "testLiveSelectionIsSentAtOnceAsAFocusAndAFollowUpKeepsOrNamesIt",
+      "testLiveSelectionMadeBeforeStartKeepsItsOwnPictureAsFocusWhenAsked",
+      "testLiveMissingCurrentPictureDropsWaitingLooksAndSurvivesLateResults",
+      "testLiveExplicitFocusJoinsAnInterruptedObservationBeforeSending",
+      "testLiveFocusAndStopCannotBeOvertakenByAnOlderRenderingLook",
+      "testLiveCancelNewSelectionStopAndQuitFenceARequestOnItsWay"
+    ]
+  },
+  "selected_methods": 40,
+  "separate_exact_command_approval": [
+    "testAskRealChildNeverGetsARequestTakenBackInThePipe"
+  ],
+  "not_run": "Full legacy suite, mutation campaign, AppKit/device, real connectors/accounts/models"
+}

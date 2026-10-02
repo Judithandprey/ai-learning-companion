@@ -1,0 +1,85 @@
+{
+  "kind": "focused-linux-correction-replay",
+  "test_exit_code": 0,
+  "selected_methods": 40,
+  "started_methods": 40,
+  "finished_methods": 40,
+  "passed_methods": 40,
+  "failed_methods": 0,
+  "raw_xctest_summaries": [
+    [
+      32,
+      0,
+      0
+    ],
+    [
+      8,
+      0,
+      0
+    ],
+    [
+      40,
+      0,
+      0
+    ],
+    [
+      40,
+      0,
+      0
+    ]
+  ],
+  "missing_methods": [],
+  "extra_methods": [],
+  "duplicate_finished_methods": false,
+  "source_drift": [],
+  "groups": {
+    "LivePresentationTests.swift": {
+      "selected": 11,
+      "passed": 11,
+      "failed": 0
+    },
+    "LiveSourceDispatchTests.swift": {
+      "selected": 8,
+      "passed": 8,
+      "failed": 0
+    },
+    "LeadQueuedPresentationProbe.swift": {
+      "selected": 1,
+      "passed": 1,
+      "failed": 0
+    },
+    "LiveFreshnessTests.swift": {
+      "selected": 8,
+      "passed": 8,
+      "failed": 0
+    },
+    "legacy": {
+      "selected": 12,
+      "passed": 12,
+      "failed": 0
+    }
+  },
+  "reviewed_app_source_sha256": {
+    "apps/macos/CompanionDesktop/Sources/CompanionDesktop/CaptureController.swift": "7a720eb18548a594d48d67ac32d30959f070db832e1cdc0b1667dcf5a2ab42de",
+    "apps/macos/CompanionDesktop/Sources/CompanionDesktop/CaptureRun.swift": "21e6f73dacfbb8fa5e1e1ddd3adfec0587d6ba2d133ae30c9ce964f83064f138",
+    "apps/macos/CompanionDesktop/Sources/CompanionDesktop/LiveController.swift": "4b6f619454aeac3201428d06f8c5bcebb6e302ea0940e8bc32a0be594f1b2021"
+  },
+  "artifact_sha256": {
+    "focused-final-typecheck.txt": "cb3d7ed06d0c00cefcce85ee04d3b711e22f9b9bca1d9b7a54c125022eaab6c9",
+    "focused-final-tests.txt": "51721dd385ae890c77e8095130f1b20c306e351260ff12d54bb38b8424c06315",
+    "focused-final-source-manifest.json": "fa7140a7552c5b06c94abef8a3965fdabde4c1aa43afdad68b2fe6249a02902d",
+    "focused-final-selection.json": "b8f192f3297edee26b599021e424a7a9e9e82cf9e8e7e73ad7191b6bb8bf1cec",
+    "focused-main.swift": "1bc20b67674384851c83cb1ecc411babbb982755a8802e2e0dcd138c8ad770af",
+    "focused-prepare.py": "3c8ac36fc9ad975110ec1bdc1df0e487871192fa030c6742b1a10fdd0672a513",
+    "focused-genmain.py": "b1bdfb14e8d5b4f88e028e407aec45874b8d0d3410b0677887e2fe07c64f2aec",
+    "focused-replay.sh": "cce35457855e131e437fbee74fb406f2ed2d8c828b76207088f0d1b0758a294a",
+    "focused-summarize.py": "88e5e23d9657cb3e420dd82f16d546c9c4a8477fef06ba1b79fc088bf5eab257"
+  },
+  "compiled_or_executed_native_macos": false,
+  "actual_ai_or_account_call": false,
+  "separate_exact_command_approval": [
+    "testAskRealChildNeverGetsARequestTakenBackInThePipe"
+  ],
+  "limits": "Linux framework substitutions and fake connectors; held-pipe local-child control separated for exact-command approval after restricted CFSocket failure. No AppKit UI or real ScreenCaptureKit callback/device/provider acceptance.",
+  "pass": true
+}

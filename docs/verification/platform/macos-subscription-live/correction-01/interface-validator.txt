@@ -1,0 +1,3 @@
+PASS: 13 loaded local shared code/schema inputs byte-identical to released c9177096c99c2562e4474bcbb2f4ffc8beb43c18.
+PASS: native fixture adapter byte-identical to worker 3147291f449105c06255cfc0ea2056f1b2582437; not claimed to exist in c917.
+PASS: 10 lines, 6 companion/turn requests (observation, focus, text_followup, observation, text_followup, focus); the focus was kept on 1 follow-up(s) and named as an earlier one on 1; 211 checks

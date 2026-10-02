@@ -1,0 +1,40 @@
+src/AskLinkTests.swift:955:36: warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 953 |             ending.connection = FakeConnector.connection(state: "signed_out", mode: NSNull())
+ 954 |             // In the first round the exit is reported only after the sign-in start has returned.
+ 955 |             ending.afterLoginStart = round == 0 ? { $0.endChildUnreported() } : { $0.exitChild() }
+     |                                    `- warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 956 |             let endingLink = askLink(ending)
+ 957 |             await endingLink.connect()
+
+src/MacIngressUploadTests.swift:400:14: warning: concurrently-executed local function 'alteredAck' must be marked as '@Sendable'; this is an error in the Swift 6 language mode
+398 |         let userID = macSource.userID
+399 |         /// The honest ACK with one change.
+400 |         func alteredAck(_ change: (inout [String: Any]) -> Void) -> MacHTTPReply {
+    |              `- warning: concurrently-executed local function 'alteredAck' must be marked as '@Sendable'; this is an error in the Swift 6 language mode
+401 |             var ack = Self.ackObject(prepared, userID: userID)
+402 |             change(&ack)
+
+src/LivePresentation.swift:60:25: error: escaping closure captures non-escaping parameter 'show'
+46 |     /// Capture -> permit is the inner lock order; closing a gate never acquires the permit lock.
+47 |     @discardableResult
+48 |     public func whileAllowed(_ show: () -> Bool) -> Bool {
+   |                                `- note: parameter 'show' is implicitly non-escaping
+49 |         func display() -> Bool {
+50 |             lock.withLock {
+   |                           `- note: captured indirectly by this call
+51 |                 guard active, clock() < expiresHost else { return false }
+52 |                 let visible = show()
+   |                               `- note: captured here
+53 |                 if visible, firstShownAt == nil { firstShownAt = LiveWire.utc(Date()) }
+54 |                 return visible
+   :
+58 |         if shownAt != nil { return show() }
+59 |         guard sourceProblem?() == nil else { return false }
+60 |         let inCapture = { self.capture.map { $0.whileOpen(display) ?? false } ?? display() }
+   |                         |                  |              |                      |- note: captured indirectly by this call
+   |                         |                  |              |                      `- note: captured indirectly by this call
+   |                         |                  |              `- note: captured indirectly by this call
+   |                         |                  `- note: captured indirectly by this call
+   |                         `- error: escaping closure captures non-escaping parameter 'show'
+61 |         return generation.map { $0.whileOpen(inCapture) ?? false } ?? inCapture()
+62 |     }
