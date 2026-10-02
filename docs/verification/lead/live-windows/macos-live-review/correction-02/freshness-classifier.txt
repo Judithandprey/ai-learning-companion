@@ -1,0 +1,16 @@
+PASS healthy newer retained frame
+PASS current retained frame
+PASS zero sequence
+PASS negative sequence
+PASS future sequence
+PASS newest unretained pixels
+PASS no retained pixels
+PASS blank source
+PASS suspended source
+PASS callback silence
+PASS stale source time
+PASS unknown source time
+PASS capture gate stopped
+PASS ended capture
+PASS missing capture
+PASS 15 exact Freshness source classifier cases; minimal data stubs, not native capture evidence.

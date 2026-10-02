@@ -1,0 +1,56 @@
+src/AskLinkTests.swift:955:36: warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 953 |             ending.connection = FakeConnector.connection(state: "signed_out", mode: NSNull())
+ 954 |             // In the first round the exit is reported only after the sign-in start has returned.
+ 955 |             ending.afterLoginStart = round == 0 ? { $0.endChildUnreported() } : { $0.exitChild() }
+     |                                    `- warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 956 |             let endingLink = askLink(ending)
+ 957 |             await endingLink.connect()
+
+Test Suite 'All tests' started at 2026-10-02 04:42:38.274
+Test Suite 'bin.xctest' started at 2026-10-02 04:42:38.276
+Test Suite 'DesktopCaptureTests' started at 2026-10-02 04:42:38.276
+Test Case 'DesktopCaptureTests.testLeadSubmittedFollowupSurvivesHealthyFrameAdvanceButNotSourceLoss' started at 2026-10-02 04:42:38.276
+FRAME_ADVANCE_PROBE healthy_advance=false; source=unavailable(status: "blank", callbackAge: 0.0); answered=true; original_frame_preserved=true; display_allowed=false; displayed=false; shown_receipt=false; stale_sequence_reason=Optional("the capture reports blank without usable current pixels; there is no current picture to give")
+FRAME_ADVANCE_PROBE healthy_advance=true; source=live(callbackAge: 0.0, pixelAge: 0.09999999999999432, newPixelsAge: Optional(0.09999999999999432)); answered=true; original_frame_preserved=true; display_allowed=true; displayed=true; shown_receipt=true; stale_sequence_reason=Optional("this earlier frame is not the current picture; healthy newer pixels were retained")
+Test Case 'DesktopCaptureTests.testLeadSubmittedFollowupSurvivesHealthyFrameAdvanceButNotSourceLoss' passed (0.15 seconds)
+Test Case 'DesktopCaptureTests.testControllerAnsweredFollowupSurvivesHealthyFrameBeforeQueuedFirstDisplayButNotSourceLoss' started at 2026-10-02 04:42:38.426
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"asking","request":"focus-a1-0b683a7d.1","scenario":"controller-answered-source-loss","session":"on"}
+CONTROLLER_TRACE {"answer":"Synthetic controller hint: check the sign.","event":"published","panel_visibility_control":true,"phase":"answered","request":"focus-a1-0b683a7d.1","scenario":"controller-answered-source-loss","session":"on"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"asking","request":"focus-a1-0b683a7d.2","scenario":"controller-answered-source-loss","session":"on"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"cancelled","request":"focus-a1-0b683a7d.2","scenario":"controller-answered-source-loss","session":"on"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"cancelled","request":"focus-a1-0b683a7d.2","scenario":"controller-answered-source-loss","session":"on"}
+CONTROLLER_FRAME_ADVANCE_PROBE healthy_advance=false; source=unavailable(status: "blank", callbackAge: 0.0); response_received_before_change=true; original_frame_preserved=true; current_dispatch_refused=true; displayed=false; shown_receipt=false
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"asking","request":"focus-a1-827f3a3d.1","scenario":"controller-answered-frame-advance","session":"on"}
+CONTROLLER_TRACE {"answer":"Synthetic controller hint: check the sign.","event":"published","panel_visibility_control":true,"phase":"answered","request":"focus-a1-827f3a3d.1","scenario":"controller-answered-frame-advance","session":"on"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"asking","request":"focus-a1-827f3a3d.2","scenario":"controller-answered-frame-advance","session":"on"}
+CONTROLLER_TRACE {"answer":"Synthetic queued controller hint anchored to the earlier frame.","event":"published","panel_visibility_control":true,"phase":"answered","request":"focus-a1-827f3a3d.2","scenario":"controller-answered-frame-advance","session":"on"}
+CONTROLLER_TRACE {"answer":"Synthetic queued controller hint anchored to the earlier frame.","event":"published","panel_visibility_control":true,"phase":"answered","request":"focus-a1-827f3a3d.2","scenario":"controller-answered-frame-advance","session":"on"}
+CONTROLLER_FRAME_ADVANCE_PROBE healthy_advance=true; source=live(callbackAge: 0.0, pixelAge: 0.09999999999999432, newPixelsAge: Optional(0.09999999999999432)); response_received_before_change=true; original_frame_preserved=true; current_dispatch_refused=true; displayed=true; shown_receipt=true
+Test Case 'DesktopCaptureTests.testControllerAnsweredFollowupSurvivesHealthyFrameBeforeQueuedFirstDisplayButNotSourceLoss' passed (0.749 seconds)
+Test Case 'DesktopCaptureTests.testHealthyAdvanceRefusesOldCurrentInputWithoutRevokingItsSubmittedAnswer' started at 2026-10-02 04:42:39.176
+Test Case 'DesktopCaptureTests.testHealthyAdvanceRefusesOldCurrentInputWithoutRevokingItsSubmittedAnswer' passed (0.038 seconds)
+Test Case 'DesktopCaptureTests.testHealthyAdvanceDuringRenderingDrainsTheNewestWaitingFrame' started at 2026-10-02 04:42:39.214
+Test Case 'DesktopCaptureTests.testHealthyAdvanceDuringRenderingDrainsTheNewestWaitingFrame' passed (0.028 seconds)
+Test Case 'DesktopCaptureTests.testHealthyAdvanceBeforeWriterCompletionStillRefusesTheOldCurrentLine' started at 2026-10-02 04:42:39.242
+Test Case 'DesktopCaptureTests.testHealthyAdvanceBeforeWriterCompletionStillRefusesTheOldCurrentLine' passed (0.084 seconds)
+Test Case 'DesktopCaptureTests.testNewestUnretainedPixelsStillBlockFirstDisplayOfAnEarlierAnswer' started at 2026-10-02 04:42:39.325
+Test Case 'DesktopCaptureTests.testNewestUnretainedPixelsStillBlockFirstDisplayOfAnEarlierAnswer' passed (0.003 seconds)
+Test Case 'DesktopCaptureTests.testSourceLossAfterHealthyAdvancePermanentlyRevokesUnshownAnswer' started at 2026-10-02 04:42:39.328
+Test Case 'DesktopCaptureTests.testSourceLossAfterHealthyAdvancePermanentlyRevokesUnshownAnswer' passed (0.035 seconds)
+Test Case 'DesktopCaptureTests.testLeadQueuedAnswerIsNotAcceptedAsShownAfterStop' started at 2026-10-02 04:42:39.363
+PROBE queued_answer=true; session=ended("stopped by you"); card=Optional(LCLeadMacLive03.LiveCard.Phase.answered); shown_receipt_after_Stop=false
+Test Case 'DesktopCaptureTests.testLeadQueuedAnswerIsNotAcceptedAsShownAfterStop' passed (0.016 seconds)
+Test Case 'DesktopCaptureTests.testControllerDeferredAnswerCannotAppearAfterSynchronousStop' started at 2026-10-02 04:42:39.379
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"asking","request":"focus-a1-0e9fc2ed.1","scenario":"controller-stop","session":"on"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"cancelled","request":"focus-a1-0e9fc2ed.1","scenario":"controller-stop","session":"ended(\"stopped by you\")"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"cancelled","request":"focus-a1-0e9fc2ed.1","scenario":"controller-stop","session":"ended(\"stopped by you\")"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"cancelled","request":"focus-a1-0e9fc2ed.1","scenario":"controller-stop","session":"ended(\"stopped by you\")"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"cancelled","request":"focus-a1-0e9fc2ed.1","scenario":"controller-stop","session":"ended(\"stopped by you\")"}
+CONTROLLER_PROBE stop deferred_answer=true published_answers=0 shown_receipt=false
+Test Case 'DesktopCaptureTests.testControllerDeferredAnswerCannotAppearAfterSynchronousStop' passed (0.164 seconds)
+Test Suite 'DesktopCaptureTests' passed at 2026-10-02 04:42:39.544
+	 Executed 9 tests, with 0 failures (0 unexpected) in 1.267 (1.267) seconds
+Test Suite 'bin.xctest' passed at 2026-10-02 04:42:39.544
+	 Executed 9 tests, with 0 failures (0 unexpected) in 1.267 (1.267) seconds
+Test Suite 'All tests' passed at 2026-10-02 04:42:39.544
+	 Executed 9 tests, with 0 failures (0 unexpected) in 1.267 (1.267) seconds

@@ -1,0 +1,85 @@
+    // Injected into the retained controller-probe extension only in the Linux replay.
+    // Uses production LiveController, LiveLink, recorder and permit; windows/provider are stand-ins.
+    @MainActor func testControllerAnsweredFollowupSurvivesHealthyFrameBeforeQueuedFirstDisplayButNotSourceLoss() async throws {
+        for healthyAdvance in [false, true] {
+            let run = try await controllerStand(healthyAdvance ? "controller-answered-frame-advance" : "controller-answered-source-loss")
+            let focus = try await queuedControllerAnswer(run)
+            await run.controller.refreshStatus()
+            XCTAssertEqual(run.controller.status.card?.answer, focus.answer)
+            let focusRequest = try XCTUnwrap(focus.requestID)
+            let focusRecorded = await until(5) {
+                FileManager.default.fileExists(atPath: self.receipt(run, focusRequest).path)
+            }
+            XCTAssertTrue(focusRecorded)
+
+            let sourceClock = LiveClock(100.3)
+            var currentInput = liveInput(run.source, run.frame)
+            currentInput.captureGate = run.gate
+            let (source, frame, gate) = (run.source, run.frame, run.gate)
+            currentInput.currentSourceProblem = {
+                Freshness.currentFrameProblem(source.recorder.status, capturing: gate.isOpen,
+                                              sequence: frame.sequence, now: sourceClock.now)
+            }
+            XCTAssertNil(currentInput.currentSourceProblem?())
+            let picture = currentInput
+            run.controller.newest = { picture }
+            run.connector.onTurn = { _ in .hold }
+            run.controller.words = "Explain the earlier frame only."
+            run.controller.assistance = .hint
+            XCTAssertTrue(run.controller.canSend)
+            run.controller.send()
+            let submitted = await until(5) {
+                run.connector.turns.contains { $0["trigger"] as? String == "text_followup" }
+            }
+            XCTAssertTrue(submitted, "The actual controller fully submits the follow-up before the answer/source race")
+            await run.controller.refreshStatus()
+            XCTAssertEqual(run.controller.status.card?.phase, .asking)
+            ControllerUITrace.reset(healthyAdvance ? "controller-answered-frame-advance" : "controller-answered-source-loss")
+
+            let text = "Synthetic queued controller hint anchored to the earlier frame."
+            run.connector.release(text: text)
+            let answered = await until(5) { await run.link.currentStatus().card?.phase == .answered }
+            XCTAssertTrue(answered)
+            let card = try await liveCard(run.link)
+            let request = try XCTUnwrap(card.requestID)
+            XCTAssertEqual(card.frameFile, run.frame.file)
+            XCTAssertNil(card.presentation?.shownAt, "The actual answered callback has not reached first UI display")
+            XCTAssertTrue(ControllerUITrace.answers.isEmpty)
+            XCTAssertGreaterThan(run.queue.count, 0)
+            XCTAssertFalse(FileManager.default.fileExists(atPath: receipt(run, request).path))
+
+            sourceClock.advance(2.7)
+            if healthyAdvance {
+                let second = try liveKeep(run.source, host: 103, shade: 90)
+                XCTAssertGreaterThan(second.sequence, run.frame.sequence)
+                XCTAssertNil(Freshness.currentFrameProblem(run.source.recorder.status, capturing: true,
+                                                          sequence: second.sequence, now: sourceClock.now))
+            } else {
+                run.source.recorder.frame(facts(.blank, source: 102.9), image: nil, host: 103, accepted: true)
+            }
+            let sourceState = Freshness.judge(run.source.recorder.status, capturing: true, now: sourceClock.now)
+            XCTAssertNotNil(picture.dispatchProblem, "The original N input is still ineligible as current pixels after either change")
+            await drainController(run)
+            let receiptExists = await until(healthyAdvance ? 5 : 0.1) {
+                FileManager.default.fileExists(atPath: self.receipt(run, request).path)
+            }
+            let displayed = ControllerUITrace.answers.contains(text)
+            let response = try liveRecord(run.source.session, request + ".response.json")
+            XCTAssertEqual(response["outcome"] as? String, "answered")
+            if healthyAdvance {
+                XCTAssertTrue(displayed, "Healthy advancement after receipt must permit the original anchored answer's queued first display")
+                XCTAssertEqual(run.controller.status.card?.answer, text)
+                XCTAssertNotNil(card.presentation?.shownAt)
+                XCTAssertTrue(receiptExists)
+                let shown = try liveRecord(run.source.session, request + ".shown.json")
+                XCTAssertEqual(shown["shown_at"] as? String, card.presentation?.shownAt)
+            } else {
+                XCTAssertFalse(displayed, "A real blank source callback still prevents the actual controller's first display")
+                XCTAssertNil(run.controller.status.card?.answer)
+                XCTAssertNil(card.presentation?.shownAt)
+                XCTAssertFalse(receiptExists)
+            }
+            print("CONTROLLER_FRAME_ADVANCE_PROBE healthy_advance=\(healthyAdvance); source=\(sourceState); response_received_before_change=true; original_frame_preserved=true; current_dispatch_refused=true; displayed=\(displayed); shown_receipt=\(receiptExists)")
+            await run.link.shutdown()
+        }
+    }

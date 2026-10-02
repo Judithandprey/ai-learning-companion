@@ -1,0 +1,52 @@
+{
+  "commit": "29bdeb4de9c926148262098ed6b4015ed62ee404",
+  "parent": "4f6c327018d46604b21c57ab4ebf2b0e45278f70",
+  "baseline": "8467e0a55113455f62067d97a8774dca889c3d88",
+  "counts": {
+    "owned_sources": 58,
+    "released_read_only_inputs": 9,
+    "translation_files": 8,
+    "correction-02/SHA256SUMS": 50,
+    "correction-02/frame-answer/SHA256SUMS": 19,
+    "correction-02/interface/interface-SHA256SUMS": 24,
+    "correction-01/SHA256SUMS": 127,
+    "correction01_unchanged_files": 128,
+    "preserved_lead_failure_artifacts": 5,
+    "reviewed_files": 8,
+    "paired": {
+      "source_hashes": 48,
+      "derived_harness_hashes": 50,
+      "registered_methods": 1,
+      "compiler_input_mappings": 50
+    },
+    "controller": {
+      "source_hashes": 48,
+      "derived_harness_hashes": 50,
+      "registered_methods": 1,
+      "compiler_input_mappings": 50
+    },
+    "controls": {
+      "source_hashes": 48,
+      "derived_harness_hashes": 50,
+      "registered_methods": 40,
+      "compiler_input_mappings": 50
+    },
+    "interface": {
+      "input_hashes": 42,
+      "derived_harness_hashes": 30,
+      "external_mappings": 12
+    },
+    "helper_provenance": 4,
+    "tested_patch_files": 4,
+    "tested_patch_existing_production_files": 3,
+    "tested_patch_new_test_files": 1
+  },
+  "mismatches": [],
+  "notes": [
+    "Interface binder refers to 12 original temporary paths; this audit independently maps all 12 to committed stand-in/helper files instead of relying on temporary files."
+  ],
+  "limits": [
+    "Read-only Git object/hash/mapping audit; no replay, suite, fixture, validator, compiler, tool installation or external operation.",
+    "Preserved historical evidence is not a current test rerun or native/device/provider acceptance."
+  ]
+}

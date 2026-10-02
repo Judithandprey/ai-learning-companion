@@ -128,6 +128,13 @@ elif name == 'swift':
             (ask / 'ask-start.jsonl').write_text(json.dumps({'synthetic': True}) + '\n')
             if os.environ.get('FIXTURE_CASE') == 'bad-mac-ask-fixture':
                 (ask / 'ask-start.jsonl').write_text('invalid JSON')
+        if os.environ.get('FIXTURE_CASE') != 'missing-mac-live-fixture':
+            live = pathlib.Path(os.environ['COMPANION_DESKTOP_LIVE_FIXTURE_DIR'])
+            assert not live.exists(), 'the live producer requires a new output directory'
+            live.mkdir(parents=True)
+            (live / 'live-session.jsonl').write_text(json.dumps({'synthetic': True}) + '\n')
+            if os.environ.get('FIXTURE_CASE') == 'bad-mac-live-fixture':
+                (live / 'live-session.jsonl').write_text('invalid JSON')
         if failed:
             print('injected test failure after fixture write', file=sys.stderr)
             sys.exit(17)
@@ -229,6 +236,22 @@ print('stub Mac ASK validator invoked; not Swift, image or provider acceptance')
 '''
 
 
+MAC_LIVE_CHECK = r'''import json, os, pathlib, sys
+with open(os.environ['PROBE_TRACE'], 'a') as trace:
+    trace.write(json.dumps({'tool': 'mac-live-validator', 'args': sys.argv[1:],
+        'cwd': str(pathlib.Path.cwd()), 'python': sys.executable, 'source': __file__}) + '\n')
+if os.environ.get('FAIL_COMMAND') == 'mac-live-validator':
+    print('injected Mac live validator failure', file=sys.stderr)
+    sys.exit(43)
+root = pathlib.Path(sys.argv[1])
+lines = (root / 'live-session.jsonl').read_text().splitlines()
+assert lines
+for line in lines:
+    json.loads(line)
+print('stub Mac live validator invoked; not Swift, image or provider acceptance')
+'''
+
+
 class DesktopChecks(unittest.TestCase):
     def setUp(self):
         if not shutil.which("node"):
@@ -290,6 +313,7 @@ class DesktopChecks(unittest.TestCase):
             (source / "checks/validate_mac_retained_frames.py").write_text(MAC_FRAME_CHECK)
             (source / "checks/validate_mac_upload.py").write_text(MAC_UPLOAD_CHECK)
             (source / "checks/validate_ask_request.py").write_text(MAC_ASK_CHECK)
+            (source / "checks/validate_live_session.py").write_text(MAC_LIVE_CHECK)
             # Byte-for-byte owner package-app.sh at 7efa46a. Execute it against
             # stub Swift/plutil here; it remains the owner's production script.
             shutil.copyfile(ROOT / "tests/probes/support/fixtures/macos-package-app.sh", source / "package-app.sh")
@@ -553,6 +577,31 @@ class DesktopChecks(unittest.TestCase):
                          self.out / "work/source/apps/macos/CompanionDesktop/checks/validate_ask_request.py")
         self.assertGreater(trace.index(asked[0]), trace.index(uploaded[0]))
         self.assertIn("macos-ask-fixture/ask-start.jsonl", (self.out / "SHA256SUMS").read_text())
+        live = [call for call in trace if call["tool"] == "mac-live-validator"]
+        self.assertEqual(len(live), 1)
+        self.assertEqual(live[0]["args"], [str(self.out / "macos-live-fixture")])
+        self.assertEqual(live[0]["python"], str(self.root / ".venv/bin/python"))
+        self.assertEqual(Path(live[0]["source"]).resolve(),
+                         self.out / "work/source/apps/macos/CompanionDesktop/checks/validate_live_session.py")
+        self.assertGreater(trace.index(live[0]), trace.index(asked[0]))
+        self.assertIn("macos-live-fixture/live-session.jsonl", (self.out / "SHA256SUMS").read_text())
+
+    def test_mac_missing_bad_live_or_validator_failure_remains_failure(self):
+        self.source("macos")
+        self.commit()
+        for case, failure in [("missing-mac-live-fixture", ""), ("bad-mac-live-fixture", ""),
+                              ("validator-failure", "mac-live-validator")]:
+            with self.subTest(case=case):
+                self.out = Path(self.temp.name) / case
+                result, status = self.run_checks("macos", failure, case)
+                self.assertNotEqual(result.returncode, 0)
+                self.assertEqual(status["last_phase"], "mac-live-fixture")
+                self.assertTrue((self.out / "MacDesktop.zip").is_file())
+                self.assertTrue((self.out / "mac-live-fixture.log").read_text())
+                if case != "missing-mac-live-fixture":
+                    self.assertIn("macos-live-fixture/live-session.jsonl", (self.out / "SHA256SUMS").read_text())
+                if failure:
+                    self.assertEqual(result.returncode, 43)
 
     def test_mac_missing_bad_ask_or_validator_failure_remains_failure(self):
         self.source("macos")
@@ -707,6 +756,8 @@ class DesktopChecks(unittest.TestCase):
                     self.assertFalse((self.out / "mac-upload-fixture.log").exists())
                     self.assertIn("macos-ask-fixture/ask-start.jsonl", (self.out / "SHA256SUMS").read_text())
                     self.assertFalse((self.out / "mac-ask-fixture.log").exists())
+                    self.assertIn("macos-live-fixture/live-session.jsonl", (self.out / "SHA256SUMS").read_text())
+                    self.assertFalse((self.out / "mac-live-fixture.log").exists())
 
     def test_mac_toolchain_failure_is_not_hidden_by_later_command(self):
         self.source("macos")

@@ -1,0 +1,23 @@
+{
+  "candidate": "29bdeb4de9c926148262098ed6b4015ed62ee404",
+  "parent": "4f6c327018d46604b21c57ab4ebf2b0e45278f70",
+  "reviewed_source": {
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/Freshness.swift": "a574f0a82ef04d1d20c21b6fcbfe7ea79ee8ad7ab25ee0b05b9fbda46f994450",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/LiveFrame.swift": "afdf0a4e3139dae803a66cb35667ece952a886190adef655497cc0e1c22e263f",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/LiveLink.swift": "05b24c7ebcdf3ce269e8a07bd2688aeaaa06c0d686d00ea7202abfe565080097"
+  },
+  "classifier_probe": {
+    "cases": 15,
+    "passed": 15,
+    "exit_code": 0,
+    "source": "exact candidate Freshness.swift plus minimal data stubs",
+    "native_capture": false,
+    "files": {
+      "freshness-classifier.swift": "e531bdb2dedbee38f9a9f684abcd1eade1740df6b20bd0863b3d29e1da6e54ed",
+      "freshness-classifier.txt": "8fd39ec54db0ee99f00e09e4800c3347817508b033d36cc81c7fc414a327aae2"
+    }
+  },
+  "source_disposition": "bounded approval; no blocker found",
+  "full_suite_rerun": false,
+  "external_actions": false
+}

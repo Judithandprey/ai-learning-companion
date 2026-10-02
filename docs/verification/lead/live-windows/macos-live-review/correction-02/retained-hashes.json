@@ -1,0 +1,18 @@
+{
+  "README.md": "474343b1fa1fe7d96eb7acb70fc6c67fc64986a0ed7d704a5fed3e016fb5df2b",
+  "before-frame-advance-manifest.json": "2c9d4393b6a3bf18d4d4255bdd1726ec14aa7453c8809b7ed42f6e5ed38d37a2",
+  "before-frame-advance.txt": "12e6acbaca6c414f8742cd086fd320aa10ef48dfbad3d7ed078243877f78cace",
+  "controller-frame-advance-method.swift.txt": "8fb4a3ea05db3920f065184286ec7e3bd3f6e5bc7479a3412a14cc21e5b1f410",
+  "focused.txt": "d44eedf61707df2275077be27b713f64c8ef68dd166b3a0014a48521392c93bb",
+  "freshness-classifier.swift": "e531bdb2dedbee38f9a9f684abcd1eade1740df6b20bd0863b3d29e1da6e54ed",
+  "freshness-classifier.txt": "8fd39ec54db0ee99f00e09e4800c3347817508b033d36cc81c7fc414a327aae2",
+  "hash-audit.json": "7c42e84e892cf57d56344e1274effe7e3f0bd6ca1d312d3610009fe7aad7f4e6",
+  "lead-frame-advance-probe.swift": "8238654c88808bf30245974b9d9b07457ecceb5beb352f482d88bc36ffc9e9e8",
+  "lifecycle-review.md": "e1a3a582c20318afd7b9f1f7c7af8b8c75b0de7c87a2ec8bc776ddb195c84321",
+  "main-ci-checks.txt": "8bc072f4168ade1b7560bad35ef79bb8dbbb87886a47df2e56fe4fe20f60314d",
+  "main-validator.txt": "9de180a87cadbc696cfbff207843260a24b4573db028685a3cdb771e2ae08d12",
+  "prepare-and-run.py": "afcc1788c65a36c2ad0d4b2a052a848a0f78e35e2f53f11488ba19ee22ac611e",
+  "review.md": "a080f1089ebdc27246dd650aae36ca0816c4aac1a8a72379ef4a7ffe77280cc7",
+  "source-manifest.json": "633aa362c4803b79b8a722325cb142f6186173581a29bc9afeeb503236adfc46",
+  "source-review.json": "c61e99dc6c15ef4fa0d15e1d05d23c372a5fe855857ec6801839e8acb2129ca6"
+}
