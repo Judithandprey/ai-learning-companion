@@ -96,3 +96,11 @@ resource coordination; then the same QA task runs only the remaining bounded
 acceptance. Native separately retains MAC-LIVE-03. Native TTS approval, actual
 audio input and interactive Mac gates remain unchanged. Old app/profile/user
 preview data and Paperclip are untouched.
+
+## Actual same-task dispatch
+
+Pushed review `55312b5d4d87dd425574573acec8f108a474ec6e` was sent as
+`handoff_3ee7bb7a7da20aff2325e7f83a77336f`, replying to the actual QA delivery.
+The [native receipt](dispatch-receipt.json) is accepted, unread, with execution
+not yet started. It assigns only the offline helper correction and precise
+permission preparation, not another real pass or resource lease.
