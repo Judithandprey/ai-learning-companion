@@ -1,0 +1,44 @@
+{
+  "source_commit": "175515308f509fb8c0f531dbdb10e57313fcde5a",
+  "owner_candidate": "095e25936c2f75d900a4c6e6b106530ac75ae93c",
+  "windows_tree": "e85fdd9bb4c84b06c008b6fa5cd8f9169075af7b",
+  "stage_name": "lc-windows-live-1755153",
+  "stage_tree_sha256": "3387824a0dee70013104388d4acec2b810475e98953e7c3f196063a8781fd154",
+  "verified_staged_files": 70,
+  "electron": "44.5.1",
+  "typescript": "7.0.2",
+  "node": "24.21.0",
+  "entrypoint": "dist/apps/windows/src/main/main.js",
+  "checks": {
+    "original_wire_probes": {
+      "pass": 2,
+      "fail": 0
+    },
+    "focused_named": {
+      "pass": 97,
+      "fail": 0,
+      "skip": 0
+    },
+    "main_released_bridge_synthetic_provider": {
+      "pass": 2,
+      "fail": 0
+    },
+    "typescript_no_emit": "pass",
+    "clean_stage_build": "pass",
+    "independent_lifecycle_review": {
+      "pass": 12,
+      "includes_original_two_probes": true,
+      "includes_selected_owner_cases": 8,
+      "extra_review_probes": 2
+    },
+    "saved_hidden_renderer": {
+      "reported_pass": 14,
+      "independently_supported_assertions": 13,
+      "noncausal_close_check": 1
+    }
+  },
+  "actual_app_launched": false,
+  "actual_provider_requests": 0,
+  "actual_microphone_or_audio": false,
+  "external_dirty_team_directory_preserved_sha256": "224cb2cf3e25a615df827168ceb4bfde48fa65ad86c35ac8a8535a0b02954318"
+}

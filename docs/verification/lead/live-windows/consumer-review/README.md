@@ -1,4 +1,6 @@
-# Windows live consumer review — candidate held for correction
+# Windows live consumer review — original failed candidate
+
+Current status: [095e259 correction integrated as1755153, distinct candidate built](correction/README.md). The failed-candidate evidence below remains historical.
 
 2026-10-01. Exact delivered candidate **9622b517b74020b2d9e8ffbb03f8d615ff32341d**,
 reviewed against released main **07c9ebd35d412ff4e8b3f5aa2e1b895da9456fe8**.
