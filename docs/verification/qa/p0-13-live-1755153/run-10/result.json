@@ -1,0 +1,1185 @@
+{
+  "kind": "exact staged Electron entrypoint; synthetic display/provider; NOT device/model acceptance",
+  "evidence_commit": "24c48c38aee660b606ebff5285acbd2ccb300392",
+  "production_commit": "175515308f509fb8c0f531dbdb10e57313fcde5a",
+  "started_at": "2026-10-02T10:15:35.362Z",
+  "electron": "44.5.1",
+  "checks": [
+    {
+      "id": "production-entrypoint-preload-hidden",
+      "status": "PASS",
+      "details": {}
+    },
+    {
+      "id": "start-fresh-whole-frame-no-card",
+      "status": "PASS",
+      "details": {
+        "ordinal": 1,
+        "request_id": "live-b2f07fa305e51302.look.1",
+        "session_id": "live-b2f07fa305e51302",
+        "trigger": "observation",
+        "user_text": null,
+        "allowed_assistance": "none",
+        "context": {
+          "capture_session_id": "1b08f7d3dbca7672",
+          "frame_seq": 1,
+          "frame_captured_at": "2026-10-02T10:15:37.866Z",
+          "frame_width": 1000,
+          "frame_height": 700,
+          "display": {
+            "id": "987654",
+            "bounds": {
+              "x": 0,
+              "y": 0,
+              "width": 1000,
+              "height": 700
+            },
+            "scale_factor": 1
+          },
+          "region_dip": {
+            "x": 0,
+            "y": 0,
+            "width": 1000,
+            "height": 700
+          },
+          "region_px": {
+            "x": 0,
+            "y": 0,
+            "width": 1000,
+            "height": 700
+          },
+          "ink_revision": 0,
+          "ink_sha256": "0293704ed8db85028ea19e777550a2283185db6576cb5a5f593b7f7a499f303f",
+          "source_url": null,
+          "source_version": null,
+          "media_position": null
+        },
+        "focus": null,
+        "history": [],
+        "image": {
+          "sha256": "75d9a0cd42ac6a1d60962f5ebdef9b16b81b023a5b2b8e870cc4cd8c4e62b962",
+          "width": 1000,
+          "height": 700
+        },
+        "synthetic": true
+      }
+    },
+    {
+      "id": "changed-frame-new-hash-same-session",
+      "status": "PASS",
+      "details": {}
+    },
+    {
+      "id": "undo-removes-visible-stroke-keeps-original",
+      "status": "PASS",
+      "details": {}
+    },
+    {
+      "id": "redo-restores-visible-original",
+      "status": "PASS",
+      "details": {}
+    },
+    {
+      "id": "circle-auto-hint-no-typed-ask",
+      "status": "PASS",
+      "details": {
+        "trigger": "focus",
+        "allowed_assistance": "hint",
+        "user_text": null,
+        "focus": {
+          "frame_seq": 6,
+          "region_dip": {
+            "x": 302,
+            "y": 337,
+            "width": 116,
+            "height": 121
+          },
+          "region_px": {
+            "x": 302,
+            "y": 337,
+            "width": 116,
+            "height": 121
+          }
+        }
+      }
+    },
+    {
+      "id": "ink-and-full-frame-in-context",
+      "status": "PASS",
+      "details": {
+        "capture_session_id": "1b08f7d3dbca7672",
+        "frame_seq": 6,
+        "frame_captured_at": "2026-10-02T10:15:57.218Z",
+        "frame_width": 1000,
+        "frame_height": 700,
+        "display": {
+          "id": "987654",
+          "bounds": {
+            "x": 0,
+            "y": 0,
+            "width": 1000,
+            "height": 700
+          },
+          "scale_factor": 1
+        },
+        "region_dip": {
+          "x": 0,
+          "y": 0,
+          "width": 1000,
+          "height": 700
+        },
+        "region_px": {
+          "x": 0,
+          "y": 0,
+          "width": 1000,
+          "height": 700
+        },
+        "ink_revision": 3,
+        "ink_sha256": "edd7f0247ebc229da3c677a5f5f44a63a326f01625f4afc62bb828ad4688fe6f",
+        "source_url": null,
+        "source_version": null,
+        "media_position": null
+      }
+    },
+    {
+      "id": "same-frame-follow-up-keeps-focus",
+      "status": "PASS",
+      "details": {
+        "focus": {
+          "frame_seq": 6,
+          "region_dip": {
+            "x": 302,
+            "y": 337,
+            "width": 116,
+            "height": 121
+          },
+          "region_px": {
+            "x": 302,
+            "y": 337,
+            "width": 116,
+            "height": 121
+          }
+        },
+        "frame_seq": 6,
+        "history_entries": 6
+      }
+    },
+    {
+      "id": "later-frame-follow-up-retains-historical-anchor",
+      "status": "PASS",
+      "details": {
+        "context": {
+          "capture_session_id": "1b08f7d3dbca7672",
+          "frame_seq": 7,
+          "frame_captured_at": "2026-10-02T10:16:03.327Z",
+          "frame_width": 1000,
+          "frame_height": 700,
+          "display": {
+            "id": "987654",
+            "bounds": {
+              "x": 0,
+              "y": 0,
+              "width": 1000,
+              "height": 700
+            },
+            "scale_factor": 1
+          },
+          "region_dip": {
+            "x": 0,
+            "y": 0,
+            "width": 1000,
+            "height": 700
+          },
+          "region_px": {
+            "x": 0,
+            "y": 0,
+            "width": 1000,
+            "height": 700
+          },
+          "ink_revision": 3,
+          "ink_sha256": "edd7f0247ebc229da3c677a5f5f44a63a326f01625f4afc62bb828ad4688fe6f",
+          "source_url": null,
+          "source_version": null,
+          "media_position": null
+        },
+        "focus": null,
+        "historical": {
+          "context": {
+            "capture_session_id": "1b08f7d3dbca7672",
+            "display": {
+              "bounds": {
+                "height": 700,
+                "width": 1000,
+                "x": 0,
+                "y": 0
+              },
+              "id": "987654",
+              "scale_factor": 1
+            },
+            "frame_captured_at": "2026-10-02T10:15:57.218Z",
+            "frame_height": 700,
+            "frame_seq": 6,
+            "frame_width": 1000,
+            "ink_revision": 3,
+            "ink_sha256": "edd7f0247ebc229da3c677a5f5f44a63a326f01625f4afc62bb828ad4688fe6f",
+            "media_position": null,
+            "region_dip": {
+              "height": 700,
+              "width": 1000,
+              "x": 0,
+              "y": 0
+            },
+            "region_px": {
+              "height": 700,
+              "width": 1000,
+              "x": 0,
+              "y": 0
+            },
+            "source_url": null,
+            "source_version": null
+          },
+          "focus": {
+            "frame_seq": 6,
+            "region_dip": {
+              "height": 121,
+              "width": 116,
+              "x": 302,
+              "y": 337
+            },
+            "region_px": {
+              "height": 121,
+              "width": 116,
+              "x": 302,
+              "y": 337
+            }
+          },
+          "image": {
+            "height": 700,
+            "sha256": "4c75c19e2c790eaff174062d0da8b35fdf31f85357d6305c2f6669cd68ce9a3e",
+            "width": 1000
+          },
+          "kind": "historical_focus_reference",
+          "limitation": "This is an earlier focus, not a rectangle on the current image. Its pixels are unavailable in this request. Do not infer their content from these coordinates or claim a provider thread retained them.",
+          "pixels_attached_to_this_request": false,
+          "provider_retention": "unverified",
+          "request_id": "ask-dfe4c478cc58000d.1"
+        }
+      }
+    },
+    {
+      "id": "drag-controls-does-not-write-or-submit",
+      "status": "FAIL",
+      "details": {
+        "handleBefore": {
+          "x": 513.03125,
+          "y": 35,
+          "width": 26,
+          "height": 38,
+          "hidden": false,
+          "disabled": false,
+          "hit": true,
+          "top": "toolbarHandle"
+        },
+        "handleAfter": {
+          "x": 513.03125,
+          "y": 35,
+          "width": 26,
+          "height": 38,
+          "hidden": false,
+          "disabled": false,
+          "hit": true,
+          "top": "toolbarHandle"
+        },
+        "cardBefore": {
+          "x": 649,
+          "y": 201.15625,
+          "width": 26,
+          "height": 28,
+          "hidden": false,
+          "disabled": false,
+          "hit": true,
+          "top": "cardHandle"
+        },
+        "cardAfter": {
+          "x": 649,
+          "y": 201.15625,
+          "width": 26,
+          "height": 28,
+          "hidden": false,
+          "disabled": false,
+          "hit": true,
+          "top": "cardHandle"
+        },
+        "revisionBefore": 3,
+        "revisionAfter": 3,
+        "turnsBefore": 8,
+        "turnsAfter": 8
+      }
+    }
+  ],
+  "safety": [
+    {
+      "guarded_native_constructor": true,
+      "kind": "control",
+      "offscreen": false,
+      "context_isolation": true,
+      "sandbox": true,
+      "preference_keys": [
+        "allowRunningInsecureContent",
+        "contextIsolation",
+        "disableDialogs",
+        "disablePopups",
+        "enableBlinkFeatures",
+        "experimentalFeatures",
+        "javascript",
+        "nodeIntegration",
+        "nodeIntegrationInSubFrames",
+        "nodeIntegrationInWorker",
+        "safeDialogs",
+        "safeDialogsMessage",
+        "sandbox",
+        "webSecurity",
+        "webviewTag"
+      ]
+    },
+    {
+      "suppressed_native_method": "show",
+      "kind": "control"
+    },
+    {
+      "guarded_native_constructor": true,
+      "kind": "overlay",
+      "offscreen": false,
+      "context_isolation": true,
+      "sandbox": true,
+      "preference_keys": [
+        "allowRunningInsecureContent",
+        "contextIsolation",
+        "disableDialogs",
+        "disablePopups",
+        "enableBlinkFeatures",
+        "experimentalFeatures",
+        "javascript",
+        "nodeIntegration",
+        "nodeIntegrationInSubFrames",
+        "nodeIntegrationInWorker",
+        "safeDialogs",
+        "safeDialogsMessage",
+        "sandbox",
+        "webSecurity",
+        "webviewTag"
+      ]
+    },
+    {
+      "suppressed_native_method": "setAlwaysOnTop",
+      "kind": "overlay"
+    },
+    {
+      "suppressed_native_method": "showInactive",
+      "kind": "overlay"
+    }
+  ],
+  "errors": [
+    {
+      "renderer_console": {
+        "level": 2,
+        "message": "%cElectron Security Warning (Insecure Content-Security-Policy) font-weight: bold; This renderer process has either no Content Security\n  Policy set or a policy with \"unsafe-eval\" enabled. This exposes users of\n  this app to unnecessary security risks.\n\nFor more information and help, consult\nhttps://electronjs.org/docs/tutorial/security.\nThis warning will not show up\nonce the app is packaged.",
+        "line": 2,
+        "source": "node:electron/js2c/sandbox_bundle"
+      }
+    },
+    {
+      "renderer_console": {
+        "level": 2,
+        "message": "%cElectron Security Warning (Insecure Content-Security-Policy) font-weight: bold; This renderer process has either no Content Security\n  Policy set or a policy with \"unsafe-eval\" enabled. This exposes users of\n  this app to unnecessary security risks.\n\nFor more information and help, consult\nhttps://electronjs.org/docs/tutorial/security.\nThis warning will not show up\nonce the app is packaged.",
+        "line": 2,
+        "source": "node:electron/js2c/sandbox_bundle"
+      }
+    }
+  ],
+  "turns": [
+    {
+      "ordinal": 1,
+      "request_id": "live-b2f07fa305e51302.look.1",
+      "session_id": "live-b2f07fa305e51302",
+      "trigger": "observation",
+      "user_text": null,
+      "allowed_assistance": "none",
+      "context": {
+        "capture_session_id": "1b08f7d3dbca7672",
+        "frame_seq": 1,
+        "frame_captured_at": "2026-10-02T10:15:37.866Z",
+        "frame_width": 1000,
+        "frame_height": 700,
+        "display": {
+          "id": "987654",
+          "bounds": {
+            "x": 0,
+            "y": 0,
+            "width": 1000,
+            "height": 700
+          },
+          "scale_factor": 1
+        },
+        "region_dip": {
+          "x": 0,
+          "y": 0,
+          "width": 1000,
+          "height": 700
+        },
+        "region_px": {
+          "x": 0,
+          "y": 0,
+          "width": 1000,
+          "height": 700
+        },
+        "ink_revision": 0,
+        "ink_sha256": "0293704ed8db85028ea19e777550a2283185db6576cb5a5f593b7f7a499f303f",
+        "source_url": null,
+        "source_version": null,
+        "media_position": null
+      },
+      "focus": null,
+      "history": [],
+      "image": {
+        "sha256": "75d9a0cd42ac6a1d60962f5ebdef9b16b81b023a5b2b8e870cc4cd8c4e62b962",
+        "width": 1000,
+        "height": 700
+      },
+      "synthetic": true
+    },
+    {
+      "ordinal": 2,
+      "request_id": "live-b2f07fa305e51302.look.2",
+      "session_id": "live-b2f07fa305e51302",
+      "trigger": "observation",
+      "user_text": null,
+      "allowed_assistance": "none",
+      "context": {
+        "capture_session_id": "1b08f7d3dbca7672",
+        "frame_seq": 2,
+        "frame_captured_at": "2026-10-02T10:15:40.901Z",
+        "frame_width": 1000,
+        "frame_height": 700,
+        "display": {
+          "id": "987654",
+          "bounds": {
+            "x": 0,
+            "y": 0,
+            "width": 1000,
+            "height": 700
+          },
+          "scale_factor": 1
+        },
+        "region_dip": {
+          "x": 0,
+          "y": 0,
+          "width": 1000,
+          "height": 700
+        },
+        "region_px": {
+          "x": 0,
+          "y": 0,
+          "width": 1000,
+          "height": 700
+        },
+        "ink_revision": 0,
+        "ink_sha256": "0293704ed8db85028ea19e777550a2283185db6576cb5a5f593b7f7a499f303f",
+        "source_url": null,
+        "source_version": null,
+        "media_position": null
+      },
+      "focus": null,
+      "history": [
+        {
+          "kind": "observation",
+          "text": "SYNTHETIC QA hint: inspect the selected relationship; no model or audio was used.",
+          "at": "2026-10-02T10:15:37.866Z",
+          "frame_seq": 1,
+          "request_id": "live-b2f07fa305e51302.look.1",
+          "audio_source": null,
+          "presentation": "not_presented"
+        }
+      ],
+      "image": {
+        "sha256": "57c7cd8fa06cede90bd389e1174f75a16387c286a87e09f4e7f63f2625b3cf96",
+        "width": 1000,
+        "height": 700
+      },
+      "synthetic": true
+    },
+    {
+      "ordinal": 3,
+      "request_id": "live-b2f07fa305e51302.look.3",
+      "session_id": "live-b2f07fa305e51302",
+      "trigger": "observation",
+      "user_text": null,
+      "allowed_assistance": "none",
+      "context": {
+        "capture_session_id": "1b08f7d3dbca7672",
+        "frame_seq": 3,
+        "frame_captured_at": "2026-10-02T10:15:48.056Z",
+        "frame_width": 1000,
+        "frame_height": 700,
+        "display": {
+          "id": "987654",
+          "bounds": {
+            "x": 0,
+            "y": 0,
+            "width": 1000,
+            "height": 700
+          },
+          "scale_factor": 1
+        },
+        "region_dip": {
+          "x": 0,
+          "y": 0,
+          "width": 1000,
+          "height": 700
+        },
+        "region_px": {
+          "x": 0,
+          "y": 0,
+          "width": 1000,
+          "height": 700
+        },
+        "ink_revision": 1,
+        "ink_sha256": "c2b1d58286cabd85eb0041ebbb2f6e4e43cfad7a0b18271cec5c1768bb188584",
+        "source_url": null,
+        "source_version": null,
+        "media_position": null
+      },
+      "focus": null,
+      "history": [
+        {
+          "kind": "observation",
+          "text": "SYNTHETIC QA hint: inspect the selected relationship; no model or audio was used.",
+          "at": "2026-10-02T10:15:37.866Z",
+          "frame_seq": 1,
+          "request_id": "live-b2f07fa305e51302.look.1",
+          "audio_source": null,
+          "presentation": "not_presented"
+        },
+        {
+          "kind": "observation",
+          "text": "SYNTHETIC QA hint: inspect the selected relationship; no model or audio was used.",
+          "at": "2026-10-02T10:15:40.901Z",
+          "frame_seq": 2,
+          "request_id": "live-b2f07fa305e51302.look.2",
+          "audio_source": null,
+          "presentation": "not_presented"
+        }
+      ],
+      "image": {
+        "sha256": "4c75c19e2c790eaff174062d0da8b35fdf31f85357d6305c2f6669cd68ce9a3e",
+        "width": 1000,
+        "height": 700
+      },
+      "synthetic": true
+    },
+    {
+      "ordinal": 4,
+      "request_id": "live-b2f07fa305e51302.look.4",
+      "session_id": "live-b2f07fa305e51302",
+      "trigger": "observation",
+      "user_text": null,
+      "allowed_assistance": "none",
+      "context": {
+        "capture_session_id": "1b08f7d3dbca7672",
+        "frame_seq": 4,
+        "frame_captured_at": "2026-10-02T10:15:50.102Z",
+        "frame_width": 1000,
+        "frame_height": 700,
+        "display": {
+          "id": "987654",
+          "bounds": {
+            "x": 0,
+            "y": 0,
+            "width": 1000,
+            "height": 700
+          },
+          "scale_factor": 1
+        },
+        "region_dip": {
+          "x": 0,
+          "y": 0,
+          "width": 1000,
+          "height": 700
+        },
+        "region_px": {
+          "x": 0,
+          "y": 0,
+          "width": 1000,
+          "height": 700
+        },
+        "ink_revision": 2,
+        "ink_sha256": "9147e493b2807d4fe497a8cc6146492147c420c6aa4d6a5744f16b58d5d83d3c",
+        "source_url": null,
+        "source_version": null,
+        "media_position": null
+      },
+      "focus": null,
+      "history": [
+        {
+          "kind": "observation",
+          "text": "SYNTHETIC QA hint: inspect the selected relationship; no model or audio was used.",
+          "at": "2026-10-02T10:15:37.866Z",
+          "frame_seq": 1,
+          "request_id": "live-b2f07fa305e51302.look.1",
+          "audio_source": null,
+          "presentation": "not_presented"
+        },
+        {
+          "kind": "observation",
+          "text": "SYNTHETIC QA hint: inspect the selected relationship; no model or audio was used.",
+          "at": "2026-10-02T10:15:40.901Z",
+          "frame_seq": 2,
+          "request_id": "live-b2f07fa305e51302.look.2",
+          "audio_source": null,
+          "presentation": "not_presented"
+        },
+        {
+          "kind": "observation",
+          "text": "SYNTHETIC QA hint: inspect the selected relationship; no model or audio was used.",
+          "at": "2026-10-02T10:15:48.056Z",
+          "frame_seq": 3,
+          "request_id": "live-b2f07fa305e51302.look.3",
+          "audio_source": null,
+          "presentation": "not_presented"
+        }
+      ],
+      "image": {
+        "sha256": "57c7cd8fa06cede90bd389e1174f75a16387c286a87e09f4e7f63f2625b3cf96",
+        "width": 1000,
+        "height": 700
+      },
+      "synthetic": true
+    },
+    {
+      "ordinal": 5,
+      "request_id": "live-b2f07fa305e51302.look.5",
+      "session_id": "live-b2f07fa305e51302",
+      "trigger": "observation",
+      "user_text": null,
+      "allowed_assistance": "none",
+      "context": {
+        "capture_session_id": "1b08f7d3dbca7672",
+        "frame_seq": 5,
+        "frame_captured_at": "2026-10-02T10:15:53.169Z",
+        "frame_width": 1000,
+        "frame_height": 700,
+        "display": {
+          "id": "987654",
+          "bounds": {
+            "x": 0,
+            "y": 0,
+            "width": 1000,
+            "height": 700
+          },
+          "scale_factor": 1
+        },
+        "region_dip": {
+          "x": 0,
+          "y": 0,
+          "width": 1000,
+          "height": 700
+        },
+        "region_px": {
+          "x": 0,
+          "y": 0,
+          "width": 1000,
+          "height": 700
+        },
+        "ink_revision": 3,
+        "ink_sha256": "edd7f0247ebc229da3c677a5f5f44a63a326f01625f4afc62bb828ad4688fe6f",
+        "source_url": null,
+        "source_version": null,
+        "media_position": null
+      },
+      "focus": null,
+      "history": [
+        {
+          "kind": "observation",
+          "text": "SYNTHETIC QA hint: inspect the selected relationship; no model or audio was used.",
+          "at": "2026-10-02T10:15:37.866Z",
+          "frame_seq": 1,
+          "request_id": "live-b2f07fa305e51302.look.1",
+          "audio_source": null,
+          "presentation": "not_presented"
+        },
+        {
+          "kind": "observation",
+          "text": "SYNTHETIC QA hint: inspect the selected relationship; no model or audio was used.",
+          "at": "2026-10-02T10:15:40.901Z",
+          "frame_seq": 2,
+          "request_id": "live-b2f07fa305e51302.look.2",
+          "audio_source": null,
+          "presentation": "not_presented"
+        },
+        {
+          "kind": "observation",
+          "text": "SYNTHETIC QA hint: inspect the selected relationship; no model or audio was used.",
+          "at": "2026-10-02T10:15:48.056Z",
+          "frame_seq": 3,
+          "request_id": "live-b2f07fa305e51302.look.3",
+          "audio_source": null,
+          "presentation": "not_presented"
+        },
+        {
+          "kind": "observation",
+          "text": "SYNTHETIC QA hint: inspect the selected relationship; no model or audio was used.",
+          "at": "2026-10-02T10:15:50.102Z",
+          "frame_seq": 4,
+          "request_id": "live-b2f07fa305e51302.look.4",
+          "audio_source": null,
+          "presentation": "not_presented"
+        }
+      ],
+      "image": {
+        "sha256": "4c75c19e2c790eaff174062d0da8b35fdf31f85357d6305c2f6669cd68ce9a3e",
+        "width": 1000,
+        "height": 700
+      },
+      "synthetic": true
+    },
+    {
+      "ordinal": 6,
+      "request_id": "ask-dfe4c478cc58000d.1",
+      "session_id": "live-b2f07fa305e51302",
+      "trigger": "focus",
+      "user_text": null,
+      "allowed_assistance": "hint",
+      "context": {
+        "capture_session_id": "1b08f7d3dbca7672",
+        "frame_seq": 6,
+        "frame_captured_at": "2026-10-02T10:15:57.218Z",
+        "frame_width": 1000,
+        "frame_height": 700,
+        "display": {
+          "id": "987654",
+          "bounds": {
+            "x": 0,
+            "y": 0,
+            "width": 1000,
+            "height": 700
+          },
+          "scale_factor": 1
+        },
+        "region_dip": {
+          "x": 0,
+          "y": 0,
+          "width": 1000,
+          "height": 700
+        },
+        "region_px": {
+          "x": 0,
+          "y": 0,
+          "width": 1000,
+          "height": 700
+        },
+        "ink_revision": 3,
+        "ink_sha256": "edd7f0247ebc229da3c677a5f5f44a63a326f01625f4afc62bb828ad4688fe6f",
+        "source_url": null,
+        "source_version": null,
+        "media_position": null
+      },
+      "focus": {
+        "frame_seq": 6,
+        "region_dip": {
+          "x": 302,
+          "y": 337,
+          "width": 116,
+          "height": 121
+        },
+        "region_px": {
+          "x": 302,
+          "y": 337,
+          "width": 116,
+          "height": 121
+        }
+      },
+      "history": [
+        {
+          "kind": "observation",
+          "text": "SYNTHETIC QA hint: inspect the selected relationship; no model or audio was used.",
+          "at": "2026-10-02T10:15:37.866Z",
+          "frame_seq": 1,
+          "request_id": "live-b2f07fa305e51302.look.1",
+          "audio_source": null,
+          "presentation": "not_presented"
+        },
+        {
+          "kind": "observation",
+          "text": "SYNTHETIC QA hint: inspect the selected relationship; no model or audio was used.",
+          "at": "2026-10-02T10:15:40.901Z",
+          "frame_seq": 2,
+          "request_id": "live-b2f07fa305e51302.look.2",
+          "audio_source": null,
+          "presentation": "not_presented"
+        },
+        {
+          "kind": "observation",
+          "text": "SYNTHETIC QA hint: inspect the selected relationship; no model or audio was used.",
+          "at": "2026-10-02T10:15:48.056Z",
+          "frame_seq": 3,
+          "request_id": "live-b2f07fa305e51302.look.3",
+          "audio_source": null,
+          "presentation": "not_presented"
+        },
+        {
+          "kind": "observation",
+          "text": "SYNTHETIC QA hint: inspect the selected relationship; no model or audio was used.",
+          "at": "2026-10-02T10:15:50.102Z",
+          "frame_seq": 4,
+          "request_id": "live-b2f07fa305e51302.look.4",
+          "audio_source": null,
+          "presentation": "not_presented"
+        },
+        {
+          "kind": "observation",
+          "text": "SYNTHETIC QA hint: inspect the selected relationship; no model or audio was used.",
+          "at": "2026-10-02T10:15:53.169Z",
+          "frame_seq": 5,
+          "request_id": "live-b2f07fa305e51302.look.5",
+          "audio_source": null,
+          "presentation": "not_presented"
+        }
+      ],
+      "image": {
+        "sha256": "4c75c19e2c790eaff174062d0da8b35fdf31f85357d6305c2f6669cd68ce9a3e",
+        "width": 1000,
+        "height": 700
+      },
+      "synthetic": true
+    },
+    {
+      "ordinal": 7,
+      "request_id": "ask-dfe4c478cc58000d.2",
+      "session_id": "live-b2f07fa305e51302",
+      "trigger": "text_followup",
+      "user_text": "SYNTHETIC same-frame follow-up",
+      "allowed_assistance": "hint",
+      "context": {
+        "capture_session_id": "1b08f7d3dbca7672",
+        "frame_seq": 6,
+        "frame_captured_at": "2026-10-02T10:15:57.218Z",
+        "frame_width": 1000,
+        "frame_height": 700,
+        "display": {
+          "id": "987654",
+          "bounds": {
+            "x": 0,
+            "y": 0,
+            "width": 1000,
+            "height": 700
+          },
+          "scale_factor": 1
+        },
+        "region_dip": {
+          "x": 0,
+          "y": 0,
+          "width": 1000,
+          "height": 700
+        },
+        "region_px": {
+          "x": 0,
+          "y": 0,
+          "width": 1000,
+          "height": 700
+        },
+        "ink_revision": 3,
+        "ink_sha256": "edd7f0247ebc229da3c677a5f5f44a63a326f01625f4afc62bb828ad4688fe6f",
+        "source_url": null,
+        "source_version": null,
+        "media_position": null
+      },
+      "focus": {
+        "frame_seq": 6,
+        "region_dip": {
+          "x": 302,
+          "y": 337,
+          "width": 116,
+          "height": 121
+        },
+        "region_px": {
+          "x": 302,
+          "y": 337,
+          "width": 116,
+          "height": 121
+        }
+      },
+      "history": [
+        {
+          "kind": "observation",
+          "text": "SYNTHETIC QA hint: inspect the selected relationship; no model or audio was used.",
+          "at": "2026-10-02T10:15:37.866Z",
+          "frame_seq": 1,
+          "request_id": "live-b2f07fa305e51302.look.1",
+          "audio_source": null,
+          "presentation": "not_presented"
+        },
+        {
+          "kind": "observation",
+          "text": "SYNTHETIC QA hint: inspect the selected relationship; no model or audio was used.",
+          "at": "2026-10-02T10:15:40.901Z",
+          "frame_seq": 2,
+          "request_id": "live-b2f07fa305e51302.look.2",
+          "audio_source": null,
+          "presentation": "not_presented"
+        },
+        {
+          "kind": "observation",
+          "text": "SYNTHETIC QA hint: inspect the selected relationship; no model or audio was used.",
+          "at": "2026-10-02T10:15:48.056Z",
+          "frame_seq": 3,
+          "request_id": "live-b2f07fa305e51302.look.3",
+          "audio_source": null,
+          "presentation": "not_presented"
+        },
+        {
+          "kind": "observation",
+          "text": "SYNTHETIC QA hint: inspect the selected relationship; no model or audio was used.",
+          "at": "2026-10-02T10:15:50.102Z",
+          "frame_seq": 4,
+          "request_id": "live-b2f07fa305e51302.look.4",
+          "audio_source": null,
+          "presentation": "not_presented"
+        },
+        {
+          "kind": "observation",
+          "text": "SYNTHETIC QA hint: inspect the selected relationship; no model or audio was used.",
+          "at": "2026-10-02T10:15:53.169Z",
+          "frame_seq": 5,
+          "request_id": "live-b2f07fa305e51302.look.5",
+          "audio_source": null,
+          "presentation": "not_presented"
+        },
+        {
+          "kind": "assistant",
+          "text": "SYNTHETIC QA hint: inspect the selected relationship; no model or audio was used.",
+          "at": "2026-10-02T10:16:00.035Z",
+          "frame_seq": 6,
+          "request_id": "ask-dfe4c478cc58000d.1",
+          "audio_source": null,
+          "presentation": "shown"
+        }
+      ],
+      "image": {
+        "sha256": "4c75c19e2c790eaff174062d0da8b35fdf31f85357d6305c2f6669cd68ce9a3e",
+        "width": 1000,
+        "height": 700
+      },
+      "synthetic": true
+    },
+    {
+      "ordinal": 8,
+      "request_id": "ask-dfe4c478cc58000d.3",
+      "session_id": "live-b2f07fa305e51302",
+      "trigger": "text_followup",
+      "user_text": "SYNTHETIC later-frame follow-up",
+      "allowed_assistance": "hint",
+      "context": {
+        "capture_session_id": "1b08f7d3dbca7672",
+        "frame_seq": 7,
+        "frame_captured_at": "2026-10-02T10:16:03.327Z",
+        "frame_width": 1000,
+        "frame_height": 700,
+        "display": {
+          "id": "987654",
+          "bounds": {
+            "x": 0,
+            "y": 0,
+            "width": 1000,
+            "height": 700
+          },
+          "scale_factor": 1
+        },
+        "region_dip": {
+          "x": 0,
+          "y": 0,
+          "width": 1000,
+          "height": 700
+        },
+        "region_px": {
+          "x": 0,
+          "y": 0,
+          "width": 1000,
+          "height": 700
+        },
+        "ink_revision": 3,
+        "ink_sha256": "edd7f0247ebc229da3c677a5f5f44a63a326f01625f4afc62bb828ad4688fe6f",
+        "source_url": null,
+        "source_version": null,
+        "media_position": null
+      },
+      "focus": null,
+      "history": [
+        {
+          "kind": "observation",
+          "text": "SYNTHETIC QA hint: inspect the selected relationship; no model or audio was used.",
+          "at": "2026-10-02T10:15:37.866Z",
+          "frame_seq": 1,
+          "request_id": "live-b2f07fa305e51302.look.1",
+          "audio_source": null,
+          "presentation": "not_presented"
+        },
+        {
+          "kind": "observation",
+          "text": "SYNTHETIC QA hint: inspect the selected relationship; no model or audio was used.",
+          "at": "2026-10-02T10:15:40.901Z",
+          "frame_seq": 2,
+          "request_id": "live-b2f07fa305e51302.look.2",
+          "audio_source": null,
+          "presentation": "not_presented"
+        },
+        {
+          "kind": "observation",
+          "text": "SYNTHETIC QA hint: inspect the selected relationship; no model or audio was used.",
+          "at": "2026-10-02T10:15:48.056Z",
+          "frame_seq": 3,
+          "request_id": "live-b2f07fa305e51302.look.3",
+          "audio_source": null,
+          "presentation": "not_presented"
+        },
+        {
+          "kind": "observation",
+          "text": "SYNTHETIC QA hint: inspect the selected relationship; no model or audio was used.",
+          "at": "2026-10-02T10:15:50.102Z",
+          "frame_seq": 4,
+          "request_id": "live-b2f07fa305e51302.look.4",
+          "audio_source": null,
+          "presentation": "not_presented"
+        },
+        {
+          "kind": "observation",
+          "text": "SYNTHETIC QA hint: inspect the selected relationship; no model or audio was used.",
+          "at": "2026-10-02T10:15:53.169Z",
+          "frame_seq": 5,
+          "request_id": "live-b2f07fa305e51302.look.5",
+          "audio_source": null,
+          "presentation": "not_presented"
+        },
+        {
+          "kind": "assistant",
+          "text": "SYNTHETIC QA hint: inspect the selected relationship; no model or audio was used.",
+          "at": "2026-10-02T10:16:00.035Z",
+          "frame_seq": 6,
+          "request_id": "ask-dfe4c478cc58000d.1",
+          "audio_source": null,
+          "presentation": "shown"
+        },
+        {
+          "kind": "user",
+          "text": "SYNTHETIC same-frame follow-up",
+          "at": "2026-10-02T10:16:02.005Z",
+          "frame_seq": 6,
+          "request_id": "ask-dfe4c478cc58000d.2",
+          "audio_source": null,
+          "presentation": null
+        },
+        {
+          "kind": "assistant",
+          "text": "SYNTHETIC QA hint: inspect the selected relationship; no model or audio was used.",
+          "at": "2026-10-02T10:16:02.034Z",
+          "frame_seq": 6,
+          "request_id": "ask-dfe4c478cc58000d.2",
+          "audio_source": null,
+          "presentation": "shown"
+        },
+        {
+          "kind": "observation",
+          "text": "{\"context\":{\"capture_session_id\":\"1b08f7d3dbca7672\",\"display\":{\"bounds\":{\"height\":700,\"width\":1000,\"x\":0,\"y\":0},\"id\":\"987654\",\"scale_factor\":1},\"frame_captured_at\":\"2026-10-02T10:15:57.218Z\",\"frame_height\":700,\"frame_seq\":6,\"frame_width\":1000,\"ink_revision\":3,\"ink_sha256\":\"edd7f0247ebc229da3c677a5f5f44a63a326f01625f4afc62bb828ad4688fe6f\",\"media_position\":null,\"region_dip\":{\"height\":700,\"width\":1000,\"x\":0,\"y\":0},\"region_px\":{\"height\":700,\"width\":1000,\"x\":0,\"y\":0},\"source_url\":null,\"source_version\":null},\"focus\":{\"frame_seq\":6,\"region_dip\":{\"height\":121,\"width\":116,\"x\":302,\"y\":337},\"region_px\":{\"height\":121,\"width\":116,\"x\":302,\"y\":337}},\"image\":{\"height\":700,\"sha256\":\"4c75c19e2c790eaff174062d0da8b35fdf31f85357d6305c2f6669cd68ce9a3e\",\"width\":1000},\"kind\":\"historical_focus_reference\",\"limitation\":\"This is an earlier focus, not a rectangle on the current image. Its pixels are unavailable in this request. Do not infer their content from these coordinates or claim a provider thread retained them.\",\"pixels_attached_to_this_request\":false,\"provider_retention\":\"unverified\",\"request_id\":\"ask-dfe4c478cc58000d.1\"}",
+          "at": "2026-10-02T10:15:57.218Z",
+          "frame_seq": 6,
+          "request_id": "ask-dfe4c478cc58000d.1",
+          "audio_source": null,
+          "presentation": "not_presented"
+        }
+      ],
+      "image": {
+        "sha256": "90ff1b117c78b121b52d61599bc638a6d78ce73a5cae2b66dcba6ed1f847b66c",
+        "width": 1000,
+        "height": 700
+      },
+      "synthetic": true
+    }
+  ],
+  "screenshots": [],
+  "actual_provider_requests": 0,
+  "actual_display_capture": false,
+  "actual_audio": false,
+  "harness_sha256": "f156ba9106c99daa762b1ae31cb7c1ca0f31a97eb550a0bb2c0b99fd9a84f859",
+  "runtime_sha256": "49b61a030a520fc36a4b8fa5cce53fb4e935a7bdbbe4b80e9222f598e49cc7fa",
+  "stage_tree_sha256": "3387824a0dee70013104388d4acec2b810475e98953e7c3f196063a8781fd154",
+  "verified_staged_files": 70,
+  "phase": "loadURL done",
+  "trace": [
+    {
+      "at": "2026-10-02T10:15:35.615Z",
+      "phase": "hidden blank renderer bootstrap",
+      "kind": "control"
+    },
+    {
+      "at": "2026-10-02T10:15:35.622Z",
+      "phase": "production main imported"
+    },
+    {
+      "at": "2026-10-02T10:15:35.623Z",
+      "phase": "production control created"
+    },
+    {
+      "at": "2026-10-02T10:15:35.634Z",
+      "phase": "synthetic CDP injection installed",
+      "kind": "control"
+    },
+    {
+      "at": "2026-10-02T10:15:35.635Z",
+      "phase": "native loadURL",
+      "kind": "control",
+      "url": "app://bundle/apps/windows/src/renderer/control.html"
+    },
+    {
+      "at": "2026-10-02T10:15:35.683Z",
+      "phase": "loadURL done",
+      "kind": "control",
+      "url": "app://bundle/apps/windows/src/renderer/control.html"
+    },
+    {
+      "at": "2026-10-02T10:15:37.725Z",
+      "phase": "hidden blank renderer bootstrap",
+      "kind": "overlay"
+    },
+    {
+      "at": "2026-10-02T10:15:37.777Z",
+      "phase": "synthetic CDP injection installed",
+      "kind": "overlay"
+    },
+    {
+      "at": "2026-10-02T10:15:37.777Z",
+      "phase": "native loadURL",
+      "kind": "overlay",
+      "url": "app://bundle/apps/windows/src/renderer/overlay.html"
+    },
+    {
+      "at": "2026-10-02T10:15:37.842Z",
+      "phase": "loadURL done",
+      "kind": "overlay",
+      "url": "app://bundle/apps/windows/src/renderer/overlay.html"
+    }
+  ],
+  "fatal": "Error: Check failed: drag-controls-does-not-write-or-submit\n    at check (C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-live-offscreen-cd28e9fee85940dd848ed9e4fe00c7fb\\qa_live_rehearsal.cjs:48:20)\n    at run (C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-live-offscreen-cd28e9fee85940dd848ed9e4fe00c7fb\\qa_live_rehearsal.cjs:319:3)",
+  "ended_at": "2026-10-02T10:16:11.231Z",
+  "pass": 9,
+  "fail": 1,
+  "fake_connector_exit_seen": false,
+  "window_visibility_at_end": [
+    {
+      "kind": "control",
+      "visible": false
+    },
+    {
+      "kind": "overlay",
+      "visible": false
+    }
+  ]
+}

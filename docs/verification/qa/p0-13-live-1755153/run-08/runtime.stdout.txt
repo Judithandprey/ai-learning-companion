@@ -1,0 +1,2 @@
+
+{"pass":1,"fail":0,"fatal":"Error: Not clickable: #subCheck {\"x\":85.87109375,\"y\":853.6796875,\"width\":139.7421875,\"height\":34.296875,\"hidden\":false,\"disabled\":false,\"hit\":false}\n    at click (C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-live-offscreen-c5b20135ae3a4bcf80b1637003c6fd59\\qa_live_rehearsal.cjs:154:69)\n    at async run (C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-live-offscreen-c5b20135ae3a4bcf80b1637003c6fd59\\qa_live_rehearsal.cjs:253:3)","turns":0}

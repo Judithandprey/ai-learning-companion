@@ -1,0 +1,81 @@
+{
+  "kind": "exact staged Electron entrypoint; synthetic display/provider; NOT device/model acceptance",
+  "evidence_commit": "24c48c38aee660b606ebff5285acbd2ccb300392",
+  "production_commit": "175515308f509fb8c0f531dbdb10e57313fcde5a",
+  "started_at": "2026-10-02T10:11:31.736Z",
+  "electron": "44.5.1",
+  "checks": [],
+  "safety": [
+    {
+      "guarded_native_constructor": true,
+      "kind": "control",
+      "offscreen": false,
+      "context_isolation": true,
+      "sandbox": true,
+      "preference_keys": [
+        "allowRunningInsecureContent",
+        "contextIsolation",
+        "disableDialogs",
+        "disablePopups",
+        "enableBlinkFeatures",
+        "experimentalFeatures",
+        "javascript",
+        "nodeIntegration",
+        "nodeIntegrationInSubFrames",
+        "nodeIntegrationInWorker",
+        "safeDialogs",
+        "safeDialogsMessage",
+        "sandbox",
+        "webSecurity",
+        "webviewTag"
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "renderer_console": {}
+    }
+  ],
+  "turns": [],
+  "screenshots": [],
+  "actual_provider_requests": 0,
+  "actual_display_capture": false,
+  "actual_audio": false,
+  "harness_sha256": "f341d4505aa61f91d9f5b11162145b18caaeb21bc478d4e09b778b32937f418a",
+  "runtime_sha256": "49b61a030a520fc36a4b8fa5cce53fb4e935a7bdbbe4b80e9222f598e49cc7fa",
+  "stage_tree_sha256": "3387824a0dee70013104388d4acec2b810475e98953e7c3f196063a8781fd154",
+  "verified_staged_files": 70,
+  "phase": "loadURL done",
+  "trace": [
+    {
+      "at": "2026-10-02T10:11:31.998Z",
+      "phase": "hidden blank renderer bootstrap",
+      "kind": "control"
+    },
+    {
+      "at": "2026-10-02T10:11:32.004Z",
+      "phase": "production main imported"
+    },
+    {
+      "at": "2026-10-02T10:11:32.005Z",
+      "phase": "production control created"
+    },
+    {
+      "at": "2026-10-02T10:11:32.022Z",
+      "phase": "synthetic CDP injection installed",
+      "kind": "control"
+    },
+    {
+      "at": "2026-10-02T10:11:32.022Z",
+      "phase": "native loadURL",
+      "kind": "control",
+      "url": "app://bundle/apps/windows/src/renderer/control.html"
+    },
+    {
+      "at": "2026-10-02T10:11:32.064Z",
+      "phase": "loadURL done",
+      "kind": "control",
+      "url": "app://bundle/apps/windows/src/renderer/control.html"
+    }
+  ]
+}

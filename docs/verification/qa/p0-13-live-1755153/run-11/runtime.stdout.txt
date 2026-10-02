@@ -1,0 +1,2 @@
+
+{"pass":11,"fail":1,"fatal":"Error: Timed out: pending cancellable follow-up\n    at until (C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-live-offscreen-aafee9a1c2b84714ada997119a85a155\\qa_live_rehearsal.cjs:146:9)\n    at async run (C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-live-offscreen-aafee9a1c2b84714ada997119a85a155\\qa_live_rehearsal.cjs:334:3)","turns":8}

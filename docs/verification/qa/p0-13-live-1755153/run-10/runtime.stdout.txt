@@ -1,0 +1,2 @@
+
+{"pass":9,"fail":1,"fatal":"Error: Check failed: drag-controls-does-not-write-or-submit\n    at check (C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-live-offscreen-cd28e9fee85940dd848ed9e4fe00c7fb\\qa_live_rehearsal.cjs:48:20)\n    at run (C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-live-offscreen-cd28e9fee85940dd848ed9e4fe00c7fb\\qa_live_rehearsal.cjs:319:3)","turns":8}

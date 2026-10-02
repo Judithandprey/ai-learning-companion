@@ -261,7 +261,7 @@ None of this is acceptance evidence for the real turn.
 - The deterministic controls and the rehearsal are not real-model evidence. A signed-in account, a model list or a
   usage figure is not a pass.
 
-## 7. Changed flow: the live desktop companion (prepared cases, all NOT_RUN)
+## 7. Changed flow: the live desktop companion (real acceptance cases remain NOT_RUN)
 
 Amended in place by the lead's `handoff_a6d4a4baf7e368565b8de52e935a3d91`, `handoff_795e97b1731ce5bc73182d8a90f07082`
 (baseline `9b33a7675fe98ab30e5c79952668906ff7ef232a`) and `handoff_b2436c62d2d68f07d104e3f0bbd917f2` (main
@@ -272,10 +272,14 @@ campaign. The runtime pass waits for the exact integrated release; a Backend can
   specification §3.8, §7.1 and §7.3 with their English text, the
   [current live-workflow directive](../../requirements/intent-and-decisions.md#current-decisions), the original-goal
   cases changed in the same commit, and the lead's [checkpoint](../lead/live-windows/README.md).
-- **State of the product:** the interface and its schema checks exist (`packages/contracts/live_companion`); the
-  shared connector and pure Learning seam are integrated; the new Windows production consumer and usable audio input
-  are unfinished. No exact integrated runnable candidate has been released for this pass, so the cases below remain
-  NOT_RUN and QA does not guess consumer behavior.
+- **Current exact-candidate checkpoint (2026-10-02):** lead released evidence commit
+  `24c48c38aee660b606ebff5285acbd2ccb300392`, production `175515308f509fb8c0f531dbdb10e57313fcde5a`, and the frozen
+  `lc-windows-live-1755153` stage for bounded hidden-window synthetic rehearsal only. The
+  [offline readiness receipt](p0-13-live-1755153/README.md) records 14 lifecycle passes, 10 final controls passes with
+  small within-handle movement, earlier typed-follow-up assertions, exact hashes and failed diagnostics. Cross-handle
+  pointer capture remains blocked in that harness; real voice/audio and every real acceptance case below remain
+  NOT_RUN. No real request or account/display/audio lease has been spent or released. This supersedes the earlier
+  no-candidate dependency, while preserving its task scope and the separate real release requirement.
 - **The old `3e4b406` package:** the lead reports that the user has exited it (`handoff_b080a2157724229207b627a489610c1d`).
   Its stage folder, profile, sign-in and connector copy are still kept as they are; the new candidate gets its own
   stage folder and its own connector copy. The lead alone coordinates the account, the display and the audio route.
@@ -299,6 +303,11 @@ campaign. The runtime pass waits for the exact integrated release; a Backend can
   no automatic retry or adding the retired slot. No raw-audio provider attempts are included. An unavailable voice
   case stays NOT_RUN and its slot is not reassigned. Use stand-ins for additional cancellation/history variants.
   The product's visible configured policy is separate; 12 calls/5 minutes is a QA preset, not its final study default.
+  The released candidate now defaults to 60 submissions in 30 minutes with a 30-second unattended interval. These
+  engineering defaults do not expand the five-attempt ceiling. The readiness receipt proposes a four-attempt,
+  one-minute/60-second-interval policy for the currently voice-unconnected candidate; it still awaits the Lead's
+  coordinated exclusive release. The second typed LIVE-05 variant and additional LIVE-08 race permutations remain
+  NOT_RUN, and an expired session is not restarted for extra real attempts.
 - **When it runs:** only on the exact released candidate, on a generated non-sensitive screen, with the display and
   the audio route coordinated by the lead. Each real case is judged by a person reading the whole answer, as in
   section 1.

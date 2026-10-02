@@ -1,0 +1,55 @@
+{
+  "kind": "exact staged Electron entrypoint; synthetic display/provider; NOT device/model acceptance",
+  "evidence_commit": "24c48c38aee660b606ebff5285acbd2ccb300392",
+  "production_commit": "175515308f509fb8c0f531dbdb10e57313fcde5a",
+  "started_at": "2026-10-02T10:08:02.940Z",
+  "electron": "44.5.1",
+  "checks": [],
+  "safety": [
+    {
+      "guarded_native_constructor": true,
+      "kind": "control",
+      "offscreen": false,
+      "context_isolation": true,
+      "sandbox": true,
+      "preference_keys": [
+        "allowRunningInsecureContent",
+        "contextIsolation",
+        "disableDialogs",
+        "disablePopups",
+        "enableBlinkFeatures",
+        "experimentalFeatures",
+        "javascript",
+        "nodeIntegration",
+        "nodeIntegrationInSubFrames",
+        "nodeIntegrationInWorker",
+        "safeDialogs",
+        "safeDialogsMessage",
+        "sandbox",
+        "webSecurity",
+        "webviewTag"
+      ]
+    }
+  ],
+  "errors": [],
+  "turns": [],
+  "screenshots": [],
+  "actual_provider_requests": 0,
+  "actual_display_capture": false,
+  "actual_audio": false,
+  "harness_sha256": "fb4e73d21e5037481c7dcf9e51045f233d896edfabc3a9728d7baef74c3fb89f",
+  "runtime_sha256": "49b61a030a520fc36a4b8fa5cce53fb4e935a7bdbbe4b80e9222f598e49cc7fa",
+  "stage_tree_sha256": "3387824a0dee70013104388d4acec2b810475e98953e7c3f196063a8781fd154",
+  "verified_staged_files": 70,
+  "fatal": "90-second bounded rehearsal watchdog",
+  "ended_at": "2026-10-02T10:09:33.114Z",
+  "pass": 0,
+  "fail": 0,
+  "fake_connector_exit_seen": null,
+  "window_visibility_at_end": [
+    {
+      "kind": "control",
+      "visible": false
+    }
+  ]
+}

@@ -1,0 +1,12 @@
+App threw an error during load
+TypeError: Cannot redefine property: BrowserWindow
+    at Object.defineProperty (<anonymous>)
+    at Object.<anonymous> (C:\Users\ROG\AppData\Local\Temp\lc-qa-live-offscreen-fb10abe741324e7888d54d4cd7dfa923\qa_live_rehearsal.cjs:106:8)
+    at Module._compile (node:internal/modules/cjs/loader:1937:14)
+    at Object..js (node:internal/modules/cjs/loader:2070:10)
+    at Module.load (node:internal/modules/cjs/loader:1658:32)
+    at Module._load (node:internal/modules/cjs/loader:1450:12)
+    at wrapModuleLoad (node:internal/modules/cjs/loader:268:19)
+    at loadCJSModuleWithModuleLoad (node:internal/modules/esm/translators:378:15)
+    at ModuleWrap.<anonymous> (node:internal/modules/esm/translators:246:9)
+    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)

@@ -1,0 +1,2 @@
+
+{"pass":0,"fail":0,"fatal":"TypeError [ERR_INVALID_ARG_TYPE]: The \"path\" argument must be of type string. Received undefined\n    at Object.basename (node:path:902:5)\n    at EventEmitter.<anonymous> (C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-live-offscreen-f825158e7f6b49f7b89d441f98b78e4f\\qa_live_rehearsal.cjs:98:19)\n    at EventEmitter.emit (node:events:514:28)\n    at BrowserWindow._init (node:electron/js2c/browser_init:1:18450)\n    at file:///C:/Users/ROG/AppData/Local/Temp/lc-windows-live-1755153/dist/apps/windows/src/main/main.js:2248:15","turns":0}

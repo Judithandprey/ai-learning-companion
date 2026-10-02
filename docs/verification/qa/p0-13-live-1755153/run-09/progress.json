@@ -1,0 +1,154 @@
+{
+  "kind": "exact staged Electron entrypoint; synthetic display/provider; NOT device/model acceptance",
+  "evidence_commit": "24c48c38aee660b606ebff5285acbd2ccb300392",
+  "production_commit": "175515308f509fb8c0f531dbdb10e57313fcde5a",
+  "started_at": "2026-10-02T10:12:37.281Z",
+  "electron": "44.5.1",
+  "checks": [
+    {
+      "id": "production-entrypoint-preload-hidden",
+      "status": "PASS",
+      "details": {}
+    }
+  ],
+  "safety": [
+    {
+      "guarded_native_constructor": true,
+      "kind": "control",
+      "offscreen": false,
+      "context_isolation": true,
+      "sandbox": true,
+      "preference_keys": [
+        "allowRunningInsecureContent",
+        "contextIsolation",
+        "disableDialogs",
+        "disablePopups",
+        "enableBlinkFeatures",
+        "experimentalFeatures",
+        "javascript",
+        "nodeIntegration",
+        "nodeIntegrationInSubFrames",
+        "nodeIntegrationInWorker",
+        "safeDialogs",
+        "safeDialogsMessage",
+        "sandbox",
+        "webSecurity",
+        "webviewTag"
+      ]
+    },
+    {
+      "suppressed_native_method": "show",
+      "kind": "control"
+    },
+    {
+      "guarded_native_constructor": true,
+      "kind": "overlay",
+      "offscreen": false,
+      "context_isolation": true,
+      "sandbox": true,
+      "preference_keys": [
+        "allowRunningInsecureContent",
+        "contextIsolation",
+        "disableDialogs",
+        "disablePopups",
+        "enableBlinkFeatures",
+        "experimentalFeatures",
+        "javascript",
+        "nodeIntegration",
+        "nodeIntegrationInSubFrames",
+        "nodeIntegrationInWorker",
+        "safeDialogs",
+        "safeDialogsMessage",
+        "sandbox",
+        "webSecurity",
+        "webviewTag"
+      ]
+    },
+    {
+      "suppressed_native_method": "setAlwaysOnTop",
+      "kind": "overlay"
+    }
+  ],
+  "errors": [
+    {
+      "renderer_console": {
+        "level": 2,
+        "message": "%cElectron Security Warning (Insecure Content-Security-Policy) font-weight: bold; This renderer process has either no Content Security\n  Policy set or a policy with \"unsafe-eval\" enabled. This exposes users of\n  this app to unnecessary security risks.\n\nFor more information and help, consult\nhttps://electronjs.org/docs/tutorial/security.\nThis warning will not show up\nonce the app is packaged.",
+        "line": 2,
+        "source": "node:electron/js2c/sandbox_bundle"
+      }
+    },
+    {
+      "renderer_console": {
+        "level": 2,
+        "message": "%cElectron Security Warning (Insecure Content-Security-Policy) font-weight: bold; This renderer process has either no Content Security\n  Policy set or a policy with \"unsafe-eval\" enabled. This exposes users of\n  this app to unnecessary security risks.\n\nFor more information and help, consult\nhttps://electronjs.org/docs/tutorial/security.\nThis warning will not show up\nonce the app is packaged.",
+        "line": 2,
+        "source": "node:electron/js2c/sandbox_bundle"
+      }
+    }
+  ],
+  "turns": [],
+  "screenshots": [],
+  "actual_provider_requests": 0,
+  "actual_display_capture": false,
+  "actual_audio": false,
+  "harness_sha256": "c010cf3f98bbbcd33191628098f0c1a2a595f05b549454eab611206766988e64",
+  "runtime_sha256": "49b61a030a520fc36a4b8fa5cce53fb4e935a7bdbbe4b80e9222f598e49cc7fa",
+  "stage_tree_sha256": "3387824a0dee70013104388d4acec2b810475e98953e7c3f196063a8781fd154",
+  "verified_staged_files": 70,
+  "phase": "loadURL done",
+  "trace": [
+    {
+      "at": "2026-10-02T10:12:37.539Z",
+      "phase": "hidden blank renderer bootstrap",
+      "kind": "control"
+    },
+    {
+      "at": "2026-10-02T10:12:37.546Z",
+      "phase": "production main imported"
+    },
+    {
+      "at": "2026-10-02T10:12:37.546Z",
+      "phase": "production control created"
+    },
+    {
+      "at": "2026-10-02T10:12:37.562Z",
+      "phase": "synthetic CDP injection installed",
+      "kind": "control"
+    },
+    {
+      "at": "2026-10-02T10:12:37.562Z",
+      "phase": "native loadURL",
+      "kind": "control",
+      "url": "app://bundle/apps/windows/src/renderer/control.html"
+    },
+    {
+      "at": "2026-10-02T10:12:37.607Z",
+      "phase": "loadURL done",
+      "kind": "control",
+      "url": "app://bundle/apps/windows/src/renderer/control.html"
+    },
+    {
+      "at": "2026-10-02T10:12:39.655Z",
+      "phase": "hidden blank renderer bootstrap",
+      "kind": "overlay"
+    },
+    {
+      "at": "2026-10-02T10:12:39.705Z",
+      "phase": "synthetic CDP injection installed",
+      "kind": "overlay"
+    },
+    {
+      "at": "2026-10-02T10:12:39.705Z",
+      "phase": "native loadURL",
+      "kind": "overlay",
+      "url": "app://bundle/apps/windows/src/renderer/overlay.html"
+    },
+    {
+      "at": "2026-10-02T10:12:39.766Z",
+      "phase": "loadURL done",
+      "kind": "overlay",
+      "url": "app://bundle/apps/windows/src/renderer/overlay.html"
+    }
+  ]
+}
