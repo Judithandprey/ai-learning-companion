@@ -1,4 +1,4 @@
-# Mac live correction integrated; native build next
+# Mac live correction integrated; native build verified
 
 2026-10-02. Actual `handoff_9902e766057d402806f72ee16a489a4a` delivers
 `29bdeb4de9c926148262098ed6b4015ed62ee404` after `4f6c327` and `3147291`.
@@ -46,11 +46,12 @@ survive. No unchanged broad suite was repeated locally.
 Lead applies the previously reviewed pending patch to the existing desktop CI:
 run the live fixture producer inside the native suite, validate it with the
 released Python contract, retain its bytes/checksums and fail on missing/bad output.
-The existing macOS-only workflow will compile/package this integrated source and
-execute the **156 declared** native methods. That count is a declaration until an
-actual completed run and artifact audit establish the result. The adapted existing
-[auditor](../native-build/audit.py) verifies all artifact/source bytes, method sets,
-App package and ASK/live fixture results; it has only been syntax-checked so far.
+The existing macOS-only workflow has now compiled/packaged exact `8018c92` and
+executed **156/156 native methods**, all passing. The adapted existing
+[auditor](../native-build/audit.py) verified119 artifact hashes,3768 Git blobs, the
+complete method set, App package and ASK72/live211 fixture checks. The
+[completed run37002921885 and evidence](../native-build/README.md) resolve native
+compilation/test verification; interactive/provider gates remain open.
 
 Lead owns exact-source CI and resulting failures. Native next handles a concrete
 native build/candidate defect if one appears; no duplicate feature or mobile

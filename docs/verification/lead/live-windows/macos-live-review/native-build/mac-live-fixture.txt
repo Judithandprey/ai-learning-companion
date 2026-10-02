@@ -1,0 +1,1 @@
+PASS: 10 lines, 6 companion/turn requests (observation, focus, text_followup, observation, text_followup, focus); the focus was kept on 1 follow-up(s) and named as an earlier one on 1; 211 checks

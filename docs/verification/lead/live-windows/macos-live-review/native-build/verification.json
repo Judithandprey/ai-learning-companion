@@ -1,0 +1,28 @@
+{
+  "source": "8018c92baace9fb070c5ef22d0e8a27ba29d98e8",
+  "approved_native": "29bdeb4de9c926148262098ed6b4015ed62ee404",
+  "run_id": 37002921885,
+  "scope": "Hosted macOS compile/package/XCTest + Swift ASK/live fixtures to real local validators; no interactive Mac or provider",
+  "artifact_hashes": 119,
+  "source_blobs": 3768,
+  "native_tree_equal": true,
+  "xctests_pass": 156,
+  "xctests_fail": 0,
+  "ask_requests": 4,
+  "ask_checks": 72,
+  "live_lines": 10,
+  "live_turns": 6,
+  "live_checks": 211,
+  "app_sha256": "700d090936afd7e72c8034c8c3ef1610f6172fd34226f10e012f17f007c351e2",
+  "hosted_result": {
+    "platform": "macos",
+    "state": "checks-completed",
+    "last_phase": "complete",
+    "exit_code": 0,
+    "interactive_runtime_verified": false,
+    "provider_verified": false,
+    "project_signing_performed": false
+  },
+  "raw_checksums_sha256": "6b2ffdab7175262e35e34b3a6649a8986e04e06d6a06b19bf5678bc4adc77806",
+  "verdict": "pass"
+}

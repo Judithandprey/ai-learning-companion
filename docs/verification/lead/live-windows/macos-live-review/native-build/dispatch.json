@@ -1,0 +1,15 @@
+{
+  "run_id": 37002921885,
+  "source_commit": "8018c92baace9fb070c5ef22d0e8a27ba29d98e8",
+  "workflow": "desktop-checks.yml",
+  "inputs": {
+    "platform": "macos"
+  },
+  "url": "https://github.com/Judithandprey/ai-learning-companion/actions/runs/37002921885",
+  "created_at": "2026-10-02T11:47:11Z",
+  "first_observed_status": "queued",
+  "first_observed_conclusion": null,
+  "dispatch_is_acceptance": false,
+  "expected_native_test_declarations": 156,
+  "account_device_or_provider_use": false
+}
