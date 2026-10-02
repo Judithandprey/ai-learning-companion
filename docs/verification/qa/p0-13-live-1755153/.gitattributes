@@ -1,0 +1,2 @@
+# Preserve raw Electron stdout CRLF bytes and hashes; not authored source.
+run-*/runtime.stdout.txt -text -whitespace

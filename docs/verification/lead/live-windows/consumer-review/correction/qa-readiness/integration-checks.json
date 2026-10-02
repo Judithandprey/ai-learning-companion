@@ -1,0 +1,16 @@
+{
+  "qa_commit": "85edcacde1d55ef3a382b7fc4c78bc574328e020",
+  "integrated_commit": "0fd810e",
+  "exact_delivery_hash_matches_on_main": 70,
+  "expected_integration_differences": [
+    "docs/verification/qa/p0-13-subscription-ask-plan.md"
+  ],
+  "reason": "Resolve the existing plan conflict: adopt actual readiness, retain newer Lead all-attempt accounting and avoid restoring superseded owner assignments. Original plan bytes remain in the QA commit.",
+  "checks": {
+    "python_harness_ast": "2 files passed",
+    "node_check": "passed",
+    "stage_identity": "70 files passed; no launch",
+    "source_english_hashes": "8 matched"
+  },
+  "product_execution": false
+}

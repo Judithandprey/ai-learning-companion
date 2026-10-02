@@ -19,7 +19,7 @@
   "allocation_retired_reason": "QA actual handoff_ec31e85d736c7661fbb4022aa0d2cb52 confirms 0 of 1 used. This selected-image allocation is not additive to the next changed-flow allocation.",
   "live_changed_flow_allocation": {
     "allocation_id": "handoff_fd794043a20068a1b52853cbb6ff884e",
-    "status": "reserved_not_released",
+    "status": "conditional_qa_release_pending_native_delivery",
     "candidate_commit": "24c48c38aee660b606ebff5285acbd2ccb300392",
     "maximum_potential_submissions": 5,
     "purpose_slots": [
@@ -34,11 +34,12 @@
     "actual_attempts": [],
     "attempt_rule": "Every real test action assigned a slot counts, including proven not_submitted and unknown. No automatic retry or reallocation of unavailable voice slots. Stop on auth/quota/capability/tool failure.",
     "release_requirements": [
-      "exact reviewed integrated build and production entrypoint",
-      "generated nonsensitive surface only",
-      "lead-coordinated exclusive display/account lease",
-      "verified current managed image route and original Stop fences",
-      "voice route independently reviewed before the voice slot"
+      "exact immutable1755153 stage/entrypoint and released source-only connector copy match",
+      "only generated nonsensitive whole-display surface; live foreground/pixel safety and no existing-user/owner conflict",
+      "substantive native delivery of the conditional exclusive QA display/account assignment",
+      "official managed lock and current selected image route; stop on missing login/quota/capability/tool/busy/unknown failure",
+      "actual UI four-request/60-second duration/60-second unattended policy recorded",
+      "one all-attempt ledger; no retry/restart/reallocation; scope-limited cleanup and explicit resource release"
     ],
     "raw_audio_provider_attempts_included": false,
     "prohibited": [
@@ -48,10 +49,30 @@
       "account/model/billing change",
       "automatic restart or retry"
     ],
-    "next_owner": "QA executes existing bounded offline rehearsal/readiness; Lead then coordinates exact generated-display/account lease. Real allowance still reserved, not released.",
+    "next_owner": "QA: prepare only necessary real-driver delta, verify generated-display/account prerequisites, then one bounded nonvoice pass after native assignment delivery. No request is recorded yet; Lead stays off account/display.",
     "production_source_commit": "175515308f509fb8c0f531dbdb10e57313fcde5a",
     "stage_name": "lc-windows-live-1755153",
     "stage_tree_sha256": "3387824a0dee70013104388d4acec2b810475e98953e7c3f196063a8781fd154",
-    "offline_readiness_handoff": "handoff_b37638ed3ce7fd94a4f62226fa9596fa"
+    "offline_readiness_handoff": "handoff_b37638ed3ce7fd94a4f62226fa9596fa",
+    "maximum_released_attempts": 4,
+    "released_purpose_slots": [
+      "unattended whole-screen observation",
+      "automatic focus response",
+      "typed follow-up after controlled screen change",
+      "Stop/fence attempt"
+    ],
+    "spoken_slot_status": "not_released_not_reassignable",
+    "lease_owner": "QA sess_104c8bc82d94481a",
+    "lease_state": "assigned_pending_native_delivery",
+    "coordination_not_os_lock": true,
+    "qa_readiness_commit": "85edcacde1d55ef3a382b7fc4c78bc574328e020",
+    "qa_readiness_integrated_as": "0fd810e",
+    "qa_readiness_message": "handoff_a26dec5655a61b506dca1eb4fc6dd002",
+    "real_test_policy": {
+      "max_submissions": 4,
+      "max_session_ms": 60000,
+      "min_observation_interval_ms": 60000
+    },
+    "review": "docs/verification/lead/live-windows/consumer-review/correction/qa-readiness/README.md"
   }
 }

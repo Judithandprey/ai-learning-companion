@@ -1,0 +1,117 @@
+{
+  "kind": "independent read-only committed evidence and request-schedule review; no product execution",
+  "qa_commit": "85edcacde1d55ef3a382b7fc4c78bc574328e020",
+  "production_commit": "175515308f509fb8c0f531dbdb10e57313fcde5a",
+  "decision": "No blocking source/evidence concern found for one separately authorized bounded nonvoice real test; this review grants no account/display lease.",
+  "artifact_hashes": {
+    "entries": 71,
+    "matching": 71,
+    "manifest_excluded_by_design": true
+  },
+  "stage_manifest": {
+    "payload_files": 70,
+    "recomputed_tree_sha256": "3387824a0dee70013104388d4acec2b810475e98953e7c3f196063a8781fd154",
+    "manifest_sha256": "24f642370fa8ab3d25a5661cb28d66efe5a0f7995b3bc19e42623cf4a51608e2",
+    "entrypoint_sha256": "581d42c430941f3b5d7b8aaa86ee3588ca1e4b4976a7de6a6dcbb7a00f3d4df5",
+    "windows_git_tree": "e85fdd9bb4c84b06c008b6fa5cd8f9169075af7b",
+    "limitation": "Recomputed committed manifest; reviewed QA before/after native-stage receipts. Did not reread or execute native stage/runtime."
+  },
+  "runs": {
+    "11": {
+      "pass": 11,
+      "fail": 1,
+      "fake_turns": 8,
+      "fatal": "Error: Timed out: pending cancellable follow-up\n    at until (C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-live-offscreen-aafee9a1c2b84714ada997119a85a155\\qa_live_rehearsal.cjs:146:9)\n    at async run (C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-live-offscreen-aafee9a1c2b84714ada997119a85a155\\qa_live_rehearsal.cjs:334:3)",
+      "exit_code": 2,
+      "cleanup": {
+        "before": [],
+        "after": [],
+        "scope": "this QA scratch path only"
+      },
+      "result_sha256": "61ea59a40e917be1e6025ee3f4cb9cb61cb70c37a828b63790d76d1ad82dcf20",
+      "reported_harness_sha256": "9233279e3b4a6ee03e5eb0a0f2133fb179693c933995c1d044dd2e55c321159d",
+      "reported_runner_sha256": "a66c6f1799a49e6f64da76857a363c6a6a177ddeaa33385eb00289a680b8425f"
+    },
+    "12": {
+      "pass": 14,
+      "fail": 0,
+      "fake_turns": 9,
+      "fatal": null,
+      "exit_code": 0,
+      "cleanup": {
+        "before": [],
+        "after": [],
+        "scope": "this QA scratch path only"
+      },
+      "result_sha256": "7cce75ed2b2fc6057a3db249b52f8abd9c061c7eb50bb10e39476e84a95e6309",
+      "reported_harness_sha256": "c0dce1d473e7e3fb6aec07677619dbf8b1b3c34815eef931116c7523a91c43b5",
+      "reported_runner_sha256": "da8fb8e5dd48deb4ed70821faed7008822190ded703a13b3ffdf78e0d3993e9d"
+    },
+    "13": {
+      "pass": 9,
+      "fail": 1,
+      "fake_turns": 6,
+      "fatal": null,
+      "exit_code": 0,
+      "cleanup": {
+        "before": [],
+        "after": [],
+        "scope": "this QA scratch path only"
+      },
+      "result_sha256": "0e82a0be31ca6bbe2fac7ff5526491d6e4e66044bd3ba6b90c2da277b3c5b474",
+      "reported_harness_sha256": "c0dce1d473e7e3fb6aec07677619dbf8b1b3c34815eef931116c7523a91c43b5",
+      "reported_runner_sha256": "da8fb8e5dd48deb4ed70821faed7008822190ded703a13b3ffdf78e0d3993e9d"
+    },
+    "14": {
+      "pass": 10,
+      "fail": 0,
+      "fake_turns": 6,
+      "fatal": null,
+      "exit_code": 0,
+      "cleanup": {
+        "before": [],
+        "after": [],
+        "scope": "this QA scratch path only"
+      },
+      "result_sha256": "219e1395585b054074a8a635b35fdce20c78d0fa17f6f9a2e4d79f0db5769d4b",
+      "reported_harness_sha256": "2c79946b51496cf94ed4af7bdfabab67dd694b1d6db2ee61d17b6f930a8acc16",
+      "reported_runner_sha256": "4c50f8554ddc3a57008c9a1a6ac94f60feaa682908a0160fdfa99b96764e5e2e"
+    }
+  },
+  "causal_review": [
+    {
+      "claim": "run-12 lifecycle 14 PASS",
+      "evidence": "Checks and captured details support the narrow stated generated-stream/fake-connector flow. Final harness lines279-305 and353-390 show the actions/assertions. Cancel late-marker absence and Stop no-extra-turn check operate after fake interrupt/stop errors settle; retainedStop additionally says submitted/cancelled/uncertain:false/shown:false and lacks late duplicate text. This does not test a response suspended at the renderer presentation gate."
+    },
+    {
+      "claim": "run-14 controls 10 PASS",
+      "evidence": "Final committed CJS hash exactly equals run-14 recorded harness hash. Lines330-336 perform small movements within initial handle targets; recorded centers change and request/ink counts do not. Lines337-341 check unobscured target centers in a synthetic440x320 work area while viewport remains1000x700. No native pointer-capture or physical/DPI acceptance."
+    },
+    {
+      "claim": "run-11 two typed assertions",
+      "evidence": "Independently recomputed captured turns: same follow-up exactly retains full image/context/focus/session; later follow-up has a changed image/advanced frame/null current focus and exact old context/focus/image in historical reference with pixels_attached:false/provider_retention:unverified. Overall run remains11PASS/1FAIL with later timeout."
+    },
+    {
+      "claim": "original ink",
+      "evidence": "Final harness lines289-295 checks undo/redo visible IDs and stroke count; lines370-373 parse saved ink and compare full original stroke objects at Stop; lines382-385 compare reopen summary ID/revision/visible IDs/history operation names. README correctly limits reopened object/point evidence."
+    }
+  ],
+  "schedule_review": {
+    "policy": {
+      "max_submissions": 4,
+      "max_session_ms": 60000,
+      "min_observation_interval_ms": 60000
+    },
+    "actions": "One first observation; one automatic circle hint; one typed follow-up after controlled screen change; one distinct Stop-interception request. Await success/settlement between earlier stages; stop on first refusal/unknown and never restart/retry.",
+    "expiry_and_cooldown": "main.ts932 registers expiry before notifying running session;1040-1044 installs60s cooldown at first observation submission, so source changes only replace waiting material during this session. flushLook1020 rejects ended/cooling; endLive950-954 clears queue. Backend chatgpt_live.py215-228 and314-335 independently check monotonic expiry at each provider write and reserve total submission slots.",
+    "accounting": "main.ts989 increments UI used for submitted/unknown outcomes only. Known not_submitted does not increment that UI count, so proposed all-attempt ceiling must be operator/receipt-counted. subscription.ts637-674 sends once and preserves unknown; backend389-392 suspends uncertain/provider failures. No model-turn retry found.",
+    "coverage_limit": "Offline harness uses12 requests/1s interval and consumes multiple observations; it is not an executable real-test runner for the4-request/60s plan. Exact UI policy must be set and recorded for the distinct real launch.60s may expire before remaining steps; leave them NOT_RUN."
+  },
+  "nonblocking_evidence_limits": [
+    "Prior run-11/run-12 CJS and Python byte copies are not committed in this delivery; their launch/result hashes identify them, while only final run-14 source can be rehashed directly here. The claim that final source differs only in controls/exit accounting is owner-reported, not independently byte-diffed from this commit.",
+    "Hidden native windows, generated media and fake connector only. Reported cleanupafter lists are empty. Screenshots are debug artifacts with unestablished compositor freshness.",
+    "run-13 FAIL is authoritative despite its historical incorrect zero exit; final CJS392/Python104-112 now count failed checks. No rerun required for unchanged passing lifecycle assertions.",
+    "Cross-handle drag, real source/capture/AI interpretation, actual audio/TTS, native pen, macOS and full product gates remain unaccepted."
+  ],
+  "workspace": "Read-only repository and git access; /tmp scratch only; pre-existing docs/team-directory.json modification preserved; no native TTS import/copy/port/execution, account/device/network calls or production tests."
+}
