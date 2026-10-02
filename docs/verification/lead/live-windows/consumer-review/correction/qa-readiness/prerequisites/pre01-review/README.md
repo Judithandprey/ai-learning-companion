@@ -68,3 +68,11 @@ Voice is unassigned/unspent and the old selected-image slot remains retired.
 Native TTS import approval and usable audio input remain separate dependencies;
 this review neither reopens nor resolves them. Old app/profile, user preview data
 and Paperclip are untouched.
+
+## Actual owner notice
+
+Pushed baseline `c0481a0945825142391a96151bb79f8d5449b7ed` was returned through
+QA's native reply route as `handoff_1afda510b82ba0ac3a2fa8b84c88ba73`.
+The [receipt](dispatch-receipt.json) is accepted/unread with execution not started.
+It reports integration and the permission dependency; it does not assign a repeat
+campaign, request an acknowledgement or grant a resource lease.

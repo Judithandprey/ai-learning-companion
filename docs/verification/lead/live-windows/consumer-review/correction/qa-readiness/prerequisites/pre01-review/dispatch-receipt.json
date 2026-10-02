@@ -1,0 +1,15 @@
+{
+  "baseline": "c0481a0945825142391a96151bb79f8d5449b7ed",
+  "reply_to": "handoff_ac69e954a91c3abad3e4e8ef3ccd1c12",
+  "purpose": "Source correction integrated; Lead owns explicit script permission and fresh display coordination; no new execution or acknowledgment task",
+  "ok": true,
+  "route_id": "route_5930b6eb6cb842a891763391fadd766e",
+  "action": "instruction",
+  "accepted": true,
+  "mode": "async_route_v1",
+  "delivery_mode": "mailbox",
+  "message_id": "handoff_1afda510b82ba0ac3a2fa8b84c88ba73",
+  "duplicate": false,
+  "state": "unread",
+  "execution_started": false
+}
