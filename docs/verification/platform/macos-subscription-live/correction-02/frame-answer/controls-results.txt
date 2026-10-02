@@ -1,0 +1,142 @@
+src/AskLinkTests.swift:955:36: warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 953 |             ending.connection = FakeConnector.connection(state: "signed_out", mode: NSNull())
+ 954 |             // In the first round the exit is reported only after the sign-in start has returned.
+ 955 |             ending.afterLoginStart = round == 0 ? { $0.endChildUnreported() } : { $0.exitChild() }
+     |                                    `- warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 956 |             let endingLink = askLink(ending)
+ 957 |             await endingLink.connect()
+
+Test Suite 'All tests' started at 2026-10-02 04:28:50.537
+Test Suite 'bin.xctest' started at 2026-10-02 04:28:50.539
+Test Suite 'DesktopCaptureTests' started at 2026-10-02 04:28:50.539
+Test Case 'DesktopCaptureTests.testLiveQueuedUnshownAnswerCannotAcquireReceiptAfterStop' started at 2026-10-02 04:28:50.539
+Test Case 'DesktopCaptureTests.testLiveQueuedUnshownAnswerCannotAcquireReceiptAfterStop' passed (0.022 seconds)
+Test Case 'DesktopCaptureTests.testLiveClosingAnUnshownAnswerRevokesItsQueuedDisplay' started at 2026-10-02 04:28:50.561
+Test Case 'DesktopCaptureTests.testLiveClosingAnUnshownAnswerRevokesItsQueuedDisplay' passed (0.015 seconds)
+Test Case 'DesktopCaptureTests.testLiveNewSelectionRejectsTheOldQueuedAnswerAndDisplaysItsOwn' started at 2026-10-02 04:28:50.577
+Test Case 'DesktopCaptureTests.testLiveNewSelectionRejectsTheOldQueuedAnswerAndDisplaysItsOwn' passed (0.025 seconds)
+Test Case 'DesktopCaptureTests.testLiveFollowUpRevokesAnUnshownAnswerOnTheSameCard' started at 2026-10-02 04:28:50.602
+Test Case 'DesktopCaptureTests.testLiveFollowUpRevokesAnUnshownAnswerOnTheSameCard' passed (0.028 seconds)
+Test Case 'DesktopCaptureTests.testLiveExplicitRestartDoesNotAuthorizeAnEarlierUnshownAnswer' started at 2026-10-02 04:28:50.629
+Test Case 'DesktopCaptureTests.testLiveExplicitRestartDoesNotAuthorizeAnEarlierUnshownAnswer' passed (0.026 seconds)
+Test Case 'DesktopCaptureTests.testLiveCaptureEndRevokesAnUnshownAnswerWithoutDiscardingItsOriginal' started at 2026-10-02 04:28:50.656
+Test Case 'DesktopCaptureTests.testLiveCaptureEndRevokesAnUnshownAnswerWithoutDiscardingItsOriginal' passed (0.016 seconds)
+Test Case 'DesktopCaptureTests.testLiveActuallyShownAnswerKeepsItsOriginalReceiptAfterStopAndClose' started at 2026-10-02 04:28:50.672
+Test Case 'DesktopCaptureTests.testLiveActuallyShownAnswerKeepsItsOriginalReceiptAfterStopAndClose' passed (0.016 seconds)
+Test Case 'DesktopCaptureTests.testLiveFinalUsedUpAnswerStillHasFirstDisplayAuthority' started at 2026-10-02 04:28:50.688
+Test Case 'DesktopCaptureTests.testLiveFinalUsedUpAnswerStillHasFirstDisplayAuthority' passed (0.018 seconds)
+Test Case 'DesktopCaptureTests.testLiveHiddenPanelDoesNotBecomeShownAndCanBeDisplayedLater' started at 2026-10-02 04:28:50.706
+Test Case 'DesktopCaptureTests.testLiveHiddenPanelDoesNotBecomeShownAndCanBeDisplayedLater' passed (0.016 seconds)
+Test Case 'DesktopCaptureTests.testLiveCaptureGateCloseBlocksDisplayBeforeItsActorNotification' started at 2026-10-02 04:28:50.722
+Test Case 'DesktopCaptureTests.testLiveCaptureGateCloseBlocksDisplayBeforeItsActorNotification' passed (0.015 seconds)
+Test Case 'DesktopCaptureTests.testLiveLocalGenerationCloseBlocksDisplayBeforeTheStopTask' started at 2026-10-02 04:28:50.737
+Test Case 'DesktopCaptureTests.testLiveLocalGenerationCloseBlocksDisplayBeforeTheStopTask' passed (0.015 seconds)
+Test Case 'DesktopCaptureTests.testControllerDeferredAnswerCannotAppearAfterSynchronousStop' started at 2026-10-02 04:28:50.752
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"asking","request":"focus-a1-a10c9489.1","scenario":"controller-stop","session":"on"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"cancelled","request":"focus-a1-a10c9489.1","scenario":"controller-stop","session":"ended(\"stopped by you\")"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"cancelled","request":"focus-a1-a10c9489.1","scenario":"controller-stop","session":"ended(\"stopped by you\")"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"cancelled","request":"focus-a1-a10c9489.1","scenario":"controller-stop","session":"ended(\"stopped by you\")"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"cancelled","request":"focus-a1-a10c9489.1","scenario":"controller-stop","session":"ended(\"stopped by you\")"}
+CONTROLLER_PROBE stop deferred_answer=true published_answers=0 shown_receipt=false
+Test Case 'DesktopCaptureTests.testControllerDeferredAnswerCannotAppearAfterSynchronousStop' passed (0.167 seconds)
+Test Case 'DesktopCaptureTests.testControllerDeferredAnswerCannotAppearAfterSynchronousCancel' started at 2026-10-02 04:28:50.919
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"asking","request":"focus-a1-36cff721.1","scenario":"controller-cancel","session":"on"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":null,"request":null,"scenario":"controller-cancel","session":"on"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":null,"request":null,"scenario":"controller-cancel","session":"on"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":null,"request":null,"scenario":"controller-cancel","session":"on"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":null,"request":null,"scenario":"controller-cancel","session":"on"}
+CONTROLLER_PROBE cancel deferred_answer=true published_answers=0 shown_receipt=false
+Test Case 'DesktopCaptureTests.testControllerDeferredAnswerCannotAppearAfterSynchronousCancel' passed (0.166 seconds)
+Test Case 'DesktopCaptureTests.testControllerCaptureGateBlocksDeferredAnswerBeforeNotification' started at 2026-10-02 04:28:51.085
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"asking","request":"focus-a1-159a604d.1","scenario":"controller-capture-gate","session":"on"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"cancelled","request":"focus-a1-159a604d.1","scenario":"controller-capture-gate","session":"on"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"cancelled","request":"focus-a1-159a604d.1","scenario":"controller-capture-gate","session":"on"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"cancelled","request":"focus-a1-159a604d.1","scenario":"controller-capture-gate","session":"ended(\"the capture was stopped\")"}
+CONTROLLER_PROBE capture_gate_closed=true actor_notification_initially=false published_answers=0 shown_receipt=false
+Test Case 'DesktopCaptureTests.testControllerCaptureGateBlocksDeferredAnswerBeforeNotification' passed (0.166 seconds)
+Test Case 'DesktopCaptureTests.testControllerNewSelectionRejectsQueuedOldAnswerAndDisplaysItsOwn' started at 2026-10-02 04:28:51.251
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"asking","request":"focus-a1-16f482c5.1","scenario":"controller-replacement","session":"on"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"asking","request":"focus-a2-0cfad07d.1","scenario":"controller-replacement","session":"on"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"asking","request":"focus-a2-0cfad07d.1","scenario":"controller-replacement","session":"on"}
+CONTROLLER_TRACE {"answer":"Synthetic replacement hint: inspect the denominator.","event":"published","panel_visibility_control":true,"phase":"answered","request":"focus-a2-0cfad07d.1","scenario":"controller-replacement","session":"on"}
+CONTROLLER_PROBE replacement_inflight=true old_answer_publications=0 old_receipt=false new_answer_visible=true new_receipt=true
+Test Case 'DesktopCaptureTests.testControllerNewSelectionRejectsQueuedOldAnswerAndDisplaysItsOwn' passed (0.372 seconds)
+Test Case 'DesktopCaptureTests.testControllerExplicitRestartRejectsQueuedOldAnswerAndDisplaysNewSessionAnswer' started at 2026-10-02 04:28:51.624
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"asking","request":"focus-a1-bfc7585b.1","scenario":"controller-restart","session":"on"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"cancelled","request":"focus-a1-bfc7585b.1","scenario":"controller-restart","session":"starting"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"cancelled","request":"focus-a1-bfc7585b.1","scenario":"controller-restart","session":"starting"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"asking","request":"focus-a2-f52bbcc9.1","scenario":"controller-restart","session":"on"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"asking","request":"focus-a2-f52bbcc9.1","scenario":"controller-restart","session":"on"}
+CONTROLLER_TRACE {"answer":"Synthetic restarted-session hint: compare both sides.","event":"published","panel_visibility_control":true,"phase":"answered","request":"focus-a2-f52bbcc9.1","scenario":"controller-restart","session":"on"}
+CONTROLLER_PROBE explicit_restart_inflight=true old_answer_publications=0 old_receipt=false new_session_visible=true new_receipt=true
+Test Case 'DesktopCaptureTests.testControllerExplicitRestartRejectsQueuedOldAnswerAndDisplaysNewSessionAnswer' passed (0.475 seconds)
+Test Case 'DesktopCaptureTests.testControllerAlreadyShownAnswerKeepsItsFirstReceiptAfterStop' started at 2026-10-02 04:28:52.099
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"asking","request":"focus-a1-6e308503.1","scenario":"controller-already-shown","session":"on"}
+CONTROLLER_TRACE {"answer":"Synthetic controller hint: check the sign.","event":"published","panel_visibility_control":true,"phase":"answered","request":"focus-a1-6e308503.1","scenario":"controller-already-shown","session":"on"}
+CONTROLLER_TRACE {"answer":"Synthetic controller hint: check the sign.","event":"published","panel_visibility_control":true,"phase":"answered","request":"focus-a1-6e308503.1","scenario":"controller-already-shown","session":"ended(\"stopped by you\")"}
+CONTROLLER_PROBE already_shown=true first_shown_at_preserved=true historical_answer_retained=true
+CONTROLLER_TRACE {"answer":"Synthetic controller hint: check the sign.","event":"published","panel_visibility_control":true,"phase":"answered","request":"focus-a1-6e308503.1","scenario":"controller-already-shown","session":"ended(\"stopped by you\")"}
+Test Case 'DesktopCaptureTests.testControllerAlreadyShownAnswerKeepsItsFirstReceiptAfterStop' passed (0.165 seconds)
+Test Case 'DesktopCaptureTests.testControllerHiddenAnswerCanBecomeVisibleWithoutFalseReceipt' started at 2026-10-02 04:28:52.264
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"asking","request":"focus-a1-67607c81.1","scenario":"controller-hidden-visible","session":"on"}
+CONTROLLER_TRACE {"answer":"Synthetic controller hint: check the sign.","event":"published","panel_visibility_control":false,"phase":"answered","request":"focus-a1-67607c81.1","scenario":"controller-hidden-visible","session":"on"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":false,"phase":"cancelled","request":"focus-a1-67607c81.1","scenario":"controller-hidden-visible","session":"on"}
+CONTROLLER_TRACE {"answer":"Synthetic controller hint: check the sign.","event":"published","panel_visibility_control":true,"phase":"answered","request":"focus-a1-67607c81.1","scenario":"controller-hidden-visible","session":"on"}
+CONTROLLER_PROBE hidden_receipt=false later_visible_receipt=true
+Test Case 'DesktopCaptureTests.testControllerHiddenAnswerCanBecomeVisibleWithoutFalseReceipt' passed (0.217 seconds)
+Test Case 'DesktopCaptureTests.testControllerFinalUsedUpAnswerCanBeDisplayed' started at 2026-10-02 04:28:52.481
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"asking","request":"focus-a1-0ed2861c.1","scenario":"controller-final-used-up","session":"on"}
+CONTROLLER_TRACE {"answer":"Synthetic controller hint: check the sign.","event":"published","panel_visibility_control":true,"phase":"answered","request":"focus-a1-0ed2861c.1","scenario":"controller-final-used-up","session":"usedUp"}
+CONTROLLER_PROBE final_used_up=true answer_visible=true shown_receipt=true
+Test Case 'DesktopCaptureTests.testControllerFinalUsedUpAnswerCanBeDisplayed' passed (0.216 seconds)
+Test Case 'DesktopCaptureTests.testRecoveredSourceRefusalDoesNotBecomeTransportFailure' started at 2026-10-02 04:28:52.697
+Test Case 'DesktopCaptureTests.testRecoveredSourceRefusalDoesNotBecomeTransportFailure' passed (0.024 seconds)
+Test Case 'DesktopCaptureTests.testOldOrReplacementDispatchGateCannotAuthorizeTheActiveSession' started at 2026-10-02 04:28:52.721
+Test Case 'DesktopCaptureTests.testOldOrReplacementDispatchGateCannotAuthorizeTheActiveSession' passed (0.016 seconds)
+Test Case 'DesktopCaptureTests.testSameFrameRecoveryClearsSourceLossWithoutAnotherSubmission' started at 2026-10-02 04:28:52.737
+Test Case 'DesktopCaptureTests.testSameFrameRecoveryClearsSourceLossWithoutAnotherSubmission' passed (0.022 seconds)
+Test Case 'DesktopCaptureTests.testClosedCaptureRefusesStartBeforeAndAfterConnectorAwait' started at 2026-10-02 04:28:52.759
+Test Case 'DesktopCaptureTests.testClosedCaptureRefusesStartBeforeAndAfterConnectorAwait' passed (0.002 seconds)
+Test Case 'DesktopCaptureTests.testPermanentGateClosureAndFinalByteAreAtomicallyOrdered' started at 2026-10-02 04:28:52.762
+Test Case 'DesktopCaptureTests.testPermanentGateClosureAndFinalByteAreAtomicallyOrdered' passed (0.051 seconds)
+Test Case 'DesktopCaptureTests.testCurrentSourceLossDuringRenderRefusesThenRecoversWithoutRestart' started at 2026-10-02 04:28:52.813
+Test Case 'DesktopCaptureTests.testCurrentSourceLossDuringRenderRefusesThenRecoversWithoutRestart' passed (0.022 seconds)
+Test Case 'DesktopCaptureTests.testCurrentSourceLossWhileFollowupWaitsInWriterDropsTheLine' started at 2026-10-02 04:28:52.835
+Test Case 'DesktopCaptureTests.testCurrentSourceLossWhileFollowupWaitsInWriterDropsTheLine' passed (0.071 seconds)
+Test Case 'DesktopCaptureTests.testSourceAdmissionRechecksFinalByteAndPermanentSessionStop' started at 2026-10-02 04:28:52.907
+Test Case 'DesktopCaptureTests.testSourceAdmissionRechecksFinalByteAndPermanentSessionStop' passed (0.0 seconds)
+Test Case 'DesktopCaptureTests.testHealthyAdvanceRefusesOldCurrentInputWithoutRevokingItsSubmittedAnswer' started at 2026-10-02 04:28:52.907
+Test Case 'DesktopCaptureTests.testHealthyAdvanceRefusesOldCurrentInputWithoutRevokingItsSubmittedAnswer' passed (0.038 seconds)
+Test Case 'DesktopCaptureTests.testHealthyAdvanceDuringRenderingDrainsTheNewestWaitingFrame' started at 2026-10-02 04:28:52.945
+Test Case 'DesktopCaptureTests.testHealthyAdvanceDuringRenderingDrainsTheNewestWaitingFrame' passed (0.027 seconds)
+Test Case 'DesktopCaptureTests.testHealthyAdvanceBeforeWriterCompletionStillRefusesTheOldCurrentLine' started at 2026-10-02 04:28:52.972
+Test Case 'DesktopCaptureTests.testHealthyAdvanceBeforeWriterCompletionStillRefusesTheOldCurrentLine' passed (0.085 seconds)
+Test Case 'DesktopCaptureTests.testNewestUnretainedPixelsStillBlockFirstDisplayOfAnEarlierAnswer' started at 2026-10-02 04:28:53.057
+Test Case 'DesktopCaptureTests.testNewestUnretainedPixelsStillBlockFirstDisplayOfAnEarlierAnswer' passed (0.002 seconds)
+Test Case 'DesktopCaptureTests.testSourceLossAfterHealthyAdvancePermanentlyRevokesUnshownAnswer' started at 2026-10-02 04:28:53.059
+Test Case 'DesktopCaptureTests.testSourceLossAfterHealthyAdvancePermanentlyRevokesUnshownAnswer' passed (0.036 seconds)
+Test Suite 'DesktopCaptureTests' passed at 2026-10-02 04:28:53.095
+	 Executed 32 tests, with 0 failures (0 unexpected) in 2.555 (2.555) seconds
+Test Suite 'LiveFreshnessTests' started at 2026-10-02 04:28:53.095
+Test Case 'LiveFreshnessTests.testHealthyIdleConfirmsOldPixelsWithoutChangingTheirSequence' started at 2026-10-02 04:28:53.095
+Test Case 'LiveFreshnessTests.testHealthyIdleConfirmsOldPixelsWithoutChangingTheirSequence' passed (0.001 seconds)
+Test Case 'LiveFreshnessTests.testCallbackSilenceLosesCurrentInputAndValidIdleRestoresTheSameFrame' started at 2026-10-02 04:28:53.097
+Test Case 'LiveFreshnessTests.testCallbackSilenceLosesCurrentInputAndValidIdleRestoresTheSameFrame' passed (0.001 seconds)
+Test Case 'LiveFreshnessTests.testBlankSuspendedAndMissingImageNeedNewPixelsToRecover' started at 2026-10-02 04:28:53.098
+Test Case 'LiveFreshnessTests.testBlankSuspendedAndMissingImageNeedNewPixelsToRecover' passed (0.003 seconds)
+Test Case 'LiveFreshnessTests.testMissingCallbackStatusCannotReuseTheRetainedFrame' started at 2026-10-02 04:28:53.101
+Test Case 'LiveFreshnessTests.testMissingCallbackStatusCannotReuseTheRetainedFrame' passed (0.001 seconds)
+Test Case 'LiveFreshnessTests.testMissingZeroAndInvalidFutureSourceTimeRefuseThenIdleCanConfirmPixels' started at 2026-10-02 04:28:53.102
+Test Case 'LiveFreshnessTests.testMissingZeroAndInvalidFutureSourceTimeRefuseThenIdleCanConfirmPixels' passed (0.003 seconds)
+Test Case 'LiveFreshnessTests.testRecentCallbackDoesNotMakeStaleSourcePixelsCurrent' started at 2026-10-02 04:28:53.105
+Test Case 'LiveFreshnessTests.testRecentCallbackDoesNotMakeStaleSourcePixelsCurrent' passed (0.001 seconds)
+Test Case 'LiveFreshnessTests.testStopGateRefusesBeforeEndingAndLaterCallbacksCannotRestoreIt' started at 2026-10-02 04:28:53.106
+Test Case 'LiveFreshnessTests.testStopGateRefusesBeforeEndingAndLaterCallbacksCannotRestoreIt' passed (0.001 seconds)
+Test Case 'LiveFreshnessTests.testFreshnessAloneCannotAuthorizeAMismatchedRetainedSequence' started at 2026-10-02 04:28:53.107
+Test Case 'LiveFreshnessTests.testFreshnessAloneCannotAuthorizeAMismatchedRetainedSequence' passed (0.001 seconds)
+Test Suite 'LiveFreshnessTests' passed at 2026-10-02 04:28:53.108
+	 Executed 8 tests, with 0 failures (0 unexpected) in 0.012 (0.012) seconds
+Test Suite 'bin.xctest' passed at 2026-10-02 04:28:53.108
+	 Executed 40 tests, with 0 failures (0 unexpected) in 2.567 (2.567) seconds
+Test Suite 'All tests' passed at 2026-10-02 04:28:53.108
+	 Executed 40 tests, with 0 failures (0 unexpected) in 2.567 (2.567) seconds

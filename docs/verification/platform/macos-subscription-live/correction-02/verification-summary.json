@@ -1,0 +1,35 @@
+{
+  "kind": "Final MAC-LIVE-03 bounded evidence audit; no test rerun",
+  "parent_commit": "4f6c327018d46604b21c57ab4ebf2b0e45278f70",
+  "lead_review_baseline": "8467e0a55113455f62067d97a8774dca889c3d88",
+  "binding": "Delivery commit containing this file and source-sha256.json",
+  "focused_executed_methods": 42,
+  "focused_failures": 0,
+  "focused_unexpected_failures": 0,
+  "focused_runs_exit_zero": true,
+  "raw_logs_and_recorded_denominators_verified": true,
+  "module_emit_and_public_controller_typecheck_exit_zero": true,
+  "library_files_in_separate_module": 29,
+  "owned_source_files_bound": 58,
+  "unchanged_released_inputs": 9,
+  "matching_original_english_files": 8,
+  "replay_source_hashes_current": {
+    "paired": 48,
+    "controller": 48,
+    "controls": 48
+  },
+  "interface_inputs_current": 42,
+  "reviewed_hashes_current": 8,
+  "tested_source_patch_reverse_application_check": true,
+  "previous_correction_files_byte_identical_to_parent": 128,
+  "evidence_checksums_verified": {
+    "../correction-01/SHA256SUMS": 127,
+    "frame-answer/SHA256SUMS": 19,
+    "interface/interface-SHA256SUMS": 24
+  },
+  "native_declared_test_methods": 156,
+  "full_native_suite_run": false,
+  "native_macos_build_run": false,
+  "real_provider_or_device_test_run": false,
+  "next_owner": "Lead integrates preserved leaves, pending fixture CI patch and exact-source macOS build; interactive device/real-AI acceptance remains separate."
+}

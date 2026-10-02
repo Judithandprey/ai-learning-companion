@@ -1,0 +1,31 @@
+src/AskLinkTests.swift:955:36: warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 953 |             ending.connection = FakeConnector.connection(state: "signed_out", mode: NSNull())
+ 954 |             // In the first round the exit is reported only after the sign-in start has returned.
+ 955 |             ending.afterLoginStart = round == 0 ? { $0.endChildUnreported() } : { $0.exitChild() }
+     |                                    `- warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 956 |             let endingLink = askLink(ending)
+ 957 |             await endingLink.connect()
+
+Test Suite 'All tests' started at 2026-10-02 04:27:36.936
+Test Suite 'bin.xctest' started at 2026-10-02 04:27:36.938
+Test Suite 'DesktopCaptureTests' started at 2026-10-02 04:27:36.938
+Test Case 'DesktopCaptureTests.testControllerAnsweredFollowupSurvivesHealthyFrameBeforeQueuedFirstDisplayButNotSourceLoss' started at 2026-10-02 04:27:36.938
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"asking","request":"focus-a1-e466dc84.1","scenario":"controller-answered-source-loss","session":"on"}
+CONTROLLER_TRACE {"answer":"Synthetic controller hint: check the sign.","event":"published","panel_visibility_control":true,"phase":"answered","request":"focus-a1-e466dc84.1","scenario":"controller-answered-source-loss","session":"on"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"asking","request":"focus-a1-e466dc84.2","scenario":"controller-answered-source-loss","session":"on"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"cancelled","request":"focus-a1-e466dc84.2","scenario":"controller-answered-source-loss","session":"on"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"cancelled","request":"focus-a1-e466dc84.2","scenario":"controller-answered-source-loss","session":"on"}
+CONTROLLER_FRAME_ADVANCE_PROBE healthy_advance=false; source=unavailable(status: "blank", callbackAge: 0.0); response_received_before_change=true; original_frame_preserved=true; current_dispatch_refused=true; displayed=false; shown_receipt=false
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"asking","request":"focus-a1-c5849866.1","scenario":"controller-answered-frame-advance","session":"on"}
+CONTROLLER_TRACE {"answer":"Synthetic controller hint: check the sign.","event":"published","panel_visibility_control":true,"phase":"answered","request":"focus-a1-c5849866.1","scenario":"controller-answered-frame-advance","session":"on"}
+CONTROLLER_TRACE {"answer":null,"event":"published","panel_visibility_control":true,"phase":"asking","request":"focus-a1-c5849866.2","scenario":"controller-answered-frame-advance","session":"on"}
+CONTROLLER_TRACE {"answer":"Synthetic queued controller hint anchored to the earlier frame.","event":"published","panel_visibility_control":true,"phase":"answered","request":"focus-a1-c5849866.2","scenario":"controller-answered-frame-advance","session":"on"}
+CONTROLLER_TRACE {"answer":"Synthetic queued controller hint anchored to the earlier frame.","event":"published","panel_visibility_control":true,"phase":"answered","request":"focus-a1-c5849866.2","scenario":"controller-answered-frame-advance","session":"on"}
+CONTROLLER_FRAME_ADVANCE_PROBE healthy_advance=true; source=live(callbackAge: 0.0, pixelAge: 0.09999999999999432, newPixelsAge: Optional(0.09999999999999432)); response_received_before_change=true; original_frame_preserved=true; current_dispatch_refused=true; displayed=true; shown_receipt=true
+Test Case 'DesktopCaptureTests.testControllerAnsweredFollowupSurvivesHealthyFrameBeforeQueuedFirstDisplayButNotSourceLoss' passed (0.756 seconds)
+Test Suite 'DesktopCaptureTests' passed at 2026-10-02 04:27:37.694
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.756 (0.756) seconds
+Test Suite 'bin.xctest' passed at 2026-10-02 04:27:37.694
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.756 (0.756) seconds
+Test Suite 'All tests' passed at 2026-10-02 04:27:37.694
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.756 (0.756) seconds

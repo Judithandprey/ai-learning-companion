@@ -1,0 +1,125 @@
+{
+  "schema_version": 1,
+  "binding": "Commit containing this manifest; Linux stand-in evidence is not native acceptance.",
+  "predecessor_candidate": "4f6c327018d46604b21c57ab4ebf2b0e45278f70",
+  "original_native_leaf": "3147291f449105c06255cfc0ea2056f1b2582437",
+  "assigned_review_baseline": "8467e0a55113455f62067d97a8774dca889c3d88",
+  "wire_version": "lc-subscription-live/1",
+  "owned_sources": {
+    "apps/macos/CompanionDesktop/Package.swift": "645462db5e1394b469d9f59024c1d1e926688806db88a7c2befe6e891b56435e",
+    "apps/macos/CompanionDesktop/README.md": "33d878eebb0176f3da559599caff4c5d6bfd709f5847027215775677684f75c7",
+    "apps/macos/CompanionDesktop/Sources/CompanionDesktop/CaptureController.swift": "7a720eb18548a594d48d67ac32d30959f070db832e1cdc0b1667dcf5a2ab42de",
+    "apps/macos/CompanionDesktop/Sources/CompanionDesktop/CaptureRun.swift": "21e6f73dacfbb8fa5e1e1ddd3adfec0587d6ba2d133ae30c9ce964f83064f138",
+    "apps/macos/CompanionDesktop/Sources/CompanionDesktop/CompanionDesktopApp.swift": "33417de9328f2f2562c8aaab3cbdbf48f55f72889c9c4645ce63682a7ada1197",
+    "apps/macos/CompanionDesktop/Sources/CompanionDesktop/ContentView.swift": "0b4c138e6e5d9c67e3e6a86d9b09f1af650cd263c860d621c4fc35ce7bac02e0",
+    "apps/macos/CompanionDesktop/Sources/CompanionDesktop/InkController.swift": "c7c9f713672e3249be4311faa2cfbf3419758f8ef468dfcbe894996fa185251a",
+    "apps/macos/CompanionDesktop/Sources/CompanionDesktop/InkViews.swift": "82593a040d52b20a626a54607f1e529faab1206e2004e65bd917f8e80bdacd51",
+    "apps/macos/CompanionDesktop/Sources/CompanionDesktop/LiveController.swift": "4b6f619454aeac3201428d06f8c5bcebb6e302ea0940e8bc32a0be594f1b2021",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/AskChild.swift": "860fe9d6a19fe7d7c5baf4235ce08a99453fd44cc4e8938ed1b1c94c6241c1bf",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/AskLink.swift": "20bad9cab5fa19de32abd15a49817b0322de31fd7839684f8a9567e311b33bec",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/AskSelection.swift": "3b9db0e16b1027ce20cf3af4078f17cbff82cf0474e1d1fc92711b297f0137e3",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/AskWire.swift": "fb88b1229d60573b8e42631e3620321a9c278d01ca722ca606c1077bf965f9ea",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureControl.swift": "0e7d90263d3071633dec649a1c0777f35605f0fc473ee058e63974a60260ab37",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureHost.swift": "fa8507c08f66653d04ac09c54cd15579165066a3f72fc709bac9e6d25fcf5aa7",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureLink.swift": "1132425230eb9e0fb1706825296126a6957d91a494ebffa798d569e140399a51",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureRecorder.swift": "6c04de1c2494f098a5d6b9bde05aa617e3d484303e2a726fee1e532217f339d2",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureRecords.swift": "7154dff12f83fa6dd996307649da18ad2f6d4c9f52ca50f3c2ca38b2ab3daa72",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureStart.swift": "5253ac128a19bf8e8103800af65bffc7c2b02f581010133b79867234e25b8c33",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/DesktopIngress.swift": "fb6da5ddb5512378ea61ecc11d6304eba2736cddfc4d7e77a12e72bb3c124d34",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/DesktopJSON.swift": "2936142964f2a601f5f71e54546c4883318b8e30232024341312ce63b901e929",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/FrameFacts.swift": "30e6e0886f13af1d2d77631a77603dff505c825137c0e58b2ab930d7163f6d83",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/FrameStore.swift": "0ba0759dde8d09c8d13cd503b6b8da9ce596a3107b4cbc5f270586a9152a19d8",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/Freshness.swift": "a574f0a82ef04d1d20c21b6fcbfe7ea79ee8ad7ab25ee0b05b9fbda46f994450",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/HostClock.swift": "fa23661c0d5649dd52ce066aa864473bc49e5390bed3cf90e5dd6b9d3702b040",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/Ink.swift": "f10f1acb1c7084a7b10e3123bd5e751dbe77cef3ab5381a6b972d16fc497623d",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/InkComposition.swift": "5e0ce3f8d5d1adb6839daeecd7a1c62c487a130838d7de3cfd781cc5b212a72b",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/LiveFrame.swift": "afdf0a4e3139dae803a66cb35667ece952a886190adef655497cc0e1c22e263f",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/LiveGate.swift": "94e937e6d7061fb53f7990be0a2451d18c791d2fd30a8d73affec52256edfaec",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/LiveLink.swift": "05b24c7ebcdf3ce269e8a07bd2688aeaaa06c0d686d00ea7202abfe565080097",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/LivePresentation.swift": "e64d2a0ecc444e52619eaef8c3c04b47f478d12f9a7101cca6405a679de4383c",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/LiveSession.swift": "30c8d8e048c4cb953b0d9645d2b31b06a53c3167e13ce88258aebe50e43b6873",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/LiveWire.swift": "87e25fc0bb7c25ee425e493eaa2d07c2e4d8e4823da4db0738f164dbd4411c64",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/MacIngressBatch.swift": "f1fe46620b773e43eecdeac3572e1b7f01c7f61e48cd4d757662284251852600",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/MacIngressUpload.swift": "1e208be4afd4412786e59810952ed00eeb653027d2fad0b00fdb07a829d9aa52",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/MacRetainedFrames.swift": "b298b9ed9e9fde1e8252477ecf836b9c953f43daa2f78da720a8181d08973430",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/SelectionCrop.swift": "06b5b90ee42b3a89133139d022161c433a27788b78b02ce6c7b3a8c4897eaa81",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/StopReason.swift": "87c34730de4b93063cd25f595d4e0cf7d024687dd9367c8f5af573daee41df45",
+    "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/AskLinkTests.swift": "d24daf562b0543468d8616321f0f55ff36affbd4e36c07ebba189ffbd4cc6082",
+    "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/CaptureLinkTests.swift": "cf282073c1e6cf826bc502629cec93315906d7789bc3d0ba998a4039345a08fe",
+    "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/DesktopCaptureTests.swift": "ae6b24dc63430b3953db62cfdb6d9c7157651166b8c4ec1b9af8c8f269c08011",
+    "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/DesktopIngressTests.swift": "76b2725abe04177fc9741bcc16c9d3edb596ed4715ca6c9e577822c965524c91",
+    "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/InkCompositionTests.swift": "1d736ef13bc83a0418e04b429468d2b7489dde3f59a1f039921414fe0e75e05a",
+    "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/InkOriginalTests.swift": "d7037582d40881000b9476cb1b5018da77c98008c59ded626c737c9dabb64d22",
+    "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/InkTests.swift": "01cc532ad578a9e32f25d5b9d9589263f130467d12d108ca9c18095a06d6d8b6",
+    "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/LiveFrameAdvanceTests.swift": "69b49e72bdb0ce55e523a4cec4420ce7ff40feb4eaf10223bec4e225ef5e2e91",
+    "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/LiveFreshnessTests.swift": "f0566bfa3c934df1795e6cff128d8d6d73a4a493e7eec7c1913cdfed80921f6f",
+    "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/LiveLinkTests.swift": "0c561a554456c31e5e12482611dc24c9bde3355b52ec53997526b881562a0497",
+    "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/LivePresentationTests.swift": "e24fe21955082191e9e3919efc115a1fc3cf5873517873c43381fc84e12c9a22",
+    "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/LiveSourceDispatchTests.swift": "ee3f042e91446e2322c5d0538a586d89cf4d15e387b2f23c05cd95684bfd26d8",
+    "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/MacIngressUploadTests.swift": "b1b448837afd0fc39f03784d02954492e4944858d805cc6ac3785933e45f46bd",
+    "apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/MacRetainedFramesTests.swift": "2601e825b1ab56bf2543fc71e2ceaa233ef2842b006640bb74e826dd2671551a",
+    "apps/macos/CompanionDesktop/checks/validate_ask_request.py": "09cf1863edbbb6ba5cedb7df465509465638d0c3c3af67a88e35783b83242e2d",
+    "apps/macos/CompanionDesktop/checks/validate_composed_frames.py": "ba7f5193d8ef1c44e284cf58a273d06f192a221a29e50f3a1076d06c83318338",
+    "apps/macos/CompanionDesktop/checks/validate_desktop_ingress.py": "204c6c2a76267202cf1012f409363fd44bda18e9c7572757b76af8db67a96823",
+    "apps/macos/CompanionDesktop/checks/validate_live_session.py": "c5d1eb95377ba00470ef2a8b6b3ddc9d39f0e821215147dd65e0cc394d1d44ec",
+    "apps/macos/CompanionDesktop/checks/validate_mac_retained_frames.py": "b2460b2deb03e9cae7e349e3038b146e21dc2fd86ecd47d3c56255d512a017ab",
+    "apps/macos/CompanionDesktop/checks/validate_mac_upload.py": "e9488353c29df34ee66e884e434875f903c9aaabd409543d76e54d1f2c3928e0"
+  },
+  "released_read_only_inputs": {
+    "docs/adr/0004-live-desktop-companion.md": "2b93a715fe25af8f56cc2e1f5f5109289e50b5937963f3f1824e3c431f1ff108",
+    "packages/contracts/live_companion/__init__.py": "68226d193c3f7755b056ee05dcb590102e760686071ce55f6a44a51859b7e880",
+    "packages/contracts/live_companion/examples/focus.json": "36a5c267affd49a4595b0205b2e98e582e9a1238008f7096ebe5f94c20cc2388",
+    "packages/contracts/live_companion/focus.py": "1438a063d12bf50c866d9ce5fe9c947ec247dc2ee7d96e4c98bd47eeedcfab2e",
+    "packages/contracts/live_companion/schema.json": "3b1eedfaa70299b2f23fbbd2cd9a7b6f30ab220c00dc69f7be2f28bd371a5786",
+    "services/learning/live_session.py": "94f5e4f82259419b7ff6f5f5f640b3961bfbba48834e4afcae0e43f30ccb43f2",
+    "services/worker/connectors/chatgpt_launch.py": "b4c89171f025056062a091dab47ac6c3b3f372843da428a72b35f7d8eab49090",
+    "services/worker/connectors/chatgpt_live.py": "09e69928b96c302bdd99b72dacfa20d2b1acea125925626343e1694e6ca2b396",
+    "services/worker/connectors/chatgpt_local.py": "3c3fb4b377d117181b3c7f9506a6ff83e0cac88bb879cec7344308021bb5e250"
+  },
+  "english_source_manifest_check": {
+    "matching_files": 8,
+    "files": [
+      {
+        "path": "docs/requirements.md",
+        "sha256": "3796691c2e433e846051087d5857c40224c4e1995e9d01151378253bb2508cae"
+      },
+      {
+        "path": "docs/requirements.en.md",
+        "sha256": "4c8f69a6d51367d35eba28596d5310f165374728ad73ef656c03f1713b4e76e2"
+      },
+      {
+        "path": "docs/requirements/problem-solving-companion.md",
+        "sha256": "bcb94929cf216094972b945d14b0282fb94c9e45f2a4875333a0ac7658deb4dd"
+      },
+      {
+        "path": "docs/requirements/problem-solving-companion.en.md",
+        "sha256": "4b368b4b1118139c10227f8f585bdcea754171ffbd9b3812bf0e280b49bd037a"
+      },
+      {
+        "path": "docs/requirements/intent-and-decisions.md",
+        "sha256": "4b21d391cc6bf4e0fe0dad1a81ff5c20a34e47cc6291ab3c997486cef284dce3"
+      },
+      {
+        "path": "docs/requirements/intent-and-decisions.en.md",
+        "sha256": "37de474da6aacbc3f02411b319ba17af812893b2d39c98cd83c6138d99b980ac"
+      },
+      {
+        "path": "docs/requirements/original-goal-verification.md",
+        "sha256": "20cbea365337a8a046c443a9fe9536ec9fbec0c42a365c69a9c6ecf7068c5986"
+      },
+      {
+        "path": "docs/requirements/original-goal-verification.en.md",
+        "sha256": "d7b589605f4bfbbefbaedf0b9d9bfd214f1722cdf3f6f8ccec8118bf4e79fd62"
+      }
+    ]
+  },
+  "independent_source_binding": {
+    "matching_replay_sources_by_group": {
+      "paired": 48,
+      "controller": 48,
+      "controls": 48
+    },
+    "matching_interface_inputs": 42,
+    "matching_reviewed_files": 8
+  }
+}

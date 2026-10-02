@@ -1,0 +1,12 @@
+{
+  "frontend_path": "/tmp/lc-review-0212/tc/usr/bin/swift-frontend",
+  "frontend_sha256": "c5f39b9b571ec3772ab7da8b7023451a2fd0ba56062b7b56143e499c069d7d2d",
+  "version_stdout": "Swift version 6.3.3 (swift-6.3.3-RELEASE)\nTarget: x86_64-unknown-linux-gnu\n",
+  "version_stderr": "<unknown>:0: warning: libc not found for 'x86_64-unknown-linux-gnu'; C stdlib may be unavailable\n",
+  "version_exit_code": 0,
+  "host_system": "Linux",
+  "host_machine": "x86_64",
+  "sdk": "/tmp/lc-review-0212/sysroot",
+  "library_path": "/tmp/lc-review-0212/libs",
+  "scope": "existing Linux stand-in toolchain only; not macOS build/device or real provider"
+}

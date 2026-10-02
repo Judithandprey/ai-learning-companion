@@ -1,0 +1,1 @@
+PASS: LiveController class typechecks against separate DesktopCapture public module (no @testable import).

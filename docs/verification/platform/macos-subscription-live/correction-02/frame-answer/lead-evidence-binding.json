@@ -1,0 +1,29 @@
+{
+  "kind": "unchanged lead MAC-LIVE-03 failing evidence",
+  "lead_commit": "8467e0a55113455f62067d97a8774dca889c3d88",
+  "native_commit": "4f6c327018d46604b21c57ab4ebf2b0e45278f70",
+  "files": {
+    "lead-frame-advance-probe.swift": {
+      "source": "docs/verification/lead/live-windows/macos-live-review/correction-01/frame-advance-probe.swift",
+      "sha256": "8238654c88808bf30245974b9d9b07457ecceb5beb352f482d88bc36ffc9e9e8"
+    },
+    "lead-frame-advance-main.swift": {
+      "source": "docs/verification/lead/live-windows/macos-live-review/correction-01/frame-advance-main.swift",
+      "sha256": "0a46599c377fba6259c17019899e60a1ea04f5986f17e4ca7b260dea18ce1133"
+    },
+    "lead-frame-advance-manifest.json": {
+      "source": "docs/verification/lead/live-windows/macos-live-review/correction-01/frame-advance-manifest.json",
+      "sha256": "2c9d4393b6a3bf18d4d4255bdd1726ec14aa7453c8809b7ed42f6e5ed38d37a2"
+    },
+    "lead-healthy-frame-before.txt": {
+      "source": "docs/verification/lead/live-windows/macos-live-review/correction-01/healthy-frame-before.txt",
+      "sha256": "12e6acbaca6c414f8742cd086fd320aa10ef48dfbad3d7ed078243877f78cace"
+    },
+    "lead-replay-frame-advance.py": {
+      "source": "docs/verification/lead/live-windows/macos-live-review/correction-01/replay-frame-advance.py",
+      "sha256": "a9b3d5eea6b7b21ce7f56b46bcba4d2c9f0034910dfc36fb7a5109ff0d486f6a"
+    }
+  },
+  "rerun_before_correction": false,
+  "limit": "Recorded Linux Apple/UI stand-ins and fake connector. No native macOS capture or real AI."
+}

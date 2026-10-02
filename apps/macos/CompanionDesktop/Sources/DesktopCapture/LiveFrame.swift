@@ -45,6 +45,13 @@ public struct LiveFrameInput: Sendable {
         return currentSourceProblem?()
     }
 
+    /// Dynamic source health for first display of an already-submitted immutable-frame answer.
+    /// The original sequence check remains strict at every render/write admission boundary.
+    public var presentationSourceProblem: (@Sendable () -> String?)? {
+        guard let currentSourceProblem else { return nil }
+        return { Freshness.sourceLossProblem(currentSourceProblem()) }
+    }
+
     /// Freezes `document` now, at `revision` (its current one when nil). A document that cannot be
     /// encoded is treated as no document: nothing is drawn, and no ink is claimed.
     public static func freeze(frame: FrameReference, document: InkDocument?, revision: Int? = nil, captureSession: URL,

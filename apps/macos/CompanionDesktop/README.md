@@ -21,6 +21,9 @@ The live-session review correction fences delayed first display and complete req
 Stop, and refuses retained frames as current unless the capture freshness verdict permits them.
 Focused Linux replays and their native limitations are recorded
 [here](../../../docs/verification/platform/macos-subscription-live/correction-01/README.md).
+The follow-up keeps a submitted answer bound to its original frame when healthy newer pixels
+arrive, while still refusing old pixels at dispatch and preserving actual source-loss fences
+([record](../../../docs/verification/platform/macos-subscription-live/correction-02/README.md)).
 
 ## Layout
 
@@ -43,7 +46,7 @@ COMPANION_DESKTOP_FIXTURE_DIR="$RUNNER_TEMP/companion-desktop-fixture" \
 COMPANION_DESKTOP_INGRESS_FIXTURE_DIR="$RUNNER_TEMP/companion-desktop-ingress-fixture" \
 COMPANION_DESKTOP_ASK_FIXTURE_DIR="$RUNNER_TEMP/companion-desktop-ask-fixture" \
 COMPANION_DESKTOP_LIVE_FIXTURE_DIR="$RUNNER_TEMP/companion-desktop-live-fixture" \
-  swift test --package-path apps/macos/CompanionDesktop                         # 151 tests; keeps fixtures
+  swift test --package-path apps/macos/CompanionDesktop                         # 156 tests; keeps fixtures
 .venv/bin/python apps/macos/CompanionDesktop/checks/validate_desktop_ingress.py "$RUNNER_TEMP/companion-desktop-ingress-fixture"
 .venv/bin/python apps/macos/CompanionDesktop/checks/validate_ask_request.py "$RUNNER_TEMP/companion-desktop-ask-fixture"
 .venv/bin/python apps/macos/CompanionDesktop/checks/validate_live_session.py "$RUNNER_TEMP/companion-desktop-live-fixture"

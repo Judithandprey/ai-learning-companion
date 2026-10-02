@@ -1,0 +1,39 @@
+{
+  "scope": "Reuse correction-01 interface helpers; keep prior evidence intact",
+  "adaptations": [
+    "isolated correction-02 evidence and temporary module/app paths",
+    "retain unchanged framework/UI stand-ins in this evidence directory; prepare copies them to isolated paths",
+    "assert exactly 29 production library sources",
+    "omit three syntax-only sources from manifest and four unchanged app syntax parses from replay"
+  ],
+  "helpers": [
+    {
+      "helper": "interface-prepare.py",
+      "reused_source": "docs/verification/platform/macos-subscription-live/correction-01/interface-prepare.py",
+      "reused_source_sha256": "4e1d6cce1e90fa6bd7b85bcbac308479509651e6c50df65e236972b4c3988046",
+      "current_sha256": "a06873eb87d285059912b01808b72999a43a2a1191306043b5be25f0d6ee7af9",
+      "byte_identical": false
+    },
+    {
+      "helper": "interface-replay.sh",
+      "reused_source": "docs/verification/platform/macos-subscription-live/correction-01/interface-replay.sh",
+      "reused_source_sha256": "8cc3c8567c7cab9d4ef796acbcea48407a7068034cb6815fb7b943709107edba",
+      "current_sha256": "da8fee0d97bd9f87e8c340460661d9dc42e783865c1fa1db60e0a68ced0410ab",
+      "byte_identical": false
+    },
+    {
+      "helper": "interface-module-build.sh",
+      "reused_source": "docs/verification/platform/macos-subscription-live/correction-01/interface-module-build.sh",
+      "reused_source_sha256": "e899c17414ef68f6aff1c1f2039449fa73e551509cc7c65f430c33b75ab8b47a",
+      "current_sha256": "d2585ef4069d507c00a4e542eeff3ca494a02d99ebe8d777f351a968f66ef1fa",
+      "byte_identical": false
+    },
+    {
+      "helper": "interface-ui-stand-ins.swift",
+      "reused_source": "docs/verification/platform/macos-subscription-live/correction-01/interface-ui-stand-ins.swift",
+      "reused_source_sha256": "1caf199b71cdc2e0916c04bbc6a6f0c7c93d2fd3598a584b6883ca9b3d7be75a",
+      "current_sha256": "1caf199b71cdc2e0916c04bbc6a6f0c7c93d2fd3598a584b6883ca9b3d7be75a",
+      "byte_identical": true
+    }
+  ]
+}

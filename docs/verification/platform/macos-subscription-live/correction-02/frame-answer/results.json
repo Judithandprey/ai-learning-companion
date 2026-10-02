@@ -1,0 +1,46 @@
+{
+  "kind": "bounded Linux stand-in/fake-connector source replay",
+  "groups": [
+    {
+      "suite": "paired",
+      "registered": 1,
+      "executed": 1,
+      "failures": 0,
+      "unexpected": 0,
+      "xctest_runtime_seconds": 0.147,
+      "exit_code": 0,
+      "raw_log_sha256": "6311b721194d761b5adbdca5920b20d471972b5bed989bdeff1aab5974f3e2f6"
+    },
+    {
+      "suite": "controller",
+      "registered": 1,
+      "executed": 1,
+      "failures": 0,
+      "unexpected": 0,
+      "xctest_runtime_seconds": 0.756,
+      "exit_code": 0,
+      "raw_log_sha256": "faa9951a4eef1cd6050211b981b0a6b27d6e208aab583eb415a972b819c15285"
+    },
+    {
+      "suite": "controls",
+      "registered": 40,
+      "executed": 40,
+      "failures": 0,
+      "unexpected": 0,
+      "xctest_runtime_seconds": 2.567,
+      "exit_code": 0,
+      "raw_log_sha256": "f6bd6b0507a1cf20d45ebb2ffacc3f9d9b2daf9e061ca2984f99a29700cbc730"
+    }
+  ],
+  "total_selected_methods": 42,
+  "all_runs_same_raw_source_hashes": true,
+  "current_source_hashes_match_tested_source": true,
+  "lead_artifacts_unchanged": true,
+  "previous_failed_probe_rerun": false,
+  "native_macOS_build": false,
+  "interactive_device": false,
+  "real_AI": false,
+  "full_declared_156_test_suite": false,
+  "production_snapshot": "4f6c327018d46604b21c57ab4ebf2b0e45278f70 + tested-source.patch",
+  "production_patch_sha256": "fed58f3c749bc1ac768a0c12a1814fe326b5153249660963b4072151bd306a66"
+}

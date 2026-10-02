@@ -1,0 +1,300 @@
+diff --git a/apps/macos/CompanionDesktop/Sources/DesktopCapture/Freshness.swift b/apps/macos/CompanionDesktop/Sources/DesktopCapture/Freshness.swift
+index 44352f8..d41f52d 100644
+--- a/apps/macos/CompanionDesktop/Sources/DesktopCapture/Freshness.swift
++++ b/apps/macos/CompanionDesktop/Sources/DesktopCapture/Freshness.swift
+@@ -64,9 +64,23 @@ public enum Freshness: Equatable, Sendable {
+             return "the pixels were last confirmed on screen too long ago; there is no fresh current picture to give"
+         case .live:
+             guard status?.lastKept?.sequence == sequence, status?.lastNewPixelsSequence == sequence else {
++                if sequence > 0, let newest = status?.lastKept?.sequence,
++                   newest == status?.lastNewPixelsSequence, sequence < newest {
++                    return advancedFrameProblem
++                }
+                 return "the newest pixels of this display were not kept in this frame; there is no current picture to give"
+             }
+             return nil
+         }
+     }
++
++    /// A local classification shared by dispatch and presentation, never a wire field. Only
++    /// healthy, fully retained newer pixels produce it; the earlier frame remains immutable.
++    public static let advancedFrameProblem = "this earlier frame is not the current picture; healthy newer pixels were retained"
++
++    /// Current-frame eligibility ends on healthy advancement. Source authority for an already
++    /// submitted answer does not. Every actual freshness/retention loss still refuses display.
++    public static func sourceLossProblem(_ currentFrameProblem: String?) -> String? {
++        currentFrameProblem == advancedFrameProblem ? nil : currentFrameProblem
++    }
+ }
+diff --git a/apps/macos/CompanionDesktop/Sources/DesktopCapture/LiveFrame.swift b/apps/macos/CompanionDesktop/Sources/DesktopCapture/LiveFrame.swift
+index 57ba7cd..10ec4a9 100644
+--- a/apps/macos/CompanionDesktop/Sources/DesktopCapture/LiveFrame.swift
++++ b/apps/macos/CompanionDesktop/Sources/DesktopCapture/LiveFrame.swift
+@@ -45,6 +45,13 @@ public struct LiveFrameInput: Sendable {
+         return currentSourceProblem?()
+     }
+ 
++    /// Dynamic source health for first display of an already-submitted immutable-frame answer.
++    /// The original sequence check remains strict at every render/write admission boundary.
++    public var presentationSourceProblem: (@Sendable () -> String?)? {
++        guard let currentSourceProblem else { return nil }
++        return { Freshness.sourceLossProblem(currentSourceProblem()) }
++    }
++
+     /// Freezes `document` now, at `revision` (its current one when nil). A document that cannot be
+     /// encoded is treated as no document: nothing is drawn, and no ink is claimed.
+     public static func freeze(frame: FrameReference, document: InkDocument?, revision: Int? = nil, captureSession: URL,
+diff --git a/apps/macos/CompanionDesktop/Sources/DesktopCapture/LiveLink.swift b/apps/macos/CompanionDesktop/Sources/DesktopCapture/LiveLink.swift
+index 7efc039..74df05e 100644
+--- a/apps/macos/CompanionDesktop/Sources/DesktopCapture/LiveLink.swift
++++ b/apps/macos/CompanionDesktop/Sources/DesktopCapture/LiveLink.swift
+@@ -695,7 +695,10 @@ public actor LiveLink {
+     private func take(_ input: LiveFrameInput) -> Bool {
+         guard var current = session, current.isRunning, current.captureSessionID == input.captureSessionID else { return false }
+         guard dispatchAuthorityMatches(input) else { return false }
+-        if let problem = input.dispatchProblem { noPicture(problem); return false }
++        if let problem = input.dispatchProblem {
++            if let loss = Freshness.sourceLossProblem(problem) { noPicture(loss) }
++            return false
++        }
+         current.offer(input)
+         session = current
+         publishSession()
+@@ -743,8 +746,12 @@ public actor LiveLink {
+         }
+         if let problem = next.input.dispatchProblem {
+             missed(problem, .notObserved)
+-            noPicture(problem)
+-            return
++            if let loss = Freshness.sourceLossProblem(problem) {
++                noPicture(loss)
++                return
++            }
++            // A healthy newer frame may already be waiting behind this obsolete render.
++            return await pump()
+         }
+         guard case .success(let made) = rendered else {
+             if case .failure(let refusal) = rendered { missed(refusal.reason, .notObserved) }
+@@ -920,7 +927,7 @@ public actor LiveLink {
+         guard var session = self.session, session.id == id, session.isRunning else { return idle("Not sent: the AI session ended.") }
+         guard dispatchAuthorityMatches(input) else { return idle("Not sent: this AI request authority has ended.") }
+         if let problem = input.dispatchProblem {
+-            if input.currentSourceProblem != nil { noPicture(problem) }
++            if input.currentSourceProblem != nil, let loss = Freshness.sourceLossProblem(problem) { noPicture(loss) }
+             return idle("Not sent: \(problem).")
+         }
+         guard case .success(let made) = rendered else {
+@@ -1013,7 +1020,7 @@ public actor LiveLink {
+             status.card?.latencyMS = answer.latencyMS
+             status.card?.presentation = LiveAnswerPresentation(turn: turn, captureSessionID: card.captureSessionID,
+                 owner: presentationOwner, directory: card.directory, generation: card.presentationGate,
+-                capture: card.answerSource?.captureGate ?? sessionCaptureGate, sourceProblem: card.answerSource?.currentSourceProblem,
++                capture: card.answerSource?.captureGate ?? sessionCaptureGate, sourceProblem: card.answerSource?.presentationSourceProblem,
+                 expiresHost: current.expiresHost, clock: clock)
+         case .refused(let error):
+             status.card?.phase = .refused
+@@ -1186,7 +1193,7 @@ public actor LiveLink {
+             outcome = .notDelivered
+             if let problem = source.dispatchProblem {
+                 fence(turn.requestID, reason: problem)
+-                if source.currentSourceProblem != nil { noPicture(problem) }
++                if source.currentSourceProblem != nil, let loss = Freshness.sourceLossProblem(problem) { noPicture(loss) }
+             }
+             if await running.send(line, revocation: handle) {
+                 if var session = self.session, session.id == turn.sessionID {
+@@ -1206,9 +1213,11 @@ public actor LiveLink {
+             if handle.isRevoked, out[turn.requestID]?.fenced == nil {
+                 // A temporary source refusal remains a refusal even if fresh callbacks recover
+                 // before the writer returns. It is not a new connector transport failure.
+-                let problem = source.dispatchProblem ?? "request authority was withdrawn before complete delivery"
++                let sourceProblem = source.dispatchProblem
++                let problem = sourceProblem ?? "request authority was withdrawn before complete delivery"
+                 fence(turn.requestID, reason: problem)
+-                if source.currentSourceProblem != nil, source.dispatchProblem != nil { noPicture(problem) }
++                if source.currentSourceProblem != nil, sourceProblem != nil,
++                   let loss = Freshness.sourceLossProblem(sourceProblem) { noPicture(loss) }
+             }
+             waiting[callID] = nil
+             request = out.removeValue(forKey: turn.requestID)
+diff --git a/apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/LiveFrameAdvanceTests.swift b/apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/LiveFrameAdvanceTests.swift
+new file mode 100644
+--- /dev/null
++++ b/apps/macos/CompanionDesktop/Tests/DesktopCaptureTests/LiveFrameAdvanceTests.swift
+@@ -0,0 +1,177 @@
++import Foundation
++import XCTest
++@testable import DesktopCapture
++
++extension DesktopCaptureTests {
++    private func checkedFrame(_ stand: LiveStand, _ frame: FrameReference, clock: LiveClock) -> LiveFrameInput {
++        var input = liveInput(stand, frame)
++        input.currentSourceProblem = {
++            Freshness.currentFrameProblem(stand.recorder.status, capturing: true,
++                                          sequence: frame.sequence, now: clock.now)
++        }
++        return input
++    }
++
++    func testHealthyAdvanceRefusesOldCurrentInputWithoutRevokingItsSubmittedAnswer() async throws {
++        let connector = FakeLiveConnector()
++        let stand = try liveStand("advance-preserves-anchored-answer")
++        let first = try liveKeep(stand, host: 100.3)
++        let link = await liveStarted(connector, stand)
++        let selected = try liveSelect(stand, on: first, host: 101)
++        await link.selected(selected.input, rect: selected.rect, selectionID: selected.id)
++        let clock = LiveClock(100.3)
++        let input = checkedFrame(stand, first, clock: clock)
++        await link.followUp("Explain this retained frame.", assistance: .hint, fresh: input)
++        let answer = try await liveCard(link)
++        let permit = try XCTUnwrap(answer.presentation)
++        let responseBefore = try Data(contentsOf: stand.session.appending(path: "live/" + permit.requestID + ".response.json"))
++        let request = try liveRecord(stand.session, permit.requestID + ".request.json")
++        let inkFile = try XCTUnwrap(request["ink_file"] as? String)
++        let inkBefore = try Data(contentsOf: stand.session.appending(path: inkFile))
++        clock.advance(2.7)
++        let second = try liveKeep(stand, host: 103, shade: 90)
++        XCTAssertNotNil(input.dispatchProblem, "Earlier pixels cannot become a current-picture request")
++        await link.offer(input)
++        var current = await link.currentStatus()
++        XCTAssertEqual(connector.turns.count, 2)
++        XCTAssertNil(current.session.missed, "A refused old input does not declare loss in a healthy source")
++        XCTAssertEqual(current.card?.frameFile, first.file)
++        XCTAssertTrue(permit.whileAllowed { true }, "The submitted answer remains bound to its original frame")
++        await link.answerShown(permit.requestID, presentation: permit)
++        await link.offer(checkedFrame(stand, second, clock: clock))
++        current = await link.currentStatus()
++        XCTAssertEqual(connector.turns.count, 3, "The healthy newer frame still reaches unattended observation")
++        XCTAssertEqual(current.card?.frameFile, first.file, "The earlier answer is never relabeled as the new frame")
++        XCTAssertEqual(try Data(contentsOf: stand.session.appending(path: inkFile)), inkBefore)
++        XCTAssertEqual(inkBefore, input.documentBytes)
++        XCTAssertEqual(try Data(contentsOf: stand.session.appending(path: "live/" + permit.requestID + ".response.json")), responseBefore)
++        await link.shutdown()
++    }
++
++    func testHealthyAdvanceDuringRenderingDrainsTheNewestWaitingFrame() async throws {
++        let connector = FakeLiveConnector()
++        let stand = try liveStand("advance-during-render")
++        let first = try liveKeep(stand, host: 100.3)
++        let sourceClock = LiveClock(100.3)
++        let entered = DispatchSemaphore(value: 0)
++        let release = DispatchSemaphore(value: 0)
++        let link = LiveLink(config: .success(askConfig), launcher: connector, changeInterval: 0, makePicture: { input in
++            if input.frame.sequence == first.sequence {
++                entered.signal()
++                guard release.wait(timeout: .now() + 5) == .success else {
++                    return .failure(MappingRefusal("synthetic held renderer timed out"))
++                }
++            }
++            return LiveFrameBuilder.render(input)
++        })
++        await link.connect()
++        await link.startSession(policy: .preset, captureSession: stand.session, captureSessionID: stand.id)
++        let input = checkedFrame(stand, first, clock: sourceClock)
++        let rendering = Task { await link.offer(input) }
++        XCTAssertEqual(entered.wait(timeout: .now() + 5), .success)
++        sourceClock.advance(2.7)
++        let second = try liveKeep(stand, host: 103, shade: 90)
++        await link.enqueue(checkedFrame(stand, second, clock: sourceClock))
++        release.signal()
++        await rendering.value
++        let current = await link.currentStatus()
++        XCTAssertEqual(connector.turns.count, 1, "No further callback is needed to drain N+1 after N loses current eligibility")
++        XCTAssertEqual(current.session.out, 0)
++        XCTAssertNil(current.session.missed)
++        let image = try XCTUnwrap(connector.turns.first?["image"] as? [String: Any])
++        XCTAssertEqual(image["sha256"] as? String, second.sha256)
++        let files = try FileManager.default.contentsOfDirectory(atPath: stand.session.appending(path: "live").path)
++        XCTAssertFalse(files.contains { $0.contains("source-loss") }, "Healthy advancement is not a fabricated source gap")
++        await link.shutdown()
++    }
++
++    func testHealthyAdvanceBeforeWriterCompletionStillRefusesTheOldCurrentLine() async throws {
++        let connector = FakeLiveConnector()
++        let stand = try liveStand("advance-before-writer")
++        let first = try liveKeep(stand, host: 100.3)
++        let link = await liveStarted(connector, stand)
++        let selected = try liveSelect(stand, on: first, host: 101)
++        await link.selected(selected.input, rect: selected.rect, selectionID: selected.id)
++        let clock = LiveClock(100.3)
++        let input = checkedFrame(stand, first, clock: clock)
++        connector.holdsWrites = ["companion/turn"]
++        let following = Task { await link.followUp("Explain the current frame.", assistance: .hint, fresh: input) }
++        let waiting = await until(5) {
++            let current = await link.currentStatus()
++            return current.card?.phase == .asking && current.card?.requestID?.hasSuffix(".2") == true
++        }
++        XCTAssertTrue(waiting)
++        clock.advance(2.7)
++        let second = try liveKeep(stand, host: 103, shade: 90)
++        connector.holdsWrites = []
++        await following.value
++        var current = await link.currentStatus()
++        XCTAssertEqual(connector.turns.count, 1)
++        XCTAssertEqual(current.session.state, .on)
++        XCTAssertEqual(current.session.out, 0)
++        XCTAssertNil(current.session.missed)
++        let request = try XCTUnwrap(current.card?.requestID)
++        let response = try liveRecord(stand.session, request + ".response.json")
++        XCTAssertEqual(response["outcome"] as? String, "cancelled")
++        XCTAssertEqual(response["delivered_to_connector"] as? Bool, false)
++        await link.followUp("Explain these new pixels.", assistance: .hint,
++                            fresh: checkedFrame(stand, second, clock: clock))
++        current = await link.currentStatus()
++        XCTAssertEqual(connector.turns.count, 2)
++        XCTAssertEqual(current.card?.frameFile, second.file)
++        await link.shutdown()
++    }
++
++    func testNewestUnretainedPixelsStillBlockFirstDisplayOfAnEarlierAnswer() throws {
++        let trial = try recorder()
++        trial.frame(facts(.complete, source: 100.2), image: try buffer(), host: 100.3, accepted: true)
++        let size = try XCTUnwrap(trial.status.lastKept).byteLength
++        let capped = try recorder(byteCap: size)
++        capped.frame(facts(.complete, source: 100.2), image: try buffer(), host: 100.3, accepted: true)
++        let first = FrameReference(try XCTUnwrap(capped.status.lastKept))
++        var input = LiveFrameInput.freeze(frame: first, document: nil, captureSession: capped.directory,
++                                         captureSessionID: capped.status.session, display: capped.status.display)
++        input.currentSourceProblem = {
++            Freshness.currentFrameProblem(capped.status, capturing: true, sequence: first.sequence, now: 103)
++        }
++        capped.frame(facts(.complete, source: 102.9), image: try buffer(marker: 90), host: 103, accepted: true)
++        XCTAssertEqual(capped.status.lastKept?.sequence, first.sequence)
++        XCTAssertGreaterThan(try XCTUnwrap(capped.status.lastNewPixelsSequence), first.sequence)
++        guard case .live = Freshness.judge(capped.status, capturing: true, now: 103) else {
++            return XCTFail("The source is fresh; the problem is retaining its newest pixels")
++        }
++        XCTAssertNotNil(input.presentationSourceProblem?(), "Unretained current pixels are still a real availability loss")
++        XCTAssertNotNil(Freshness.sourceLossProblem(Freshness.currentFrameProblem(capped.status, capturing: true,
++            sequence: 0, now: 103)))
++    }
++
++    func testSourceLossAfterHealthyAdvancePermanentlyRevokesUnshownAnswer() async throws {
++        let connector = FakeLiveConnector()
++        let stand = try liveStand("advance-then-true-loss")
++        let first = try liveKeep(stand, host: 100.3)
++        let link = await liveStarted(connector, stand)
++        let selected = try liveSelect(stand, on: first, host: 101)
++        await link.selected(selected.input, rect: selected.rect, selectionID: selected.id)
++        let clock = LiveClock(100.3)
++        let input = checkedFrame(stand, first, clock: clock)
++        await link.followUp("Explain this retained frame.", assistance: .hint, fresh: input)
++        let card = try await liveCard(link)
++        let permit = try XCTUnwrap(card.presentation)
++        clock.advance(2.7)
++        _ = try liveKeep(stand, host: 103, shade: 90)
++        XCTAssertNil(input.presentationSourceProblem?())
++        stand.recorder.frame(facts(.blank, source: 103.9), image: nil, host: 104, accepted: true)
++        clock.advance(1)
++        let loss = try XCTUnwrap(input.presentationSourceProblem?())
++        await link.noPicture(loss)
++        clock.advance(2)
++        _ = try liveKeep(stand, host: 106, shade: 70)
++        XCTAssertNil(input.presentationSourceProblem?(), "The capture can recover without reviving this answer's authority")
++        var displayed = false
++        XCTAssertFalse(permit.whileAllowed { displayed = true; return true })
++        XCTAssertFalse(displayed)
++        await link.answerShown(permit.requestID, presentation: permit)
++        XCTAssertFalse(FileManager.default.fileExists(atPath: stand.session.appending(path: "live/" + permit.requestID + ".shown.json").path))
++        await link.shutdown()
++    }
++}

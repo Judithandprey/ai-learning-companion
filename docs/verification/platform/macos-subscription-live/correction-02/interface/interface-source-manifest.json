@@ -1,0 +1,253 @@
+{
+  "kind": "public-interface-linux-source-snapshot",
+  "native_or_real_ai": false,
+  "git_head": "4f6c327018d46604b21c57ab4ebf2b0e45278f70",
+  "transformations": [
+    "add existing CFNetwork re-export for corelibs Foundation networking",
+    "comment Linux-unavailable waitsForConnectivity setter in copied source only",
+    "extract LiveController before LiveConnectionView marker; replace AppKit/SwiftUI imports with UIStub",
+    "empty LiveCardView implements only existing UIStub.View"
+  ],
+  "files": [
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/AskChild.swift",
+      "source_sha256": "860fe9d6a19fe7d7c5baf4235ce08a99453fd44cc4e8938ed1b1c94c6241c1bf",
+      "harness_path": "/tmp/lc-interface-correction-02-module/src/AskChild.swift",
+      "harness_sha256": "860fe9d6a19fe7d7c5baf4235ce08a99453fd44cc4e8938ed1b1c94c6241c1bf"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/AskLink.swift",
+      "source_sha256": "20bad9cab5fa19de32abd15a49817b0322de31fd7839684f8a9567e311b33bec",
+      "harness_path": "/tmp/lc-interface-correction-02-module/src/AskLink.swift",
+      "harness_sha256": "20bad9cab5fa19de32abd15a49817b0322de31fd7839684f8a9567e311b33bec"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/AskSelection.swift",
+      "source_sha256": "3b9db0e16b1027ce20cf3af4078f17cbff82cf0474e1d1fc92711b297f0137e3",
+      "harness_path": "/tmp/lc-interface-correction-02-module/src/AskSelection.swift",
+      "harness_sha256": "3b9db0e16b1027ce20cf3af4078f17cbff82cf0474e1d1fc92711b297f0137e3"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/AskWire.swift",
+      "source_sha256": "fb88b1229d60573b8e42631e3620321a9c278d01ca722ca606c1077bf965f9ea",
+      "harness_path": "/tmp/lc-interface-correction-02-module/src/AskWire.swift",
+      "harness_sha256": "fb88b1229d60573b8e42631e3620321a9c278d01ca722ca606c1077bf965f9ea"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureControl.swift",
+      "source_sha256": "0e7d90263d3071633dec649a1c0777f35605f0fc473ee058e63974a60260ab37",
+      "harness_path": "/tmp/lc-interface-correction-02-module/src/CaptureControl.swift",
+      "harness_sha256": "167e7810f6104f2e383b862961e54eb0a7e585f9fefef704a7758247409e5317"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureHost.swift",
+      "source_sha256": "fa8507c08f66653d04ac09c54cd15579165066a3f72fc709bac9e6d25fcf5aa7",
+      "harness_path": "/tmp/lc-interface-correction-02-module/src/CaptureHost.swift",
+      "harness_sha256": "fa8507c08f66653d04ac09c54cd15579165066a3f72fc709bac9e6d25fcf5aa7"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureLink.swift",
+      "source_sha256": "1132425230eb9e0fb1706825296126a6957d91a494ebffa798d569e140399a51",
+      "harness_path": "/tmp/lc-interface-correction-02-module/src/CaptureLink.swift",
+      "harness_sha256": "1132425230eb9e0fb1706825296126a6957d91a494ebffa798d569e140399a51"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureRecorder.swift",
+      "source_sha256": "6c04de1c2494f098a5d6b9bde05aa617e3d484303e2a726fee1e532217f339d2",
+      "harness_path": "/tmp/lc-interface-correction-02-module/src/CaptureRecorder.swift",
+      "harness_sha256": "6c04de1c2494f098a5d6b9bde05aa617e3d484303e2a726fee1e532217f339d2"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureRecords.swift",
+      "source_sha256": "7154dff12f83fa6dd996307649da18ad2f6d4c9f52ca50f3c2ca38b2ab3daa72",
+      "harness_path": "/tmp/lc-interface-correction-02-module/src/CaptureRecords.swift",
+      "harness_sha256": "7154dff12f83fa6dd996307649da18ad2f6d4c9f52ca50f3c2ca38b2ab3daa72"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/CaptureStart.swift",
+      "source_sha256": "5253ac128a19bf8e8103800af65bffc7c2b02f581010133b79867234e25b8c33",
+      "harness_path": "/tmp/lc-interface-correction-02-module/src/CaptureStart.swift",
+      "harness_sha256": "5253ac128a19bf8e8103800af65bffc7c2b02f581010133b79867234e25b8c33"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/DesktopIngress.swift",
+      "source_sha256": "fb6da5ddb5512378ea61ecc11d6304eba2736cddfc4d7e77a12e72bb3c124d34",
+      "harness_path": "/tmp/lc-interface-correction-02-module/src/DesktopIngress.swift",
+      "harness_sha256": "fb6da5ddb5512378ea61ecc11d6304eba2736cddfc4d7e77a12e72bb3c124d34"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/DesktopJSON.swift",
+      "source_sha256": "2936142964f2a601f5f71e54546c4883318b8e30232024341312ce63b901e929",
+      "harness_path": "/tmp/lc-interface-correction-02-module/src/DesktopJSON.swift",
+      "harness_sha256": "2936142964f2a601f5f71e54546c4883318b8e30232024341312ce63b901e929"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/FrameFacts.swift",
+      "source_sha256": "30e6e0886f13af1d2d77631a77603dff505c825137c0e58b2ab930d7163f6d83",
+      "harness_path": "/tmp/lc-interface-correction-02-module/src/FrameFacts.swift",
+      "harness_sha256": "30e6e0886f13af1d2d77631a77603dff505c825137c0e58b2ab930d7163f6d83"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/FrameStore.swift",
+      "source_sha256": "0ba0759dde8d09c8d13cd503b6b8da9ce596a3107b4cbc5f270586a9152a19d8",
+      "harness_path": "/tmp/lc-interface-correction-02-module/src/FrameStore.swift",
+      "harness_sha256": "0ba0759dde8d09c8d13cd503b6b8da9ce596a3107b4cbc5f270586a9152a19d8"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/Freshness.swift",
+      "source_sha256": "a574f0a82ef04d1d20c21b6fcbfe7ea79ee8ad7ab25ee0b05b9fbda46f994450",
+      "harness_path": "/tmp/lc-interface-correction-02-module/src/Freshness.swift",
+      "harness_sha256": "a574f0a82ef04d1d20c21b6fcbfe7ea79ee8ad7ab25ee0b05b9fbda46f994450"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/HostClock.swift",
+      "source_sha256": "fa23661c0d5649dd52ce066aa864473bc49e5390bed3cf90e5dd6b9d3702b040",
+      "harness_path": "/tmp/lc-interface-correction-02-module/src/HostClock.swift",
+      "harness_sha256": "fa23661c0d5649dd52ce066aa864473bc49e5390bed3cf90e5dd6b9d3702b040"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/Ink.swift",
+      "source_sha256": "f10f1acb1c7084a7b10e3123bd5e751dbe77cef3ab5381a6b972d16fc497623d",
+      "harness_path": "/tmp/lc-interface-correction-02-module/src/Ink.swift",
+      "harness_sha256": "f10f1acb1c7084a7b10e3123bd5e751dbe77cef3ab5381a6b972d16fc497623d"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/InkComposition.swift",
+      "source_sha256": "5e0ce3f8d5d1adb6839daeecd7a1c62c487a130838d7de3cfd781cc5b212a72b",
+      "harness_path": "/tmp/lc-interface-correction-02-module/src/InkComposition.swift",
+      "harness_sha256": "5e0ce3f8d5d1adb6839daeecd7a1c62c487a130838d7de3cfd781cc5b212a72b"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/LiveFrame.swift",
+      "source_sha256": "afdf0a4e3139dae803a66cb35667ece952a886190adef655497cc0e1c22e263f",
+      "harness_path": "/tmp/lc-interface-correction-02-module/src/LiveFrame.swift",
+      "harness_sha256": "afdf0a4e3139dae803a66cb35667ece952a886190adef655497cc0e1c22e263f"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/LiveGate.swift",
+      "source_sha256": "94e937e6d7061fb53f7990be0a2451d18c791d2fd30a8d73affec52256edfaec",
+      "harness_path": "/tmp/lc-interface-correction-02-module/src/LiveGate.swift",
+      "harness_sha256": "94e937e6d7061fb53f7990be0a2451d18c791d2fd30a8d73affec52256edfaec"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/LiveLink.swift",
+      "source_sha256": "05b24c7ebcdf3ce269e8a07bd2688aeaaa06c0d686d00ea7202abfe565080097",
+      "harness_path": "/tmp/lc-interface-correction-02-module/src/LiveLink.swift",
+      "harness_sha256": "05b24c7ebcdf3ce269e8a07bd2688aeaaa06c0d686d00ea7202abfe565080097"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/LivePresentation.swift",
+      "source_sha256": "e64d2a0ecc444e52619eaef8c3c04b47f478d12f9a7101cca6405a679de4383c",
+      "harness_path": "/tmp/lc-interface-correction-02-module/src/LivePresentation.swift",
+      "harness_sha256": "e64d2a0ecc444e52619eaef8c3c04b47f478d12f9a7101cca6405a679de4383c"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/LiveSession.swift",
+      "source_sha256": "30c8d8e048c4cb953b0d9645d2b31b06a53c3167e13ce88258aebe50e43b6873",
+      "harness_path": "/tmp/lc-interface-correction-02-module/src/LiveSession.swift",
+      "harness_sha256": "30c8d8e048c4cb953b0d9645d2b31b06a53c3167e13ce88258aebe50e43b6873"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/LiveWire.swift",
+      "source_sha256": "87e25fc0bb7c25ee425e493eaa2d07c2e4d8e4823da4db0738f164dbd4411c64",
+      "harness_path": "/tmp/lc-interface-correction-02-module/src/LiveWire.swift",
+      "harness_sha256": "87e25fc0bb7c25ee425e493eaa2d07c2e4d8e4823da4db0738f164dbd4411c64"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/MacIngressBatch.swift",
+      "source_sha256": "f1fe46620b773e43eecdeac3572e1b7f01c7f61e48cd4d757662284251852600",
+      "harness_path": "/tmp/lc-interface-correction-02-module/src/MacIngressBatch.swift",
+      "harness_sha256": "f1fe46620b773e43eecdeac3572e1b7f01c7f61e48cd4d757662284251852600"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/MacIngressUpload.swift",
+      "source_sha256": "1e208be4afd4412786e59810952ed00eeb653027d2fad0b00fdb07a829d9aa52",
+      "harness_path": "/tmp/lc-interface-correction-02-module/src/MacIngressUpload.swift",
+      "harness_sha256": "192d5177de7cc91264456f5c4a70828dbd94d055e30924d4411451ace399cef9"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/MacRetainedFrames.swift",
+      "source_sha256": "b298b9ed9e9fde1e8252477ecf836b9c953f43daa2f78da720a8181d08973430",
+      "harness_path": "/tmp/lc-interface-correction-02-module/src/MacRetainedFrames.swift",
+      "harness_sha256": "b298b9ed9e9fde1e8252477ecf836b9c953f43daa2f78da720a8181d08973430"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/SelectionCrop.swift",
+      "source_sha256": "06b5b90ee42b3a89133139d022161c433a27788b78b02ce6c7b3a8c4897eaa81",
+      "harness_path": "/tmp/lc-interface-correction-02-module/src/SelectionCrop.swift",
+      "harness_sha256": "06b5b90ee42b3a89133139d022161c433a27788b78b02ce6c7b3a8c4897eaa81"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/DesktopCapture/StopReason.swift",
+      "source_sha256": "87c34730de4b93063cd25f595d4e0cf7d024687dd9367c8f5af573daee41df45",
+      "harness_path": "/tmp/lc-interface-correction-02-module/src/StopReason.swift",
+      "harness_sha256": "87c34730de4b93063cd25f595d4e0cf7d024687dd9367c8f5af573daee41df45"
+    },
+    {
+      "path": "apps/macos/CompanionDesktop/Sources/CompanionDesktop/LiveController.swift",
+      "source_sha256": "4b6f619454aeac3201428d06f8c5bcebb6e302ea0940e8bc32a0be594f1b2021",
+      "harness_path": "/tmp/lc-interface-correction-02-app/LiveControllerClass.swift",
+      "harness_sha256": "b98887dd962a33f00af403b040e62aae61bea1bdecc3233f5a6229060e684824"
+    },
+    {
+      "path": "/tmp/lc-interface-correction-02-module/build.sh",
+      "source_sha256": "d2585ef4069d507c00a4e542eeff3ca494a02d99ebe8d777f351a968f66ef1fa",
+      "check": "existing stand-in input"
+    },
+    {
+      "path": "/tmp/lc-interface-correction-02-module/fshim/AppleShim.swift",
+      "source_sha256": "79a1a34d19e9fec8b61f63ddf5d0940f4861aed16f3e1a988e1599131e2ba751",
+      "check": "existing stand-in input"
+    },
+    {
+      "path": "/tmp/lc-interface-correction-02-app/UIStub.swift",
+      "source_sha256": "1caf199b71cdc2e0916c04bbc6a6f0c7c93d2fd3598a584b6883ca9b3d7be75a",
+      "check": "existing stand-in input"
+    },
+    {
+      "path": "/tmp/lc-interface-correction-02-module/mods/CFNetwork.swift",
+      "source_sha256": "6821ec863e4c10615db198a932af74006b88c5619892397227c9cd7e5fda505d",
+      "check": "existing stand-in input"
+    },
+    {
+      "path": "/tmp/lc-interface-correction-02-module/mods/CoreGraphics.swift",
+      "source_sha256": "6821ec863e4c10615db198a932af74006b88c5619892397227c9cd7e5fda505d",
+      "check": "existing stand-in input"
+    },
+    {
+      "path": "/tmp/lc-interface-correction-02-module/mods/CoreImage.swift",
+      "source_sha256": "6821ec863e4c10615db198a932af74006b88c5619892397227c9cd7e5fda505d",
+      "check": "existing stand-in input"
+    },
+    {
+      "path": "/tmp/lc-interface-correction-02-module/mods/CoreMedia.swift",
+      "source_sha256": "6821ec863e4c10615db198a932af74006b88c5619892397227c9cd7e5fda505d",
+      "check": "existing stand-in input"
+    },
+    {
+      "path": "/tmp/lc-interface-correction-02-module/mods/CoreVideo.swift",
+      "source_sha256": "6821ec863e4c10615db198a932af74006b88c5619892397227c9cd7e5fda505d",
+      "check": "existing stand-in input"
+    },
+    {
+      "path": "/tmp/lc-interface-correction-02-module/mods/CryptoKit.swift",
+      "source_sha256": "6821ec863e4c10615db198a932af74006b88c5619892397227c9cd7e5fda505d",
+      "check": "existing stand-in input"
+    },
+    {
+      "path": "/tmp/lc-interface-correction-02-module/mods/Darwin.swift",
+      "source_sha256": "94c08ad9ab62318a9d55b4b8405ecffdb53daa7a2e3b764c87b2eb48ab72465b",
+      "check": "existing stand-in input"
+    },
+    {
+      "path": "/tmp/lc-interface-correction-02-module/mods/ImageIO.swift",
+      "source_sha256": "6821ec863e4c10615db198a932af74006b88c5619892397227c9cd7e5fda505d",
+      "check": "existing stand-in input"
+    },
+    {
+      "path": "/tmp/lc-interface-correction-02-module/mods/ScreenCaptureKit.swift",
+      "source_sha256": "6821ec863e4c10615db198a932af74006b88c5619892397227c9cd7e5fda505d",
+      "check": "existing stand-in input"
+    }
+  ]
+}

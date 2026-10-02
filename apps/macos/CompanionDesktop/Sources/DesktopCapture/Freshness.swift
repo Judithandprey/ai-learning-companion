@@ -64,9 +64,23 @@ public enum Freshness: Equatable, Sendable {
             return "the pixels were last confirmed on screen too long ago; there is no fresh current picture to give"
         case .live:
             guard status?.lastKept?.sequence == sequence, status?.lastNewPixelsSequence == sequence else {
+                if sequence > 0, let newest = status?.lastKept?.sequence,
+                   newest == status?.lastNewPixelsSequence, sequence < newest {
+                    return advancedFrameProblem
+                }
                 return "the newest pixels of this display were not kept in this frame; there is no current picture to give"
             }
             return nil
         }
+    }
+
+    /// A local classification shared by dispatch and presentation, never a wire field. Only
+    /// healthy, fully retained newer pixels produce it; the earlier frame remains immutable.
+    public static let advancedFrameProblem = "this earlier frame is not the current picture; healthy newer pixels were retained"
+
+    /// Current-frame eligibility ends on healthy advancement. Source authority for an already
+    /// submitted answer does not. Every actual freshness/retention loss still refuses display.
+    public static func sourceLossProblem(_ currentFrameProblem: String?) -> String? {
+        currentFrameProblem == advancedFrameProblem ? nil : currentFrameProblem
     }
 }

@@ -1,0 +1,57 @@
+{
+  "kind": "MAC-LIVE-03 correction-02 independent public interface check",
+  "recorded_utc": "2026-10-02T11:30:15.062687+00:00",
+  "worker_head": "4f6c327018d46604b21c57ab4ebf2b0e45278f70",
+  "lead_review_baseline": "8467e0a55113455f62067d97a8774dca889c3d88",
+  "source_state": "final dirty MAC-LIVE-03 library snapshot; exact hashes in interface-source-manifest.json",
+  "production_library_sources": 29,
+  "library_paths_changed_from_head": [
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/Freshness.swift",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/LiveFrame.swift",
+    "apps/macos/CompanionDesktop/Sources/DesktopCapture/LiveLink.swift"
+  ],
+  "actual_live_controller_unchanged_from_head": true,
+  "language": "Swift 6.3.3 toolchain, Swift 5 language mode, Linux Apple/UI stand-ins",
+  "native_compiled": false,
+  "real_device_verified": false,
+  "real_ai_connected": false,
+  "production_or_git_mutations": 0,
+  "provider_model_account_network_calls": 0,
+  "checks": [
+    {
+      "stage": "prepare isolated harness",
+      "exit_code": 0,
+      "log": "interface-prepare.txt"
+    },
+    {
+      "stage": "emit separate DesktopCapture library module",
+      "exit_code": 0,
+      "source_count": 29,
+      "log": "interface-module.txt"
+    },
+    {
+      "stage": "typecheck extracted actual LiveController against public DesktopCapture module",
+      "exit_code": 0,
+      "ordinary_import": true,
+      "testable_import": false,
+      "log": "interface-app.txt"
+    }
+  ],
+  "source_and_harness_drift_at_completion": [],
+  "correction_01_evidence_preserved": {
+    "file_count": 128,
+    "changed_files": []
+  },
+  "source_english_manifest_checks": 8,
+  "warnings": [
+    "Existing libc-not-found warning from swiftc -version; preserved in interface-module.txt"
+  ],
+  "not_run": [
+    "unchanged app syntax parses",
+    "XCTest suite or focused tests",
+    "synthetic fixture/validator",
+    "native macOS App/views build",
+    "real provider or native device flow"
+  ],
+  "next_owner_action": "Root binds final correction commit and combines the independently assigned focused tests. Lead reviews/integrates and performs exact-source hosted macOS build; interactive Mac/provider/ink/audio acceptance remains separate."
+}

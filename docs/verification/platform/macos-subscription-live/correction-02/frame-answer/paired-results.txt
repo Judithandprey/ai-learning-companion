@@ -1,0 +1,21 @@
+src/AskLinkTests.swift:955:36: warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 953 |             ending.connection = FakeConnector.connection(state: "signed_out", mode: NSNull())
+ 954 |             // In the first round the exit is reported only after the sign-in start has returned.
+ 955 |             ending.afterLoginStart = round == 0 ? { $0.endChildUnreported() } : { $0.exitChild() }
+     |                                    `- warning: converting non-Sendable function value to '@Sendable (FakeConnector) -> Void' may introduce data races
+ 956 |             let endingLink = askLink(ending)
+ 957 |             await endingLink.connect()
+
+Test Suite 'All tests' started at 2026-10-02 04:26:37.110
+Test Suite 'bin.xctest' started at 2026-10-02 04:26:37.111
+Test Suite 'DesktopCaptureTests' started at 2026-10-02 04:26:37.111
+Test Case 'DesktopCaptureTests.testLeadSubmittedFollowupSurvivesHealthyFrameAdvanceButNotSourceLoss' started at 2026-10-02 04:26:37.111
+FRAME_ADVANCE_PROBE healthy_advance=false; source=unavailable(status: "blank", callbackAge: 0.0); answered=true; original_frame_preserved=true; display_allowed=false; displayed=false; shown_receipt=false; stale_sequence_reason=Optional("the capture reports blank without usable current pixels; there is no current picture to give")
+FRAME_ADVANCE_PROBE healthy_advance=true; source=live(callbackAge: 0.0, pixelAge: 0.09999999999999432, newPixelsAge: Optional(0.09999999999999432)); answered=true; original_frame_preserved=true; display_allowed=true; displayed=true; shown_receipt=true; stale_sequence_reason=Optional("this earlier frame is not the current picture; healthy newer pixels were retained")
+Test Case 'DesktopCaptureTests.testLeadSubmittedFollowupSurvivesHealthyFrameAdvanceButNotSourceLoss' passed (0.147 seconds)
+Test Suite 'DesktopCaptureTests' passed at 2026-10-02 04:26:37.258
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.147 (0.147) seconds
+Test Suite 'bin.xctest' passed at 2026-10-02 04:26:37.258
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.147 (0.147) seconds
+Test Suite 'All tests' passed at 2026-10-02 04:26:37.258
+	 Executed 1 test, with 0 failures (0 unexpected) in 0.147 (0.147) seconds

@@ -695,7 +695,10 @@ public actor LiveLink {
     private func take(_ input: LiveFrameInput) -> Bool {
         guard var current = session, current.isRunning, current.captureSessionID == input.captureSessionID else { return false }
         guard dispatchAuthorityMatches(input) else { return false }
-        if let problem = input.dispatchProblem { noPicture(problem); return false }
+        if let problem = input.dispatchProblem {
+            if let loss = Freshness.sourceLossProblem(problem) { noPicture(loss) }
+            return false
+        }
         current.offer(input)
         session = current
         publishSession()
@@ -743,8 +746,12 @@ public actor LiveLink {
         }
         if let problem = next.input.dispatchProblem {
             missed(problem, .notObserved)
-            noPicture(problem)
-            return
+            if let loss = Freshness.sourceLossProblem(problem) {
+                noPicture(loss)
+                return
+            }
+            // A healthy newer frame may already be waiting behind this obsolete render.
+            return await pump()
         }
         guard case .success(let made) = rendered else {
             if case .failure(let refusal) = rendered { missed(refusal.reason, .notObserved) }
@@ -920,7 +927,7 @@ public actor LiveLink {
         guard var session = self.session, session.id == id, session.isRunning else { return idle("Not sent: the AI session ended.") }
         guard dispatchAuthorityMatches(input) else { return idle("Not sent: this AI request authority has ended.") }
         if let problem = input.dispatchProblem {
-            if input.currentSourceProblem != nil { noPicture(problem) }
+            if input.currentSourceProblem != nil, let loss = Freshness.sourceLossProblem(problem) { noPicture(loss) }
             return idle("Not sent: \(problem).")
         }
         guard case .success(let made) = rendered else {
@@ -1013,7 +1020,7 @@ public actor LiveLink {
             status.card?.latencyMS = answer.latencyMS
             status.card?.presentation = LiveAnswerPresentation(turn: turn, captureSessionID: card.captureSessionID,
                 owner: presentationOwner, directory: card.directory, generation: card.presentationGate,
-                capture: card.answerSource?.captureGate ?? sessionCaptureGate, sourceProblem: card.answerSource?.currentSourceProblem,
+                capture: card.answerSource?.captureGate ?? sessionCaptureGate, sourceProblem: card.answerSource?.presentationSourceProblem,
                 expiresHost: current.expiresHost, clock: clock)
         case .refused(let error):
             status.card?.phase = .refused
@@ -1186,7 +1193,7 @@ public actor LiveLink {
             outcome = .notDelivered
             if let problem = source.dispatchProblem {
                 fence(turn.requestID, reason: problem)
-                if source.currentSourceProblem != nil { noPicture(problem) }
+                if source.currentSourceProblem != nil, let loss = Freshness.sourceLossProblem(problem) { noPicture(loss) }
             }
             if await running.send(line, revocation: handle) {
                 if var session = self.session, session.id == turn.sessionID {
@@ -1206,9 +1213,11 @@ public actor LiveLink {
             if handle.isRevoked, out[turn.requestID]?.fenced == nil {
                 // A temporary source refusal remains a refusal even if fresh callbacks recover
                 // before the writer returns. It is not a new connector transport failure.
-                let problem = source.dispatchProblem ?? "request authority was withdrawn before complete delivery"
+                let sourceProblem = source.dispatchProblem
+                let problem = sourceProblem ?? "request authority was withdrawn before complete delivery"
                 fence(turn.requestID, reason: problem)
-                if source.currentSourceProblem != nil, source.dispatchProblem != nil { noPicture(problem) }
+                if source.currentSourceProblem != nil, sourceProblem != nil,
+                   let loss = Freshness.sourceLossProblem(sourceProblem) { noPicture(loss) }
             }
             waiting[callID] = nil
             request = out.removeValue(forKey: turn.requestID)

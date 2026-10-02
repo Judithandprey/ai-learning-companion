@@ -1,0 +1,45 @@
+{
+  "paired": [
+    "DesktopCaptureTests.testLeadSubmittedFollowupSurvivesHealthyFrameAdvanceButNotSourceLoss"
+  ],
+  "controller": [
+    "DesktopCaptureTests.testControllerAnsweredFollowupSurvivesHealthyFrameBeforeQueuedFirstDisplayButNotSourceLoss"
+  ],
+  "controls": [
+    "DesktopCaptureTests.testLiveQueuedUnshownAnswerCannotAcquireReceiptAfterStop",
+    "DesktopCaptureTests.testLiveClosingAnUnshownAnswerRevokesItsQueuedDisplay",
+    "DesktopCaptureTests.testLiveNewSelectionRejectsTheOldQueuedAnswerAndDisplaysItsOwn",
+    "DesktopCaptureTests.testLiveFollowUpRevokesAnUnshownAnswerOnTheSameCard",
+    "DesktopCaptureTests.testLiveExplicitRestartDoesNotAuthorizeAnEarlierUnshownAnswer",
+    "DesktopCaptureTests.testLiveCaptureEndRevokesAnUnshownAnswerWithoutDiscardingItsOriginal",
+    "DesktopCaptureTests.testLiveActuallyShownAnswerKeepsItsOriginalReceiptAfterStopAndClose",
+    "DesktopCaptureTests.testLiveFinalUsedUpAnswerStillHasFirstDisplayAuthority",
+    "DesktopCaptureTests.testLiveHiddenPanelDoesNotBecomeShownAndCanBeDisplayedLater",
+    "DesktopCaptureTests.testLiveCaptureGateCloseBlocksDisplayBeforeItsActorNotification",
+    "DesktopCaptureTests.testLiveLocalGenerationCloseBlocksDisplayBeforeTheStopTask",
+    "DesktopCaptureTests.testControllerDeferredAnswerCannotAppearAfterSynchronousStop",
+    "DesktopCaptureTests.testControllerDeferredAnswerCannotAppearAfterSynchronousCancel",
+    "DesktopCaptureTests.testControllerCaptureGateBlocksDeferredAnswerBeforeNotification",
+    "DesktopCaptureTests.testControllerNewSelectionRejectsQueuedOldAnswerAndDisplaysItsOwn",
+    "DesktopCaptureTests.testControllerExplicitRestartRejectsQueuedOldAnswerAndDisplaysNewSessionAnswer",
+    "DesktopCaptureTests.testControllerAlreadyShownAnswerKeepsItsFirstReceiptAfterStop",
+    "DesktopCaptureTests.testControllerHiddenAnswerCanBecomeVisibleWithoutFalseReceipt",
+    "DesktopCaptureTests.testControllerFinalUsedUpAnswerCanBeDisplayed",
+    "DesktopCaptureTests.testRecoveredSourceRefusalDoesNotBecomeTransportFailure",
+    "DesktopCaptureTests.testOldOrReplacementDispatchGateCannotAuthorizeTheActiveSession",
+    "DesktopCaptureTests.testSameFrameRecoveryClearsSourceLossWithoutAnotherSubmission",
+    "DesktopCaptureTests.testClosedCaptureRefusesStartBeforeAndAfterConnectorAwait",
+    "DesktopCaptureTests.testPermanentGateClosureAndFinalByteAreAtomicallyOrdered",
+    "DesktopCaptureTests.testCurrentSourceLossDuringRenderRefusesThenRecoversWithoutRestart",
+    "DesktopCaptureTests.testCurrentSourceLossWhileFollowupWaitsInWriterDropsTheLine",
+    "DesktopCaptureTests.testSourceAdmissionRechecksFinalByteAndPermanentSessionStop",
+    "LiveFreshnessTests.testHealthyIdleConfirmsOldPixelsWithoutChangingTheirSequence",
+    "LiveFreshnessTests.testCallbackSilenceLosesCurrentInputAndValidIdleRestoresTheSameFrame",
+    "LiveFreshnessTests.testBlankSuspendedAndMissingImageNeedNewPixelsToRecover",
+    "LiveFreshnessTests.testMissingCallbackStatusCannotReuseTheRetainedFrame",
+    "LiveFreshnessTests.testMissingZeroAndInvalidFutureSourceTimeRefuseThenIdleCanConfirmPixels",
+    "LiveFreshnessTests.testRecentCallbackDoesNotMakeStaleSourcePixelsCurrent",
+    "LiveFreshnessTests.testStopGateRefusesBeforeEndingAndLaterCallbacksCannotRestoreIt",
+    "LiveFreshnessTests.testFreshnessAloneCannotAuthorizeAMismatchedRetainedSequence"
+  ]
+}
