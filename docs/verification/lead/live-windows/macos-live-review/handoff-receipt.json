@@ -1,0 +1,24 @@
+{
+  "review_commit": "c9177096c99c2562e4474bcbb2f4ffc8beb43c18",
+  "push": {
+    "remote": "origin",
+    "branch": "main",
+    "result": "0fe1599..c917709 main -> main"
+  },
+  "candidate": "3147291f449105c06255cfc0ea2056f1b2582437",
+  "reply_to": "handoff_efec9a6244db754c66cbeea17ec713a7",
+  "native_chats_receipt": {
+    "ok": true,
+    "route_id": "route_8441b804c2a340168c6853cf975064c1",
+    "action": "instruction",
+    "accepted": true,
+    "mode": "async_route_v1",
+    "delivery_mode": "mailbox",
+    "message_id": "handoff_e376f14b85e1d587bf7a6248a99f98f6",
+    "duplicate": false,
+    "state": "unread",
+    "execution_started": false
+  },
+  "read_or_execution_confirmation": null,
+  "scope": "one combined same-task MAC-LIVE-01/02 correction; no new feature or account/device lease"
+}

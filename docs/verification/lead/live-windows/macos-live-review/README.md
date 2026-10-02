@@ -99,3 +99,14 @@ hosted macOS-only build/package/native XCTest/fixture check. Interactive Mac,
 actual provider/audio/pen, content-anchored ink and Notability acceptance remain
 separate. The prior native-TTS approval rejection is unchanged; no source import,
 port, account use or alternate permission path occurred.
+
+## Actual handoff
+
+Review commit `c9177096c99c2562e4474bcbb2f4ffc8beb43c18` was ordinarily pushed
+to `origin/main`. Native Chats accepted the single combined correction as
+`handoff_e376f14b85e1d587bf7a6248a99f98f6`, replying to the actual delivery.
+[Receipt](handoff-receipt.json) is `unread`, `execution_started:false`; acceptance
+is not evidence of reading, implementation or a fixed candidate. Native's next
+action is the two focused corrections; Lead then reviews/integrates and runs
+the prepared native check. The existing Windows QA dispatch remains separate;
+no duplicate task or acknowledgment loop was created.
