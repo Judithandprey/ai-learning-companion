@@ -42,6 +42,7 @@ import { CaptureLink, readLinkConfig, type LinkStatus } from './capture-link.ts'
 import { earlierNotes, readConnectorConfig, Subscription, type ConnectorEnd, type SubscriptionStatus, type TurnOutcome } from './subscription.ts';
 import { clampRate, isPlace, isSurface, NO_PREFERENCES, placesOf, readPreferences, storedPreferences, withPlace, type Preferences, type Rect } from '../shared/placement.ts';
 import { speechCultures, speechPieces, type Culture } from '../shared/voice.ts';
+import { bundledSystemVoice } from './native-speech.ts';
 
 const HERE = dirname(fileURLToPath(import.meta.url)); // dist/apps/windows/src/main
 const DIST = normalize(join(HERE, '..', '..', '..', '..')); // dist/
@@ -315,6 +316,7 @@ function finish(s: Session, reason: string): void {
   link?.stopSending(s.retention.id); // however the session ended
   stopAsking(s, 'the capture ended');
   hush(s);
+  if (!s.live) releaseVoice(); // no AI session owned a child to release on its own end
   lastEnd ??= reason;
   // Records of questions that could not be written are written now; what still cannot be is said, not dropped silently.
   if (s.ask) retireSelection(s, s.ask);
@@ -952,7 +954,10 @@ function endLive(s: Session, live: Live, reason: string): void {
   live.waiting = null;
   live.latest = null;
   subscription?.stopSession(live.id); // told to the connector that has it; its turns that are out are interrupted
-  if (s.live === live) hush(s);
+  if (s.live === live) {
+    hush(s);
+    releaseVoice(); // an AI Stop ends its native child too; a later explicit Start uses a fresh child
+  }
   appendLive(s, live, { kind: 'ended', session_id: live.id, reason, used: live.used, out: live.out, frames: live.frames }); // (`used` is not final while requests are out: each says how it settled, below)
   notifyLive(s);
 }
@@ -1100,7 +1105,7 @@ type AskOutcome =
  * an audio device (Talk on), from what that voice itself reported: 'attempted' (handed to the voice; no piece was
  * reported said to its end, so whether anything was played is NOT known: this is not played help), 'interrupted'
  * (some pieces were reported said to their end, then it stopped) or 'finished' (every piece was). `spoken_pieces`
- * counts the pieces reported said. A response never handed to a voice has no `spoken`. None of this shows that
+ * counts the completed prefix; 'partial' retains it while further pieces are pending. A response never handed to a voice has no `spoken`. None of this shows that
  * anything was heard.
  */
 type AskEntry = {
@@ -1118,7 +1123,7 @@ type AskEntry = {
   submission?: TurnOutcome['submission'];
   shown: boolean;
   presentation?: 'shown' | 'unconfirmed';
-  spoken?: 'attempted' | 'interrupted' | 'finished';
+  spoken?: 'attempted' | 'partial' | 'interrupted' | 'finished';
   spoken_pieces?: { said: number; of: number };
 };
 type Selection = {
@@ -1459,14 +1464,25 @@ function askPresented(s: Session, selectionId: unknown, requestId: unknown, show
 // starts nothing.
 /**
  * A voice: says one piece in a language's voice (true only when it was said to its end), stops at once, and is ended
- * with the app (its `dispose` is waited for no longer than VOICE_END_MS). `audible`: it plays on an audio device; a
+ * on session end and with the app (its `dispose` is waited for no longer than VOICE_END_MS). A later authorized
+ * session can reuse the provider after its old child was reaped. `audible`: it is configured for an audio device; a
  * voice that only synthesizes (a test's) is false, and nothing it says is recorded as read aloud.
  */
 export type Voice = { readonly audible: boolean; say(text: string, rate: number, culture: Culture): Promise<boolean>; stop(): void; dispose(): Promise<void> };
-/** The voice of this build. None is connected: Talk says so, and every response stays text. */
+/** The replaceable main-owned provider. Source-only/non-Windows builds have none. */
 let voice: Voice | null = null;
 /** Connects the build's voice (before a Start). Only main-process code can: no window can name a voice, a program or an output. */
-export const connectVoice = (v: Voice | null): void => void (voice = v);
+export const connectVoice = (v: Voice | null): void => {
+  if (voice === v) return;
+  if (current) hush(current);
+  releaseVoice();
+  voice = v;
+};
+/** Release the session's child without blocking ink retention or claiming that a failed exit was observed. */
+function releaseVoice(): void {
+  try { void voice?.dispose().catch(() => console.warn('Speech child exit was not observed; this provider will not start another child.')); }
+  catch { console.warn('Speech child disposal failed.'); }
+}
 type Reading = { readonly sel: Selection; readonly entry: AskEntry; readonly pieces: string[]; /** The voice of each piece. */ readonly cultures: Culture[]; /** The piece that is next, or being said. */ at: number; saying: boolean; /** What the voice reports of this reading is written to the record (a voice that plays on a device; not for an answer once read to its end). */ recorded: boolean };
 /**
  * The current session's current selection's last request, if it was answered in the AI session that is still
@@ -1475,10 +1491,14 @@ type Reading = { readonly sel: Selection; readonly entry: AskEntry; readonly pie
  */
 function readable(s: Session, selectionId: unknown, requestId: unknown): { sel: Selection; entry: AskEntry; text: string } | null {
   const sel = s.ask;
-  if (s.ending || !s.live || s.live.ended !== null || !s.talk.on || s.talk.muted || !sel || sel.id !== selectionId) return null;
+  if (linkQuitting !== null || s.ending || !s.live || s.live.ended !== null || !s.talk.on || s.talk.muted || !sel || sel.id !== selectionId) return null;
   const entry = sel.record.requests.at(-1);
   const out = entry?.outcome;
-  if (!entry || entry.request_id !== requestId || out?.status !== 'answered' || !entry.shown || entry.presentation !== 'shown' || entry.asked_as !== 'spoken') return null;
+  if (!entry || entry.request_id !== requestId || entry.live_session_id !== s.live.id || sel.request?.id !== requestId || sel.request.state !== 'done' || out?.status !== 'answered' || !entry.shown || entry.presentation !== 'shown' || entry.asked_as !== 'spoken') return null;
+  // askEnded received this text only after the connector checked the complete response provenance. Recheck that
+  // same main-owned response and its current disclosure scope; a shown record alone is not playback permission.
+  const verified = presented.get(entry);
+  if (!verified || verified.request_id !== requestId || verified.text !== out.answer.text || (verified.presentation !== 'shown' && verified.presentation !== 'spoken') || out.answer.request_id !== requestId || out.answer.model !== entry.model || !['hint', 'explain', 'solution'].includes(entry.assistance) || (entry.trigger === 'focus' && entry.assistance !== 'hint')) return null;
   return { sel, entry, text: out.answer.text };
 }
 /**
@@ -1488,8 +1508,9 @@ function readable(s: Session, selectionId: unknown, requestId: unknown): { sel: 
  */
 function recordSpoken(s: Session, r: Reading, over: boolean): void {
   if (!r.recorded) return;
-  const said = r.at; // the pieces before the next one were each reported said to their end
-  r.entry.spoken = said === r.pieces.length ? 'finished' : over && said > 0 ? 'interrupted' : 'attempted';
+  // The completed prefix from an earlier interrupted reading remains evidence during a replay, even if that replay fails.
+  const said = Math.max(r.at, r.entry.spoken_pieces?.said ?? 0);
+  r.entry.spoken = said === r.pieces.length ? 'finished' : said > 0 ? over ? 'interrupted' : 'partial' : 'attempted';
   r.entry.spoken_pieces = { said, of: r.pieces.length };
   if (r.entry.spoken === 'finished') {
     const entry = presented.get(r.entry);
@@ -1537,6 +1558,10 @@ async function sayPiece(s: Session, selectionId: unknown, requestId: unknown, at
     // a voice that throws, or whose promise is rejected, did not say the piece to its end
   }
   if (s.reading !== r) return NO; // stopped meanwhile: this late end starts nothing, and it was recorded where it was stopped
+  if (current !== s || voice !== now || readable(s, selectionId, requestId)?.entry !== r.entry) {
+    hush(s);
+    return NO;
+  }
   r.saying = false;
   if (!said) {
     hush(s); // not said to its end: the voice is told to stop too, whatever it still holds, and the reading is over
@@ -1546,7 +1571,7 @@ async function sayPiece(s: Session, selectionId: unknown, requestId: unknown, at
   if (r.at === r.pieces.length) {
     s.reading = null;
     recordSpoken(s, r, true); // every piece was reported said to its end
-  }
+  } else recordSpoken(s, r, false); // retain each confirmed completed prefix before asking for another piece
   return { spoken: true };
 }
 /** An answer the overlay itself says it did not show (or never took, its card being gone): its text is not kept. */
@@ -2101,6 +2126,7 @@ function notifySubscription(): void {
 }
 
 app.whenReady().then(async () => {
+  connectVoice(bundledSystemVoice()); // fixed hash-checked local bundle; lazy and silent until an authorized Talk response
   // Development only: explicitly configured, the test database only; earlier streams are reconciled (reads and
   // control only) before any Start can ask for a new one.
   const linkConfig = readLinkConfig(process.env);

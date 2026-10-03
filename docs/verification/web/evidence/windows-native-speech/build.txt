@@ -1,0 +1,15 @@
+/home/agentsdock/.local/share/paperclip-pilot-runtime/node-v24.21.0-linux-x64/bin/node node_modules/typescript/bin/tsc -p tsconfig.json --noEmit
+
+/home/agentsdock/.local/share/paperclip-pilot-runtime/node-v24.21.0-linux-x64/bin/node node_modules/typescript/bin/tsc -p tsconfig.json
+
+/home/agentsdock/.local/share/paperclip-pilot-runtime/node-v24.21.0-linux-x64/bin/node scripts/copy-static.mjs --native-build native/build/build-approved-20261003-01
+copied src/main/native-voice.mjs
+copied src/preload/control.cjs
+copied src/preload/overlay.cjs
+copied src/renderer/control.css
+copied src/renderer/control.html
+copied src/renderer/overlay.css
+copied src/renderer/overlay.html
+copied src/renderer/probe.css
+copied src/renderer/probe.html
+bundled native helper 48360d37cdcc0121f03aa5e16975c2343f47090d1d6f19fa93306bd4f10f7d87

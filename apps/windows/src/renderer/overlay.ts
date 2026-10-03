@@ -290,8 +290,8 @@ window.addEventListener('resize', () => fitCard(true));
 // The voice is not part of this page: the main process owns it, and what it is handed. This page asks only for the
 // next piece of the current response by its place (lc.say), and says when to stop (lc.hush); the main process cuts
 // its own copy of the answer and checks again, before every piece, that it is still the one shown here with Talk on.
-// None is connected in this build, so Talk says that and nothing is played. Speaking TO the AI is not connected
-// either: questions are typed.
+// Source-only builds have no voice. A compiled Windows build can use installed system speech, with Talk off by
+// default. Speaking TO the AI is not connected: questions are typed.
 /** The build's voice as the main process reports it (`audible`: it plays on an audio device), or none. */
 const voice = info.voice ?? null;
 const NO_VOICE = 'no voice is connected in this build, so responses are not read aloud; they are shown as text';

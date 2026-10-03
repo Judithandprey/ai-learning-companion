@@ -1,0 +1,303 @@
+{
+  "at": "2026-10-03T03:38:49.956Z",
+  "scope": "Synthetic native memory synthesis and observed direct-child close; no audible/microphone/model/display acceptance",
+  "sink": "memory",
+  "node": "v24.19.0",
+  "platform": "win32",
+  "build": {
+    "schema": "lc-native-speech-build/1",
+    "mode": "local-compilation",
+    "at": "2026-10-03T03:38:01.534Z",
+    "node": "v24.19.0",
+    "builder_sha256": "feedd10f4e01f008371afda0c4a125e91d270c361292689da8104da459b9a308",
+    "source_sha256": "c4c1f127a85ff1c871ce98895d51584af7936bbf23f3a35c7418002f201cbbfd",
+    "executable_sha256": "48360d37cdcc0121f03aa5e16975c2343f47090d1d6f19fa93306bd4f10f7d87",
+    "compiler": {
+      "path": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.exe",
+      "sha256": "46809206887326d2d24db1eff1f3064de972c3451abe766b49111450a5e08e00"
+    },
+    "references": [
+      {
+        "path": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\WPF\\System.Speech.dll",
+        "sha256": "59aa7929fc874d5b124cf86995c0c66d27e4c9b0340c43645cd897c3162ba8cb"
+      },
+      {
+        "path": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.Web.Extensions.dll",
+        "sha256": "5e6378edc06f5a61920aaadb2aba839dd3cf302d6192e08aacd4454ba4cff0b3"
+      }
+    ],
+    "status": 0,
+    "signal": null,
+    "error": null,
+    "stdout": "",
+    "stderr": ""
+  },
+  "hashes": {
+    "check_sha256": "8b1c039b7d89d45b9a2631964a1b9239310dd5814fd72d61322d8435e76ee11b",
+    "adapter_sha256": "e3f80d60a03d8dd054723c7514ebd1b29de9a9189c7285bf9c964871985ec587",
+    "build_receipt_sha256": "b553bd619e43316399c1cd7855e204e15c4953db4084cdc27016153cc98ced20"
+  },
+  "tests": [
+    {
+      "name": "en-US synthetic negation and explanation at requested 1.3 rate",
+      "status": "PASS"
+    },
+    {
+      "name": "zh-CN synthetic negation and explanation at requested 1.3 rate",
+      "status": "PASS"
+    },
+    {
+      "name": "XML and shell-looking text remains literal in native memory synthesis",
+      "status": "PASS"
+    },
+    {
+      "name": "idle helper produces no utterance; submitted memory synthesis is cancelled; observed normal exit",
+      "status": "PASS"
+    },
+    {
+      "name": "EOF during queued work publishes no success; oversized line/text fail closed; all children close",
+      "status": "PASS"
+    }
+  ],
+  "native": [
+    {
+      "culture": "en-US",
+      "text": "The answer is not three, it is five. Please explain this step first.",
+      "requested_rate": 1.3,
+      "event": "utterance_done",
+      "sink": "memory",
+      "ok": true,
+      "reason": "completed",
+      "wave": {
+        "bytes": 204178,
+        "audio_bytes": 204132,
+        "format": 1,
+        "channels": 1,
+        "sample_rate_hz": 22050,
+        "bits_per_sample": 16,
+        "duration_ms": 4628.843537414966,
+        "sha256": "15ce65e28b136f3f62844b57c12221f9a27fbe115338fd506ad5b120ad32f839"
+      }
+    },
+    {
+      "culture": "zh-CN",
+      "text": "答案不是三，是五。请先解释这个步骤。",
+      "requested_rate": 1.3,
+      "event": "utterance_done",
+      "sink": "memory",
+      "ok": true,
+      "reason": "completed",
+      "wave": {
+        "bytes": 197406,
+        "audio_bytes": 197360,
+        "format": 1,
+        "channels": 1,
+        "sample_rate_hz": 22050,
+        "bits_per_sample": 16,
+        "duration_ms": 4475.283446712018,
+        "sha256": "f60ccf6c27c79efdb461bd2cb0b2f76b3ba4fcc3fafae053d4023c8d97d25932"
+      }
+    },
+    {
+      "culture": "en-US",
+      "text": "Literal <tag> & \"quotes\"; $(never executed), `ticks`, </prosody>.",
+      "requested_rate": 1.3,
+      "event": "utterance_done",
+      "sink": "memory",
+      "ok": true,
+      "reason": "completed",
+      "wave": {
+        "bytes": 231520,
+        "audio_bytes": 231474,
+        "format": 1,
+        "channels": 1,
+        "sample_rate_hz": 22050,
+        "bits_per_sample": 16,
+        "duration_ms": 5248.843537414966,
+        "sha256": "cc56ed3e1fff8ad13c827bf75061965de503335222d79f9460f0cee4d63a903b"
+      }
+    },
+    {
+      "raw_child": {
+        "pid": 12704,
+        "sink": "memory",
+        "culture": "en-US",
+        "close_observed": true,
+        "code": 0,
+        "signal": null,
+        "error": null,
+        "closed_at": "2026-10-03T03:38:51.268Z"
+      },
+      "stderr_bytes": 0,
+      "stdout_bytes": 170,
+      "messages": [
+        {
+          "type": "ready",
+          "sink": "memory",
+          "culture": "en-US",
+          "max_text": 220
+        },
+        {
+          "type": "done",
+          "id": "7",
+          "ok": false,
+          "reason": "cancelled",
+          "sink": "memory",
+          "elapsed_ms": 114,
+          "wave": null
+        }
+      ]
+    },
+    {
+      "raw_child": {
+        "pid": 65760,
+        "sink": "memory",
+        "culture": "en-US",
+        "close_observed": true,
+        "code": 0,
+        "signal": null,
+        "error": null,
+        "closed_at": "2026-10-03T03:38:51.527Z"
+      },
+      "stderr_bytes": 0,
+      "stdout_bytes": 164,
+      "messages": [
+        {
+          "type": "ready",
+          "sink": "memory",
+          "culture": "en-US",
+          "max_text": 220
+        },
+        {
+          "type": "done",
+          "id": "9",
+          "ok": false,
+          "reason": "eof",
+          "sink": "memory",
+          "elapsed_ms": 113,
+          "wave": null
+        }
+      ]
+    },
+    {
+      "raw_child": {
+        "pid": 40744,
+        "sink": "memory",
+        "culture": "en-US",
+        "close_observed": true,
+        "code": 2,
+        "signal": null,
+        "error": null,
+        "closed_at": "2026-10-03T03:38:51.664Z"
+      },
+      "stderr_bytes": 0,
+      "stdout_bytes": 67,
+      "messages": [
+        {
+          "type": "ready",
+          "sink": "memory",
+          "culture": "en-US",
+          "max_text": 220
+        }
+      ]
+    },
+    {
+      "raw_child": {
+        "pid": 57324,
+        "sink": "memory",
+        "culture": "en-US",
+        "close_observed": true,
+        "code": 2,
+        "signal": null,
+        "error": null,
+        "closed_at": "2026-10-03T03:38:51.794Z"
+      },
+      "stderr_bytes": 0,
+      "stdout_bytes": 67,
+      "messages": [
+        {
+          "type": "ready",
+          "sink": "memory",
+          "culture": "en-US",
+          "max_text": 220
+        }
+      ]
+    }
+  ],
+  "children": [
+    {
+      "pid": 84212,
+      "sink": "memory",
+      "culture": "en-US",
+      "close_observed": true,
+      "code": 0,
+      "signal": null,
+      "error": null,
+      "closed_at": "2026-10-03T03:38:50.447Z"
+    },
+    {
+      "pid": 24500,
+      "sink": "memory",
+      "culture": "zh-CN",
+      "close_observed": true,
+      "code": 0,
+      "signal": null,
+      "error": null,
+      "closed_at": "2026-10-03T03:38:50.707Z"
+    },
+    {
+      "pid": 77296,
+      "sink": "memory",
+      "culture": "en-US",
+      "close_observed": true,
+      "code": 0,
+      "signal": null,
+      "error": null,
+      "closed_at": "2026-10-03T03:38:50.957Z"
+    },
+    {
+      "pid": 12704,
+      "sink": "memory",
+      "culture": "en-US",
+      "close_observed": true,
+      "code": 0,
+      "signal": null,
+      "error": null,
+      "closed_at": "2026-10-03T03:38:51.268Z"
+    },
+    {
+      "pid": 65760,
+      "sink": "memory",
+      "culture": "en-US",
+      "close_observed": true,
+      "code": 0,
+      "signal": null,
+      "error": null,
+      "closed_at": "2026-10-03T03:38:51.527Z"
+    },
+    {
+      "pid": 40744,
+      "sink": "memory",
+      "culture": "en-US",
+      "close_observed": true,
+      "code": 2,
+      "signal": null,
+      "error": null,
+      "closed_at": "2026-10-03T03:38:51.664Z"
+    },
+    {
+      "pid": 57324,
+      "sink": "memory",
+      "culture": "en-US",
+      "close_observed": true,
+      "code": 2,
+      "signal": null,
+      "error": null,
+      "closed_at": "2026-10-03T03:38:51.794Z"
+    }
+  ],
+  "ended_at": "2026-10-03T03:38:51.808Z",
+  "pass": 5,
+  "fail": 0,
+  "all_children_close_observed": true
+}

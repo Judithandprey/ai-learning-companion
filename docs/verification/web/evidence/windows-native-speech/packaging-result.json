@@ -1,0 +1,6 @@
+{
+  "pass": 18,
+  "fail": 0,
+  "scope": "Portable synthetic receipt/packaging only. No compiler, executable, helper or Windows process executed.",
+  "fixture_root": "/tmp/lc-native-packaging-e5B8J4"
+}

@@ -5,7 +5,7 @@
 // profile or sign-in: an earlier package stays where it is and can be opened again as before.
 // It writes stage-manifest.json into the stage: every staged file with its SHA-256, and one hash of the whole tree.
 //
-// Usage: node scripts/stage.mjs <name>     for example: node scripts/stage.mjs lc-windows-live-<commit>
+// Usage: node scripts/stage.mjs <name> [--native-build <verified-local-build-directory>]
 // To open the staged app (from PowerShell on Windows; set LC_SUBSCRIPTION_CONNECTOR first to enable the subscription,
 // and LC_USER_DATA to keep its data apart from another package's):
 //   & '<electron.exe as printed>' '<stage as printed>'
@@ -16,11 +16,12 @@ import { join, relative } from 'node:path';
 import { buildAndStage, toWin } from './windows-stage.mjs';
 
 const name = process.argv[2] ?? '';
-if (!/^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/.test(name)) {
-  console.error('usage: node scripts/stage.mjs <name>   (letters, digits, dot, dash, underscore; a new name for each version)');
+const args = process.argv.slice(3);
+if (!/^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/.test(name) || (args.length !== 0 && (args.length !== 2 || args[0] !== '--native-build'))) {
+  console.error('usage: node scripts/stage.mjs <name> [--native-build <verified-local-build-directory>] (a fresh name for each version)');
   process.exit(2);
 }
-const { stage, electron } = buildAndStage(name, { fresh: true });
+const { stage, electron } = buildAndStage(name, { fresh: true, nativeBuild: args.length ? args[1] : null });
 const walk = (dir) => readdirSync(dir).sort().flatMap((n) => (statSync(join(dir, n)).isDirectory() ? walk(join(dir, n)) : [join(dir, n)]));
 const sha = (data) => createHash('sha256').update(data).digest('hex');
 const files = Object.fromEntries(walk(stage).map((f) => [relative(stage, f).split('\\').join('/'), sha(readFileSync(f))]));

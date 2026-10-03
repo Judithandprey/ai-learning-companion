@@ -1,0 +1,60 @@
+(node:3) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ the toolbar has a handle: a drag moves the toolbar and nothing else, in every mode; it is kept inside the work area and its place is written for this display (56.911697ms)
+✔ in NAV the pointer passes through to the apps except over a surface, and a surface being moved keeps it until it is let go (3.478211ms)
+✔ Stop while a surface is being moved: the surface is let go and the session ends as it does otherwise (8.739213ms)
+✔ the place is restored at the next Start, per display, and fitted to the work area as it is then: another size, another scale, a taskbar elsewhere (39.296301ms)
+✔ the work area changing while the capture runs keeps the surfaces inside the new one; the keys move a surface too; a place that cannot be written holds for the session and is said (27.91912ms)
+✔ [synthetic connector] the card has a handle too: it moves with its selection, form and response, asks nothing by being moved, and its place is kept beside the toolbar's (89.595106ms)
+✔ [synthetic connector] no voice is connected in this build: a response is silent text, Talk says so, and nothing is read or recorded as read (64.249041ms)
+✔ [synthetic connector, stand-in voice] a response is silent text unless Talk was on when it was asked for; then it is read from the card's own text, a piece at a time, at 1.3×, and what the voice reported is recorded apart from shown (92.233345ms)
+✔ [synthetic connector, stand-in voice] the voice stops at once, with everything not yet spoken: Stop reading, Mute, Talk off, closing the card, a new selection, a new question, Cancel and Stop (257.66503ms)
+✔ [synthetic connector, stand-in voice] the rate is the user's, inside its bounds, kept for the next Start; a piece is handed to the voice only by the main process, for the shown current response, in order, with Talk on (90.800237ms)
+✔ [synthetic connector] the card's handle too moves the card and nothing else, in every mode, and its keys work; a second pointer, a cancelled pointer and a pointer taken away end or leave the drag as they should (31.509576ms)
+✔ [synthetic connector, stand-in voice] an answer that Cancel crossed is not read; a cut piece ending late does not disturb the reading after it; a voice that rejects or throws is said as stopped, and a Stop still completes (180.349986ms)
+✔ [synthetic connector] the Talk control never says it reads aloud when no voice is connected; a preferences file cut short is set aside so places can be kept again, and one of another format is left as it is (144.498512ms)
+Speech child disposal failed.
+Speech child exit was not observed; this provider will not start another child.
+✔ [synthetic connector, stand-in voice] each piece is said in its language's voice; the overlay lost, or the app closing, stops and ends the voice; a voice that only synthesizes is said as a test voice and recorded as nothing read (295.138493ms)
+✔ [synthetic connector, stand-in voice] an already shown answer stays recorded across AI Stop and Start, but the new session cannot read it without a new request (25.827239ms)
+✔ [synthetic connector, stand-in voice] completed audible pieces are persisted before the next piece; AI Stop rejects a late completion and releases the voice without counting or requeuing it (23.958421ms)
+✔ [synthetic connector, stand-in voice] a reread that fails at its first piece cannot erase the previously completed audible prefix (25.414056ms)
+✔ [synthetic connector, stand-in voice] while app quit waits for its connector, main refuses old and next pieces and a late completion cannot increase the recorded prefix (153.034444ms)
+✔ [synthetic connector, stand-in voice] a completed audible prefix whose write failed stays in main and is persisted by Stop once storage recovers (24.291261ms)
+▶ [synthetic connector, stand-in voice] the last main guard refuses corrupted answer provenance, request state, presentation and circle assistance before handing anything to the voice
+  ✔ stored answer belongs to another request (22.995676ms)
+  ✔ stored answer belongs to another model (21.947785ms)
+  ✔ stored answer text differs from the presented answer (30.401433ms)
+  ✔ selection points to another request (22.320059ms)
+  ✔ selection request is still asking (23.711258ms)
+  ✔ selection request is cancelled (22.576671ms)
+  ✔ stored answer belongs to another live session (22.360309ms)
+  ✔ no assistance is allowed (31.206655ms)
+  ✔ circle hint cannot become an explanation (48.208845ms)
+  ✔ circle hint cannot become a solution (21.067639ms)
+  ✔ answer was not shown (22.857602ms)
+  ✔ answer presentation remains unconfirmed (22.006048ms)
+  ✔ answer was requested silently (20.50009ms)
+  ✔ copied record has no matching presented entry identity (21.517061ms)
+✔ [synthetic connector, stand-in voice] the last main guard refuses corrupted answer provenance, request state, presentation and circle assistance before handing anything to the voice (359.064385ms)
+▶ [synthetic connector, stand-in voice] main rechecks provenance after an async piece completes; a changed request or answer cannot count the pending piece or authorize another one
+  ✔ request cancelled while the piece was pending (44.282575ms)
+  ✔ answer request changed while the piece was pending (24.023638ms)
+  ✔ answer model changed while the piece was pending (23.417405ms)
+  ✔ answer text changed while the piece was pending (23.684708ms)
+✔ [synthetic connector, stand-in voice] main rechecks provenance after an async piece completes; a changed request or answer cannot count the pending piece or authorize another one (117.184153ms)
+✔ [synthetic connector, stand-in voice] renderer-supplied text, program paths and sinks cannot choose speech; only the verified main answer is handed to the voice (22.390756ms)
+✔ [synthetic connector, stand-in voice] the main process itself keeps the order and stops the voice, whatever the page does: pieces in order only, and a Stop, a closed card and a follow-up each stop it there (173.491009ms)
+✔ [synthetic connector, stand-in voice] a response is read only if it was asked for with Talk on: Talk turned on while a silent request is out, or after it, reads nothing and says nothing of a failure; the AI session ending stops a reading and nothing of it is read after (116.519228ms)
+✔ [synthetic connector] the card is given the room beside the toolbar, so neither covers the other, whatever the toolbar's size and place become; a small work area makes the controls smaller; a change of the room or of the window brings the response back into view (73.891996ms)
+✔ [synthetic connector, stand-in voice] an answer is put on the card only if the main process says, at that moment, that it is still this card's to show: the AI stopped, or started again, while it waited in the overlay, and it is never shown, read or kept; one already shown stays (172.514589ms)
+✔ [synthetic connector] nothing queued gains authority from a Stop or a new Start of the AI: a delayed follow-up's answer is not shown, a request whose picture was still being made is not sent in another session, and a refusal that cannot be written says so (195.550081ms)
+✔ [synthetic connector] a repeated wall-clock Start does not give a queued circle or follow-up authority in a distinct AI session (69.453583ms)
+ℹ tests 46
+ℹ suites 0
+ℹ pass 46
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3060.124551

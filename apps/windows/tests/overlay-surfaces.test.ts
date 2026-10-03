@@ -4,7 +4,7 @@
 // a circle asks for a small hint by itself; its response is silent text unless Talk was on when it was asked for;
 // what is read aloud is the card's own text, handed to the voice by the main process, and it stops at once when asked.
 // SYNTHETIC: the connector is a stand-in, the display is a fake, and the voice is a stand-in connected to the main
-// process that plays nothing (the product connects no voice in this build). No display, no audio device, no
+// process that plays nothing (this harness never loads the compiled native provider). No display, no audio device, no
 // microphone, no Codex, no ChatGPT and no network are involved.
 import { after, test } from 'node:test';
 import assert from 'node:assert/strict';
@@ -83,6 +83,19 @@ async function app(o: { subscription?: boolean; userData?: string; /** a stand-i
     return fs.existsSync(dir) ? fs.readdirSync(dir).filter((f) => f.endsWith('.json')).sort().map((f) => JSON.parse(fs.readFileSync(path.join(dir, f), 'utf8'))) : [];
   };
   return { h, s, fakes, page, control, file, stored, circle, select, ask, followUp, records, live };
+}
+/** The shown answer requested with main's Talk on; the page's Talk stays off, so only direct IPC starts a reading. */
+async function answerForMain(text = 'One. Two. Three.') {
+  const w = await app({ voice: true });
+  const overlay = { sender: w.s.overlay.webContents };
+  w.h.handlers['lc:talk']!(overlay, true, false);
+  await w.select();
+  await w.ask(text);
+  const id = (w.records()[0] as unknown as { selection_id: string }).selection_id;
+  const request = w.records()[0]!.requests[0]!['request_id'] as string;
+  const say = async (...a: unknown[]): Promise<unknown> => plain(await w.h.handlers['lc:say']!(overlay, ...a));
+  assert.deepEqual([w.records()[0]!.requests[0]!['shown'], w.page.voice.spoken.length], [true, 0]);
+  return { ...w, id, request, overlay, say };
 }
 /** A drag of a surface by its handle: press at (x, y), move through the points, release at the last. */
 function dragBy(page: Awaited<ReturnType<typeof app>>['page'], handle: string, from: { x: number; y: number }, ...to: Array<{ x: number; y: number }>): void {
@@ -362,8 +375,10 @@ test('[synthetic connector, stand-in voice] a response is silent text unless Tal
   page.voice.spoken[0]!.end();
   await settle();
   assert.deepEqual([page.voice.spoken.length, page.voice.spoken[1]!.text, page.talkState().status], [2, 'So the line rises!', 'Reading the response aloud at 1.3× (part 2 of 3). The text below is what is read.']);
+  assert.deepEqual([w.records()[0]!.requests[1]!['spoken'], w.records()[0]!.requests[1]!['spoken_pieces']], ['partial', { said: 1, of: 3 }], 'the completed prefix is already on disk while the next piece is pending');
   page.voice.spoken[1]!.end();
   await settle();
+  assert.deepEqual([w.records()[0]!.requests[1]!['spoken'], w.records()[0]!.requests[1]!['spoken_pieces']], ['partial', { said: 2, of: 3 }]);
   page.voice.spoken[2]!.end();
   await settle();
   assert.deepEqual([page.voice.spoken.map((u) => u.text).join(' '), page.talkState().interrupt, w.records()[0]!.requests[1]!['spoken'], w.records()[0]!.requests[1]!['spoken_pieces'], page.voice.cancels], [text, false, 'finished', { said: 3, of: 3 }, 0]);
@@ -545,11 +560,11 @@ test('[synthetic connector, stand-in voice] the rate is the user\'s, inside its 
   assert.deepEqual(await say(overlay, id, `${id}.3`, 2), NO, 'a reading that was stopped is not taken up in the middle');
   const again = say(overlay, id, `${id}.3`, 0, 'Say this instead.', 2, 'zh-CN', 'C:\\another.exe');
   await settle();
-  assert.deepEqual([page.voice.spoken.length, plain(page.voice.spoken[4]), w.records()[0]!.requests[2]!['spoken']], [5, { text: 'Being read now.', rate: 0.7, culture: 'en-US' }, 'attempted']);
+  assert.deepEqual([page.voice.spoken.length, plain(page.voice.spoken[4]), w.records()[0]!.requests[2]!['spoken'], w.records()[0]!.requests[2]!['spoken_pieces']], [5, { text: 'Being read now.', rate: 0.7, culture: 'en-US' }, 'partial', { said: 1, of: 3 }], 'the previously completed prefix remains evidence during this reread');
   w.h.handlers['lc:hush']!({ sender: w.control.webContents }); // only the overlay stops it
   assert.equal(page.voice.cancels, 1);
   w.h.handlers['lc:hush']!(overlay);
-  assert.deepEqual([page.voice.cancels, w.records()[0]!.requests[2]!['spoken'], w.records()[0]!.requests[2]!['spoken_pieces']], [2, 'attempted', { said: 0, of: 3 }], 'stopped before a piece of this reading was reported said');
+  assert.deepEqual([page.voice.cancels, w.records()[0]!.requests[2]!['spoken'], w.records()[0]!.requests[2]!['spoken_pieces']], [2, 'interrupted', { said: 1, of: 3 }], 'stopping the reread before its first completion preserves the earlier completed prefix');
   page.voice.spoken[4]!.end();
   assert.deepEqual(await again, NO, 'a piece that ends after it was stopped was not said to its end, and starts nothing');
   // An answer the overlay has not reported as shown is not read.
@@ -797,10 +812,10 @@ test('[synthetic connector, stand-in voice] each piece is said in its language\'
   const id = (w.records()[0] as unknown as { selection_id: string }).selection_id;
   assert.deepEqual(plain(await w.h.handlers['lc:say']!({ sender: w.s.overlay.webContents }, id, `${id}.1`, 0)), { spoken: false });
   // The app closing ends the voice, and waits for that before it goes.
-  assert.deepEqual([page.voice.disposed, w.h.quits.n], [0, 0]);
+  assert.deepEqual([page.voice.disposed, w.h.quits.n], [1, 0], 'losing the overlay already released the AI session\'s voice');
   w.h.app.quit();
   await until('the app quit', () => w.h.quits.n === 1, 5000);
-  assert.equal(page.voice.disposed, 1);
+  assert.equal(page.voice.disposed, 2, 'app shutdown also waits for provider disposal');
 
   // A voice that only synthesizes (a test's): said as that on the card while it reads, and nothing is recorded as read aloud.
   const t = await app({ voice: 'silent' });
@@ -845,6 +860,164 @@ test('[synthetic connector, stand-in voice] each piece is said in its language\'
     await until('the app quit', () => q.h.quits.n === 1, 5000);
     assert.equal(ends.connector, true, `${bad}: the connector's end was waited for`);
   }
+});
+
+test('[synthetic connector, stand-in voice] an already shown answer stays recorded across AI Stop and Start, but the new session cannot read it without a new request', async () => {
+  const w = await answerForMain('Shown before the AI restarted.');
+  const kept = w.records()[0]!.requests[0]!;
+  assert.equal('spoken' in kept, false);
+  w.h.handlers['lc:live-stop']!({ sender: w.control.webContents });
+  assert.equal(w.live().state, 'ended');
+  assert.deepEqual(plain(await w.h.handlers['lc:live-start']!({ sender: w.control.webContents }, AI.policy)), { ok: true });
+  await until('restarted', () => w.live().state === 'on');
+  assert.deepEqual([await w.say(w.id, w.request, 0), await w.say(w.id, w.request, 1), w.page.voice.spoken.length], [{ spoken: false }, { spoken: false }, 0]);
+  assert.deepEqual(w.records()[0]!.requests[0], kept, 'the original shown answer and its source record are preserved');
+  assert.deepEqual([w.page.ask().answer, w.fakes.last().asks().length], ['Shown before the AI restarted.', 1], 'there was no new request to authorize the old response');
+});
+
+test('[synthetic connector, stand-in voice] completed audible pieces are persisted before the next piece; AI Stop rejects a late completion and releases the voice without counting or requeuing it', async () => {
+  const w = await answerForMain();
+  const first = w.say(w.id, w.request, 0);
+  await settle();
+  w.page.voice.spoken[0]!.end();
+  assert.deepEqual(await first, { spoken: true });
+  assert.deepEqual([w.records()[0]!.requests[0]!['spoken'], w.records()[0]!.requests[0]!['spoken_pieces'], w.page.voice.spoken.length], ['partial', { said: 1, of: 3 }, 1], 'the persisted prefix does not depend on a later say request');
+  const second = w.say(w.id, w.request, 1);
+  await settle();
+  w.h.handlers['lc:live-stop']!({ sender: w.control.webContents });
+  await settle();
+  assert.deepEqual([w.live().state, w.page.voice.cancels, w.page.voice.disposed, w.records()[0]!.requests[0]!['spoken'], w.records()[0]!.requests[0]!['spoken_pieces']], ['ended', 1, 1, 'interrupted', { said: 1, of: 3 }]);
+  const stopped = w.records()[0]!.requests[0]!;
+  w.page.voice.spoken[1]!.end();
+  assert.deepEqual(await second, { spoken: false });
+  assert.deepEqual([await w.say(w.id, w.request, 2), w.page.voice.spoken.length, w.records()[0]!.requests[0]], [{ spoken: false }, 2, stopped], 'the cut piece ending late creates neither completed evidence nor another piece');
+});
+
+test('[synthetic connector, stand-in voice] a reread that fails at its first piece cannot erase the previously completed audible prefix', async () => {
+  const w = await answerForMain();
+  for (let at = 0; at < 2; at += 1) {
+    const piece = w.say(w.id, w.request, at);
+    await settle();
+    w.page.voice.spoken[at]!.end();
+    assert.deepEqual(await piece, { spoken: true });
+    assert.deepEqual([w.records()[0]!.requests[0]!['spoken'], w.records()[0]!.requests[0]!['spoken_pieces']], ['partial', { said: at + 1, of: 3 }]);
+  }
+  const third = w.say(w.id, w.request, 2);
+  await settle();
+  w.page.voice.spoken[2]!.end(false);
+  assert.deepEqual(await third, { spoken: false });
+  assert.deepEqual([w.records()[0]!.requests[0]!['spoken'], w.records()[0]!.requests[0]!['spoken_pieces']], ['interrupted', { said: 2, of: 3 }]);
+  const reread = w.say(w.id, w.request, 0);
+  await settle();
+  assert.deepEqual(w.records()[0]!.requests[0]!['spoken_pieces'], { said: 2, of: 3 }, 'starting over does not reset the known completed prefix');
+  w.page.voice.spoken[3]!.end(false);
+  assert.deepEqual(await reread, { spoken: false });
+  assert.deepEqual([w.records()[0]!.requests[0]!['spoken'], w.records()[0]!.requests[0]!['spoken_pieces'], w.page.voice.spoken.map((u) => u.text)], ['interrupted', { said: 2, of: 3 }, ['One.', 'Two.', 'Three.', 'One.']], 'failure at piece zero retains prior played evidence');
+});
+
+test('[synthetic connector, stand-in voice] while app quit waits for its connector, main refuses old and next pieces and a late completion cannot increase the recorded prefix', async () => {
+  const w = await answerForMain();
+  const first = w.say(w.id, w.request, 0);
+  await settle();
+  w.page.voice.spoken[0]!.end();
+  assert.deepEqual(await first, { spoken: true });
+  const pending = w.say(w.id, w.request, 1);
+  await settle();
+  w.fakes.last().endDelayMs = 120;
+  w.h.app.quit();
+  await settle();
+  assert.equal(w.h.quits.n, 0, 'the app is still waiting for the connector');
+  assert.deepEqual([await w.say(w.id, w.request, 0), await w.say(w.id, w.request, 2), w.page.voice.spoken.length], [{ spoken: false }, { spoken: false }, 2], 'quitting itself revokes playback authority');
+  w.page.voice.spoken[1]!.end();
+  assert.deepEqual(await pending, { spoken: false });
+  assert.deepEqual([w.records()[0]!.requests[0]!['spoken'], w.records()[0]!.requests[0]!['spoken_pieces'], w.page.voice.spoken.length], ['interrupted', { said: 1, of: 3 }, 2], 'the piece pending at quit is not newly completed evidence');
+  await until('the app quit', () => w.h.quits.n === 1, 5000);
+});
+
+test('[synthetic connector, stand-in voice] a completed audible prefix whose write failed stays in main and is persisted by Stop once storage recovers', async () => {
+  const w = await answerForMain();
+  const first = w.say(w.id, w.request, 0);
+  await settle();
+  w.h.failWrites.only = `${path.sep}asks${path.sep}`;
+  w.page.voice.spoken[0]!.end();
+  assert.deepEqual(await first, { spoken: true });
+  assert.deepEqual([w.records()[0]!.requests[0]!['spoken'], w.records()[0]!.requests[0]!['spoken_pieces']], ['attempted', { said: 0, of: 3 }], 'the failed completion write did not replace the last saved record');
+  const sel = (w.s as unknown as { ask: { unsaved: string | null; record: { requests: Array<Record<string, unknown>> } } }).ask;
+  assert.notEqual(sel.unsaved, null, 'the held record is marked unsaved');
+  assert.deepEqual([sel.record.requests[0]!['spoken'], plain(sel.record.requests[0]!['spoken_pieces'])], ['partial', { said: 1, of: 3 }]);
+  w.h.failWrites.only = null;
+  w.h.handlers['lc:live-stop']!({ sender: w.control.webContents });
+  await settle();
+  assert.deepEqual([sel.unsaved, w.records()[0]!.requests[0]!['spoken'], w.records()[0]!.requests[0]!['spoken_pieces'], w.page.ask().answer], [null, 'interrupted', { said: 1, of: 3 }, 'One. Two. Three.'], 'Stop writes the held completed prefix and preserves the shown source answer');
+});
+
+// A deliberately narrow view of private main state for corruption checks; renderers cannot edit these objects.
+type SpeechEntry = {
+  request_id: string; live_session_id: string; model: string; trigger: string; assistance: string;
+  shown: boolean; presentation: string; asked_as: string;
+  outcome: { status: string; answer: { request_id: string; model: string; text: string } };
+};
+type SpeechSelection = { request: { id: string; state: string }; record: { requests: SpeechEntry[] } };
+
+test('[synthetic connector, stand-in voice] the last main guard refuses corrupted answer provenance, request state, presentation and circle assistance before handing anything to the voice', async (t) => {
+  const cases: Array<{ name: string; mutate: (sel: SpeechSelection, entry: SpeechEntry) => void }> = [
+    { name: 'stored answer belongs to another request', mutate: (_sel, entry) => void (entry.outcome.answer.request_id = 'another-request') },
+    { name: 'stored answer belongs to another model', mutate: (_sel, entry) => void (entry.outcome.answer.model = 'another-model') },
+    { name: 'stored answer text differs from the presented answer', mutate: (_sel, entry) => void (entry.outcome.answer.text = 'Unverified replacement text.') },
+    { name: 'selection points to another request', mutate: (sel) => void (sel.request.id = 'another-request') },
+    { name: 'selection request is still asking', mutate: (sel) => void (sel.request.state = 'asking') },
+    { name: 'selection request is cancelled', mutate: (sel) => void (sel.request.state = 'cancelled') },
+    { name: 'stored answer belongs to another live session', mutate: (_sel, entry) => void (entry.live_session_id = 'another-live-session') },
+    { name: 'no assistance is allowed', mutate: (_sel, entry) => void (entry.assistance = 'none') },
+    { name: 'circle hint cannot become an explanation', mutate: (_sel, entry) => void (entry.assistance = 'explain') },
+    { name: 'circle hint cannot become a solution', mutate: (_sel, entry) => void (entry.assistance = 'solution') },
+    { name: 'answer was not shown', mutate: (_sel, entry) => void (entry.shown = false) },
+    { name: 'answer presentation remains unconfirmed', mutate: (_sel, entry) => void (entry.presentation = 'unconfirmed') },
+    { name: 'answer was requested silently', mutate: (_sel, entry) => void (entry.asked_as = 'silent') },
+    { name: 'copied record has no matching presented entry identity', mutate: (sel, entry) => void (sel.record.requests[0] = { ...entry }) },
+  ];
+  for (const c of cases) await t.test(c.name, async () => {
+    const w = await answerForMain();
+    const sel = (w.s as unknown as { ask: SpeechSelection }).ask;
+    c.mutate(sel, sel.record.requests[0]!);
+    assert.deepEqual([await w.say(w.id, w.request, 0), w.page.voice.spoken.length, 'spoken' in w.records()[0]!.requests[0]!], [{ spoken: false }, 0, false], c.name);
+  });
+});
+
+test('[synthetic connector, stand-in voice] main rechecks provenance after an async piece completes; a changed request or answer cannot count the pending piece or authorize another one', async (t) => {
+  const cases: Array<{ name: string; mutate: (sel: SpeechSelection, entry: SpeechEntry) => void }> = [
+    { name: 'request cancelled while the piece was pending', mutate: (sel) => void (sel.request.state = 'cancelled') },
+    { name: 'answer request changed while the piece was pending', mutate: (_sel, entry) => void (entry.outcome.answer.request_id = 'another-request') },
+    { name: 'answer model changed while the piece was pending', mutate: (_sel, entry) => void (entry.outcome.answer.model = 'another-model') },
+    { name: 'answer text changed while the piece was pending', mutate: (_sel, entry) => void (entry.outcome.answer.text = 'Changed after the voice started.') },
+  ];
+  for (const c of cases) await t.test(c.name, async () => {
+    const w = await answerForMain();
+    const first = w.say(w.id, w.request, 0);
+    await settle();
+    w.page.voice.spoken[0]!.end();
+    assert.deepEqual(await first, { spoken: true });
+    const second = w.say(w.id, w.request, 1);
+    await settle();
+    const sel = (w.s as unknown as { ask: SpeechSelection }).ask;
+    c.mutate(sel, sel.record.requests[0]!);
+    w.page.voice.spoken[1]!.end();
+    assert.deepEqual(await second, { spoken: false });
+    assert.deepEqual([await w.say(w.id, w.request, 2), w.page.voice.spoken.length, w.page.voice.cancels, w.records()[0]!.requests[0]!['spoken'], w.records()[0]!.requests[0]!['spoken_pieces']], [{ spoken: false }, 2, 1, 'interrupted', { said: 1, of: 3 }], c.name);
+  });
+});
+
+test('[synthetic connector, stand-in voice] renderer-supplied text, program paths and sinks cannot choose speech; only the verified main answer is handed to the voice', async () => {
+  const w = await answerForMain('Verified main answer.');
+  const supplied = { text: 'Untrusted renderer text.', executable: '/tmp/not-a-voice', output: '/tmp/not-a-speech-sink' };
+  for (const args of [[supplied, w.request, 0], [w.id, supplied, 0], [w.id, w.request, supplied], [w.id, w.request, '0']]) {
+    assert.deepEqual([await w.say(...args), w.page.voice.spoken.length], [{ spoken: false }, 0]);
+  }
+  const valid = w.say(w.id, w.request, 0, supplied.text, supplied.executable, supplied.output);
+  await settle();
+  assert.deepEqual(w.page.voice.spoken.map((u) => [u.text, u.rate, u.culture]), [['Verified main answer.', 1.3, 'en-US']], 'extra renderer arguments never reach the voice');
+  w.page.voice.spoken[0]!.end();
+  assert.deepEqual(await valid, { spoken: true });
 });
 
 test('[synthetic connector, stand-in voice] the main process itself keeps the order and stops the voice, whatever the page does: pieces in order only, and a Stop, a closed card and a follow-up each stop it there', async () => {

@@ -28,11 +28,11 @@ export function copyTree(from, to) {
  * replaced, unless `fresh` is set: then an existing directory of that name is refused and left as it is (a stage
  * that someone may be running, or may want to go back to, is never written over).
  */
-export function buildAndStage(name, { fresh = false } = {}) {
+export function buildAndStage(name, { fresh = false, nativeBuild = null } = {}) {
   // A fresh stage is built from nothing: no file of an earlier build (of a module since removed, say) goes into it.
   if (fresh) rmSync(join(APP, 'dist'), { recursive: true, force: true });
   run(process.execPath, [join(APP, 'node_modules', 'typescript', 'bin', 'tsc'), '-p', join(APP, 'tsconfig.json')], { stdio: 'inherit', cwd: APP });
-  run(process.execPath, [join(APP, 'scripts', 'copy-static.mjs')], { cwd: APP });
+  run(process.execPath, [join(APP, 'scripts', 'copy-static.mjs'), ...(nativeBuild === null ? [] : ['--native-build', resolve(nativeBuild)])], { cwd: APP });
   const electron = run(process.execPath, [join(APP, 'scripts', 'windows-runtime.mjs')], { cwd: APP });
   const winTemp = run('cmd.exe', ['/c', 'echo %TEMP%'], { cwd: '/mnt/c' });
   const stage = join(run('wslpath', ['-u', winTemp]), name);

@@ -1,0 +1,17 @@
+/home/agentsdock/.local/share/paperclip-pilot-runtime/node-v24.21.0-linux-x64/bin/node --permission --allow-fs-read=* --allow-fs-write=/tmp --test --test-isolation=none --test-reporter=spec tests/native-speech.test.ts
+✔ system provider is lazy, keeps same-language pieces, and reaps before switching language (2.398727ms)
+✔ Stop while a language switch waits for exit drops that unsaid piece; later explicit speech uses a fresh child (0.293984ms)
+✔ session disposal cancels active speech, fences its late success and waits for actual exit before reuse (0.274056ms)
+✔ unobserved child exit fails closed and prevents a replacement child (0.473578ms)
+✔ only a consistent approved-source local build bundle enables the lazy Windows provider (1.803028ms)
+✔ bundle bytes are checked before first spawn and adapter restart after a same-language idle exit (2.123843ms)
+ℹ tests 6
+ℹ suites 0
+ℹ pass 6
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 58.280143
+
+/home/agentsdock/.local/share/paperclip-pilot-runtime/node-v24.21.0-linux-x64/bin/node node_modules/typescript/bin/tsc -p tsconfig.json --noEmit

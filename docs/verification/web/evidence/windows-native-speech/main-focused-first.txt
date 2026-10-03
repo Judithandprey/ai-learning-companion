@@ -1,0 +1,89 @@
+(node:3) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+✔ the toolbar has a handle: a drag moves the toolbar and nothing else, in every mode; it is kept inside the work area and its place is written for this display (58.20672ms)
+✔ in NAV the pointer passes through to the apps except over a surface, and a surface being moved keeps it until it is let go (4.582571ms)
+✔ Stop while a surface is being moved: the surface is let go and the session ends as it does otherwise (8.316984ms)
+✔ the place is restored at the next Start, per display, and fitted to the work area as it is then: another size, another scale, a taskbar elsewhere (39.247889ms)
+✔ the work area changing while the capture runs keeps the surfaces inside the new one; the keys move a surface too; a place that cannot be written holds for the session and is said (26.035996ms)
+✔ [synthetic connector] the card has a handle too: it moves with its selection, form and response, asks nothing by being moved, and its place is kept beside the toolbar's (94.306622ms)
+✔ [synthetic connector] no voice is connected in this build: a response is silent text, Talk says so, and nothing is read or recorded as read (49.382001ms)
+✔ [synthetic connector, stand-in voice] a response is silent text unless Talk was on when it was asked for; then it is read from the card's own text, a piece at a time, at 1.3×, and what the voice reported is recorded apart from shown (109.907271ms)
+✔ [synthetic connector, stand-in voice] the voice stops at once, with everything not yet spoken: Stop reading, Mute, Talk off, closing the card, a new selection, a new question, Cancel and Stop (260.348834ms)
+✖ [synthetic connector, stand-in voice] the rate is the user's, inside its bounds, kept for the next Start; a piece is handed to the voice only by the main process, for the shown current response, in order, with Talk on (64.061805ms)
+✔ [synthetic connector] the card's handle too moves the card and nothing else, in every mode, and its keys work; a second pointer, a cancelled pointer and a pointer taken away end or leave the drag as they should (21.817409ms)
+✔ [synthetic connector, stand-in voice] an answer that Cancel crossed is not read; a cut piece ending late does not disturb the reading after it; a voice that rejects or throws is said as stopped, and a Stop still completes (175.825748ms)
+✔ [synthetic connector] the Talk control never says it reads aloud when no voice is connected; a preferences file cut short is set aside so places can be kept again, and one of another format is left as it is (138.168972ms)
+Speech child disposal failed.
+Speech child exit was not observed; this provider will not start another child.
+✔ [synthetic connector, stand-in voice] each piece is said in its language's voice; the overlay lost, or the app closing, stops and ends the voice; a voice that only synthesizes is said as a test voice and recorded as nothing read (303.572739ms)
+✔ [synthetic connector, stand-in voice] an already shown answer stays recorded across AI Stop and Start, but the new session cannot read it without a new request (24.617168ms)
+✔ [synthetic connector, stand-in voice] completed audible pieces are persisted before the next piece; AI Stop rejects a late completion and releases the voice without counting or requeuing it (26.740471ms)
+✔ [synthetic connector, stand-in voice] a reread that fails at its first piece cannot erase the previously completed audible prefix (33.925219ms)
+✔ [synthetic connector, stand-in voice] while app quit waits for its connector, main refuses old and next pieces and a late completion cannot increase the recorded prefix (151.952313ms)
+✔ [synthetic connector, stand-in voice] a completed audible prefix whose write failed stays in main and is persisted by Stop once storage recovers (25.254618ms)
+▶ [synthetic connector, stand-in voice] the last main guard refuses corrupted answer provenance, request state, presentation and circle assistance before handing anything to the voice
+  ✔ stored answer belongs to another request (22.361612ms)
+  ✔ stored answer belongs to another model (23.876739ms)
+  ✔ stored answer text differs from the presented answer (22.742662ms)
+  ✔ selection points to another request (22.905174ms)
+  ✔ selection request is still asking (22.170723ms)
+  ✔ selection request is cancelled (22.966643ms)
+  ✔ stored answer belongs to another live session (36.866613ms)
+  ✔ no assistance is allowed (23.075757ms)
+  ✔ circle hint cannot become an explanation (22.57465ms)
+  ✔ circle hint cannot become a solution (24.077322ms)
+  ✔ answer was not shown (22.484267ms)
+  ✔ answer presentation remains unconfirmed (23.366555ms)
+  ✔ answer was requested silently (44.238144ms)
+  ✔ copied record has no matching presented entry identity (20.851437ms)
+✔ [synthetic connector, stand-in voice] the last main guard refuses corrupted answer provenance, request state, presentation and circle assistance before handing anything to the voice (360.4345ms)
+▶ [synthetic connector, stand-in voice] main rechecks provenance after an async piece completes; a changed request or answer cannot count the pending piece or authorize another one
+  ✔ request cancelled while the piece was pending (23.830286ms)
+  ✔ answer request changed while the piece was pending (23.996907ms)
+  ✔ answer model changed while the piece was pending (25.299337ms)
+  ✔ answer text changed while the piece was pending (24.296603ms)
+✔ [synthetic connector, stand-in voice] main rechecks provenance after an async piece completes; a changed request or answer cannot count the pending piece or authorize another one (98.852976ms)
+✔ [synthetic connector, stand-in voice] renderer-supplied text, program paths and sinks cannot choose speech; only the verified main answer is handed to the voice (44.820694ms)
+✔ [synthetic connector, stand-in voice] the main process itself keeps the order and stops the voice, whatever the page does: pieces in order only, and a Stop, a closed card and a follow-up each stop it there (178.27365ms)
+✔ [synthetic connector, stand-in voice] a response is read only if it was asked for with Talk on: Talk turned on while a silent request is out, or after it, reads nothing and says nothing of a failure; the AI session ending stops a reading and nothing of it is read after (117.401067ms)
+✔ [synthetic connector] the card is given the room beside the toolbar, so neither covers the other, whatever the toolbar's size and place become; a small work area makes the controls smaller; a change of the room or of the window brings the response back into view (61.370665ms)
+✔ [synthetic connector, stand-in voice] an answer is put on the card only if the main process says, at that moment, that it is still this card's to show: the AI stopped, or started again, while it waited in the overlay, and it is never shown, read or kept; one already shown stays (162.856444ms)
+✔ [synthetic connector] nothing queued gains authority from a Stop or a new Start of the AI: a delayed follow-up's answer is not shown, a request whose picture was still being made is not sent in another session, and a refusal that cannot be written says so (220.890738ms)
+✔ [synthetic connector] a repeated wall-clock Start does not give a queued circle or follow-up authority in a distinct AI session (46.114993ms)
+ℹ tests 46
+ℹ suites 0
+ℹ pass 45
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 3041.234061
+
+✖ failing tests:
+
+test at apps/windows/tests/overlay-surfaces.test.ts:489:1
+✖ [synthetic connector, stand-in voice] the rate is the user's, inside its bounds, kept for the next Start; a piece is handed to the voice only by the main process, for the shown current response, in order, with Talk on (64.061805ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    [
+      5,
+      {
+        culture: 'en-US',
+        rate: 0.7,
+        text: 'Being read now.'
+      },
+  +   'partial'
+  -   'attempted'
+    ]
+  
+      at TestContext.<anonymous> (file:///home/agentsdock/Projects/learning-companion/wt-web/apps/windows/tests/overlay-surfaces.test.ts:563:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [Array],
+    expected: [Array],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }

@@ -100,7 +100,7 @@ export type Review = {
   exportRecovery(id: string, file: string): unknown;
   openInk(id: string): unknown;
   inkContexts(id: string): unknown;
-  /** Connects a voice to the app, as a build's main process would (the product connects none). */
+  /** Connects a stand-in provider; this harness never loads the compiled native bundle. */
   connectVoice(voice: unknown): void;
 };
 /**
@@ -228,6 +228,7 @@ export function harness(options: { env?: Record<string, string>; /** The app dat
     withPlace,
     speechCultures,
     speechPieces,
+    bundledSystemVoice: () => null, // the portable harness never loads a native/device provider
     shell: { openExternal: async (url: string) => void opened.push(url) },
     Buffer,
     Response,
@@ -275,4 +276,3 @@ export function withStroke(doc: desktopInk.DesktopInk): desktopInk.DesktopInk {
   const context: desktopInk.StrokeContext = { reason: 'writing_started', from_point: 0, frame_seq: 2, frame_taken_at: 't', frame_pixels_sha256: null, region: { x: 0, y: 0, width: 130, height: 58 }, region_px: { x: 0, y: 0, width: 130, height: 58 }, image: { sha256: PNG_SHA, width: 1, height: 1 }, not_observed: desktopInk.NOT_OBSERVED };
   return { ...doc, ink: addStroke(doc.ink, stroke, stroke.created_at), evidence: { s1: { frame_seq: 2, frame_sampled_at: 't', region: { x: 2, y: 2, width: 96, height: 16 }, fingerprint: fingerprintToBase64(new Uint8Array(256).fill(9)), contexts: [context], changes_not_kept: 0 } } };
 }
-

@@ -1,0 +1,29 @@
+{
+  "output": "\\\\wsl.localhost\\Ubuntu\\home\\agentsdock\\Projects\\learning-companion\\wt-web\\apps\\windows\\native\\build\\build-approved-20261003-01",
+  "schema": "lc-native-speech-build/1",
+  "mode": "local-compilation",
+  "at": "2026-10-03T03:38:01.534Z",
+  "node": "v24.19.0",
+  "builder_sha256": "feedd10f4e01f008371afda0c4a125e91d270c361292689da8104da459b9a308",
+  "source_sha256": "c4c1f127a85ff1c871ce98895d51584af7936bbf23f3a35c7418002f201cbbfd",
+  "executable_sha256": "48360d37cdcc0121f03aa5e16975c2343f47090d1d6f19fa93306bd4f10f7d87",
+  "compiler": {
+    "path": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\csc.exe",
+    "sha256": "46809206887326d2d24db1eff1f3064de972c3451abe766b49111450a5e08e00"
+  },
+  "references": [
+    {
+      "path": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\WPF\\System.Speech.dll",
+      "sha256": "59aa7929fc874d5b124cf86995c0c66d27e4c9b0340c43645cd897c3162ba8cb"
+    },
+    {
+      "path": "C:\\Windows\\Microsoft.NET\\Framework64\\v4.0.30319\\System.Web.Extensions.dll",
+      "sha256": "5e6378edc06f5a61920aaadb2aba839dd3cf302d6192e08aacd4454ba4cff0b3"
+    }
+  ],
+  "status": 0,
+  "signal": null,
+  "error": null,
+  "stdout": "",
+  "stderr": ""
+}
