@@ -94,13 +94,16 @@
   "approved_ai_disabled_diagnostic": {
     "approval_id": "approved-two-gates-20261002:571427dcdc434c0f820236892925aedf",
     "owner": "QA sess_104c8bc82d94481a",
-    "status": "prepared_for_exact_revision_dispatch",
-    "display_allocation_active": false,
+    "status": "exclusive_display_coordination_sent_waiting_actual_acquisition",
+    "display_allocation_active": true,
     "account_allocation_active": false,
     "audio_allocation_active": false,
     "model_attempts_allowed": 0,
     "runner_sha256": "0f6d0b28b7a7bf92adf437dc4d679ea3e53daea73e56c450a5cf34bd7b1f10ec",
     "production_commit": "175515308f509fb8c0f531dbdb10e57313fcde5a",
-    "next_action": "Commit/push exact wrapper and send one native QA allocation; require fresh admission and explicit resource release."
+    "next_action": "QA performs one guarded AI-disabled diagnostic if current admission permits it, then returns exact result and explicit display/process release; Lead integrates. No account/model/mic/sound.",
+    "dispatch_message": "handoff_5f3da00f7ad575f4773dc2efd35fbcf1",
+    "baseline": "69c06ea58696a2c76bbfd943cc7dfa7fb5b15e5b",
+    "execution_started": false
   }
 }

@@ -65,3 +65,13 @@ Web continuation `handoff_65f7230482b6e41f0f374a7affe5dea3` was accepted on base
 owned integration, local compilation and focused portable/memory checks. QA gets
 the exact committed wrapper revision before the one controlled display attempt.
 Owner adoption, actual execution and results are recorded separately below.
+
+Actual exact-baseline QA allocation was accepted as
+`handoff_5f3da00f7ad575f4773dc2efd35fbcf1` at pushed
+`69c06ea58696a2c76bbfd943cc7dfa7fb5b15e5b`; [receipt](qa-dispatch.json) is
+initially unread/execution not started. It coordinates only the one AI-disabled
+display attempt. Web requested the originating approval record because its older
+migration handoff still said pending; Lead supplied this committed user-origin
+record as `handoff_1deffe26cc9ea0a7b1255f617fb9966d`, [receipt](web-approval-record-dispatch.json).
+No repeated human approval or new source scope is requested. Web retains its
+same implementation and no display lease. Accepted delivery is not execution.
