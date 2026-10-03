@@ -53,3 +53,9 @@ Actual native placement, running Stop operability, capture/drag, real speech and
 matching captions remain unverified. Real0/4 is unused, voice slot unassigned,
 display/account/audio leases absent, paused automation unchanged. No technical
 probe here is a usable full companion or either §7.1 desktop gate.
+
+Ordinary push and remote readback confirmed
+`21a9b6ba3a5c60ffc84cc7a0b9e50a05294aacd9`. Actual QA reply-route update
+`handoff_58190bbd3a72c3aa712e7314bdb037df` is accepted, initially unread with
+execution not started. It supplies these completed checks to the existing
+output-preparation task, without dispatching another review or resource run.
