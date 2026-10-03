@@ -75,3 +75,9 @@ migration handoff still said pending; Lead supplied this committed user-origin
 record as `handoff_1deffe26cc9ea0a7b1255f617fb9966d`, [receipt](web-approval-record-dispatch.json).
 No repeated human approval or new source scope is requested. Web retains its
 same implementation and no display lease. Accepted delivery is not execution.
+
+Read-only [owner progress](observed-owner-progress.json) subsequently observes
+QA's normal baseline merge in progress and both approved source files in Web's
+assigned worktree with the reviewed hashes. This establishes resumed source work,
+not compilation, native diagnostic success or audible acceptance. Lead's next
+action is to review their actual bounded deliveries; there is no duplicate task.

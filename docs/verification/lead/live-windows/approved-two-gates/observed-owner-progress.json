@@ -1,0 +1,22 @@
+{
+  "kind": "read_only_owned_work_progress_not_runtime_acceptance",
+  "qa": {
+    "head": "bcb2b55142ce382c713e5651a9fce13f38f61019",
+    "merge_in_progress": true,
+    "observed": "Native assignment followed by normal baseline merge in progress; owner resolves conflicts. No GUI result inferred."
+  },
+  "web": {
+    "observed_source_paths": [
+      {
+        "path": "apps/windows/native/NativeSpeech.cs",
+        "sha256": "c4c1f127a85ff1c871ce98895d51584af7936bbf23f3a35c7418002f201cbbfd"
+      },
+      {
+        "path": "apps/windows/src/main/native-voice.mjs",
+        "sha256": "1a9279891b691de4cb4787eabcb947c0e3d6c47957f6db318c481dca82ec1077"
+      }
+    ],
+    "observed": "Approved source files appeared in assigned Windows worktree; no compile or playback result inferred."
+  },
+  "native_or_provider_result_claimed": false
+}
