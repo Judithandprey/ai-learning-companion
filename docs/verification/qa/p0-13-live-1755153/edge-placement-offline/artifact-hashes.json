@@ -1,0 +1,45 @@
+{
+  "kind": "qa-offline-evidence-integrity/v1",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 6413,
+      "sha256": "4cc7e58f949a1dbf6426b549c58a417637a7882abb5ca25c154e87d579ff4aca"
+    },
+    {
+      "path": "candidate/candidate.json",
+      "bytes": 6102,
+      "sha256": "78b784e562958d597d8a3eff461017e598b18a899f8e55d13662826bb8195f21"
+    },
+    {
+      "path": "candidate/runner.ps1",
+      "bytes": 83332,
+      "sha256": "2558ecee93191506b890472a80b5306f055bf22abe64ce24615d03e35b86fe84"
+    },
+    {
+      "path": "candidate/steps.json",
+      "bytes": 10966,
+      "sha256": "b1576400458635eba3e630f707edb5c0b818306980cbec471f08c821ae9f922c"
+    },
+    {
+      "path": "candidate/surface.html",
+      "bytes": 6526,
+      "sha256": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2"
+    },
+    {
+      "path": "candidate-integrity.json",
+      "bytes": 1977,
+      "sha256": "3b1b12004a081bc064d4cd42045b5e7e0f4ec50182705ca0c8f94056862c6e83"
+    },
+    {
+      "path": "check-receipt.json",
+      "bytes": 561,
+      "sha256": "1b184d8db5af98a7f61f4cd56d3c2758e9f602b1abfd28f2d184d0326a51c344"
+    },
+    {
+      "path": "offline-checks.json",
+      "bytes": 1616,
+      "sha256": "d0377a9fe96fdca4cb182e707a6830b6cc319db6690eac54d7c4ec1b5695afd2"
+    }
+  ]
+}

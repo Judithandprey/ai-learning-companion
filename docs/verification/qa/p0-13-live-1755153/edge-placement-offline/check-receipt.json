@@ -1,0 +1,16 @@
+{
+  "kind": "offline-check-command-receipt/v1",
+  "node": "/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node",
+  "focused_command": "node tests/e2e/windows/test_qa_edge_placement.mjs",
+  "exit_code": 0,
+  "stdout_file": "offline-checks.json",
+  "syntax_passed": [
+    "tests/e2e/windows/qa_visible_candidate.mjs",
+    "tests/e2e/windows/qa_prepare_visible.mjs",
+    "tests/e2e/windows/test_qa_edge_placement.mjs"
+  ],
+  "native_executed": false,
+  "gui_executed": false,
+  "provider_requests": 0,
+  "resources": "NONE"
+}

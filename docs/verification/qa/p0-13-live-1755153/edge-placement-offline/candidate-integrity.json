@@ -1,0 +1,69 @@
+{
+  "kind": "offline-candidate-integrity-audit/v1",
+  "payloads": [
+    {
+      "name": "runner.ps1",
+      "sha256": "2558ecee93191506b890472a80b5306f055bf22abe64ce24615d03e35b86fe84",
+      "match": true
+    },
+    {
+      "name": "steps.json",
+      "sha256": "b1576400458635eba3e630f707edb5c0b818306980cbec471f08c821ae9f922c",
+      "match": true
+    },
+    {
+      "name": "surface.html",
+      "sha256": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2",
+      "match": true
+    }
+  ],
+  "sources": [
+    {
+      "name": "qa_visible_candidate.mjs",
+      "sha256": "9df43a98f64c67559029d31bc41573db4df4df94341ef48845687987b5460410",
+      "match": true
+    },
+    {
+      "name": "qa_display_admission.ps1",
+      "sha256": "b4f586b7c987f533f318eb72ebffe318482ed2c2aa7f7f720574147071747590",
+      "match": true
+    },
+    {
+      "name": "qa_visible_drag.mjs",
+      "sha256": "fa7491499aad6c289793fec195a11993b3d102415347a7251e82592362940d1e",
+      "match": true
+    },
+    {
+      "name": "signin_cleanup.mjs",
+      "sha256": "efa06295262ea27006769e0dea363051fbd6401f4c810d2049db5937ee939b2b",
+      "match": true
+    },
+    {
+      "name": "qa-electron-runner.ps1",
+      "sha256": "1a0dfc3f178a1d6f59233c2a7d6a836ce68b18887affd2f6431c2d4ef5c48218",
+      "match": true
+    },
+    {
+      "name": "surface.html",
+      "sha256": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2",
+      "match": true
+    },
+    {
+      "name": "qa_edge_placement.ps1",
+      "sha256": "e527a59e63f6823adc9aaa1b5d9619661d8299769985ae1a0bf108749c2535bb",
+      "match": true
+    },
+    {
+      "name": "qa_prepare_visible.mjs",
+      "sha256": "bec19863f3b03309fb866b9e656e5dd0260620a591f27ab73ecf90aee01a64aa",
+      "match": true
+    }
+  ],
+  "exact_assembly_reproduced": true,
+  "steps": 32,
+  "allocated_resources": "NONE",
+  "future_scratch_exists": false,
+  "execution_authorized": false,
+  "native_executed": false,
+  "provider_requests": 0
+}

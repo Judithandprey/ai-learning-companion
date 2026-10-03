@@ -4,7 +4,8 @@ import { readFileSync } from 'node:fs';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 const here = dirname(fileURLToPath(import.meta.url));
-export function buildVisibleCandidate({ appPort, edgePort, edgeArgs, surfaceUrl, profile }) {
+export function buildVisibleCandidate({ appPort, edgePort, edgeArgs, surfaceUrl, profile, edgePlacement = false }) {
+  if (typeof edgePlacement !== 'boolean') throw Error('invalid owned Edge placement option');
   if (![appPort, edgePort].every(p => Number.isInteger(p) && p >= 43000 && p < 46500) || appPort === edgePort) throw Error('invalid QA debug ports');
 let runner = readFileSync(join(here, 'qa-electron-runner.ps1'), 'utf8');
 const originalHash = createHash('sha256').update(runner).digest('hex');
@@ -148,6 +149,25 @@ const steps = [
   { target: 'control', waitEval: '(async () => !(await lc.sessionState()).running)()', timeoutMs: 12000 },
   { closeApp: true, via: 'wm_close', waitMs: 3000, required: false }, { edgeClose: true, required: false },
 ];
+
+if (edgePlacement) {
+  // This diagnostic alone avoids Raise's TOPMOST pulse for its owned Edge window.
+  // Generic callers, product windows and the historical default runner retain their behavior.
+  replaceOnce('public static bool Raise(IntPtr h) {', 'public static bool Raise(IntPtr h) { return Raise(h, true); }\n  public static bool Raise(IntPtr h, bool pulseTopmost) {');
+  replaceOnce('if (((long)GetWindowLongPtr(h, -20) & 0x8) == 0) {', 'if (pulseTopmost && ((long)GetWindowLongPtr(h, -20) & 0x8) == 0) {');
+  replaceOnce('$i = 0\ntry {\n  Initialize-QaDisplayAdmission', readFileSync(join(here, 'qa_edge_placement.ps1'), 'utf8') + '\n$i = 0\ntry {\n  Initialize-QaDisplayAdmission');
+  replaceOnce("'raise'    { $entry.foreground = [QaWin]::Raise($h) }", "'raise'    { if ([string]$step.window -eq 'edge') { $entry.foreground = Raise-QaEdgeNormal $entry $h } else { $entry.foreground = [QaWin]::Raise($h) } }");
+  const fullscreenBranch = runner.slice(runner.indexOf('        # Edge\'s own window, through its DevTools'), runner.indexOf('      elseif ($null -ne $step.keys) {'));
+  if (!fullscreenBranch.startsWith('        # Edge\'s own window') || !fullscreenBranch.endsWith('      }\n')) throw Error('Edge fullscreen branch changed');
+  replaceOnce(fullscreenBranch, "        $entry.kind = 'edgeFullscreen'\n        Reset-QaEdgeFullscreen $entry\n      }\n");
+  // Preserve the existing PID predicate; add exact-root observations and a stricter check before it.
+  replaceOnce('$entry.points = @($step.points).Count', '$entry.points = @($step.points).Count\n        Assert-QaEdgePoints $entry $h @($step.points)');
+  replaceOnce('$r = Invoke-Cdp $captureSocket', '$script:qaPlacementCaptureAttempted = $true\n        $r = Invoke-Cdp $captureSocket');
+  replaceOnce('elseif ($null -ne $step.waitEval) {', "elseif ($null -ne $step.productPlacement) {\n        $entry.kind = 'productPlacement'; $entry.phase = [string]$step.productPlacement\n        Assert-QaProductPlacement $entry ([string]$step.productPlacement)\n      }\n      elseif ($null -ne $step.waitEval) {");
+  // Focus/raise control only before capture; the existing Edge raise/16 points then restore safe-surface admission.
+  steps.splice(steps.findIndex(s => s.as === 'before_capture') + 1, 0, { productPlacement: 'control' });
+  steps.splice(steps.findIndex(s => s.as === 'drag_hook'), 0, { productPlacement: 'overlay' });
+}
 
 return { runner, steps, originalHash };
 }

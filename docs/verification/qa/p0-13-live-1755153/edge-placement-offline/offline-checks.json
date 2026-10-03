@@ -1,0 +1,26 @@
+{
+  "kind": "offline-owned-edge-placement-checks",
+  "passed": 15,
+  "failed": 0,
+  "cases": [
+    "historical default runner/steps remain byte-identical and surface retained",
+    "actual new assembly bounds Edge raises and the single fullscreen transition",
+    "Edge TOPMOST pulse regression is detected",
+    "a fullscreen transition after capture is detected",
+    "native admission and exact cleanup are preserved verbatim",
+    "control raise precedes fresh capture admission; overlay observation follows the first frame",
+    "capture attempt is marked before the call and blocks later control raises, including unknown results",
+    "removing the control-before-capture fence is detected",
+    "all sixteen root records precede rejection, with unchanged card/corner positions",
+    "window validation failures retain point records and native observations",
+    "owned CDP normal/fullscreen replies and identity are checked even from fullscreen",
+    "new helper has bounded read-only foreign metadata and no pixels/global mutation",
+    "product operability checks normal Edge, higher controls/overlay and framed client origin",
+    "actual display-option predicate uses client CSS center and identifies DOM cover/zero size",
+    "new candidate cannot inherit historical wrapper admission"
+  ],
+  "native_executed": false,
+  "product_launched": false,
+  "provider_requests": 0,
+  "limitation": "Assembly/source mutation checks plus the actual display-option browser predicate on synthetic Node VM geometry. No PowerShell/C# parser, compilation, Win32, z-order, browser, placement or device verification."
+}
