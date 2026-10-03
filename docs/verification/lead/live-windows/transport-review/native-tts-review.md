@@ -1,6 +1,8 @@
 # Native Windows TTS candidate — bounded pre-integration review
 
-**HOLD one small parent-parser correction before production adoption.** The candidate is otherwise suitable for the assigned main-owned integration, with its memory/device limits preserved. No candidate, owner or repository source was edited. Applied project PONYTAIL LITE and current §7.3 / AUDIO-08/09/14/15; this adapter supplies neither speech permission nor full audio/context acceptance.
+**Source-adoption approval is now granted by the human; the parser correction remains part of Web integration.** See [the exact approved continuation](../approved-two-gates/README.md).
+
+**Historical review: HOLD one small parent-parser correction before production adoption.** The candidate is otherwise suitable for the assigned main-owned integration, with its memory/device limits preserved. No candidate, owner or repository source was edited. Applied project PONYTAIL LITE and current §7.3 / AUDIO-08/09/14/15; this adapter supplies neither speech permission nor full audio/context acceptance.
 
 ## P2: JSON null escapes the parent protocol handler
 

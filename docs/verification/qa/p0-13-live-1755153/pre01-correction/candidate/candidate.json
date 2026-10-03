@@ -1,7 +1,7 @@
 {
   "kind": "qa-visible-pre01-offline-candidate/v1",
   "prepared_only": true,
-  "execution_authorized": false,
+  "execution_authorized": true,
   "production_commit": "175515308f509fb8c0f531dbdb10e57313fcde5a",
   "source_review_baseline": "55312b5d4d87dd425574573acec8f108a474ec6e",
   "appPort": 43123,
@@ -36,7 +36,7 @@
   "source_files": {
     "qa_visible_candidate.mjs": "505ed53900060d1cd2c3c6394f2ca4b288cc0058ff6bbc4e4cd892e4c2a14e50",
     "qa_display_admission.ps1": "b4f586b7c987f533f318eb72ebffe318482ed2c2aa7f7f720574147071747590",
-    "qa_visible_drag.mjs": "ca134fbda6b1c89e4371795820e252d5381cfa4ae5245f71aceb8e89449843b1",
+    "qa_visible_drag.mjs": "fa7491499aad6c289793fec195a11993b3d102415347a7251e82592362940d1e",
     "signin_cleanup.mjs": "efa06295262ea27006769e0dea363051fbd6401f4c810d2049db5937ee939b2b",
     "qa-electron-runner.ps1": "1a0dfc3f178a1d6f59233c2a7d6a836ce68b18887affd2f6431c2d4ef5c48218",
     "surface.html": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2"
@@ -89,8 +89,8 @@
       "-AppTemp",
       "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-visible-pre01-6eada7a925a94308895331ed6cf7465a\\apptemp"
     ],
-    "status": "REQUEST_ONLY_NOT_EXECUTED",
-    "permission_owner": "Lead obtains explicit approval before any renewed lease",
+    "status": "HUMAN_APPROVED_NOT_EXECUTED",
+    "permission_owner": "Human user approved both enumerated scopes on 2026-10-02; Lead coordinates QA execution",
     "persistent_policy_changes": false
   },
   "future_trusted_connector_setting": {
@@ -101,5 +101,7 @@
   },
   "provider_attempts": 0,
   "native_script_executed": false,
-  "display_account_lease": "NONE"
+  "display_account_lease": "NONE",
+  "approval_id": "approved-two-gates-20261002:571427dcdc434c0f820236892925aedf",
+  "approval_scope": "One AI-disabled generated-screen/capture/toolbar-and-caption-drag diagnostic; process and children RemoteSigned only. No persistent policy, account, model, microphone or sound. Fresh Lead-controlled display allocation required."
 }

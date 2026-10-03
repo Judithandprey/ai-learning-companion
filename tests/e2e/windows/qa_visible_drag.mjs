@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // AI-disabled visible-window diagnostic of the frozen 1755153 package. No real-run mode.
-// Run only with a newly assigned exclusive lease and explicit script permission.
+// Human-approved process-only RemoteSigned; still requires a newly assigned exclusive display lease.
 // Usage: node tests/e2e/windows/qa_visible_drag.mjs <new evidence folder> <reviewed candidate.json>
 // Native scratch, userdata and evidence are preserved. Input is synthetic CDP/Win32, not hardware.
 import { execFileSync, spawnSync } from 'node:child_process';
@@ -19,6 +19,7 @@ if (!process.argv[3]) throw Error('an exact reviewed offline candidate.json is r
 const candidateDir = dirname(resolve(process.argv[3]));
 const candidate = JSON.parse(readFileSync(resolve(process.argv[3]), 'utf8'));
 if (candidate.kind !== 'qa-visible-pre01-offline-candidate/v1' || !/^\/mnt\/c\/Users\/ROG\/AppData\/Local\/Temp\/lc-qa-visible-pre01-[0-9a-f]{32}$/.test(candidate.work)) throw Error('unexpected offline candidate');
+if (candidate.execution_authorized !== true || candidate.approval_id !== 'approved-two-gates-20261002:571427dcdc434c0f820236892925aedf' || candidate.files['runner.ps1'] !== '0f6d0b28b7a7bf92adf437dc4d679ea3e53daea73e56c450a5cf34bd7b1f10ec') throw Error('exact diagnostic approval is required');
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 for (const name of ['qa_visible_candidate.mjs', 'qa_display_admission.ps1', 'qa_visible_drag.mjs', 'signin_cleanup.mjs', 'qa-electron-runner.ps1', 'surface.html']) {
   if (sha(readFileSync(join(here, name))) !== candidate.source_files[name]) throw Error('reviewed QA source bytes changed');
@@ -67,7 +68,7 @@ try {
   report.native_parse = JSON.parse(ps(`$ProgressPreference='SilentlyContinue'; $p=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('${encodedPath}')); $tokens=$null; $errors=$null; [void][Management.Automation.Language.Parser]::ParseFile($p,[ref]$tokens,[ref]$errors); @{ok=(@($errors).Count -eq 0);errors=@($errors | ForEach-Object { @{line=$_.Extent.StartLineNumber;column=$_.Extent.StartColumnNumber;id=$_.ErrorId} })} | ConvertTo-Json -Depth 4 -Compress`).trim());
   if (!report.native_parse.ok) report.aborted = 'adapted PowerShell parser rejected source; no app launched';
   else {
-    const run = spawnSync(psBin, ['-NoProfile', '-NonInteractive', '-File', win(join(work, 'runner.ps1')), '-Electron', electron, '-Stage', win(stage), '-UserData', win(userData), '-StepsFile', win(join(work, 'steps.json')), '-OutDir', win(join(work, 'out')), '-Edge', edge, '-AppTemp', win(join(work, 'apptemp'))], { cwd: '/mnt/c', timeout: 140000, maxBuffer: 4 * 1024 * 1024 });
+    const run = spawnSync(psBin, ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'RemoteSigned', '-File', win(join(work, 'runner.ps1')), '-Electron', electron, '-Stage', win(stage), '-UserData', win(userData), '-StepsFile', win(join(work, 'steps.json')), '-OutDir', win(join(work, 'out')), '-Edge', edge, '-AppTemp', win(join(work, 'apptemp'))], { cwd: '/mnt/c', timeout: 140000, maxBuffer: 4 * 1024 * 1024 });
     report.launcher = { status: run.status, signal: run.signal, timeout: run.error?.code === 'ETIMEDOUT' };
     writeFileSync(join(out, 'runner.stdout.bin'), run.stdout ?? Buffer.alloc(0)); writeFileSync(join(out, 'runner.stderr.bin'), run.stderr ?? Buffer.alloc(0));
     if (run.status !== 0) report.aborted = 'native launcher failed; read preserved native diagnostics';

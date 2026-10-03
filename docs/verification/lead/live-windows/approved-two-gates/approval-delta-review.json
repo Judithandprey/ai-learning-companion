@@ -1,0 +1,102 @@
+{
+  "decision": "APPROVE small approved-execution delta",
+  "baseline": "576bce7e845a592bd486bd73bbc94a92ca524e71",
+  "approval_id": "approved-two-gates-20261002:571427dcdc434c0f820236892925aedf",
+  "node_syntax_exit": 0,
+  "checks": [
+    {
+      "kind": "source",
+      "path": "qa_visible_candidate.mjs",
+      "passed": true
+    },
+    {
+      "kind": "source",
+      "path": "qa_display_admission.ps1",
+      "passed": true
+    },
+    {
+      "kind": "source",
+      "path": "qa_visible_drag.mjs",
+      "passed": true
+    },
+    {
+      "kind": "source",
+      "path": "signin_cleanup.mjs",
+      "passed": true
+    },
+    {
+      "kind": "source",
+      "path": "qa-electron-runner.ps1",
+      "passed": true
+    },
+    {
+      "kind": "source",
+      "path": "surface.html",
+      "passed": true
+    },
+    {
+      "kind": "payload",
+      "path": "runner.ps1",
+      "passed": true
+    },
+    {
+      "kind": "payload",
+      "path": "steps.json",
+      "passed": true
+    },
+    {
+      "kind": "payload",
+      "path": "surface.html",
+      "passed": true
+    },
+    {
+      "kind": "artifact",
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-correction/README.md",
+      "passed": true
+    },
+    {
+      "kind": "artifact",
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-correction/candidate/candidate.json",
+      "passed": true
+    },
+    {
+      "kind": "artifact",
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-correction/candidate/runner.ps1",
+      "passed": true
+    },
+    {
+      "kind": "artifact",
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-correction/candidate/steps.json",
+      "passed": true
+    },
+    {
+      "kind": "artifact",
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-correction/candidate/surface.html",
+      "passed": true
+    },
+    {
+      "kind": "artifact",
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-correction/offline-controls.json",
+      "passed": true
+    },
+    {
+      "kind": "artifact",
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-correction/pinned-binary-admission.json",
+      "passed": true
+    },
+    {
+      "kind": "artifact",
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-correction/powershell-syntax.json",
+      "passed": true
+    },
+    {
+      "kind": "artifact",
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-correction/source-and-preservation.json",
+      "passed": true
+    }
+  ],
+  "approved_argv_only_adds_process_RemoteSigned": true,
+  "payloads_unchanged": true,
+  "native_executed": false,
+  "repository_edits_by_reviewer": false
+}

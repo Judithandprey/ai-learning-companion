@@ -8,8 +8,8 @@
     },
     {
       "path": "docs/verification/qa/p0-13-live-1755153/pre01-correction/candidate/candidate.json",
-      "bytes": 5442,
-      "sha256": "6c8aaabd93308ca46a83bc59f6a7685d6bcf7e39168cf1684b21c37ce29e9373"
+      "bytes": 5807,
+      "sha256": "fa1e63fd22bf367e8a40afea9bcd6f765d025c3465bd9dc05ccfe6546f759f60"
     },
     {
       "path": "docs/verification/qa/p0-13-live-1755153/pre01-correction/candidate/runner.ps1",

@@ -1,4 +1,8 @@
-# PRE-01 correction integrated; exact script permission pending
+# PRE-01 correction integrated; human approved exact script execution
+
+Current continuation: the human explicitly approved the process-only request on 2026-10-02.
+See [approval and execution coordination](../../../../../approved-two-gates/README.md).
+The original review below remains evidence of the prepared candidate, not native execution.
 
 2026-10-02. Actual QA message `handoff_ac69e954a91c3abad3e4e8ef3ccd1c12`
 delivers `bcb2b55142ce382c713e5651a9fce13f38f61019`, parent

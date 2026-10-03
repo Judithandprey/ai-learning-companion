@@ -1,0 +1,14 @@
+{
+  "baseline": "576bce7",
+  "approval_id": "approved-two-gates-20261002:571427dcdc434c0f820236892925aedf",
+  "ok": true,
+  "route_id": "route_8e71e8f65f70405ea087013fdae2efbc",
+  "action": "instruction",
+  "accepted": true,
+  "mode": "async_route_v1",
+  "delivery_mode": "mailbox",
+  "message_id": "handoff_65f7230482b6e41f0f374a7affe5dea3",
+  "duplicate": false,
+  "state": "unread",
+  "execution_started": false
+}
