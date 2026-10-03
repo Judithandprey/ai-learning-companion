@@ -1,0 +1,3 @@
+# Preserve native result bytes and foreground process output as observed.
+runner-results.json -text -whitespace
+*.bin -text -whitespace

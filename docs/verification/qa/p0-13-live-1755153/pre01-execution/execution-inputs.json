@@ -1,0 +1,34 @@
+{
+  "kind": "exact-approved-execution-inputs",
+  "source_review_and_approval_commit": "69c06ea58696a2c76bbfd943cc7dfa7fb5b15e5b",
+  "actual_qa_merge_commit": "dbbd890fe1122e70c6b9651f0ba8092d4de88a45",
+  "production_commit": "175515308f509fb8c0f531dbdb10e57313fcde5a",
+  "approval_id": "approved-two-gates-20261002:571427dcdc434c0f820236892925aedf",
+  "payloads": {
+    "runner.ps1": {
+      "candidate_sha256": "0f6d0b28b7a7bf92adf437dc4d679ea3e53daea73e56c450a5cf34bd7b1f10ec",
+      "actual_native_scratch_sha256": "0f6d0b28b7a7bf92adf437dc4d679ea3e53daea73e56c450a5cf34bd7b1f10ec",
+      "match": true
+    },
+    "steps.json": {
+      "candidate_sha256": "68f86fe275d5a1efaeb8e531848444e166e9aad11dfb7897987d5a94ca84fdae",
+      "actual_native_scratch_sha256": "68f86fe275d5a1efaeb8e531848444e166e9aad11dfb7897987d5a94ca84fdae",
+      "match": true
+    },
+    "surface.html": {
+      "candidate_sha256": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2",
+      "actual_native_scratch_sha256": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2",
+      "match": true
+    }
+  },
+  "sources": {
+    "qa_visible_candidate.mjs": "505ed53900060d1cd2c3c6394f2ca4b288cc0058ff6bbc4e4cd892e4c2a14e50",
+    "qa_display_admission.ps1": "b4f586b7c987f533f318eb72ebffe318482ed2c2aa7f7f720574147071747590",
+    "qa_visible_drag.mjs": "fa7491499aad6c289793fec195a11993b3d102415347a7251e82592362940d1e",
+    "signin_cleanup.mjs": "efa06295262ea27006769e0dea363051fbd6401f4c810d2049db5937ee939b2b",
+    "qa-electron-runner.ps1": "1a0dfc3f178a1d6f59233c2a7d6a836ce68b18887affd2f6431c2d4ef5c48218",
+    "surface.html": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2"
+  },
+  "candidate_manifest_sha256": "fa1e63fd22bf367e8a40afea9bcd6f765d025c3465bd9dc05ccfe6546f759f60",
+  "payloads_regenerated_or_changed": false
+}

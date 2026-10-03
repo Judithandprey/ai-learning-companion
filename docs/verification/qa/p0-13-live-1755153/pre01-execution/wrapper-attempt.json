@@ -1,0 +1,20 @@
+{
+  "state": "completed",
+  "started_at": "2026-10-03T03:33:31.955210+00:00",
+  "finished_at": "2026-10-03T03:33:53.574847+00:00",
+  "elapsed_seconds": 21.62,
+  "command": [
+    "/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node",
+    "tests/e2e/windows/qa_visible_drag.mjs",
+    "docs/verification/qa/p0-13-live-1755153/pre01-execution",
+    "docs/verification/qa/p0-13-live-1755153/pre01-correction/candidate/candidate.json"
+  ],
+  "exit_code": 1,
+  "supervisor_timeout": false,
+  "attempt": 1,
+  "retry_allowed": false,
+  "provider_attempts": 0,
+  "stdout_bytes": 253,
+  "stderr_bytes": 0,
+  "evidence_folder_created": true
+}

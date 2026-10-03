@@ -1,0 +1,104 @@
+{
+  "kind": "explicit-qa-resource-release",
+  "display": "OFF / RELEASED",
+  "account": "OFF / NOT_ACQUIRED",
+  "audio": "OFF / NOT_ACQUIRED",
+  "basis": "Actual exact-identity wrapper cleanup after stopped attempt; elapsed time is not release.",
+  "electron": {
+    "owned_seen": [],
+    "asked_to_close": [],
+    "ended_by_force": [],
+    "signals": [],
+    "errors": [],
+    "exit": "confirmed",
+    "left_running": [],
+    "not_revalidated": [],
+    "unresolved": [],
+    "not_owned_on_the_port": [],
+    "foreign": [],
+    "children": [],
+    "folder": "kept",
+    "folder_reason": "this check did not make the folder: it is not this check's to remove"
+  },
+  "edge": {
+    "owned_seen": [
+      {
+        "pid": 75156,
+        "created": "639265952241359270",
+        "kind": "app"
+      }
+    ],
+    "asked_to_close": [
+      {
+        "pid": 75156,
+        "created": "639265952241359270"
+      }
+    ],
+    "ended_by_force": [],
+    "signals": [
+      {
+        "pid": 75156,
+        "created": "639265952241359270",
+        "how": "close",
+        "answer": "signalled"
+      }
+    ],
+    "errors": [],
+    "exit": "confirmed",
+    "left_running": [],
+    "not_revalidated": [],
+    "unresolved": [],
+    "not_owned_on_the_port": [],
+    "foreign": [
+      23092
+    ],
+    "children": [
+      21896,
+      34188,
+      9052,
+      8156,
+      5396,
+      5312,
+      48148,
+      51928,
+      43860,
+      42008,
+      47228,
+      41972,
+      54532,
+      58448,
+      4068,
+      69364,
+      67720,
+      62708,
+      42544,
+      29292,
+      78912,
+      55828,
+      64724,
+      61484,
+      36076,
+      66452,
+      82280,
+      37228,
+      82776,
+      84292,
+      62592,
+      15160
+    ],
+    "folder": "kept",
+    "folder_reason": "this check did not make the folder: it is not this check's to remove"
+  },
+  "product_launched": false,
+  "capture_start_reached": false,
+  "drags_reached": false,
+  "provider_requests": 0,
+  "real_attempts_used": 0,
+  "real_attempt_ceiling": 4,
+  "real_actions": "all NOT_RUN",
+  "voice": "unassigned/unspent",
+  "old_selected_image_slot": "retired",
+  "retry": false,
+  "scratch_preserved": "/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-visible-pre01-6eada7a925a94308895331ed6cf7465a",
+  "limitation": "Confirmed cleanup covers checked launch roots and debugging ports, not every reported Chromium child or all desktop apps. Foreign identities were not signalled."
+}

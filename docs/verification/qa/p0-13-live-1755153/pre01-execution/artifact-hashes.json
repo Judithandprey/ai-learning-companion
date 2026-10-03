@@ -1,0 +1,75 @@
+{
+  "algorithm": "SHA256 of exact stored bytes; excludes this index",
+  "files": [
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-execution/.gitattributes",
+      "bytes": 136,
+      "sha256": "b0c9d77e15210c7bee9c92dc9a6bec7fac5686d8ec8c4bdb73a0b9e436e4563f"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-execution/README.md",
+      "bytes": 7355,
+      "sha256": "73d910dab65786d1f7c5d7f555298f776226477e8275990e7245bab4d9826fb4"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-execution/current-display-use-observer.ps1",
+      "bytes": 2647,
+      "sha256": "9c906549b6183fa99897a941cc180f023b45e2bca5a5c2ca2b208a1f41a0c7e8"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-execution/current-display-use.json",
+      "bytes": 936,
+      "sha256": "73102de60eee91431d00d7a2938a123547639732c6b27308b9beaee2c91b6eb3"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-execution/execution-inputs.json",
+      "bytes": 1851,
+      "sha256": "fa70ceeb9fc06195122cac575af8d69a04eb38463712630c14b7fed0d9696dce"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-execution/release.json",
+      "bytes": 2425,
+      "sha256": "874573f71e28009fc4110c106ea660c81ec602345005ea546cf8f106581075fa"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-execution/run.json",
+      "bytes": 5346,
+      "sha256": "914b24ab91dcf501e313e8ce915e7a7d3161ba039a684cf2cc3d36250485aeab"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-execution/runner-results.json",
+      "bytes": 9516,
+      "sha256": "4b268427b00d42e046deae01ebbe16a55604427b38dae5c32c95985b5e9ff5f7"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-execution/runner.stderr.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-execution/runner.stdout.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-execution/stage-after.json",
+      "bytes": 2517,
+      "sha256": "8228de69ab11a269ff22d81cc232e94467efc71b8f83f3e374042ece00e91c01"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-execution/wrapper-attempt.json",
+      "bytes": 669,
+      "sha256": "30238d9e7885556cbd7cd43aed02c1e6e226e4ffa82a6484b90efea5c26b3cfc"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-execution/wrapper.stderr.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-execution/wrapper.stdout.bin",
+      "bytes": 253,
+      "sha256": "2225bb89108ae5c6932b4063dd87c3d2f5e2cea41b72a21082aa7429938be7c3"
+    }
+  ]
+}

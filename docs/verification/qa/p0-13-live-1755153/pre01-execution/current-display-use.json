@@ -1,0 +1,47 @@
+{
+  "explicit_execution_policies": [
+    {
+      "policy": "Undefined",
+      "scope": "MachinePolicy"
+    },
+    {
+      "policy": "Undefined",
+      "scope": "UserPolicy"
+    },
+    {
+      "policy": "Undefined",
+      "scope": "Process"
+    },
+    {
+      "policy": "Undefined",
+      "scope": "CurrentUser"
+    },
+    {
+      "policy": "Undefined",
+      "scope": "LocalMachine"
+    }
+  ],
+  "foreground": {
+    "physical_rect": [
+      -13,
+      -13,
+      2573,
+      1517
+    ],
+    "visible": true,
+    "pid": 76772,
+    "dpi": 192,
+    "stable": true,
+    "process": "ChatGPT"
+  },
+  "capture_or_focus_or_input_or_account_actions": false,
+  "kind": "current-nonpixel-display-use-metadata",
+  "pixels_or_titles_or_typed_content_read": false,
+  "input": {
+    "idle_milliseconds": 968313,
+    "any_key_or_button_held": false
+  },
+  "observed_at": "2026-10-03T03:31:30.6585310Z",
+  "point_in_time_only": true,
+  "host_exit": 0
+}

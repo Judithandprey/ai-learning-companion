@@ -1,0 +1,138 @@
+﻿{
+    "steps":  [
+                  {
+                      "i":  1,
+                      "ok":  true,
+                      "at":  "2026-10-03T03:33:44.0953647Z",
+                      "kind":  "edgeStart"
+                  },
+                  {
+                      "i":  2,
+                      "ok":  true,
+                      "at":  "2026-10-03T03:33:44.8570873Z",
+                      "kind":  "window",
+                      "window":  "edge",
+                      "show":  "raise",
+                      "foreground":  true,
+                      "is_foreground":  true
+                  },
+                  {
+                      "i":  3,
+                      "ok":  true,
+                      "at":  "2026-10-03T03:33:45.9715526Z",
+                      "kind":  "edgeFullscreen",
+                      "before":  "fullscreen",
+                      "after":  "fullscreen"
+                  },
+                  {
+                      "i":  4,
+                      "ok":  true,
+                      "at":  "2026-10-03T03:33:46.0639441Z",
+                      "kind":  "eval",
+                      "target":  "edge",
+                      "as":  "surface_before"
+                  },
+                  {
+                      "i":  5,
+                      "ok":  false,
+                      "at":  "2026-10-03T03:33:46.0707873Z",
+                      "kind":  "onTop",
+                      "window":  "edge",
+                      "points":  16,
+                      "covered":  [
+                                      {
+                                          "point":  [
+                                                        20,
+                                                        1580
+                                                    ],
+                                          "process":  "explorer"
+                                      },
+                                      {
+                                          "point":  [
+                                                        2540,
+                                                        1580
+                                                    ],
+                                          "process":  "explorer"
+                                      }
+                                  ],
+                      "error":  "the edge window is covered at 2 of 16 points by: explorer"
+                  }
+              ],
+    "values":  {
+                   "qa_display_admission_001":  {
+                                                    "phase":  "initialize",
+                                                    "at":  "2026-10-03T03:33:44.0663076Z",
+                                                    "accepted":  true,
+                                                    "native":  {
+                                                                   "count":  1,
+                                                                   "device":  "\\\\.\\DISPLAY1",
+                                                                   "monitor_handle":  "65537",
+                                                                   "primary":  true,
+                                                                   "monitor_bounds":  [
+                                                                                          0,
+                                                                                          0,
+                                                                                          2560,
+                                                                                          1600
+                                                                                      ],
+                                                                   "work_bounds":  [
+                                                                                       0,
+                                                                                       0,
+                                                                                       2560,
+                                                                                       1504
+                                                                                   ],
+                                                                   "dpi":  192
+                                                               }
+                                                },
+                   "qa_display_admission_002":  {
+                                                    "phase":  "before_browser_launch",
+                                                    "at":  "2026-10-03T03:33:44.1033675Z",
+                                                    "accepted":  true,
+                                                    "native":  {
+                                                                   "count":  1,
+                                                                   "device":  "\\\\.\\DISPLAY1",
+                                                                   "monitor_handle":  "65537",
+                                                                   "primary":  true,
+                                                                   "monitor_bounds":  [
+                                                                                          0,
+                                                                                          0,
+                                                                                          2560,
+                                                                                          1600
+                                                                                      ],
+                                                                   "work_bounds":  [
+                                                                                       0,
+                                                                                       0,
+                                                                                       2560,
+                                                                                       1504
+                                                                                   ],
+                                                                   "dpi":  192
+                                                               }
+                                                },
+                   "surface_before":  "{\"format\":\"qa-subscription-surface/2\",\"generated_at\":\"2026-10-03T03:33:44.587Z\",\"read_at\":\"2026-10-03T03:33:46.069Z\",\"grid\":{\"x\":40,\"y\":90,\"cols\":4,\"rows\":3,\"w\":190,\"h\":150,\"gap\":20},\"cards\":[{\"index\":0,\"number\":6468,\"shape\":\"triangle\",\"color\":\"blue\",\"rect_dip\":{\"x\":40,\"y\":90,\"width\":190,\"height\":150}},{\"index\":1,\"number\":5635,\"shape\":\"triangle\",\"color\":\"red\",\"rect_dip\":{\"x\":250,\"y\":90,\"width\":190,\"height\":150}},{\"index\":2,\"number\":7362,\"shape\":\"square\",\"color\":\"green\",\"rect_dip\":{\"x\":460,\"y\":90,\"width\":190,\"height\":150}},{\"index\":3,\"number\":2927,\"shape\":\"square\",\"color\":\"green\",\"rect_dip\":{\"x\":670,\"y\":90,\"width\":190,\"height\":150}},{\"index\":4,\"number\":7254,\"shape\":\"triangle\",\"color\":\"red\",\"rect_dip\":{\"x\":40,\"y\":260,\"width\":190,\"height\":150}},{\"index\":5,\"number\":4806,\"shape\":\"diamond\",\"color\":\"green\",\"rect_dip\":{\"x\":250,\"y\":260,\"width\":190,\"height\":150}},{\"index\":6,\"number\":1673,\"shape\":\"triangle\",\"color\":\"red\",\"rect_dip\":{\"x\":460,\"y\":260,\"width\":190,\"height\":150}},{\"index\":7,\"number\":2896,\"shape\":\"square\",\"color\":\"blue\",\"rect_dip\":{\"x\":670,\"y\":260,\"width\":190,\"height\":150}},{\"index\":8,\"number\":4797,\"shape\":\"star\",\"color\":\"orange\",\"rect_dip\":{\"x\":40,\"y\":430,\"width\":190,\"height\":150}},{\"index\":9,\"number\":5377,\"shape\":\"star\",\"color\":\"green\",\"rect_dip\":{\"x\":250,\"y\":430,\"width\":190,\"height\":150}},{\"index\":10,\"number\":3188,\"shape\":\"heart\",\"color\":\"red\",\"rect_dip\":{\"x\":460,\"y\":430,\"width\":190,\"height\":150}},{\"index\":11,\"number\":3223,\"shape\":\"heart\",\"color\":\"orange\",\"rect_dip\":{\"x\":670,\"y\":430,\"width\":190,\"height\":150}}],\"viewport_offset_dip\":{\"x\":0,\"y\":0},\"viewport\":{\"width\":1280,\"height\":800,\"dpr\":2,\"screen\":[1280,800]},\"fits\":true,\"full_screen\":true,\"dom_text\":\"\",\"title\":\"QA test surface\",\"url_has_query\":false}"
+               },
+    "errors":  [
+                   "step 5: the edge window is covered at 2 of 16 points by: explorer"
+               ],
+    "processes":  {
+                      "edge":  {
+                                   "pid":  75156
+                               }
+                  },
+    "foreign":  {
+                    "start":  null,
+                    "end":  null
+                },
+    "cursor":  {
+                   "start":  [
+                                 1576,
+                                 1195
+                             ],
+                   "end":  [
+                               1576,
+                               1195
+                           ]
+               },
+    "aborted":  "the edge window is covered at 2 of 16 points by: explorer",
+    "wsl_seen":  [
+
+                 ]
+}
