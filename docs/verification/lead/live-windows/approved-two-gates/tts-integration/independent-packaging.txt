@@ -1,0 +1,7 @@
+copied src/main/native-voice.mjs
+copied src/main/static.html
+native helper omitted (explicit verified --native-build required)
+copied src/main/native-voice.mjs
+copied src/main/static.html
+bundled native helper 3992e38aa17057a51bb5c80b8cd19bdcbe2dc0a73d619aaa9c13d026059d917d
+{"pass":18,"fail":0,"scope":"Portable synthetic receipt/packaging only. No compiler, executable, helper or Windows process executed.","fixture_root":"/tmp/lc-native-packaging-sce3jM"}

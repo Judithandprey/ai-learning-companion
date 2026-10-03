@@ -1,0 +1,10 @@
+{
+  "evidence-audit.json": "abb580a964110e0743d6e19c688125b36e2a8ae4fe86989d3ab78ac030ea34c3",
+  "main-focused.txt": "2e720973cd6e7d1a67472363f79d957b8f200c96a75983ec9213043c9a63fd95",
+  "stage-audit.json": "39851d4afa4e8feba7f63a9e8f6a40cc263400f0be034573c1c42e9ac5195544",
+  "compile.json": "feffa19d564031d9a0cf112ec61140ca01946465b1bd91ff0f83b337d190c407",
+  "independent-main.txt": "c313a82f3c0c0a2fb5768377d57dbe58dfed2a94d4f7cb2e9cc7f61cddb7d8c4",
+  "independent-native.txt": "f1c643ba25b5a1a217f98a208187ff0197c12054fa46da2fc68f679cb0034f66",
+  "independent-packaging.txt": "9d5d13007607c3a34622aed697043eeed7f240c4cfbceddcb6a7897276aa1880",
+  "stage-manifest.json": "1bf398257334ab22961a91036f5a3c8bc805cce14f820f554d30cd8132d73fda"
+}

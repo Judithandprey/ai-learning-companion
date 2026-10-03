@@ -1,0 +1,1034 @@
+{
+  "candidate": "dff86d972d09115b9b8a480be43e33e9d3069d1a",
+  "checked": 204,
+  "failures": [],
+  "groups": {
+    "compiled_bundle_sha256": 77,
+    "evidence_sha256": 17,
+    "local_build": 3,
+    "requirements_sha256": 13,
+    "source_sha256": 94
+  },
+  "checks": [
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/native/NativeSpeech.cs",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/native/README.md",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/package-lock.json",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/package.json",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/scripts/build-native.mjs",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/scripts/check-native-memory.mjs",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/scripts/copy-static.mjs",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/scripts/ingress-fixtures.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/scripts/ingress-harness-capture.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/scripts/ingress-harness-ink-capture.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/scripts/launch.mjs",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/scripts/link-quit-check.mjs",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/scripts/self-test.mjs",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/scripts/stage.mjs",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/scripts/windows-runtime.mjs",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/scripts/windows-stage.mjs",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/src/main/capture-host.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/src/main/capture-link.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/src/main/loopback-http.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/src/main/main.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/src/main/native-speech.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/src/main/native-voice.d.mts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/src/main/native-voice.mjs",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/src/main/self-test-course.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/src/main/self-test.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/src/main/subscription.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/src/main/uploader.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/src/preload/control.cjs",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/src/preload/overlay.cjs",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/src/renderer/control.css",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/src/renderer/control.html",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/src/renderer/control.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/src/renderer/overlay.css",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/src/renderer/overlay.html",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/src/renderer/overlay.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/src/renderer/probe.css",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/src/renderer/probe.html",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/src/renderer/probe.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/src/shared/capture-plan.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/src/shared/desktop-ink.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/src/shared/frame-ingress.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/src/shared/live.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/src/shared/placement.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/src/shared/retention.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/src/shared/samples.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/src/shared/voice.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/app-ask.test.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/app-link.test.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/app-live.test.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/backend-host.py",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/capture-host.test.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/capture-link-record.test.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/capture-link-rules.test.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/capture-link.test.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/capture-plan.test.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/context-pictures.test.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/control-link.test.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/control-live.test.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/control-page.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/fake-connector.mjs",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/frame-ingress.test.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/host-brief.py",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/host-fixture.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/host-flood.py",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/host-memory.py",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/host-stubborn.py",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/ink-original.test.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/link-fakes.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/link-world.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/live-bridge-child.py",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/live-bridge.test.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/live.test.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/main-harness.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/main-lifecycle.test.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/native-speech.test.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/native-voice.test.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/overlay-alignment.test.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/overlay-capture.test.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/overlay-frames.test.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/overlay-page.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/overlay-stop.test.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/overlay-surfaces.test.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/owned-host-flow.test.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/owned-host-run.py",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/placement.test.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/png.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/retention-correction.test.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/retention.test.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/shared.test.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/source.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/subscription-fakes.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/subscription.test.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tests/uploader.test.ts",
+      "pass": true
+    },
+    {
+      "group": "source_sha256",
+      "path": "apps/windows/tsconfig.json",
+      "pass": true
+    },
+    {
+      "group": "requirements_sha256",
+      "path": "docs/requirements.md",
+      "pass": true
+    },
+    {
+      "group": "requirements_sha256",
+      "path": "docs/requirements.en.md",
+      "pass": true
+    },
+    {
+      "group": "requirements_sha256",
+      "path": "docs/requirements-traceability.md",
+      "pass": true
+    },
+    {
+      "group": "requirements_sha256",
+      "path": "docs/requirements/intent-and-decisions.md",
+      "pass": true
+    },
+    {
+      "group": "requirements_sha256",
+      "path": "docs/requirements/intent-and-decisions.en.md",
+      "pass": true
+    },
+    {
+      "group": "requirements_sha256",
+      "path": "docs/requirements/problem-solving-companion.md",
+      "pass": true
+    },
+    {
+      "group": "requirements_sha256",
+      "path": "docs/requirements/problem-solving-companion.en.md",
+      "pass": true
+    },
+    {
+      "group": "requirements_sha256",
+      "path": "docs/requirements/audio-screen-interpretation.md",
+      "pass": true
+    },
+    {
+      "group": "requirements_sha256",
+      "path": "docs/tasks.md",
+      "pass": true
+    },
+    {
+      "group": "requirements_sha256",
+      "path": "docs/workflow.md",
+      "pass": true
+    },
+    {
+      "group": "requirements_sha256",
+      "path": "docs/verification/lead/live-windows/approved-two-gates/README.md",
+      "pass": true
+    },
+    {
+      "group": "requirements_sha256",
+      "path": "docs/verification/lead/live-windows/transport-review/native-tts-review.md",
+      "pass": true
+    },
+    {
+      "group": "requirements_sha256",
+      "path": "docs/verification/qa/p0-13-subscription-ask-plan.md",
+      "pass": true
+    },
+    {
+      "group": "evidence_sha256",
+      "path": "build.txt",
+      "pass": true
+    },
+    {
+      "group": "evidence_sha256",
+      "path": "compile.json",
+      "pass": true
+    },
+    {
+      "group": "evidence_sha256",
+      "path": "compile.txt",
+      "pass": true
+    },
+    {
+      "group": "evidence_sha256",
+      "path": "executed-NativeSpeech.cs",
+      "pass": true
+    },
+    {
+      "group": "evidence_sha256",
+      "path": "executed-build.json",
+      "pass": true
+    },
+    {
+      "group": "evidence_sha256",
+      "path": "executed-check-native-memory.mjs",
+      "pass": true
+    },
+    {
+      "group": "evidence_sha256",
+      "path": "executed-native-voice.mjs",
+      "pass": true
+    },
+    {
+      "group": "evidence_sha256",
+      "path": "focused-before-loader-hardening.txt",
+      "pass": true
+    },
+    {
+      "group": "evidence_sha256",
+      "path": "focused-final.txt",
+      "pass": true
+    },
+    {
+      "group": "evidence_sha256",
+      "path": "independent-review.md",
+      "pass": true
+    },
+    {
+      "group": "evidence_sha256",
+      "path": "loader.txt",
+      "pass": true
+    },
+    {
+      "group": "evidence_sha256",
+      "path": "main-focused-final.txt",
+      "pass": true
+    },
+    {
+      "group": "evidence_sha256",
+      "path": "main-focused-first.txt",
+      "pass": true
+    },
+    {
+      "group": "evidence_sha256",
+      "path": "memory.txt",
+      "pass": true
+    },
+    {
+      "group": "evidence_sha256",
+      "path": "packaging-probe.mjs",
+      "pass": true
+    },
+    {
+      "group": "evidence_sha256",
+      "path": "packaging-result.json",
+      "pass": true
+    },
+    {
+      "group": "evidence_sha256",
+      "path": "result.json",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/safari-extension/src/ink.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/safari-extension/src/mode.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/native/NativeSpeech.cs",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/native/NativeSpeech.exe",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/native/build.json",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/scripts/ingress-fixtures.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/scripts/ingress-harness-capture.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/scripts/ingress-harness-ink-capture.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/src/main/capture-host.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/src/main/capture-link.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/src/main/loopback-http.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/src/main/main.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/src/main/native-speech.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/src/main/native-voice.mjs",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/src/main/self-test-course.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/src/main/self-test.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/src/main/subscription.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/src/main/uploader.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/src/preload/control.cjs",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/src/preload/overlay.cjs",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/src/renderer/control.css",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/src/renderer/control.html",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/src/renderer/control.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/src/renderer/overlay.css",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/src/renderer/overlay.html",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/src/renderer/overlay.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/src/renderer/probe.css",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/src/renderer/probe.html",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/src/renderer/probe.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/src/shared/capture-plan.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/src/shared/desktop-ink.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/src/shared/frame-ingress.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/src/shared/live.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/src/shared/placement.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/src/shared/retention.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/src/shared/samples.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/src/shared/subscription-ask.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/src/shared/voice.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/tests/app-ask.test.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/tests/app-link.test.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/tests/app-live.test.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/tests/capture-host.test.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/tests/capture-link-record.test.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/tests/capture-link-rules.test.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/tests/capture-link.test.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/tests/capture-plan.test.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/tests/context-pictures.test.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/tests/control-link.test.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/tests/control-live.test.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/tests/control-page.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/tests/frame-ingress.test.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/tests/host-fixture.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/tests/ink-original.test.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/tests/link-fakes.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/tests/link-world.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/tests/live-bridge.test.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/tests/live.test.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/tests/main-harness.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/tests/main-lifecycle.test.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/tests/native-speech.test.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/tests/native-voice.test.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/tests/overlay-alignment.test.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/tests/overlay-capture.test.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/tests/overlay-frames.test.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/tests/overlay-page.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/tests/overlay-stop.test.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/tests/overlay-surfaces.test.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/tests/owned-host-flow.test.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/tests/placement.test.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/tests/png.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/tests/retention-correction.test.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/tests/retention.test.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/tests/shared.test.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/tests/source.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/tests/subscription-fakes.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/tests/subscription.test.js",
+      "pass": true
+    },
+    {
+      "group": "compiled_bundle_sha256",
+      "path": "apps/windows/tests/uploader.test.js",
+      "pass": true
+    },
+    {
+      "group": "local_build",
+      "path": "NativeSpeech.cs",
+      "pass": true
+    },
+    {
+      "group": "local_build",
+      "path": "NativeSpeech.exe",
+      "pass": true
+    },
+    {
+      "group": "local_build",
+      "path": "build.json",
+      "pass": true
+    }
+  ]
+}

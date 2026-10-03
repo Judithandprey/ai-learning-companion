@@ -1,0 +1,20 @@
+{
+  "commit": "52be105a148a28e677f83cc4b7077665f2ff372c",
+  "stage_name": "lc-windows-tts-52be105",
+  "files": 77,
+  "all_file_hashes_match": true,
+  "exact_file_set": true,
+  "tree_sha256": "531943a83d3572ca9c686c7d8cd62bd88da5b0401b84050487722b8e87a02669",
+  "tree_matches": true,
+  "entry_sha256": "9969b8afa2b3f3df82d3733c5d6e8adec5c34393af49d2d10c88704d68982128",
+  "helper_sha256": "21c7bed3fedcdefdccc2f45b799bfebb417df7a56f44f656523d303e7b349e10",
+  "source_sha256": "c4c1f127a85ff1c871ce98895d51584af7936bbf23f3a35c7418002f201cbbfd",
+  "compile_status": 0,
+  "compile_error": null,
+  "new_helper_execution": false,
+  "app_launched": false,
+  "audible": false,
+  "mic": false,
+  "account": false,
+  "display": false
+}

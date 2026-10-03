@@ -90,6 +90,7 @@ step5 stopped on Explorer owning two bottom corner points before product launch.
 [Reviewed actual result and existing-owner continuation](qa-result/README.md)
 retain14/16 ownership, four Edge step passes, all later product/capture/drag
 NOT_RUN and0/4 real requests. QA now prepares only the local test-surface
-placement correction offline; no retry or new lease. Web TTS implementation
-continues independently. These are actual execution boundaries, not full-product
+placement correction offline; no retry or new lease. Web TTS source is now integrated and separately staged;
+[actual delivery, independent review and local compilation](tts-integration/README.md)
+retain the device/audibility limits. These are actual execution boundaries, not full-product
 completion or a repeated permission dependency.
