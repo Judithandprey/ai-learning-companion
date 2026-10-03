@@ -1,0 +1,205 @@
+{
+  "decision": "APPROVE evidence integration; diagnostic remains BLOCKED at step5",
+  "commit": "6903beb2c0e2adeec0298a15ffe2bc329d8a097c",
+  "parent": "dbbd890fe1122e70c6b9651f0ba8092d4de88a45",
+  "scope": "Saved bytes/source inspection only. No tests, Windows/PowerShell/native calls, scenario recreation, account/display/capture activity, network or repository writes.",
+  "artifacts": [
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-execution/.gitattributes",
+      "bytes": 136,
+      "sha256": "b0c9d77e15210c7bee9c92dc9a6bec7fac5686d8ec8c4bdb73a0b9e436e4563f",
+      "matched": true
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-execution/README.md",
+      "bytes": 7355,
+      "sha256": "73d910dab65786d1f7c5d7f555298f776226477e8275990e7245bab4d9826fb4",
+      "matched": true
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-execution/current-display-use-observer.ps1",
+      "bytes": 2647,
+      "sha256": "9c906549b6183fa99897a941cc180f023b45e2bca5a5c2ca2b208a1f41a0c7e8",
+      "matched": true
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-execution/current-display-use.json",
+      "bytes": 936,
+      "sha256": "73102de60eee91431d00d7a2938a123547639732c6b27308b9beaee2c91b6eb3",
+      "matched": true
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-execution/execution-inputs.json",
+      "bytes": 1851,
+      "sha256": "fa70ceeb9fc06195122cac575af8d69a04eb38463712630c14b7fed0d9696dce",
+      "matched": true
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-execution/release.json",
+      "bytes": 2425,
+      "sha256": "874573f71e28009fc4110c106ea660c81ec602345005ea546cf8f106581075fa",
+      "matched": true
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-execution/run.json",
+      "bytes": 5346,
+      "sha256": "914b24ab91dcf501e313e8ce915e7a7d3161ba039a684cf2cc3d36250485aeab",
+      "matched": true
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-execution/runner-results.json",
+      "bytes": 9516,
+      "sha256": "4b268427b00d42e046deae01ebbe16a55604427b38dae5c32c95985b5e9ff5f7",
+      "matched": true
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-execution/runner.stderr.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-execution/runner.stdout.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-execution/stage-after.json",
+      "bytes": 2517,
+      "sha256": "8228de69ab11a269ff22d81cc232e94467efc71b8f83f3e374042ece00e91c01",
+      "matched": true
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-execution/wrapper-attempt.json",
+      "bytes": 669,
+      "sha256": "30238d9e7885556cbd7cd43aed02c1e6e226e4ffa82a6484b90efea5c26b3cfc",
+      "matched": true
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-execution/wrapper.stderr.bin",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "matched": true
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-execution/wrapper.stdout.bin",
+      "bytes": 253,
+      "sha256": "2225bb89108ae5c6932b4063dd87c3d2f5e2cea41b72a21082aa7429938be7c3",
+      "matched": true
+    }
+  ],
+  "sources": [
+    {
+      "path": "tests/e2e/windows/qa_visible_candidate.mjs",
+      "sha256": "505ed53900060d1cd2c3c6394f2ca4b288cc0058ff6bbc4e4cd892e4c2a14e50",
+      "matched": true
+    },
+    {
+      "path": "tests/e2e/windows/qa_display_admission.ps1",
+      "sha256": "b4f586b7c987f533f318eb72ebffe318482ed2c2aa7f7f720574147071747590",
+      "matched": true
+    },
+    {
+      "path": "tests/e2e/windows/qa_visible_drag.mjs",
+      "sha256": "fa7491499aad6c289793fec195a11993b3d102415347a7251e82592362940d1e",
+      "matched": true
+    },
+    {
+      "path": "tests/e2e/windows/signin_cleanup.mjs",
+      "sha256": "efa06295262ea27006769e0dea363051fbd6401f4c810d2049db5937ee939b2b",
+      "matched": true
+    },
+    {
+      "path": "tests/e2e/windows/qa-electron-runner.ps1",
+      "sha256": "1a0dfc3f178a1d6f59233c2a7d6a836ce68b18887affd2f6431c2d4ef5c48218",
+      "matched": true
+    },
+    {
+      "path": "tests/e2e/windows/surface.html",
+      "sha256": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2",
+      "matched": true
+    }
+  ],
+  "payloads": [
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-correction/candidate/runner.ps1",
+      "sha256": "0f6d0b28b7a7bf92adf437dc4d679ea3e53daea73e56c450a5cf34bd7b1f10ec",
+      "matched": true,
+      "native_scratch_limit": "Saved recorded digest only; no Windows scratch reread."
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-correction/candidate/steps.json",
+      "sha256": "68f86fe275d5a1efaeb8e531848444e166e9aad11dfb7897987d5a94ca84fdae",
+      "matched": true,
+      "native_scratch_limit": "Saved recorded digest only; no Windows scratch reread."
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/pre01-correction/candidate/surface.html",
+      "sha256": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2",
+      "matched": true,
+      "native_scratch_limit": "Saved recorded digest only; no Windows scratch reread."
+    }
+  ],
+  "consistency": {
+    "index_exact_14": true,
+    "source_exact_6": true,
+    "payload_exact_3": true,
+    "candidate_manifest_hash": true,
+    "manifest_matches_approved_and_parent": true,
+    "approved_marker": true,
+    "stage_before_after_identical": true,
+    "saved_stage_identity_matches_expected_manifest": true,
+    "stage_source_runtime_pins": true,
+    "only_5_steps": true,
+    "exact_coverage_failure": true,
+    "abort_propagates": true,
+    "native_exit_not_misreported_as_pass": true,
+    "no_product_or_capture_steps": true,
+    "same_native_baseline": true,
+    "cleanup_release_exact": true,
+    "electron_cleanup_no_owned_process_or_signal": true,
+    "edge_exact_close_no_force": true,
+    "cleanup_no_outstanding_root_identity": true,
+    "foreign_edge_not_signalled": true,
+    "wrapper_binary_output_lengths": true,
+    "exact_one_attempt_no_retry": true,
+    "real_ledger_0_of_4": true,
+    "resource_release_explicit": true,
+    "scratch_preserved": true
+  },
+  "all_consistent": true,
+  "contradictions": [],
+  "result": {
+    "successful_edge_steps": 4,
+    "failing_step": 5,
+    "failing_points": [
+      {
+        "point": [
+          20,
+          1580
+        ],
+        "process": "explorer"
+      },
+      {
+        "point": [
+          2540,
+          1580
+        ],
+        "process": "explorer"
+      }
+    ],
+    "product_launched": false,
+    "capture_start_reached": false,
+    "drag_executed": false,
+    "real_attempts": "0/4",
+    "cleanup": "Owned root/port checks confirmed; one exact Edge close, no force, foreign Edge untouched; explicit release."
+  },
+  "limits": [
+    "Explorer process identity at the two points is observed; window class/content and OS cause remain unknown.",
+    "Later Assert-QaSurfaceAdmission, product startup/capture, drag and real AI were not reached. Native single-display metadata has positive runtime evidence only; no multi-display/unknown runtime negative claims.",
+    "Stage/native-scratch equality is audited against saved digests and expected committed manifest; Windows files were not reread.",
+    "Confirmed cleanup covers checked launch roots and debug ports, not every Chromium child or all desktop applications.",
+    "Native PowerShell exit0 indicates its error-reporting path completed; wrapper exit1 and passed:false correctly preserve failure."
+  ]
+}

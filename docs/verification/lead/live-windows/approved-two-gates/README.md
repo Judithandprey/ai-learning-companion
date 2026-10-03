@@ -81,3 +81,15 @@ QA's normal baseline merge in progress and both approved source files in Web's
 assigned worktree with the reviewed hashes. This establishes resumed source work,
 not compilation, native diagnostic success or audible acceptance. Lead's next
 action is to review their actual bounded deliveries; there is no duplicate task.
+
+## Actual QA result
+
+The one approved attempt is complete and its display allocation explicitly
+released. Actual `6903beb` → `d007de2` shows the OS script refusal resolved, but
+step5 stopped on Explorer owning two bottom corner points before product launch.
+[Reviewed actual result and existing-owner continuation](qa-result/README.md)
+retain14/16 ownership, four Edge step passes, all later product/capture/drag
+NOT_RUN and0/4 real requests. QA now prepares only the local test-surface
+placement correction offline; no retry or new lease. Web TTS implementation
+continues independently. These are actual execution boundaries, not full-product
+completion or a repeated permission dependency.

@@ -1,0 +1,11 @@
+{
+  "baseline": "47fd01f",
+  "in_reply_to": "handoff_65884c9d789f5f9ed28bc2ef59ff71d2",
+  "route_id": "route_5930b6eb6cb842a891763391fadd766e",
+  "mode": "async_route_v1",
+  "message_id": "handoff_977a93a93d3c879e0d431416817712e5",
+  "accepted": true,
+  "state": "unread",
+  "execution_started": false,
+  "scope": "Existing QA card; offline own-generated-window placement preparation only. No resource lease or execution; preserve fixed failed candidate."
+}

@@ -94,16 +94,22 @@
   "approved_ai_disabled_diagnostic": {
     "approval_id": "approved-two-gates-20261002:571427dcdc434c0f820236892925aedf",
     "owner": "QA sess_104c8bc82d94481a",
-    "status": "exclusive_display_coordination_sent_waiting_actual_acquisition",
-    "display_allocation_active": true,
+    "status": "completed_blocked_at_generated_surface_admission",
+    "display_allocation_active": false,
     "account_allocation_active": false,
     "audio_allocation_active": false,
     "model_attempts_allowed": 0,
     "runner_sha256": "0f6d0b28b7a7bf92adf437dc4d679ea3e53daea73e56c450a5cf34bd7b1f10ec",
     "production_commit": "175515308f509fb8c0f531dbdb10e57313fcde5a",
-    "next_action": "QA performs one guarded AI-disabled diagnostic if current admission permits it, then returns exact result and explicit display/process release; Lead integrates. No account/model/mic/sound.",
+    "next_action": "Lead reviews saved evidence and scopes a local generated-surface placement correction. No current lease, retry, product execution, account or audio allocation.",
     "dispatch_message": "handoff_5f3da00f7ad575f4773dc2efd35fbcf1",
     "baseline": "69c06ea58696a2c76bbfd943cc7dfa7fb5b15e5b",
-    "execution_started": false
+    "execution_started": true,
+    "actual_delivery_message": "handoff_65884c9d789f5f9ed28bc2ef59ff71d2",
+    "actual_delivery_commit": "6903beb2c0e2adeec0298a15ffe2bc329d8a097c",
+    "actual_display_release": "explicit_QA_release_with_checked_owned_roots_and_ports_gone",
+    "native_script_executed": true,
+    "product_launched": false,
+    "capture_started": false
   }
 }
