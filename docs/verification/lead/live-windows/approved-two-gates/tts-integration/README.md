@@ -100,3 +100,18 @@ the former display-only approval is an audible pass.
 
 Raw logs and hashes are adjacent. Native dispatch receipts and any actual owner
 adoption are recorded separately; delivery alone is not execution.
+
+## Publication and actual handoff
+
+Ordinary push succeeded; origin/main was independently read back as
+`ad7bd72a8e902b366fbbb71d90f530c18043a251`. Web release reply
+`handoff_d3fd78d98223aadb3e11d992b111e32d` and QA's same-assignment next-preparation
+update `handoff_4e8a3b554079777a3c4f701b6a69837b` were actually accepted through
+the currently granted native routes. Both receipts are initially unread with
+`execution_started:false`, not claimed owner adoption.
+
+Read-only worktree observation found QA already editing its owned placement
+preparation/test paths, consistent with the prior active correction; no completed
+delivery is inferred from those edits. Its next output-preparation step remains
+offline until the exact controlled-display candidate is reviewed. No fresh lease,
+account action or voice-slot allocation is implied. Web has no duplicate task.
