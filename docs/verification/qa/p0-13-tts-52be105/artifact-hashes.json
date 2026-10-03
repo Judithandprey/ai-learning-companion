@@ -1,0 +1,16 @@
+{
+  "schema": "qa-evidence-hashes/1",
+  "index_excludes_itself": true,
+  "files": {
+    "README.md": "779e41c52645c90749a073042b4cf2d8f32be26f3c3432f6364dbccede2da7c3",
+    "admission.json": "f6e2e1d3341e8171cf6ccdeeca964c435a9a40511b12c02a1f0922365b6c28b5",
+    "candidate/candidate.json": "f5a55d6edabe33c0b4fa5cc3e299e4f79d6c0304f1e36fd76dc3cc1547f3e2bd",
+    "candidate/runner.ps1": "4a9b9b9cee7a843d5f35d97bb4f5c078d233b3a2cb81d2ac96b4813245cd0302",
+    "candidate/steps.json": "c3e5141018f30e9ed20975e9461c40f8c1060f8f2bea433eb915f32c404cbea3",
+    "candidate/surface.html": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2",
+    "check-receipt.json": "83c99f9768cc638ac14af1650ed0178f8b5ef11a21b8cbe705f11e8669f6ae2b",
+    "file-level-test-discovery.log": "16cbb40af4cbd990614bd2dfe56035746180507688e552f8ce8b730df7a9ed25",
+    "focused-checks.log": "d00b2a7cecfc1a98e1250a6a8646a2494439b2035ddeaa0d38c605506c06c613",
+    "stage-identity.json": "dade97eb3bff2ceb6b5b2665b8c4dbbcc305019a160869721b4092ece8c463b1"
+  }
+}

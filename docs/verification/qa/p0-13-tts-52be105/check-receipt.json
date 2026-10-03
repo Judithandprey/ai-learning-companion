@@ -1,0 +1,97 @@
+{
+  "kind": "qa-tts-offline-preparation-checks/v1",
+  "record_prepared_at_utc": "2026-10-03T04:44:10Z",
+  "source_commit": "52be105a148a28e677f83cc4b7077665f2ff372c",
+  "release_commit": "ad7bd72a8e902b366fbbb71d90f530c18043a251",
+  "source_sha256": {
+    "apps/windows/src/main/main.ts": "cbf3ede04376fe78983215f69de0cdc33b0afcb0db7d49678445916d6e729e60",
+    "apps/windows/src/main/native-speech.ts": "d63a557e93d60e3f2ecccbf4b4f0539c98ecdb1ae2e33ad7b09e4bc846d3101d",
+    "apps/windows/src/main/native-voice.mjs": "e3f80d60a03d8dd054723c7514ebd1b29de9a9189c7285bf9c964871985ec587",
+    "apps/windows/native/NativeSpeech.cs": "c4c1f127a85ff1c871ce98895d51584af7936bbf23f3a35c7418002f201cbbfd",
+    "apps/windows/src/renderer/overlay.ts": "be49bb5ab5c23c001f2e962b44700be8c591e744545de6e4a637de33047d010f",
+    "apps/windows/src/renderer/overlay.html": "d7b84d4dbd06615f4a598e2b8072a34b92e9c6d0b39d8576fb53ceb421c8516e",
+    "apps/windows/src/shared/voice.ts": "df12ade8a22588c97a019ed51c6e71543fbccbc5044bd17617be33df4d27618d",
+    "apps/windows/scripts/stage.mjs": "c263a227473525c5688002bdd287a0bc77b42f459f5471bb9d089ee4b66d98bb",
+    "docs/requirements.md": "3796691c2e433e846051087d5857c40224c4e1995e9d01151378253bb2508cae",
+    "docs/requirements/intent-and-decisions.md": "4b21d391cc6bf4e0fe0dad1a81ff5c20a34e47cc6291ab3c997486cef284dce3",
+    "docs/requirements/audio-screen-interpretation.md": "f55c7ec7795f8561f4550f7447041063b5f4308bff52fa07c37301582a82b010",
+    "docs/requirements/original-goal-verification.md": "20cbea365337a8a046c443a9fe9536ec9fbec0c42a365c69a9c6ecf7068c5986",
+    "docs/tasks.md": "5b2cd302965a17bb3ea26bb901ea87f75bdac8b895fda41a67026858686f7109",
+    "docs/workflow.md": "175f5d86715ed857561f64c2cb3bc97cb4cf33d2a63acc900dba7c4c4746e16d"
+  },
+  "qa_source_sha256": {
+    "tests/e2e/windows/qa_tts_stage_check.py": "9e0a8257f740ee6d7e8924ac848de2fc7ddfd9b7621967e8a7f67c1c518b810f",
+    "tests/e2e/windows/qa_tts_output_candidate.mjs": "09b22f531eba9bd82798c65ea1fa985b74015eabef6c29769b39fe67b311a756",
+    "tests/e2e/windows/test_qa_tts_output_candidate.mjs": "96e1f6ce0d505a7bb77638eeb9e5c43ade1689b8b2250d375892397ba667addd"
+  },
+  "commands": [
+    {
+      "argv": [
+        "python3",
+        "-B",
+        "tests/e2e/windows/qa_tts_stage_check.py"
+      ],
+      "exit_code": 0,
+      "result": "stage-identity.json",
+      "payload_hashes_matching": 77
+    },
+    {
+      "argv": [
+        "/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node",
+        "tests/e2e/windows/test_qa_tts_output_candidate.mjs"
+      ],
+      "environment": {
+        "LC_QA_TTS_STATIC_RECEIPT": "docs/verification/qa/p0-13-tts-52be105/stage-identity.json"
+      },
+      "exit_code": 0,
+      "result": "focused-checks.log",
+      "tests": 16,
+      "pass": 16,
+      "fail": 0,
+      "skipped": 0,
+      "cancelled": 0
+    },
+    {
+      "argv": [
+        "/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node",
+        "tests/e2e/windows/qa_tts_output_candidate.mjs",
+        "check",
+        "docs/verification/qa/p0-13-tts-52be105/candidate/candidate.json",
+        "docs/verification/qa/p0-13-tts-52be105/stage-identity.json"
+      ],
+      "exit_code": 0,
+      "result": "admission.json",
+      "execution_admitted": false
+    }
+  ],
+  "syntax_checks": {
+    "javascript": [
+      "qa_tts_output_candidate.mjs",
+      "test_qa_tts_output_candidate.mjs"
+    ],
+    "python_ast": [
+      "qa_tts_stage_check.py"
+    ],
+    "all_passed": true,
+    "powershell_new_runner": "NOT_RUN",
+    "native_compilation": "NOT_RUN"
+  },
+  "environment": {
+    "os": "Linux/WSL",
+    "python": "3.14.4",
+    "node": "24.21.0"
+  },
+  "independent_review": {
+    "role": "fresh bounded read-only reviewer",
+    "result": "no remaining material preparation gap after complete-step pin fix",
+    "tests_run_by_reviewer": false,
+    "native_run_by_reviewer": false
+  },
+  "native_execution": false,
+  "product_or_helper_launch": false,
+  "provider_attempts": 0,
+  "real_ledger": "0/4 unchanged; voice-input slot unassigned",
+  "resource_lease": "NONE",
+  "old_candidate_and_failure_modified": false,
+  "limitation": "Static/source/admission evidence only. No audible/device/UI/provider acceptance."
+}

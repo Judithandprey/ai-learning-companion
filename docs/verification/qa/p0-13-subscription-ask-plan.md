@@ -302,6 +302,19 @@ campaign. The exact package is released; the real pass remains subject to its ac
   execution is still NOT_RUN. [Review and narrow script request](../lead/live-windows/consumer-review/correction/qa-readiness/prerequisites/pre01-review/README.md)
   specify one AI-disabled display diagnostic only, pending explicit process-only RemoteSigned permission and a fresh
   display allocation. No account/audio lease or real protocol release; the unused four-action allocation remains closed.
+- **Current checkpoint (2026-10-03; historical pending statuses above retained):** the two exact human approvals
+  are resolved in [the decision record](../lead/live-windows/approved-two-gates/README.md). The once-only diagnostic
+  actually completed as `6903beb` → `d007de2`, stopped at step5's 14/16 owned points before product launch, and
+  explicitly released display/processes. Actual requests remain 0/4. The offline placement correction `fc2fe34`
+  integrates as `56e0672`; [review `21a9b6b`](../lead/live-windows/approved-two-gates/edge-placement-review/README.md)
+  includes source checks and parsing/compilation, without native getter or GUI operation. QA's
+  [separate TTS packet](p0-13-tts-52be105/README.md) now prepares exact source `52be105` / release `ad7bd72`:
+  77 static payload identities and 16 focused offline admission checks pass. New entry/runner/32 AI-disabled
+  prerequisite steps and manual LIVE-07/08 output cases are pinned separately; the wrapper admits identity only,
+  never execution. Old stage/candidate/failure bytes remain intact. New-package geometry, actual speech/caption
+  timing and physical Stop remain NOT_RUN. Lead owns a separately reviewed execution wrapper and fresh substantive
+  display/account/audio allocation; no old approval is rebound, no voice-input slot is reassigned, and no test runs
+  or requests follow from this preparation.
 - **The old `3e4b406` package:** the lead reports that the user has exited it (`handoff_b080a2157724229207b627a489610c1d`).
   Its stage folder, profile, sign-in and connector copy are still kept as they are; the new candidate gets its own
   stage folder and its own connector copy. The lead alone coordinates the account, the display and the audio route.

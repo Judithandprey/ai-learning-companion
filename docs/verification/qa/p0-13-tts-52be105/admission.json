@@ -1,0 +1,12 @@
+{
+  "kind": "qa-tts-offline-admission/v1",
+  "identity_passed": true,
+  "execution_admitted": false,
+  "native_executed": false,
+  "provider_attempts": 0,
+  "source_commit": "52be105a148a28e677f83cc4b7077665f2ff372c",
+  "stage_tree_sha256": "531943a83d3572ca9c686c7d8cd62bd88da5b0401b84050487722b8e87a02669",
+  "runner_sha256": "4a9b9b9cee7a843d5f35d97bb4f5c078d233b3a2cb81d2ac96b4813245cd0302",
+  "prerequisite_steps": 32,
+  "limitation": "Saved point-in-time static receipt and candidate identity only; not a live launch gate, resource lease or speech/device acceptance."
+}
