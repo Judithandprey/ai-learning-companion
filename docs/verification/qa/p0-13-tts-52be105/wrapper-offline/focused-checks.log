@@ -1,0 +1,31 @@
+✔ actual child-process permission is withheld (1.442437ms)
+✔ no explicit execute mode (1.296978ms)
+✔ independent allocation hash required (0.326196ms)
+✔ self-reviewed altered record cannot replace the independent hash (6.086074ms)
+✔ released allocation (4.793032ms)
+✔ expired allocation (5.000071ms)
+✔ historical approval cannot authorize the updated command (4.110847ms)
+✔ wrong wrapper source (3.914528ms)
+✔ wrong runner binding (4.063174ms)
+✔ Bypass cannot replace the exact process-only RemoteSigned command (4.45361ms)
+✔ alternate PowerShell engine cannot replace the pinned command (3.655773ms)
+✔ wrong launch work/port (4.211889ms)
+✔ nonexclusive display (4.666459ms)
+✔ sound/model scope expansion (3.782805ms)
+✔ fresh package failure must precede every Windows call/cleanup (7.873544ms)
+✔ altered saved candidate rejects before fresh identity or Windows (0.234209ms)
+✔ altered saved steps reject before fresh identity or Windows (0.278244ms)
+✔ valid injected admission orders fresh identity, preflight, copies, parser, one runner and both cleanup looks (8.773358ms)
+✔ parser rejection starts nothing and performs no termination/cleanup queries (7.781885ms)
+✔ expiry during the first lookup prevents all later non-cleanup Windows calls (7.342123ms)
+✔ throw performs both exact cleanup observations with no retry (7.469778ms)
+✔ timeout performs both exact cleanup observations with no retry (7.371426ms)
+✔ incomplete native result cannot pass the diagnostic (7.915773ms)
+ℹ tests 23
+ℹ suites 0
+ℹ pass 23
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 114.222092

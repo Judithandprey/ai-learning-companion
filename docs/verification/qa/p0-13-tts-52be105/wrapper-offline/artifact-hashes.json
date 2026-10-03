@@ -1,0 +1,13 @@
+{
+  "schema": "qa-evidence-hashes/1",
+  "index_excludes_itself": true,
+  "files": {
+    "README.md": "b62075aeaf5cea63b37c7af6bc206581b6492dc27bd17b7e1a558bbcbf1d6bc3",
+    "allocation.template.json": "cde16ed05457c75a8318975a5eeac0a0fb2ed1b1aab38cd3c012bcced010c92a",
+    "check-receipt.json": "fdc4e50c0a1948a6b1a91c9dc2f708ca3e692e59f8ed4739345a83a3c7bcfa2f",
+    "focused-checks-before-expiry-fix.log": "66b8ee5caaa1619819f01d43ef783c26790849f4dc2eb2116decbfd999dcfffb",
+    "focused-checks-before-expiry-fix.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "focused-checks.log": "9ccf9b342437de13f398432049b1b89782ecf49cf883082c3f364199d832836d",
+    "focused-checks.stderr.log": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+}

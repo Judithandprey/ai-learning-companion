@@ -1,0 +1,170 @@
+#!/usr/bin/env node
+// One AI-disabled display diagnostic. No execution without a separately reviewed allocation.
+// --execute <new QA evidence folder> <allocation.json> <Lead-provided allocation SHA256>
+import { execFileSync, spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
+import * as fs from 'node:fs';
+import { dirname, join, resolve, sep } from 'node:path';
+import { fileURLToPath } from 'node:url';
+import { checkTtsCandidate } from './qa_tts_output_candidate.mjs';
+import { launches, lookCommand, readLook, releaseOwned, windowsCalls } from './signin_cleanup.mjs';
+
+const here = dirname(fileURLToPath(import.meta.url)), repo = resolve(here, '../../..');
+const candidateDir = join(repo, 'docs/verification/qa/p0-13-tts-52be105/candidate');
+const candidateHash = 'f5a55d6edabe33c0b4fa5cc3e299e4f79d6c0304f1e36fd76dc3cc1547f3e2bd';
+const pins = { 'runner.ps1': '4a9b9b9cee7a843d5f35d97bb4f5c078d233b3a2cb81d2ac96b4813245cd0302',
+  'steps.json': 'c3e5141018f30e9ed20975e9461c40f8c1060f8f2bea433eb915f32c404cbea3',
+  'surface.html': '69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2' };
+const psBin = '/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe';
+const oldApproval = 'approved-two-gates-20261002:571427dcdc434c0f820236892925aedf';
+const sha = bytes => createHash('sha256').update(bytes).digest('hex');
+const win = path => {
+  if (!path.startsWith('/mnt/c/') || /['\r\n]/.test(path)) throw Error('unexpected Windows path');
+  return 'C:\\' + path.slice(7).replaceAll('/', '\\');
+};
+const equal = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+
+function validateAllocation(record, candidate, wrapperHash, now) {
+  if (record?.schema !== 'qa-tts-display-allocation/1' || record.state !== 'active' || record.lead_reviewed !== true
+      || record.mode !== 'AI_DISABLED_GENERATED_SURFACE_ONLY' || record.exclusive_display !== true
+      || record.account_access !== false || record.audio_access !== false || record.microphone_access !== false
+      || record.provider_attempts !== 0 || record.max_native_attempts !== 1 || record.retry !== false
+      || record.cleanup_only_after_expiry !== true
+      || typeof record.allocation_id !== 'string' || !/^[A-Za-z0-9._:-]{1,128}$/.test(record.allocation_id)
+      || typeof record.updated_command_approval_ref !== 'string' || record.updated_command_approval_ref.length < 8
+      || record.updated_command_approval_ref === oldApproval
+      || record.wrapper_sha256 !== wrapperHash || record.candidate_sha256 !== candidateHash
+      || !equal(record.payload_sha256, pins) || !equal(record.native_invocation, {
+        executable: candidate.proposed_native_invocation.executable, arguments: candidate.proposed_native_invocation.arguments })
+      || !equal(record.launch_identity, { source: candidate.production_commit, stage: candidate.stage, tree: candidate.stage_tree_sha256,
+        work: candidate.work, electron: candidate.electron, edge: candidate.edge, appPort: candidate.appPort, edgePort: candidate.edgePort })) throw Error('separate exact Lead-reviewed display allocation required');
+  const start = Date.parse(record.valid_from_utc), end = Date.parse(record.valid_until_utc);
+  if (!Number.isFinite(start) || !Number.isFinite(end) || start > now || now >= end || end <= start) throw Error('allocation is not currently active');
+  return end;
+}
+
+export async function runTtsCandidate(options, injected = {}) {
+  // Injection is for the offline boundary test, never a CLI option or a product path.
+  const io = injected.fs ?? fs, runFile = injected.execFileSync ?? execFileSync, run = injected.spawnSync ?? spawnSync;
+  const now = injected.now ?? Date.now, sleep = injected.sleep ?? (ms => new Promise(r => setTimeout(r, ms)));
+  if (options?.execute !== true) throw Error('explicit --execute and separately reviewed allocation required');
+  const out = options.out && resolve(options.out), allocationPath = options.allocation && resolve(options.allocation);
+  if (!out || io.existsSync(out) || ![join(repo, 'docs/verification/qa') + sep, '/tmp/'].some(p => out.startsWith(p))) throw Error('new QA evidence folder required');
+  if (!allocationPath || ![join(repo, 'docs/verification/lead') + sep, '/tmp/'].some(p => allocationPath.startsWith(p))
+      || !/^[a-f0-9]{64}$/.test(options.allocationSha256 ?? '')) throw Error('independently supplied allocation file/hash required');
+  const regularRead = path => {
+    if (!io.lstatSync(path).isFile() || io.lstatSync(path).isSymbolicLink()) throw Error('regular pinned file required');
+    return io.readFileSync(path);
+  };
+  const candidateBytes = regularRead(join(candidateDir, 'candidate.json'));
+  if (sha(candidateBytes) !== candidateHash) throw Error('saved candidate bytes changed');
+  const candidate = JSON.parse(candidateBytes), payload = Object.fromEntries(Object.keys(pins).map(name => {
+    const bytes = regularRead(join(candidateDir, name));
+    if (sha(bytes) !== pins[name]) throw Error('saved payload bytes changed');
+    return [name, bytes];
+  }));
+  // This is metadata admission; checkTtsCandidate also rechecks all ten unchanged source pins.
+  checkTtsCandidate(candidate, payload, JSON.parse(regularRead(join(candidateDir, '../stage-identity.json'))));
+  const allocationBytes = regularRead(allocationPath);
+  if (sha(allocationBytes) !== options.allocationSha256) throw Error('allocation differs from independently reviewed hash');
+  const record = JSON.parse(allocationBytes), wrapperHash = sha(regularRead(fileURLToPath(import.meta.url)));
+  const deadline = validateAllocation(record, candidate, wrapperHash, now());
+  const stillActive = () => {
+    if (now() >= deadline) throw Error('allocation expired before admission/launch; no retry');
+  };
+  // Linux file inspection only, freshly run after the allocation gate and before any Windows call.
+  const identity = JSON.parse(runFile('python3', ['-B', join(here, 'qa_tts_stage_check.py')], { encoding: 'utf8', timeout: 30000 }));
+  checkTtsCandidate(candidate, payload, identity);
+  if (io.existsSync(candidate.work)) throw Error('candidate scratch already consumed; no retry');
+  stillActive();
+  const ps = code => runFile(psBin, ['-NoProfile', '-NonInteractive', '-EncodedCommand',
+    Buffer.from("$ProgressPreference='SilentlyContinue'; " + code, 'utf16le').toString('base64')],
+    { cwd: '/mnt/c', encoding: 'utf8', timeout: 8000, maxBuffer: 8 * 1024 * 1024 });
+  const appCalls = windowsCalls(ps, candidate.appPort), edgeCalls = windowsCalls(ps, candidate.edgePort);
+  edgeCalls.look = async () => readLook(ps(lookCommand(candidate.edgePort, 'msedge.exe')));
+  stillActive();
+  const beforeApp = await appCalls.look();
+  stillActive();
+  const beforeEdge = await edgeCalls.look();
+  if (beforeApp.listen.length || beforeEdge.listen.length || launches(beforeApp.processes).length) throw Error('another launch or debugging-port owner present; nothing started');
+  stillActive();
+  if (ps(`[bool](Test-Path -LiteralPath '${candidate.edge}' -PathType Leaf)`).trim() !== 'True') throw Error('reviewed Edge unavailable');
+  const expectedApp = { exe: candidate.electron, app: [win(candidate.stage), `--remote-debugging-port=${candidate.appPort}`, '--remote-debugging-address=127.0.0.1'],
+    checker: ['unlaunched-qa-checker'], markers: [`--remote-debugging-port=${candidate.appPort}`], notBefore: beforeApp.now };
+  const expectedEdge = { exe: candidate.edge, app: candidate.edgeArgs, checker: ['unlaunched-qa-checker'],
+    markers: [`--remote-debugging-port=${candidate.edgePort}`], notBefore: beforeEdge.now };
+  stillActive();
+  io.mkdirSync(out, { recursive: true, mode: 0o700 });
+  // mkdir without recursive refuses an occupied scratch; it permanently consumes this candidate's one attempt.
+  io.mkdirSync(candidate.work, { recursive: false });
+  const report = { kind: 'AI-disabled generated-surface display diagnostic', passed: false, identity,
+    wrapper_sha256: wrapperHash, candidate_sha256: candidateHash, allocation_sha256: options.allocationSha256,
+    allocation_id: record.allocation_id, scratch: candidate.work, scratch_preserved: true,
+    native_attempts: 0, provider_attempts: 0, microphone_access: false, audio_access: false, cleanup: {},
+    limitation: 'Synthetic CDP/guarded Win32 input only. No physical input, speech, caption synchronization, real AI or desktop product acceptance.' };
+  try {
+    for (const name of ['out', 'apptemp']) io.mkdirSync(join(candidate.work, name));
+    for (const [name, bytes] of Object.entries(payload)) {
+      io.writeFileSync(join(candidate.work, name), bytes);
+      if (sha(regularRead(join(candidate.work, name))) !== pins[name]) throw Error('copied payload differs; launch refused');
+    }
+    // Recheck allocation before parser and before launch; cleanup of exact owned identities is allowed after expiry.
+    stillActive();
+    const encodedPath = Buffer.from(win(join(candidate.work, 'runner.ps1')), 'utf8').toString('base64');
+    report.native_parse = JSON.parse(ps(`$p=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('${encodedPath}')); $tokens=$null; $errors=$null; [void][Management.Automation.Language.Parser]::ParseFile($p,[ref]$tokens,[ref]$errors); @{ok=(@($errors).Count -eq 0);errors=@($errors | ForEach-Object { @{line=$_.Extent.StartLineNumber;column=$_.Extent.StartColumnNumber;id=$_.ErrorId} })} | ConvertTo-Json -Depth 4 -Compress`).trim());
+    if (!report.native_parse.ok) report.aborted = 'exact saved runner parser rejected source; no app launched';
+    else {
+      stillActive();
+      if (now() + 140000 > deadline) throw Error('allocation has too little time for the bounded native attempt');
+      report.native_attempts = 1;
+      const invocation = candidate.proposed_native_invocation;
+      const result = run(psBin, invocation.arguments, { cwd: '/mnt/c', timeout: 140000, maxBuffer: 4 * 1024 * 1024 });
+      report.launcher = { status: result.status, signal: result.signal, timeout: result.error?.code === 'ETIMEDOUT' };
+      io.writeFileSync(join(out, 'runner.stdout.bin'), result.stdout ?? Buffer.alloc(0));
+      io.writeFileSync(join(out, 'runner.stderr.bin'), result.stderr ?? Buffer.alloc(0));
+      if (result.status !== 0) report.aborted = 'native launcher failed; preserved diagnostics, no retry';
+    }
+  } catch (error) {
+    report.aborted = String(error?.message ?? error).slice(0, 200);
+  } finally {
+    // Complete observations and held-process revalidation, never PID-only or name-only termination.
+    for (const [label, calls, expected] of [['electron', appCalls, expectedApp], ['edge', edgeCalls, expectedEdge]]) {
+      if (report.native_attempts === 0) { report.cleanup[label] = { exit: 'not_started', folder: 'kept' }; continue; }
+      try { report.cleanup[label] = await releaseOwned({ ...calls, expected, ownsFolder: false, removeFolder: async () => false,
+        sleep, now, waitSelfMs: 1000, waitCloseMs: 5000, waitForceMs: 5000, stepMs: 250 }); }
+      catch { report.cleanup[label] = { exit: 'unknown', error: 'exact identity cleanup unavailable; scratch retained' }; }
+    }
+    const resultsFile = join(candidate.work, 'out/results.json');
+    try {
+      if (io.existsSync(resultsFile)) {
+        const bytes = regularRead(resultsFile);
+        io.writeFileSync(join(out, 'runner-results.json'), bytes);
+        const result = JSON.parse(bytes.toString('utf8').replace(/^\uFEFF/, ''));
+        report.aborted ??= result.aborted ?? null;
+        report.steps_ok = result.steps.length === 32 && result.steps.every(s => s.ok === true);
+        report.drags = result.steps.filter(s => s.kind === 'dragHandle').map(s => {
+          const b = s.before, a = s.after_os ?? s.after_cdp, events = a?.events.slice(b?.events.length ?? 0) ?? [];
+          return { handle: s.handle, ok: s.ok === true && !!b && !!a &&
+            Math.abs(b.surface.x-a.surface.x)+Math.abs(b.surface.y-a.surface.y)>20 &&
+            events.some(e=>e.type==='gotpointercapture'&&e.target===s.handle) && equal(b.doc,a.doc) &&
+            b.crop_source_sha256===a.crop_source_sha256 && equal(b.pinned,a.pinned) };
+        });
+      }
+    } catch { report.aborted ??= 'native result unreadable; scratch and raw evidence retained'; }
+    report.owned_launch_cleanup_confirmed = ['electron','edge'].every(label => report.cleanup[label]?.exit === 'confirmed');
+    report.passed = report.launcher?.status === 0 && !report.aborted && report.steps_ok === true &&
+      report.drags?.length === 2 && report.drags.every(d=>d.ok) && report.owned_launch_cleanup_confirmed;
+    // This does not close the runtime display lease; QA must explicitly report actual release to Lead.
+    io.writeFileSync(join(out, 'run.json'), JSON.stringify(report, null, 2)+'\n');
+  }
+  return report;
+}
+
+if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
+  const [mode, out, allocation, allocationSha256, extra] = process.argv.slice(2);
+  if (mode !== '--execute' || !out || !allocation || !allocationSha256 || extra) throw Error('no default run: --execute <new QA folder> <allocation.json> <Lead-provided SHA256>');
+  const report = await runTtsCandidate({ execute: true, out, allocation, allocationSha256 });
+  console.log(JSON.stringify({ passed: report.passed, aborted: report.aborted ?? null, native_attempts: report.native_attempts,
+    provider_attempts: 0, cleanup: report.cleanup, scratch: report.scratch }));
+  process.exitCode = report.passed ? 0 : 1;
+}

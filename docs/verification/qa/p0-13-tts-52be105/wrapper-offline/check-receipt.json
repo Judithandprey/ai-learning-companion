@@ -1,0 +1,98 @@
+{
+  "kind": "qa-tts-executable-wrapper-offline-checks/v1",
+  "task_ref": "handoff_73f0ff743a103f851d4cac39926a70c5",
+  "baseline": "d783764384c65b4747904c1e2c8fa75715b27139",
+  "lead_review_baseline": "c6d7eda",
+  "wrapper_source_sha256": "d7f47e688962ea069b1a82b6073abf2ffd05b955bdf48468bcb5a2a8548dc48b",
+  "test_source_sha256": "69fee5b4e2e8dd9d84210586dbde0da2510974bb64488ef830c20ddc1a4a095c",
+  "candidate_sha256": "f5a55d6edabe33c0b4fa5cc3e299e4f79d6c0304f1e36fd76dc3cc1547f3e2bd",
+  "candidate_source_pins_preserved": {
+    "qa_tts_output_candidate.mjs": "09b22f531eba9bd82798c65ea1fa985b74015eabef6c29769b39fe67b311a756",
+    "qa_tts_stage_check.py": "9e0a8257f740ee6d7e8924ac848de2fc7ddfd9b7621967e8a7f67c1c518b810f",
+    "qa_live_stage_check.py": "8bdd042b426c0784500375a41fe874e41b80186a6a8dddcc1d544213abd8c791",
+    "qa_visible_candidate.mjs": "9df43a98f64c67559029d31bc41573db4df4df94341ef48845687987b5460410",
+    "qa_edge_placement.ps1": "e527a59e63f6823adc9aaa1b5d9619661d8299769985ae1a0bf108749c2535bb",
+    "qa_display_admission.ps1": "b4f586b7c987f533f318eb72ebffe318482ed2c2aa7f7f720574147071747590",
+    "qa-electron-runner.ps1": "1a0dfc3f178a1d6f59233c2a7d6a836ce68b18887affd2f6431c2d4ef5c48218",
+    "signin_cleanup.mjs": "efa06295262ea27006769e0dea363051fbd6401f4c810d2049db5937ee939b2b",
+    "qa_visible_drag.mjs": "fa7491499aad6c289793fec195a11993b3d102415347a7251e82592362940d1e",
+    "surface.html": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2"
+  },
+  "native_payload_pins_preserved": {
+    "runner.ps1": "4a9b9b9cee7a843d5f35d97bb4f5c078d233b3a2cb81d2ac96b4813245cd0302",
+    "steps.json": "c3e5141018f30e9ed20975e9461c40f8c1060f8f2bea433eb915f32c404cbea3",
+    "surface.html": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2"
+  },
+  "reviewable_command_argv": [
+    "/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node",
+    "/home/agentsdock/Projects/learning-companion/wt-review/tests/e2e/windows/qa_run_tts_candidate.mjs",
+    "--execute",
+    "/home/agentsdock/Projects/learning-companion/wt-review/docs/verification/qa/p0-13-tts-52be105/execution-result",
+    "/tmp/lc-qa-tts-52be105-display-allocation.json",
+    "<LEAD-PROVIDED-ALLOCATION-SHA256>"
+  ],
+  "execution_authorized_now": false,
+  "required_allocation_fields": [
+    "schema",
+    "state",
+    "lead_reviewed",
+    "allocation_id",
+    "mode",
+    "exclusive_display",
+    "account_access",
+    "audio_access",
+    "microphone_access",
+    "provider_attempts",
+    "max_native_attempts",
+    "retry",
+    "cleanup_only_after_expiry",
+    "updated_command_approval_ref",
+    "wrapper_sha256",
+    "candidate_sha256",
+    "payload_sha256",
+    "native_invocation",
+    "launch_identity",
+    "valid_from_utc",
+    "valid_until_utc"
+  ],
+  "allocation_template_state": "UNALLOCATED",
+  "commands": [
+    {
+      "argv": [
+        "/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node",
+        "--permission",
+        "--allow-fs-read=/home/agentsdock/Projects/learning-companion/wt-review",
+        "--allow-fs-read=/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-tts-output-bf94386da582443495d2cae7ae3cbffb",
+        "tests/e2e/windows/test_qa_run_tts_candidate.mjs"
+      ],
+      "exit_code": 0,
+      "result": "focused-checks.log",
+      "tests": 23,
+      "passed": 23,
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "actual_child_process_permission": "withheld; verified ERR_ACCESS_DENIED"
+    }
+  ],
+  "syntax_checks": {
+    "wrapper": "passed",
+    "test": "passed"
+  },
+  "independent_review": {
+    "scope": "source only; no native or tests run",
+    "finding": "lease expiration between individual preflight queries",
+    "resolution": "validity rechecked before each query; clock-advance negative passes",
+    "remaining_material_findings": []
+  },
+  "preserved_initial_check_log": "focused-checks-before-expiry-fix.log",
+  "initial_named_checks": 20,
+  "native_or_windows_process_invoked": false,
+  "linux_stage_audit_invoked_this_turn": false,
+  "all_execution_effects_in_tests": "injected FS/subprocess outputs; no native scratch or resource access",
+  "product_or_helper_launched": false,
+  "provider_attempts": 0,
+  "active_resource_lease": "NONE",
+  "real_request_ledger": "0/4 unchanged; voice-input slot unassigned",
+  "limitation": "Executable path implemented, offline boundaries only. No native, GUI, physical input, speech, caption, provider or full-product acceptance."
+}

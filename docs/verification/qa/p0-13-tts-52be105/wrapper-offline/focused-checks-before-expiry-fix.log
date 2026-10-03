@@ -1,0 +1,28 @@
+✔ actual child-process permission is withheld (2.099836ms)
+✔ no explicit execute mode (1.311766ms)
+✔ independent allocation hash required (0.267473ms)
+✔ self-reviewed altered record cannot replace the independent hash (6.019757ms)
+✔ released allocation (4.672113ms)
+✔ expired allocation (4.602967ms)
+✔ historical approval cannot authorize the updated command (3.916294ms)
+✔ wrong wrapper source (3.948882ms)
+✔ wrong runner binding (4.059156ms)
+✔ wrong launch work/port (7.872249ms)
+✔ nonexclusive display (3.954586ms)
+✔ sound/model scope expansion (4.156101ms)
+✔ fresh package failure must precede every Windows call/cleanup (7.113073ms)
+✔ altered saved candidate rejects before fresh identity or Windows (0.312439ms)
+✔ altered saved steps reject before fresh identity or Windows (0.471214ms)
+✔ valid injected admission orders fresh identity, preflight, copies, parser, one runner and both cleanup looks (10.259096ms)
+✔ parser rejection starts nothing and performs no termination/cleanup queries (7.603085ms)
+✔ throw performs both exact cleanup observations with no retry (7.188027ms)
+✔ timeout performs both exact cleanup observations with no retry (6.68833ms)
+✔ incomplete native result cannot pass the diagnostic (7.490595ms)
+ℹ tests 20
+ℹ suites 0
+ℹ pass 20
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 101.115057
