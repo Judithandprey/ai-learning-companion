@@ -1,0 +1,24 @@
+{
+  "decision": "APPROVE bounded owned-Edge placement source change; no material blocker found",
+  "commit": "fc2fe346b6caba46e8ca56defa1496824d0a8b02",
+  "parent": "6903beb2c0e2adeec0298a15ffe2bc329d8a097c",
+  "scope": "Read complete delivery README and all four changed source files, reviewed emitted assembly and focused call flow. One focused portable15 check and3 Node syntax checks only. No Windows/PowerShell/parser/compiler/device/display/audio/account calls, no network and no repository edits.",
+  "evidence": "/tmp/lc-lead-edge-fc2fe3/portable-check-receipt.json",
+  "observations": [
+    "Owned Edge uses existing Raise without its temporary TOPMOST/NOTOPMOST pulse. Generic control Raise is unchanged; no Explorer or other foreign window is changed by new helper calls.",
+    "A single normal-to-fullscreen CDP transition is restricted to before any product launch, and validates both acknowledgements, window id/state and owned native handle/owner. Unknown native/style metadata fails closed.",
+    "All16 exact-root observations are retained before rejection, with same card/corner positions. Read-only class, physical bounds, foreground, TOPMOST, minimized and relative order evidence supplements the original PID predicate.",
+    "Control option center uses native physical client origin/size/DPI plus current DOM viewport/DPR, then verifies exact top-level control root and stable client bounds. Its Raise precedes existing Edge Raise/truth/all16 and immediate fresh surface admission before Start.",
+    "Capture-attempt flag is set before CDP invocation, so even an unknown Start result prevents the added control-placement phase from raising control afterward.",
+    "Overlay phase follows first frame, reads ownership/TOPMOST/order only and returns before control code. Existing drag/Stop and exact-process cleanup remain unchanged.",
+    "Default builder reproduces historical runner/steps; old fixed candidate and failed evidence have no diff from parent. The new candidate remains distinct and is intentionally not admitted by the unchanged historical wrapper."
+  ],
+  "findings": [],
+  "limits": [
+    "Portable15 is source/assembly mutation checks plus actual browser predicate under synthetic Node VM DOM, not execution of PowerShell/C#/Win32/CDP or true placement.",
+    "Sequential native/window observations and16-point sampling do not establish atomic whole-screen isolation. Foreground/style and geometry can change after admission.",
+    "New native parsing/compilation and actual geometry/order/fullscreen/operability are not verified by this reviewer; Lead handles its separate native admission audit.",
+    "The observed historical Explorer cause remains unknown. Source approval does not claim placement repair has worked on Windows.",
+    "Existing human process-scoped RemoteSigned approval remains resolved. New candidate admission/resource coordination remains Lead-owned; no duplicate human permission gate is requested."
+  ]
+}

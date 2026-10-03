@@ -1,0 +1,55 @@
+{
+  "kind": "independent-portable-command-receipt",
+  "commit": "fc2fe346b6caba46e8ca56defa1496824d0a8b02",
+  "cwd": "/tmp/lc-lead-edge-fc2fe3/source",
+  "focused_command": [
+    "/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node",
+    "tests/e2e/windows/test_qa_edge_placement.mjs"
+  ],
+  "exit_code": 0,
+  "observed_result": {
+    "kind": "offline-owned-edge-placement-checks",
+    "passed": 15,
+    "failed": 0
+  },
+  "output_record": "Actual tool output in this review; case names match the delivered offline-checks.json. No rerun to reproduce a log.",
+  "syntax": [
+    {
+      "command": [
+        "/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node",
+        "--check",
+        "tests/e2e/windows/qa_visible_candidate.mjs"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node",
+        "--check",
+        "tests/e2e/windows/qa_prepare_visible.mjs"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "command": [
+        "/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node",
+        "--check",
+        "tests/e2e/windows/test_qa_edge_placement.mjs"
+      ],
+      "exit_code": 0,
+      "stdout": "",
+      "stderr": ""
+    }
+  ],
+  "native_executed": false,
+  "sources": {
+    "tests/e2e/windows/qa_edge_placement.ps1": "e527a59e63f6823adc9aaa1b5d9619661d8299769985ae1a0bf108749c2535bb",
+    "tests/e2e/windows/qa_visible_candidate.mjs": "9df43a98f64c67559029d31bc41573db4df4df94341ef48845687987b5460410",
+    "tests/e2e/windows/qa_prepare_visible.mjs": "bec19863f3b03309fb866b9e656e5dd0260620a591f27ab73ecf90aee01a64aa",
+    "tests/e2e/windows/test_qa_edge_placement.mjs": "2863f0ad3fbfc32652c203787c393a5b08b22c5db9df58222df07ec486665bcf"
+  }
+}

@@ -1,0 +1,6 @@
+{
+  "exit_code": 0,
+  "timeout": false,
+  "purpose": "Parse exact runner and compile its three constant C# definitions only; never execute runner or native methods",
+  "runner_executed": false
+}

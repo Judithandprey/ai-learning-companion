@@ -1,0 +1,103 @@
+{
+  "candidate": "fc2fe346b6caba46e8ca56defa1496824d0a8b02",
+  "checks": [
+    {
+      "path": "README.md",
+      "kind": "evidence",
+      "ok": true
+    },
+    {
+      "path": "candidate/candidate.json",
+      "kind": "evidence",
+      "ok": true
+    },
+    {
+      "path": "candidate/runner.ps1",
+      "kind": "evidence",
+      "ok": true
+    },
+    {
+      "path": "candidate/steps.json",
+      "kind": "evidence",
+      "ok": true
+    },
+    {
+      "path": "candidate/surface.html",
+      "kind": "evidence",
+      "ok": true
+    },
+    {
+      "path": "candidate-integrity.json",
+      "kind": "evidence",
+      "ok": true
+    },
+    {
+      "path": "check-receipt.json",
+      "kind": "evidence",
+      "ok": true
+    },
+    {
+      "path": "offline-checks.json",
+      "kind": "evidence",
+      "ok": true
+    },
+    {
+      "path": "qa_visible_candidate.mjs",
+      "kind": "source",
+      "ok": true
+    },
+    {
+      "path": "qa_display_admission.ps1",
+      "kind": "source",
+      "ok": true
+    },
+    {
+      "path": "qa_visible_drag.mjs",
+      "kind": "source",
+      "ok": true
+    },
+    {
+      "path": "signin_cleanup.mjs",
+      "kind": "source",
+      "ok": true
+    },
+    {
+      "path": "qa-electron-runner.ps1",
+      "kind": "source",
+      "ok": true
+    },
+    {
+      "path": "surface.html",
+      "kind": "source",
+      "ok": true
+    },
+    {
+      "path": "qa_edge_placement.ps1",
+      "kind": "source",
+      "ok": true
+    },
+    {
+      "path": "qa_prepare_visible.mjs",
+      "kind": "source",
+      "ok": true
+    },
+    {
+      "path": "runner.ps1",
+      "kind": "payload",
+      "ok": true
+    },
+    {
+      "path": "steps.json",
+      "kind": "payload",
+      "ok": true
+    },
+    {
+      "path": "surface.html",
+      "kind": "payload",
+      "ok": true
+    }
+  ],
+  "passed": true,
+  "csharp_blocks": 3,
+  "runner_sha256": "2558ecee93191506b890472a80b5306f055bf22abe64ce24615d03e35b86fe84"
+}
