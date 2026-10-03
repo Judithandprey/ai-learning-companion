@@ -1,0 +1,140 @@
+✔ actual child-process permission is withheld (1.578678ms)
+✔ no explicit execute mode (1.45453ms)
+✔ independent allocation hash required (0.295086ms)
+✔ self-reviewed altered record cannot replace the independent hash (1.018343ms)
+✔ released allocation (0.779285ms)
+✔ expired allocation (0.800656ms)
+✔ historical approval cannot authorize the updated command (0.843047ms)
+✔ wrong wrapper source (0.869227ms)
+✔ wrong runner binding (0.885849ms)
+✔ Bypass cannot replace the exact process-only RemoteSigned command (0.968728ms)
+✔ alternate PowerShell engine cannot replace the pinned command (0.839039ms)
+✔ wrong launch work/port (0.822638ms)
+✔ nonexclusive display (0.78724ms)
+✔ sound/model scope expansion (0.827808ms)
+✔ fresh package failure must precede every Windows call/cleanup (1.307659ms)
+✔ altered saved candidate rejects before fresh identity or Windows (0.572708ms)
+✔ altered saved steps reject before fresh identity or Windows (0.352066ms)
+✖ valid injected admission orders fresh identity, preflight, copies, parser, one runner and both cleanup looks (0.643946ms)
+✖ parser rejection starts nothing and performs no termination/cleanup queries (0.378396ms)
+✖ expiry during the first lookup prevents all later non-cleanup Windows calls (0.922529ms)
+✖ throw performs both exact cleanup observations with no retry (0.371312ms)
+✖ timeout performs both exact cleanup observations with no retry (0.31812ms)
+✖ incomplete native result cannot pass the diagnostic (0.46877ms)
+ℹ tests 23
+ℹ suites 0
+ℹ pass 17
+ℹ fail 6
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 24.954144
+
+✖ failing tests:
+
+test at tests/e2e/windows/test_qa_run_tts_candidate.mjs:118:1
+✖ valid injected admission orders fresh identity, preflight, copies, parser, one runner and both cleanup looks (0.643946ms)
+  Error: Access to this API has been restricted. Use --allow-fs-read to manage permissions.
+      at existsSync (node:fs:293:18)
+      at prepareTtsCandidate (file:///home/agentsdock/Projects/learning-companion/repo/tests/e2e/windows/qa_tts_output_candidate.mjs:52:100)
+      at checkTtsCandidate (file:///home/agentsdock/Projects/learning-companion/repo/tests/e2e/windows/qa_tts_output_candidate.mjs:77:20)
+      at runTtsCandidate (file:///home/agentsdock/Projects/learning-companion/repo/tests/e2e/windows/qa_run_tts_candidate.mjs:67:3)
+      at TestContext.<anonymous> (file:///home/agentsdock/Projects/learning-companion/repo/tests/e2e/windows/test_qa_run_tts_candidate.mjs:119:32)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12) {
+    code: 'ERR_ACCESS_DENIED',
+    permission: 'FileSystemRead',
+    resource: '/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-tts-output-bf94386da582443495d2cae7ae3cbffb'
+  }
+
+test at tests/e2e/windows/test_qa_run_tts_candidate.mjs:131:1
+✖ parser rejection starts nothing and performs no termination/cleanup queries (0.378396ms)
+  Error: Access to this API has been restricted. Use --allow-fs-read to manage permissions.
+      at existsSync (node:fs:293:18)
+      at prepareTtsCandidate (file:///home/agentsdock/Projects/learning-companion/repo/tests/e2e/windows/qa_tts_output_candidate.mjs:52:100)
+      at checkTtsCandidate (file:///home/agentsdock/Projects/learning-companion/repo/tests/e2e/windows/qa_tts_output_candidate.mjs:77:20)
+      at runTtsCandidate (file:///home/agentsdock/Projects/learning-companion/repo/tests/e2e/windows/qa_run_tts_candidate.mjs:67:3)
+      at TestContext.<anonymous> (file:///home/agentsdock/Projects/learning-companion/repo/tests/e2e/windows/test_qa_run_tts_candidate.mjs:132:60)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12) {
+    code: 'ERR_ACCESS_DENIED',
+    permission: 'FileSystemRead',
+    resource: '/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-tts-output-bf94386da582443495d2cae7ae3cbffb'
+  }
+
+test at tests/e2e/windows/test_qa_run_tts_candidate.mjs:137:1
+✖ expiry during the first lookup prevents all later non-cleanup Windows calls (0.922529ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  0 !== 1
+  
+      at TestContext.<anonymous> (file:///home/agentsdock/Projects/learning-companion/repo/tests/e2e/windows/test_qa_run_tts_candidate.mjs:140:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 0,
+    expected: 1,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/e2e/windows/test_qa_run_tts_candidate.mjs:143:42
+✖ throw performs both exact cleanup observations with no retry (0.371312ms)
+  Error: Access to this API has been restricted. Use --allow-fs-read to manage permissions.
+      at existsSync (node:fs:293:18)
+      at prepareTtsCandidate (file:///home/agentsdock/Projects/learning-companion/repo/tests/e2e/windows/qa_tts_output_candidate.mjs:52:100)
+      at checkTtsCandidate (file:///home/agentsdock/Projects/learning-companion/repo/tests/e2e/windows/qa_tts_output_candidate.mjs:77:20)
+      at runTtsCandidate (file:///home/agentsdock/Projects/learning-companion/repo/tests/e2e/windows/qa_run_tts_candidate.mjs:67:3)
+      at TestContext.<anonymous> (file:///home/agentsdock/Projects/learning-companion/repo/tests/e2e/windows/test_qa_run_tts_candidate.mjs:144:58)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12) {
+    code: 'ERR_ACCESS_DENIED',
+    permission: 'FileSystemRead',
+    resource: '/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-tts-output-bf94386da582443495d2cae7ae3cbffb'
+  }
+
+test at tests/e2e/windows/test_qa_run_tts_candidate.mjs:143:42
+✖ timeout performs both exact cleanup observations with no retry (0.31812ms)
+  Error: Access to this API has been restricted. Use --allow-fs-read to manage permissions.
+      at existsSync (node:fs:293:18)
+      at prepareTtsCandidate (file:///home/agentsdock/Projects/learning-companion/repo/tests/e2e/windows/qa_tts_output_candidate.mjs:52:100)
+      at checkTtsCandidate (file:///home/agentsdock/Projects/learning-companion/repo/tests/e2e/windows/qa_tts_output_candidate.mjs:77:20)
+      at runTtsCandidate (file:///home/agentsdock/Projects/learning-companion/repo/tests/e2e/windows/qa_run_tts_candidate.mjs:67:3)
+      at TestContext.<anonymous> (file:///home/agentsdock/Projects/learning-companion/repo/tests/e2e/windows/test_qa_run_tts_candidate.mjs:144:58)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12) {
+    code: 'ERR_ACCESS_DENIED',
+    permission: 'FileSystemRead',
+    resource: '/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-tts-output-bf94386da582443495d2cae7ae3cbffb'
+  }
+
+test at tests/e2e/windows/test_qa_run_tts_candidate.mjs:148:1
+✖ incomplete native result cannot pass the diagnostic (0.46877ms)
+  Error: Access to this API has been restricted. Use --allow-fs-read to manage permissions.
+      at existsSync (node:fs:293:18)
+      at prepareTtsCandidate (file:///home/agentsdock/Projects/learning-companion/repo/tests/e2e/windows/qa_tts_output_candidate.mjs:52:100)
+      at checkTtsCandidate (file:///home/agentsdock/Projects/learning-companion/repo/tests/e2e/windows/qa_tts_output_candidate.mjs:77:20)
+      at runTtsCandidate (file:///home/agentsdock/Projects/learning-companion/repo/tests/e2e/windows/qa_run_tts_candidate.mjs:67:3)
+      at TestContext.<anonymous> (file:///home/agentsdock/Projects/learning-companion/repo/tests/e2e/windows/test_qa_run_tts_candidate.mjs:149:66)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12) {
+    code: 'ERR_ACCESS_DENIED',
+    permission: 'FileSystemRead',
+    resource: '/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-tts-output-bf94386da582443495d2cae7ae3cbffb'
+  }

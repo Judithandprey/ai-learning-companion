@@ -1,0 +1,27 @@
+{
+  "source_commit": "1e18a5100494335edf592f64e60a59727fbcdbd0",
+  "integrated_as": "ddd5b5a",
+  "initial": {
+    "pass": 17,
+    "fail": 6,
+    "reason": "Node filesystem fixture permission missing for the exact uncreated Windows scratch existence check"
+  },
+  "final": {
+    "pass": 23,
+    "fail": 0,
+    "skip": 0,
+    "cancel": 0,
+    "child_process_permission": false,
+    "actual_windows_commands": 0,
+    "additional_read_permission": "only the candidate exact unused scratch path"
+  },
+  "runtime": "project .tools Node24.21.0",
+  "test_command": [
+    "node",
+    "--permission",
+    "--allow-fs-read=.",
+    "--allow-fs-read=/tmp",
+    "--allow-fs-read=/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-tts-output-bf94386da582443495d2cae7ae3cbffb",
+    "tests/e2e/windows/test_qa_run_tts_candidate.mjs"
+  ]
+}

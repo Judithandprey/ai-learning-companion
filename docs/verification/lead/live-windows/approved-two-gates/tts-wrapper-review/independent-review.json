@@ -1,0 +1,58 @@
+{
+  "decision": "APPROVE scoped separately allocated executable wrapper; no concrete blocker found",
+  "commit": "1e18a5100494335edf592f64e60a59727fbcdbd0",
+  "parent": "d783764384c65b4747904c1e2c8fa75715b27139",
+  "wrapper_sha256": "d7f47e688962ea069b1a82b6073abf2ffd05b955bdf48468bcb5a2a8548dc48b",
+  "focused_test": {
+    "command": [
+      "/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node",
+      "--permission",
+      "--allow-fs-read=/tmp/lc-lead-wrapper-1e18a5/source",
+      "--allow-fs-read=/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-tts-output-bf94386da582443495d2cae7ae3cbffb",
+      "tests/e2e/windows/test_qa_run_tts_candidate.mjs"
+    ],
+    "cwd": "/tmp/lc-lead-wrapper-1e18a5/source",
+    "exit_code": 0,
+    "tests": 23,
+    "passed": 23,
+    "failed": 0,
+    "skipped": 0,
+    "cancelled": 0,
+    "child_process_permission": "withheld and ERR_ACCESS_DENIED verified",
+    "write_permission": "withheld; filesystem mutations injected",
+    "raw_stdout": "/tmp/lc-lead-wrapper-1e18a5/focused-checks.log",
+    "raw_stderr": "/tmp/lc-lead-wrapper-1e18a5/focused-checks.stderr.log"
+  },
+  "pin_checks": {
+    "wrapper_hash_matches_template_and_receipt": true,
+    "test_hash_matches_receipt": true,
+    "candidate_hash_matches_template_and_receipt": true,
+    "payload_pins_match": true,
+    "native_arguments_exact": true,
+    "template_inert": true,
+    "prior_candidate_and_source_bytes_unchanged": true,
+    "evidence_sha256:README.md": true,
+    "evidence_sha256:allocation.template.json": true,
+    "evidence_sha256:check-receipt.json": true,
+    "evidence_sha256:focused-checks-before-expiry-fix.log": true,
+    "evidence_sha256:focused-checks-before-expiry-fix.stderr.log": true,
+    "evidence_sha256:focused-checks.log": true,
+    "evidence_sha256:focused-checks.stderr.log": true
+  },
+  "all_pin_checks_passed": true,
+  "findings": [],
+  "observations": [
+    "Candidate/payload/source/independent allocation hash and currently active exact scope are checked before the fresh Python file audit and all Windows calls or directory writes. Allocation binds wrapper, candidate, native argv and launch identity; old fixed approval cannot be reused.",
+    "Expiry is checked before each Windows metadata query and before parser/launch; launch reserves140seconds, and only exact-owned cleanup can continue after expiry. An external deadline record is not authenticated as human authority by these booleans: independently supplied hash remains Lead-owned.",
+    "Atomic nonrecursive creation of fixed unique scratch consumes the one candidate attempt. Copied payloads are rehashed. There is one possible RemoteSigned -File spawn and no loop/retry/Bypass/unblock/alternate-engine path.",
+    "native_attempts is set before spawn. Throw/timeout/failure reach both unchanged complete cleanup lookups; held-process creation/executable/full-command revalidation protects signals. Unknown cleanup cannot pass; native scratch/evidence remains preserved.",
+    "Account/provider/audio/microphone scope is explicitly false and the exact reused candidate disables AI. No real-provider/audio mode is added. Actual full diagnostic/physical input/product/voice evidence remains NOT_RUN.",
+    "Inert allocation template matches exact wrapper/candidate/native pins and remains unallocated; this source review issues no record, execution approval or display lease."
+  ],
+  "limits": [
+    "Focused23 uses injected subprocess results and filesystem mutations. It verifies actual Node child-process denial, not Windows behavior or native cleanup effectiveness.",
+    "Short cleanup waits may force an exact owned process before its graceful close finishes; confirmed cleanup is only owned-launch/port exit, not successful product Stop or runtime display release. QA still must explicitly report release.",
+    "The stage auditor was not run and no Windows/parser/compiler/helper/device/capture/account/audio operation occurred. No repository files were changed.",
+    "Lead retains exact updated-command scope/resource decision and resulting-main checks; no new permission gate is invented by this review."
+  ]
+}

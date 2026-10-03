@@ -1,0 +1,122 @@
+{
+  "candidate": "1e18a5100494335edf592f64e60a59727fbcdbd0",
+  "checks": [
+    {
+      "path": "README.md",
+      "kind": "evidence",
+      "pass": true
+    },
+    {
+      "path": "allocation.template.json",
+      "kind": "evidence",
+      "pass": true
+    },
+    {
+      "path": "check-receipt.json",
+      "kind": "evidence",
+      "pass": true
+    },
+    {
+      "path": "focused-checks-before-expiry-fix.log",
+      "kind": "evidence",
+      "pass": true
+    },
+    {
+      "path": "focused-checks-before-expiry-fix.stderr.log",
+      "kind": "evidence",
+      "pass": true
+    },
+    {
+      "path": "focused-checks.log",
+      "kind": "evidence",
+      "pass": true
+    },
+    {
+      "path": "focused-checks.stderr.log",
+      "kind": "evidence",
+      "pass": true
+    },
+    {
+      "kind": "new_source",
+      "path": "tests/e2e/windows/qa_run_tts_candidate.mjs",
+      "pass": true
+    },
+    {
+      "kind": "new_source",
+      "path": "tests/e2e/windows/test_qa_run_tts_candidate.mjs",
+      "pass": true
+    },
+    {
+      "kind": "preserved_source",
+      "path": "qa_tts_output_candidate.mjs",
+      "pass": true
+    },
+    {
+      "kind": "preserved_source",
+      "path": "qa_tts_stage_check.py",
+      "pass": true
+    },
+    {
+      "kind": "preserved_source",
+      "path": "qa_live_stage_check.py",
+      "pass": true
+    },
+    {
+      "kind": "preserved_source",
+      "path": "qa_visible_candidate.mjs",
+      "pass": true
+    },
+    {
+      "kind": "preserved_source",
+      "path": "qa_edge_placement.ps1",
+      "pass": true
+    },
+    {
+      "kind": "preserved_source",
+      "path": "qa_display_admission.ps1",
+      "pass": true
+    },
+    {
+      "kind": "preserved_source",
+      "path": "qa-electron-runner.ps1",
+      "pass": true
+    },
+    {
+      "kind": "preserved_source",
+      "path": "signin_cleanup.mjs",
+      "pass": true
+    },
+    {
+      "kind": "preserved_source",
+      "path": "qa_visible_drag.mjs",
+      "pass": true
+    },
+    {
+      "kind": "preserved_source",
+      "path": "surface.html",
+      "pass": true
+    },
+    {
+      "kind": "preserved_payload",
+      "path": "runner.ps1",
+      "pass": true
+    },
+    {
+      "kind": "preserved_payload",
+      "path": "steps.json",
+      "pass": true
+    },
+    {
+      "kind": "preserved_payload",
+      "path": "surface.html",
+      "pass": true
+    },
+    {
+      "kind": "candidate",
+      "path": "candidate.json",
+      "pass": true
+    }
+  ],
+  "pass": true,
+  "count": 23
+}
