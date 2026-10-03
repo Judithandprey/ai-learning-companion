@@ -1,0 +1,24 @@
+✔ valid new-package descriptor admits identity only, with no execution path (5.140882ms)
+✔ manifest execution flag cannot activate execution (0.220913ms)
+✔ historical approval cannot be rebound (0.082077ms)
+✔ old package is rejected (0.074122ms)
+✔ wrong entry or launch argument is rejected (3.413812ms)
+✔ altered planned PowerShell arguments are rejected (4.062077ms)
+✔ wrong source pin is rejected (3.188897ms)
+✔ missing placement step is rejected (3.549408ms)
+✔ historical runner mixture is rejected (2.853072ms)
+✔ changed surface is rejected (3.716107ms)
+✔ missing package file receipt is rejected (3.19561ms)
+✔ extra package file receipt is rejected (3.730423ms)
+✔ altered package file receipt is rejected (4.429918ms)
+✔ different compiled helper is rejected (4.339225ms)
+✔ different Electron bytes are rejected (3.403578ms)
+✔ a same-length change to the reviewed physical point set is rejected (0.481002ms)
+ℹ tests 16
+ℹ suites 0
+ℹ pass 16
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 51.857728

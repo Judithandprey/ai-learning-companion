@@ -1,0 +1,50 @@
+{
+  "decision": "APPROVE scoped TTS offline candidate/preparation change; no blocker found",
+  "commit": "d783764384c65b4747904c1e2c8fa75715b27139",
+  "parent": "fc2fe346b6caba46e8ca56defa1496824d0a8b02",
+  "sources_read": [
+    "tests/e2e/windows/qa_tts_output_candidate.mjs",
+    "tests/e2e/windows/qa_tts_stage_check.py",
+    "tests/e2e/windows/test_qa_tts_output_candidate.mjs",
+    "docs/verification/qa/p0-13-tts-52be105/README.md",
+    "docs/verification/qa/p0-13-tts-52be105/candidate/candidate.json"
+  ],
+  "result": {
+    "focused_portable_checks": {
+      "passed": 16,
+      "failed": 0,
+      "skipped": 0,
+      "cancelled": 0,
+      "exit_code": 0,
+      "command": "LC_QA_TTS_STATIC_RECEIPT=docs/verification/qa/p0-13-tts-52be105/stage-identity.json /home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node tests/e2e/windows/test_qa_tts_output_candidate.mjs",
+      "cwd": "/tmp/lc-lead-tts-qa-d783/source",
+      "raw_log": "/tmp/lc-lead-tts-qa-d783/focused-checks.log"
+    },
+    "admission_only": {
+      "exit_code": 0,
+      "identity_passed": true,
+      "execution_admitted": false,
+      "output": "/tmp/lc-lead-tts-qa-d783/admission.json"
+    },
+    "saved_identity_audit": {
+      "all_passed": true,
+      "checks": 34,
+      "output": "/tmp/lc-lead-tts-qa-d783/identity-audit.json"
+    }
+  },
+  "findings": [],
+  "observations": [
+    "Exact new runner normalizes to prior2558ecee bytes by replacing exactly one isolated Edge profile literal. Full32step plan equals prior after normalizing only first-step surface URL/profile; surface bytes unchanged.",
+    "The new admission module has prepare/check paths only. It checks exact complete manifest against reproduction, source pins/payload bytes and77file saved receipt tree; valid results retain execution_admitted:false.",
+    "Saved77file receipt matches the exact ad7bd72 release manifest, main entry,52be105 NativeSpeech.cs, local compile receipt/native executable and recorded Electron digest. No stage/runtime binary was opened or executed during this review.",
+    "Stage checker imports only read-only inventory/hash helpers and invokes git show for committed source records; it neither compiles nor loads/executes the native helper.",
+    "README labels32steps as AI-disabled placement prerequisite, actual TTS/output/device cases NOT_RUN, real0/4 unchanged and resource allocation absent. It preserves prior human approvals without inventing a repeat permission question.",
+    "Old fixed candidates, placement snapshot and failed native evidence remain unchanged from parent."
+  ],
+  "limits": [
+    "No re-audit or rerun of accepted placement logic, broad product tests or historical campaigns.",
+    "No Windows/PowerShell/helper/device/capture/audio/account execution, native parsing/compiler, network or repository edits. The staged files were not reread; identities derive from saved evidence and committed source.",
+    "Source approval does not verify audibility, synchronized floating captions, physical Stop, real provider/capture or device acceptance. A valid saved receipt is explicitly not a live launch gate.",
+    "Lead retains resulting-main checks, new-file parser and separately pinned execution-wrapper/resource decisions; this review creates no new permission gate."
+  ]
+}

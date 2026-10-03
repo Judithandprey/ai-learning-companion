@@ -1,0 +1,122 @@
+{
+  "candidate": "d783764384c65b4747904c1e2c8fa75715b27139",
+  "checks": [
+    {
+      "kind": "source",
+      "path": "qa_tts_output_candidate.mjs",
+      "pass": true
+    },
+    {
+      "kind": "source",
+      "path": "qa_tts_stage_check.py",
+      "pass": true
+    },
+    {
+      "kind": "source",
+      "path": "qa_live_stage_check.py",
+      "pass": true
+    },
+    {
+      "kind": "source",
+      "path": "qa_visible_candidate.mjs",
+      "pass": true
+    },
+    {
+      "kind": "source",
+      "path": "qa_edge_placement.ps1",
+      "pass": true
+    },
+    {
+      "kind": "source",
+      "path": "qa_display_admission.ps1",
+      "pass": true
+    },
+    {
+      "kind": "source",
+      "path": "qa-electron-runner.ps1",
+      "pass": true
+    },
+    {
+      "kind": "source",
+      "path": "signin_cleanup.mjs",
+      "pass": true
+    },
+    {
+      "kind": "source",
+      "path": "qa_visible_drag.mjs",
+      "pass": true
+    },
+    {
+      "kind": "source",
+      "path": "surface.html",
+      "pass": true
+    },
+    {
+      "kind": "payload",
+      "path": "runner.ps1",
+      "pass": true
+    },
+    {
+      "kind": "payload",
+      "path": "steps.json",
+      "pass": true
+    },
+    {
+      "kind": "payload",
+      "path": "surface.html",
+      "pass": true
+    },
+    {
+      "kind": "evidence",
+      "path": "README.md",
+      "pass": true
+    },
+    {
+      "kind": "evidence",
+      "path": "admission.json",
+      "pass": true
+    },
+    {
+      "kind": "evidence",
+      "path": "candidate/candidate.json",
+      "pass": true
+    },
+    {
+      "kind": "evidence",
+      "path": "candidate/runner.ps1",
+      "pass": true
+    },
+    {
+      "kind": "evidence",
+      "path": "candidate/steps.json",
+      "pass": true
+    },
+    {
+      "kind": "evidence",
+      "path": "candidate/surface.html",
+      "pass": true
+    },
+    {
+      "kind": "evidence",
+      "path": "check-receipt.json",
+      "pass": true
+    },
+    {
+      "kind": "evidence",
+      "path": "file-level-test-discovery.log",
+      "pass": true
+    },
+    {
+      "kind": "evidence",
+      "path": "focused-checks.log",
+      "pass": true
+    },
+    {
+      "kind": "evidence",
+      "path": "stage-identity.json",
+      "pass": true
+    }
+  ],
+  "pass": true,
+  "count": 23
+}

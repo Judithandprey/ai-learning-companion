@@ -1,0 +1,144 @@
+{
+  "commit": "d783764384c65b4747904c1e2c8fa75715b27139",
+  "passed": true,
+  "checks": [
+    {
+      "name": "runner has exactly one changed literal isolated Edge profile",
+      "passed": true
+    },
+    {
+      "name": "complete32step plan unchanged after first-step surface/profile normalization",
+      "passed": true
+    },
+    {
+      "name": "generated surface unchanged",
+      "passed": true
+    },
+    {
+      "name": "prior runner descriptor pins",
+      "passed": true
+    },
+    {
+      "name": "source pin qa_tts_output_candidate.mjs",
+      "passed": true
+    },
+    {
+      "name": "source pin qa_tts_stage_check.py",
+      "passed": true
+    },
+    {
+      "name": "source pin qa_live_stage_check.py",
+      "passed": true
+    },
+    {
+      "name": "source pin qa_visible_candidate.mjs",
+      "passed": true
+    },
+    {
+      "name": "source pin qa_edge_placement.ps1",
+      "passed": true
+    },
+    {
+      "name": "source pin qa_display_admission.ps1",
+      "passed": true
+    },
+    {
+      "name": "source pin qa-electron-runner.ps1",
+      "passed": true
+    },
+    {
+      "name": "source pin signin_cleanup.mjs",
+      "passed": true
+    },
+    {
+      "name": "source pin qa_visible_drag.mjs",
+      "passed": true
+    },
+    {
+      "name": "source pin surface.html",
+      "passed": true
+    },
+    {
+      "name": "payload pin runner.ps1",
+      "passed": true
+    },
+    {
+      "name": "payload pin steps.json",
+      "passed": true
+    },
+    {
+      "name": "payload pin surface.html",
+      "passed": true
+    },
+    {
+      "name": "evidence hash README.md",
+      "passed": true
+    },
+    {
+      "name": "evidence hash admission.json",
+      "passed": true
+    },
+    {
+      "name": "evidence hash candidate/candidate.json",
+      "passed": true
+    },
+    {
+      "name": "evidence hash candidate/runner.ps1",
+      "passed": true
+    },
+    {
+      "name": "evidence hash candidate/steps.json",
+      "passed": true
+    },
+    {
+      "name": "evidence hash candidate/surface.html",
+      "passed": true
+    },
+    {
+      "name": "evidence hash check-receipt.json",
+      "passed": true
+    },
+    {
+      "name": "evidence hash file-level-test-discovery.log",
+      "passed": true
+    },
+    {
+      "name": "evidence hash focused-checks.log",
+      "passed": true
+    },
+    {
+      "name": "evidence hash stage-identity.json",
+      "passed": true
+    },
+    {
+      "name": "saved77file receipt equals exact released manifest",
+      "passed": true
+    },
+    {
+      "name": "complete package tree pin",
+      "passed": true
+    },
+    {
+      "name": "main entry pin",
+      "passed": true
+    },
+    {
+      "name": "local helper and exact source/build receipt pins",
+      "passed": true
+    },
+    {
+      "name": "Electron recorded executable pin",
+      "passed": true
+    },
+    {
+      "name": "execution remains false",
+      "passed": true
+    },
+    {
+      "name": "old fixed candidate and failed evidence unchanged",
+      "passed": true
+    }
+  ],
+  "scope": "Exact saved bytes and committed release objects only. No stage/runtime/Windows filesystem reread or code execution.",
+  "limitations": "Stage and executable identity remains a saved point-in-time author receipt; not device or audio acceptance."
+}
