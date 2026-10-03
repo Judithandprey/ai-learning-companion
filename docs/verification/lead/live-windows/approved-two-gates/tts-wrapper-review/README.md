@@ -75,3 +75,9 @@ command under normal exact-command review, reports actual result/cleanup and
 explicitly releases the display. Current template remains UNALLOCATED, no native
 command starts now. Real0/4, unassigned voice-input slot and paused automation
 remain unchanged. No owner is asked for another general audit or duplicate task.
+
+Ordinary push/readback confirmed release
+`0d8629b0863ad86307726e6a77a7e4f5f8cda60b`. Actual QA review-result message
+`handoff_e74171dd29fa94f7a2ac757b421c571a` was accepted, initially unread and
+execution not started. It closes source preparation and preserves the exact
+candidate pending the updated one-run scope; it is not a runtime allocation.
