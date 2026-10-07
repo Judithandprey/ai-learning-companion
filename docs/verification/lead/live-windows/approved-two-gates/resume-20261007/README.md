@@ -177,3 +177,34 @@ permission change, service restart or new spending is assigned. Lead resumes
 normal integration and actionable dispatch; full product requirements and all
 unverified real GUI/AI/audio/Mac gates remain. Automation `ai` and Paperclip remain
 paused independently of project continuation.
+
+## Targeted identity result received and integrated
+
+Support delivery `44fd49547041b0a4c37af10fa8f8624f6fa1979d`, message
+`handoff_2bed9bd7d7e647ade79bdd844a7f6a52`, ordered read
+`mailread_442a1665924c417098db171c4677155c` (seq 978), integrates as `5fca1ab`.
+[Original report and receipt](../../../../support/windows-target-identity-20261007.md)
+record one normal-review native observation from 08:18:06.556745 to
+08:18:09.073070Z, exit 0. Exact CIM creation identity matched. Product/company/
+description were generic Electron/GitHub, Inc./Electron; no child argument was
+present, executable differed from the pinned QA runtime, and neither known QA
+stage matched. **Specific application and owner remain unknown**; this does not
+rule out another project version or establish a new product defect.
+
+Lead reviewed the exact source and sanitized receipt, verified its native-script
+hash, and ran the six focused tests on resulting main in 0.004 seconds. Every
+subprocess is mocked; Lead did not repeat native observation, capture or execution.
+The probe preserves exclusive output, fixed PID/creation checks, privacy filtering
+and unknown results; no parent query, replacement search or process signal ran.
+The original report accurately notes that only the CIM operation has an 8-second
+timeout, with no total outer deadline; the actual observation exited normally.
+No future invocation is assigned.
+
+A bounded read-only search for the exact PID/creation identity found no additional
+launch attribution in this project's automation records or supplied Windows-live
+work evidence. Lead has requested the operator/user's known application name or
+launch/install context. That is missing environment information, not another
+approval for the already resolved diagnostic scope. No request to close the
+unknown process was made. Support is finished and idle. Restored owners and all
+prior integration remain available; the display test is not retried and no full
+GUI/voice/provider acceptance is claimed.

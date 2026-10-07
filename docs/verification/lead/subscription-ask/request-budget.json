@@ -115,7 +115,7 @@
   "updated_ai_disabled_diagnostic": {
     "approval_id": "interactive-resume-20261007:6e1744183d4548619cf4ce4b29a0e37f",
     "owner": "QA sess_104c8bc82d94481a",
-    "status": "preflight_conflict_correction_integrated_awaiting_launch_identity",
+    "status": "preflight_conflict_awaiting_application_owner_context",
     "display_allocation_active": false,
     "account_allocation_active": false,
     "audio_allocation_active": false,
@@ -154,9 +154,13 @@
       "known_product_stage": "unknown",
       "reconstructs_first_refusal": false
     },
-    "next_action": "Support identifies exact competing launch read-only; Lead coordinates from actual evidence. No active display lease or GUI rerun.",
+    "next_action": "Lead requests operator/user known application or launch context. Support finished; no active resource lease, termination or retry.",
     "restoration_complete": true,
     "restoration_confirmation": "claude-restored-completion-20261007:53b820fb792145b88caa629df214b3b8",
-    "launch_identity_task": "handoff_39373f62becfa7e4aea05eb313467536"
+    "launch_identity_task": "handoff_39373f62becfa7e4aea05eb313467536",
+    "launch_identity_delivery": "44fd49547041b0a4c37af10fa8f8624f6fa1979d",
+    "launch_identity_integrated": "5fca1ab",
+    "launch_identity_message": "handoff_2bed9bd7d7e647ade79bdd844a7f6a52",
+    "launch_identity_result": "exact PID/creation matched; generic Electron resources; application owner unknown"
   }
 }
