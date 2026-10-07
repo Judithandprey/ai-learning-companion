@@ -35,7 +35,35 @@ process-and-child RemoteSigned only, no genuine-refusal bypass, exact-owned
 cleanup and explicit display release. The prepared 32 steps and production 52be105
 are unchanged. No other owner has a display/account/audio allocation.
 
-Actual result and resource release must be recorded from QA's return. This
-dispatch is not a test pass. Real-AI 0/4 remains unused, voice-input slot remains
-unassigned; real speech/captions/audio and full desktop gates remain separate.
-Independent automation `ai` and Paperclip remain paused.
+## Actual preflight refusal and released display
+
+QA's actual reply `handoff_876cad3c8b3ed17383853a0218230c07`, ordered read
+`mailread_70feafd5df1548b5a654d40f703cc739` (seq 971), reports **DISPLAY RELEASE
+at 2026-10-07T07:44:21Z**. Normal command review permitted the exact wrapper;
+it was invoked once and exited 1 at line 89:
+
+> another launch or debugging-port owner present; nothing started
+
+The saved terminal output and unchanged source locate this rejection after
+allocation/stage checks and two metadata reads, before scratch creation, parser,
+RemoteSigned runner or any product/test-window launch. No owned test process was
+created or signalled. Lead marked the temporary allocation released after this
+receipt, invalidating its execution hash; the committed issued bytes remain
+unchanged as history. Native-File attempts: **0**. All 32 steps, capture, drag and
+Stop remain **NOT_RUN**. This is an actual admission conflict, not an approval
+refusal or product failure. The original combined guard discarded the conflicting
+PID/port snapshot, so its exact cause remains unknown; it is not inferred from
+another process or historical run.
+
+The next bounded continuation was actually accepted as
+`handoff_d6346bd3b86d35e270077b49eaa9ea94` by the same QA route: finish preserving
+this result, add sanitized refusal evidence to the existing wrapper/test without
+weakening admission, and make at most one read-only observation of the same
+Electron/port scope. A new observation cannot reconstruct the discarded one.
+There is **no second execution or renewed display allocation**, no foreign process
+cleanup, and no extra audit campaign. Lead will integrate the actual evidence and
+correction before the next concrete action.
+
+Real-AI 0/4 remains unused, voice-input slot remains unassigned; real speech,
+captions, audio and full desktop gates remain separate. Independent automation
+`ai` and Paperclip remain paused.

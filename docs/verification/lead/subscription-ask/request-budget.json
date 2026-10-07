@@ -115,8 +115,8 @@
   "updated_ai_disabled_diagnostic": {
     "approval_id": "interactive-resume-20261007:6e1744183d4548619cf4ce4b29a0e37f",
     "owner": "QA sess_104c8bc82d94481a",
-    "status": "fresh_display_allocation_dispatched_execution_unconfirmed",
-    "display_allocation_active": true,
+    "status": "preflight_conflict_display_released",
+    "display_allocation_active": false,
     "account_allocation_active": false,
     "audio_allocation_active": false,
     "model_attempts_allowed": 0,
@@ -127,6 +127,20 @@
     "allocation_record": "docs/verification/lead/live-windows/approved-two-gates/resume-20261007/allocation.json",
     "production_commit": "52be105a148a28e677f83cc4b7077665f2ff372c",
     "runner_sha256": "4a9b9b9cee7a843d5f35d97bb4f5c078d233b3a2cb81d2ac96b4813245cd0302",
-    "actual_attempts": []
+    "actual_attempts": [
+      {
+        "wrapper_invocations": 1,
+        "native_file_attempts": 0,
+        "provider_attempts": 0,
+        "result": "another launch or debugging-port owner present; nothing started",
+        "specific_conflict": "unknown: original guard did not persist metadata",
+        "owned_launches": 0,
+        "cleanup_signals": 0,
+        "native_steps": "NOT_RUN"
+      }
+    ],
+    "display_released_at": "2026-10-07T07:44:21Z",
+    "result_message": "handoff_876cad3c8b3ed17383853a0218230c07",
+    "next_diagnostic_message": "handoff_d6346bd3b86d35e270077b49eaa9ea94"
   }
 }
