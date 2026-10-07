@@ -1,0 +1,41 @@
+✔ actual child-process permission is withheld (1.648362ms)
+✔ no explicit execute mode (1.551957ms)
+✔ independent allocation hash required (0.37555ms)
+✔ self-reviewed altered record cannot replace the independent hash (11.265114ms)
+✔ released allocation (7.825613ms)
+✔ expired allocation (6.774424ms)
+✔ historical approval cannot authorize the updated command (4.548291ms)
+✔ wrong wrapper source (4.423357ms)
+✔ wrong runner binding (5.150707ms)
+✔ Bypass cannot replace the exact process-only RemoteSigned command (4.110353ms)
+✔ alternate PowerShell engine cannot replace the pinned command (4.456948ms)
+✔ wrong launch work/port (4.981946ms)
+✔ nonexclusive display (6.311931ms)
+✔ sound/model scope expansion (5.508025ms)
+✔ fresh package failure must precede every Windows call/cleanup (9.348121ms)
+✔ altered saved candidate rejects before fresh identity or Windows (0.262143ms)
+✔ altered saved steps reject before fresh identity or Windows (0.279045ms)
+✔ valid injected admission orders fresh identity, preflight, copies, parser, one runner and both cleanup looks (10.29662ms)
+✔ parser rejection starts nothing and performs no termination/cleanup queries (9.777449ms)
+✔ expiry during the first lookup prevents all later non-cleanup Windows calls (8.507147ms)
+✔ throw performs both exact cleanup observations with no retry (8.908543ms)
+✔ timeout performs both exact cleanup observations with no retry (8.666657ms)
+✔ incomplete native result cannot pass the diagnostic (7.958912ms)
+✔ sanitized preflight refusal: app port only (16.71968ms)
+✔ sanitized preflight refusal: Edge port only (7.586324ms)
+✔ sanitized preflight refusal: both ports (8.677424ms)
+✔ sanitized preflight refusal: non-child Electron launch (7.610718ms)
+✔ sanitized preflight refusal: unreadable command and executable (8.254058ms)
+✔ sanitized preflight refusal: child missing creation (7.407822ms)
+✔ readable child with creation time remains ignored by launch admission (8.82684ms)
+✔ refusal mkdir failure still starts and signals nothing (8.89964ms)
+✔ refusal write failure still starts and signals nothing (9.216343ms)
+✔ metadata allowlist preserves separate snapshot clocks and safe known-stage classification (0.920295ms)
+ℹ tests 33
+ℹ suites 0
+ℹ pass 33
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 230.057949

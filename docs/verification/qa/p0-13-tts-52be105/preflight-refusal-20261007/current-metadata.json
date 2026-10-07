@@ -1,0 +1,47 @@
+{
+  "schema": "qa-tts-current-metadata/1",
+  "observation_status": "OBSERVED",
+  "started_utc": "2026-10-07T07:55:23.119Z",
+  "windows_metadata_invocations": 1,
+  "scope": "electron.exe and listening ports 43123/45123 only",
+  "first_attempt_snapshot_reconstructed": false,
+  "native_file_invocations": 0,
+  "provider_attempts": 0,
+  "signals_sent": 0,
+  "lookup_exit_code": 0,
+  "timed_out": false,
+  "metadata": {
+    "schema": "qa-tts-preflight-metadata/1",
+    "observed_at_utc": "2026-10-07T07:55:26.486Z",
+    "blocked": true,
+    "app_port": {
+      "port": 43123,
+      "observed_ticks": "639269565263924031",
+      "owners": []
+    },
+    "edge_port": {
+      "port": 45123,
+      "observed_ticks": "639269565263924031",
+      "owners": []
+    },
+    "electron_observed_ticks": "639269565263924031",
+    "electron_launch_conflicts": [
+      {
+        "pid": 100568,
+        "created_ticks": "639267186912717160",
+        "metadata_present": true,
+        "creation_readable": true,
+        "executable_readable": true,
+        "command_line_readable": true,
+        "child_argument_present": false,
+        "executable_matches_candidate": false,
+        "known_product_stage": "unknown",
+        "reason": "non_child_launch"
+      }
+    ],
+    "native_attempts": 0,
+    "provider_attempts": 0,
+    "signals_sent": 0
+  },
+  "completed_utc": "2026-10-07T07:55:26.487Z"
+}

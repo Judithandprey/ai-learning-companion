@@ -6,7 +6,7 @@ import * as fs from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import test from 'node:test';
-import { runTtsCandidate } from './qa_run_tts_candidate.mjs';
+import { runTtsCandidate, summarizeTtsPreflight } from './qa_run_tts_candidate.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url)), repo = resolve(here, '../../..');
 const base = join(repo, 'docs/verification/qa/p0-13-tts-52be105');
@@ -32,15 +32,17 @@ function setup(change = () => {}) {
       work: candidate.work, electron: candidate.electron, edge: candidate.edge, appPort: candidate.appPort, edgePort: candidate.edgePort },
     valid_from_utc: '2029-12-31T23:59:00Z', valid_until_utc: '2030-01-01T01:00:00Z',
   };
-  const state = { record, parserOk: true, runMode: 'ok', identity: JSON.parse(identity), clock: start };
+  const emptyLook = () => ({ now: '640000000000000000', processes: [], listen: [] });
+  const state = { record, parserOk: true, runMode: 'ok', identity: JSON.parse(identity), clock: start,
+    appLook: emptyLook(), edgeLook: emptyLook() };
   change(state);
   files.set(allocation, Buffer.from(JSON.stringify(record)));
   const io = {
     existsSync: p => files.has(p) || directories.has(p) || (p.startsWith(repo) && fs.existsSync(p)),
     lstatSync: p => files.has(p) ? { isFile: () => true, isSymbolicLink: () => false } : fs.lstatSync(p),
     readFileSync: p => files.has(p) ? files.get(p) : fs.readFileSync(p),
-    mkdirSync: p => { trace.push(['mkdir', p]); if (directories.has(p)) throw Error('directory already exists'); directories.add(p); },
-    writeFileSync: (p, bytes) => { trace.push(['write', p]); files.set(p, Buffer.from(bytes)); },
+    mkdirSync: (p, opts) => { trace.push(['mkdir', p, opts]); if (state.mkdirFails || directories.has(p)) throw Error('synthetic mkdir failure'); directories.add(p); },
+    writeFileSync: (p, bytes, opts) => { trace.push(['write', p, opts]); if (state.writeFails || opts?.flag === 'wx' && files.has(p)) throw Error('synthetic write failure'); files.set(p, Buffer.from(bytes)); },
   };
   const options = { execute: true, out, allocation, allocationSha256: sha(files.get(allocation)) };
   const injected = {
@@ -54,7 +56,10 @@ function setup(change = () => {}) {
       if (code.includes('Test-Path')) return 'True';
       if (code.includes('Get-CimInstance')) {
         if (state.expireOnFirstLook && trace.filter(e => e[0] === 'windows').length === 1) state.clock = Date.parse(record.valid_until_utc) + 1;
-        return Buffer.from(JSON.stringify({ now: '640000000000000000', processes: [], listen: [] })).toString('base64');
+        if (state.occupyOutputAfterLook && code.includes("Name='msedge.exe'")) {
+          directories.add(out); files.set(join(out, 'preflight-refusal.json'), Buffer.from('preserved concurrent evidence'));
+        }
+        return Buffer.from(JSON.stringify(code.includes("Name='msedge.exe'") ? state.edgeLook : state.appLook)).toString('base64');
       }
       throw Error('unexpected injected Windows command');
     },
@@ -148,4 +153,80 @@ for (const mode of ['throw', 'timeout']) test(`${mode} performs both exact clean
 test('incomplete native result cannot pass the diagnostic', async () => {
   const v = setup(s => { s.runMode = 'incomplete'; }), r = await runTtsCandidate(v.options, v.injected);
   assert.equal(r.passed, false); assert.equal(r.steps_ok, false);
+});
+
+const processRow = extra => ({ pid: 123, created: '639269000000000000', exe: candidate.electron,
+  command_line: `"${candidate.electron}" "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-windows-tts-52be105"`, ...extra });
+function assertPreflightStop(v) {
+  assert.equal(windows(v).length, 2); assert.equal(runs(v).length, 0);
+  assert.equal(v.trace.some(e => e[0] === 'mkdir' && e[1].startsWith(candidate.work)), false);
+  assert.equal(v.trace.some(e => e[0] === 'windows' && /Test-Path|ParseFile|GetProcessById/.test(e[1])), false);
+  assert.equal(v.files.has(join(v.options.out, 'run.json')), false);
+}
+for (const [name, mutate] of [
+  ['app port only', s => { s.appLook.listen = [901]; }],
+  ['Edge port only', s => { s.edgeLook.listen = [902]; }],
+  ['both ports', s => { s.appLook.listen = [901]; s.edgeLook.listen = [902]; }],
+  ['non-child Electron launch', s => { s.appLook.processes = [processRow()]; }],
+  ['unreadable command and executable', s => { s.appLook.processes = [processRow({ exe: null, command_line: null })]; }],
+  ['child missing creation', s => { s.appLook.processes = [processRow({ created: null, command_line: 'electron.exe --type=renderer' })]; }],
+]) test(`sanitized preflight refusal: ${name}`, async () => {
+  const v = setup(mutate);
+  await assert.rejects(runTtsCandidate(v.options, v.injected), /another launch or debugging-port owner/);
+  assertPreflightStop(v);
+  const r = JSON.parse(v.files.get(join(v.options.out, 'preflight-refusal.json')));
+  assert.equal(v.trace.find(e => e[0] === 'mkdir')[2].recursive, false);
+  assert.equal(v.trace.find(e => e[0] === 'write')[2].flag, 'wx');
+  assert.equal(r.blocked, true); assert.equal(r.native_attempts, 0); assert.equal(r.signals_sent, 0);
+  assert.deepEqual(r.app_port.owners.map(p => p.pid), v.state.appLook.listen);
+  assert.deepEqual(r.edge_port.owners.map(p => p.pid), v.state.edgeLook.listen);
+  assert.equal(r.electron_launch_conflicts.length, v.state.appLook.processes.length);
+  for (const p of [...r.app_port.owners, ...r.edge_port.owners]) {
+    assert.equal(p.metadata_present, false); assert.equal(p.created_ticks, null);
+    assert.equal(p.command_line_readable, null);
+  }
+});
+test('readable child with creation time remains ignored by launch admission', async () => {
+  const v = setup(s => { s.appLook.processes = [processRow({ command_line: 'electron.exe --type=renderer' })]; });
+  const r = await runTtsCandidate(v.options, v.injected);
+  assert.equal(r.passed, true); assert.equal(runs(v).length, 1);
+  assert.equal(v.files.has(join(v.options.out, 'preflight-refusal.json')), false);
+});
+for (const [flag, label] of [['mkdirFails','mkdir'], ['writeFails','write']]) test(`refusal ${label} failure still starts and signals nothing`, async () => {
+  const v = setup(s => { s.appLook.listen = [901]; s[flag] = true; });
+  await assert.rejects(runTtsCandidate(v.options, v.injected), /sanitized refusal could not be saved/);
+  assertPreflightStop(v);
+  assert.equal(v.files.has(join(v.options.out, 'preflight-refusal.json')), false);
+});
+test('output occupied during preflight is preserved without starting or signalling anything', async () => {
+  const v = setup(s => { s.appLook.listen = [901]; s.occupyOutputAfterLook = true; });
+  await assert.rejects(runTtsCandidate(v.options, v.injected), /sanitized refusal could not be saved/);
+  assertPreflightStop(v);
+  assert.equal(v.files.get(join(v.options.out, 'preflight-refusal.json')).toString(), 'preserved concurrent evidence');
+});
+test('metadata allowlist preserves separate snapshot clocks and safe known-stage classification', () => {
+  const secret = 'PRIVATE_TOKEN_TITLE_PATH_DO_NOT_SAVE';
+  const exact = processRow({ command_line: processRow().command_line.toUpperCase() + ' --token=' + secret });
+  const rows = [exact,
+    processRow({ pid: 124, command_line: processRow().command_line.replace('lc-windows-tts-52be105','lc-windows-tts-52be105-sibling') }),
+    processRow({ pid: 125, command_line: `electron.exe C:\\${secret} --label="${candidate.stage}"` }),
+    processRow({ pid: 126, exe: `C:\\${secret}\\electron.exe` }),
+    processRow({ pid: 127, created: null, command_line: 'electron.exe --type=renderer' }),
+    processRow({ pid: 128, command_line: null }),
+  ];
+  const r = summarizeTtsPreflight(candidate, { now: '100', processes: rows, listen: [123,900] },
+    { now: '200', processes: [], listen: [902] }, start);
+  assert.equal(r.app_port.observed_ticks, '100'); assert.equal(r.edge_port.observed_ticks, '200');
+  assert.equal(r.electron_launch_conflicts[0].known_product_stage, 'candidate_stage');
+  assert.ok(r.electron_launch_conflicts.slice(1).every(p => p.known_product_stage === 'unknown'));
+  assert.equal(r.electron_launch_conflicts[4].reason, 'unreadable_creation');
+  assert.equal(r.electron_launch_conflicts[5].reason, 'unreadable_command_line');
+  assert.equal(r.app_port.owners[0].created_ticks, rows[0].created);
+  assert.equal(r.app_port.owners[1].metadata_present, false);
+  const allowed = ['pid','created_ticks','metadata_present','creation_readable','executable_readable',
+    'command_line_readable','child_argument_present','executable_matches_candidate','known_product_stage'];
+  for (const p of [...r.app_port.owners,...r.edge_port.owners]) assert.deepEqual(Object.keys(p).sort(),allowed.toSorted());
+  for (const p of r.electron_launch_conflicts) assert.deepEqual(Object.keys(p).sort(), [...allowed,'reason'].toSorted());
+  const json = JSON.stringify(r);
+  for (const value of [secret,'C:\\',candidate.stage,'"command_line":','"exe":']) assert.equal(json.includes(value),false);
 });

@@ -1,0 +1,42 @@
+{
+  "schema": "qa-tts-preflight-correction-artifacts/1",
+  "files": {
+    "README.md": {
+      "sha256": "a7ab8c121a503477454055a0aa5ad306e65e7acd4eaa14d003fa076a65204d2e",
+      "bytes": 5327
+    },
+    "check-receipt.json": {
+      "sha256": "3ff502fb4a1dd0d28e0f9d591e1acc052dc7381d9a7c21e4e49907e459224ce7",
+      "bytes": 1991
+    },
+    "current-metadata.json": {
+      "sha256": "4da9a6766691170674be0430f6628bc43033e35c993223662694a196f0ea82ae",
+      "bytes": 1378
+    },
+    "focused-checks.txt": {
+      "sha256": "a4f52b1ba75b77fb3eaf802b11da815af166caf69c27ce374b9f2f5a6295083a",
+      "bytes": 2478
+    },
+    "initial-check-excerpt.txt": {
+      "sha256": "e023bc06611f95e56e6ea682c6351304712050f31c42bc01e04029ea19a2c378",
+      "bytes": 915
+    },
+    "intermediate-33-checks.txt": {
+      "sha256": "1bf9896388dca29fef88317b30f5732c4e936ce0129f12ac03a5f68f5d7b2fe5",
+      "bytes": 2376
+    },
+    "metadata-observation-script.txt": {
+      "sha256": "2458300af991ffa23dfe3b9e3161afb2164ee7ecac5d559f641bafc19e702208",
+      "bytes": 3415
+    }
+  },
+  "source": {
+    "tests/e2e/windows/qa_run_tts_candidate.mjs": "cadc3a85d0c8c3621c5570247536ca1c81b4c0e53d83a9357441893e9ec7cee6",
+    "tests/e2e/windows/test_qa_run_tts_candidate.mjs": "4ee0c8dcc431ede6032f5fa03eeb9f64fe145c30db431cf76d139a32e92e7a1f"
+  },
+  "candidate_sha256": "f5a55d6edabe33c0b4fa5cc3e299e4f79d6c0304f1e36fd76dc3cc1547f3e2bd",
+  "source_pins_unchanged": true,
+  "payload_pins_unchanged": true,
+  "first_attempt_evidence_commit": "1b27f128d5bf78b1dbff1c14ca1002da0e1a3f74",
+  "first_attempt_evidence_files_unchanged": true
+}

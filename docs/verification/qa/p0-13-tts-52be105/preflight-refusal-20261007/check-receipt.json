@@ -1,0 +1,43 @@
+{
+  "schema": "qa-tts-preflight-correction/1",
+  "assignment_message_id": "handoff_d6346bd3b86d35e270077b49eaa9ea94",
+  "failure_evidence_commit": "1b27f128d5bf78b1dbff1c14ca1002da0e1a3f74",
+  "lead_baseline": "1df4976",
+  "production_commit": "52be105a148a28e677f83cc4b7077665f2ff372c",
+  "wrapper_sha256": "cadc3a85d0c8c3621c5570247536ca1c81b4c0e53d83a9357441893e9ec7cee6",
+  "test_sha256": "4ee0c8dcc431ede6032f5fa03eeb9f64fe145c30db431cf76d139a32e92e7a1f",
+  "offline_checks": {
+    "final_pass": 34,
+    "final_fail": 0,
+    "child_process_permission": "withheld",
+    "Windows_calls": "injected only",
+    "initial_result": "32 pass, 1 assertion fail; selected excerpt saved",
+    "intermediate_result": "33 pass before exclusive-write race correction; complete log retained"
+  },
+  "independent_source_review": "approved; no tests or Windows observations by reviewer; exclusive evidence creation incorporated",
+  "current_metadata": {
+    "command_review": "accepted",
+    "windows_metadata_invocations": 1,
+    "no_retry": true,
+    "started_utc": "2026-10-07T07:55:23.119Z",
+    "completed_utc": "2026-10-07T07:55:26.487Z",
+    "blocker_pid": 100568,
+    "blocker_created_ticks": "639267186912717160",
+    "ports_occupied": false,
+    "known_product_stage": "unknown",
+    "executable_matches_candidate": false,
+    "first_snapshot_reconstructed": false
+  },
+  "metadata_command_argv": [
+    "/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node",
+    "/tmp/lc-qa-tts-current-metadata-20261007.mjs"
+  ],
+  "native_file_invocations": 0,
+  "additional_wrapper_execute_invocations": 0,
+  "signals_sent": 0,
+  "provider_attempts": 0,
+  "real_request_budget": "0/4 unchanged",
+  "display_lease": "released 2026-10-07T07:44:21Z; no new lease",
+  "automation": "existing ai remains paused",
+  "next_owner": "Lead coordinates competing launch ownership and any future separately reviewed exact-wrapper scope/allocation; QA does not retry or close it"
+}

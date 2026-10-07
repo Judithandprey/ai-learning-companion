@@ -1,0 +1,20 @@
+Selected excerpt copied from the first combined test-tool output, not a complete log. The other 32 checks passed. The privacy assertion accidentally matched the safe reason value unreadable_command_line, rather than a raw command_line key; the assertion was corrected to look for the exact serialized key. No production change was needed for this test failure.
+
+ℹ tests 33
+ℹ suites 0
+ℹ pass 32
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 205.62858
+
+✖ failing tests:
+
+test at tests/e2e/windows/test_qa_run_tts_candidate.mjs:196:1
+✖ metadata allowlist preserves separate snapshot clocks and safe known-stage classification (1.187858ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///home/agentsdock/Projects/learning-companion/wt-review/tests/e2e/windows/test_qa_run_tts_candidate.mjs:220:86)

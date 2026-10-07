@@ -1,0 +1,45 @@
+// One read-only metadata observation assigned by Lead. No wrapper execution/launch/cleanup.
+import { spawnSync } from 'node:child_process';
+import { readFileSync, writeFileSync } from 'node:fs';
+import { summarizeTtsPreflight } from '/home/agentsdock/Projects/learning-companion/wt-review/tests/e2e/windows/qa_run_tts_candidate.mjs';
+import { readLook } from '/home/agentsdock/Projects/learning-companion/wt-review/tests/e2e/windows/signin_cleanup.mjs';
+
+const base = '/home/agentsdock/Projects/learning-companion/wt-review/docs/verification/qa/p0-13-tts-52be105';
+const candidate = JSON.parse(readFileSync(base + '/candidate/candidate.json'));
+const output = base + '/preflight-refusal-20261007/current-metadata.json';
+const started = new Date().toISOString();
+const code = `$ProgressPreference='SilentlyContinue'; $ErrorActionPreference='Stop';
+$rows = @(Get-CimInstance Win32_Process -Filter "Name='electron.exe'" | ForEach-Object {
+  @{pid=[int]$_.ProcessId; created=$(if ($_.CreationDate) {[string]$_.CreationDate.ToUniversalTime().Ticks} else {$null}); exe=$_.ExecutablePath; command_line=$_.CommandLine}
+});
+$ev=$null; $ports=@(Get-NetTCPConnection -LocalPort 43123,45123 -State Listen -ErrorAction SilentlyContinue -ErrorVariable ev | ForEach-Object {
+  @{port=[int]$_.LocalPort; pid=[int]$_.OwningProcess}
+});
+if (@($ev | Where-Object {$_.CategoryInfo.Category -ne 'ObjectNotFound'}).Count -gt 0) {throw 'listener metadata unavailable'};
+$json=ConvertTo-Json -Compress -Depth 4 @{now=[string][DateTime]::UtcNow.Ticks; processes=$rows; ports=$ports};
+[Convert]::ToBase64String([Text.Encoding]::UTF8.GetBytes($json))`;
+let record = {schema:'qa-tts-current-metadata/1', observation_status:'UNAVAILABLE',
+  started_utc:started, windows_metadata_invocations:1,
+  scope:'electron.exe and listening ports 43123/45123 only',
+  first_attempt_snapshot_reconstructed:false, native_file_invocations:0, provider_attempts:0, signals_sent:0};
+try {
+  const result = spawnSync('/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe',
+    ['-NoProfile','-NonInteractive','-EncodedCommand',Buffer.from(code,'utf16le').toString('base64')],
+    {cwd:'/mnt/c',encoding:'utf8',timeout:8000,maxBuffer:8*1024*1024});
+  record.lookup_exit_code = Number.isInteger(result.status) ? result.status : null;
+  record.timed_out = result.error?.code === 'ETIMEDOUT';
+  if (result.status !== 0 || result.error) throw Error('metadata lookup unavailable');
+  // Raw command lines/paths stay in this process memory; neither stdout nor evidence receives them.
+  const raw = JSON.parse(Buffer.from(result.stdout.trim().split(/\r?\n/).at(-1),'base64').toString('utf8'));
+  const ports = [].concat(raw.ports ?? []);
+  if (!ports.every(p => [43123,45123].includes(p.port) && Number.isInteger(p.pid) && p.pid >= 0)) throw Error('metadata lookup unavailable');
+  const look = port => readLook(Buffer.from(JSON.stringify({now:raw.now,processes:raw.processes,
+    listen:[...new Set(ports.filter(p => p.port === port).map(p => p.pid))]})).toString('base64'));
+  record.observation_status='OBSERVED';
+  record.metadata=summarizeTtsPreflight(candidate,look(43123),look(45123),Date.now());
+} catch {
+  record.failure='Metadata unavailable; no raw error output saved, no retry.';
+}
+record.completed_utc=new Date().toISOString();
+writeFileSync(output,JSON.stringify(record,null,2)+'\n',{mode:0o600,flag:'wx'});
+console.log(JSON.stringify(record));

@@ -7,7 +7,7 @@ import * as fs from 'node:fs';
 import { dirname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { checkTtsCandidate } from './qa_tts_output_candidate.mjs';
-import { launches, lookCommand, readLook, releaseOwned, windowsCalls } from './signin_cleanup.mjs';
+import { argv, isChild, launches, lookCommand, readLook, releaseOwned, windowsCalls } from './signin_cleanup.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url)), repo = resolve(here, '../../..');
 const candidateDir = join(repo, 'docs/verification/qa/p0-13-tts-52be105/candidate');
@@ -23,6 +23,34 @@ const win = path => {
   return 'C:\\' + path.slice(7).replaceAll('/', '\\');
 };
 const equal = (a, b) => JSON.stringify(a) === JSON.stringify(b);
+
+// Whitelist metadata only: unrelated command lines and paths never enter saved evidence.
+export function summarizeTtsPreflight(candidate, app, edge, observedAt) {
+  const readable = value => typeof value === 'string' && value.length > 0;
+  const samePath = (a, b) => readable(a) && readable(b) && a.toLowerCase() === b.toLowerCase();
+  const process = p => {
+    const child = isChild(p), executable = readable(p.exe), command = readable(p.command_line);
+    return { pid: p.pid, created_ticks: p.created, metadata_present: true,
+      creation_readable: readable(p.created), executable_readable: executable, command_line_readable: command,
+      child_argument_present: child, executable_matches_candidate: executable ? samePath(p.exe, candidate.electron) : null,
+      known_product_stage: executable && command && !child && samePath(p.exe, candidate.electron)
+        && samePath(argv(p.command_line)[1], win(candidate.stage)) ? 'candidate_stage' : 'unknown' };
+  };
+  const port = (number, look) => ({ port: number, observed_ticks: look.now, owners: look.listen.map(pid => {
+    const p = look.processes.find(p => p.pid === pid);
+    return p ? process(p) : { pid, created_ticks: null, metadata_present: false,
+      creation_readable: null, executable_readable: null, command_line_readable: null,
+      child_argument_present: null, executable_matches_candidate: null, known_product_stage: 'unknown' };
+  }) });
+  const conflicts = launches(app.processes).map(p => ({ ...process(p),
+    reason: !readable(p.command_line) ? 'unreadable_command_line'
+      : !readable(p.created) ? 'unreadable_creation' : 'non_child_launch' }));
+  return { schema: 'qa-tts-preflight-metadata/1', observed_at_utc: new Date(observedAt).toISOString(),
+    blocked: app.listen.length > 0 || edge.listen.length > 0 || conflicts.length > 0,
+    app_port: port(candidate.appPort, app), edge_port: port(candidate.edgePort, edge),
+    electron_observed_ticks: app.now, electron_launch_conflicts: conflicts,
+    native_attempts: 0, provider_attempts: 0, signals_sent: 0 };
+}
 
 function validateAllocation(record, candidate, wrapperHash, now) {
   if (record?.schema !== 'qa-tts-display-allocation/1' || record.state !== 'active' || record.lead_reviewed !== true
@@ -86,7 +114,14 @@ export async function runTtsCandidate(options, injected = {}) {
   const beforeApp = await appCalls.look();
   stillActive();
   const beforeEdge = await edgeCalls.look();
-  if (beforeApp.listen.length || beforeEdge.listen.length || launches(beforeApp.processes).length) throw Error('another launch or debugging-port owner present; nothing started');
+  if (beforeApp.listen.length || beforeEdge.listen.length || launches(beforeApp.processes).length) {
+    const refusal = summarizeTtsPreflight(candidate, beforeApp, beforeEdge, now());
+    try {
+      io.mkdirSync(out, { recursive: false, mode: 0o700 });
+      io.writeFileSync(join(out, 'preflight-refusal.json'), JSON.stringify(refusal, null, 2)+'\n', { mode: 0o600, flag: 'wx' });
+    } catch { throw Error('preflight conflict found; sanitized refusal could not be saved; nothing started'); }
+    throw Error('another launch or debugging-port owner present; nothing started');
+  }
   stillActive();
   if (ps(`[bool](Test-Path -LiteralPath '${candidate.edge}' -PathType Leaf)`).trim() !== 'True') throw Error('reviewed Edge unavailable');
   const expectedApp = { exe: candidate.electron, app: [win(candidate.stage), `--remote-debugging-port=${candidate.appPort}`, '--remote-debugging-address=127.0.0.1'],
