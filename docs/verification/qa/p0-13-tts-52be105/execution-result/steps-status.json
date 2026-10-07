@@ -1,0 +1,290 @@
+[
+  {
+    "step": 1,
+    "kind": "edgeStart",
+    "as": "edge",
+    "target": null,
+    "handle": null,
+    "status": "NOT_RUN",
+    "reason": "Wrapper preflight refused at line 89 before native runner launch; original snapshot was not persisted."
+  },
+  {
+    "step": 2,
+    "kind": "window",
+    "as": null,
+    "target": "edge",
+    "handle": null,
+    "status": "NOT_RUN",
+    "reason": "Wrapper preflight refused at line 89 before native runner launch; original snapshot was not persisted."
+  },
+  {
+    "step": 3,
+    "kind": "edgeFullscreen",
+    "as": null,
+    "target": null,
+    "handle": null,
+    "status": "NOT_RUN",
+    "reason": "Wrapper preflight refused at line 89 before native runner launch; original snapshot was not persisted."
+  },
+  {
+    "step": 4,
+    "kind": "eval",
+    "as": "surface_before",
+    "target": "edge",
+    "handle": null,
+    "status": "NOT_RUN",
+    "reason": "Wrapper preflight refused at line 89 before native runner launch; original snapshot was not persisted."
+  },
+  {
+    "step": 5,
+    "kind": "onTop",
+    "as": null,
+    "target": null,
+    "handle": null,
+    "status": "NOT_RUN",
+    "reason": "Wrapper preflight refused at line 89 before native runner launch; original snapshot was not persisted."
+  },
+  {
+    "step": 6,
+    "kind": "launchApp",
+    "as": "app",
+    "target": null,
+    "handle": null,
+    "status": "NOT_RUN",
+    "reason": "Wrapper preflight refused at line 89 before native runner launch; original snapshot was not persisted."
+  },
+  {
+    "step": 7,
+    "kind": "waitEval",
+    "as": null,
+    "target": "control",
+    "handle": null,
+    "status": "NOT_RUN",
+    "reason": "Wrapper preflight refused at line 89 before native runner launch; original snapshot was not persisted."
+  },
+  {
+    "step": 8,
+    "kind": "eval",
+    "as": "before_capture",
+    "target": "control",
+    "handle": null,
+    "status": "NOT_RUN",
+    "reason": "Wrapper preflight refused at line 89 before native runner launch; original snapshot was not persisted."
+  },
+  {
+    "step": 9,
+    "kind": "productPlacement",
+    "as": null,
+    "target": null,
+    "handle": null,
+    "status": "NOT_RUN",
+    "reason": "Wrapper preflight refused at line 89 before native runner launch; original snapshot was not persisted."
+  },
+  {
+    "step": 10,
+    "kind": "window",
+    "as": null,
+    "target": "edge",
+    "handle": null,
+    "status": "NOT_RUN",
+    "reason": "Wrapper preflight refused at line 89 before native runner launch; original snapshot was not persisted."
+  },
+  {
+    "step": 11,
+    "kind": "eval",
+    "as": "surface_at_start",
+    "target": "edge",
+    "handle": null,
+    "status": "NOT_RUN",
+    "reason": "Wrapper preflight refused at line 89 before native runner launch; original snapshot was not persisted."
+  },
+  {
+    "step": 12,
+    "kind": "onTop",
+    "as": null,
+    "target": null,
+    "handle": null,
+    "status": "NOT_RUN",
+    "reason": "Wrapper preflight refused at line 89 before native runner launch; original snapshot was not persisted."
+  },
+  {
+    "step": 13,
+    "kind": "captureStart",
+    "as": "capture_start",
+    "target": null,
+    "handle": null,
+    "status": "NOT_RUN",
+    "reason": "Wrapper preflight refused at line 89 before native runner launch; original snapshot was not persisted."
+  },
+  {
+    "step": 14,
+    "kind": "waitEval",
+    "as": null,
+    "target": "control",
+    "handle": null,
+    "status": "NOT_RUN",
+    "reason": "Wrapper preflight refused at line 89 before native runner launch; original snapshot was not persisted."
+  },
+  {
+    "step": 15,
+    "kind": "waitEval",
+    "as": null,
+    "target": "overlay",
+    "handle": null,
+    "status": "NOT_RUN",
+    "reason": "Wrapper preflight refused at line 89 before native runner launch; original snapshot was not persisted."
+  },
+  {
+    "step": 16,
+    "kind": "eval",
+    "as": "capture_only",
+    "target": "control",
+    "handle": null,
+    "status": "NOT_RUN",
+    "reason": "Wrapper preflight refused at line 89 before native runner launch; original snapshot was not persisted."
+  },
+  {
+    "step": 17,
+    "kind": "productPlacement",
+    "as": null,
+    "target": null,
+    "handle": null,
+    "status": "NOT_RUN",
+    "reason": "Wrapper preflight refused at line 89 before native runner launch; original snapshot was not persisted."
+  },
+  {
+    "step": 18,
+    "kind": "eval",
+    "as": "drag_hook",
+    "target": "overlay",
+    "handle": null,
+    "status": "NOT_RUN",
+    "reason": "Wrapper preflight refused at line 89 before native runner launch; original snapshot was not persisted."
+  },
+  {
+    "step": 19,
+    "kind": "dragHandle",
+    "as": null,
+    "target": null,
+    "handle": "toolbarHandle",
+    "status": "NOT_RUN",
+    "reason": "Wrapper preflight refused at line 89 before native runner launch; original snapshot was not persisted."
+  },
+  {
+    "step": 20,
+    "kind": "eval",
+    "as": null,
+    "target": "overlay",
+    "handle": null,
+    "status": "NOT_RUN",
+    "reason": "Wrapper preflight refused at line 89 before native runner launch; original snapshot was not persisted."
+  },
+  {
+    "step": 21,
+    "kind": "stroke",
+    "as": null,
+    "target": null,
+    "handle": null,
+    "status": "NOT_RUN",
+    "reason": "Wrapper preflight refused at line 89 before native runner launch; original snapshot was not persisted."
+  },
+  {
+    "step": 22,
+    "kind": "waitEval",
+    "as": null,
+    "target": "overlay",
+    "handle": null,
+    "status": "NOT_RUN",
+    "reason": "Wrapper preflight refused at line 89 before native runner launch; original snapshot was not persisted."
+  },
+  {
+    "step": 23,
+    "kind": "dragHandle",
+    "as": null,
+    "target": null,
+    "handle": "cardHandle",
+    "status": "NOT_RUN",
+    "reason": "Wrapper preflight refused at line 89 before native runner launch; original snapshot was not persisted."
+  },
+  {
+    "step": 24,
+    "kind": "eval",
+    "as": "after_drags",
+    "target": "control",
+    "handle": null,
+    "status": "NOT_RUN",
+    "reason": "Wrapper preflight refused at line 89 before native runner launch; original snapshot was not persisted."
+  },
+  {
+    "step": 25,
+    "kind": "eval",
+    "as": null,
+    "target": "overlay",
+    "handle": null,
+    "status": "NOT_RUN",
+    "reason": "Wrapper preflight refused at line 89 before native runner launch; original snapshot was not persisted."
+  },
+  {
+    "step": 26,
+    "kind": "window",
+    "as": null,
+    "target": "edge",
+    "handle": null,
+    "status": "NOT_RUN",
+    "reason": "Wrapper preflight refused at line 89 before native runner launch; original snapshot was not persisted."
+  },
+  {
+    "step": 27,
+    "kind": "eval",
+    "as": "surface_after",
+    "target": "edge",
+    "handle": null,
+    "status": "NOT_RUN",
+    "reason": "Wrapper preflight refused at line 89 before native runner launch; original snapshot was not persisted."
+  },
+  {
+    "step": 28,
+    "kind": "onTop",
+    "as": null,
+    "target": null,
+    "handle": null,
+    "status": "NOT_RUN",
+    "reason": "Wrapper preflight refused at line 89 before native runner launch; original snapshot was not persisted."
+  },
+  {
+    "step": 29,
+    "kind": "eval",
+    "as": "stop_pressed",
+    "target": "control",
+    "handle": null,
+    "status": "NOT_RUN",
+    "reason": "Wrapper preflight refused at line 89 before native runner launch; original snapshot was not persisted."
+  },
+  {
+    "step": 30,
+    "kind": "waitEval",
+    "as": null,
+    "target": "control",
+    "handle": null,
+    "status": "NOT_RUN",
+    "reason": "Wrapper preflight refused at line 89 before native runner launch; original snapshot was not persisted."
+  },
+  {
+    "step": 31,
+    "kind": "closeApp",
+    "as": null,
+    "target": null,
+    "handle": null,
+    "status": "NOT_RUN",
+    "reason": "Wrapper preflight refused at line 89 before native runner launch; original snapshot was not persisted."
+  },
+  {
+    "step": 32,
+    "kind": "edgeClose",
+    "as": null,
+    "target": null,
+    "handle": null,
+    "status": "NOT_RUN",
+    "reason": "Wrapper preflight refused at line 89 before native runner launch; original snapshot was not persisted."
+  }
+]

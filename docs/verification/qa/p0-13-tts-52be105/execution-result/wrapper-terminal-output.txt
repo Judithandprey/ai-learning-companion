@@ -1,0 +1,9 @@
+file:///home/agentsdock/Projects/learning-companion/wt-review/tests/e2e/windows/qa_run_tts_candidate.mjs:89
+  if (beforeApp.listen.length || beforeEdge.listen.length || launches(beforeApp.processes).length) throw Error('another launch or debugging-port owner present; nothing started');
+                                                                                                         ^
+
+Error: another launch or debugging-port owner present; nothing started
+    at runTtsCandidate (file:///home/agentsdock/Projects/learning-companion/wt-review/tests/e2e/windows/qa_run_tts_candidate.mjs:89:106)
+    at async file:///home/agentsdock/Projects/learning-companion/wt-review/tests/e2e/windows/qa_run_tts_candidate.mjs:166:18
+
+Node.js v24.21.0

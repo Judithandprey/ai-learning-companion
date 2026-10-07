@@ -1,0 +1,35 @@
+{
+  "schema": "qa-tts-actual-attempt-artifacts/1",
+  "files": {
+    "README.md": {
+      "sha256": "180fe923a1f830cac3433d9a344cd6d427bab379f89dc611ff79eb312d9a2920",
+      "bytes": 4495
+    },
+    "allocation-as-issued.json": {
+      "sha256": "c91fbe625d414033816724ff770970c6743450fadc49486e9757dfc42d1fff97",
+      "bytes": 2805
+    },
+    "attempt.json": {
+      "sha256": "b3b85e2df02d0b758e1a62bc5365544b21d0cea8c83da060b4f51d86087951b9",
+      "bytes": 3442
+    },
+    "steps-status.json": {
+      "sha256": "f52dfc480354df57e9c533c8afc1ae9d45f573c0948c4dafb6cea78fa73445e8",
+      "bytes": 8128
+    },
+    "wrapper-terminal-output.txt": {
+      "sha256": "bcb25362702f5a90651d6cb48cf846650acec3148e0212a070d45c6d4d63211f",
+      "bytes": 746
+    }
+  },
+  "pinned_wrapper": {
+    "path": "tests/e2e/windows/qa_run_tts_candidate.mjs",
+    "sha256": "d7f47e688962ea069b1a82b6073abf2ffd05b955bdf48468bcb5a2a8548dc48b"
+  },
+  "pinned_candidate": {
+    "path": "docs/verification/qa/p0-13-tts-52be105/candidate/candidate.json",
+    "sha256": "f5a55d6edabe33c0b4fa5cc3e299e4f79d6c0304f1e36fd76dc3cc1547f3e2bd"
+  },
+  "source_pins_unchanged": true,
+  "saved_payload_pins_unchanged": true
+}

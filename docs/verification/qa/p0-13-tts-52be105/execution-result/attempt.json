@@ -1,0 +1,73 @@
+{
+  "schema": "qa-tts-wrapper-attempt/1",
+  "result": "BLOCKED",
+  "evidence_origin": "QA salvage after wrapper exited; not wrapper run.json",
+  "observed_completion_utc": "2026-10-07T07:44:21Z",
+  "baseline_commit": "1e18a5100494335edf592f64e60a59727fbcdbd0",
+  "production_commit": "52be105a148a28e677f83cc4b7077665f2ff372c",
+  "lead_review_commit": "e20229f",
+  "assignment_message_id": "handoff_3d2a3a342f1406de8103d684dfbe3072",
+  "updated_approval_ref": "human-interactive-resume-20261007:6e1744183d4548619cf4ce4b29a0e37f",
+  "command_argv": [
+    "/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node",
+    "/home/agentsdock/Projects/learning-companion/wt-review/tests/e2e/windows/qa_run_tts_candidate.mjs",
+    "--execute",
+    "/home/agentsdock/Projects/learning-companion/wt-review/docs/verification/qa/p0-13-tts-52be105/execution-result",
+    "/tmp/lc-qa-tts-52be105-display-allocation-20261007-01.json",
+    "c91fbe625d414033816724ff770970c6743450fadc49486e9757dfc42d1fff97"
+  ],
+  "command_review": "accepted",
+  "wrapper_invocations": 1,
+  "exit_code": 1,
+  "wrapper_sha256": "d7f47e688962ea069b1a82b6073abf2ffd05b955bdf48468bcb5a2a8548dc48b",
+  "candidate_sha256": "f5a55d6edabe33c0b4fa5cc3e299e4f79d6c0304f1e36fd76dc3cc1547f3e2bd",
+  "allocation_sha256": "c91fbe625d414033816724ff770970c6743450fadc49486e9757dfc42d1fff97",
+  "allocation_window_utc": [
+    "2026-10-07T07:40:28Z",
+    "2026-10-07T08:10:28Z"
+  ],
+  "refusal": {
+    "line": 89,
+    "error": "another launch or debugging-port owner present; nothing started",
+    "predicate": "beforeApp.listen.length || beforeEdge.listen.length || launches(beforeApp.processes).length",
+    "specific_trigger": "UNKNOWN",
+    "pid": "UNKNOWN",
+    "port": "UNKNOWN",
+    "original_preflight_snapshots_saved": false
+  },
+  "reached_inferred_from_pinned_call_flow": [
+    "candidate and saved payload admission",
+    "allocation hash/scope/wrapper admission",
+    "fresh Linux stage identity command and checkTtsCandidate returned",
+    "unused scratch check",
+    "Windows app preflight look returned",
+    "Windows Edge preflight look returned"
+  ],
+  "fresh_stage_identity_receipt_saved": false,
+  "native_file_invocations": 0,
+  "diagnostic_steps_run": 0,
+  "diagnostic_steps_not_run": 32,
+  "owned_electron_launches": 0,
+  "owned_edge_launches": 0,
+  "owned_cleanup": "not required: no owned launches created; cleanup block not entered",
+  "foreign_signals": 0,
+  "scratch_path": "/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-tts-output-bf94386da582443495d2cae7ae3cbffb",
+  "scratch_absent_at_evidence_save": true,
+  "output_directory_created_by": "QA after failure to preserve terminal output and issued allocation",
+  "wrapper_run_json_created": false,
+  "display_release": {
+    "utc": "2026-10-07T07:44:21Z",
+    "accepted_native_message_id": "handoff_876cad3c8b3ed17383853a0218230c07"
+  },
+  "allocation_copy": "as issued, including historical state active; not a renewed lease",
+  "provider_attempts": 0,
+  "real_request_budget": "0/4 unchanged",
+  "account_access": false,
+  "audio_access": false,
+  "microphone_access": false,
+  "tts_helper_execution": false,
+  "automation": "existing ai pause unchanged",
+  "retry": false,
+  "product_acceptance": "NOT_RUN",
+  "limitation": "Only a wrapper preflight refusal is observed. No specific conflicting process/port identified, no capture/drag/Stop/speech or real AI/device acceptance."
+}
