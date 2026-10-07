@@ -67,3 +67,13 @@ correction before the next concrete action.
 Real-AI 0/4 remains unused, voice-input slot remains unassigned; real speech,
 captions, audio and full desktop gates remain separate. Independent automation
 `ai` and Paperclip remain paused.
+
+## Evidence integration
+
+QA committed the original failure evidence as
+`1b27f128d5bf78b1dbff1c14ca1002da0e1a3f74`; Lead integrated it as `3c48366`.
+The [actual attempt](../../../../qa/p0-13-tts-52be105/execution-result/README.md)
+preserves the complete tool-terminal failure, issued allocation, all 32 NOT_RUN
+steps and post-failure salvage provenance. Lead checked all five artifact hashes
+and lengths, two source pins, the allocation hash and step/attempt consistency
+from that exact commit. No native/application check was repeated.
