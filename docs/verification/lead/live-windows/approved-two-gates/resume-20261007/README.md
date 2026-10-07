@@ -77,3 +77,22 @@ preserves the complete tool-terminal failure, issued allocation, all 32 NOT_RUN
 steps and post-failure salvage provenance. Lead checked all five artifact hashes
 and lengths, two source pins, the allocation hash and step/attempt consistency
 from that exact commit. No native/application check was repeated.
+
+## Provider-restoration coordination checkpoint
+
+The human's subsequent direct instruction
+`claude-restore-coordinate-20261007:da35a4b7436b4f05a302b579a832f7a1`
+requests the existing Native/ios, Web/Windows and QA identities return to
+Opus 5.5 through the configuration operator. Lead holds new assignments to those
+three roles pending the operator's verified map. No provider migration, settings,
+service or permission change is performed here; Astra roles remain unchanged.
+
+At this checkpoint the original diagnostic is finished and its display released.
+QA's already assigned refusal-evidence correction is dirty in its two assigned
+source/test files and its QA evidence folder, based on `1b27f12`. Preserve that
+work for completion/restoration; no new test, interrupted cleanup, renewed display
+slot or model experiment is needed. The unrelated operator edit to
+`docs/team-directory.json` remains unstaged and is not inferred to establish a
+completed runtime migration. Lead may integrate immutable delivered work while
+the operator preserves the live owner context. Project development is not paused;
+independent automation `ai` and Paperclip remain paused as previously directed.

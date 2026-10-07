@@ -35,6 +35,25 @@ are intermediate slices. Native iPad/phone work is deferred, preserved and not
 silently counted as a desktop pass. Sidecar is a later optional Mac-app candidate,
 not a desktop prerequisite or a native-iPad overlay.
 
+### Role restoration checkpoint — 2026-10-07
+
+Under direct human instruction `claude-restore-coordinate-20261007:da35a4b7436b4f05a302b579a832f7a1`,
+Lead holds **new assignments** to Native/ios, Web/Windows and QA while the operator
+restores their existing Opus 5.5 sessions and supplies the verified final role map.
+Lead and the other Astra roles stay unchanged. This is not a project cancellation
+or permission for Lead to migrate providers. Preserve current work and let the
+already assigned QA refusal-diagnostic correction reach its saved boundary.
+
+The admitted Windows wrapper already finished: one invocation refused by the
+preflight conflict guard, native steps 0/32, no owned test launches. QA explicitly
+released the display at 07:44:21Z; Lead invalidated the temporary allocation and
+integrated the evidence in `3c48366` / `54baed6`. [Actual result and preserved
+continuation](verification/lead/live-windows/approved-two-gates/resume-20261007/README.md).
+No new display slot, model experiment or duplicate test is allocated for migration.
+The same QA repair remains with its restored owner when the operator confirms the
+map; Lead may review delivered immutable commits and integrate without editing
+worker worktrees. Automation `ai` and Paperclip remain paused.
+
 ### Current runnable delivery and one changed-flow acceptance
 
 Use the [complete user-journey entry](requirements-traceability.md#user-journeys)
