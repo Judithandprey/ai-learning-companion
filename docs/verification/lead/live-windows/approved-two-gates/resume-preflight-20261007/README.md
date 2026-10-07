@@ -33,3 +33,30 @@ at dispatch. Full continuous screen/context, automatic focus, voice/captions,
 movable controls, Stop and editable-original requirements remain open at their
 actual acceptance gates. Other delivered roles have no manufactured tasks;
 automation `ai` and Paperclip remain paused.
+
+## Independent preparation result
+
+Lead's current read-only stage audit failed before execution because the existing
+fixed runtime had lost its `version` file. Comparison against the already cached
+Electron44.5.1 ZIP found 60 missing files and no differing existing file. The ZIP's
+Electron hash still matched the reviewed binary. With normal execution approval,
+Lead restored only missing files using exclusive creation: zero overwrites, no
+download, launch, service or process change. All73 archive files now match.
+[Original missing inventory](runtime-missing.json) and [actual restoration](runtime-restored.json)
+retain that separate environment failure; its cause is unknown.
+
+The [fresh static stage audit](stage-recheck.json) now passes all77 product files,
+unchanged tree `531943a83d3572ca9c686c7d8cd62bd88da5b0401b84050487722b8e87a02669`,
+entrypoint, local helper-build receipt and pinned Electron44.5.1 identity. This is
+file inspection only, not a native test or display allocation. QA received the
+resolved prerequisite; source repair/review continue under the existing card.
+
+Support has written its scoped call-graph preparation in its own worktree; this
+is observed preparation, not final approval. It identified the native runner's
+second broad Foreign-Electron guard, and Lead relayed that concrete finding as
+`handoff_f530b0ce49426ce28fafb9d9f918dc52`. Runtime preparation was reported to QA
+as `handoff_41de99e6c84549e61350297d1c8f761b` (failure) and
+`handoff_99ec807bb7468b806a1e90ec7c4f13d3` (resolved). These amend the same card,
+not additional tasks. At this saved boundary no QA start/delivery reply has
+arrived; do not equate route acceptance with restored execution. Next owner is
+QA for the exact committed repair, then Support review and Lead allocation.

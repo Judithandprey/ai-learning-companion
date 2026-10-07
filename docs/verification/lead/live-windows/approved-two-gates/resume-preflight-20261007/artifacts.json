@@ -1,0 +1,11 @@
+{
+  "files_sha256": {
+    "stage-recheck.json": "9c6d8d8e65e9212dad9eca39b6f50a865a6442c22793bb1c74d5711b4312a67e",
+    "runtime-missing.json": "ac6e25e83cddd7dc16b306aab49c6880a45ab07f41c500389c96ade19f396094",
+    "runtime-restored.json": "72d03e761af9f428b8d7b9e390576baf5e3753820e5b83c4e4e8eec0be54f92d"
+  },
+  "restoration_script_sha256": "8884fa8609a9c77138389b9dbdee3f032155f7ca4472cdd7806d9ee2fd0ab1e5",
+  "native_calls": 0,
+  "provider_requests": 0,
+  "test_attempts": 0
+}
