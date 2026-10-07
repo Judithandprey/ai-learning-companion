@@ -1,0 +1,28 @@
+{
+  "baseline": "4388217a3784d6979a36b0359b2a49eb6f869750",
+  "script_sha256": "a55c64759a0501665dacdfbf03eb0360e305d94790a9646cd14e42c8bb3ee32c",
+  "started_utc": "2026-10-07T08:18:06.556745+00:00",
+  "native_invocations": 1,
+  "status": "completed",
+  "first_attempt_snapshot_reconstructed": false,
+  "signals_sent": 0,
+  "display_acquired": false,
+  "provider_attempts": 0,
+  "native_exit_code": 0,
+  "observation": {
+    "status": "observed",
+    "pid": 100568,
+    "expected_created_ticks": "639267186912717160",
+    "creation_source": "CIM CreationDate.ToUniversalTime().Ticks",
+    "identity_matches": true,
+    "classification": "unknown",
+    "observed_utc": "2026-10-07T08:18:06.9961264Z",
+    "product": "Electron",
+    "company": "GitHub, Inc.",
+    "description": "Electron",
+    "child_argument_present": false,
+    "executable_matches_candidate": false,
+    "known_launch": "unknown"
+  },
+  "completed_utc": "2026-10-07T08:18:09.073070+00:00"
+}
