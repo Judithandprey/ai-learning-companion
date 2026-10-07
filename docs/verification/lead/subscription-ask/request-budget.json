@@ -111,5 +111,22 @@
     "native_script_executed": true,
     "product_launched": false,
     "capture_started": false
+  },
+  "updated_ai_disabled_diagnostic": {
+    "approval_id": "interactive-resume-20261007:6e1744183d4548619cf4ce4b29a0e37f",
+    "owner": "QA sess_104c8bc82d94481a",
+    "status": "fresh_display_allocation_dispatched_execution_unconfirmed",
+    "display_allocation_active": true,
+    "account_allocation_active": false,
+    "audio_allocation_active": false,
+    "model_attempts_allowed": 0,
+    "max_native_attempts": 1,
+    "native_timeout_seconds": 140,
+    "dispatch_message": "handoff_3d2a3a342f1406de8103d684dfbe3072",
+    "allocation_sha256": "c91fbe625d414033816724ff770970c6743450fadc49486e9757dfc42d1fff97",
+    "allocation_record": "docs/verification/lead/live-windows/approved-two-gates/resume-20261007/allocation.json",
+    "production_commit": "52be105a148a28e677f83cc4b7077665f2ff372c",
+    "runner_sha256": "4a9b9b9cee7a843d5f35d97bb4f5c078d233b3a2cb81d2ac96b4813245cd0302",
+    "actual_attempts": []
   }
 }

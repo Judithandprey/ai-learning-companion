@@ -58,7 +58,12 @@ admitted generated surface. No real subscription/account request, microphone,
 sound or TTS helper invocation is part of these steps. It does not certify real
 speech/captions, microphone/system audio or full live-AI acceptance.
 
-## Decision and next action
+## Historical request and current resolution
+
+The human explicitly resolved this request on2026-10-07. See the
+[one fresh allocation and actual execution record](../resume-20261007/README.md).
+The text below preserves why the exact-scope request was made; it is no longer
+a pending confirmation.
 
 The human's previous approval expressly fixed production1755153, runner0f6d0b28
 and its steps. That approved attempt finished and its display was released.
