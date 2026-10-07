@@ -48,7 +48,7 @@ The following retain the configured identities and paths. Descriptive responsibi
 | 03 学习与记忆 | GPT-6 Astra | `/home/agentsdock/Projects/learning-companion/wt-learning` | `services/learning`, `services/worker/learning`, `tests/fixtures/memory`, `tests/evals`, `docs/verification/learning` |
 | 04 iPad 原生体验 (`ios`; current responsibility: macOS native) | Claude Opus 5.5 | `/home/agentsdock/Projects/learning-companion/wt-platform` | `apps/macos`, its native project settings/entitlements and tests, `docs/verification/platform`; preserve/defer `apps/ios` |
 | 05 Safari 与桌面端 (`web`; current responsibility: Windows and web) | Claude Opus 5.5 | `/home/agentsdock/Projects/learning-companion/wt-web` | `apps/windows` and its platform settings/tests; retain `apps/safari-extension`, module tests and `docs/verification/web` |
-| 06 独立验收 | Claude Opus 5.5 initially | `/home/agentsdock/Projects/learning-companion/wt-review` | `tests/e2e`, `docs/verification/qa`; independent Windows/macOS acceptance; production fixes only by explicit task |
+| 06 独立验收 | Claude Opus 5.5 | `/home/agentsdock/Projects/learning-companion/wt-review` | `tests/e2e`, `docs/verification/qa`; independent Windows/macOS acceptance; production fixes only by explicit task |
 | 07 疑难排障与技术研究 | GPT-6 Astra | `/home/agentsdock/Projects/learning-companion/wt-support` | `docs/verification/support`, `tests/probes/support`; bounded diagnosis/research only, production fixes stay with original owners unless explicitly coordinated |
 
 Read the corresponding file in `docs/roles/`. QA initially reviews Astra work with Opus. The lead arranges review by a different model for Opus work when useful; review evidence matters more than model agreement.
@@ -60,6 +60,13 @@ original owner integrates. Do not treat model votes as proof, silently switch
 existing workers, or add permanent parallel workers. Requested expert models
 (such as Fable 5.1) still require actual available access and normal authorization;
 a name in an operator report does not prove a callable route.
+
+2026-10-07: the user-authorized operator restoration is verified. The original
+Native/ios, Web/Windows and QA sessions again use Opus 5.5 / ultracode; their
+temporary migration assignment hold is lifted. Existing Astra roles, worktrees,
+approval policies and product scope remain unchanged. The current directory and
+granted native routes identify recipients; archived continuation histories remain
+preserved. This restoration is not authority to repeat a consumed test.
 
 Keep the configured runtime models and effort unchanged. `docs/team-directory.json` now records all seven verified identities/worktrees and the current Astra `ultra` / Claude `ultracode` descriptive metadata, matching the operator's live metadata check. This file is not a runtime control; later explicit user/runtime settings take precedence. Old high/xhigh values remain history only. Specification updates and task cards do not themselves reconfigure a model or effort level.
 

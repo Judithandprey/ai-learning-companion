@@ -115,7 +115,7 @@
   "updated_ai_disabled_diagnostic": {
     "approval_id": "interactive-resume-20261007:6e1744183d4548619cf4ce4b29a0e37f",
     "owner": "QA sess_104c8bc82d94481a",
-    "status": "preflight_conflict_correction_integrated_restoration_hold",
+    "status": "preflight_conflict_correction_integrated_awaiting_launch_identity",
     "display_allocation_active": false,
     "account_allocation_active": false,
     "audio_allocation_active": false,
@@ -154,6 +154,9 @@
       "known_product_stage": "unknown",
       "reconstructs_first_refusal": false
     },
-    "next_action": "Lead coordinates conflicting launch owner and awaits operator-confirmed role map; no active display lease or further worker assignment."
+    "next_action": "Support identifies exact competing launch read-only; Lead coordinates from actual evidence. No active display lease or GUI rerun.",
+    "restoration_complete": true,
+    "restoration_confirmation": "claude-restored-completion-20261007:53b820fb792145b88caa629df214b3b8",
+    "launch_identity_task": "handoff_39373f62becfa7e4aea05eb313467536"
   }
 }

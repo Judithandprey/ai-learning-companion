@@ -78,7 +78,7 @@ steps and post-failure salvage provenance. Lead checked all five artifact hashes
 and lengths, two source pins, the allocation hash and step/attempt consistency
 from that exact commit. No native/application check was repeated.
 
-## Provider-restoration coordination checkpoint
+## Historical provider-restoration coordination checkpoint
 
 The human's subsequent direct instruction
 `claude-restore-coordinate-20261007:da35a4b7436b4f05a302b579a832f7a1`
@@ -123,8 +123,9 @@ the pinned candidate. Product/stage identity is **unknown**. This later snapshot
 does not establish the exact first refusal cause or authority to close the process.
 No second observation or native run was performed by Lead.
 
-Current next action is Lead coordination of the conflicting launch's actual owner
-and the operator-confirmed restored role map. Previously granted human scope is
+At correction receipt, the next action was Lead coordination of the conflicting
+launch's actual owner and the operator-confirmed restored role map. The completion
+section below resolves the role-map dependency. Previously granted human scope is
 not reopened; any eventual execution still needs current admission and a fresh
 exact-hash resource allocation after the real conflict is resolved. No allocation
 is active, no process termination is assigned, and all 32 native steps remain
@@ -137,3 +138,42 @@ fail-closed condition, redaction, exclusive creation and refusal-before-launch
 boundaries are preserved. The reviewer ran no tests, Windows metadata queries or
 native actions and edited no files; the 34 main checks above are separately
 attributed. No new external worker assignment or runtime change was involved.
+
+## Restoration completion and resumed bounded coordination
+
+Direct operator completion
+`claude-restored-completion-20261007:53b820fb792145b88caa629df214b3b8`
+lifts the temporary assignment hold. The operator reports preserved histories,
+original Opus 5.5 / ultracode identities, fresh tool activity and unchanged Astra
+settings, services, approval rules and quota-resumer algorithm/timer/backoff/Stop.
+The earlier external `verification.json` was a startup snapshot awaiting response;
+subsequent actual native receipts establish the owner responses:
+
+| Owner | Current session | Actual status message | Native ordered read |
+| --- | --- | --- | --- |
+| Native / ios | `sess_d2ceae32e2204d4d` | `handoff_f053032aa1b5b906a569865907cbb299` | `mailread_c7fa685701c04c76ae1b4c3d04731760` |
+| Web / Windows | `sess_10c42daaeb704334` | `handoff_7ca0f10425696e8c607a0639e8006a88` | `mailread_56298caf0aa04feca74a33d1615c9634` |
+| QA | `sess_06a4c3cc6e214e96` | `handoff_d40129aa68bc53b8f5260adb4ac6280c` | `mailread_6667cbe15f0e49a5a4afef89f8230c20` |
+
+Lead reread the canonical directory and current native route list. All three
+routes are available with backend `claude`; other three worker routes remain
+`codex`. No credentials/probe output was copied or another model verification run.
+The operator's directory edit is retained separately. Restored owners report
+clean preserved worktrees and no pending executable task; no completed test is
+redispatched to create activity.
+
+The real Windows admission obstruction still needs an owner. One substantive
+Support task was accepted as `handoff_39373f62becfa7e4aea05eb313467536` at baseline
+`4388217`: identify only PID 100568 / creation ticks 639267186912717160 through
+at most one read-only metadata observation, allowing safe product classification
+but no unrelated command/path/secret output. If absent/reused/unreadable, stop and
+report it rather than search or poll. Support writes only its assigned evidence/
+probe paths and returns the actual next owner action. Initial receipt is unread,
+execution not started. This is a new concrete ownership question, not a replay
+of the consumed GUI diagnostic or a migration/model experiment.
+
+No active display/account/audio allocation exists. No process termination,
+permission change, service restart or new spending is assigned. Lead resumes
+normal integration and actionable dispatch; full product requirements and all
+unverified real GUI/AI/audio/Mac gates remain. Automation `ai` and Paperclip remain
+paused independently of project continuation.
