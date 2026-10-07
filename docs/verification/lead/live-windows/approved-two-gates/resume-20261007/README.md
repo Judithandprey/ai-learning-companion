@@ -96,3 +96,44 @@ slot or model experiment is needed. The unrelated operator edit to
 completed runtime migration. Lead may integrate immutable delivered work while
 the operator preserves the live owner context. Project development is not paused;
 independent automation `ai` and Paperclip remain paused as previously directed.
+
+## Refusal correction delivered at the restoration boundary
+
+Actual QA `d60f553df38f1943899007d642e3c97bb79050b3` arrived as
+`handoff_beca1e4984ec904b915ae11dd7b62e47`, read
+`mailread_3de36491b0164d6d8b28b6cb925704e3` (seq 973). It integrates as `2181b74`.
+The QA worktree is now clean; the repair is saved for restoration, not an active
+assignment. No new Native/Web/QA message or allocation was sent after the hold.
+
+The unchanged refusal predicate now saves separate port/launch facts with only
+PID, creation/readability and fixed stage classification. Unrelated command lines,
+paths, titles and tokens are not serialized. Exclusive evidence creation preserves
+concurrent outputs; even failure to save evidence stops without launch or signals.
+[Changed-path main checks](refusal-review/main-checks.txt): **34 pass**, with
+actual child-process permission withheld. This is injected verification, not a
+native test. Lead checked seven evidence hashes/lengths and both changed source
+hashes, plus unchanged candidate and original-attempt trees. Two blank-line trailing
+spaces in the initial failure excerpt were normalized on main; its original
+commit/hash and unchanged assertion text remain recorded in the artifact manifest.
+
+The [single separately authorized metadata observation](../../../../qa/p0-13-tts-52be105/preflight-refusal-20261007/README.md)
+at 07:55:23.119–07:55:26.487Z found both ports free and readable non-child Electron
+PID **100568**, creation ticks **639267186912717160**, with executable not matching
+the pinned candidate. Product/stage identity is **unknown**. This later snapshot
+does not establish the exact first refusal cause or authority to close the process.
+No second observation or native run was performed by Lead.
+
+Current next action is Lead coordination of the conflicting launch's actual owner
+and the operator-confirmed restored role map. Previously granted human scope is
+not reopened; any eventual execution still needs current admission and a fresh
+exact-hash resource allocation after the real conflict is resolved. No allocation
+is active, no process termination is assigned, and all 32 native steps remain
+NOT_RUN. Wrapper SHA is now
+`cadc3a85d0c8c3621c5570247536ca1c81b4c0e53d83a9357441893e9ec7cee6`;
+the historical allocation cannot run these changed bytes.
+
+Independent Lead-side source review **approves** this exact delta: the existing
+fail-closed condition, redaction, exclusive creation and refusal-before-launch
+boundaries are preserved. The reviewer ran no tests, Windows metadata queries or
+native actions and edited no files; the 34 main checks above are separately
+attributed. No new external worker assignment or runtime change was involved.

@@ -1,0 +1,28 @@
+{
+  "source_commit": "d60f553df38f1943899007d642e3c97bb79050b3",
+  "integrated_commit": "2181b74",
+  "receipt_message": "handoff_beca1e4984ec904b915ae11dd7b62e47",
+  "mailread_id": "mailread_3de36491b0164d6d8b28b6cb925704e3",
+  "main_checks": {
+    "pass": 34,
+    "fail": 0,
+    "child_process_permission": "withheld",
+    "native_execution": false,
+    "log_sha256": "802d458d6d169b7722d6426b8a2995958f954f6417d1de21b692ac473611b827"
+  },
+  "independent_source_review": {
+    "verdict": "APPROVE",
+    "agent": "/root/qa_pre01_review",
+    "tests_run": false,
+    "native_queries_or_actions": false,
+    "worker_edits": false
+  },
+  "display_allocation_active": false,
+  "restoration_dispatch_hold": [
+    "ios",
+    "web",
+    "qa"
+  ],
+  "operator_role_map_verified": false,
+  "next_action": "Coordinate unknown competing launch owner and operator-confirmed role restoration; do not reopen resolved human scope or retry the diagnostic."
+}

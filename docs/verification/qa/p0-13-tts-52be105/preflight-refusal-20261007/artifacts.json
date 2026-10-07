@@ -18,8 +18,8 @@
       "bytes": 2478
     },
     "initial-check-excerpt.txt": {
-      "sha256": "e023bc06611f95e56e6ea682c6351304712050f31c42bc01e04029ea19a2c378",
-      "bytes": 915
+      "sha256": "7666c4ed7e92680bbe51407cd04678d011497147bbbe9a6c29d063fdcac2189e",
+      "bytes": 911
     },
     "intermediate-33-checks.txt": {
       "sha256": "1bf9896388dca29fef88317b30f5732c4e936ce0129f12ac03a5f68f5d7b2fe5",
@@ -38,5 +38,10 @@
   "source_pins_unchanged": true,
   "payload_pins_unchanged": true,
   "first_attempt_evidence_commit": "1b27f128d5bf78b1dbff1c14ca1002da0e1a3f74",
-  "first_attempt_evidence_files_unchanged": true
+  "first_attempt_evidence_files_unchanged": true,
+  "lead_excerpt_normalization": {
+    "source_commit": "d60f553df38f1943899007d642e3c97bb79050b3",
+    "source_sha256": "e023bc06611f95e56e6ea682c6351304712050f31c42bc01e04029ea19a2c378",
+    "change": "Removed trailing spaces on two blank lines only; assertion failure text retained. Original bytes remain at source commit."
+  }
 }

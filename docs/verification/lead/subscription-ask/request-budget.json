@@ -115,7 +115,7 @@
   "updated_ai_disabled_diagnostic": {
     "approval_id": "interactive-resume-20261007:6e1744183d4548619cf4ce4b29a0e37f",
     "owner": "QA sess_104c8bc82d94481a",
-    "status": "preflight_conflict_display_released",
+    "status": "preflight_conflict_correction_integrated_restoration_hold",
     "display_allocation_active": false,
     "account_allocation_active": false,
     "audio_allocation_active": false,
@@ -141,6 +141,19 @@
     ],
     "display_released_at": "2026-10-07T07:44:21Z",
     "result_message": "handoff_876cad3c8b3ed17383853a0218230c07",
-    "next_diagnostic_message": "handoff_d6346bd3b86d35e270077b49eaa9ea94"
+    "next_diagnostic_message": "handoff_d6346bd3b86d35e270077b49eaa9ea94",
+    "diagnostic_correction_source": "d60f553df38f1943899007d642e3c97bb79050b3",
+    "diagnostic_correction_integrated": "2181b74",
+    "diagnostic_delivery_message": "handoff_beca1e4984ec904b915ae11dd7b62e47",
+    "subsequent_metadata_observations": 1,
+    "subsequent_observation": {
+      "observed_at_utc": "2026-10-07T07:55:26.486Z",
+      "ports_occupied": false,
+      "electron_pid": 100568,
+      "creation_ticks": "639267186912717160",
+      "known_product_stage": "unknown",
+      "reconstructs_first_refusal": false
+    },
+    "next_action": "Lead coordinates conflicting launch owner and awaits operator-confirmed role map; no active display lease or further worker assignment."
   }
 }

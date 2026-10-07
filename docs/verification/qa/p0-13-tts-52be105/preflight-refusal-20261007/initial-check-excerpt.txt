@@ -14,7 +14,7 @@ Selected excerpt copied from the first combined test-tool output, not a complete
 test at tests/e2e/windows/test_qa_run_tts_candidate.mjs:196:1
 ✖ metadata allowlist preserves separate snapshot clocks and safe known-stage classification (1.187858ms)
   AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
-  
+
   true !== false
-  
+
       at TestContext.<anonymous> (file:///home/agentsdock/Projects/learning-companion/wt-review/tests/e2e/windows/test_qa_run_tts_candidate.mjs:220:86)
