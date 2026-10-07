@@ -60,3 +60,35 @@ as `handoff_41de99e6c84549e61350297d1c8f761b` (failure) and
 not additional tasks. At this saved boundary no QA start/delivery reply has
 arrived; do not equate route acceptance with restored execution. Next owner is
 QA for the exact committed repair, then Support review and Lead allocation.
+
+## Actual QA start and new automatic-review refusal
+
+QA's actual replies `handoff_0107c57aab975096112a055a40b1b534` and
+`handoff_451d6a4e54edb2d41eac60b1210eb95c` establish baseline merge `e23208a`,
+then a refusal before its first edit. [Read receipts and scope](review-refusal.json)
+retain the event. The affected command would edit `qa_tts_output_candidate.mjs`
+to replace this candidate's broad native admission block, then inspect its emitted
+runner in memory. The proposed wrapper edit had not started. No harness edit,
+new candidate, Windows call, allocation or attempt occurred.
+
+The reviewer explicitly returned: “Permission for this action was denied by the
+Claude Code auto mode classifier. Reason: [Security Weaken].” It says the refusal
+applies to the outcome, not only the command, and directs trying a safer method
+then letting the human decide if essential. It names no missing-evidence clearing
+condition. Lead will not route the same denied change through another owner/file
+or disable global guards. The relevant repair inherently changes this admission
+outcome; leaving it unchanged would consume a run at the known second refusal.
+
+QA clarified that requiring the human to repeat approval specifically in its own
+session was **its inference, not reviewer wording**. Existing project/scope
+approvals remain valid; the current blocker is this newly observed local review
+denial. No global permission rule, model change or process closure is requested.
+Support's independent review waits for legitimately permitted source, not a
+bypass assignment. Old consumed evidence stays intact and the new one-attempt
+authorization is unused.
+
+The user's subsequent `native-admission-detail:e44f20cb8e8d43b18c39a3ccaa2cdba8`
+was delivered into the same existing QA card as
+`handoff_bf81e29bf2d9dde72c1343d82abeafd1`: wrapper plus emitted runner, minimum
+pin changes, complete cleanup enumeration and no AllowForeign/PID exemption.
+That scope is understood; no duplicate assignment was created.

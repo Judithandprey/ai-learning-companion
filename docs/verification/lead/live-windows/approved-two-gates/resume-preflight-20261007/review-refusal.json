@@ -1,0 +1,26 @@
+{
+  "kind": "actual-owner-auto-review-refusal",
+  "owner": "qa",
+  "session": "sess_06a4c3cc6e214e96",
+  "baseline_merge": "e23208a",
+  "messages": [
+    "handoff_0107c57aab975096112a055a40b1b534",
+    "handoff_780e7135baef8af7d12fdbd7b70244c5",
+    "handoff_451d6a4e54edb2d41eac60b1210eb95c"
+  ],
+  "reads": [
+    "mailread_a85053ad7ea94a1aadd2a9172ba17e00",
+    "mailread_b7bbcb182c8348ecb731486d3fe06c45",
+    "mailread_f0106335bfda41ec9060e654daaa502c"
+  ],
+  "denied_action": "Bash inline Python edit of qa_tts_output_candidate.mjs to substitute candidate-scoped native launch admission, followed by in-memory Node inspection",
+  "reviewer_reason": "Security Weaken",
+  "scope": "Outcome denied across tools/interpreters/hosts/subagents/later turns; try safer method, then let user decide if essential. No specific first-hand-evidence clearing condition named.",
+  "clarification": "Reviewer did not require human approval specifically in QA session. That was QA inference, subsequently explicitly corrected in its actual reply.",
+  "production_or_harness_edits": 0,
+  "candidate_prepared": false,
+  "native_calls": 0,
+  "new_native_attempts": 0,
+  "display_allocated": false,
+  "models_permissions_changed": false
+}
