@@ -1,0 +1,110 @@
+# The 28 Edge-identity (R1-R3) mutants of edge-identity-r2-20261008, rerun on the r3 generator; copies exclude execution-* folders.
+
+R1 lookup: page check before scan dropped: CAUGHT
+    - R1 before/after (source path): at b9ce4cc the window lookup never touched the page; now every lookup and every full-screen write checks the bound page
+    - every guard of the emitted identity rule is present as an exact line, as often as it should be
+    - the emitted rule is bound to the models: lookup redirected, refusals in order, bound right after the surface loads, nothing acts in the identity path
+    - the new runner differs from the runner that ran as attempt 1 only in the point-list line, the placement client-area name and its work folder
+R1 lookup: page check after scan dropped: CAUGHT
+    - R1 before/after (source path): at b9ce4cc the window lookup never touched the page; now every lookup and every full-screen write checks the bound page
+    - every guard of the emitted identity rule is present as an exact line, as often as it should be
+    - the new runner differs from the runner that ran as attempt 1 only in the point-list line, the placement client-area name and its work folder
+R1 page: token-in-title check dropped: CAUGHT
+    - R1 before/after (source path): at b9ce4cc the window lookup never touched the page; now every lookup and every full-screen write checks the bound page
+    - the new runner differs from the runner that ran as attempt 1 only in the point-list line, the placement client-area name and its work folder
+R1 page: truth-function check dropped: CAUGHT
+    - R1 before/after (source path): at b9ce4cc the window lookup never touched the page; now every lookup and every full-screen write checks the bound page
+    - the new runner differs from the runner that ran as attempt 1 only in the point-list line, the placement client-area name and its work folder
+R1 page: re-tags a page that lost the token: CAUGHT
+    - R1 before/after (source path): at b9ce4cc the window lookup never touched the page; now every lookup and every full-screen write checks the bound page
+    - every guard of the emitted identity rule is present as an exact line, as often as it should be
+    - the emitted rule is bound to the models: lookup redirected, refusals in order, bound right after the surface loads, nothing acts in the identity path
+    - the new runner differs from the runner that ran as attempt 1 only in the point-list line, the placement client-area name and its work folder
+R1 page: non-bool result accepted: CAUGHT
+    - every guard of the emitted identity rule is present as an exact line, as often as it should be
+    - the new runner differs from the runner that ran as attempt 1 only in the point-list line, the placement client-area name and its work folder
+R1 page: trailing target re-check dropped: CAUGHT
+    - R1 before/after (source path): at b9ce4cc the window lookup never touched the page; now every lookup and every full-screen write checks the bound page
+    - the new runner differs from the runner that ran as attempt 1 only in the point-list line, the placement client-area name and its work folder
+R1 page: ended-Edge check dropped: CAUGHT
+    - R1 before/after (source path): at b9ce4cc the window lookup never touched the page; now every lookup and every full-screen write checks the bound page
+    - the new runner differs from the runner that ran as attempt 1 only in the point-list line, the placement client-area name and its work folder
+R1 fullscreen: page check before write dropped: CAUGHT
+    - R1 before/after (source path): at b9ce4cc the window lookup never touched the page; now every lookup and every full-screen write checks the bound page
+    - every guard of the emitted identity rule is present as an exact line, as often as it should be
+    - the new runner differs from the runner that ran as attempt 1 only in the point-list line, the placement client-area name and its work folder
+R1 fullscreen: window re-lookup dropped: CAUGHT
+    - R1 before/after (source path): at b9ce4cc the window lookup never touched the page; now every lookup and every full-screen write checks the bound page
+    - every guard of the emitted identity rule is present as an exact line, as often as it should be
+    - the new runner differs from the runner that ran as attempt 1 only in the point-list line, the placement client-area name and its work folder
+R1 fullscreen: CDP window id check dropped: CAUGHT
+    - R1 before/after (source path): at b9ce4cc the window lookup never touched the page; now every lookup and every full-screen write checks the bound page
+    - the new runner differs from the runner that ran as attempt 1 only in the point-list line, the placement client-area name and its work folder
+R1 bind: page check before publish dropped: CAUGHT
+    - R1 before/after (source path): at b9ce4cc the window lookup never touched the page; now every lookup and every full-screen write checks the bound page
+    - every guard of the emitted identity rule is present as an exact line, as often as it should be
+    - the emitted rule is bound to the models: lookup redirected, refusals in order, bound right after the surface loads, nothing acts in the identity path
+    - the new runner differs from the runner that ran as attempt 1 only in the point-list line, the placement client-area name and its work folder
+R1 socket: redirect removed: CAUGHT
+    - every guard of the emitted identity rule is present as an exact line, as often as it should be
+    - the emitted rule is bound to the models: lookup redirected, refusals in order, bound right after the surface loads, nothing acts in the identity path
+    - the new runner differs from the runner that ran as attempt 1 only in the point-list line, the placement client-area name and its work folder
+R2 Find: unknown caption counted as nonmatch: CAUGHT
+    - R2 before/after (replayed C#): a readable match plus an unreadable second owned window was taken as unique at b9ce4cc; now it is carried as unknown
+    - every guard of the emitted identity rule is present as an exact line, as often as it should be
+    - the new runner differs from the runner that ran as attempt 1 only in the point-list line, the placement client-area name and its work folder
+R2 lookup: unknown refusal dropped: CAUGHT
+    - every guard of the emitted identity rule is present as an exact line, as often as it should be
+    - the emitted rule is bound to the models: lookup redirected, refusals in order, bound right after the surface loads, nothing acts in the identity path
+    - the new runner differs from the runner that ran as attempt 1 only in the point-list line, the placement client-area name and its work folder
+R2 bind: unknown refusal dropped: CAUGHT
+    - every guard of the emitted identity rule is present as an exact line, as often as it should be
+    - the emitted rule is bound to the models: lookup redirected, refusals in order, bound right after the surface loads, nothing acts in the identity path
+    - the new runner differs from the runner that ran as attempt 1 only in the point-list line, the placement client-area name and its work folder
+R2 bind: poll stops on a match beside unknown: CAUGHT
+    - R2: the PowerShell lookup and bind refuse while any owned caption is unknown, before using the matches
+    - the new runner differs from the runner that ran as attempt 1 only in the point-list line, the placement client-area name and its work folder
+R2 Caption: over-limit read as no-token: CAUGHT
+    - R2 before/after (replayed C#): a readable match plus an unreadable second owned window was taken as unique at b9ce4cc; now it is carried as unknown
+    - every guard of the emitted identity rule is present as an exact line, as often as it should be
+    - the new runner differs from the runner that ran as attempt 1 only in the point-list line, the placement client-area name and its work folder
+R2 Caption: failed length read as empty: CAUGHT
+    - R2 before/after (replayed C#): a readable match plus an unreadable second owned window was taken as unique at b9ce4cc; now it is carried as unknown
+    - R3 before/after (replayed C#): at b9ce4cc the receipt read captions of a foreign process found by HWND reuse; now Caption reads nothing for it
+    - every guard of the emitted identity rule is present as an exact line, as often as it should be
+    - the new runner differs from the runner that ran as attempt 1 only in the point-list line, the placement client-area name and its work folder
+R2 Caption: changed-while-read accepted: CAUGHT
+    - R2 before/after (replayed C#): a readable match plus an unreadable second owned window was taken as unique at b9ce4cc; now it is carried as unknown
+    - every guard of the emitted identity rule is present as an exact line, as often as it should be
+    - the new runner differs from the runner that ran as attempt 1 only in the point-list line, the placement client-area name and its work folder
+R2 Caption: unread owned window reported foreign: CAUGHT
+    - R2 before/after (replayed C#): a readable match plus an unreadable second owned window was taken as unique at b9ce4cc; now it is carried as unknown
+    - every guard of the emitted identity rule is present as an exact line, as often as it should be
+    - the new runner differs from the runner that ran as attempt 1 only in the point-list line, the placement client-area name and its work folder
+R3 Caption: ownership check before read dropped: CAUGHT
+    - R3 before/after (replayed C#): at b9ce4cc the receipt read captions of a foreign process found by HWND reuse; now Caption reads nothing for it
+    - every guard of the emitted identity rule is present as an exact line, as often as it should be
+    - the new runner differs from the runner that ran as attempt 1 only in the point-list line, the placement client-area name and its work folder
+R3 Caption: ownership re-check after read dropped: CAUGHT
+    - every guard of the emitted identity rule is present as an exact line, as often as it should be
+    - the new runner differs from the runner that ran as attempt 1 only in the point-list line, the placement client-area name and its work folder
+R3 Find: ownership filter dropped: CAUGHT
+    - every guard of the emitted identity rule is present as an exact line, as often as it should be
+    - the new runner differs from the runner that ran as attempt 1 only in the point-list line, the placement client-area name and its work folder
+R3 receipt: owner-changed short-circuit dropped: CAUGHT
+    - R3 before/after (replayed C#): at b9ce4cc the receipt read captions of a foreign process found by HWND reuse; now Caption reads nothing for it
+    - every guard of the emitted identity rule is present as an exact line, as often as it should be
+    - the new runner differs from the runner that ran as attempt 1 only in the point-list line, the placement client-area name and its work folder
+R3 receipt: re-check after metadata dropped: CAUGHT
+    - R3 before/after (replayed C#): at b9ce4cc the receipt read captions of a foreign process found by HWND reuse; now Caption reads nothing for it
+    - every guard of the emitted identity rule is present as an exact line, as often as it should be
+    - the new runner differs from the runner that ran as attempt 1 only in the point-list line, the placement client-area name and its work folder
+R3 receipt: widened by observed owner: CAUGHT
+    - R3 before/after (replayed C#): at b9ce4cc the receipt read captions of a foreign process found by HWND reuse; now Caption reads nothing for it
+    - the new runner differs from the runner that ran as attempt 1 only in the point-list line, the placement client-area name and its work folder
+R3 OwnedWindows: ownership filter dropped: CAUGHT
+    - R3 before/after (replayed C#): at b9ce4cc the receipt read captions of a foreign process found by HWND reuse; now Caption reads nothing for it
+    - every guard of the emitted identity rule is present as an exact line, as often as it should be
+    - the new runner differs from the runner that ran as attempt 1 only in the point-list line, the placement client-area name and its work folder
+
+28/28 caught by behaviour, line or order assertions (beyond the block hash pin)

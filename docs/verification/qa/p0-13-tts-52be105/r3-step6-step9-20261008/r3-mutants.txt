@@ -1,0 +1,34 @@
+# 12 targeted mutants of the two r3 fixes, each applied in a fresh /tmp copy that never includes an execution-* evidence folder;
+# then the generator suite is rerun. CAUGHT = a test other than the hash pins and the whole-runner comparison fails. Three stop the
+# suite at load (the generator's reviewed-placement check refuses them): 'a corner dropped', 'client area: delta not applied',
+# 'delta not applied'. Script: r3-mutants.py, run from the worktree root (LC_QA_NODE = node binary).
+
+only x parenthesized (y still beside the comma): CAUGHT
+    - attempt 1 (before): its runner has exactly one comma-precedence hazard, the admission point list; the new runner has none
+    - the 16 admission points, computed from the emitted coordinates, are exactly the on-top points that passed on the display
+only y parenthesized: CAUGHT
+    - attempt 1 (before): its runner has exactly one comma-precedence hazard, the admission point list; the new runner has none
+    - the 16 admission points, computed from the emitted coordinates, are exactly the on-top points that passed on the display
+scale dropped on y: CAUGHT
+    - the 16 admission points, computed from the emitted coordinates, are exactly the on-top points that passed on the display
+column count 3 instead of 4: CAUGHT
+    - the 16 admission points, computed from the emitted coordinates, are exactly the on-top points that passed on the display
+x and y swapped: CAUGHT
+    - the 16 admission points, computed from the emitted coordinates, are exactly the on-top points that passed on the display
+card centre offset 95 -> 90: CAUGHT
+    - the 16 admission points, computed from the emitted coordinates, are exactly the on-top points that passed on the display
+one array of three values: CAUGHT
+    - the 16 admission points, computed from the emitted coordinates, are exactly the on-top points that passed on the display
+a corner dropped [in qa_display_admission.ps1]: CAUGHT
+    - tests/e2e/windows/test_qa_tts_output_candidate.mjs
+client area: only its first line renamed: CAUGHT
+    - attempt 1 (before): its runner hides the script WebClient from the Edge socket lookup in step 9; the new runner has no such case
+client area: renamed to a different name: CAUGHT
+    - attempt 1 (before): its runner hides the script WebClient from the Edge socket lookup in step 9; the new runner has no such case
+    - the deltas are exactly the scoped admission, the owned Edge surface identity, the admission points and the placement client area: reverting all gives 
+client area: delta not applied: CAUGHT
+    - tests/e2e/windows/test_qa_tts_output_candidate.mjs
+delta not applied (old line emitted): CAUGHT
+    - tests/e2e/windows/test_qa_tts_output_candidate.mjs
+
+12/12 caught beyond the hash pins and the whole-runner comparison

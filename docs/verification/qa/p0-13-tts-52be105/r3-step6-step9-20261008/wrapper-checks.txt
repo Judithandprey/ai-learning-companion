@@ -1,0 +1,63 @@
+$ node --permission --allow-fs-read=$PWD --allow-fs-read=%TEMP%/lc-qa-tts-output-6bd71cac570a42a18cedd16b28cf6d68 tests/e2e/windows/test_qa_run_tts_candidate.mjs   # no child-process or write permission
+✔ actual child-process permission is withheld
+✔ no explicit execute mode
+✔ independent allocation hash required
+✔ self-reviewed altered record cannot replace the independent hash
+✔ released allocation
+✔ expired allocation
+✔ historical approval cannot authorize the updated command
+✔ wrong wrapper source
+✔ wrong runner binding
+✔ Bypass cannot replace the exact process-only RemoteSigned command
+✔ alternate PowerShell engine cannot replace the pinned command
+✔ wrong launch work/port
+✔ nonexclusive display
+✔ sound/model scope expansion
+✔ fresh package failure must precede every Windows call/cleanup
+✔ altered saved candidate rejects before fresh identity or Windows
+✔ altered saved steps reject before fresh identity or Windows
+✔ valid injected admission orders fresh identity, preflight, copies, parser, one runner and both cleanup looks
+✔ parser rejection starts nothing and performs no termination/cleanup queries
+✔ expiry during the first lookup prevents all later non-cleanup Windows calls
+✔ throw performs both exact cleanup observations with no retry
+✔ timeout performs both exact cleanup observations with no retry
+✔ incomplete native result cannot pass the diagnostic
+✔ sanitized preflight refusal: app port only
+✔ sanitized preflight refusal: Edge port only
+✔ sanitized preflight refusal: both ports
+✔ sanitized preflight refusal: the candidate stage on the candidate runtime
+✔ sanitized preflight refusal: unreadable command and executable
+✔ sanitized preflight refusal: child missing creation
+✔ readable children are judged by their own arguments: a plain child (of another runtime or of the candidate runtime) is admitted; one naming the stage refuses
+✔ refusal mkdir failure still starts and signals nothing
+✔ refusal write failure still starts and signals nothing
+✔ output occupied during preflight is preserved without starting or signalling anything
+✔ metadata allowlist preserves separate snapshot clocks, reasons and safe known-stage classification
+✔ path keys follow Windows: letter case, / or \, a \\?\ prefix, doubled and trailing separators, trailing dots and spaces
+✔ the candidate stage or this run's folder named in any form is relevant; quoting is read by Windows' rules
+✔ arguments that only resemble the stage or folder are not relevant (whole path components are compared)
+✔ a debugging-port argument for either test port is relevant; other numbers, other keys and a bare number are not
+✔ a main process of the candidate runtime refuses unless its FIRST argument is an absolute app path; with another absolute app it is another owner's; unreadable fields refuse
+✔ Edge: only this run's folder or a test-port argument is relevant; the user's browser and unreadable rows are not
+✔ namesThisRun compares 8.3 short names by their six-character prefix only, and only for components with ~N
+✔ scoped refusal before anything starts: another runtime naming the stage
+✔ scoped refusal before anything starts: another runtime naming this run's user data
+✔ scoped refusal before anything starts: another runtime with the app port argument
+✔ scoped refusal before anything starts: an unreadable executable
+✔ scoped refusal before anything starts: the candidate runtime with a relative app
+✔ scoped refusal before anything starts: the candidate runtime with a switch before its app
+✔ scoped refusal before anything starts: Edge using this run's profile
+✔ another owner's readable Electron app (main and children) is admitted, seen by the complete cleanup look, and never signalled; only this run's exact launches are
+✔ a PID of another owner's app reused by this run's launch is owned by its new identity only
+✔ this run's PID taken by another process between the look and the signal: the signal finds it stale and nothing is signalled
+✔ cleanup bounds are unchanged: complete looks of both images, held-handle signals, 1 s / 5 s / 5 s waits in 250 ms steps
+✔ a staged app of another owner on the same cached runtime (another absolute stage, its own port) is admitted and never signalled
+✔ after the run the cleanup still sees everything: a young unreadable row makes the exit unknown (passed false), a listener that is not ours is said
+ℹ tests 54
+ℹ suites 0
+ℹ pass 54
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms (omitted)

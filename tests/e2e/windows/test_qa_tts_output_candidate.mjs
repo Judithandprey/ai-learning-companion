@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { createHash } from 'node:crypto';
-import { applyEdgeIdentity, applyScopedAdmission, assertReviewedPlacement, checkTtsCandidate, edgeBindGeometryModel, edgeIdentityBlocks, edgeLookupModel, edgePageModel, edgeRaiseModel, edgeReceiptModel, edgeScanModel, edgeSurfaceModel, edgeTargetModel, prepareTtsCandidate, revertEdgeIdentity, revertScopedAdmission, scopedAdmissionBlocks } from './qa_tts_output_candidate.mjs';
+import { admissionPointsBlock, applyAdmissionPoints, applyEdgeIdentity, applyPlacementClient, applyScopedAdmission, assertReviewedPlacement, checkTtsCandidate, edgeBindGeometryModel, edgeIdentityBlocks, edgeLookupModel, edgePageModel, edgeRaiseModel, edgeReceiptModel, edgeScanModel, edgeSurfaceModel, edgeTargetModel, placementClientBlock, prepareTtsCandidate, revertAdmissionPoints, revertEdgeIdentity, revertPlacementClient, revertScopedAdmission, scopedAdmissionBlocks } from './qa_tts_output_candidate.mjs';
 import vm from 'node:vm';
 import { buildVisibleCandidate } from './qa_visible_candidate.mjs';
 
@@ -106,10 +106,14 @@ test('the controlled-surface gates and the owned-only termination paths of the r
   assert.deepEqual(runner.match(/Stop-Process[^\n]*/g), ['Stop-Process -Id $script:app.Id -Force -ErrorAction SilentlyContinue']);   // the owned app only (endHungApp, not among the 32 steps)
   assert.equal(/taskkill|\.Kill\(\)|Get-Process[^\n]*\| *Stop/.test(runner), false);
 });
-test('the deltas are exactly the scoped admission and the owned Edge surface identity: reverting both gives the reviewed runner; each applies once', () => {
+test('the deltas are exactly the scoped admission, the owned Edge surface identity, the admission points and the placement client area: reverting all gives the reviewed runner; each applies once', () => {
   const built = buildVisibleCandidate(ctx);
-  assert.equal(applyEdgeIdentity(applyScopedAdmission(built.runner, ctx)), runner);
-  assert.equal(revertScopedAdmission(revertEdgeIdentity(runner), ctx), built.runner);
+  assert.equal(applyPlacementClient(applyAdmissionPoints(applyEdgeIdentity(applyScopedAdmission(built.runner, ctx)))), runner);
+  assert.equal(revertScopedAdmission(revertEdgeIdentity(revertAdmissionPoints(revertPlacementClient(runner))), ctx), built.runner);
+  assert.throws(() => applyAdmissionPoints(runner), /already present/);
+  assert.throws(() => applyPlacementClient(runner), /already present/);
+  assert.throws(() => revertPlacementClient(revertPlacementClient(runner)), /missing or changed/);
+  assert.throws(() => revertAdmissionPoints(revertAdmissionPoints(runner)), /missing or changed/);
   assert.throws(() => applyScopedAdmission(runner, ctx), /already present/);
   assert.throws(() => applyEdgeIdentity(runner), /already present/);
   assert.throws(() => applyScopedAdmission(built.runner.replace("exit 3\n}\n$script:wslSeen", "exit 4\n}\n$script:wslSeen"), ctx), /substitution refused/);
@@ -429,4 +433,199 @@ test('every guard of the emitted identity rule is present as an exact line, as o
     assert.equal(block.split('\n').filter(l => l === line).length, n, line);
     assert.ok(runner.includes(line), line);
   }
+});
+
+// ---- the product-launch admission's 16 points: attempt 1 of the bounded diagnostic stopped at step 6 with op_Multiply; ----
+// ---- from source reading only (step 6's record was not read), they are the likely site, not a confirmed one         ----
+// A static lint, not a PowerShell parse: in PowerShell the comma operator binds more tightly than + - * / %, so a comma
+// list whose element holds an unparenthesized binary arithmetic operator pairs the wrong operands (`a * 2, b` is
+// `a * (2, b)`). Strings, comments and here-strings are skipped; so are method-call argument lists (`.Name(` and
+// `::Name(`), where each comma-separated argument is a whole expression. One line at a time. Limits: only operators with
+// a space on each side are seen; a comma and an operator on different lines, "$(...)" subexpressions and lines with
+// backtick-escaped quotes are not checked; text that looks like a method call (a dotted type name given to New-Object
+// included) is skipped.
+function commaArithmeticHazards(text) {
+  const hits = [];
+  let here = null;
+  text.split('\n').forEach((line, n) => {
+    if (here) { if (line.startsWith(here)) here = null; return; }
+    if (/@['"]\s*$/.test(line)) here = line.trimEnd().endsWith("@'") ? "'@" : '"@';
+    let out = '', q = null;
+    for (let i = 0; i < line.length; i++) {
+      const c = line[i];
+      if (q) { if (c === q && line[i + 1] === q) { out += '  '; i++; } else if (c === q) { q = null; out += c; } else out += ' '; continue; }
+      if (c === "'" || c === '"') { q = c; out += c; continue; }
+      if (c === '#') break;
+      out += c;
+    }
+    const stack = [{ segs: [''], commas: 0, call: false }];
+    const check = g => { if (g.commas && !g.call && g.segs.some(s => / [*\/%+-] /.test(` ${s.replace(/[+\-*\/]=/g, '=')} `))) hits.push(n + 1); };
+    for (let i = 0; i < out.length; i++) {
+      const c = out[i], top = stack[stack.length - 1];
+      if ('({['.includes(c)) { top.segs[top.segs.length - 1] += ' X '; stack.push({ segs: [''], commas: 0, call: c === '(' && /(\.|::)[A-Za-z_]\w*$/.test(out.slice(0, i)) }); }
+      else if (')}];'.includes(c)) { check(stack.pop()); if (c === ';' || !stack.length) stack.push({ segs: [''], commas: 0, call: false }); }
+      else if (c === ',') { top.segs.push(''); top.commas++; }
+      else top.segs[top.segs.length - 1] += c;
+    }
+    while (stack.length) check(stack.pop());
+  });
+  return [...new Set(hits)];
+}
+const attempt1Runner = readFileSync(new URL('../../../docs/verification/qa/p0-13-tts-52be105/candidate-edge-identity-r2-20261008/runner.ps1', import.meta.url), 'utf8');
+assert.equal(createHash('sha256').update(attempt1Runner).digest('hex'), '301b5053e758938df97059fa52a60715d6ed7d9423a7e44de5e30df681c59dfa');   // ran as attempt 1
+const POINTS_OLD = '    for ($card = 0; $card -lt 12; $card++) { $points += ,@((40 + $card % 4 * 210 + 95) * 2, (90 + [Math]::Floor($card / 4) * 170 + 75) * 2) }';
+const POINTS_NEW = '    for ($card = 0; $card -lt 12; $card++) { $points += ,@(((40 + $card % 4 * 210 + 95) * 2), ((90 + [Math]::Floor($card / 4) * 170 + 75) * 2)) }';
+test('comma-precedence lint: flags arithmetic beside a list comma, not parenthesized coordinates, method arguments, strings, comments or here-strings', () => {
+  for (const bad of [POINTS_OLD, '$p = @($a + 1, 2)', '$p = 1, 2 * 3', '$q += ,@($x - 1, $y)', 'Foo (1 / 2, 3)'])
+    assert.deepEqual(commaArithmeticHazards(bad), [1], bad);
+  for (const good of [POINTS_NEW, '$points += ,@(20, 20); $points += ,@(2540, 1580)', "$s.StartsWith($r + '\\', [StringComparison]::Ordinal)",
+    "[Math]::Max($a + 1, $b * 2)", "$t = 'a * 2, b'", '$n = 1 # x * 2, y', '$a += 1, 2', '$p = @(-1, -2)', '$c = $a -lt 2, 3', "@'\n$a * 2, $b\n'@"])
+    assert.deepEqual(commaArithmeticHazards(good), [], good);
+});
+test('attempt 1 (before): its runner has exactly one comma-precedence hazard, the admission point list; the new runner has none', () => {
+  const hits = commaArithmeticHazards(attempt1Runner);
+  assert.equal(hits.length, 1);
+  assert.equal(attempt1Runner.split('\n')[hits[0] - 1], POINTS_OLD);
+  assert.deepEqual(commaArithmeticHazards(runner), []);
+  const shared = readFileSync(new URL('qa_display_admission.ps1', import.meta.url), 'utf8');
+  assert.equal(shared.split('\n').filter(l => l === POINTS_OLD).length, 1);                                        // the shared helper is unchanged
+});
+const CLIENT_OLD = placementClientBlock().replaceAll('$clientArea', '$client');
+test('the new runner differs from the runner that ran as attempt 1 only in the point-list line, the placement client-area name and its work folder', () => {
+  const work = base.manifest.work.split('/').pop();
+  assert.equal(attempt1Runner.split(CLIENT_OLD).length, 2);
+  assert.equal(attempt1Runner.replaceAll('lc-qa-tts-output-77fadf1af4554e9dbd361e200b896aaa', work).replace(POINTS_OLD, POINTS_NEW).replace(CLIENT_OLD, placementClientBlock()), runner);
+  assert.equal(runner.split('\n').filter(l => l === POINTS_NEW).length, 1);
+  assert.equal(runner.includes(POINTS_OLD), false);
+  const admission = runner.slice(runner.indexOf('function Assert-QaSurfaceAdmission('), runner.indexOf('\n# Candidate-only, non-pixel window metadata.'));
+  let at = -1;
+  for (const part of ['$points = @()', POINTS_NEW, '$points += ,@(20, 20); $points += ,@(2540, 20); $points += ,@(20, 1580); $points += ,@(2540, 1580)', '$entry.owned_points = 0',
+    "if ([QaWin]::RootAt([int]$point[0], [int]$point[1]) -ne $window) { throw 'owned surface lost at a required card or corner point' }", '$entry.owned_points++']) { const k = admission.indexOf(part, at + 1); assert.ok(k > at, part); at = k; }
+});
+test('the 16 admission points, computed from the emitted coordinates, are exactly the on-top points that passed on the display', () => {
+  // The emitted line itself: the list inside `,@( … )`, split at its top-level commas.
+  const lines = runner.split('\n').filter(l => l.startsWith('    for ($card = 0; $card -lt 12; $card++) { $points += ,@('));
+  assert.equal(lines.length, 1);
+  const inner = lines[0].slice(lines[0].indexOf(',@(') + 3, lines[0].lastIndexOf(') }'));
+  const parts = [];
+  let d = 0, from = 0;
+  for (let i = 0; i < inner.length; i++) { d += inner[i] === '(' ? 1 : inner[i] === ')' ? -1 : 0; if (inner[i] === ',' && d === 0) { parts.push(inner.slice(from, i).trim()); from = i + 1; } }
+  parts.push(inner.slice(from).trim());
+  assert.equal(parts.length, 2);                                                                                   // one x and one y, as PowerShell pairs them
+  const whole = e => { let k = 0; for (let i = 0; i < e.length; i++) { k += e[i] === '(' ? 1 : e[i] === ')' ? -1 : 0; if (k === 0 && i < e.length - 1) return false; } return k === 0; };
+  assert.ok(parts.every(whole), parts.join(' | '));                                                                // each coordinate one parenthesized expression
+  const m = [null, ...parts];
+  // Fully parenthesized, with only + * % / and Floor on numbers, the coordinates mean the same in JS as in PowerShell.
+  const js = e => new Function('card', 'return ' + e.replaceAll('$card', 'card').replaceAll('[Math]::Floor(', 'Math.floor('));
+  const points = Array.from({ length: 12 }, (_, card) => [js(m[1])(card), js(m[2])(card)]);
+  const corners = runner.match(/\$points \+= ,@\(20, 20\); .*$/m)[0];
+  for (const c of corners.matchAll(/,@\((\d+), (\d+)\)/g)) points.push([Number(c[1]), Number(c[2])]);
+  const onTop = JSON.parse(base.payload['steps.json']).filter(s => s.onTop === 'edge').map(s => s.points);
+  assert.equal(onTop.length, 3);
+  for (const p of onTop) assert.deepEqual(points, p);
+  assert.equal(new Set(points.map(String)).size, 16);
+});
+test('the emitted point-list line and the renamed client-area lines are pinned by their reviewed hashes', () => {
+  assert.equal(createHash('sha256').update(placementClientBlock()).digest('hex'), 'd30e56a28b09cbd6ab1cf87a08946c3b3bb1476ee2672a7bfa8166a927b9e34e');
+  assert.equal(admissionPointsBlock(), POINTS_NEW);
+  assert.equal(createHash('sha256').update(admissionPointsBlock()).digest('hex'), 'd37acc4bd1f07ce53f2e2dcd0c7918d4a6066ed5d568777d462786c5e0baa1e3');
+});
+
+// ---- dynamic scope: PowerShell resolves an unqualified variable through the CALLER's scopes ----
+// A static text scan, not a PowerShell parse. Reports (caller, variable, reader) where the caller has a local $v (assigned
+// or a parameter), $v is a script-level variable (assigned outside functions or a script parameter), and a function the
+// caller reaches (transitively, by name) reads $v before assigning it itself, without receiving it as a parameter
+// (parameter default values count as reads). The caller's statement order is ignored, which is conservative for the
+// caller. Limits: single-quoted text is masked, double-quoted text is kept (it interpolates); scriptblocks, dot-sourcing,
+// Set-Variable, -ErrorVariable/-OutVariable and $script:/$global: writes inside functions are not modelled; calls are
+// found by function name only.
+function scopeShadowHazards(text) {
+  const lines = text.split('\n'), fns = new Map(), top = [];
+  const mask = line => {                                   // single-quoted text and comments blanked, double-quoted kept
+    let out = '', q = null;
+    for (let i = 0; i < line.length; i++) {
+      const c = line[i];
+      if (q === "'") { if (c === "'" && line[i + 1] === "'") { out += '  '; i++; } else if (c === "'") { q = null; out += c; } else out += ' '; continue; }
+      if (q === '"') { if (c === '`') { out += c + (line[i + 1] ?? ''); i++; } else { if (c === '"') q = null; out += c; } continue; }
+      if (c === '#') break;
+      if (c === "'" || c === '"') q = c;
+      out += c;
+    }
+    return out;
+  };
+  let here = null, cur = null;
+  for (const raw of lines) {
+    if (here) { if (raw.startsWith(here)) here = null; continue; }
+    if (/@['"]\s*$/.test(raw)) here = raw.trimEnd().endsWith("@'") ? "'@" : '"@';
+    const line = mask(raw), m = !cur && line.match(/^function ([A-Za-z][\w-]*)\s*(\((.*?)\))?\s*\{/);
+    if (m) {
+      cur = { name: m[1], head: m[3] ?? '', body: [] }; fns.set(m[1], cur);
+      const rest = line.slice(line.indexOf('{', m[0].length - 1));
+      if (rest.split('{').length > 1 && rest.split('{').length === rest.split('}').length) { cur.body.push(rest.slice(1, rest.lastIndexOf('}'))); cur = null; }   // one line
+      continue;
+    }
+    if (cur && /^}\s*$/.test(line)) { cur = null; continue; }
+    (cur ? cur.body : top).push(line);
+  }
+  const ASSIGN = /(?<![:\w])\$(\w+)\s*(?:=(?!=)|\+=|-=|\*=|\/=|\+\+|--)|foreach\s*\(\s*\$(\w+)\s+in/gi, READ = /(?<![:\w])\$(\w+)(?![\w:])/g;
+  const builtin = new Set(['null', 'true', 'false', '_', 'psitem', 'args', 'input', 'this', 'lastexitcode', 'error', 'erroractionpreference', 'matches', 'pscmdlet', 'psboundparameters', 'pwd', 'home', 'host', 'pid']);
+  // A parameter list: each top-level comma piece declares its first $name; any other $name in it is a default-value read.
+  const paramList = head => {
+    const pieces = [], names = new Set(), defaults = [];
+    let d = 0, from = 0;
+    for (let i = 0; i <= head.length; i++) { const c = head[i]; if (c === '(' || c === '[') d++; else if (c === ')' || c === ']') d--; else if ((c === ',' && d === 0) || i === head.length) { pieces.push(head.slice(from, i)); from = i + 1; } }
+    for (const p of pieces) { const all = [...p.matchAll(READ)].map(x => x[1].toLowerCase()); if (all.length) { names.add(all[0]); defaults.push(...all.slice(1)); } }
+    return { names, defaults };
+  };
+  const firstWrite = body => { const w = new Map(); for (const x of body.matchAll(ASSIGN)) { const v = (x[1] ?? x[2]).toLowerCase(); if (!w.has(v)) w.set(v, x.index); } return w; };
+  const topWrites = firstWrite(top.join('\n')), scriptParams = paramList(lines.slice(0, 80).join('\n').match(/^param\(([\s\S]*?)^\)/m)?.[1] ?? '').names;
+  const scriptVars = new Set([...topWrites.keys(), ...scriptParams]);
+  const info = new Map();
+  for (const [name, f] of fns) {
+    const body = f.body.join('\n'), block = body.match(/^\s*param\s*\(([^)]*)\)/im)?.[1] ?? '';
+    const head = paramList(f.head), inner = paramList(block), params = new Set([...head.names, ...inner.names]), writes = firstWrite(body);
+    const reads = new Set([...head.defaults, ...inner.defaults].filter(v => !builtin.has(v)));
+    for (const x of body.matchAll(READ)) {
+      const v = x[1].toLowerCase();
+      if (builtin.has(v) || params.has(v)) continue;
+      if (!writes.has(v) || x.index < writes.get(v)) reads.add(v);                                     // read before its own first write
+    }
+    const calls = [...fns.keys()].filter(g => g !== name && new RegExp(`(^|[\\s(;{|=,@])${g.replace(/-/g, '\\-')}(?=[\\s)(;}|,]|$)`, 'm').test(body));
+    info.set(name, { locals: new Set([...writes.keys(), ...params]), reads, calls });
+  }
+  const reach = name => { const seen = new Set(), todo = [...info.get(name).calls]; while (todo.length) { const g = todo.pop(); if (!seen.has(g)) { seen.add(g); todo.push(...info.get(g).calls); } } return seen; };
+  const hits = [];
+  for (const [name, i] of info) for (const v of i.locals) if (scriptVars.has(v)) for (const g of reach(name)) if (info.get(g).reads.has(v)) hits.push(`${name} $${v} -> ${g}`);
+  return [...new Set(hits)].sort();
+}
+test('scope scan: a caller local that hides a script variable from a function it reaches is found; renamed, received or own locals are not', () => {
+  const script = (a, b = '  $client.DownloadString(1)') => `$client = New-Object Net.WebClient\nfunction A($entry) {\n${a}\n  C\n}\nfunction C {\n  B\n}\nfunction B {\n${b}\n}\nA 1`;
+  assert.deepEqual(scopeShadowHazards(script('  $client = $entry.area')), ['A $client -> B']);
+  assert.deepEqual(scopeShadowHazards(script('  $clientArea = $entry.area')), []);
+  assert.deepEqual(scopeShadowHazards(script('  $client = $entry.area', '  $client = 2; $client.X()')), []);                       // B has its own local
+  assert.deepEqual(scopeShadowHazards(script('  $client = $entry.area', '  param($client) $client.X()')), []);                   // B receives it
+  assert.deepEqual(scopeShadowHazards(script('  $script:client = 3')), []);                                                     // a script write is not a local
+  assert.deepEqual(scopeShadowHazards(script("  $x = '$client = 1'")), []);                                                     // single-quoted text
+  assert.deepEqual(scopeShadowHazards(`$client = 1\nfunction One { $client = 2; Two }\nfunction Two { return $client }`), ['One $client -> Two']);   // one-line functions
+  const plain = (a, b) => `$client = 1\nfunction A${a} {\n  B\n}\nfunction B${b}\nA 2`;
+  assert.deepEqual(scopeShadowHazards(plain('([int[]]$client)', ' {\n  $client.X()\n}')), ['A $client -> B']);                // a caller parameter hides it too
+  assert.deepEqual(scopeShadowHazards(plain('($x) {\n  $client = 2', ' {\n  $client.X(); $client = $null\n}')), ['A $client -> B']);   // read before the reader's own write
+  assert.deepEqual(scopeShadowHazards(plain('($x) {\n  $client = 2', '($c = $client) {\n  $c\n}')), ['A $client -> B']);       // a parameter default reads it
+  assert.deepEqual(scopeShadowHazards(plain('($x) {\n  $client = 2', ' {\n  "it\'s $client"\n}')), ['A $client -> B']);    // inside a double-quoted string
+  assert.deepEqual(scopeShadowHazards(`$client = 1\nfunction A {\n  $client++\n  B|Out-Null\n}\nfunction B {\n  $client\n}`), ['A $client -> B']);   // ++ and a piped call
+});
+test('attempt 1 (before): its runner hides the script WebClient from the Edge socket lookup in step 9; the new runner has no such case', () => {
+  // Get-Socket is listed because the scan ignores order: its own $client reads (non-edge targets) all run before the local is set.
+  assert.deepEqual(scopeShadowHazards(attempt1Runner), ['Assert-QaProductPlacement $client -> Get-QaEdgeSocket', 'Assert-QaProductPlacement $client -> Get-Socket']);
+  assert.deepEqual(scopeShadowHazards(runner), []);
+  // The concrete path: after the local is set, Assert-QaNormalEdge -> Window-Handle 'edge' -> ... -> Get-QaEdgeSocket reads $client.
+  const fn = (text, name) => { const k = text.indexOf(`function ${name}`); return text.slice(k, text.indexOf('\n}\n', k)); };
+  const before = fn(attempt1Runner, 'Assert-QaProductPlacement');
+  assert.ok(before.indexOf('  $client = $entry.control_client') < before.lastIndexOf('$last = Assert-QaNormalEdge $edge'));
+  assert.ok(fn(attempt1Runner, 'Assert-QaNormalEdge').includes("(Window-Handle 'edge') -ne $window"));
+  assert.ok(fn(attempt1Runner, 'Get-QaEdgeSocket').includes('$client.DownloadString('));
+  const after = fn(runner, 'Assert-QaProductPlacement');
+  assert.equal(/\$client\b(?!Area)/.test(after), false);                                                             // no unqualified $client left in it
+  assert.ok(after.includes('  $clientArea = $entry.control_client') && after.includes('$point = @(($clientArea[0] + [int][Math]::Round($box.x * $box.dpr)), ($clientArea[1] + [int][Math]::Round($box.y * $box.dpr)))'));
+  assert.equal(runner.split('$clientArea').length - 1, placementClientBlock().split('$clientArea').length - 1);      // only in the renamed lines
 });

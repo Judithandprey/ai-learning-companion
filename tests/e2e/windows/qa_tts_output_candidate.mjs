@@ -490,6 +490,55 @@ export function revertEdgeIdentity(runner) {
   if (runner.includes('QaEdgeSurface') || runner.includes('Set-QaEdgeSurfaceIdentity') || runner.includes('Get-QaEdgeSocket')) throw Error('owned Edge surface identity duplicated');
   return runner;
 }
+// ADMISSION POINT LIST (this TTS candidate only; qa_display_admission.ps1 and its other callers are unchanged).
+// On 2026-10-08 attempt 1 of the bounded diagnostic (execution-bounded-20261008-01) passed steps 1-5 and stopped at
+// step 6 with "[System.Object[]] has no op_Multiply", before the product started. Step 6's own record was not read (that
+// read was refused), so the site below is an inference from source reading, not confirmed: the product-launch
+// admission computes its 16 points by `,@((x) * 2, (y) * 2)`. PowerShell's comma operator binds more tightly than its
+// arithmetic operators, so that reads `(x) * (2, (y)) * 2`: a number times an array. It is the only PowerShell
+// multiplication on step 6's path, and that line had never run before. Each coordinate is now parenthesized, so both are
+// computed before the comma pairs them. The 16 points (12 card centres, 4 corners) and every check on them are
+// unchanged; they equal the literal points of the on-top steps (steps 5, 12 and 28), and step 5's copy passed on the
+// display in that attempt.
+const admissionPointsHead = String.raw`    for ($card = 0; $card -lt 12; $card++) { $points += ,@((40 + $card % 4 * 210 + 95) * 2, (90 + [Math]::Floor($card / 4) * 170 + 75) * 2) }`;
+const admissionPointsFixed = String.raw`    for ($card = 0; $card -lt 12; $card++) { $points += ,@(((40 + $card % 4 * 210 + 95) * 2), ((90 + [Math]::Floor($card / 4) * 170 + 75) * 2)) }`;
+/** The emitted point-list line, for the reviewed-hash pin in the focused test. */
+export const admissionPointsBlock = () => admissionPointsFixed;
+export function applyAdmissionPoints(runner) {
+  if (runner.includes(admissionPointsFixed)) throw Error('parenthesized admission points already present');
+  if (runner.split(admissionPointsHead).length !== 2) throw Error('runner admission point list changed; substitution refused');
+  return runner.replace(admissionPointsHead, () => admissionPointsFixed);
+}
+export function revertAdmissionPoints(runner) {
+  if (runner.split(admissionPointsFixed).length !== 2) throw Error('parenthesized admission points missing or changed');
+  runner = runner.replace(admissionPointsFixed, () => admissionPointsHead);
+  if (runner.split(admissionPointsHead).length !== 2) throw Error('admission point list duplicated');
+  return runner;
+}
+// PLACEMENT CLIENT-AREA NAME (this TTS candidate only; qa_edge_placement.ps1 and its other callers are unchanged).
+// PowerShell resolves an unqualified variable through the CALLER's scopes. Assert-QaProductPlacement (step 9) keeps the
+// owned control window's client rectangle in a local `$client`, then calls Assert-QaNormalEdge. Since the Edge identity
+// delta, that Edge lookup reaches Get-QaEdgeSocket, which reads `$client` meaning the script's WebClient; it would get the
+// int[5] instead, its DevTools list read would fail (the error is swallowed) and after 20 s the required step would
+// refuse with a misleading DevTools message. Found by source review of the prepared fix, not observed (attempt 1 stopped
+// at step 6). The local is renamed `$clientArea`; its values and checks are unchanged.
+const placementClientHead = String.raw`  $client = $entry.control_client
+  if ($client[4] -ne 192 -or $client[2] - $client[0] -ne $box.viewport[0] * $box.dpr -or $client[3] - $client[1] -ne $box.viewport[1] * $box.dpr -or $box.x -le 0 -or $box.x -ge $box.viewport[0] -or $box.y -le 0 -or $box.y -ge $box.viewport[1]) { throw 'owned control client and browser geometry disagree' }
+  $point = @(($client[0] + [int][Math]::Round($box.x * $box.dpr)), ($client[1] + [int][Math]::Round($box.y * $box.dpr)))`;
+const placementClientFixed = placementClientHead.replaceAll('$client', () => '$clientArea');
+/** The emitted client-area lines, for the reviewed-hash pin in the focused test. */
+export const placementClientBlock = () => placementClientFixed;
+export function applyPlacementClient(runner) {
+  if (runner.includes('$clientArea')) throw Error('renamed placement client area already present');
+  if (runner.split(placementClientHead).length !== 2) throw Error('runner placement client lines changed; substitution refused');
+  return runner.replace(placementClientHead, () => placementClientFixed);
+}
+export function revertPlacementClient(runner) {
+  if (runner.split(placementClientFixed).length !== 2) throw Error('renamed placement client area missing or changed');
+  runner = runner.replace(placementClientFixed, () => placementClientHead);
+  if (runner.includes('$clientArea')) throw Error('renamed placement client area duplicated');
+  return runner;
+}
 /**
  * Models of the emitted rule, only for the offline tests: the native PowerShell cannot run on this host. `windows` are
  * top-level windows in z-order: { handle, pid, visible, title } where `title: null` stands for a caption that cannot be
@@ -582,9 +631,10 @@ export function edgeRaiseModel(state, action = 'raise') {
   } catch (error) { return { actions, refused: error.message }; }
 }
 export function assertReviewedPlacement(ctx, built) {
-  // Only the literal, isolated Edge profile, the scoped launch admission and the owned Edge surface identity change in
-  // the emitted runner. The previous parse/compile receipt applies to its saved bytes, not this new file.
-  if (sha(revertScopedAdmission(revertEdgeIdentity(built.runner), ctx).replaceAll(ctx.profile, priorCandidate.profile)) !== priorRunnerHash || built.steps.length !== 32) throw Error('reviewed placement runner/steps changed');
+  // Only the literal, isolated Edge profile, the scoped launch admission, the owned Edge surface identity, the
+  // parenthesized admission points and the renamed placement client area change in the emitted runner. The previous
+  // parse/compile receipt applies to its saved bytes, not this new file.
+  if (sha(revertScopedAdmission(revertEdgeIdentity(revertAdmissionPoints(revertPlacementClient(built.runner))), ctx).replaceAll(ctx.profile, priorCandidate.profile)) !== priorRunnerHash || built.steps.length !== 32) throw Error('reviewed placement runner/steps changed');
   if (built.steps[0].edgeStart !== ctx.surfaceUrl || built.steps[0].profile !== ctx.profile) throw Error('owned Edge first step changed');
   const normalized = structuredClone(built.steps);
   normalized[0].edgeStart = priorCandidate.surfaceUrl;
@@ -593,7 +643,7 @@ export function assertReviewedPlacement(ctx, built) {
 }
 function payloadFor(ctx) {
   const built = buildVisibleCandidate(ctx);
-  built.runner = applyEdgeIdentity(applyScopedAdmission(built.runner, ctx));
+  built.runner = applyPlacementClient(applyAdmissionPoints(applyEdgeIdentity(applyScopedAdmission(built.runner, ctx))));
   assertReviewedPlacement(ctx, built);
   return { 'runner.ps1': built.runner, 'steps.json': JSON.stringify(built.steps, null, 2) + '\n', 'surface.html': readFileSync(join(here, 'surface.html')) };
 }
@@ -608,7 +658,7 @@ export function prepareTtsCandidate(work = stage.replace(/lc-windows-tts-52be105
     files: Object.fromEntries(Object.entries(payload).map(([n, bytes]) => [n, sha(bytes)])),
     prior_placement_runner_sha256: priorRunnerHash, prior_placement_descriptor_sha256: sha(priorCandidateBytes),
     prior_tts_candidate_sha256: firstTtsCandidateHash,
-    runner_delta: 'literal isolated Edge profile; the start-up Foreign-Electron listing and refusal replaced by a launch admission scoped to this run; the owned Edge window bound to the generated surface by a title token set through its verified DevTools target, the bound page checked again before every window action, unknown captions refused, and the receipt confined to the owned processes',
+    runner_delta: 'literal isolated Edge profile; the start-up Foreign-Electron listing and refusal replaced by a launch admission scoped to this run; the owned Edge window bound to the generated surface by a title token set through its verified DevTools target, the bound page checked again before every window action, unknown captions refused, and the receipt confined to the owned processes; the 16 points of the product-launch admission computed with each coordinate parenthesized (in PowerShell the comma binds before arithmetic); the product placement client area renamed so it no longer hides the script WebClient from the Edge lookup',
     source_files: Object.fromEntries(sourceNames.map(n => [n, sha(readFileSync(join(here, n)))])),
     app_entry: { executable: electron, app_arguments: [win(stage)], package_main: 'dist/apps/windows/src/main/main.js', main_sha256: entry, native_helper_sha256: helper, electron_sha256: runtime },
     proposed_native_invocation: { executable: String.raw`C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`, arguments: ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'RemoteSigned', ...fileArgs], status: 'NOT_ALLOCATED_NOT_EXECUTED', persistent_policy_changes: false },

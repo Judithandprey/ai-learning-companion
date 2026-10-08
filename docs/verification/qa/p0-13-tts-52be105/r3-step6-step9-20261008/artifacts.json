@@ -1,0 +1,130 @@
+{
+  "kind": "qa-tts-r3-candidate/prepared",
+  "status": "PREPARED_ONLY_NOT_REVIEWED_NOT_AUTHORIZED",
+  "context": "attempt 1 of human-bounded-retest-20261008:d41dbbfa stopped at step 6 (op_Multiply); continuation stopped on two tool refusals (repair-stopped-20261008); operator notice read-denial-notice-20261008:8d07d2932b644d98817b014af2f27dc9 allows local preparation only",
+  "targets_runner_of_attempt_1": "301b5053e758938df97059fa52a60715d6ed7d9423a7e44de5e30df681c59dfa",
+  "changes_vs_attempt_1_runner": [
+    "line 826: admission points, each coordinate parenthesized (inferred step-6 site, not confirmed)",
+    "lines 1025-1027: placement local $client renamed $clientArea (step-9 scope collision found by source review, not observed)",
+    "work folder"
+  ],
+  "production_commit": "52be105a148a28e677f83cc4b7077665f2ff372c",
+  "stage_tree_sha256": "531943a83d3572ca9c686c7d8cd62bd88da5b0401b84050487722b8e87a02669",
+  "wrapper_sha256": "8f7d7132ffe8d3edb1477d7716345fb52ba619f6ebc6edec59102e14389ec6bc",
+  "candidate_sha256": "320ba2c1dee4b6eb769beec6fafd2b61b085684eeddc14b335fd28a6f41bbcbc",
+  "payload_sha256": {
+    "runner.ps1": "01f35325d8c10cfe0b66cdbfc2cf17486e8deb215d5bec033499df9aa4d42d15",
+    "steps.json": "b7c5cc0b7c04867c1ac95a9399d24e06809043eb2c84a9300ffe5cce4769edf5",
+    "surface.html": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2"
+  },
+  "source_files_pinned_by_candidate": {
+    "qa_tts_output_candidate.mjs": "cb2f69fb90e25ff8c3ca32d7d4dc35845b6c6ba9c9cefe84fd722702d7bebb12",
+    "qa_tts_stage_check.py": "9e0a8257f740ee6d7e8924ac848de2fc7ddfd9b7621967e8a7f67c1c518b810f",
+    "qa_live_stage_check.py": "8bdd042b426c0784500375a41fe874e41b80186a6a8dddcc1d544213abd8c791",
+    "qa_visible_candidate.mjs": "9df43a98f64c67559029d31bc41573db4df4df94341ef48845687987b5460410",
+    "qa_edge_placement.ps1": "e527a59e63f6823adc9aaa1b5d9619661d8299769985ae1a0bf108749c2535bb",
+    "qa_display_admission.ps1": "b4f586b7c987f533f318eb72ebffe318482ed2c2aa7f7f720574147071747590",
+    "qa-electron-runner.ps1": "1a0dfc3f178a1d6f59233c2a7d6a836ce68b18887affd2f6431c2d4ef5c48218",
+    "signin_cleanup.mjs": "efa06295262ea27006769e0dea363051fbd6401f4c810d2049db5937ee939b2b",
+    "qa_visible_drag.mjs": "fa7491499aad6c289793fec195a11993b3d102415347a7251e82592362940d1e",
+    "surface.html": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2"
+  },
+  "reviewed_emitted_blocks_sha256": {
+    "admission_listing": "8669891a7eae6e4f3d641dee6ec2320390a78c36c2d8b0f2cde540480eb7ed50",
+    "admission_guard": "1222e15da6e564ccda5fbf5d49c11c841c2cd8c7d0a51bfc3836715a1b6c8287",
+    "edge_socket": "9ef77d2c3110b3fbc110d9062243a954e8c991c789e405d201eab4d7e9ec6e9c",
+    "edge_lookup": "0107b4da53eb342c627f9462a4603aec566e55fe67e22b227706030a743bea0b",
+    "edge_bind": "fb8a41b80ea87ef4c7050ebcdc341bbc2f25f68f3e5154c70216440c02b7686b",
+    "edge_fullscreen": "27aaa0bc0b7b321f5e3e94dab17a8ff3062475fa9d6f413ec3d751259efa48ee",
+    "admission_points_line": "d37acc4bd1f07ce53f2e2dcd0c7918d4a6066ed5d568777d462786c5e0baa1e3",
+    "placement_client_lines": "d30e56a28b09cbd6ab1cf87a08946c3b3bb1476ee2672a7bfa8166a927b9e34e"
+  },
+  "launch_identity_for_allocation": {
+    "source": "52be105a148a28e677f83cc4b7077665f2ff372c",
+    "stage": "/mnt/c/Users/ROG/AppData/Local/Temp/lc-windows-tts-52be105",
+    "tree": "531943a83d3572ca9c686c7d8cd62bd88da5b0401b84050487722b8e87a02669",
+    "work": "/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-tts-output-6bd71cac570a42a18cedd16b28cf6d68",
+    "electron": "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-electron-44.5.1-win32-x64\\electron.exe",
+    "edge": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+    "appPort": 43123,
+    "edgePort": 45123
+  },
+  "native_invocation_for_allocation": {
+    "executable": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "arguments": [
+      "-NoProfile",
+      "-NonInteractive",
+      "-ExecutionPolicy",
+      "RemoteSigned",
+      "-File",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-tts-output-6bd71cac570a42a18cedd16b28cf6d68\\runner.ps1",
+      "-Electron",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-electron-44.5.1-win32-x64\\electron.exe",
+      "-Stage",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-windows-tts-52be105",
+      "-UserData",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-tts-output-6bd71cac570a42a18cedd16b28cf6d68\\userdata",
+      "-StepsFile",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-tts-output-6bd71cac570a42a18cedd16b28cf6d68\\steps.json",
+      "-OutDir",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-tts-output-6bd71cac570a42a18cedd16b28cf6d68\\out",
+      "-Edge",
+      "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+      "-AppTemp",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-tts-output-6bd71cac570a42a18cedd16b28cf6d68\\apptemp"
+    ]
+  },
+  "new_work_folder_existed_at_preparation": false,
+  "tests": {
+    "test_qa_run_tts_candidate.mjs": {
+      "sha256": "1ff626d2db38641112852c1713b28b5e68f2da13d09e2cb7f50c08ea953c0ec4",
+      "pass": 54,
+      "fail": 0,
+      "child_process_permission": "withheld"
+    },
+    "test_qa_tts_output_candidate.mjs": {
+      "sha256": "fb5eaf6cb5d9dcd3eaa61abda5d1720baa1bd79213b866ff75cb510e0f6aaf1e",
+      "pass": 48,
+      "fail": 0
+    }
+  },
+  "r3_mutants": {
+    "run": 12,
+    "caught": 12,
+    "caught_by_behaviour_or_source_test": 9,
+    "stopped_suite_at_load": 3
+  },
+  "rule_mutants_r1_r3_rerun": {
+    "run": 28,
+    "caught_beyond_hash_pin": 28
+  },
+  "logs": {
+    "generator-checks.txt": "35848a403e05be8a99e1ebdda49bd4fade8279c2e5e98d2f31821be11e38318f",
+    "wrapper-checks.txt": "8de5c066fa71c0483163ac8843aa381edf7007f00f3a2a0fc4319f816432903f",
+    "candidate-check.json": "f7b0e19b7eae4d284438ccc5b723fb887222d1b617eac66c313f5976c5e26d90",
+    "r3-mutants.txt": "c0243f08e0347ad4a3888e2c4439ba80db015ac40c67e222f97b5dceabc81c64",
+    "r3-mutants.py": "175fc535cc1f3b8ace1680d5275cc2fe900a3e0456b03102f741a77b98f0cd24",
+    "rule-mutants-r1-r3.txt": "f1e9bec577465041b080f9cc50b3246cf5f94b909cd695323d490dc7550e10c6",
+    "rule-mutants-r1-r3.py": "de6bd8cd9c72a384e76b7cef1d734fe3d298fbb94fa47045ce68828162964393"
+  },
+  "refused_read_file": {
+    "contents_printed_parsed_or_inspected": false,
+    "byte_level_touches_after_refusal": [
+      "sha256sum for the attempt-1 README",
+      "git add/commit b586e8a (evidence saved as the lead asked)",
+      "one repository-wide git grep -l owned_points (filename match only; disclosed)",
+      "unread /tmp copies made by the superseded preparation mutant scripts (deleted); r3 scripts exclude execution-*"
+    ]
+  },
+  "powershell_executed": false,
+  "execution": {
+    "windows_calls": 0,
+    "native_attempts": 0,
+    "provider_attempts": 0,
+    "display_allocation": "NONE"
+  },
+  "internal_reviews": {
+    "wf_89c87d8c-562": "first version (fix 1 only): 3 must-fix, 1 should-fix, 2 notes; all dispositioned in README",
+    "wf_f4b5887a-eca": "r3 delta: 0 must-fix, 1 should-fix, 5 notes; all dispositioned; later edits (scan, comment, pins, docs) not re-reviewed"
+  }
+}

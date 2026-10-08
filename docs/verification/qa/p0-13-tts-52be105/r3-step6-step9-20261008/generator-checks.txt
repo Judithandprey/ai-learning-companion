@@ -1,0 +1,57 @@
+$ LC_QA_TTS_STATIC_RECEIPT=docs/verification/qa/p0-13-tts-52be105/stage-identity.json node --test tests/e2e/windows/test_qa_tts_output_candidate.mjs
+✔ valid new-package descriptor admits identity only, with no execution path
+✔ manifest execution flag cannot activate execution
+✔ historical approval cannot be rebound
+✔ old package is rejected
+✔ wrong entry or launch argument is rejected
+✔ altered planned PowerShell arguments are rejected
+✔ wrong source pin is rejected
+✔ missing placement step is rejected
+✔ historical runner mixture is rejected
+✔ changed surface is rejected
+✔ missing package file receipt is rejected
+✔ extra package file receipt is rejected
+✔ altered package file receipt is rejected
+✔ different compiled helper is rejected
+✔ different Electron bytes are rejected
+✔ a same-length change to the reviewed physical point set is rejected
+✔ the emitted runner no longer refuses beside every other Electron app, and never reads -AllowForeign
+✔ Foreign-Electron keeps its three call sites (start gate, desktop screenshot, end record) and lists PIDs and reasons only
+✔ the native rule is the wrapper's: Windows' own argument splitter, the same path, short-name, runtime and port patterns, the two ports, the stage and this run's folder
+✔ the runner reads only-unreadable rows once more before refusing, and refuses on any relevant row or listener
+✔ the two emitted blocks are pinned by their reviewed hashes (any change to the native rule must be reviewed again)
+✔ the controlled-surface gates and the owned-only termination paths of the runner are unchanged
+✔ the deltas are exactly the scoped admission, the owned Edge surface identity, the admission points and the placement client area: reverting all gives the reviewed runner; each applies once
+✔ identity model: an owned popup first in z-order is never taken; the window showing the generated surface is
+✔ identity model: another window of the same Edge process, a hidden window, and another app's window with the same title are not the surface
+✔ identity model: a child process window counts only if the child was created after the launched Edge
+✔ identity model: no match, two matches, an ended or replaced Edge, a missing identity and a changed window all refuse
+✔ R2 model: a readable token window PLUS an eligible owned window whose caption cannot be read is unresolved, never unique
+✔ target model: only the page showing the generated surface, the same one every time; another page first, two, none or a navigation refuses
+✔ page model: the bound page must still be at the URL, still the generated surface and still carry the token (a reloaded page is not tagged again)
+✔ bind model: the found window must have the page's DPI and a client area that holds its viewport; unreadable geometry refuses
+✔ R1 action model: bind, then the page or target changes before a raise, full-screen write or front: refusal and zero actions
+✔ R1, Support's 6c7872d fixture in the model's {target, page} input: the same window, owner, band and token caption; only the page's URL/target changed
+✔ R3 receipt model: the processes are fixed before the walk; a window whose owner changed to another process gets no caption read
+✔ R2 before/after (replayed C#): a readable match plus an unreadable second owned window was taken as unique at b9ce4cc; now it is carried as unknown
+✔ R2: the PowerShell lookup and bind refuse while any owned caption is unknown, before using the matches
+✔ R3 before/after (replayed C#): at b9ce4cc the receipt read captions of a foreign process found by HWND reuse; now Caption reads nothing for it
+✔ R1 before/after (source path): at b9ce4cc the window lookup never touched the page; now every lookup and every full-screen write checks the bound page first
+✔ the emitted rule is bound to the models: lookup redirected, refusals in order, bound right after the surface loads, nothing acts in the identity path
+✔ the emitted identity blocks are pinned by their reviewed hashes
+✔ every guard of the emitted identity rule is present as an exact line, as often as it should be
+✔ comma-precedence lint: flags arithmetic beside a list comma, not parenthesized coordinates, method arguments, strings, comments or here-strings
+✔ attempt 1 (before): its runner has exactly one comma-precedence hazard, the admission point list; the new runner has none
+✔ the new runner differs from the runner that ran as attempt 1 only in the point-list line, the placement client-area name and its work folder
+✔ the 16 admission points, computed from the emitted coordinates, are exactly the on-top points that passed on the display
+✔ the emitted point-list line and the renamed client-area lines are pinned by their reviewed hashes
+✔ scope scan: a caller local that hides a script variable from a function it reaches is found; renamed, received or own locals are not
+✔ attempt 1 (before): its runner hides the script WebClient from the Edge socket lookup in step 9; the new runner has no such case
+ℹ tests 48
+ℹ suites 0
+ℹ pass 48
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms (omitted)
