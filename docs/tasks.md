@@ -83,11 +83,20 @@ isolated argv class with 8/8 synthetic cases; no display/product run.
 Resulting main `4280597` passed 54 wrapper and 23 generator checks, with all21
 source/test/log/payload hashes matching final QA source and unused scratch absent.
 [Integrated checks and review](verification/lead/live-windows/approved-two-gates/resume-preflight-20261007/README.md#reviewed-integration).
-Lead issued the one fresh scoped allocation to current QA, accepted as
-`handoff_8e274b900077536738e52f7472eedd28` (17:20:03–17:50:03 UTC); native32-step
-result remains NOT_RUN until the actual delivery. Both admission layers are fixed; full enumeration,
-exact-owned cleanup, listener and generated-surface protections remain.
-No account/audio/provider authorization is part of this diagnostic.
+The fresh allocation actually ran once17:21:11.8–17:21:45.8 UTC: scoped launch
+admission passed, including the unrelated AgentsDock remaining untouched. Native
+step1 opened owned Edge; step2 rejected a small topmost same-process window before
+any raise/product launch. QA evidence `89a077d` integrates as `a716ae5`;
+[actual result](verification/qa/p0-13-tts-52be105/execution-admission-20261008/README.md)
+and Lead17 saved-evidence consistency checks confirm no product/capture/provider
+run and exact-owned cleanup. QA explicitly released DISPLAY at about17:22Z in
+`handoff_de51af8fcae9104bf6e9f40332df7787`; allocation is consumed, no retry.
+Current next action: same QA fixes candidate-specific generated Edge HWND identity
+under `handoff_fa627da3c2310dd4eca1ccf6676186a6`, source/offline only. Support's
+bounded source diagnosis/review is `handoff_7ec6453247f0b0c65ed89342abbf34be`.
+Keep normal-band/foreground/16-point/display guards and exact-owned cleanup;
+no largest-window-only trust, foreign mutation or new native allocation. Actual
+popup content is unknown; the product and complete live/audio gates remain untested.
 Automation `ai` and Paperclip remain paused; quota-resumer behavior is unchanged.
 
 ### Current runnable delivery and one changed-flow acceptance

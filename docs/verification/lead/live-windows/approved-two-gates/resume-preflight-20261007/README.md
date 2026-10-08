@@ -190,3 +190,36 @@ bound/32 unchanged steps, process/child-only RemoteSigned, no account/AI/audio/
 microphone/TTS, and requires exact-owned cleanup plus explicit DISPLAY RELEASE.
 Accepted dispatch alone is not execution or pass. Outcome will be recorded below;
 no automatic retry or old allocation reuse is authorized.
+
+
+## Actual result and continued repair
+
+QA delivery `89a077d99985b3e8a073afee5e58da9fd94ce862`, received as
+`handoff_03a45aa99ce1a8644e61b87ca362cb87`, integrates as `a716ae5`.
+[Raw report and exact hashes](../../../../qa/p0-13-tts-52be105/execution-admission-20261008/README.md)
+retain one invocation17:21:11.769–17:21:45.789 UTC. Wrapper admission passed;
+native parsing passed, launcher exited0, but the diagnostic correctly reportsFAIL:
+step1 `edgeStart` succeeded; step2 failed before raise/product startup on a small
+owned topmost window. Steps3–32 did not run. Scoped process admission found zero
+relevant Electron rows/port owners; the unrelated AgentsDock and children were
+left untouched. No pixel capture, account/provider/microphone/audio/TTS action.
+
+[Lead's17 saved-evidence checks](result-review.json) confirm the actual77-file stage,
+exact allocation/source hashes, native result distinction, and cleanup ownership.
+The only signal was a close to the exact owned Edge identity; no foreign process
+was signalled, no process force-terminated. QA explicitly released DISPLAY at
+about17:22Z in `handoff_de51af8fcae9104bf6e9f40332df7787`. The live `/tmp` allocation
+is now marked released/consumed; its originally issued bytes/hash remain above.
+There is no new allocation or implicit retry.
+
+`Window-Handle 'edge'` selects the first visible window in the owned process tree,
+so it can select a different topmost Edge window. The small window's precise
+content (such as a fullscreen hint) is unknown because no title/image was recorded.
+This is a harness binding defect; it is not evidence against unlaunched product code.
+Same QA received source-only repair `handoff_fa627da3c2310dd4eca1ccf6676186a6`;
+Support received bounded source/saved-result diagnosis
+`handoff_7ec6453247f0b0c65ed89342abbf34be`, with exact final evidence follow-up
+`handoff_fe99b5f26871465f2094733ab6c7bdec`. Keep generated-target/owned identity,
+ambiguity rejection and all normal-band, display, point and cleanup guards.
+Author repair → Support exact-delta review → Lead integration is the next action;
+no duplicate general campaign or idle-role tasks.

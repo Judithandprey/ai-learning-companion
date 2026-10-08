@@ -168,7 +168,7 @@
     "specific_refusal_human_decision": "lead-scoped-human-decision-20261008:d804efce8242419e9b18942980d95f04",
     "approval_record": "docs/verification/lead/live-windows/approved-two-gates/resume-preflight-20261007/human-approval-20261008.json",
     "owner": "QA sess_06a4c3cc6e214e96",
-    "status": "fresh_display_allocation_dispatched_awaiting_actual_execution",
+    "status": "completed_failed_owned_edge_window_guard",
     "operator_reported_run": "run_5c2ad98ebfa540fa",
     "production_commit": "52be105a148a28e677f83cc4b7077665f2ff372c",
     "max_native_attempts": 1,
@@ -177,9 +177,27 @@
     "model_attempts_allowed": 0,
     "account_allocation_active": false,
     "audio_allocation_active": false,
-    "display_allocation_active": true,
-    "actual_attempts": [],
-    "next_owner_action": "Current QA executes the exact approved diagnostic once, then exact-owned cleanup and explicit DISPLAY RELEASE.",
+    "display_allocation_active": false,
+    "actual_attempts": [
+      {
+        "wrapper_invocations": 1,
+        "native_file_attempts": 1,
+        "provider_attempts": 0,
+        "started_at_utc": "2026-10-08T17:21:11.8Z",
+        "finished_at_utc": "2026-10-08T17:21:45.8Z",
+        "wrapper_exit": 1,
+        "launcher_exit": 0,
+        "admission": "passed_no_relevant_electron_or_port_owner",
+        "successful_steps": 1,
+        "failed_step_zero_based": 1,
+        "result": "owned Edge must remain visible in the normal window band",
+        "product_launched": false,
+        "capture_started": false,
+        "owned_cleanup_confirmed": true,
+        "foreign_signals": 0
+      }
+    ],
+    "next_owner_action": "QA source/offline HWND repair handoff_fa627da3c2310dd4eca1ccf6676186a6 -> Support independent review -> Lead integration; no further native allocation.",
     "repair_commits": [
       "b79d195b77df530b72df943f95188b418af217ba",
       "78d6de0f1e1b92113d0829a1f88be6fb84ae96f8",
@@ -197,6 +215,11 @@
     "integration_baseline": "e74cdfc8c97363eea03b769020563dcaffa91584",
     "dispatch_message": "handoff_8e274b900077536738e52f7472eedd28",
     "dispatch_accepted": true,
-    "execution_started_at_dispatch": false
+    "execution_started_at_dispatch": false,
+    "display_release_message": "handoff_de51af8fcae9104bf6e9f40332df7787",
+    "display_released_at": "2026-10-08T17:22Z",
+    "result_commit": "89a077d99985b3e8a073afee5e58da9fd94ce862",
+    "result_integrated": "a716ae5",
+    "result_message": "handoff_03a45aa99ce1a8644e61b87ca362cb87"
   }
 }

@@ -1,0 +1,31 @@
+{
+  "source_commit": "89a077d99985b3e8a073afee5e58da9fd94ce862",
+  "checks": [
+    "hash:run.json",
+    "hash:runner-results.json",
+    "hash:runner.stdout.bin",
+    "hash:runner.stderr.bin",
+    "hash:README.md",
+    "one_native_zero_provider_audio_mic",
+    "exact_issued_allocation",
+    "actual_stage77",
+    "actual_native_parse_passed",
+    "launcher_success_not_product_acceptance",
+    "one_pass_one_failure_remaining30_not_run",
+    "observed_owned_topmost",
+    "scoped_admission_passed",
+    "product_not_launched",
+    "exact_owned_cleanup:electron",
+    "exact_owned_cleanup:edge",
+    "one_owned_edge_close_no_foreign_signal"
+  ],
+  "passed": 17,
+  "failed": 0,
+  "evidence_review_only": true,
+  "new_native_calls": 0,
+  "display_release_message": "handoff_de51af8fcae9104bf6e9f40332df7787",
+  "result_message": "handoff_03a45aa99ce1a8644e61b87ca362cb87",
+  "defect": "harness chooses first visible owned Edge HWND; actual popup identity unknown",
+  "next_repair_dispatch": "handoff_fa627da3c2310dd4eca1ccf6676186a6",
+  "source_diagnosis_dispatch": "handoff_7ec6453247f0b0c65ed89342abbf34be"
+}
