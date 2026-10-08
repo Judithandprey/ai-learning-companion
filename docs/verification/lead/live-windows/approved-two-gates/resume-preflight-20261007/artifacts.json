@@ -11,7 +11,8 @@
     "integrated-1aea6b2/generator-checks.txt": "9757269a477cfd621c289cf2b77d75bcca01a8732a2403c2bec19839962cf686",
     "issued-allocation-20261008.json": "b8df4c881c5cb9d1c6930f5d908853b9b503714abc0cb47db11ab40ccc20dfc7",
     "result-review.json": "bd7543e65e3e1932eca6961702885292e56ee4b8764df8122f9be8b8c49b5ba8",
-    "edge-repair-delivery.json": "a7b8f46f0aa91d41f6e8178e6d01e726058e06fe9b205d1438836909c52f2a35"
+    "edge-repair-delivery.json": "a7b8f46f0aa91d41f6e8178e6d01e726058e06fe9b205d1438836909c52f2a35",
+    "edge-repair-r2-delivery.json": "1df3c13b1ce27b693580eaa1c31452b046fd1eae912999d2d0290a3b8eec6f9d"
   },
   "restoration_script_sha256": "8884fa8609a9c77138389b9dbdee3f032155f7ca4472cdd7806d9ee2fd0ab1e5",
   "native_calls": 0,

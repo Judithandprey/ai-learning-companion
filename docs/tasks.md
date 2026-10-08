@@ -110,7 +110,13 @@ readable/unknown caption sets, and preventing diagnostic HWND reuse from widenin
 caption reads to another owner. These are source/synthetic findings, not a new
 GUI incident. Exact PowerShell parsing and five isolated C# definitions compiled;
 no methods, windows, apps or capture were invoked. QA received the same-card
-correction `handoff_a05ac9a096200016381d14ded6c42c0c`; source remains unintegrated.
+correction `handoff_a05ac9a096200016381d14ded6c42c0c`, then actually delivered
+r2 `151f7d7` as `handoff_53756ff8518632020bc7e2b1ecd30500`. Lead verified25
+pins and18-file scope; source remains unintegrated. Author41 generator/54 wrapper
+checks and28 mutants are offline evidence. The old probe's pins-only after-failure
+is explicitly an input/signature mismatch, not proof of repair. Support received
+this exact delta as `handoff_9365c461dadc1fbb62d9bb4595be03ba` for R1–R3 semantic
+before/after review and changed-source isolated parser/compile prerequisite only.
 No new display attempt or repeated full campaign is assigned.
 Keep normal-band/foreground/16-point/display guards and exact-owned cleanup;
 no largest-window-only trust, foreign mutation or new native allocation. Actual

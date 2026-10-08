@@ -197,7 +197,7 @@
         "foreign_signals": 0
       }
     ],
-    "next_owner_action": "QA fixes actual page/action validation, unknown-caption uniqueness and receipt ownership reuse; exact correction -> Support delta review -> Lead integration. No display allocation.",
+    "next_owner_action": "Support R1-R3 semantic delta review of151f7d7, corrected-source isolated parse/compile -> QA fixes if needed -> Lead integration. No display allocation.",
     "repair_commits": [
       "b79d195b77df530b72df943f95188b418af217ba",
       "78d6de0f1e1b92113d0829a1f88be6fb84ae96f8",
@@ -232,6 +232,10 @@
     "window_repair_review_commit": "6c7872d8dab2074e95a29d218d19a0af38fef1bc",
     "window_repair_review_integrated": "972e26e",
     "window_repair_review_result_message": "handoff_eee3fd9eee87de91777db654e0052305",
-    "window_repair_correction_dispatch": "handoff_a05ac9a096200016381d14ded6c42c0c"
+    "window_repair_correction_dispatch": "handoff_a05ac9a096200016381d14ded6c42c0c",
+    "window_repair_r2_commit": "151f7d741e2b88912a94f0b24473594e236d0076",
+    "window_repair_r2_delivery": "handoff_53756ff8518632020bc7e2b1ecd30500",
+    "window_repair_r2_review_dispatch": "handoff_9365c461dadc1fbb62d9bb4595be03ba",
+    "window_repair_r2_status": "independent_review_pending_not_integrated"
   }
 }

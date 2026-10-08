@@ -282,3 +282,23 @@ caption uncertainty, and preserve the authorized owner set during diagnostics;
 retain all guards/cleanup and test the combined failure cases with zero actions.
 The held candidate is not integrated or released. Next: exact QA correction →
 same Support delta review → Lead integration. No display allocation or retry.
+
+
+### R2 correction received (independent verdict pending)
+
+Actual QA `151f7d741e2b88912a94f0b24473594e236d0076` arrived in
+`handoff_53756ff8518632020bc7e2b1ecd30500`. It adds page checks around window
+lookup/fullscreen mutation, distinguishes unknown captions, and fixes the receipt's
+owned-process set. [Lead delivery checks](edge-repair-r2-delivery.json) verify25
+pins,18-file authorized scope and unused scratch; no suite or native call repeated.
+The old `b9ce4cc` HOLD and its evidence remain. Neither candidate is integrated.
+
+Author41 generator/54 wrapper checks,28 targeted mutants and internal perspectives
+are not independent/native acceptance. QA explicitly records that the old Support
+probe with only pin changes fails on incompatible input/signatures, including a
+valid control; it does not prove the defects are fixed. Support received exact
+r2 review `handoff_9365c461dadc1fbb62d9bb4595be03ba`, preserving the original cases
+and valid controls when mechanically adapting inputs. Changed-source parser and
+isolated C# compilation are permitted under normal review without method/runner
+execution or any display/process/window/account/audio action. Timing and residual
+check/action races must remain explicit. No display lease, retry or product pass.
