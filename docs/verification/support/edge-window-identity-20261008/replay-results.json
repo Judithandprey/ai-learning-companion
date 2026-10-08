@@ -1,0 +1,50 @@
+{
+  "kind": "synthetic source-bound selection replay",
+  "source_behavior_checks": 6,
+  "windows_calls": 0,
+  "limitation": "Scaffolding translation, not native execution; synthetic alternatives do not prove which other HWNDs existed during the saved attempt.",
+  "results": [
+    {
+      "name": "surface_only_control",
+      "selected": "200",
+      "expected_source_selection": "200",
+      "required_unique_target_or_refusal": "200",
+      "meets_identity_boundary": true
+    },
+    {
+      "name": "recorded_narrow_window_first",
+      "selected": "17504798",
+      "expected_source_selection": "17504798",
+      "required_unique_target_or_refusal": "200",
+      "meets_identity_boundary": false
+    },
+    {
+      "name": "same_windows_reverse_order",
+      "selected": "200",
+      "expected_source_selection": "200",
+      "required_unique_target_or_refusal": "200",
+      "meets_identity_boundary": true
+    },
+    {
+      "name": "normal_decoy_first",
+      "selected": "300",
+      "expected_source_selection": "300",
+      "required_unique_target_or_refusal": null,
+      "meets_identity_boundary": false
+    },
+    {
+      "name": "same_geometry_reverse_order",
+      "selected": "200",
+      "expected_source_selection": "200",
+      "required_unique_target_or_refusal": null,
+      "meets_identity_boundary": false
+    },
+    {
+      "name": "foreign_and_hidden_ignored_control",
+      "selected": "200",
+      "expected_source_selection": "200",
+      "required_unique_target_or_refusal": "200",
+      "meets_identity_boundary": true
+    }
+  ]
+}

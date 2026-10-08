@@ -1,0 +1,134 @@
+{
+  "revision": "6d256bcd22bfa09f5f551e8f99ba2d9612586ef5",
+  "source_sha256": "1a0dfc3f178a1d6f59233c2a7d6a836ce68b18887affd2f6431c2d4ef5c48218",
+  "evidence_origin": "/home/agentsdock/Projects/learning-companion/wt-review/docs/verification/qa/p0-13-tts-52be105/execution-admission-20261008",
+  "evidence_sha256": {
+    "run.json": "3fcb00c50dc108042767a3d769b437362a53701a06b8ed4555f1c488f1b61c9a",
+    "runner-results.json": "6255d97aca74378a5b472a3d786a4e9ff1ea3905cdb536df0fee40f475be08a1"
+  },
+  "recorded_steps": [
+    {
+      "i": 1,
+      "ok": true,
+      "at": "2026-10-08T17:21:28.5991011Z",
+      "kind": "edgeStart"
+    },
+    {
+      "i": 2,
+      "ok": false,
+      "at": "2026-10-08T17:21:29.8467276Z",
+      "kind": "window",
+      "window": "edge",
+      "show": "raise",
+      "before_window": {
+        "handle": "17504798",
+        "owner": 14104,
+        "bounds": [
+          670,
+          88,
+          1888,
+          202
+        ],
+        "visible": true,
+        "foreground": false,
+        "class": "Chrome_WidgetWin_1",
+        "topmost": true,
+        "minimized": false,
+        "above_edge": false
+      },
+      "before_window_error": "owned Edge must remain visible in the normal window band",
+      "error": "owned Edge must remain visible in the normal window band"
+    }
+  ],
+  "recorded_admission": {
+    "relevant_electron": [],
+    "other_owner_electron": 4,
+    "port_owners": [],
+    "rechecked": false
+  },
+  "recorded_processes": {
+    "edge": {
+      "pid": 14104
+    }
+  },
+  "recorded_display": {
+    "phase": "before_edge_raise",
+    "at": "2026-10-08T17:21:31.4771932Z",
+    "accepted": true,
+    "native": {
+      "count": 1,
+      "device": "\\\\.\\DISPLAY1",
+      "monitor_handle": "65537",
+      "primary": true,
+      "monitor_bounds": [
+        0,
+        0,
+        2560,
+        1600
+      ],
+      "work_bounds": [
+        0,
+        0,
+        2560,
+        1504
+      ],
+      "dpi": 192
+    }
+  },
+  "wrapper": {
+    "passed": false,
+    "wrapper_sha256": "84009e821d3495c153a1ff04e042f8027070c9dac0b8ac5e91cd239051dfd941",
+    "candidate_sha256": "c083ad0eb5540632e9a2d5acf57bd5a09e5b5f82869fe05345c325ef263e34e6",
+    "allocation_id": "lc-tts-admission-20261008-01",
+    "native_attempts": 1,
+    "provider_attempts": 0,
+    "audio_access": false,
+    "microphone_access": false,
+    "aborted": "owned Edge must remain visible in the normal window band",
+    "steps_ok": false,
+    "owned_launch_cleanup_confirmed": true
+  },
+  "recorded_cleanup": {
+    "electron": {
+      "exit": "confirmed",
+      "owned_seen": [],
+      "asked_to_close": [],
+      "ended_by_force": [],
+      "signals": [],
+      "left_running": [],
+      "unresolved": []
+    },
+    "edge": {
+      "exit": "confirmed",
+      "owned_seen": [
+        {
+          "pid": 14104,
+          "created": "639270768887287900",
+          "kind": "app"
+        }
+      ],
+      "asked_to_close": [
+        {
+          "pid": 14104,
+          "created": "639270768887287900"
+        }
+      ],
+      "ended_by_force": [],
+      "signals": [
+        {
+          "pid": 14104,
+          "created": "639270768887287900",
+          "how": "close",
+          "answer": "signalled"
+        }
+      ],
+      "left_running": [],
+      "unresolved": []
+    }
+  },
+  "support_native_invocations": 0,
+  "finalized_evidence_commit": "89a077d99985b3e8a073afee5e58da9fd94ce862",
+  "finalized_evidence_matches_initial_reads": true,
+  "emitted_runner_sha256": "6728ec6cf8a5a2030059f8b31bddaa2b7d059f757730698ef38d5a2fad6c1c28",
+  "find_and_window_handle_identical_in_emitted_runner": true
+}
