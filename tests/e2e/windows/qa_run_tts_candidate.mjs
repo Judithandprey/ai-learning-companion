@@ -7,13 +7,13 @@ import * as fs from 'node:fs';
 import { dirname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { checkTtsCandidate } from './qa_tts_output_candidate.mjs';
-import { argv, isChild, launches, lookCommand, readLook, releaseOwned, windowsCalls } from './signin_cleanup.mjs';
+import { argv, isChild, lookCommand, readLook, releaseOwned, windowsCalls } from './signin_cleanup.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url)), repo = resolve(here, '../../..');
-const candidateDir = join(repo, 'docs/verification/qa/p0-13-tts-52be105/candidate');
-const candidateHash = 'f5a55d6edabe33c0b4fa5cc3e299e4f79d6c0304f1e36fd76dc3cc1547f3e2bd';
-const pins = { 'runner.ps1': '4a9b9b9cee7a843d5f35d97bb4f5c078d233b3a2cb81d2ac96b4813245cd0302',
-  'steps.json': 'c3e5141018f30e9ed20975e9461c40f8c1060f8f2bea433eb915f32c404cbea3',
+const candidateDir = join(repo, 'docs/verification/qa/p0-13-tts-52be105/candidate-admission-20261008');
+const candidateHash = 'f580ef5c93484c4cbe89ff3d8af8c53b99571bac897d8570ad1a638f6dd6dc58';
+const pins = { 'runner.ps1': '986077ec88ef8c4d3e626edbb4397e5bd1d56a587bebb5038d8e41c5ab12fad6',
+  'steps.json': 'c7b8f5ed842856de42e0ddd25ac8e534f57eafb40a64e3ca2af0e1ffbef7baa3',
   'surface.html': '69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2' };
 const psBin = '/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe';
 const oldApproval = 'approved-two-gates-20261002:571427dcdc434c0f820236892925aedf';
@@ -24,15 +24,106 @@ const win = path => {
 };
 const equal = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 
+// LAUNCH ADMISSION SCOPED TO THIS RUN. The same electron.exe rule is emitted into this candidate's native runner
+// (qa_tts_output_candidate.mjs, Get-QaLaunchRelevance), where the full rationale is. A process is relevant if a field
+// cannot be read, if it is a main process of the candidate runtime without an absolute app argument, or if its
+// executable or arguments name the candidate stage or this run's new folder, or carry a port/inspect/debug switch for
+// one of the two debugging ports. Every other process belongs to another owner: listed by PID only, never signalled and
+// never a reason to refuse. The cleanup (releaseOwned) still gets the complete, unfiltered process list: this
+// relevance is never applied to it. Unlike the runner, the wrapper also checks msedge.exe arguments (ttsEdgeRelevance).
+const readable = value => typeof value === 'string' && value.length > 0;
+// One Windows path, for comparison only: '/' as '\', no '\\?\' prefix, single separators, no trailing separator, dot or
+// space (Windows ignores those), lower case.
+export const pathKey = value => {
+  let k = String(value).replaceAll('/', '\\');
+  if (k.startsWith('\\\\?\\')) k = k.slice(4);
+  return k.replace(/(?<=.)\\{2,}/g, '\\').replace(/[\\. ]+$/, '').toLowerCase();
+};
+const isSwitch = t => t.startsWith('-') || t.startsWith('/');
+export function ttsAdmissionScope(candidate) {
+  const refs = [win(candidate.stage), win(candidate.work)].map(pathKey), runtime = pathKey(candidate.electron);
+  return { runtime, runtimeName: runtime.split('\\').at(-2), refs, names: refs.map(r => r.split('\\').at(-1)), ports: [candidate.appPort, candidate.edgePort].map(String) };
+}
+// An 8.3 short name: only its first six characters can be compared.
+const shortNameOf = (c, names) => {
+  const short = /^([^~]{6})~[0-9]+(\.[^\\]*)?$/.exec(c);
+  return !!short && names.some(n => n.replaceAll(' ', '').replaceAll('.', '').startsWith(short[1]));
+};
+export function namesThisRun(value, scope) {
+  const k = pathKey(value);
+  if (scope.refs.some(r => k === r || k.startsWith(r + '\\'))) return true;
+  return k.split('\\').some(c => {
+    const d = c.replace(/[. ]+$/, '');
+    return scope.names.includes(d) || shortNameOf(d, scope.names);
+  });
+}
+export function isCandidateRuntime(exe, scope) {
+  const k = pathKey(exe);
+  if (k === scope.runtime) return true;
+  const parts = k.split('\\');
+  if (parts.length < 2 || parts.at(-1) !== 'electron.exe') return false;
+  const dir = parts.at(-2).replace(/[. ]+$/, '');
+  return dir === scope.runtimeName || shortNameOf(dir, [scope.runtimeName]);
+}
+export function portArgument(args, i, scope) {
+  const t = args[i];
+  if (!isSwitch(t)) return false;
+  const eq = t.indexOf('=');
+  const [key, value] = eq > 0 ? [t.slice(0, eq), t.slice(eq + 1)] : [t, args[i + 1] ?? ''];
+  return /^(?:(?:.*-)?port|inspect(?:-brk|-wait)?|debug(?:-brk)?)$/i.test(key.replace(/^[-/]+/, ''))
+    && new RegExp(`(?:^|:)\\+?0*(?:${scope.ports.join('|')})$`).test(value);
+}
+/** Why an electron.exe process is relevant to this run, or null (another owner's). */
+export function ttsLaunchRelevance(p, scope) {
+  if (!readable(p.created)) return 'unreadable_creation';
+  if (!readable(p.exe)) return 'unreadable_executable';
+  if (!readable(p.command_line)) return 'unreadable_command_line';
+  const args = argv(p.command_line);
+  if (isCandidateRuntime(p.exe, scope) && !isChild(p)) {
+    // The candidate runtime: which app it runs decides. Without an app, or with one relative to a working folder that
+    // cannot be read, it cannot be told apart from the candidate.
+    const app = args.slice(1).find(a => !isSwitch(a));
+    if (app === undefined) return 'candidate_runtime_without_app';
+    if (!/^(?:[a-z]:\\|\\\\)/.test(pathKey(app))) return 'candidate_runtime_relative_app';
+  }
+  if (namesThisRun(p.exe, scope)) return 'names_this_run';
+  return argumentRelevance(args, scope);
+}
+function argumentRelevance(args, scope) {
+  for (let i = 1; i < args.length; i++) {
+    const t = args[i], eq = t.indexOf('=');
+    const values = isSwitch(t) && eq > 0 ? [t, t.slice(eq + 1)] : [t];
+    if (values.some(v => v && namesThisRun(v, scope))) return 'names_this_run';
+    if (portArgument(args, i, scope)) return 'test_port_argument';
+  }
+  return null;
+}
+/**
+ * Why an msedge.exe process is relevant: only if its readable arguments name this run's folder (its profile is there) or
+ * carry a debugging-port switch. The user's own browser is not this run's; an unreadable row cannot hold this run's
+ * new folder (the wrapper refuses if it already exists), and a port owner is caught by the listener check. The runner
+ * does not repeat this msedge.exe check.
+ */
+export function ttsEdgeRelevance(p, scope) {
+  return readable(p.command_line) ? argumentRelevance(argv(p.command_line), scope) : null;
+}
+export function ttsAdmission(candidate, app, edge) {
+  const scope = ttsAdmissionScope(candidate);
+  const electron = app.processes.map(p => ({ p, reason: ttsLaunchRelevance(p, scope) }));
+  const edgeRows = edge.processes.map(p => ({ p, reason: ttsEdgeRelevance(p, scope) }));
+  const electronConflicts = electron.filter(e => e.reason), edgeConflicts = edgeRows.filter(e => e.reason);
+  return { scope, electronConflicts, edgeConflicts, otherElectron: electron.filter(e => !e.reason).map(e => e.p), otherEdgeCount: edgeRows.length - edgeConflicts.length,
+    blocked: app.listen.length > 0 || edge.listen.length > 0 || electronConflicts.length > 0 || edgeConflicts.length > 0 };
+}
+
 // Whitelist metadata only: unrelated command lines and paths never enter saved evidence.
 export function summarizeTtsPreflight(candidate, app, edge, observedAt) {
-  const readable = value => typeof value === 'string' && value.length > 0;
   const samePath = (a, b) => readable(a) && readable(b) && a.toLowerCase() === b.toLowerCase();
-  const process = p => {
+  const process = (p, exe = candidate.electron) => {
     const child = isChild(p), executable = readable(p.exe), command = readable(p.command_line);
     return { pid: p.pid, created_ticks: p.created, metadata_present: true,
       creation_readable: readable(p.created), executable_readable: executable, command_line_readable: command,
-      child_argument_present: child, executable_matches_candidate: executable ? samePath(p.exe, candidate.electron) : null,
+      child_argument_present: child, executable_matches_candidate: executable ? samePath(p.exe, exe) : null,
       known_product_stage: executable && command && !child && samePath(p.exe, candidate.electron)
         && samePath(argv(p.command_line)[1], win(candidate.stage)) ? 'candidate_stage' : 'unknown' };
   };
@@ -42,13 +133,15 @@ export function summarizeTtsPreflight(candidate, app, edge, observedAt) {
       creation_readable: null, executable_readable: null, command_line_readable: null,
       child_argument_present: null, executable_matches_candidate: null, known_product_stage: 'unknown' };
   }) });
-  const conflicts = launches(app.processes).map(p => ({ ...process(p),
-    reason: !readable(p.command_line) ? 'unreadable_command_line'
-      : !readable(p.created) ? 'unreadable_creation' : 'non_child_launch' }));
-  return { schema: 'qa-tts-preflight-metadata/1', observed_at_utc: new Date(observedAt).toISOString(),
-    blocked: app.listen.length > 0 || edge.listen.length > 0 || conflicts.length > 0,
+  const admission = ttsAdmission(candidate, app, edge);
+  return { schema: 'qa-tts-preflight-metadata/2', observed_at_utc: new Date(observedAt).toISOString(), blocked: admission.blocked,
     app_port: port(candidate.appPort, app), edge_port: port(candidate.edgePort, edge),
-    electron_observed_ticks: app.now, electron_launch_conflicts: conflicts,
+    electron_observed_ticks: app.now, edge_observed_ticks: edge.now,
+    electron_launch_conflicts: admission.electronConflicts.map(({ p, reason }) => ({ ...process(p), reason })),
+    edge_launch_conflicts: admission.edgeConflicts.map(({ p, reason }) => ({ ...process(p, candidate.edge), reason })),
+    // Another owner's processes: never signalled and no reason to refuse. Electron ones by PID and creation only.
+    other_owner_electron: admission.otherElectron.map(p => ({ pid: p.pid, created_ticks: p.created })),
+    other_owner_edge_count: admission.otherEdgeCount,
     native_attempts: 0, provider_attempts: 0, signals_sent: 0 };
 }
 
@@ -114,13 +207,13 @@ export async function runTtsCandidate(options, injected = {}) {
   const beforeApp = await appCalls.look();
   stillActive();
   const beforeEdge = await edgeCalls.look();
-  if (beforeApp.listen.length || beforeEdge.listen.length || launches(beforeApp.processes).length) {
+  if (ttsAdmission(candidate, beforeApp, beforeEdge).blocked) {
     const refusal = summarizeTtsPreflight(candidate, beforeApp, beforeEdge, now());
     try {
       io.mkdirSync(out, { recursive: false, mode: 0o700 });
       io.writeFileSync(join(out, 'preflight-refusal.json'), JSON.stringify(refusal, null, 2)+'\n', { mode: 0o600, flag: 'wx' });
     } catch { throw Error('preflight conflict found; sanitized refusal could not be saved; nothing started'); }
-    throw Error('another launch or debugging-port owner present; nothing started');
+    throw Error('a launch or debugging-port owner relevant to this run is present; nothing started');
   }
   stillActive();
   if (ps(`[bool](Test-Path -LiteralPath '${candidate.edge}' -PathType Leaf)`).trim() !== 'True') throw Error('reviewed Edge unavailable');

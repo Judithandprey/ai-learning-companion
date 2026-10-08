@@ -1,0 +1,31 @@
+$ LC_QA_TTS_STATIC_RECEIPT=docs/verification/qa/p0-13-tts-52be105/stage-identity.json node --test tests/e2e/windows/test_qa_tts_output_candidate.mjs
+✔ valid new-package descriptor admits identity only, with no execution path
+✔ manifest execution flag cannot activate execution
+✔ historical approval cannot be rebound
+✔ old package is rejected
+✔ wrong entry or launch argument is rejected
+✔ altered planned PowerShell arguments are rejected
+✔ wrong source pin is rejected
+✔ missing placement step is rejected
+✔ historical runner mixture is rejected
+✔ changed surface is rejected
+✔ missing package file receipt is rejected
+✔ extra package file receipt is rejected
+✔ altered package file receipt is rejected
+✔ different compiled helper is rejected
+✔ different Electron bytes are rejected
+✔ a same-length change to the reviewed physical point set is rejected
+✔ the emitted runner no longer refuses beside every other Electron app, and never reads -AllowForeign
+✔ Foreign-Electron keeps its three call sites (start gate, desktop screenshot, end record) and lists PIDs and reasons only
+✔ the native rule is the wrapper's: Windows' own argument splitter, the same path, short-name, runtime and port patterns, the two ports, the stage and this run's folder
+✔ the runner reads only-unreadable rows once more before refusing, and refuses on any relevant row or listener
+✔ the two emitted blocks are pinned by their reviewed hashes (any change to the native rule must be reviewed again)
+✔ the controlled-surface gates and the owned-only termination paths of the runner are unchanged
+✔ the delta is exactly the scoped admission: reverting it gives the reviewed runner, and it applies once to that runner only
+ℹ tests 23
+ℹ suites 0
+ℹ pass 23
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0

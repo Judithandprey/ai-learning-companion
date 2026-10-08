@@ -1,0 +1,107 @@
+{
+  "kind": "qa-tts-admission-repair/1",
+  "baseline_merge": "66c2b43 (team/qa merge of main 5448e49)",
+  "human_approval": "human-approve-admission-20261008:2dde43ea7f4842619709d034fb8b0534",
+  "assignment": "handoff_ffff4e5f0aabea316351ecf893b9313a with handoff_f530b0ce49426ce28fafb9d9f918dc52 and handoff_bf81e29bf2d9dde72c1343d82abeafd1",
+  "production_commit": "52be105a148a28e677f83cc4b7077665f2ff372c",
+  "stage_tree_sha256": "531943a83d3572ca9c686c7d8cd62bd88da5b0401b84050487722b8e87a02669",
+  "wrapper_sha256": "9f3bc94052246981b9f554823400df4882acdc0906f34b916e7036b952ff7e3f",
+  "candidate_sha256": "f580ef5c93484c4cbe89ff3d8af8c53b99571bac897d8570ad1a638f6dd6dc58",
+  "payload_sha256": {
+    "runner.ps1": "986077ec88ef8c4d3e626edbb4397e5bd1d56a587bebb5038d8e41c5ab12fad6",
+    "steps.json": "c7b8f5ed842856de42e0ddd25ac8e534f57eafb40a64e3ca2af0e1ffbef7baa3",
+    "surface.html": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2"
+  },
+  "source_files_pinned_by_candidate": {
+    "qa_tts_output_candidate.mjs": "4c4dac7649210c28b780da8123cfef69f2378897af01d6e7c6ca887c055e96a4",
+    "qa_tts_stage_check.py": "9e0a8257f740ee6d7e8924ac848de2fc7ddfd9b7621967e8a7f67c1c518b810f",
+    "qa_live_stage_check.py": "8bdd042b426c0784500375a41fe874e41b80186a6a8dddcc1d544213abd8c791",
+    "qa_visible_candidate.mjs": "9df43a98f64c67559029d31bc41573db4df4df94341ef48845687987b5460410",
+    "qa_edge_placement.ps1": "e527a59e63f6823adc9aaa1b5d9619661d8299769985ae1a0bf108749c2535bb",
+    "qa_display_admission.ps1": "b4f586b7c987f533f318eb72ebffe318482ed2c2aa7f7f720574147071747590",
+    "qa-electron-runner.ps1": "1a0dfc3f178a1d6f59233c2a7d6a836ce68b18887affd2f6431c2d4ef5c48218",
+    "signin_cleanup.mjs": "efa06295262ea27006769e0dea363051fbd6401f4c810d2049db5937ee939b2b",
+    "qa_visible_drag.mjs": "fa7491499aad6c289793fec195a11993b3d102415347a7251e82592362940d1e",
+    "surface.html": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2"
+  },
+  "reviewed_emitted_blocks_sha256": {
+    "listing": "4632e764ea307acaf840b7469d9fe0e850612267b44a800e9e32d1ab61cbbdfb",
+    "guard": "1222e15da6e564ccda5fbf5d49c11c841c2cd8c7d0a51bfc3836715a1b6c8287"
+  },
+  "launch_identity_for_allocation": {
+    "source": "52be105a148a28e677f83cc4b7077665f2ff372c",
+    "stage": "/mnt/c/Users/ROG/AppData/Local/Temp/lc-windows-tts-52be105",
+    "tree": "531943a83d3572ca9c686c7d8cd62bd88da5b0401b84050487722b8e87a02669",
+    "work": "/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-tts-output-afad96151bad482f8f4883656cb58e5f",
+    "electron": "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-electron-44.5.1-win32-x64\\electron.exe",
+    "edge": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+    "appPort": 43123,
+    "edgePort": 45123
+  },
+  "native_invocation_for_allocation": {
+    "executable": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "arguments": [
+      "-NoProfile",
+      "-NonInteractive",
+      "-ExecutionPolicy",
+      "RemoteSigned",
+      "-File",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-tts-output-afad96151bad482f8f4883656cb58e5f\\runner.ps1",
+      "-Electron",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-electron-44.5.1-win32-x64\\electron.exe",
+      "-Stage",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-windows-tts-52be105",
+      "-UserData",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-tts-output-afad96151bad482f8f4883656cb58e5f\\userdata",
+      "-StepsFile",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-tts-output-afad96151bad482f8f4883656cb58e5f\\steps.json",
+      "-OutDir",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-tts-output-afad96151bad482f8f4883656cb58e5f\\out",
+      "-Edge",
+      "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+      "-AppTemp",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-tts-output-afad96151bad482f8f4883656cb58e5f\\apptemp"
+    ]
+  },
+  "new_work_folder_existed_at_preparation": false,
+  "tests": {
+    "test_qa_run_tts_candidate.mjs": {
+      "sha256": "cf42efeb9ed233ee323efae454c084af6c3283915453d0e6087a51752d8ea2d1",
+      "pass": 53,
+      "fail": 0,
+      "child_process_permission": "withheld"
+    },
+    "test_qa_tts_output_candidate.mjs": {
+      "sha256": "58d398c9ce8492f03f42e6dbe2a941370189f7fec2194dc400f7c8b72b3a2872",
+      "pass": 23,
+      "fail": 0
+    },
+    "signin_cleanup.test.mjs + signin_launcher.test.mjs (unchanged code)": {
+      "pass": 42,
+      "fail": 0
+    }
+  },
+  "logs": {
+    "wrapper-checks.txt": "dfeeddec1cb8a9ec041889b433e889fdffe50f3a7c91e0d61a3c97931b7283d7",
+    "generator-checks.txt": "56e3075d4be4f2233752facbd062391f2aa64efd54c538fe7c2b64d942747722",
+    "cleanup-checks.txt": "1031ac781943393a34a926df61342bf09093bf6535ac2b128a22f00d9cb76891",
+    "candidate-check.json": "0f70da1edeb95675e7f876c3a04359698b79330f952c447b2e92a7e4cc1dfc4c"
+  },
+  "unchanged": [
+    "signin_cleanup.mjs",
+    "qa-electron-runner.ps1 (shared runner)",
+    "qa_visible_candidate.mjs",
+    "qa_display_admission.ps1",
+    "qa_edge_placement.ps1",
+    "qa_tts_stage_check.py",
+    "surface.html",
+    "the 32 steps except their two new work-folder paths",
+    "first candidate folder and all earlier evidence"
+  ],
+  "execution": {
+    "windows_calls": 0,
+    "native_attempts": 0,
+    "provider_attempts": 0,
+    "display_allocation": "NONE"
+  }
+}
