@@ -92,3 +92,84 @@ was delivered into the same existing QA card as
 `handoff_bf81e29bf2d9dde72c1343d82abeafd1`: wrapper plus emitted runner, minimum
 pin changes, complete cleanup enumeration and no AllowForeign/PID exemption.
 That scope is understood; no duplicate assignment was created.
+
+## Human decision on the actual refusal (2026-10-08)
+
+The human explicitly answered **批准** after the configuration operator disclosed
+the exact Security Weaken refusal and unchanged code. The [original scoped
+approval record](human-approval-20261008.json) preserves the question and answer.
+This resolves the human-decision dependency; do not ask it again. The operator
+directly resumed the same QA as `run_5c2ad98ebfa540fa`. Lead observed its normal
+merge `66c2b43` of current main. This establishes baseline adoption, not a completed
+edit or a newly accepted tool operation. No duplicate assignment was sent.
+
+Existing QA delivers the exact tested patch and fresh candidate/pins; Support's
+existing conditional card receives that SHA for independent review. Lead then
+integrates and issues the already authorized, unused one-attempt display lease.
+Normal tool review remains; any genuinely new refusal is recorded and never
+routed through another agent or global permission change. The prior denial and
+original combined-guard uncertainty remain historical.
+
+Lead repeated only current static package admission after the overnight boundary:
+all77 product payload files and pinned runtime match; no native process, capture,
+account or audio call. Current stage tree remains
+`531943a83d3572ca9c686c7d8cd62bd88da5b0401b84050487722b8e87a02669`.
+
+## Exact repaired delivery received
+
+QA `b79d195b77df530b72df943f95188b418af217ba` plus
+`78d6de0f1e1b92113d0829a1f88be6fb84ae96f8` arrived as
+`handoff_118b638f8bf8b1ebcee451e3995f6608`, ordered read
+`mailread_91ef8b145c8c47eca0724d5f16ff0dbf` (seq992). QA explicitly reports
+the new edits accepted through normal tool review. This is the actual repair
+recovery receipt; the earlier denial remains preserved. Owner checks report
+53 wrapper,23 generator and42 cleanup/launcher passes, plus their own internal
+reviews/mutants. These are owner evidence, not the separate Support verdict or
+Windows behaviour acceptance. No native attempt or allocation was used.
+
+Lead's [23 immutable consistency checks](source-hash-review.json) verify delivered
+source/test/log/payload pins,32 unchanged steps except the two work paths, and
+unused scratch. The fresh candidate is `f580ef5c93484c4cbe89ff3d8af8c53b99571bac897d8570ad1a638f6dd6dc58`;
+runner `986077ec88ef8c4d3e626edbb4397e5bd1d56a587bebb5038d8e41c5ab12fad6`.
+The original candidate/attempt and product52be105 remain unchanged.
+
+Support received exact SHA78d6de0 in the existing conditional card as
+`handoff_135a4bd2ac6e011fc8453e34e024f09a`. Review includes source and optional
+bounded syntax/type-only Windows checks, with no full runner/process queries,
+window/capture/account/audio operations. Lead also supplied one synthetic
+argument-ambiguity observation as `handoff_3fbe6d66705e3a91a537fab3a298ed1d`: a
+switch value preceding a relative app may be mistaken for an absolute app. This
+requires reviewer disposition, not a claim that a native launch occurred.
+
+
+<a id="reviewed-integration"></a>
+## Reviewed integration (2026-10-08)
+
+The preceding initial delivery/hash checks apply to `78d6de0`. Support held three
+switch-first ambiguous app cases; Lead independently found the same boundary.
+QA corrected both JS and emitted PowerShell at `1aea6b2`, delivered in
+`handoff_e7d7d650d2a968b58e83cac08a248448`. The unchanged first argument must be
+an absolute application path; option values do not establish another app.
+
+QA commits integrate as `b4fc327` / `56b5b1f` / `9a92375`; both the initial
+Support HOLD and final approval integrate as `d945a6c` / `4280597`.
+[Final independent review](../../../../support/admission-review-20261008/corrected-1aea6b2/README.md)
+was received as `handoff_75d24cbd3706a3ee24a468dc6286c414`: 77 focused offline
+checks, 5 argument regression/control cases, actual Windows parser zero errors,
+only isolated argv C# compilation and 8/8 synthetic cases. The entire runner
+was never evaluated during that prerequisite. Report-only own-root classification
+has a less-than-1ms timestamp tolerance; cleanup still requires exact CIM identity.
+
+[Resulting-main checks](integrated-1aea6b2/checks.json) at `4280597` pass54 wrapper
+and23 generator tests with child-process/write permission withheld. All21 checked
+source/test/log/payload hashes also byte-match final `1aea6b2`. Scratch is absent.
+No Windows calls or GUI/provider attempts were made by Lead's integration checks.
+Production remains `52be105`, the77-file tree `531943a83d3572ca9c686c7d8cd62bd88da5b0401b84050487722b8e87a02669`.
+Final candidate `c083ad0eb5540632e9a2d5acf57bd5a09e5b5f82869fe05345c325ef263e34e6`,
+runner `6728ec6cf8a5a2030059f8b31bddaa2b7d059f757730698ef38d5a2fad6c1c28`,
+wrapper `84009e821d3495c153a1ff04e042f8027070c9dac0b8ac5e91cd239051dfd941`.
+
+Next: Lead supplies current QA one new exclusive display allocation with separate
+hash, the reviewed140-second/32-step scope, no account/AI/audio/mic/TTS and no retry.
+Native behavior remains NOT_RUN until actual delivery; cleanup and explicit
+DISPLAY RELEASE are required. Earlier consumed attempts remain unchanged.

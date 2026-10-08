@@ -3,7 +3,12 @@
     "stage-recheck.json": "9c6d8d8e65e9212dad9eca39b6f50a865a6442c22793bb1c74d5711b4312a67e",
     "runtime-missing.json": "ac6e25e83cddd7dc16b306aab49c6880a45ab07f41c500389c96ade19f396094",
     "runtime-restored.json": "72d03e761af9f428b8d7b9e390576baf5e3753820e5b83c4e4e8eec0be54f92d",
-    "review-refusal.json": "72f117ddd72068892831fb869162585e04ee687dc4fb7363d67443628b01f987"
+    "review-refusal.json": "72f117ddd72068892831fb869162585e04ee687dc4fb7363d67443628b01f987",
+    "human-approval-20261008.json": "17c1a71661e3821371a656d1601787debcdc01379a50e227ab88beb6a2e8e1f7",
+    "source-hash-review.json": "2c7f75b383599fe4ab7b005896bd9dc87362e845ec9d154eaa1ef40d62a9060c",
+    "integrated-1aea6b2/checks.json": "912d6b2e0e40d9f6bea8b2bc09e774a7179c116fd787dd96985059f4a9805330",
+    "integrated-1aea6b2/wrapper-checks.txt": "3e48aa32fa87fccd263b9a4a3069c0847a26315efe2586a40dc158185073c568",
+    "integrated-1aea6b2/generator-checks.txt": "9757269a477cfd621c289cf2b77d75bcca01a8732a2403c2bec19839962cf686"
   },
   "restoration_script_sha256": "8884fa8609a9c77138389b9dbdee3f032155f7ca4472cdd7806d9ee2fd0ab1e5",
   "native_calls": 0,

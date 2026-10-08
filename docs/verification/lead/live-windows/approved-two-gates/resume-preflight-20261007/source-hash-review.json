@@ -1,0 +1,30 @@
+{
+  "commit": "78d6de0f1e1b92113d0829a1f88be6fb84ae96f8",
+  "checks": [
+    "log:wrapper-checks.txt",
+    "log:generator-checks.txt",
+    "log:cleanup-checks.txt",
+    "log:candidate-check.json",
+    "source:qa_tts_output_candidate.mjs",
+    "source:qa_tts_stage_check.py",
+    "source:qa_live_stage_check.py",
+    "source:qa_visible_candidate.mjs",
+    "source:qa_edge_placement.ps1",
+    "source:qa_display_admission.ps1",
+    "source:qa-electron-runner.ps1",
+    "source:signin_cleanup.mjs",
+    "source:qa_visible_drag.mjs",
+    "source:surface.html",
+    "test:test_qa_run_tts_candidate.mjs",
+    "test:test_qa_tts_output_candidate.mjs",
+    "candidate",
+    "wrapper",
+    "payload:runner.ps1",
+    "payload:steps.json",
+    "payload:surface.html",
+    "32steps_only_two_paths_changed",
+    "scratch_absent"
+  ],
+  "passed": 23,
+  "native_calls": 0
+}

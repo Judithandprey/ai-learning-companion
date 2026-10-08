@@ -1,0 +1,31 @@
+✔ valid new-package descriptor admits identity only, with no execution path (5.563235ms)
+✔ manifest execution flag cannot activate execution (0.220102ms)
+✔ historical approval cannot be rebound (0.080654ms)
+✔ old package is rejected (0.071768ms)
+✔ wrong entry or launch argument is rejected (3.724905ms)
+✔ altered planned PowerShell arguments are rejected (3.600482ms)
+✔ wrong source pin is rejected (3.65468ms)
+✔ missing placement step is rejected (4.303378ms)
+✔ historical runner mixture is rejected (24.928174ms)
+✔ changed surface is rejected (4.404435ms)
+✔ missing package file receipt is rejected (7.631407ms)
+✔ extra package file receipt is rejected (3.658878ms)
+✔ altered package file receipt is rejected (3.547898ms)
+✔ different compiled helper is rejected (3.431923ms)
+✔ different Electron bytes are rejected (3.860631ms)
+✔ a same-length change to the reviewed physical point set is rejected (0.497334ms)
+✔ the emitted runner no longer refuses beside every other Electron app, and never reads -AllowForeign (0.647603ms)
+✔ Foreign-Electron keeps its three call sites (start gate, desktop screenshot, end record) and lists PIDs and reasons only (0.294936ms)
+✔ the native rule is the wrapper's: Windows' own argument splitter, the same path, short-name, runtime and port patterns, the two ports, the stage and this run's folder (0.265199ms)
+✔ the runner reads only-unreadable rows once more before refusing, and refuses on any relevant row or listener (0.12526ms)
+✔ the two emitted blocks are pinned by their reviewed hashes (any change to the native rule must be reviewed again) (0.143956ms)
+✔ the controlled-surface gates and the owned-only termination paths of the runner are unchanged (0.186208ms)
+✔ the delta is exactly the scoped admission: reverting it gives the reviewed runner, and it applies once to that runner only (1.425234ms)
+ℹ tests 23
+ℹ suites 0
+ℹ pass 23
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 83.599515

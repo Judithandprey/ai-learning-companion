@@ -1,0 +1,144 @@
+{
+  "integrated_commit": "42805975ed862b299dd92dc6f88c2825c4f88f6e",
+  "reviewed_source": "1aea6b24aac6517a09b014408cc9db6bc3bb1625",
+  "at_utc": "2026-10-08T17:18:22.134774+00:00",
+  "checks": [
+    {
+      "name": "wrapper",
+      "argv": [
+        "/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node",
+        "--permission",
+        "--allow-fs-read=/home/agentsdock/Projects/learning-companion/repo",
+        "--allow-fs-read=/tmp/lc-stage-recheck-20261008.json",
+        "--allow-fs-read=/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-tts-output-*",
+        "tests/e2e/windows/test_qa_run_tts_candidate.mjs"
+      ],
+      "exit_code": 0,
+      "log_sha256": "3e48aa32fa87fccd263b9a4a3069c0847a26315efe2586a40dc158185073c568"
+    },
+    {
+      "name": "generator",
+      "argv": [
+        "/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node",
+        "--permission",
+        "--allow-fs-read=/home/agentsdock/Projects/learning-companion/repo",
+        "--allow-fs-read=/tmp/lc-stage-recheck-20261008.json",
+        "--allow-fs-read=/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-tts-output-*",
+        "tests/e2e/windows/test_qa_tts_output_candidate.mjs"
+      ],
+      "exit_code": 0,
+      "log_sha256": "9757269a477cfd621c289cf2b77d75bcca01a8732a2403c2bec19839962cf686"
+    }
+  ],
+  "hashes": [
+    {
+      "file": "tests/e2e/windows/qa_run_tts_candidate.mjs",
+      "sha256": "84009e821d3495c153a1ff04e042f8027070c9dac0b8ac5e91cd239051dfd941",
+      "matches_reviewed_1aea6b2": true
+    },
+    {
+      "file": "docs/verification/qa/p0-13-tts-52be105/candidate-admission-20261008/candidate.json",
+      "sha256": "c083ad0eb5540632e9a2d5acf57bd5a09e5b5f82869fe05345c325ef263e34e6",
+      "matches_reviewed_1aea6b2": true
+    },
+    {
+      "file": "docs/verification/qa/p0-13-tts-52be105/candidate-admission-20261008/runner.ps1",
+      "sha256": "6728ec6cf8a5a2030059f8b31bddaa2b7d059f757730698ef38d5a2fad6c1c28",
+      "matches_reviewed_1aea6b2": true
+    },
+    {
+      "file": "docs/verification/qa/p0-13-tts-52be105/candidate-admission-20261008/steps.json",
+      "sha256": "c7b8f5ed842856de42e0ddd25ac8e534f57eafb40a64e3ca2af0e1ffbef7baa3",
+      "matches_reviewed_1aea6b2": true
+    },
+    {
+      "file": "docs/verification/qa/p0-13-tts-52be105/candidate-admission-20261008/surface.html",
+      "sha256": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2",
+      "matches_reviewed_1aea6b2": true
+    },
+    {
+      "file": "tests/e2e/windows/qa_tts_output_candidate.mjs",
+      "sha256": "6545dc452dcc88536ebd2a963385dca68d15cdaa9cd385c0d6474e8f1c4affbc",
+      "matches_reviewed_1aea6b2": true
+    },
+    {
+      "file": "tests/e2e/windows/qa_tts_stage_check.py",
+      "sha256": "9e0a8257f740ee6d7e8924ac848de2fc7ddfd9b7621967e8a7f67c1c518b810f",
+      "matches_reviewed_1aea6b2": true
+    },
+    {
+      "file": "tests/e2e/windows/qa_live_stage_check.py",
+      "sha256": "8bdd042b426c0784500375a41fe874e41b80186a6a8dddcc1d544213abd8c791",
+      "matches_reviewed_1aea6b2": true
+    },
+    {
+      "file": "tests/e2e/windows/qa_visible_candidate.mjs",
+      "sha256": "9df43a98f64c67559029d31bc41573db4df4df94341ef48845687987b5460410",
+      "matches_reviewed_1aea6b2": true
+    },
+    {
+      "file": "tests/e2e/windows/qa_edge_placement.ps1",
+      "sha256": "e527a59e63f6823adc9aaa1b5d9619661d8299769985ae1a0bf108749c2535bb",
+      "matches_reviewed_1aea6b2": true
+    },
+    {
+      "file": "tests/e2e/windows/qa_display_admission.ps1",
+      "sha256": "b4f586b7c987f533f318eb72ebffe318482ed2c2aa7f7f720574147071747590",
+      "matches_reviewed_1aea6b2": true
+    },
+    {
+      "file": "tests/e2e/windows/qa-electron-runner.ps1",
+      "sha256": "1a0dfc3f178a1d6f59233c2a7d6a836ce68b18887affd2f6431c2d4ef5c48218",
+      "matches_reviewed_1aea6b2": true
+    },
+    {
+      "file": "tests/e2e/windows/signin_cleanup.mjs",
+      "sha256": "efa06295262ea27006769e0dea363051fbd6401f4c810d2049db5937ee939b2b",
+      "matches_reviewed_1aea6b2": true
+    },
+    {
+      "file": "tests/e2e/windows/qa_visible_drag.mjs",
+      "sha256": "fa7491499aad6c289793fec195a11993b3d102415347a7251e82592362940d1e",
+      "matches_reviewed_1aea6b2": true
+    },
+    {
+      "file": "tests/e2e/windows/surface.html",
+      "sha256": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2",
+      "matches_reviewed_1aea6b2": true
+    },
+    {
+      "file": "tests/e2e/windows/test_qa_run_tts_candidate.mjs",
+      "sha256": "9b0bfc94e83e2febaa5ead6d909f4b79acca5a252a6b15500a1e12f9d5d981b4",
+      "matches_reviewed_1aea6b2": true
+    },
+    {
+      "file": "tests/e2e/windows/test_qa_tts_output_candidate.mjs",
+      "sha256": "ea2063919a47e6f4c5ba1003aed87569b70f101b2976fd656b0effe6e6ac66b7",
+      "matches_reviewed_1aea6b2": true
+    },
+    {
+      "file": "docs/verification/qa/p0-13-tts-52be105/admission-repair-20261008/wrapper-checks.txt",
+      "sha256": "9d4fd250ee15d05255c5544ded0ec70a854506a9619bafc4f803340638bee4ff",
+      "matches_reviewed_1aea6b2": true
+    },
+    {
+      "file": "docs/verification/qa/p0-13-tts-52be105/admission-repair-20261008/generator-checks.txt",
+      "sha256": "56e3075d4be4f2233752facbd062391f2aa64efd54c538fe7c2b64d942747722",
+      "matches_reviewed_1aea6b2": true
+    },
+    {
+      "file": "docs/verification/qa/p0-13-tts-52be105/admission-repair-20261008/cleanup-checks.txt",
+      "sha256": "1031ac781943393a34a926df61342bf09093bf6535ac2b128a22f00d9cb76891",
+      "matches_reviewed_1aea6b2": true
+    },
+    {
+      "file": "docs/verification/qa/p0-13-tts-52be105/admission-repair-20261008/candidate-check.json",
+      "sha256": "a99fc17ee0a9c76abe7dac69b19dde2c044de02fd7d1767e59e19599775f1183",
+      "matches_reviewed_1aea6b2": true
+    }
+  ],
+  "scratch_absent": true,
+  "windows_calls": 0,
+  "native_attempts": 0,
+  "provider_attempts": 0
+}
