@@ -100,14 +100,20 @@ match reviewed QA bytes. Support separately parsed the exact new runner and
 compiled five isolated C# blocks, invoking no methods. Old failures and original
 HOLD/counterexamples remain in their evidence records.
 
-Next owner/action: Lead has completed integration and prepared the exact next
-one-run command/template for current QA. The previous user-authorized single
-native attempt was consumed and explicitly released; no automatic retry or new
-lease is active. A new one-run display authorization is needed before allocating
-this unused candidate. This is an attempt-count boundary, not another source-import
-or script-hash approval. Planned scope remains140seconds/32steps, generated Edge
-surface, isolated unused profile, zero account/provider/mic/audio/TTS, process-only
-RemoteSigned and exact-owned cleanup. [Exact ready candidate and remaining gate](verification/lead/live-windows/approved-two-gates/resume-preflight-20261007/README.md#integrated-edge-repair).
+Current authorization: the human approved up to **three additional attempts total**
+in `human-bounded-retest-20261008:d41dbbfae11448f7847e26cb54afcd44` at22:48 UTC.
+[Exact approval, allocations and actual results](verification/lead/live-windows/approved-two-gates/bounded-retest-20261008/README.md).
+The earlier consumed run stays history. No repeated approval for ordinary
+same-scope code/hash changes within this budget. Each attempt stays140seconds /
+32generated-surface steps, with fresh exclusive allocation and explicit release;
+zero account/provider/microphone/audio/TTS, exact-owned cleanup, process-only
+RemoteSigned. Stop on success,3consumed,new real security denial or scope change.
+Lead rechecked final pins, clean QA worktree and77-file stage/runtime identity.
+Attempt1 was actually dispatched to current QA as
+`handoff_c288b88e43f46451b28c7887361aaf54`; accepted, actual outcome pending.
+One slot reserved,2unreserved; the one canonical counter is request-budget.json.
+QA returns outcome/cleanup/release; Lead then integrates or coordinates only
+necessary same-owner repair + Support review before any next sequential slot.
 Keep normal-band/foreground/16-point/display guards and exact-owned cleanup;
 no largest-window-only trust, foreign mutation or new native allocation. Actual
 popup content is unknown; the product and complete live/audio gates remain untested.

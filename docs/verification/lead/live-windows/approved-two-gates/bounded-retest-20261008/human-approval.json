@@ -1,0 +1,7 @@
+{
+  "at": "2026-10-08T22:48:42.437411+00:00",
+  "human_reply": "OK，你解决问题吧。",
+  "approved_proposal": "同范围内最多3次修复→独立复核→实机复测，每次不超过140秒；生成测试画面，不调用AI/账号/麦克风/声音，不改全局权限；新的安全拒绝或范围变化停止。",
+  "scope": "3 additional attempts total, not 3 per candidate or per agent. Previous attempt remains consumed.",
+  "nonce": "human-bounded-retest-20261008:d41dbbfae11448f7847e26cb54afcd44"
+}

@@ -331,7 +331,7 @@ unchanged140second bound. Popup identity and actual Edge caption/foreground
 behavior remain unverified. Product `52be105` and its77-file tree are unchanged;
 no full companion, real vision, audio, microphone or interactive Mac acceptance.
 
-### Ready command, no active allocation
+### Historical ready command — replaced by bounded authorization
 
 The prior user authorization permitted one new attempt, consumed17:21 UTC and
 explicitly released17:22 UTC. Source/hash repairs need no repeated approval, but
@@ -357,3 +357,9 @@ Current final pins: candidate `03344f776afb4ff2110e7450b8c48d86fd0b9d7b394e5473e
 runner `301b5053e758938df97059fa52a60715d6ed7d9423a7e44de5e30df681c59dfa`,
 wrapper `aad5e81b76e8b329b3c95c6b7ee31359443f6a47ede55312af2ff751fa416816`.
 Old app/profile, unrelated client and all prior attempts remain untouched.
+
+
+The above single-run approval wait was resolved by the human's direct bounded
+approval at2026-10-08T22:48:42Z. [Current three-attempt budget](../bounded-retest-20261008/README.md)
+governs subsequent execution, retaining the old consumed slot and all evidence.
+The inactive template above remains history; attempt1 has its own new allocation.

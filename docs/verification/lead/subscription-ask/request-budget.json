@@ -197,7 +197,7 @@
         "foreign_signals": 0
       }
     ],
-    "next_owner_action": "Lead publishes exact repaired candidate and requests one additional native attempt because prior one-shot is consumed; current QA runs only after fresh authorization/allocation. No active lease.",
+    "next_owner_action": "Historical one-shot remains consumed/released; the separately authorized bounded_display_retests_20261008 budget now governs additional attempts.",
     "repair_commits": [
       "b79d195b77df530b72df943f95188b418af217ba",
       "78d6de0f1e1b92113d0829a1f88be6fb84ae96f8",
@@ -236,7 +236,7 @@
     "window_repair_r2_commit": "151f7d741e2b88912a94f0b24473594e236d0076",
     "window_repair_r2_delivery": "handoff_53756ff8518632020bc7e2b1ecd30500",
     "window_repair_r2_review_dispatch": "handoff_9365c461dadc1fbb62d9bb4595be03ba",
-    "window_repair_r2_status": "reviewed_integrated_offline_verified_awaiting_new_one_run_authorization",
+    "window_repair_r2_status": "reviewed_integrated_offline_verified_new_bounded_authorization_received",
     "window_repair_r2_approval": "3b718d85eaea3a606c6c6da6f97efb925c24ac9e",
     "window_repair_r2_approval_message": "handoff_7b0ea5673cefd13b86e56bd0cc8b7c0e",
     "window_repair_r2_integrated": [
@@ -250,5 +250,47 @@
       "independent_boundary_fixtures": 13,
       "residual_race_illustrations": 1
     }
+  },
+  "bounded_display_retests_20261008": {
+    "authorization_nonce": "human-bounded-retest-20261008:d41dbbfae11448f7847e26cb54afcd44",
+    "human_approval_record": "docs/verification/lead/live-windows/approved-two-gates/bounded-retest-20261008/human-approval.json",
+    "human_approval_sha256": "0549372eb4096b05812b1bc64ebf0e31b5c9b618a1590a33881305d0f948e0d6",
+    "additional_attempt_limit": 3,
+    "historical_attempts_not_reused": true,
+    "attempt_budget_committed": 1,
+    "actual_wrapper_invocations_confirmed": 0,
+    "remaining_unreserved_attempts": 2,
+    "native_timeout_seconds_per_attempt": 140,
+    "reviewed_steps": 32,
+    "provider_attempts_allowed": 0,
+    "account_access": false,
+    "microphone_access": false,
+    "audio_access": false,
+    "tts_helper": false,
+    "automatic_blind_retry": false,
+    "sequential_only": true,
+    "stop_on_success_new_refusal_or_scope_change": true,
+    "display_allocation_active": true,
+    "attempts": [
+      {
+        "number": 1,
+        "status": "dispatched_outcome_pending_conservatively_reserved",
+        "allocation_id": "lc-bounded-display-20261008-01",
+        "allocation_sha256": "d3f67d96e5654660ec4951f5a2027278b7d41f0fb1a59624349d15aa0c2007a6",
+        "allocation_record": "docs/verification/lead/live-windows/approved-two-gates/bounded-retest-20261008/attempt-01-allocation.json",
+        "valid_from_utc": "2026-10-08T22:49:48Z",
+        "valid_until_utc": "2026-10-08T23:19:48Z",
+        "baseline": "0c4c41748d53c330b8f52f5a3a8f6b32568a0efb",
+        "candidate_sha256": "03344f776afb4ff2110e7450b8c48d86fd0b9d7b394e5473e3ccd7959770cde9",
+        "runner_sha256": "301b5053e758938df97059fa52a60715d6ed7d9423a7e44de5e30df681c59dfa",
+        "wrapper_sha256": "aad5e81b76e8b329b3c95c6b7ee31359443f6a47ede55312af2ff751fa416816",
+        "wrapper_invoked": null,
+        "display_released": false,
+        "dispatch_message": "handoff_c288b88e43f46451b28c7887361aaf54",
+        "dispatch_accepted": true,
+        "execution_started_at_dispatch": false
+      }
+    ],
+    "next_owner_action": "Current QA one exact native run; return actual outcome and explicit display release. Then Lead accounts results before any next allocation."
   }
 }
