@@ -258,7 +258,7 @@
     "additional_attempt_limit": 3,
     "historical_attempts_not_reused": true,
     "attempt_budget_committed": 1,
-    "actual_wrapper_invocations_confirmed": 0,
+    "actual_wrapper_invocations_confirmed": 1,
     "remaining_unreserved_attempts": 2,
     "native_timeout_seconds_per_attempt": 140,
     "reviewed_steps": 32,
@@ -270,11 +270,11 @@
     "automatic_blind_retry": false,
     "sequential_only": true,
     "stop_on_success_new_refusal_or_scope_change": true,
-    "display_allocation_active": true,
+    "display_allocation_active": false,
     "attempts": [
       {
         "number": 1,
-        "status": "dispatched_outcome_pending_conservatively_reserved",
+        "status": "failed_before_product_launch_display_released",
         "allocation_id": "lc-bounded-display-20261008-01",
         "allocation_sha256": "d3f67d96e5654660ec4951f5a2027278b7d41f0fb1a59624349d15aa0c2007a6",
         "allocation_record": "docs/verification/lead/live-windows/approved-two-gates/bounded-retest-20261008/attempt-01-allocation.json",
@@ -284,13 +284,27 @@
         "candidate_sha256": "03344f776afb4ff2110e7450b8c48d86fd0b9d7b394e5473e3ccd7959770cde9",
         "runner_sha256": "301b5053e758938df97059fa52a60715d6ed7d9423a7e44de5e30df681c59dfa",
         "wrapper_sha256": "aad5e81b76e8b329b3c95c6b7ee31359443f6a47ede55312af2ff751fa416816",
-        "wrapper_invoked": null,
-        "display_released": false,
+        "wrapper_invoked": true,
+        "display_released": true,
         "dispatch_message": "handoff_c288b88e43f46451b28c7887361aaf54",
         "dispatch_accepted": true,
-        "execution_started_at_dispatch": false
+        "execution_started_at_dispatch": false,
+        "native_attempts": 1,
+        "display_release_utc": "2026-10-08T22:53:43Z",
+        "result_message": "handoff_d15c356ef2f7386a3b92d3a7dc4b8e7d",
+        "result_record": "docs/verification/lead/live-windows/approved-two-gates/bounded-retest-20261008/attempt-01-result.json",
+        "reported_start_utc": "2026-10-08T22:50:51Z",
+        "reported_end_utc": "2026-10-08T22:51:48Z",
+        "steps_passed": [
+          1,
+          2,
+          3,
+          4,
+          5
+        ],
+        "failed_step": 6
       }
     ],
-    "next_owner_action": "Current QA one exact native run; return actual outcome and explicit display release. Then Lead accounts results before any next allocation."
+    "next_owner_action": "QA preserves attempt-01 report and repairs the step-6 arithmetic failure; Support independently reviews exact delta. Lead integrates before any fresh attempt-02 allocation; 2 attempts remain."
   }
 }

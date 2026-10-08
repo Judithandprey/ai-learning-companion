@@ -109,13 +109,16 @@ same-scope code/hash changes within this budget. Each attempt stays140seconds /
 zero account/provider/microphone/audio/TTS, exact-owned cleanup, process-only
 RemoteSigned. Stop on success,3consumed,new real security denial or scope change.
 Lead rechecked final pins, clean QA worktree and77-file stage/runtime identity.
-Attempt1 was actually dispatched to current QA as
-`handoff_c288b88e43f46451b28c7887361aaf54`; accepted, actual outcome pending.
-One slot reserved,2unreserved; the one canonical counter is request-budget.json.
-QA returns outcome/cleanup/release; Lead then integrates or coordinates only
-necessary same-owner repair + Support review before any next sequential slot.
+Attempt1 actually ran once22:50:51–22:51:48 UTC: steps1–5 passed, including
+correct owned generated-page binding/raise/fullscreen. Step6 failed before product
+launch with a PowerShell `op_Multiply` array error; steps7–32 NOT_RUN. Exact-owned
+cleanup and DISPLAY RELEASE are confirmed in `handoff_d15c356ef2f7386a3b92d3a7dc4b8e7d`.
+One attempt consumed,2remain; the canonical counter is request-budget.json.
+QA received concrete same-path arithmetic repair `handoff_c880e9e3b0cc794cbccd89b0609f6a60`;
+Support reviews the exact correction, then Lead integrates before a fresh sequential
+allocation. No product or live/audio acceptance follows from these harness steps.
 Keep normal-band/foreground/16-point/display guards and exact-owned cleanup;
-no largest-window-only trust, foreign mutation or new native allocation. Actual
+no largest-window-only trust, foreign mutation or allocation before the reviewed correction. Actual
 popup content is unknown; the product and complete live/audio gates remain untested.
 Automation `ai` and Paperclip remain paused; quota-resumer behavior is unchanged.
 

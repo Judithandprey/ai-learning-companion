@@ -21,7 +21,7 @@ playback/TTS helper, foreign application control, private-content capture,
 purchase, global permission/service/model changes. Process/child-only RemoteSigned
 stays limited to this command. Automation ai and Paperclip remain paused.
 
-## Attempt1 — dispatched, actual outcome pending
+## Attempt1 — consumed; failed before product launch; display released
 
 Reviewed source151f7d7 + Support3b718d8 is integrated/pushed at
 `0c4c41748d53c330b8f52f5a3a8f6b32568a0efb`. Lead rechecked15source/payload pins,
@@ -34,8 +34,20 @@ runtime identity passed; zero Windows invocation. This is not GUI acceptance.
 valid22:49:48–23:19:48 UTC, belongs only to current QA
 `sess_06a4c3cc6e214e96`. Actual native send
 `handoff_c288b88e43f46451b28c7887361aaf54` was accepted unread,
-execution_started=false. One slot is reserved,2unreserved; confirmed invocations0
-until the actual receipt. No second allocation before actual cleanup/release.
+execution_started=false. The delivery receipt was not execution proof. Actual QA then invoked the wrapper
+once22:50:51–22:51:48 UTC, exit1; native attempts1/provider attempts0.
+[Saved result](attempt-01-result.json): steps1–5 passed; step6 failed before
+product launch with PowerShell `op_Multiply`, steps7–32 NOT_RUN. Exact-owned
+Edge41212 closed without force; no product process launched, foreign applications
+unsignalled. QA explicitly released the display at22:53:43Z in
+`handoff_d15c356ef2f7386a3b92d3a7dc4b8e7d`. The live allocation is marked released;
+issued bytes above remain immutable. One attempt consumed,2remain.
+
+QA has the concrete arithmetic repair via
+`handoff_c880e9e3b0cc794cbccd89b0609f6a60`; source correction and independent
+Support review precede any new allocation. This is a harness failure, not a
+product test result. No same-slot resend or further execution is authorized to QA
+until Lead issues the next fresh allocation within this shared budget.
 
 Candidate `03344f776afb4ff2110e7450b8c48d86fd0b9d7b394e5473e3ccd7959770cde9`,
 runner `301b5053e758938df97059fa52a60715d6ed7d9423a7e44de5e30df681c59dfa`,
