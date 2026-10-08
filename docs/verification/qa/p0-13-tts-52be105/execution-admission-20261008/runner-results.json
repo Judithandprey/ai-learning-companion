@@ -1,0 +1,168 @@
+﻿{
+    "steps":  [
+                  {
+                      "i":  1,
+                      "ok":  true,
+                      "at":  "2026-10-08T17:21:28.5991011Z",
+                      "kind":  "edgeStart"
+                  },
+                  {
+                      "i":  2,
+                      "ok":  false,
+                      "at":  "2026-10-08T17:21:29.8467276Z",
+                      "kind":  "window",
+                      "window":  "edge",
+                      "show":  "raise",
+                      "before_window":  {
+                                            "handle":  "17504798",
+                                            "owner":  14104,
+                                            "bounds":  [
+                                                           670,
+                                                           88,
+                                                           1888,
+                                                           202
+                                                       ],
+                                            "visible":  true,
+                                            "foreground":  false,
+                                            "class":  "Chrome_WidgetWin_1",
+                                            "topmost":  true,
+                                            "minimized":  false,
+                                            "above_edge":  false
+                                        },
+                      "before_window_error":  "owned Edge must remain visible in the normal window band",
+                      "error":  "owned Edge must remain visible in the normal window band"
+                  }
+              ],
+    "values":  {
+                   "qa_display_admission_001":  {
+                                                    "phase":  "initialize",
+                                                    "at":  "2026-10-08T17:21:28.5580971Z",
+                                                    "accepted":  true,
+                                                    "native":  {
+                                                                   "count":  1,
+                                                                   "device":  "\\\\.\\DISPLAY1",
+                                                                   "monitor_handle":  "65537",
+                                                                   "primary":  true,
+                                                                   "monitor_bounds":  [
+                                                                                          0,
+                                                                                          0,
+                                                                                          2560,
+                                                                                          1600
+                                                                                      ],
+                                                                   "work_bounds":  [
+                                                                                       0,
+                                                                                       0,
+                                                                                       2560,
+                                                                                       1504
+                                                                                   ],
+                                                                   "dpi":  192
+                                                               }
+                                                },
+                   "qa_display_admission_002":  {
+                                                    "phase":  "before_browser_launch",
+                                                    "at":  "2026-10-08T17:21:28.6135629Z",
+                                                    "accepted":  true,
+                                                    "native":  {
+                                                                   "count":  1,
+                                                                   "device":  "\\\\.\\DISPLAY1",
+                                                                   "monitor_handle":  "65537",
+                                                                   "primary":  true,
+                                                                   "monitor_bounds":  [
+                                                                                          0,
+                                                                                          0,
+                                                                                          2560,
+                                                                                          1600
+                                                                                      ],
+                                                                   "work_bounds":  [
+                                                                                       0,
+                                                                                       0,
+                                                                                       2560,
+                                                                                       1504
+                                                                                   ],
+                                                                   "dpi":  192
+                                                               }
+                                                },
+                   "qa_display_admission_003":  {
+                                                    "phase":  "before_edge_raise",
+                                                    "at":  "2026-10-08T17:21:31.4771932Z",
+                                                    "accepted":  true,
+                                                    "native":  {
+                                                                   "count":  1,
+                                                                   "device":  "\\\\.\\DISPLAY1",
+                                                                   "monitor_handle":  "65537",
+                                                                   "primary":  true,
+                                                                   "monitor_bounds":  [
+                                                                                          0,
+                                                                                          0,
+                                                                                          2560,
+                                                                                          1600
+                                                                                      ],
+                                                                   "work_bounds":  [
+                                                                                       0,
+                                                                                       0,
+                                                                                       2560,
+                                                                                       1504
+                                                                                   ],
+                                                                   "dpi":  192
+                                                               }
+                                                }
+               },
+    "errors":  [
+                   "step 2: owned Edge must remain visible in the normal window band"
+               ],
+    "processes":  {
+                      "edge":  {
+                                   "pid":  14104
+                               }
+                  },
+    "foreign":  {
+                    "start":  {
+                                  "relevant":  [
+
+                                               ],
+                                  "other_owner":  [
+                                                      100568,
+                                                      102880,
+                                                      102032,
+                                                      107764
+                                                  ],
+                                  "this_run":  0
+                              },
+                    "end":  {
+                                "relevant":  [
+
+                                             ],
+                                "other_owner":  [
+                                                    100568,
+                                                    102880,
+                                                    102032,
+                                                    107764
+                                                ],
+                                "this_run":  0
+                            }
+                },
+    "cursor":  {
+                   "start":  [
+                                 1476,
+                                 1322
+                             ],
+                   "end":  [
+                               1476,
+                               1322
+                           ]
+               },
+    "admission":  {
+                      "relevant_electron":  [
+
+                                            ],
+                      "other_owner_electron":  4,
+                      "port_owners":  [
+
+                                      ],
+                      "rechecked":  false
+                  },
+    "aborted":  "owned Edge must remain visible in the normal window band",
+    "wsl_seen":  [
+
+                 ]
+}

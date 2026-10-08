@@ -1,0 +1,49 @@
+{
+  "kind": "qa-tts-display-diagnostic-result/1",
+  "allocation_id": "lc-tts-admission-20261008-01",
+  "allocation_sha256": "b8df4c881c5cb9d1c6930f5d908853b9b503714abc0cb47db11ab40ccc20dfc7",
+  "source_commit": "1aea6b24aac6517a09b014408cc9db6bc3bb1625",
+  "wrapper_sha256": "84009e821d3495c153a1ff04e042f8027070c9dac0b8ac5e91cd239051dfd941",
+  "candidate_sha256": "c083ad0eb5540632e9a2d5acf57bd5a09e5b5f82869fe05345c325ef263e34e6",
+  "runner_sha256": "6728ec6cf8a5a2030059f8b31bddaa2b7d059f757730698ef38d5a2fad6c1c28",
+  "invoked_utc": "2026-10-08T17:21:11.769Z",
+  "ended_utc": "2026-10-08T17:21:45.789Z",
+  "exit_code": 1,
+  "native_attempts": 1,
+  "provider_attempts": 0,
+  "admission": {
+    "wrapper": "passed",
+    "runner_relevant_electron": 0,
+    "runner_port_owners": 0,
+    "other_owner_electron_pids": [
+      100568,
+      102880,
+      102032,
+      107764
+    ]
+  },
+  "steps": {
+    "passed": [
+      "1 edgeStart"
+    ],
+    "failed": "2 window edge raise: owned Edge must remain visible in the normal window band",
+    "not_run": "3..32"
+  },
+  "product_launched": false,
+  "cleanup": {
+    "edge": "confirmed (owned 14104 closed)",
+    "electron": "confirmed (none of this run)",
+    "foreign_signalled": 0
+  },
+  "display_release": {
+    "message": "handoff_de51af8fcae9104bf6e9f40332df7787",
+    "at_utc_approx": "2026-10-08T17:22Z"
+  },
+  "files": {
+    "run.json": "3fcb00c50dc108042767a3d769b437362a53701a06b8ed4555f1c488f1b61c9a",
+    "runner-results.json": "6255d97aca74378a5b472a3d786a4e9ff1ea3905cdb536df0fee40f475be08a1",
+    "runner.stdout.bin": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "runner.stderr.bin": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "README.md": "8d8ee858578d0eb01504ec0a280ddb2e080a709886507ebf083ca51086ee943b"
+  }
+}
