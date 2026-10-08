@@ -11,9 +11,9 @@ from pathlib import Path
 import re
 import subprocess
 
-REVISION = '78d6de0f1e1b92113d0829a1f88be6fb84ae96f8'
+REVISION = '1aea6b24aac6517a09b014408cc9db6bc3bb1625'
 RUNNER = 'docs/verification/qa/p0-13-tts-52be105/candidate-admission-20261008/runner.ps1'
-RUNNER_HASH = '986077ec88ef8c4d3e626edbb4397e5bd1d56a587bebb5038d8e41c5ab12fad6'
+RUNNER_HASH = '6728ec6cf8a5a2030059f8b31bddaa2b7d059f757730698ef38d5a2fad6c1c28'
 HARNESS = r"""
 $ErrorActionPreference='Stop'; $ProgressPreference='SilentlyContinue'
 [Console]::OutputEncoding=New-Object System.Text.UTF8Encoding

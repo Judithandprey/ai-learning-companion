@@ -1,0 +1,14 @@
+[
+  {
+    "name": "wrapper",
+    "command": "LC_QA_TTS_STATIC_RECEIPT='/tmp/support-admission-1aea6b2-vkonb0qe/docs/verification/qa/p0-13-tts-52be105/stage-identity.json' '/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node' --permission --allow-fs-read='/tmp/support-admission-1aea6b2-vkonb0qe' --allow-fs-read='/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-tts-output-*' tests/e2e/windows/test_qa_run_tts_candidate.mjs",
+    "cwd": "/tmp/support-admission-1aea6b2-vkonb0qe",
+    "exit_code": 0
+  },
+  {
+    "name": "generator",
+    "command": "LC_QA_TTS_STATIC_RECEIPT='/tmp/support-admission-1aea6b2-vkonb0qe/docs/verification/qa/p0-13-tts-52be105/stage-identity.json' '/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node' --permission --allow-fs-read='/tmp/support-admission-1aea6b2-vkonb0qe' --allow-fs-read='/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-tts-output-*' tests/e2e/windows/test_qa_tts_output_candidate.mjs",
+    "cwd": "/tmp/support-admission-1aea6b2-vkonb0qe",
+    "exit_code": 0
+  }
+]

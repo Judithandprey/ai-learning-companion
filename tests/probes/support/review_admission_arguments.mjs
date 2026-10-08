@@ -7,8 +7,12 @@ import { pathToFileURL } from 'node:url';
 
 const root = resolve(process.argv[2]);
 const wrapper = join(root, 'tests/e2e/windows/qa_run_tts_candidate.mjs');
-assert.equal(createHash('sha256').update(readFileSync(wrapper)).digest('hex'),
-  '9f3bc94052246981b9f554823400df4882acdc0906f34b916e7036b952ff7e3f');
+const revisionByHash = {
+  '9f3bc94052246981b9f554823400df4882acdc0906f34b916e7036b952ff7e3f': '78d6de0f1e1b92113d0829a1f88be6fb84ae96f8',
+  '84009e821d3495c153a1ff04e042f8027070c9dac0b8ac5e91cd239051dfd941': '1aea6b24aac6517a09b014408cc9db6bc3bb1625',
+};
+const revision = revisionByHash[createHash('sha256').update(readFileSync(wrapper)).digest('hex')];
+assert.ok(revision, 'only the two exact reviewed wrappers are accepted');
 const { ttsAdmissionScope, ttsLaunchRelevance } = await import(pathToFileURL(wrapper));
 const candidate = JSON.parse(readFileSync(join(root,
   'docs/verification/qa/p0-13-tts-52be105/candidate-admission-20261008/candidate.json')));
@@ -25,7 +29,7 @@ const results = cases.map(([name, command_line, expectedRelevant]) => {
   return { name, synthetic_command: command_line, expected_relevant: expectedRelevant,
     actual_reason: reason, matches_required_boundary: (reason !== null) === expectedRelevant };
 });
-console.log(JSON.stringify({ candidate: '78d6de0f1e1b92113d0829a1f88be6fb84ae96f8',
+console.log(JSON.stringify({ candidate: revision,
   native_executions: 0, interpretation: 'An option value does not establish an unambiguous absolute application identity.',
   results }, null, 2));
 process.exitCode = results.every(r => r.matches_required_boundary) ? 0 : 1;

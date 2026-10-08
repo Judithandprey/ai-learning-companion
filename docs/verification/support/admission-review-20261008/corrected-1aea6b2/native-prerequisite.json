@@ -1,0 +1,96 @@
+{
+  "revision": "1aea6b24aac6517a09b014408cc9db6bc3bb1625",
+  "runner_sha256": "6728ec6cf8a5a2030059f8b31bddaa2b7d059f757730698ef38d5a2fad6c1c28",
+  "argv_class_sha256": "61e10ba7bd7d49b9e360ead7a7120bfe1fb7de9c092fdb07a4f9acfb11fd9a20",
+  "harness_sha256": "a02ec8f77a44e8a9610bea41a3559b5f0c46a602344dcb436dd3c86d55ea0a33",
+  "started_utc": "2026-10-08T17:09:39.692429+00:00",
+  "native_invocations": 1,
+  "native_exit_code": 0,
+  "result": {
+    "runner_executed": false,
+    "admission_invoked": false,
+    "process_queries": 0,
+    "display_access": false,
+    "application_launches": 0,
+    "signals": 0,
+    "phase": "synthetic_literal_argv",
+    "completed": true,
+    "parse_errors": [],
+    "argv_class_compiled": true,
+    "cases": [
+      {
+        "name": "single_program",
+        "passed": true,
+        "actual": [
+          "e.exe"
+        ]
+      },
+      {
+        "name": "quoted_paths",
+        "passed": true,
+        "actual": [
+          "C:\\a b\\e.exe",
+          "C:\\s t",
+          "--x=1",
+          "--y"
+        ]
+      },
+      {
+        "name": "plain_path",
+        "passed": true,
+        "actual": [
+          "e.exe",
+          "C:\\d\\f.js",
+          "--p=1"
+        ]
+      },
+      {
+        "name": "trailing_backslash",
+        "passed": true,
+        "actual": [
+          "e.exe",
+          "C:\\d\\",
+          "a"
+        ]
+      },
+      {
+        "name": "program_backslashes",
+        "passed": true,
+        "actual": [
+          "C:\\d\\\\",
+          "a"
+        ]
+      },
+      {
+        "name": "doubled_quote",
+        "passed": true,
+        "actual": [
+          "e.exe",
+          "S\" --p=1 --q"
+        ]
+      },
+      {
+        "name": "escaped_empty",
+        "passed": true,
+        "actual": [
+          "e.exe",
+          "a\"b",
+          "",
+          "c"
+        ]
+      },
+      {
+        "name": "ambiguous_option_tokens",
+        "passed": true,
+        "actual": [
+          "e.exe",
+          "--user-data-dir",
+          "C:\\Other\\Profile",
+          "."
+        ]
+      }
+    ]
+  },
+  "stderr_bytes": 0,
+  "completed_utc": "2026-10-08T17:09:40.381742+00:00"
+}

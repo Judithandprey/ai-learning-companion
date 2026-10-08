@@ -1,5 +1,8 @@
 # Exact admission review — 2026-10-08
 
+Follow-up: [the corrected `1aea6b2` delta is approved](corrected-1aea6b2/README.md).
+The original HOLD and its evidence below remain the record for `78d6de0` only.
+
 **HOLD on `78d6de0f1e1b92113d0829a1f88be6fb84ae96f8`: an option value can be
 mistaken for an absolute application operand in both admission predicates.**
 QA owns the correction. This is a source review, not approval to run the diagnostic.

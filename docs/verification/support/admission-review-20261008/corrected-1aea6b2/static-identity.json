@@ -1,0 +1,51 @@
+{
+  "revision": "1aea6b24aac6517a09b014408cc9db6bc3bb1625",
+  "comparison": "78d6de0f1e1b92113d0829a1f88be6fb84ae96f8",
+  "candidate_sha256": "c083ad0eb5540632e9a2d5acf57bd5a09e5b5f82869fe05345c325ef263e34e6",
+  "wrapper_sha256": "84009e821d3495c153a1ff04e042f8027070c9dac0b8ac5e91cd239051dfd941",
+  "payload_sha256": {
+    "runner.ps1": "6728ec6cf8a5a2030059f8b31bddaa2b7d059f757730698ef38d5a2fad6c1c28",
+    "steps.json": "c7b8f5ed842856de42e0ddd25ac8e534f57eafb40a64e3ca2af0e1ffbef7baa3",
+    "surface.html": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2"
+  },
+  "payload_pins_match": true,
+  "source_pins_match": {
+    "qa_tts_output_candidate.mjs": true,
+    "qa_tts_stage_check.py": true,
+    "qa_live_stage_check.py": true,
+    "qa_visible_candidate.mjs": true,
+    "qa_edge_placement.ps1": true,
+    "qa_display_admission.ps1": true,
+    "qa-electron-runner.ps1": true,
+    "signin_cleanup.mjs": true,
+    "qa_visible_drag.mjs": true,
+    "surface.html": true
+  },
+  "unchanged_helpers": {
+    "signin_cleanup.mjs": true,
+    "qa_visible_candidate.mjs": true,
+    "qa_display_admission.ps1": true,
+    "qa_edge_placement.ps1": true,
+    "qa-electron-runner.ps1": true,
+    "qa_visible_drag.mjs": true,
+    "surface.html": true
+  },
+  "unchanged_steps_and_surface": {
+    "steps.json": true,
+    "surface.html": true
+  },
+  "unchanged_launch_fields": {
+    "work": true,
+    "stage": true,
+    "stage_payload_files": true,
+    "stage_tree_sha256": true,
+    "production_commit": true,
+    "appPort": true,
+    "edgePort": true,
+    "profile": true,
+    "edgeArgs": true,
+    "proposed_native_invocation": true
+  },
+  "scratch_exists_linux_file_inspection": false,
+  "stage_not_reinspected": true
+}
