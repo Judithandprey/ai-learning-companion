@@ -1,0 +1,42 @@
+{
+  "revision": "b9ce4cc56c375909befea38d410bc9e233ebc953",
+  "comparison": "03ecfa2",
+  "candidate_sha256": "d8d87df4c9cc9b32782e634dab963f83ace4960221db19508b4c877c9059f3f8",
+  "wrapper_sha256": "5b537bbe2407fa7413c790d022226cfe1bbb2480a58e386a2fcf8ceed2b90bda",
+  "payload_sha256": {
+    "runner.ps1": "f739487b513cc4f749ac4cc95cfa0a64ba58e23670d9fdc4d14753df4ae3e44f",
+    "steps.json": "22654c440365cb6ad2fd2aafe47e0d767d705cd07beea8436f2acff4005ac06a",
+    "surface.html": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2"
+  },
+  "source_pin_matches": {
+    "qa_tts_output_candidate.mjs": true,
+    "qa_tts_stage_check.py": true,
+    "qa_live_stage_check.py": true,
+    "qa_visible_candidate.mjs": true,
+    "qa_edge_placement.ps1": true,
+    "qa_display_admission.ps1": true,
+    "qa-electron-runner.ps1": true,
+    "signin_cleanup.mjs": true,
+    "qa_visible_drag.mjs": true,
+    "surface.html": true
+  },
+  "unchanged_helpers": {
+    "signin_cleanup.mjs": true,
+    "qa_display_admission.ps1": true,
+    "qa_edge_placement.ps1": true,
+    "qa_visible_candidate.mjs": true,
+    "qa-electron-runner.ps1": true
+  },
+  "steps_count": 32,
+  "steps_equal_after_initial_path_normalization": true,
+  "unchanged_production_stage": {
+    "production_commit": true,
+    "stage": true,
+    "stage_payload_files": true,
+    "stage_tree_sha256": true,
+    "app_entry": true
+  },
+  "scratch": "/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-tts-output-c28000baefb243218ba3e7287182da30",
+  "scratch_exists_linux_read_only": false,
+  "stage_not_reinspected": true
+}
