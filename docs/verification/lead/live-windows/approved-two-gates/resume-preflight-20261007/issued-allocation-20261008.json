@@ -1,0 +1,63 @@
+{
+  "schema": "qa-tts-display-allocation/1",
+  "state": "active",
+  "lead_reviewed": true,
+  "allocation_id": "lc-tts-admission-20261008-01",
+  "mode": "AI_DISABLED_GENERATED_SURFACE_ONLY",
+  "exclusive_display": true,
+  "account_access": false,
+  "audio_access": false,
+  "microphone_access": false,
+  "provider_attempts": 0,
+  "max_native_attempts": 1,
+  "retry": false,
+  "cleanup_only_after_expiry": true,
+  "updated_command_approval_ref": "resume-preflight-20261007:56d856359741413c8968edaa9ca6d5fd",
+  "specific_tool_decision_ref": "lead-scoped-human-decision-20261008:d804efce8242419e9b18942980d95f04",
+  "owner_session": "sess_06a4c3cc6e214e96",
+  "integration_baseline": "e74cdfc8c97363eea03b769020563dcaffa91584",
+  "wrapper_sha256": "84009e821d3495c153a1ff04e042f8027070c9dac0b8ac5e91cd239051dfd941",
+  "candidate_sha256": "c083ad0eb5540632e9a2d5acf57bd5a09e5b5f82869fe05345c325ef263e34e6",
+  "payload_sha256": {
+    "runner.ps1": "6728ec6cf8a5a2030059f8b31bddaa2b7d059f757730698ef38d5a2fad6c1c28",
+    "steps.json": "c7b8f5ed842856de42e0ddd25ac8e534f57eafb40a64e3ca2af0e1ffbef7baa3",
+    "surface.html": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2"
+  },
+  "native_invocation": {
+    "executable": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "arguments": [
+      "-NoProfile",
+      "-NonInteractive",
+      "-ExecutionPolicy",
+      "RemoteSigned",
+      "-File",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-tts-output-afad96151bad482f8f4883656cb58e5f\\runner.ps1",
+      "-Electron",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-electron-44.5.1-win32-x64\\electron.exe",
+      "-Stage",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-windows-tts-52be105",
+      "-UserData",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-tts-output-afad96151bad482f8f4883656cb58e5f\\userdata",
+      "-StepsFile",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-tts-output-afad96151bad482f8f4883656cb58e5f\\steps.json",
+      "-OutDir",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-tts-output-afad96151bad482f8f4883656cb58e5f\\out",
+      "-Edge",
+      "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+      "-AppTemp",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-tts-output-afad96151bad482f8f4883656cb58e5f\\apptemp"
+    ]
+  },
+  "launch_identity": {
+    "source": "52be105a148a28e677f83cc4b7077665f2ff372c",
+    "stage": "/mnt/c/Users/ROG/AppData/Local/Temp/lc-windows-tts-52be105",
+    "tree": "531943a83d3572ca9c686c7d8cd62bd88da5b0401b84050487722b8e87a02669",
+    "work": "/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-tts-output-afad96151bad482f8f4883656cb58e5f",
+    "electron": "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-electron-44.5.1-win32-x64\\electron.exe",
+    "edge": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+    "appPort": 43123,
+    "edgePort": 45123
+  },
+  "valid_from_utc": "2026-10-08T17:20:03Z",
+  "valid_until_utc": "2026-10-08T17:50:03Z"
+}

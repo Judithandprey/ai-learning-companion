@@ -173,3 +173,20 @@ Next: Lead supplies current QA one new exclusive display allocation with separat
 hash, the reviewed140-second/32-step scope, no account/AI/audio/mic/TTS and no retry.
 Native behavior remains NOT_RUN until actual delivery; cleanup and explicit
 DISPLAY RELEASE are required. Earlier consumed attempts remain unchanged.
+
+
+## Fresh single diagnostic allocation
+
+Reviewed/tested integration `e74cdfc8c97363eea03b769020563dcaffa91584` was ordinarily
+pushed to origin/main. Lead issued [this immutable allocation](issued-allocation-20261008.json)
+for current QA `sess_06a4c3cc6e214e96`, valid17:20:03–17:50:03 UTC on2026-10-08,
+SHA256 `b8df4c881c5cb9d1c6930f5d908853b9b503714abc0cb47db11ab40ccc20dfc7`.
+Its new scratch and evidence path were absent. No other Lead display allocation
+is active. Execution-time native admission still checks actual conflicts.
+
+Actual native dispatch `handoff_8e274b900077536738e52f7472eedd28` was accepted
+unread, execution_started=false. It supplies the exact `--execute` entry,140-second
+bound/32 unchanged steps, process/child-only RemoteSigned, no account/AI/audio/
+microphone/TTS, and requires exact-owned cleanup plus explicit DISPLAY RELEASE.
+Accepted dispatch alone is not execution or pass. Outcome will be recorded below;
+no automatic retry or old allocation reuse is authorized.

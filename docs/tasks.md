@@ -83,8 +83,9 @@ isolated argv class with 8/8 synthetic cases; no display/product run.
 Resulting main `4280597` passed 54 wrapper and 23 generator checks, with all21
 source/test/log/payload hashes matching final QA source and unused scratch absent.
 [Integrated checks and review](verification/lead/live-windows/approved-two-gates/resume-preflight-20261007/README.md#reviewed-integration).
-Lead now issues the one fresh scoped allocation to current QA; native32-step
-result remains NOT_RUN. Both admission layers are fixed; full enumeration,
+Lead issued the one fresh scoped allocation to current QA, accepted as
+`handoff_8e274b900077536738e52f7472eedd28` (17:20:03–17:50:03 UTC); native32-step
+result remains NOT_RUN until the actual delivery. Both admission layers are fixed; full enumeration,
 exact-owned cleanup, listener and generated-surface protections remain.
 No account/audio/provider authorization is part of this diagnostic.
 Automation `ai` and Paperclip remain paused; quota-resumer behavior is unchanged.

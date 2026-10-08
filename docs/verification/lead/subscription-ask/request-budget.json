@@ -168,7 +168,7 @@
     "specific_refusal_human_decision": "lead-scoped-human-decision-20261008:d804efce8242419e9b18942980d95f04",
     "approval_record": "docs/verification/lead/live-windows/approved-two-gates/resume-preflight-20261007/human-approval-20261008.json",
     "owner": "QA sess_06a4c3cc6e214e96",
-    "status": "reviewed_integrated_ready_for_fresh_allocation",
+    "status": "fresh_display_allocation_dispatched_awaiting_actual_execution",
     "operator_reported_run": "run_5c2ad98ebfa540fa",
     "production_commit": "52be105a148a28e677f83cc4b7077665f2ff372c",
     "max_native_attempts": 1,
@@ -177,9 +177,9 @@
     "model_attempts_allowed": 0,
     "account_allocation_active": false,
     "audio_allocation_active": false,
-    "display_allocation_active": false,
+    "display_allocation_active": true,
     "actual_attempts": [],
-    "next_owner_action": "Lead fresh exact display allocation -> current QA one bounded diagnostic -> actual result and explicit release; no retry.",
+    "next_owner_action": "Current QA executes the exact approved diagnostic once, then exact-owned cleanup and explicit DISPLAY RELEASE.",
     "repair_commits": [
       "b79d195b77df530b72df943f95188b418af217ba",
       "78d6de0f1e1b92113d0829a1f88be6fb84ae96f8",
@@ -190,6 +190,13 @@
     "candidate_sha256": "c083ad0eb5540632e9a2d5acf57bd5a09e5b5f82869fe05345c325ef263e34e6",
     "integrated_commit": "4280597",
     "independent_approval_commit": "4cbb6b5e51bfccfb86a40696ac6b661fa71b1b89",
-    "independent_approval_message": "handoff_75d24cbd3706a3ee24a468dc6286c414"
+    "independent_approval_message": "handoff_75d24cbd3706a3ee24a468dc6286c414",
+    "allocation_id": "lc-tts-admission-20261008-01",
+    "allocation_sha256": "b8df4c881c5cb9d1c6930f5d908853b9b503714abc0cb47db11ab40ccc20dfc7",
+    "allocation_record": "docs/verification/lead/live-windows/approved-two-gates/resume-preflight-20261007/issued-allocation-20261008.json",
+    "integration_baseline": "e74cdfc8c97363eea03b769020563dcaffa91584",
+    "dispatch_message": "handoff_8e274b900077536738e52f7472eedd28",
+    "dispatch_accepted": true,
+    "execution_started_at_dispatch": false
   }
 }
