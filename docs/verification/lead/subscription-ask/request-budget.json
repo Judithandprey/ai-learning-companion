@@ -197,7 +197,7 @@
         "foreign_signals": 0
       }
     ],
-    "next_owner_action": "QA source/offline HWND repair handoff_fa627da3c2310dd4eca1ccf6676186a6 -> Support independent review -> Lead integration; no further native allocation.",
+    "next_owner_action": "QA actual generator/test/candidate repair in progress -> exact commit to Support -> Lead integration; no further native allocation.",
     "repair_commits": [
       "b79d195b77df530b72df943f95188b418af217ba",
       "78d6de0f1e1b92113d0829a1f88be6fb84ae96f8",
@@ -220,6 +220,10 @@
     "display_released_at": "2026-10-08T17:22Z",
     "result_commit": "89a077d99985b3e8a073afee5e58da9fd94ce862",
     "result_integrated": "a716ae5",
-    "result_message": "handoff_03a45aa99ce1a8644e61b87ca362cb87"
+    "result_message": "handoff_03a45aa99ce1a8644e61b87ca362cb87",
+    "window_diagnosis_commit": "6c7302bd255f72a8221d6df32744ce80d7a2013c",
+    "window_diagnosis_integrated": "c3c5dc0",
+    "window_diagnosis_message": "handoff_fd60b1eea1c3643b78fac0c24da99b5e",
+    "window_repair_evidence_update": "handoff_251a58bf1585820923e17cf342546e3d"
   }
 }

@@ -223,3 +223,18 @@ Support received bounded source/saved-result diagnosis
 ambiguity rejection and all normal-band, display, point and cleanup guards.
 Author repair → Support exact-delta review → Lead integration is the next action;
 no duplicate general campaign or idle-role tasks.
+
+
+### Source diagnosis adopted
+
+Support delivered `6c7302bd255f72a8221d6df32744ce80d7a2013c` as
+`handoff_fd60b1eea1c3643b78fac0c24da99b5e`, integrated `c3c5dc0`.
+[Source diagnosis](../../../../support/edge-window-identity-20261008/README.md)
+confirms that first visible HWND and first CDP page are selected separately, with
+no generated-page identity binding; cached target navigation is not revalidated.
+Its six literal-data source replays describe defective selection behavior, not
+native repair passes. Lead verified saved raw-evidence and both source hashes;
+no replay or Windows call was repeated. Findings went to the already active QA
+repair as `handoff_251a58bf1585820923e17cf342546e3d`. Actual QA generator/test/new
+candidate work is present; delivery and Support exact-delta review remain pending.
+No allocation is active and the consumed run stays unchanged.
