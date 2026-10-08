@@ -8,9 +8,9 @@ from pathlib import Path
 import re
 import subprocess
 
-REVISION = 'b9ce4cc56c375909befea38d410bc9e233ebc953'
-RUNNER = 'docs/verification/qa/p0-13-tts-52be105/candidate-edge-identity-20261008/runner.ps1'
-RUNNER_HASH = 'f739487b513cc4f749ac4cc95cfa0a64ba58e23670d9fdc4d14753df4ae3e44f'
+REVISION = '151f7d741e2b88912a94f0b24473594e236d0076'
+RUNNER = 'docs/verification/qa/p0-13-tts-52be105/candidate-edge-identity-r2-20261008/runner.ps1'
+RUNNER_HASH = '301b5053e758938df97059fa52a60715d6ed7d9423a7e44de5e30df681c59dfa'
 HARNESS = r"""
 $ErrorActionPreference='Stop'; $ProgressPreference='SilentlyContinue'
 [Console]::OutputEncoding=New-Object System.Text.UTF8Encoding

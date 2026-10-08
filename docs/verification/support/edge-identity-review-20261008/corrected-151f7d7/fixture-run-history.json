@@ -1,0 +1,17 @@
+[
+  {
+    "attempt": 1,
+    "exit_code": 1,
+    "classification": "Support fixture extraction error, not a candidate result",
+    "error": "SyntaxError: Unexpected identifier 'found' at IntPtr found = 0",
+    "cause": "Method regex searched the whole emitted runner and selected unrelated QaWin.Find before QaEdgeSurface.Find.",
+    "correction": "Scope extraction to the pinned QaEdgeSurface class before selecting IsOwned/Caption/Find. Candidate code and failure expectations unchanged.",
+    "native_invocations": 0
+  },
+  {
+    "attempt": 2,
+    "exit_code": 0,
+    "classification": "Adapted fixture run completed; valid controls and original failure expectations retained",
+    "native_invocations": 0
+  }
+]

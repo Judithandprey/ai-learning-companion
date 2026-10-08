@@ -1,5 +1,8 @@
 # Exact Edge identity review — 2026-10-08
 
+Follow-up: [corrected `151f7d7` is approved for this bounded source review](corrected-151f7d7/README.md).
+The HOLD and original counterexamples below remain the record for `b9ce4cc`.
+
 **HOLD on `b9ce4cc56c375909befea38d410bc9e233ebc953`: three must-fixes remain.**
 The token approach addresses first-window selection, but its action path does not
 revalidate the page, unreadable captions can create false uniqueness, and a stale

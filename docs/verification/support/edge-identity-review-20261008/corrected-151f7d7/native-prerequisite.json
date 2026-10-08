@@ -1,0 +1,97 @@
+{
+  "revision": "151f7d741e2b88912a94f0b24473594e236d0076",
+  "runner_sha256": "301b5053e758938df97059fa52a60715d6ed7d9423a7e44de5e30df681c59dfa",
+  "blocks": [
+    {
+      "index": 0,
+      "name": "QaWin",
+      "sha256": "300879c63d5d78ca9c6df64a2dd9d314fdfb50faf9c97145cf28dc6b6c8caea7"
+    },
+    {
+      "index": 1,
+      "name": "QaArgv",
+      "sha256": "61e10ba7bd7d49b9e360ead7a7120bfe1fb7de9c092fdb07a4f9acfb11fd9a20"
+    },
+    {
+      "index": 2,
+      "name": "QaEdgeSurface",
+      "sha256": "bccf532ebb7afa449916d956995d610d492558ee017071f6747acf55a22db382"
+    },
+    {
+      "index": 3,
+      "name": "QaDisplayAdmissionNative",
+      "sha256": "caee186fa0835a02330c9877eb41b86b1455f98126a736054742819bddeb750e"
+    },
+    {
+      "index": 4,
+      "name": "QaPlacementNative",
+      "sha256": "d5f69ab1e91089fe2da9fbd3299311ba51242ddc32b05e5b71d40dd14792e21e"
+    }
+  ],
+  "harness_sha256": "acb2d240b092a7b8fe6625c28a2bc8071b63f93361eef7ee3ef1eb7fde25e679",
+  "started_utc": "2026-10-08T18:51:59.405337+00:00",
+  "native_invocations": 1,
+  "native_exit_code": 0,
+  "result": {
+    "runner_executed": false,
+    "emitted_methods_invoked": 0,
+    "process_queries": 0,
+    "window_calls": 0,
+    "signals": 0,
+    "phase": "compile_4",
+    "completed": true,
+    "compiled_blocks": [
+      {
+        "index": 0,
+        "types": [
+          "QaWin",
+          "QaWin+EnumProc",
+          "QaWin+Pt",
+          "QaWin+<>c__DisplayClass1"
+        ]
+      },
+      {
+        "index": 1,
+        "types": [
+          "QaArgv"
+        ]
+      },
+      {
+        "index": 2,
+        "types": [
+          "QaEdgeScan",
+          "QaEdgeSurface",
+          "QaEdgeSurface+EnumProc",
+          "QaEdgeSurface+<>c__DisplayClass2",
+          "QaEdgeSurface+<>c__DisplayClass5"
+        ]
+      },
+      {
+        "index": 3,
+        "types": [
+          "QaAdmissionMonitor",
+          "QaAdmissionDisplaySnapshot",
+          "QaAdmissionWindowSnapshot",
+          "QaDisplayAdmissionNative",
+          "QaDisplayAdmissionNative+Rect",
+          "QaDisplayAdmissionNative+MonitorInfo",
+          "QaDisplayAdmissionNative+MonitorCallback",
+          "QaDisplayAdmissionNative+<>c__DisplayClass3"
+        ]
+      },
+      {
+        "index": 4,
+        "types": [
+          "QaPlacementMetadata",
+          "QaPlacementNative",
+          "QaPlacementNative+Rect",
+          "QaPlacementNative+Point",
+          "QaPlacementNative+Info"
+        ]
+      }
+    ],
+    "parse_errors": []
+  },
+  "stderr_bytes": 0,
+  "completed_utc": "2026-10-08T18:52:00.486718+00:00"
+}
