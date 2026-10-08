@@ -256,3 +256,29 @@ state. It may perform exact parser and isolated C# compilation under normal revi
 without evaluating the runner or invoking any native process/window function.
 No display/account/audio allocation exists. Independent approval, integration and
 actual behavior remain separate pending steps; old consumed evidence is unchanged.
+
+
+### Independent HOLD and same-owner correction
+
+Support `6c7872d8dab2074e95a29d218d19a0af38fef1bc`, received as
+`handoff_eee3fd9eee87de91777db654e0052305`, integrates as `972e26e`.
+[Exact review and preserved counterexamples](../../../../support/edge-identity-review-20261008/README.md)
+hold `b9ce4cc`: R1 direct window actions lack current page/target validation;
+R2 a readable token plus an unreadable owned caption can falsely appear unique;
+R3 stale receipt HWND ownership can widen caption inspection to another process.
+These are source/fixture defects, not observed foreign-caption access or another
+native attempt. The product and retained old diagnostic are unchanged.
+
+Support ran33 focused generator checks and six boundary scenarios (four exposed
+counterexamples across R1–R3, two controls). Exact runner parsing and compilation
+of five isolated C# blocks succeeded in one prerequisite invocation; no emitted
+method was called. Lead verified the runner, embedded PowerShell harness and all
+five block hashes against the receipt, plus counterexample provenance, without
+rerunning the suite or native invocation.
+
+QA received the concrete same-task correction as
+`handoff_a05ac9a096200016381d14ded6c42c0c`: fix the actual mutation path, carry
+caption uncertainty, and preserve the authorized owner set during diagnostics;
+retain all guards/cleanup and test the combined failure cases with zero actions.
+The held candidate is not integrated or released. Next: exact QA correction →
+same Support delta review → Lead integration. No display allocation or retry.

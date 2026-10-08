@@ -197,7 +197,7 @@
         "foreign_signals": 0
       }
     ],
-    "next_owner_action": "Support reviews delivered b9ce4cc candidate identity delta and exact isolated compile prerequisite -> QA correction if needed -> Lead integration. No fresh display allocation.",
+    "next_owner_action": "QA fixes actual page/action validation, unknown-caption uniqueness and receipt ownership reuse; exact correction -> Support delta review -> Lead integration. No display allocation.",
     "repair_commits": [
       "b79d195b77df530b72df943f95188b418af217ba",
       "78d6de0f1e1b92113d0829a1f88be6fb84ae96f8",
@@ -227,6 +227,11 @@
     "window_repair_evidence_update": "handoff_251a58bf1585820923e17cf342546e3d",
     "window_repair_commit": "b9ce4cc56c375909befea38d410bc9e233ebc953",
     "window_repair_delivery": "handoff_da988764aed9cf743e67c49da46909e8",
-    "window_repair_review": "handoff_3a0d7aff9252c76ee96bbefa667d52bc"
+    "window_repair_review": "handoff_3a0d7aff9252c76ee96bbefa667d52bc",
+    "window_repair_verdict": "HOLD_R1_R2_R3",
+    "window_repair_review_commit": "6c7872d8dab2074e95a29d218d19a0af38fef1bc",
+    "window_repair_review_integrated": "972e26e",
+    "window_repair_review_result_message": "handoff_eee3fd9eee87de91777db654e0052305",
+    "window_repair_correction_dispatch": "handoff_a05ac9a096200016381d14ded6c42c0c"
   }
 }

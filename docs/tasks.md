@@ -103,8 +103,14 @@ and supplied the findings to the existing QA repair as
 unique generated CDP page/title-token/HWND binding, 33 generator/54 wrapper
 owner-reported offline checks, native0. Lead verified21 delivered hashes and
 bounded14-file scope; source is not yet integrated/accepted. Existing Support
-received exact-delta review `handoff_3a0d7aff9252c76ee96bbefa667d52bc`, including
-optional exact parser/isolated compilation only, no display/process/window action.
+completed exact-delta review `6c7872d` / `handoff_eee3fd9eee87de91777db654e0052305`,
+integrated as `972e26e`: **HOLD** on b9ce4cc. [Three required corrections](verification/support/edge-identity-review-20261008/README.md)
+are fresh page validation on the actual window-action path, refusal of mixed
+readable/unknown caption sets, and preventing diagnostic HWND reuse from widening
+caption reads to another owner. These are source/synthetic findings, not a new
+GUI incident. Exact PowerShell parsing and five isolated C# definitions compiled;
+no methods, windows, apps or capture were invoked. QA received the same-card
+correction `handoff_a05ac9a096200016381d14ded6c42c0c`; source remains unintegrated.
 No new display attempt or repeated full campaign is assigned.
 Keep normal-band/foreground/16-point/display guards and exact-owned cleanup;
 no largest-window-only trust, foreign mutation or new native allocation. Actual
