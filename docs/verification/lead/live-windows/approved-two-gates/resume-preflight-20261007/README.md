@@ -238,3 +238,21 @@ no replay or Windows call was repeated. Findings went to the already active QA
 repair as `handoff_251a58bf1585820923e17cf342546e3d`. Actual QA generator/test/new
 candidate work is present; delivery and Support exact-delta review remain pending.
 No allocation is active and the consumed run stays unchanged.
+
+
+### Exact repair delivered for independent review
+
+QA `b9ce4cc56c375909befea38d410bc9e233ebc953` arrived as
+`handoff_da988764aed9cf743e67c49da46909e8`. It adds candidate-specific unique
+surface-URL/CDP target binding and a random title token to find the owned HWND;
+normal-band/display/point checks and cleanup stay unchanged. Lead's
+[delivery checks](edge-repair-delivery.json) verify21 hashes,14-file authorized
+scope and unused scratch; no tests/native calls are repeated in this receipt check.
+Author33 generator/54 wrapper results are offline/model evidence, not native proof.
+
+Support received exact-delta review `handoff_3a0d7aff9252c76ee96bbefa667d52bc`
+on actual target/lifetime binding and no mutation on ambiguity, stale or unreadable
+state. It may perform exact parser and isolated C# compilation under normal review,
+without evaluating the runner or invoking any native process/window function.
+No display/account/audio allocation exists. Independent approval, integration and
+actual behavior remain separate pending steps; old consumed evidence is unchanged.

@@ -197,7 +197,7 @@
         "foreign_signals": 0
       }
     ],
-    "next_owner_action": "QA actual generator/test/candidate repair in progress -> exact commit to Support -> Lead integration; no further native allocation.",
+    "next_owner_action": "Support reviews delivered b9ce4cc candidate identity delta and exact isolated compile prerequisite -> QA correction if needed -> Lead integration. No fresh display allocation.",
     "repair_commits": [
       "b79d195b77df530b72df943f95188b418af217ba",
       "78d6de0f1e1b92113d0829a1f88be6fb84ae96f8",
@@ -224,6 +224,9 @@
     "window_diagnosis_commit": "6c7302bd255f72a8221d6df32744ce80d7a2013c",
     "window_diagnosis_integrated": "c3c5dc0",
     "window_diagnosis_message": "handoff_fd60b1eea1c3643b78fac0c24da99b5e",
-    "window_repair_evidence_update": "handoff_251a58bf1585820923e17cf342546e3d"
+    "window_repair_evidence_update": "handoff_251a58bf1585820923e17cf342546e3d",
+    "window_repair_commit": "b9ce4cc56c375909befea38d410bc9e233ebc953",
+    "window_repair_delivery": "handoff_da988764aed9cf743e67c49da46909e8",
+    "window_repair_review": "handoff_3a0d7aff9252c76ee96bbefa667d52bc"
   }
 }

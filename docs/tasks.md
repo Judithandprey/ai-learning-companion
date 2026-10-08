@@ -98,9 +98,14 @@ bounded source diagnosis `6c7302b` is reviewed/integrated as `c3c5dc0`:
 It confirms independent first-HWND/first-CDP-page selection lacks generated-target
 binding; exact popup content remains unknown. Lead verified evidence/source pins
 and supplied the findings to the existing QA repair as
-`handoff_251a58bf1585820923e17cf342546e3d`; actual generator/test/candidate changes
-are present in QA's worktree, not yet a delivered or accepted repair. Support
-reviews that exact future delta; no repeated source/native campaign is assigned.
+`handoff_251a58bf1585820923e17cf342546e3d`. QA actually delivered
+`b9ce4cc` in `handoff_da988764aed9cf743e67c49da46909e8`: candidate-specific
+unique generated CDP page/title-token/HWND binding, 33 generator/54 wrapper
+owner-reported offline checks, native0. Lead verified21 delivered hashes and
+bounded14-file scope; source is not yet integrated/accepted. Existing Support
+received exact-delta review `handoff_3a0d7aff9252c76ee96bbefa667d52bc`, including
+optional exact parser/isolated compilation only, no display/process/window action.
+No new display attempt or repeated full campaign is assigned.
 Keep normal-band/foreground/16-point/display guards and exact-owned cleanup;
 no largest-window-only trust, foreign mutation or new native allocation. Actual
 popup content is unknown; the product and complete live/audio gates remain untested.
