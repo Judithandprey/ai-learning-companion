@@ -135,6 +135,14 @@ audio or speech helper are enforced as before.
 by reading. The wrapper's own pre-launch parser step and the lead's or Support's Windows-side review remain the
 compile checks.
 
+## Lead counterexample (handoff_eaea203f)
+
+The lead ran the earlier exported predicate on `C:\Test\lc-windows-tts-52be105.\package.json` and the same path with a
+trailing space after the folder name; both were admitted. `b79d195` already trims each path component's trailing dots
+and spaces before comparing, in the wrapper (`namesThisRun`) and in the emitted runner (`Test-QaNamesThisRun`). Both
+forms, a dot-space mix, and the new work folder with a trailing space now refuse as `names_this_run`. Focused cases were
+added to the wrapper test, and an assertion on the emitted trim line to the generator test.
+
 ## Not shown, limits
 
 - Windows itself: what `Win32_Process` reports for each process at the time, `CommandLineToArgvW` results, and the

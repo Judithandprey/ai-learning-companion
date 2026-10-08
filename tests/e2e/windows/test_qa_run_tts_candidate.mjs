@@ -281,6 +281,8 @@ test('the candidate stage or this run\'s folder named in any form is relevant; q
     `"${OTHER_EXE}" "${STAGE}\\..\\lc-windows-tts-52be105"`,
     `"${OTHER_EXE}" --label=lc-windows-tts-52be105`, `"${OTHER_EXE}" --user-data-dir=LC-QA-~1`,   // only the '=value' split finds these
     `"${OTHER_EXE}" /app-path=lc-windows-tts-52be105`, `"${OTHER_EXE}" "${STAGE}.\\dist\\main.js"`,
+    `"${OTHER_EXE}" "C:\\Test\\lc-windows-tts-52be105 \\package.json"`, `"${OTHER_EXE}" "C:\\Test\\lc-windows-tts-52be105. .\\x"`,   // a middle component's trailing dot/space (lead counterexample)
+    `"${OTHER_EXE}" "--user-data-dir=${WORK} \\userdata"`,
   ];
   for (const f of forms) assert.equal(rel(f), 'names_this_run', f);
 });

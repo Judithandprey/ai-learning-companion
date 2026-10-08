@@ -74,6 +74,7 @@ test('the native rule is the wrapper\'s: Windows\' own argument splitter, the sa
   assert.ok(runner.includes("$k = [regex]::Replace($k, '(?<=.)\\\\{2,}', '\\')"));
   assert.ok(runner.includes("return $k.TrimEnd([char[]]@('\\', '.', ' ')).ToLowerInvariant()"));
   assert.ok(runner.includes("if ($c -match '^([^~]{6})~[0-9]+(\\.[^\\\\]*)?$') {"));
+  assert.ok(runner.includes("$d = $c.TrimEnd([char[]]@('.', ' '))"));                    // each component's trailing dot/space, as Windows ignores them
   assert.ok(runner.includes(`[regex]::IsMatch($name, '^(?:(?:.*-)?port|inspect(?:-brk|-wait)?|debug(?:-brk)?)\\z', 'IgnoreCase, CultureInvariant') -and [regex]::IsMatch($val, '(?:^|:)\\+?0*(?:${ctx.appPort}|${ctx.edgePort})\\z')`));
   assert.ok(runner.includes("if (-not [regex]::IsMatch((ConvertTo-QaPathKey $app), '^(?:[a-z]:\\\\|\\\\\\\\)')) { return 'candidate_runtime_relative_app' }"));
   assert.ok(runner.includes(`foreach ($port in @(${ctx.appPort}, ${ctx.edgePort})) {`));
