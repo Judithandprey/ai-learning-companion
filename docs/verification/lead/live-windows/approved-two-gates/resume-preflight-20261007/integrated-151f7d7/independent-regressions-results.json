@@ -1,0 +1,277 @@
+{
+  "revision": "151f7d741e2b88912a94f0b24473594e236d0076",
+  "windows_calls": 0,
+  "adaptations": [
+    "R1 passes valid nested target and page inputs with unchanged HWND/PID/token and valid control.",
+    "R2 uses actual emitted IsOwned/Caption/Find return codes and Matches/Unknown interface; old unsafe expectations remain refusal.",
+    "R3 uses fixed owned IDs and Caption before metadata; tests both unchanged and already-changed owners."
+  ],
+  "limitations": "Exported action model plus source call trace; mechanically adapted C# predicates with literal API results, not native method execution.",
+  "r1": [
+    {
+      "name": "valid_bound_page_control",
+      "actions": [
+        [
+          "raise",
+          "A"
+        ]
+      ]
+    },
+    {
+      "name": "original_navigation_counterexample",
+      "actions": [],
+      "refused": "generated surface DevTools target navigated or ended"
+    },
+    {
+      "name": "target_replaced_same_url",
+      "actions": [],
+      "refused": "generated surface DevTools target changed"
+    },
+    {
+      "name": "same_url_reload_lost_token",
+      "actions": [],
+      "refused": "generated surface page changed, navigated or lost its identity"
+    },
+    {
+      "name": "actual_target_topmost",
+      "actions": [],
+      "refused": "owned Edge must remain visible in the normal window band"
+    }
+  ],
+  "r2": [
+    {
+      "name": "empty_caption_control",
+      "result": {
+        "Matches": [
+          "A"
+        ],
+        "Unknown": []
+      },
+      "caption_reads": [
+        {
+          "operation": "length",
+          "pid": 14104
+        },
+        {
+          "operation": "text",
+          "pid": 14104
+        },
+        {
+          "operation": "length",
+          "pid": 14104
+        },
+        {
+          "operation": "length",
+          "pid": 14104
+        }
+      ],
+      "lookup_accepts": true
+    },
+    {
+      "name": "two_readable_tokens_control",
+      "result": {
+        "Matches": [
+          "A",
+          "B"
+        ],
+        "Unknown": []
+      },
+      "caption_reads": [
+        {
+          "operation": "length",
+          "pid": 14104
+        },
+        {
+          "operation": "text",
+          "pid": 14104
+        },
+        {
+          "operation": "length",
+          "pid": 14104
+        },
+        {
+          "operation": "length",
+          "pid": 14104
+        },
+        {
+          "operation": "text",
+          "pid": 14104
+        },
+        {
+          "operation": "length",
+          "pid": 14104
+        }
+      ],
+      "lookup_accepts": false
+    },
+    {
+      "name": "original_second_caption_read_failure",
+      "result": {
+        "Matches": [
+          "A"
+        ],
+        "Unknown": [
+          "B"
+        ]
+      },
+      "caption_reads": [
+        {
+          "operation": "length",
+          "pid": 14104
+        },
+        {
+          "operation": "text",
+          "pid": 14104
+        },
+        {
+          "operation": "length",
+          "pid": 14104
+        },
+        {
+          "operation": "length",
+          "pid": 14104
+        },
+        {
+          "operation": "text",
+          "pid": 14104
+        }
+      ],
+      "lookup_accepts": false
+    },
+    {
+      "name": "original_second_caption_over_limit",
+      "result": {
+        "Matches": [
+          "A"
+        ],
+        "Unknown": [
+          "B"
+        ]
+      },
+      "caption_reads": [
+        {
+          "operation": "length",
+          "pid": 14104
+        },
+        {
+          "operation": "text",
+          "pid": 14104
+        },
+        {
+          "operation": "length",
+          "pid": 14104
+        },
+        {
+          "operation": "length",
+          "pid": 14104
+        }
+      ],
+      "lookup_accepts": false
+    },
+    {
+      "name": "length_failure_is_not_empty",
+      "result": {
+        "Matches": [
+          "A"
+        ],
+        "Unknown": [
+          "B"
+        ]
+      },
+      "caption_reads": [
+        {
+          "operation": "length",
+          "pid": 14104
+        },
+        {
+          "operation": "text",
+          "pid": 14104
+        },
+        {
+          "operation": "length",
+          "pid": 14104
+        },
+        {
+          "operation": "length",
+          "pid": 14104
+        }
+      ],
+      "lookup_accepts": false
+    },
+    {
+      "name": "caption_changed_during_read",
+      "result": {
+        "Matches": [
+          "A"
+        ],
+        "Unknown": [
+          "B"
+        ]
+      },
+      "caption_reads": [
+        {
+          "operation": "length",
+          "pid": 14104
+        },
+        {
+          "operation": "text",
+          "pid": 14104
+        },
+        {
+          "operation": "length",
+          "pid": 14104
+        },
+        {
+          "operation": "length",
+          "pid": 14104
+        },
+        {
+          "operation": "text",
+          "pid": 14104
+        },
+        {
+          "operation": "length",
+          "pid": 14104
+        }
+      ],
+      "lookup_accepts": false
+    }
+  ],
+  "r3": {
+    "unchanged_owner_control": {
+      "result": 1,
+      "caption_reads": [
+        {
+          "operation": "length",
+          "pid": 14104
+        },
+        {
+          "operation": "text",
+          "pid": 14104
+        },
+        {
+          "operation": "length",
+          "pid": 14104
+        }
+      ]
+    },
+    "already_changed_owner": {
+      "result": -2,
+      "caption_reads": []
+    }
+  },
+  "residual_check_read_race": {
+    "result": -2,
+    "caption_reads": [
+      {
+        "operation": "length",
+        "pid": 14104
+      },
+      {
+        "operation": "text",
+        "pid": 23092
+      }
+    ],
+    "interpretation": "Rejected afterwards, but one foreign text read occurred in the injected gap; no atomic zero-read claim."
+  }
+}

@@ -302,3 +302,58 @@ and valid controls when mechanically adapting inputs. Changed-source parser and
 isolated C# compilation are permitted under normal review without method/runner
 execution or any display/process/window/account/audio action. Timing and residual
 check/action races must remain explicit. No display lease, retry or product pass.
+
+
+<a id="integrated-edge-repair"></a>
+## Final source integration and bounded next action
+
+Support `3b718d85eaea3a606c6c6da6f97efb925c24ac9e`, received as
+`handoff_7b0ea5673cefd13b86e56bd0cc8b7c0e`, approves the specific R1–R3 delta.
+[Full verdict](../../../../support/edge-identity-review-20261008/corrected-151f7d7/README.md)
+retains the original HOLD and describes13 adapted boundary cases with valid
+controls, plus a deliberate residual-race illustration. This is not a pins-only
+probe pass. Exact runner parsing and all five isolated C# definitions compiled
+once under normal review; no emitted method, window or process query ran.
+
+QA `b9ce4cc` / `151f7d7` integrate as `18b08a2` / `16aacaf`; Support evidence
+integrates as `c0a07f6`. [Resulting-main checks](integrated-151f7d7/checks.json)
+pass41 generator/54 wrapper tests and13 independent boundary fixtures. Child
+process and filesystem writes were denied to the Node checks. All25 candidate,
+source, test and evidence hashes byte-match final QA source. Native receipt
+runner/harness/five block pins match. No new Windows or provider call was made;
+the saved stage receipt is not a fresh runtime inspection. New scratch is absent.
+
+Check/effect races are not atomic: a window or page can change after the last
+check, and a later rejection cannot undo a read/action. The source closes the
+specific observable-before-gate counterexamples; it does not prove zero effects
+for arbitrary OS timing. Added page-validation latency is unmeasured under the
+unchanged140second bound. Popup identity and actual Edge caption/foreground
+behavior remain unverified. Product `52be105` and its77-file tree are unchanged;
+no full companion, real vision, audio, microphone or interactive Mac acceptance.
+
+### Ready command, no active allocation
+
+The prior user authorization permitted one new attempt, consumed17:21 UTC and
+explicitly released17:22 UTC. Source/hash repairs need no repeated approval, but
+that used attempt is not reusable. Lead will request **one additional attempt**
+after publishing this exact reviewed result; no automatic retry is authorized.
+[Prepared allocation template](edge-r2-allocation.template.json) is UNALLOCATED,
+with no validity window or approval ref; it is not executable authorization.
+The final wrapper will refuse it until Lead receives the new scope authorization,
+checks admission, issues a fresh exclusive allocation and supplies its byte hash.
+
+Current QA's ready invocation (the allocation path/hash are issued only then):
+
+```text
+.tools/node-v24.21.0-linux-x64/bin/node tests/e2e/windows/qa_run_tts_candidate.mjs --execute docs/verification/qa/p0-13-tts-52be105/execution-edge-r2-20261008 <fresh-allocation-file> <independently-supplied-sha256>
+```
+
+Run from the existing QA worktree using the project's absolute Node path. The
+32 reviewed steps and generated Edge page remain; native limit140seconds, one
+attempt, new isolated profile/scratch, exact-owned cleanup and explicit DISPLAY
+RELEASE. No account/model/provider, microphone, audio/playback/TTS helper,
+private-content capture, foreign application control or global policy change.
+Current final pins: candidate `03344f776afb4ff2110e7450b8c48d86fd0b9d7b394e5473e3ccd7959770cde9`,
+runner `301b5053e758938df97059fa52a60715d6ed7d9423a7e44de5e30df681c59dfa`,
+wrapper `aad5e81b76e8b329b3c95c6b7ee31359443f6a47ede55312af2ff751fa416816`.
+Old app/profile, unrelated client and all prior attempts remain untouched.

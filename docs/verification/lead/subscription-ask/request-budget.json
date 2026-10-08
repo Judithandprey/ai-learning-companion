@@ -197,7 +197,7 @@
         "foreign_signals": 0
       }
     ],
-    "next_owner_action": "Support R1-R3 semantic delta review of151f7d7, corrected-source isolated parse/compile -> QA fixes if needed -> Lead integration. No display allocation.",
+    "next_owner_action": "Lead publishes exact repaired candidate and requests one additional native attempt because prior one-shot is consumed; current QA runs only after fresh authorization/allocation. No active lease.",
     "repair_commits": [
       "b79d195b77df530b72df943f95188b418af217ba",
       "78d6de0f1e1b92113d0829a1f88be6fb84ae96f8",
@@ -236,6 +236,19 @@
     "window_repair_r2_commit": "151f7d741e2b88912a94f0b24473594e236d0076",
     "window_repair_r2_delivery": "handoff_53756ff8518632020bc7e2b1ecd30500",
     "window_repair_r2_review_dispatch": "handoff_9365c461dadc1fbb62d9bb4595be03ba",
-    "window_repair_r2_status": "independent_review_pending_not_integrated"
+    "window_repair_r2_status": "reviewed_integrated_offline_verified_awaiting_new_one_run_authorization",
+    "window_repair_r2_approval": "3b718d85eaea3a606c6c6da6f97efb925c24ac9e",
+    "window_repair_r2_approval_message": "handoff_7b0ea5673cefd13b86e56bd0cc8b7c0e",
+    "window_repair_r2_integrated": [
+      "18b08a2",
+      "16aacaf",
+      "c0a07f6"
+    ],
+    "window_repair_r2_main_checks": {
+      "generator": 41,
+      "wrapper": 54,
+      "independent_boundary_fixtures": 13,
+      "residual_race_illustrations": 1
+    }
   }
 }

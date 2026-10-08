@@ -91,33 +91,23 @@ any raise/product launch. QA evidence `89a077d` integrates as `a716ae5`;
 and Lead17 saved-evidence consistency checks confirm no product/capture/provider
 run and exact-owned cleanup. QA explicitly released DISPLAY at about17:22Z in
 `handoff_de51af8fcae9104bf6e9f40332df7787`; allocation is consumed, no retry.
-Current next action: same QA fixes candidate-specific generated Edge HWND identity
-under `handoff_fa627da3c2310dd4eca1ccf6676186a6`, source/offline only. Support's
-bounded source diagnosis `6c7302b` is reviewed/integrated as `c3c5dc0`:
-[saved evidence and correction constraints](verification/support/edge-window-identity-20261008/README.md).
-It confirms independent first-HWND/first-CDP-page selection lacks generated-target
-binding; exact popup content remains unknown. Lead verified evidence/source pins
-and supplied the findings to the existing QA repair as
-`handoff_251a58bf1585820923e17cf342546e3d`. QA actually delivered
-`b9ce4cc` in `handoff_da988764aed9cf743e67c49da46909e8`: candidate-specific
-unique generated CDP page/title-token/HWND binding, 33 generator/54 wrapper
-owner-reported offline checks, native0. Lead verified21 delivered hashes and
-bounded14-file scope; source is not yet integrated/accepted. Existing Support
-completed exact-delta review `6c7872d` / `handoff_eee3fd9eee87de91777db654e0052305`,
-integrated as `972e26e`: **HOLD** on b9ce4cc. [Three required corrections](verification/support/edge-identity-review-20261008/README.md)
-are fresh page validation on the actual window-action path, refusal of mixed
-readable/unknown caption sets, and preventing diagnostic HWND reuse from widening
-caption reads to another owner. These are source/synthetic findings, not a new
-GUI incident. Exact PowerShell parsing and five isolated C# definitions compiled;
-no methods, windows, apps or capture were invoked. QA received the same-card
-correction `handoff_a05ac9a096200016381d14ded6c42c0c`, then actually delivered
-r2 `151f7d7` as `handoff_53756ff8518632020bc7e2b1ecd30500`. Lead verified25
-pins and18-file scope; source remains unintegrated. Author41 generator/54 wrapper
-checks and28 mutants are offline evidence. The old probe's pins-only after-failure
-is explicitly an input/signature mismatch, not proof of repair. Support received
-this exact delta as `handoff_9365c461dadc1fbb62d9bb4595be03ba` for R1–R3 semantic
-before/after review and changed-source isolated parser/compile prerequisite only.
-No new display attempt or repeated full campaign is assigned.
+Current source repair is approved and integrated: QA `b9ce4cc` / `151f7d7`
+→ `18b08a2` / `16aacaf`; Support `3b718d8` → `c0a07f6` closes the specific
+R1–R3 HOLD. [Independent verdict and limits](verification/support/edge-identity-review-20261008/corrected-151f7d7/README.md).
+Resulting main passes41 generator +54 wrapper checks and13 preserved boundary
+fixtures, plus the documented residual-race illustration; all25 release pins
+match reviewed QA bytes. Support separately parsed the exact new runner and
+compiled five isolated C# blocks, invoking no methods. Old failures and original
+HOLD/counterexamples remain in their evidence records.
+
+Next owner/action: Lead has completed integration and prepared the exact next
+one-run command/template for current QA. The previous user-authorized single
+native attempt was consumed and explicitly released; no automatic retry or new
+lease is active. A new one-run display authorization is needed before allocating
+this unused candidate. This is an attempt-count boundary, not another source-import
+or script-hash approval. Planned scope remains140seconds/32steps, generated Edge
+surface, isolated unused profile, zero account/provider/mic/audio/TTS, process-only
+RemoteSigned and exact-owned cleanup. [Exact ready candidate and remaining gate](verification/lead/live-windows/approved-two-gates/resume-preflight-20261007/README.md#integrated-edge-repair).
 Keep normal-band/foreground/16-point/display guards and exact-owned cleanup;
 no largest-window-only trust, foreign mutation or new native allocation. Actual
 popup content is unknown; the product and complete live/audio gates remain untested.
