@@ -1,0 +1,98 @@
+{
+  "kind": "qa-tts-edge-identity-repair/1",
+  "assignment": "handoff_fa627da3c2310dd4eca1ccf6676186a6 (+ refinement handoff_251a58bf1585820923e17cf342546e3d, Support 6c7302b)",
+  "baseline": "team/qa 03ecfa2 (main 6d256bc merged)",
+  "production_commit": "52be105a148a28e677f83cc4b7077665f2ff372c",
+  "stage_tree_sha256": "531943a83d3572ca9c686c7d8cd62bd88da5b0401b84050487722b8e87a02669",
+  "wrapper_sha256": "5b537bbe2407fa7413c790d022226cfe1bbb2480a58e386a2fcf8ceed2b90bda",
+  "candidate_sha256": "d8d87df4c9cc9b32782e634dab963f83ace4960221db19508b4c877c9059f3f8",
+  "payload_sha256": {
+    "runner.ps1": "f739487b513cc4f749ac4cc95cfa0a64ba58e23670d9fdc4d14753df4ae3e44f",
+    "steps.json": "22654c440365cb6ad2fd2aafe47e0d767d705cd07beea8436f2acff4005ac06a",
+    "surface.html": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2"
+  },
+  "source_files_pinned_by_candidate": {
+    "qa_tts_output_candidate.mjs": "f7e7a93d0c9eeaea163bef205a299c663573630ae53c40aff0db9cf8b5c34a1d",
+    "qa_tts_stage_check.py": "9e0a8257f740ee6d7e8924ac848de2fc7ddfd9b7621967e8a7f67c1c518b810f",
+    "qa_live_stage_check.py": "8bdd042b426c0784500375a41fe874e41b80186a6a8dddcc1d544213abd8c791",
+    "qa_visible_candidate.mjs": "9df43a98f64c67559029d31bc41573db4df4df94341ef48845687987b5460410",
+    "qa_edge_placement.ps1": "e527a59e63f6823adc9aaa1b5d9619661d8299769985ae1a0bf108749c2535bb",
+    "qa_display_admission.ps1": "b4f586b7c987f533f318eb72ebffe318482ed2c2aa7f7f720574147071747590",
+    "qa-electron-runner.ps1": "1a0dfc3f178a1d6f59233c2a7d6a836ce68b18887affd2f6431c2d4ef5c48218",
+    "signin_cleanup.mjs": "efa06295262ea27006769e0dea363051fbd6401f4c810d2049db5937ee939b2b",
+    "qa_visible_drag.mjs": "fa7491499aad6c289793fec195a11993b3d102415347a7251e82592362940d1e",
+    "surface.html": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2"
+  },
+  "reviewed_emitted_blocks_sha256": {
+    "admission_listing": "8669891a7eae6e4f3d641dee6ec2320390a78c36c2d8b0f2cde540480eb7ed50",
+    "admission_guard": "1222e15da6e564ccda5fbf5d49c11c841c2cd8c7d0a51bfc3836715a1b6c8287",
+    "edge_socket": "9ef77d2c3110b3fbc110d9062243a954e8c991c789e405d201eab4d7e9ec6e9c",
+    "edge_lookup": "ab7e45d85d61d4996c178da132e4d3db7fa0917f312252b9350cb4457ca352aa",
+    "edge_bind": "fb8a41b80ea87ef4c7050ebcdc341bbc2f25f68f3e5154c70216440c02b7686b"
+  },
+  "launch_identity_for_allocation": {
+    "source": "52be105a148a28e677f83cc4b7077665f2ff372c",
+    "stage": "/mnt/c/Users/ROG/AppData/Local/Temp/lc-windows-tts-52be105",
+    "tree": "531943a83d3572ca9c686c7d8cd62bd88da5b0401b84050487722b8e87a02669",
+    "work": "/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-tts-output-c28000baefb243218ba3e7287182da30",
+    "electron": "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-electron-44.5.1-win32-x64\\electron.exe",
+    "edge": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+    "appPort": 43123,
+    "edgePort": 45123
+  },
+  "native_invocation_for_allocation": {
+    "executable": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "arguments": [
+      "-NoProfile",
+      "-NonInteractive",
+      "-ExecutionPolicy",
+      "RemoteSigned",
+      "-File",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-tts-output-c28000baefb243218ba3e7287182da30\\runner.ps1",
+      "-Electron",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-electron-44.5.1-win32-x64\\electron.exe",
+      "-Stage",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-windows-tts-52be105",
+      "-UserData",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-tts-output-c28000baefb243218ba3e7287182da30\\userdata",
+      "-StepsFile",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-tts-output-c28000baefb243218ba3e7287182da30\\steps.json",
+      "-OutDir",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-tts-output-c28000baefb243218ba3e7287182da30\\out",
+      "-Edge",
+      "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+      "-AppTemp",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-tts-output-c28000baefb243218ba3e7287182da30\\apptemp"
+    ]
+  },
+  "new_work_folder_existed_at_preparation": false,
+  "tests": {
+    "test_qa_run_tts_candidate.mjs": {
+      "sha256": "174f0bac09377999ce05f57cfd27fe1c25905bc205519a05efde64f10e9c5ad4",
+      "pass": 54,
+      "fail": 0,
+      "child_process_permission": "withheld"
+    },
+    "test_qa_tts_output_candidate.mjs": {
+      "sha256": "776882a6760e69b7bcfc1baa1e08a5fdbce82224cf2123571bf8c42e561c8313",
+      "pass": 33,
+      "fail": 0
+    }
+  },
+  "rule_mutants": {
+    "run": 13,
+    "caught_beyond_hash_pin": 13
+  },
+  "logs": {
+    "wrapper-checks.txt": "9d4fd250ee15d05255c5544ded0ec70a854506a9619bafc4f803340638bee4ff",
+    "generator-checks.txt": "819f4b5af26c0cb26934e3d52c2e8655fe3446f1551133c51c0d84002d2581fd",
+    "candidate-check.json": "8f8317aabb6af73ad16ac9bfbe9b49aefd3299d0ebba95b57ac15f859ed96418",
+    "rule-mutants.txt": "7ea6fc1bad060379be66d9780f236c332c55c803382d81257e679174c2eb8ad7"
+  },
+  "execution": {
+    "windows_calls": 0,
+    "native_attempts": 0,
+    "provider_attempts": 0,
+    "display_allocation": "NONE"
+  }
+}

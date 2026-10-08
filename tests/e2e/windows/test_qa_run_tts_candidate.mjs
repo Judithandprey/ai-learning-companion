@@ -10,7 +10,7 @@ import { isCandidateRuntime, namesThisRun, pathKey, runTtsCandidate, summarizeTt
 
 const here = dirname(fileURLToPath(import.meta.url)), repo = resolve(here, '../../..');
 const base = join(repo, 'docs/verification/qa/p0-13-tts-52be105');
-const candidateFile = join(base, 'candidate-admission-20261008/candidate.json');
+const candidateFile = join(base, 'candidate-edge-identity-20261008/candidate.json');
 const candidate = JSON.parse(fs.readFileSync(candidateFile));
 const identity = fs.readFileSync(join(base, 'stage-identity.json'));
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');

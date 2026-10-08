@@ -233,10 +233,258 @@ export function revertScopedAdmission(runner, ctx) {
   if (runner.includes('Get-QaLaunchRelevance') || runner.includes('QaArgv')) throw Error('scoped launch admission duplicated');
   return runner;
 }
+// OWNED EDGE SURFACE IDENTITY (this TTS candidate only; the shared runner and its other callers are unchanged).
+// The runner took as "the owned Edge window" the FIRST visible top-level window, in z-order, of the launched Edge and its
+// children, and as "the Edge page" the FIRST DevTools page target (a cached one revalidated only by its id). On
+// 2026-10-08 the window found was a small topmost Edge window (execution-admission-20261008); which window it was is not
+// known. Now:
+//   - The Edge DevTools target is the ONE page target whose URL is the generated surface's URL. Every use checks again
+//     that exactly one such page exists and that it is the same target; another page first, two such pages, a page that
+//     navigated away or a changed target refuses.
+//   - Right after the surface has loaded, the runner checks through that target that the page is the generated surface
+//     (its URL and its truth function), appends a random token of letters to its page title, and reads its viewport
+//     and device pixel ratio.
+//   - It then binds the ONE visible top-level window of the launched Edge (and of its children created after it) whose
+//     title carries that token, and only if that window's DPI equals the page's and its client area can hold the page's
+//     viewport. Every later lookup takes that same window again, by token, and refuses if the launched Edge ended or
+//     was replaced, or if the window changed.
+//   - Nothing is raised, moved or resized before this identity holds; zero, two, unreadable or stale matches refuse.
+// Titles are read only for windows of the launched Edge's processes. The guards that follow (normal band, foreground,
+// display, the 16 points) are unchanged and still apply: an identified surface window that is topmost still refuses.
+const edgeLookupHead = String.raw`function Window-Handle([string]$name) {
+  if ($name -eq 'control')`;
+const edgeSocketHead = String.raw`function Get-Socket([string]$target) {
+  $cached = $sockets[$target]`;
+const edgeSocketRedirect = String.raw`function Get-Socket([string]$target) {
+  if ($target -eq 'edge') { return Get-QaEdgeSocket }
+  $cached = $sockets[$target]`;
+const edgeLoadWait = String.raw`        [void](Eval 'edge' 'new Promise(r => document.readyState === "complete" ? r(true) : addEventListener("load", () => r(true)))')`;
+const edgeIdentityLookup = String.raw`# TTS candidate only (qa_tts_output_candidate.mjs): the owned Edge window is the ONE visible top-level window of the
+# launched Edge (and its children created after it) whose title carries this run's random token, set on the generated
+# surface through its verified DevTools target. Titles are read only for windows of those processes.
+Add-Type @'
+using System;
+using System.Collections.Generic;
+using System.Runtime.InteropServices;
+using System.Text;
+public static class QaEdgeSurface {
+  private delegate bool EnumProc(IntPtr h, IntPtr l);
+  [DllImport("user32.dll")] private static extern bool EnumWindows(EnumProc f, IntPtr l);
+  [DllImport("user32.dll")] private static extern uint GetWindowThreadProcessId(IntPtr h, out uint pid);
+  [DllImport("user32.dll")] private static extern bool IsWindowVisible(IntPtr h);
+  [DllImport("user32.dll", CharSet = CharSet.Unicode)] private static extern int GetWindowTextLength(IntPtr h);
+  [DllImport("user32.dll", CharSet = CharSet.Unicode)] private static extern int GetWindowText(IntPtr h, StringBuilder s, int n);
+  public static IntPtr[] Find(uint[] pids, string token) {
+    var found = new List<IntPtr>();
+    EnumProc each = (h, l) => {
+      uint pid;
+      GetWindowThreadProcessId(h, out pid);
+      if (!IsWindowVisible(h) || Array.IndexOf(pids, pid) < 0) return true;
+      int n = GetWindowTextLength(h);
+      if (n <= 0 || n > 4096) return true;
+      var s = new StringBuilder(n + 1);
+      if (GetWindowText(h, s, s.Capacity) <= 0) return true;
+      if (s.ToString().IndexOf(token, StringComparison.Ordinal) >= 0) found.Add(h);
+      return true;
+    };
+    if (!EnumWindows(each, IntPtr.Zero)) throw new InvalidOperationException("top-level windows could not be enumerated");
+    GC.KeepAlive(each);
+    return found.ToArray();
+  }
+  // Every visible top-level window of the owned processes, for the receipt only.
+  public static IntPtr[] Owned(uint[] pids) {
+    var found = new List<IntPtr>();
+    EnumProc each = (h, l) => {
+      uint pid;
+      GetWindowThreadProcessId(h, out pid);
+      if (IsWindowVisible(h) && Array.IndexOf(pids, pid) >= 0) found.Add(h);
+      return true;
+    };
+    if (!EnumWindows(each, IntPtr.Zero)) throw new InvalidOperationException("top-level windows could not be enumerated");
+    GC.KeepAlive(each);
+    return found.ToArray();
+  }
+  public static int TitleLength(IntPtr h) { return GetWindowTextLength(h); }
+}
+'@
+$script:qaEdgeIdentity = $null
+$script:qaEdgeSurfaceUrl = $null
+function ConvertTo-QaUrlKey([string]$u) { return $u.ToLowerInvariant() }
+# The ONE DevTools page target showing the generated surface's URL, the same target at every use.
+function Get-QaEdgeSocket {
+  if (-not $script:qaEdgeSurfaceUrl) { throw 'generated surface URL is not known' }
+  $want = ConvertTo-QaUrlKey $script:qaEdgeSurfaceUrl
+  $cached = $sockets['edge']
+  $deadline = (Get-Date).AddSeconds(20)
+  while ($true) {
+    $pages = $null
+    try { $pages = @(($client.DownloadString("http://127.0.0.1:$($script:edgePort)/json/list") | ConvertFrom-Json) | Where-Object { $_.type -eq 'page' }) } catch { $pages = $null }
+    if ($null -ne $pages) {
+      $match = @($pages | Where-Object { (ConvertTo-QaUrlKey ([string]$_.url)) -eq $want })
+      if ($match.Count -gt 1) { throw 'generated surface DevTools target is ambiguous' }
+      if ($match.Count -eq 1) { break }
+      if ($cached) { throw 'generated surface DevTools target navigated or ended' }
+    }
+    if ((Get-Date) -gt $deadline) { throw 'no DevTools target for the generated surface' }
+    Start-Sleep -Milliseconds 150
+  }
+  $t = $match[0]
+  if ($cached) {
+    if ([string]$cached.id -cne [string]$t.id) { throw 'generated surface DevTools target changed' }
+    if ($cached.ws.State -ne [System.Net.WebSockets.WebSocketState]::Open) { throw 'generated surface DevTools connection closed' }
+    return $cached.ws
+  }
+  $ws = New-Object System.Net.WebSockets.ClientWebSocket
+  $ws.ConnectAsync([Uri]$t.webSocketDebuggerUrl, [Threading.CancellationToken]::None).Wait()
+  $sockets['edge'] = @{ ws = $ws; id = $t.id }
+  return $ws
+}
+function Get-QaOwnedEdgeIds($identity) {
+  $p = $started['edge']
+  if (-not $p) { throw 'owned Edge was not started' }
+  if ($p.HasExited) { throw 'owned Edge has ended' }
+  if ([uint32]$p.Id -ne $identity.pid -or $p.StartTime -ne $identity.start) { throw 'owned Edge identity changed' }
+  $kids = @(Get-CimInstance Win32_Process -Filter "ParentProcessId=$($p.Id)" | Where-Object { $_.CreationDate -and $_.CreationDate -ge $p.StartTime } | ForEach-Object { [uint32]$_.ProcessId })
+  return @([uint32]$p.Id) + $kids
+}
+function Find-QaEdgeSurface($identity) {
+  return [QaEdgeSurface]::Find([uint32[]]@(Get-QaOwnedEdgeIds $identity), [string]$identity.token)
+}
+function Get-QaEdgeSurfaceWindow {
+  if ($null -eq $script:qaEdgeIdentity) { throw 'owned Edge surface identity is not established' }
+  $found = @(Find-QaEdgeSurface $script:qaEdgeIdentity)
+  if ($found.Count -eq 0) { throw 'owned generated surface window not found' }
+  if ($found.Count -gt 1) { throw 'owned generated surface window is ambiguous' }
+  if ($found[0] -ne $script:qaEdgeIdentity.handle) { throw 'owned generated surface window changed' }
+  return $found[0]
+}
+# Title-free metadata of every visible top-level window of the owned processes, so that a refusal can be diagnosed.
+function Get-QaEdgeWindowReceipt($identity) {
+  $rows = @()
+  foreach ($h in @([QaEdgeSurface]::Owned([uint32[]]@(Get-QaOwnedEdgeIds $identity)))) {
+    $row = [ordered]@{ handle = $h.ToInt64().ToString() }
+    try {
+      $g = [QaDisplayAdmissionNative]::ReadWindow($h); $m = [QaPlacementNative]::Read($h)
+      $row.owner = $g.Owner; $row.bounds = @($g.Bounds); $row.class = $m.Class; $row.topmost = $m.Topmost; $row.minimized = $m.Minimized; $row.foreground = $g.Foreground
+      $row.title_length = [QaEdgeSurface]::TitleLength($h)
+      $row.has_token = @([QaEdgeSurface]::Find([uint32[]]@($g.Owner), [string]$identity.token) | Where-Object { $_ -eq $h }).Count -eq 1
+    } catch { $row.error = $_.Exception.Message }
+    $rows += $row
+  }
+  return ,$rows
+}
+function Set-QaEdgeSurfaceIdentity($entry, [string]$url) {
+  if ($null -ne $script:qaEdgeIdentity) { throw 'owned Edge surface identity is already established' }
+  $p = $started['edge']
+  if (-not $p -or $p.HasExited) { throw 'owned Edge is unavailable for its surface identity' }
+  if ($url.Contains('%') -or $url -cne $script:qaEdgeSurfaceUrl) { throw 'generated surface URL changed or escaped' }
+  $letters = 'ghijklmnopqrstuv'
+  $token = 'lcqa' + (-join ([Guid]::NewGuid().ToString('N').ToCharArray() | ForEach-Object { $letters[[Convert]::ToInt32([string]$_, 16)] }))
+  $expected = ConvertTo-Json -InputObject (ConvertTo-QaUrlKey $url) -Compress
+  $page = (Eval 'edge' ("(() => { if (location.href.toLowerCase() !== " + $expected + " || typeof window.__qaSurfaceTruth !== 'function') throw Error('generated surface target mismatch'); document.title = document.title + ' ' + '" + $token + "'; return JSON.stringify({ title: document.title, inner_width: innerWidth, inner_height: innerHeight, dpr: devicePixelRatio }); })()")) | ConvertFrom-Json
+  if (-not ([string]$page.title).EndsWith(' ' + $token, [StringComparison]::Ordinal)) { throw 'generated surface title identity was not set' }
+  if (-not ($page.inner_width -gt 0 -and $page.inner_height -gt 0 -and $page.dpr -gt 0)) { throw 'generated surface viewport unavailable' }
+  # Kept local until every check below holds: no lookup can use a half-made identity.
+  $identity = [ordered]@{ token = $token; pid = [uint32]$p.Id; start = $p.StartTime; handle = [IntPtr]::Zero }
+  # The window title follows the page title asynchronously.
+  $deadline = (Get-Date).AddSeconds(5)
+  do {
+    $found = @(Find-QaEdgeSurface $identity)
+    if ($found.Count -gt 0) { break }
+    Start-Sleep -Milliseconds 100
+  } while ((Get-Date) -lt $deadline)
+  $entry.surface_identity = [ordered]@{ owner = [int]$p.Id; matching_windows = $found.Count; page = @([int]$page.inner_width, [int]$page.inner_height, [double]$page.dpr) }
+  try { $entry.surface_identity.owned_windows = Get-QaEdgeWindowReceipt $identity } catch { $entry.surface_identity.owned_windows_error = $_.Exception.Message }
+  if ($found.Count -eq 0) { throw 'owned generated surface window not found' }
+  if ($found.Count -gt 1) { throw 'owned generated surface window is ambiguous' }
+  # The window must agree with the page it shows: the same DPI, and a client area that holds the page's viewport.
+  $area = [QaPlacementNative]::ClientBounds($found[0])
+  $entry.surface_identity.client = @(($area[2] - $area[0]), ($area[3] - $area[1]), $area[4])
+  if ($area[4] -ne [int][Math]::Round([double]$page.dpr * 96)) { throw 'owned generated surface window DPI disagrees with its page' }
+  if (($area[2] - $area[0]) -lt [Math]::Round([double]$page.inner_width * [double]$page.dpr) - 2 -or ($area[3] - $area[1]) -lt [Math]::Round([double]$page.inner_height * [double]$page.dpr) - 2) { throw 'owned generated surface window cannot hold its page' }
+  $identity.handle = $found[0]
+  $entry.surface_identity.handle = $found[0].ToInt64().ToString()
+  $script:qaEdgeIdentity = $identity
+}
+function Window-Handle([string]$name) {
+  if ($name -eq 'edge') { return Get-QaEdgeSurfaceWindow }
+  if ($name -eq 'control')`;
+const edgeIdentityBind = "        $script:qaEdgeSurfaceUrl = [string]$step.edgeStart\n" + edgeLoadWait + "\n        Set-QaEdgeSurfaceIdentity $entry ([string]$step.edgeStart)";
+const identityBlocks = () => [[edgeSocketHead, edgeSocketRedirect], [edgeLookupHead, edgeIdentityLookup], [edgeLoadWait, edgeIdentityBind]];
+/** The two emitted identity blocks, for the reviewed-hash pin in the focused test. */
+export const edgeIdentityBlocks = () => ({ socket: edgeSocketRedirect, lookup: edgeIdentityLookup, bind: edgeIdentityBind });
+export function applyEdgeIdentity(runner) {
+  if (runner.includes('QaEdgeSurface')) throw Error('owned Edge surface identity already present');
+  for (const [from, to] of identityBlocks()) {
+    if (runner.split(from).length !== 2) throw Error('runner Edge socket, lookup or load wait changed; substitution refused');
+    runner = runner.replace(from, () => to);
+  }
+  return runner;
+}
+export function revertEdgeIdentity(runner) {
+  for (const [from, to] of identityBlocks().reverse()) {
+    if (runner.split(to).length !== 2) throw Error('owned Edge surface identity missing or changed');
+    runner = runner.replace(to, () => from);
+  }
+  if (runner.includes('QaEdgeSurface') || runner.includes('Set-QaEdgeSurfaceIdentity') || runner.includes('Get-QaEdgeSocket')) throw Error('owned Edge surface identity duplicated');
+  return runner;
+}
+/**
+ * A model of the emitted rule (Get-QaOwnedEdgeIds, Find-QaEdgeSurface, Get-QaEdgeSurfaceWindow), only for the offline
+ * tests: the native PowerShell cannot run on this host. `windows` are top-level windows in z-order.
+ */
+export function edgeSurfaceModel({ launched, children = [], windows, identity }) {
+  if (!identity) throw Error('owned Edge surface identity is not established');
+  if (!launched) throw Error('owned Edge was not started');
+  if (launched.exited) throw Error('owned Edge has ended');
+  if (launched.pid !== identity.pid || launched.start !== identity.start) throw Error('owned Edge identity changed');
+  const pids = [launched.pid, ...children.filter(c => c.created !== null && c.created >= launched.start).map(c => c.pid)];
+  const found = windows.filter(w => w.visible && pids.includes(w.pid) && typeof w.title === 'string' && w.title.length > 0
+    && w.title.length <= 4096 && w.title.includes(identity.token)).map(w => w.handle);
+  if (found.length === 0) throw Error('owned generated surface window not found');
+  if (found.length > 1) throw Error('owned generated surface window is ambiguous');
+  if (found[0] !== identity.handle) throw Error('owned generated surface window changed');
+  return found[0];
+}
+/** A model of Get-QaEdgeSocket, for the offline tests: which DevTools page target is the generated surface. */
+export function edgeTargetModel({ url, pages, cachedId = null }) {
+  if (!url) throw Error('generated surface URL is not known');
+  const key = u => String(u).toLowerCase();
+  if (pages === null) throw Error('no DevTools target for the generated surface');
+  const match = pages.filter(p => p.type === 'page' && key(p.url) === key(url));
+  if (match.length > 1) throw Error('generated surface DevTools target is ambiguous');
+  if (match.length === 0) throw Error(cachedId ? 'generated surface DevTools target navigated or ended' : 'no DevTools target for the generated surface');
+  if (cachedId && cachedId !== match[0].id) throw Error('generated surface DevTools target changed');
+  return match[0].id;
+}
+/** A model of the bind-time agreement between the found window and its page (Set-QaEdgeSurfaceIdentity). */
+export function edgeBindGeometryModel({ area, page }) {
+  if (!area) throw Error('client geometry unavailable');
+  if (!(page?.inner_width > 0 && page.inner_height > 0 && page.dpr > 0)) throw Error('generated surface viewport unavailable');
+  const [x0, y0, x1, y1, dpi] = area;
+  if (dpi !== Math.round(page.dpr * 96)) throw Error('owned generated surface window DPI disagrees with its page');
+  if (x1 - x0 < Math.round(page.inner_width * page.dpr) - 2 || y1 - y0 < Math.round(page.inner_height * page.dpr) - 2) throw Error('owned generated surface window cannot hold its page');
+  return true;
+}
+/**
+ * The first Edge window action of the diagnostic (step 2, `window edge raise`), as a model: what it does to a window. An
+ * action is recorded only after the identity holds AND the identified window is in the normal band (not topmost, not
+ * minimized). Every refusal leaves the actions empty.
+ */
+export function edgeRaiseModel(state) {
+  const actions = [];
+  try {
+    const handle = edgeSurfaceModel(state);
+    const w = state.windows.find(x => x.handle === handle);
+    if (w.topmost || w.minimized) throw Error('owned Edge must remain visible in the normal window band');
+    actions.push(['raise', handle]);
+    return { actions };
+  } catch (error) { return { actions, refused: error.message }; }
+}
 export function assertReviewedPlacement(ctx, built) {
-  // Only the literal, isolated Edge profile and the scoped launch admission change in the emitted runner.
-  // The previous parse/compile receipt applies to its saved bytes, not this new file.
-  if (sha(revertScopedAdmission(built.runner, ctx).replaceAll(ctx.profile, priorCandidate.profile)) !== priorRunnerHash || built.steps.length !== 32) throw Error('reviewed placement runner/steps changed');
+  // Only the literal, isolated Edge profile, the scoped launch admission and the owned Edge surface identity change in
+  // the emitted runner. The previous parse/compile receipt applies to its saved bytes, not this new file.
+  if (sha(revertScopedAdmission(revertEdgeIdentity(built.runner), ctx).replaceAll(ctx.profile, priorCandidate.profile)) !== priorRunnerHash || built.steps.length !== 32) throw Error('reviewed placement runner/steps changed');
   if (built.steps[0].edgeStart !== ctx.surfaceUrl || built.steps[0].profile !== ctx.profile) throw Error('owned Edge first step changed');
   const normalized = structuredClone(built.steps);
   normalized[0].edgeStart = priorCandidate.surfaceUrl;
@@ -245,7 +493,7 @@ export function assertReviewedPlacement(ctx, built) {
 }
 function payloadFor(ctx) {
   const built = buildVisibleCandidate(ctx);
-  built.runner = applyScopedAdmission(built.runner, ctx);
+  built.runner = applyEdgeIdentity(applyScopedAdmission(built.runner, ctx));
   assertReviewedPlacement(ctx, built);
   return { 'runner.ps1': built.runner, 'steps.json': JSON.stringify(built.steps, null, 2) + '\n', 'surface.html': readFileSync(join(here, 'surface.html')) };
 }
@@ -254,13 +502,13 @@ export function prepareTtsCandidate(work = stage.replace(/lc-windows-tts-52be105
   const ctx = context(work), payload = payloadFor(ctx);
   const fileArgs = ['-File', win(join(work, 'runner.ps1')), '-Electron', electron, '-Stage', win(stage), '-UserData', win(join(work, 'userdata')), '-StepsFile', win(join(work, 'steps.json')), '-OutDir', win(join(work, 'out')), '-Edge', edge, '-AppTemp', win(join(work, 'apptemp'))];
   const manifest = {
-    kind: 'qa-tts-output-offline-candidate/v2', prepared_only: true, execution_authorized: false,
+    kind: 'qa-tts-output-offline-candidate/v3', prepared_only: true, execution_authorized: false,
     production_commit: source, release_commit: release, placement_review_commit: '21a9b6ba3a5c60ffc84cc7a0b9e50a05294aacd9',
     work, stage, stage_payload_files: 77, stage_tree_sha256: tree, ...ctx, electron, edge,
     files: Object.fromEntries(Object.entries(payload).map(([n, bytes]) => [n, sha(bytes)])),
     prior_placement_runner_sha256: priorRunnerHash, prior_placement_descriptor_sha256: sha(priorCandidateBytes),
     prior_tts_candidate_sha256: firstTtsCandidateHash,
-    runner_delta: 'literal isolated Edge profile, and the start-up Foreign-Electron listing and refusal replaced by a launch admission scoped to this run',
+    runner_delta: 'literal isolated Edge profile; the start-up Foreign-Electron listing and refusal replaced by a launch admission scoped to this run; the owned Edge window bound to the generated surface by a title token set through its verified DevTools target',
     source_files: Object.fromEntries(sourceNames.map(n => [n, sha(readFileSync(join(here, n)))])),
     app_entry: { executable: electron, app_arguments: [win(stage)], package_main: 'dist/apps/windows/src/main/main.js', main_sha256: entry, native_helper_sha256: helper, electron_sha256: runtime },
     proposed_native_invocation: { executable: String.raw`C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`, arguments: ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'RemoteSigned', ...fileArgs], status: 'NOT_ALLOCATED_NOT_EXECUTED', persistent_policy_changes: false },
@@ -273,7 +521,7 @@ export function prepareTtsCandidate(work = stage.replace(/lc-windows-tts-52be105
   return { manifest, payload };
 }
 export function checkTtsCandidate(manifest, payload, identity) {
-  if (manifest.kind !== 'qa-tts-output-offline-candidate/v2' || manifest.production_commit !== source || manifest.release_commit !== release
+  if (manifest.kind !== 'qa-tts-output-offline-candidate/v3' || manifest.production_commit !== source || manifest.release_commit !== release
       || manifest.stage !== stage || manifest.stage_payload_files !== 77 || manifest.stage_tree_sha256 !== tree
       || manifest.execution_authorized !== false || manifest.prepared_only !== true || manifest.prior_approval_rebound_to_this_candidate !== false
       || manifest.display_account_audio_lease !== 'NONE' || manifest.native_script_executed !== false || manifest.provider_attempts !== 0) throw Error('exact offline-only TTS manifest required');
