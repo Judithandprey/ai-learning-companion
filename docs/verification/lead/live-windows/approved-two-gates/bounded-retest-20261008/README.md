@@ -55,3 +55,38 @@ wrapper `aad5e81b76e8b329b3c95c6b7ee31359443f6a47ede55312af2ff751fa416816`.
 New evidence: `docs/verification/qa/p0-13-tts-52be105/execution-bounded-20261008-01`.
 Source/fixture/parser/compilation evidence remains separate from an actual
 launched product, display/input behavior, real AI/audio and complete desktop gates.
+
+## New automatic-review refusal — further allocation withheld
+
+The QA source report `b586e8a` discloses that its local Python read of
+`runner-results.json` (step6/full error/process fields) was denied as
+`Remote Shell Writes`. QA says it did not try another reading path. Operator now confirms run_406725b9eedd4d38/seq25524 at22:53:14Z: read-only
+local Python, no write/network, with an explicit prohibition on substitute
+tool/host/agent access to the same data. The human decision is pending. Lead sent
+`handoff_8c9efa10693deb9a4826619d4efb6643` to preserve that state and prevent
+substitution by another tool/role. Lead's saved-receipt review occurred before
+this disclosure; it is not approval to bypass the denial.
+
+Under the human's explicit stop condition, no attempt2 allocation will be issued
+while this new denial is unresolved. Attempt1 remains consumed/released;2slots
+remain unused. No new native call or automated retry. The QA raw report remains
+on its branch pending allowed review; it has not been integrated/pushed to main.
+
+QA delivery `handoff_90fca77dc824e62948b0cf8ff8159143` reports a second refusal,
+`Auto-Mode Bypass`, on the isolated PowerShell arithmetic/AST check. It would have
+evaluated the point expression, parsed its AST, constructed the corrected16points,
+and scanned the runner's arithmetic AST; no GUI/process/native call was intended.
+The refused action was not executed or retried. Its exact event time is not
+established here; QA subsequently corrected its approximate time to22:57Z
+in `handoff_d042d87da1586296d824ff4db25da2b5`. Operator seq25524 supplies the
+precise first-refusal timestamp above; the QA approximate time does not replace it.
+
+QA remains clean at `e8a5f64` with the durable stop record
+`docs/verification/qa/p0-13-tts-52be105/repair-stopped-20261008/README.md`;
+no generator/test/candidate/pin changes. The
+source-only preparation is to parenthesize each multiplied coordinate in the
+candidate-emitted point list while retaining12card centres+4corners and all guard
+semantics. This is unexecuted/unverified, not an approved replacement route for
+either denied action. No Support review or second allocation was dispatched.
+Do not infer that a later decision about reading the result JSON also covers the
+separately refused PowerShell check. No global permission change is proposed.

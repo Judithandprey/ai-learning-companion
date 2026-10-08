@@ -305,6 +305,42 @@
         "failed_step": 6
       }
     ],
-    "next_owner_action": "QA preserves attempt-01 report and repairs the step-6 arithmetic failure; Support independently reviews exact delta. Lead integrates before any fresh attempt-02 allocation; 2 attempts remain."
+    "next_owner_action": "Await the actual human decision covering the disclosed denied operations. QA has stopped at e8a5f64; no next allocation, substitute read or arithmetic check. Two attempts remain unused.",
+    "continuation_status": "stopped_new_auto_review_refusal",
+    "new_refusal": {
+      "reported_by": "qa",
+      "evidence_commit": "b586e8a",
+      "evidence_path": "docs/verification/qa/p0-13-tts-52be105/execution-bounded-20261008-01/README.md",
+      "action": "Local Python read of runner-results.json to print step-6, errors and processes",
+      "classification": "Remote Shell Writes",
+      "exact_command_delivery": "scope confirmed by operator and QA; not rerun",
+      "display_allocation_issued_after_refusal": false,
+      "no_bypass_notice": "handoff_8c9efa10693deb9a4826619d4efb6643",
+      "lead_saved_receipt_checks_preceded_disclosure": true,
+      "operator_notice": "read-denial-notice-20261008:8e3d2bb3acbe410c9b2080f3498474fd",
+      "runtime_run": "run_406725b9eedd4d38",
+      "runtime_seq": 25524,
+      "denied_at_utc": "2026-10-08T22:53:14Z",
+      "human_decision": "pending"
+    },
+    "additional_refusal": {
+      "classification": "Auto-Mode Bypass",
+      "action": "Isolated powershell.exe -NoProfile -NonInteractive -EncodedCommand arithmetic/AST check of the point construction and saved runner source",
+      "report_message": "handoff_90fca77dc824e62948b0cf8ff8159143",
+      "exact_event_time": "not established; QA corrected approximate time to 22:57Z",
+      "executed": false,
+      "human_decision": "pending; do not infer coverage from the separate read decision"
+    },
+    "repair_checkpoint": {
+      "qa_head": "e8a5f64",
+      "worktree_clean": true,
+      "source_changed": false,
+      "candidate_changed": false,
+      "source_diagnosis": "Comma precedence in 16-point coordinate construction is suspected; proposed parentheses around each multiplication; not executed/verified.",
+      "support_review_dispatched": false,
+      "attempt_evidence_head": "b586e8a",
+      "stop_record": "docs/verification/qa/p0-13-tts-52be105/repair-stopped-20261008/README.md",
+      "confirmation_message": "handoff_d042d87da1586296d824ff4db25da2b5"
+    }
   }
 }
