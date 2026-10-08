@@ -1,0 +1,41 @@
+# The same probe with ONLY its candidate folder and two hashes changed to this candidate:
+$ diff support-probe.mjs support-probe-after.mjs
+10c10
+< const base = join(root, 'docs/verification/qa/p0-13-tts-52be105/candidate-edge-identity-20261008');
+---
+> const base = join(root, 'docs/verification/qa/p0-13-tts-52be105/candidate-edge-identity-r2-20261008');
+13c13
+< assert.equal(hash(manifestBytes), 'd8d87df4c9cc9b32782e634dab963f83ace4960221db19508b4c877c9059f3f8');
+---
+> assert.equal(hash(manifestBytes), '03344f776afb4ff2110e7450b8c48d86fd0b9d7b394e5473e3ccd7959770cde9');
+16c16
+< assert.equal(hash(runner), 'f739487b513cc4f749ac4cc95cfa0a64ba58e23670d9fdc4d14753df4ae3e44f');
+---
+> assert.equal(hash(runner), '301b5053e758938df97059fa52a60715d6ed7d9423a7e44de5e30df681c59dfa');
+$ node --permission --allow-fs-read=<worktree> --allow-fs-read=<probe> <probe> <worktree>
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
++ actual - expected
+
++ []
+- [
+-   [
+-     'raise',
+-     'A'
+-   ]
+- ]
+
+    at file://support-probe-after.mjs:35:8 {
+  generatedMessage: true,
+  code: 'ERR_ASSERTION',
+  actual: [],
+  expected: [ [ 'raise', 'A' ] ],
+  operator: 'deepStrictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.21.0
+exit=1

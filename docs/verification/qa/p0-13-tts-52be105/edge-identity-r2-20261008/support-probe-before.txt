@@ -1,0 +1,85 @@
+# Support probe 6c7872d:tests/probes/support/review_edge_identity_counterexamples.mjs, byte for byte, against a full
+# 'git archive b9ce4cc tests docs' (offline; read permission only).
+$ node --permission --allow-fs-read=<archive> --allow-fs-read=<probe> <probe> <archive>
+{
+  "revision": "b9ce4cc56c375909befea38d410bc9e233ebc953",
+  "windows_calls": 0,
+  "limitation": "Source call-graph plus exact exported model and scaffolding-translated Find fixtures; not runtime PowerShell/C# execution or an observed navigation/API failure.",
+  "r1": {
+    "hwnd_lookup_revalidates_page": false,
+    "isolated_page_check_refuses": "generated surface DevTools target navigated or ended",
+    "action_model": {
+      "actions": [
+        [
+          "raise",
+          "A"
+        ]
+      ]
+    }
+  },
+  "r2": [
+    {
+      "name": "empty_caption_control",
+      "matches": [
+        "A"
+      ],
+      "caption_reads_for_pids": [
+        14104,
+        14104
+      ],
+      "required_refusal": false,
+      "lookup_accepts": true,
+      "violates_boundary": false
+    },
+    {
+      "name": "two_readable_tokens_control",
+      "matches": [
+        "A",
+        "B"
+      ],
+      "caption_reads_for_pids": [
+        14104,
+        14104
+      ],
+      "required_refusal": true,
+      "lookup_accepts": false,
+      "violates_boundary": false
+    },
+    {
+      "name": "owned_second_caption_read_failure",
+      "matches": [
+        "A"
+      ],
+      "caption_reads_for_pids": [
+        14104,
+        14104
+      ],
+      "required_refusal": true,
+      "lookup_accepts": true,
+      "violates_boundary": true
+    },
+    {
+      "name": "owned_second_caption_over_limit",
+      "matches": [
+        "A"
+      ],
+      "caption_reads_for_pids": [
+        14104,
+        14104
+      ],
+      "required_refusal": true,
+      "lookup_accepts": true,
+      "violates_boundary": true
+    }
+  ],
+  "r3": {
+    "scenario": "Owned returns owned HWND A, then ReadWindow(A) reports foreign PID 23092; receipt uses that PID as new Find whitelist",
+    "matches": [
+      "A"
+    ],
+    "caption_reads_for_pids": [
+      23092
+    ]
+  }
+}
+exit=0

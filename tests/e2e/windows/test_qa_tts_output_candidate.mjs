@@ -3,7 +3,8 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { createHash } from 'node:crypto';
-import { applyEdgeIdentity, applyScopedAdmission, assertReviewedPlacement, checkTtsCandidate, edgeBindGeometryModel, edgeIdentityBlocks, edgeRaiseModel, edgeSurfaceModel, edgeTargetModel, prepareTtsCandidate, revertEdgeIdentity, revertScopedAdmission, scopedAdmissionBlocks } from './qa_tts_output_candidate.mjs';
+import { applyEdgeIdentity, applyScopedAdmission, assertReviewedPlacement, checkTtsCandidate, edgeBindGeometryModel, edgeIdentityBlocks, edgeLookupModel, edgePageModel, edgeRaiseModel, edgeReceiptModel, edgeScanModel, edgeSurfaceModel, edgeTargetModel, prepareTtsCandidate, revertEdgeIdentity, revertScopedAdmission, scopedAdmissionBlocks } from './qa_tts_output_candidate.mjs';
+import vm from 'node:vm';
 import { buildVisibleCandidate } from './qa_visible_candidate.mjs';
 
 if (!process.env.LC_QA_TTS_STATIC_RECEIPT) throw Error('explicit saved static stage receipt required');
@@ -48,7 +49,7 @@ test('a same-length change to the reviewed physical point set is rejected', () =
 
 // ---- the scoped launch admission in the emitted runner ---------------------------------------------------------------
 const runner = base.payload['runner.ps1'].toString();
-const REVIEWED_IDENTITY_BLOCKS = { socket: '9ef77d2c3110b3fbc110d9062243a954e8c991c789e405d201eab4d7e9ec6e9c', lookup: 'ab7e45d85d61d4996c178da132e4d3db7fa0917f312252b9350cb4457ca352aa', bind: 'fb8a41b80ea87ef4c7050ebcdc341bbc2f25f68f3e5154c70216440c02b7686b' };
+const REVIEWED_IDENTITY_BLOCKS = { socket: '9ef77d2c3110b3fbc110d9062243a954e8c991c789e405d201eab4d7e9ec6e9c', lookup: '0107b4da53eb342c627f9462a4603aec566e55fe67e22b227706030a743bea0b', bind: 'fb8a41b80ea87ef4c7050ebcdc341bbc2f25f68f3e5154c70216440c02b7686b', fullscreen: '27aaa0bc0b7b321f5e3e94dab17a8ff3062475fa9d6f413ec3d751259efa48ee' };
 const REVIEWED_BLOCKS = { listing: '8669891a7eae6e4f3d641dee6ec2320390a78c36c2d8b0f2cde540480eb7ed50', guard: '1222e15da6e564ccda5fbf5d49c11c841c2cd8c7d0a51bfc3836715a1b6c8287' };
 const ctx = { appPort: base.manifest.appPort, edgePort: base.manifest.edgePort, edgeArgs: base.manifest.edgeArgs, surfaceUrl: base.manifest.surfaceUrl, profile: base.manifest.profile, edgePlacement: true };
 test('the emitted runner no longer refuses beside every other Electron app, and never reads -AllowForeign', () => {
@@ -118,29 +119,32 @@ test('the deltas are exactly the scoped admission and the owned Edge surface ide
 
 // ---- the owned Edge surface identity -------------------------------------------------------------------------------
 const TOKEN = 'lcqaghijklmnopqrstuvghijklmnopqrstuv';
+const URL_ = base.manifest.surfaceUrl;
 const launched = { pid: 14104, start: 1000, exited: false };
 const surface = { handle: 'S', pid: 14104, visible: true, title: `QA test surface ${TOKEN}` };
 const popup = { handle: 'P', pid: 14104, visible: true, title: '' };                       // e.g. a topmost bubble, first in z-order
 const ID = { token: TOKEN, pid: 14104, start: 1000, handle: 'S' };
+const page = (id, url = URL_) => ({ id, type: 'page', url });
+const target = { url: URL_, pages: [page('T')], cachedId: 'T' };
+const livePage = { href: URL_, truth: true, title: `QA test surface ${TOKEN}` };
 const model = (over = {}) => edgeSurfaceModel({ launched, children: [], windows: [popup, surface], identity: ID, ...over });
 test('identity model: an owned popup first in z-order is never taken; the window showing the generated surface is', () => {
   assert.equal(model(), 'S');
   assert.equal(model({ windows: [popup, { ...surface, title: `QA test surface ${TOKEN} - Microsoft Edge` }] }), 'S');   // the token anywhere in the caption
-  assert.throws(() => model({ windows: [popup, { ...surface, title: `${'x'.repeat(4096)} ${TOKEN}` }] }), /not found/); // an over-long caption is not read
   assert.equal(model({ windows: [{ ...popup, title: 'Restore pages?' }, surface] }), 'S');
 });
 test('identity model: another window of the same Edge process, a hidden window, and another app\'s window with the same title are not the surface', () => {
   assert.throws(() => model({ windows: [popup, { ...surface, title: 'QA test surface' }] }), /not found/);            // same PID, no token
   assert.throws(() => model({ windows: [popup, { ...surface, visible: false }] }), /not found/);
   assert.throws(() => model({ windows: [popup, { ...surface, pid: 23092 }] }), /not found/);                           // the user's Edge
-  assert.equal(model({ windows: [{ ...surface, handle: 'U', pid: 23092 }, popup, surface] }), 'S');
+  assert.equal(model({ windows: [{ ...surface, handle: 'U', pid: 23092, title: null }, popup, surface] }), 'S');      // a foreign unreadable window is not ours to read
 });
 test('identity model: a child process window counts only if the child was created after the launched Edge', () => {
   const child = { ...surface, pid: 777 };
   assert.equal(model({ windows: [child], children: [{ pid: 777, created: 1001 }] }), 'S');
+  assert.equal(model({ windows: [child], children: [{ pid: 777, created: 1000 }] }), 'S');
   assert.throws(() => model({ windows: [child], children: [{ pid: 777, created: 999 }] }), /not found/);
   assert.throws(() => model({ windows: [child], children: [{ pid: 777, created: null }] }), /not found/);
-  assert.equal(model({ windows: [child], children: [{ pid: 777, created: 1000 }] }), 'S');                       // created at the same instant counts
 });
 test('identity model: no match, two matches, an ended or replaced Edge, a missing identity and a changed window all refuse', () => {
   assert.throws(() => model({ windows: [popup] }), /not found/);
@@ -153,47 +157,14 @@ test('identity model: no match, two matches, an ended or replaced Edge, a missin
   assert.throws(() => model({ identity: { ...ID, handle: 'OLD' } }), /window changed/);
   assert.throws(() => model({ identity: null, launched: { ...launched, exited: true } }), /not established/);   // the native order: identity first
 });
-test('the emitted rule is the model: lookup redirected for edge, PID before title, same refusals in the same order, bound right after the surface loads', () => {
-  const lookup = runner.slice(runner.indexOf('public static class QaEdgeSurface'), runner.indexOf("if ($name -eq 'control')"));
-  assert.ok(runner.includes("function Window-Handle([string]$name) {\n  if ($name -eq 'edge') { return Get-QaEdgeSurfaceWindow }\n  if ($name -eq 'control')"));
-  const csharp = lookup.slice(0, lookup.indexOf("'@"));
-  assert.ok(csharp.indexOf('Array.IndexOf(pids, pid) < 0) return true;') < csharp.indexOf('GetWindowTextLength(h)'));   // no title read for other processes
-  assert.ok(csharp.includes('if (!IsWindowVisible(h) || Array.IndexOf(pids, pid) < 0) return true;'));
-  assert.ok(csharp.includes('if (s.ToString().IndexOf(token, StringComparison.Ordinal) >= 0) found.Add(h);'));
-  const order = ["throw 'owned Edge was not started'", "throw 'owned Edge has ended'", "throw 'owned Edge identity changed'", '$_.CreationDate -ge $p.StartTime',
-    "throw 'owned Edge surface identity is not established'", "throw 'owned generated surface window not found'", "throw 'owned generated surface window is ambiguous'", "throw 'owned generated surface window changed'"];
-  let at = -1;
-  for (const o of order) { const k = lookup.indexOf(o, at + 1); assert.ok(k > at, o); at = k; }
-  assert.ok(lookup.includes("location.href.toLowerCase() !== \" + $expected + \" || typeof window.__qaSurfaceTruth !== 'function') throw Error('generated surface target mismatch')"));
-  assert.ok(lookup.includes("$letters = 'ghijklmnopqrstuv'"));                                // the token holds no digit (the surface's values never appear in its title)
-  assert.ok(lookup.includes("if ($found.Count -eq 1) {") === false && lookup.includes("if ($found.Count -gt 1) { throw 'owned generated surface window is ambiguous' }"));
-  const branch = runner.slice(runner.indexOf('elseif ($null -ne $step.edgeStart) {'), runner.indexOf('elseif ($null -ne $step.consoleStart) {'));
-  assert.ok(branch.trimEnd().endsWith("        $script:qaEdgeSurfaceUrl = [string]$step.edgeStart\n        [void](Eval 'edge' 'new Promise(r => document.readyState === \"complete\" ? r(true) : addEventListener(\"load\", () => r(true)))')\n        Set-QaEdgeSurfaceIdentity $entry ([string]$step.edgeStart)\n      }"));
-  assert.ok(runner.includes("function Get-Socket([string]$target) {\n  if ($target -eq 'edge') { return Get-QaEdgeSocket }\n  $cached = $sockets[$target]"));
-  const sock = runner.slice(runner.indexOf('function Get-QaEdgeSocket {'), runner.indexOf('function Get-QaOwnedEdgeIds($identity) {'));
-  assert.ok(sock.length > 0 && sock.length < 3000);
-  let k = -1;
-  for (const o of ["throw 'generated surface URL is not known'", "Where-Object { (ConvertTo-QaUrlKey ([string]$_.url)) -eq $want }", "throw 'generated surface DevTools target is ambiguous'",
-    "throw 'generated surface DevTools target navigated or ended'", "throw 'no DevTools target for the generated surface'", "throw 'generated surface DevTools target changed'", "throw 'generated surface DevTools connection closed'"]) { const at = sock.indexOf(o, k + 1); assert.ok(at > k, o); k = at; }
-  const bind = runner.slice(runner.indexOf('function Set-QaEdgeSurfaceIdentity'), runner.indexOf("function Window-Handle([string]$name) {"));
-  k = -1;
-  for (const o of ["throw 'generated surface URL changed or escaped'", "throw 'generated surface title identity was not set'", "throw 'generated surface viewport unavailable'", '$identity = [ordered]@{ token = $token;',
-    "throw 'owned generated surface window not found'", "throw 'owned generated surface window is ambiguous'", '$area = [QaPlacementNative]::ClientBounds($found[0])',
-    "throw 'owned generated surface window DPI disagrees with its page'", "throw 'owned generated surface window cannot hold its page'", '$identity.handle = $found[0]', '$script:qaEdgeIdentity = $identity']) { const at = bind.indexOf(o, k + 1); assert.ok(at > k, o); k = at; }
-  assert.equal(bind.split('$script:qaEdgeIdentity =').length, 2);                         // the identity is published once, after every check
-  assert.equal(/Raise|SetWindowPos|ShowWindow|setWindowBounds|MoveWindow/.test(sock + bind + runner.slice(runner.indexOf('public static class QaEdgeSurface'), runner.indexOf('function Get-QaEdgeSocket {'))), false);   // the identity path never acts on a window
-  assert.equal(runner.split('Set-QaEdgeSurfaceIdentity $entry').length, 2);
-  assert.equal(base.manifest.surfaceUrl, JSON.parse(base.payload['steps.json'])[0].edgeStart);
+test('R2 model: a readable token window PLUS an eligible owned window whose caption cannot be read is unresolved, never unique', () => {
+  for (const second of [{ ...popup, handle: 'B', title: null }, { ...popup, handle: 'B', title: 'x'.repeat(5000) }])
+    assert.throws(() => model({ windows: [surface, second] }), /unresolved/);
+  assert.deepEqual(edgeScanModel({ launched, windows: [surface, { ...popup, handle: 'B', title: null }], identity: ID }), { matches: ['S'], unknown: ['B'] });
+  assert.equal(model({ windows: [surface, { ...popup, handle: 'B', title: '' }] }), 'S');                          // a successful empty caption is a nonmatch
+  assert.throws(() => model({ windows: [popup, { ...surface, title: `${'x'.repeat(4096)} ${TOKEN}` }] }), /unresolved/);   // an over-long caption is not read
+  assert.equal(model({ windows: [surface, { ...popup, handle: 'B', title: null, visible: false }] }), 'S');       // a hidden window is not eligible
 });
-test('the two emitted identity blocks are pinned by their reviewed hashes', () => {
-  const blocks = edgeIdentityBlocks(), h = t => createHash('sha256').update(t).digest('hex');
-  assert.ok(runner.includes(blocks.socket) && runner.includes(blocks.lookup) && runner.includes(blocks.bind));
-  assert.deepEqual({ socket: h(blocks.socket), lookup: h(blocks.lookup), bind: h(blocks.bind) }, REVIEWED_IDENTITY_BLOCKS);
-});
-
-// The DevTools page target (Get-QaEdgeSocket), the bind-time agreement and the first window action, as models.
-const URL_ = 'file:///C:/Users/ROG/AppData/Local/Temp/lc-qa-tts-output-x/surface.html';
-const page = (id, url = URL_) => ({ id, type: 'page', url });
 test('target model: only the page showing the generated surface, the same one every time; another page first, two, none or a navigation refuses', () => {
   assert.equal(edgeTargetModel({ url: URL_, pages: [page('other', 'edge://newtab/'), page('A')] }), 'A');
   assert.equal(edgeTargetModel({ url: URL_, pages: [page('A', URL_.toLowerCase())] }), 'A');
@@ -203,47 +174,240 @@ test('target model: only the page showing the generated surface, the same one ev
   assert.throws(() => edgeTargetModel({ url: URL_, pages: [page('A', 'file:///C:/elsewhere.html')], cachedId: 'A' }), /navigated or ended/);
   assert.throws(() => edgeTargetModel({ url: URL_, pages: [page('B')], cachedId: 'A' }), /target changed/);
   assert.throws(() => edgeTargetModel({ url: null, pages: [page('A')] }), /URL is not known/);
-  assert.throws(() => edgeTargetModel({ url: URL_, pages: [page('A', URL_.replace('surface.html', 'surface%2Ehtml'))] }), /no DevTools target/);   // an escaped form is not the surface
+  assert.throws(() => edgeTargetModel({ url: URL_, pages: [page('A', URL_.replace('surface.html', 'surface%2Ehtml'))] }), /no DevTools target/);
+});
+test('page model: the bound page must still be at the URL, still the generated surface and still carry the token (a reloaded page is not tagged again)', () => {
+  assert.equal(edgePageModel({ target, page: livePage, identity: ID }), true);
+  assert.throws(() => edgePageModel({ target, page: { ...livePage, title: 'QA test surface' }, identity: ID }), /lost its identity/);   // reloaded: token gone
+  assert.throws(() => edgePageModel({ target, page: { ...livePage, href: 'file:///C:/elsewhere.html' }, identity: ID }), /navigated/);
+  assert.throws(() => edgePageModel({ target, page: { ...livePage, truth: false }, identity: ID }), /changed/);
+  assert.throws(() => edgePageModel({ target: { ...target, pages: [page('T2')] }, page: livePage, identity: ID }), /target changed/);
 });
 test('bind model: the found window must have the page\'s DPI and a client area that holds its viewport; unreadable geometry refuses', () => {
   const p = { inner_width: 1280, inner_height: 800, dpr: 2 };
   assert.equal(edgeBindGeometryModel({ area: [0, 0, 2560, 1600, 192], page: p }), true);
   assert.equal(edgeBindGeometryModel({ area: [100, 50, 2660, 1730, 192], page: p }), true);                      // a normal window with its title bar
   assert.throws(() => edgeBindGeometryModel({ area: [670, 88, 1888, 202, 192], page: p }), /cannot hold/);        // the 2026-10-08 window's size
-  assert.throws(() => edgeBindGeometryModel({ area: [0, 0, 2560, 400, 192], page: p }), /cannot hold/);           // wide but short
-  assert.throws(() => edgeBindGeometryModel({ area: [0, 0, 1000, 1600, 192], page: p }), /cannot hold/);          // tall but narrow
-  assert.equal(edgeBindGeometryModel({ area: [0, 0, 2558, 1598, 192], page: p }), true);                          // the 2 px tolerance
+  assert.throws(() => edgeBindGeometryModel({ area: [0, 0, 2560, 400, 192], page: p }), /cannot hold/);
+  assert.throws(() => edgeBindGeometryModel({ area: [0, 0, 1000, 1600, 192], page: p }), /cannot hold/);
+  assert.equal(edgeBindGeometryModel({ area: [0, 0, 2558, 1598, 192], page: p }), true);
   assert.throws(() => edgeBindGeometryModel({ area: [0, 0, 2560, 1600, 96], page: p }), /DPI/);
   assert.throws(() => edgeBindGeometryModel({ area: null, page: p }), /unavailable/);
   assert.throws(() => edgeBindGeometryModel({ area: [0, 0, 2560, 1600, 192], page: { ...p, dpr: 0 } }), /viewport unavailable/);
 });
-test('action model: nothing is raised unless the identity holds and the identified window is in the normal band; every refusal leaves no action', () => {
-  const state = (over = {}) => ({ launched, children: [], identity: { token: TOKEN, pid: 14104, start: 1000, handle: 'S' }, windows: [{ ...popup, topmost: true }, surface], ...over });
-  assert.deepEqual(edgeRaiseModel(state()).actions, [['raise', 'S']]);                                              // owned topmost popup first: the surface is raised
-  for (const [over, why] of [
-    [{ windows: [{ ...popup, topmost: true }] }, /not found/],
-    [{ windows: [surface, { ...surface, handle: 'D' }] }, /ambiguous/],                                             // a same-size decoy with the token
-    [{ windows: [{ ...surface, handle: 'S2' }], identity: { token: TOKEN, pid: 14104, start: 1000, handle: 'S' } }, /window changed/],
-    [{ launched: { ...launched, exited: true } }, /has ended/],
-    [{ launched: { ...launched, start: 1001 } }, /identity changed/],
-    [{ windows: [{ ...surface, topmost: true }] }, /normal window band/],                                         // the identified surface itself is topmost
-    [{ windows: [{ ...surface, minimized: true }] }, /normal window band/],
-  ]) { const r = edgeRaiseModel(state(over)); assert.deepEqual(r.actions, []); assert.match(r.refused, why); }
+test('R1 action model: bind, then the page or target changes before a raise, full-screen write or front: refusal and zero actions', () => {
+  const bound = (over = {}) => ({ launched, children: [], identity: ID, windows: [{ ...popup, topmost: true }, surface], target, page: livePage, ...over });
+  for (const action of ['raise', 'fullscreen', 'front']) {
+    assert.deepEqual(edgeRaiseModel(bound(), action).actions, [[action, 'S']]);
+    for (const [over, why] of [
+      [{ page: { ...livePage, href: 'file:///C:/elsewhere.html' }, target: { ...target, pages: [page('T', 'file:///C:/elsewhere.html')] } }, /navigated or ended/],
+      [{ target: { ...target, pages: [page('T2')] } }, /target changed/],                                           // target replaced, caption and HWND kept
+      [{ page: { ...livePage, title: 'QA test surface' } }, /lost its identity/],                                  // the page reloaded
+      [{ page: { ...livePage, truth: false } }, /lost its identity/],                                              // another page at the same URL
+      [{ target: undefined }, /target is not known/],
+      [{ windows: [surface, { ...popup, handle: 'B', title: null }] }, /unresolved/],
+      [{ windows: [{ ...popup, topmost: true }] }, /not found/],
+      [{ windows: [surface, { ...surface, handle: 'D' }] }, /ambiguous/],
+      [{ windows: [{ ...surface, handle: 'S2' }] }, /window changed/],
+      [{ launched: { ...launched, exited: true } }, /has ended/],
+      [{ launched: { ...launched, start: 1001 } }, /identity changed/],                                            // Edge replaced under the same PID
+      [{ windows: [{ ...surface, topmost: true }] }, /normal window band/],                                       // the identified surface itself is topmost
+      [{ windows: [{ ...surface, minimized: true }] }, /normal window band/],
+    ]) { const r = edgeRaiseModel(bound(over), action); assert.deepEqual(r.actions, [], `${action} ${why}`); assert.match(r.refused, why); }
+  }
+});
+test("R1, Support's 6c7872d fixture in the model's {target, page} input: the same window, owner, band and token caption; only the page's URL/target changed", () => {
+  const token = 'lcqaghijklmnopqrstuvghijklmnopqrstuv', A_ = { handle: 'A', pid: 14104, visible: true, title: `QA test surface ${token}`, topmost: false, minimized: false };
+  const state = { launched: { pid: 14104, start: 1000, exited: false }, windows: [A_], identity: { token, pid: 14104, start: 1000, handle: 'A' } };
+  const url = base.manifest.surfaceUrl, other = 'file:///C:/synthetic-other-page.html';
+  const kept = { url, cachedId: 'page-A', pages: [{ type: 'page', id: 'page-A', url }] };
+  assert.deepEqual(edgeRaiseModel({ ...state, target: kept, page: { href: url, truth: true, title: A_.title } }).actions, [['raise', 'A']]);   // control: the bound page
+  const changed = { url, cachedId: 'page-A', pages: [{ type: 'page', id: 'page-A', url: other }] };                 // Support's changed target
+  const r = edgeRaiseModel({ ...state, target: changed, page: { href: other, truth: true, title: A_.title } });
+  assert.deepEqual(r.actions, []);
+  assert.match(r.refused, /navigated or ended/);
+});
+test('R3 receipt model: the processes are fixed before the walk; a window whose owner changed to another process gets no caption read', () => {
+  const r = edgeReceiptModel({ ids: [14104], enumerated: [{ handle: 'H' }, { handle: 'S' }], owners: { H: 23092, S: 14104 } });
+  assert.deepEqual(r.rows, [{ handle: 'H', status: 'owner_changed' }, { handle: 'S', status: 'owned' }]);
+  assert.deepEqual(r.captionReads, [14104]);
 });
 
+// ---- replays of the emitted C# (mechanical translation of its source text; injected Win32; not native execution) ----
+const before = readFileSync(new URL('../../../docs/verification/qa/p0-13-tts-52be105/candidate-edge-identity-20261008/runner.ps1', import.meta.url), 'utf8');
+assert.equal(createHash('sha256').update(before).digest('hex'), 'f739487b513cc4f749ac4cc95cfa0a64ba58e23670d9fdc4d14753df4ae3e44f');   // b9ce4cc, Support's HOLD
+const method = (text, signature) => { const m = text.split(signature + ' {'); assert.equal(m.length, 2, signature); return m[1].slice(0, m[1].indexOf('\n  }\n')); };
+function translate(body, pairs) {
+  for (const [from, to] of pairs) { assert.ok(body.includes(from), from); body = body.split(from).join(to); }
+  return body;
+}
+function winApi(rows, owners = {}) {
+  const row = h => rows.find(w => w.handle === h), reads = [];
+  let lastError = 0;
+  const api = {
+    EnumWindows(cb) { for (const w of rows) if (!cb(w.handle, 0)) break; return true; },
+    GetWindowThreadProcessId: h => (row(h)?.gone ? 0 : owners[h] ?? row(h).pid),
+    IsWindowVisible: h => row(h).visible !== false,
+    SetLastError(c) { lastError = c; },
+    GetLastWin32Error: () => lastError,
+    GetWindowTextLength(h) {
+      reads.push(owners[h] ?? row(h).pid);
+      const w = row(h);
+      if (w.lengthFails) { lastError = 5; if (w.vanishes) w.gone = true; return 0; }
+      return w.lengthResult ?? w.title.length;
+    },
+    GetWindowText(h, s) { const w = row(h); if (w.readFails) return 0; s.value = w.title; return w.title.length; },
+    StringBuilder: class { constructor(n) { this.Capacity = n; } ToString() { return this.value; } },
+  };
+  return { api, reads };
+}
+function newRule(rows, owners) {
+  const isOwned = translate(method(runner, 'public static bool IsOwned(IntPtr h, uint[] pids)'), [['uint pid;\n    GetWindowThreadProcessId(h, out pid);', 'const pid = GetWindowThreadProcessId(h);'], ['Array.IndexOf(pids, pid)', 'pids.indexOf(pid)']]);
+  const caption = translate(method(runner, 'public static int Caption(IntPtr h, uint[] pids, string token)'), [['int n =', 'const n ='], ['Marshal.GetLastWin32Error()', 'GetLastWin32Error()'],
+    ['var s = new StringBuilder(n + 1);', 'const s = new StringBuilder(n + 1);'], ['int r =', 'const r ='], ['s.ToString().IndexOf(token, StringComparison.Ordinal)', 's.ToString().indexOf(token)']]);
+  const find = translate(method(runner, 'public static QaEdgeScan Find(uint[] pids, string token)'), [['var matches = new List<IntPtr>();', 'const matches = [];'], ['var unknown = new List<IntPtr>();', 'const unknown = [];'],
+    ['EnumProc each =', 'const each ='], ['int c =', 'const c ='], ['.Add(h)', '.push(h)'], ['IntPtr.Zero', '0'], ['new InvalidOperationException(', 'new Error('], ['GC.KeepAlive(each);', ''],
+    ['return new QaEdgeScan { Matches = matches.ToArray(), Unknown = unknown.ToArray() };', 'return { Matches: matches, Unknown: unknown };']]);
+  const owned = translate(method(runner, 'public static IntPtr[] OwnedWindows(uint[] pids)'), [['var found = new List<IntPtr>();', 'const found = [];'], ['EnumProc each =', 'const each ='], ['found.Add(h)', 'found.push(h)'],
+    ['IntPtr.Zero', '0'], ['new InvalidOperationException(', 'new Error('], ['GC.KeepAlive(each);', ''], ['found.ToArray()', 'found']]);
+  const { api, reads } = winApi(rows, owners);
+  const fn = new vm.Script(`(() => { function IsOwned(h, pids) {${isOwned}\n} function Caption(h, pids, token) {${caption}\n} function Find(pids, token) {${find}\n} function OwnedWindows(pids) {${owned}\n} return { IsOwned, Caption, Find, OwnedWindows }; })()`).runInNewContext(api);
+  return { ...fn, reads };
+}
+function oldFind(rows, pids) {
+  const body = translate(method(before, 'public static IntPtr[] Find(uint[] pids, string token)'), [['var found = new List<IntPtr>();', 'const found = [];'], ['EnumProc each =', 'const each ='],
+    ['uint pid;\n      GetWindowThreadProcessId(h, out pid);', 'const pid = GetWindowThreadProcessId(h);'], ['Array.IndexOf(pids, pid)', 'pids.indexOf(pid)'], ['int n =', 'const n ='],
+    ['var s = new StringBuilder(n + 1);', 'const s = new StringBuilder(n + 1);'], ['s.ToString().IndexOf(token, StringComparison.Ordinal)', 's.ToString().indexOf(token)'], ['found.Add(h)', 'found.push(h)'],
+    ['IntPtr.Zero', '0'], ['new InvalidOperationException(', 'new Error('], ['GC.KeepAlive(each);', ''], ['found.ToArray()', 'found']]);
+  const { api, reads } = winApi(rows);
+  return { matches: Array.from(new vm.Script(`((pids, token) => {${body}\n})(pids, token)`).runInNewContext({ ...api, pids, token: TOKEN })), reads };
+}
+const A = { handle: 'A', pid: 14104, visible: true, title: `QA test surface ${TOKEN}` };
+test('R2 before/after (replayed C#): a readable match plus an unreadable second owned window was taken as unique at b9ce4cc; now it is carried as unknown', () => {
+  for (const second of [{ handle: 'B', pid: 14104, title: 'x', readFails: true }, { handle: 'B', pid: 14104, title: 'x', lengthResult: 5000 }, { handle: 'B', pid: 14104, title: 'x', lengthFails: true }]) {
+    assert.deepEqual(oldFind([A, second], [14104]).matches, ['A']);                                              // before: false uniqueness
+    const now = newRule([A, second]).Find([14104], TOKEN);
+    assert.deepEqual([Array.from(now.Matches), Array.from(now.Unknown)], [['A'], ['B']]);                         // after: unresolved
+  }
+  const empty = newRule([A, { handle: 'B', pid: 14104, title: '' }]).Find([14104], TOKEN);
+  assert.deepEqual([Array.from(empty.Matches), Array.from(empty.Unknown)], [['A'], []]);                          // a successful empty caption stays a nonmatch
+  const two = newRule([A, { ...A, handle: 'B' }]).Find([14104], TOKEN);
+  assert.deepEqual(Array.from(two.Matches), ['A', 'B']);
+  const grew = newRule([A, { handle: 'B', pid: 14104, title: 'abc', lengthResult: 2 }]).Find([14104], TOKEN);    // read returned more than the length said
+  assert.deepEqual(Array.from(grew.Unknown), ['B']);
+  const cleared = newRule([A, { handle: 'B', pid: 14104, title: 'x', lengthFails: true }, { handle: 'C', pid: 14104, title: '' }]).Find([14104], TOKEN);
+  assert.deepEqual([Array.from(cleared.Matches), Array.from(cleared.Unknown)], [['A'], ['B']]);                     // an earlier failure does not make a later empty caption unknown
+  const vanished = newRule([A, { handle: 'B', pid: 14104, title: 'x', lengthFails: true, vanishes: true }]);
+  assert.equal(vanished.Caption('B', [14104], TOKEN), -2);                                                            // a window gone during the read is no longer a candidate
+});
+test('R2: the PowerShell lookup and bind refuse while any owned caption is unknown, before using the matches', () => {
+  const lookup = runner.slice(runner.indexOf('function Get-QaEdgeSurfaceWindow {'), runner.indexOf('function Get-QaEdgeWindowReceipt('));
+  assert.ok(lookup.indexOf("if (@($scan.Unknown).Count -gt 0) { throw 'an owned Edge window caption could not be read: the surface window is unresolved' }") < lookup.indexOf('$found = @($scan.Matches)'));
+  const bind = runner.slice(runner.indexOf('function Set-QaEdgeSurfaceIdentity'), runner.indexOf("function Window-Handle([string]$name) {"));
+  assert.ok(bind.indexOf("if (@($scan.Unknown).Count -gt 0) { throw") < bind.indexOf("if ($found.Count -eq 0) { throw"));
+  assert.ok(bind.includes("if (@($scan.Matches).Count -gt 0 -and @($scan.Unknown).Count -eq 0) { break }"));   // unknown captions may settle during the 5 s
+});
+test('R3 before/after (replayed C#): at b9ce4cc the receipt read captions of a foreign process found by HWND reuse; now Caption reads nothing for it', () => {
+  assert.ok(before.includes('[QaEdgeSurface]::Find([uint32[]]@($g.Owner), [string]$identity.token)'));          // before: observed owner became a whitelist
+  assert.ok(oldFind([{ ...A, pid: 23092 }], [23092]).reads.includes(23092));
+  const now = newRule([A], { A: 23092 });                                                                            // enumerated as 14104's, now 23092's
+  assert.equal(now.Caption('A', [14104], TOKEN), -2);
+  assert.deepEqual(now.reads, []);                                                                                   // zero caption reads for the foreign process
+  assert.deepEqual(Array.from(newRule([{ ...A, pid: 23092 }]).Find([14104], TOKEN).Matches), []);
+  const receipt = runner.slice(runner.indexOf('function Get-QaEdgeWindowReceipt('), runner.indexOf('function Set-QaEdgeSurfaceIdentity'));
+  assert.equal(/\$g\.Owner|\$row\.owner|TitleLength/.test(receipt), false);                                          // never a whitelist from an observed owner
+  assert.ok(receipt.indexOf('$caption = [QaEdgeSurface]::Caption($h, $ids, [string]$identity.token)') < receipt.indexOf('[QaDisplayAdmissionNative]::ReadWindow($h)'));
+  const shortCircuit = receipt.indexOf("if ($caption -eq -2) { $row.status = 'owner_changed' }");                     // no metadata read either once the owner changed
+  assert.ok(shortCircuit > 0 && shortCircuit < receipt.indexOf('[QaDisplayAdmissionNative]::ReadWindow($h)'));
+  const walk = newRule([A, { handle: 'F', pid: 23092, title: 'another app' }, { handle: 'H', pid: 14104, visible: false, title: '' }]);
+  assert.deepEqual(Array.from(walk.OwnedWindows([14104])), ['A']);                                                 // the receipt walks only visible windows of the owned processes
+  assert.deepEqual(walk.reads, []);
+  assert.ok(receipt.indexOf('[QaDisplayAdmissionNative]::ReadWindow($h)') < receipt.indexOf("if (-not [QaEdgeSurface]::IsOwned($h, $ids)) { $row.status = 'owner_changed' }"));
+  const csharp = method(runner, 'public static int Caption(IntPtr h, uint[] pids, string token)');
+  assert.ok(csharp.indexOf('if (!IsOwned(h, pids)) return -2;') < csharp.indexOf('GetWindowTextLength(h)'));
+});
+test('R1 before/after (source path): at b9ce4cc the window lookup never touched the page; now every lookup and every full-screen write checks the bound page first', () => {
+  const fn = (text, name) => { const k = text.indexOf(`function ${name}`); return text.slice(k, text.indexOf('\n}\n', k)); };
+  const touchesPage = text => /Assert-QaEdgeSurfacePage|Get-QaEdgeSocket|Get-Socket|\bEval\b|Invoke-Cdp/.test(fn(text, 'Get-QaEdgeSurfaceWindow') + fn(text, 'Find-QaEdgeSurface') + fn(text, 'Get-QaOwnedEdgeIds'));
+  assert.equal(touchesPage(before), false);                                                                            // before: the lookup never reached the page
+  assert.equal(touchesPage(runner), true);                                                                             // the same test on the corrected rule
+  const lookup = fn(runner, 'Get-QaEdgeSurfaceWindow');
+  assert.ok(lookup.indexOf('[void](Assert-QaEdgeSurfacePage $script:qaEdgeIdentity)') > 0 && lookup.indexOf('[void](Assert-QaEdgeSurfacePage $script:qaEdgeIdentity)') < lookup.indexOf('$scan = Find-QaEdgeSurface $script:qaEdgeIdentity'));
+  assert.ok(lookup.lastIndexOf('[void](Assert-QaEdgeSurfacePage $script:qaEdgeIdentity)') > lookup.indexOf("throw 'owned generated surface window changed'"));   // and again after the scan
+  const pageCheck = fn(runner, 'Assert-QaEdgeSurfacePage');
+  for (const part of ["if (-not $p -or $p.HasExited) { throw 'owned Edge has ended' }", '$socket = Get-QaEdgeSocket', "document.title.endsWith(' ' + '\" + [string]$identity.token + \"')", "typeof window.__qaSurfaceTruth === 'function'", 'location.href.toLowerCase() === " + $expected + "',
+    "throw 'generated surface page changed, navigated or lost its identity'", '[void](Get-QaEdgeSocket)']) assert.ok(pageCheck.includes(part), part);
+  assert.equal(/document\.title\s*=/.test(pageCheck), false);                                                        // an unknown page is never tagged again
+  const writes = runner.split('\n').map((l, i, all) => [l, all[i - 1]]).filter(([l]) => l.includes("'Browser.setWindowBounds'"));
+  assert.equal(writes.length, 1);
+  const guard = runner.slice(runner.indexOf('    $socket = Assert-QaEdgeSurfacePage $script:qaEdgeIdentity   # the bound page'), runner.indexOf("'Browser.setWindowBounds'"));
+  for (const part of ["if ((Window-Handle 'edge') -ne $window) { throw 'owned Edge window changed before placement' }", "$cdpNow = Invoke-Cdp $socket 'Browser.getWindowForTarget' '{}'",
+    "if ($null -eq $cdpNow -or $cdpNow.error -or $cdpNow.result.windowId -ne $id) { throw 'owned Edge CDP window identity changed before placement' }"]) assert.ok(guard.includes(part), part);
+  assert.ok(guard.length < 600);                                                                                      // directly before the write
+  const bind = fn(runner, 'Set-QaEdgeSurfaceIdentity');
+  assert.ok(bind.indexOf('[void](Assert-QaEdgeSurfacePage $identity)') > bind.indexOf("throw 'owned generated surface window cannot hold its page'") && bind.indexOf('[void](Assert-QaEdgeSurfacePage $identity)') < bind.indexOf('$script:qaEdgeIdentity = $identity'));
+  // Every Edge window action goes through Window-Handle 'edge' (and so through the page check): raise, show, onTop, placement.
+  assert.ok(runner.includes("function Window-Handle([string]$name) {\n  if ($name -eq 'edge') { return Get-QaEdgeSurfaceWindow }"));
+  assert.equal(runner.split('[QaWin]::Raise($window, $false)').length, 2);
+  assert.ok(fn(runner, 'Raise-QaEdgeNormal').indexOf("$entry.before_window = Assert-QaNormalEdge $window $entry 'before_window'") < fn(runner, 'Raise-QaEdgeNormal').indexOf('[QaWin]::Raise($window, $false)'));
+  assert.ok(fn(runner, 'Assert-QaNormalEdge').includes("(Window-Handle 'edge') -ne $window"));
+});
+test('the emitted rule is bound to the models: lookup redirected, refusals in order, bound right after the surface loads, nothing acts in the identity path', () => {
+  const lookup = runner.slice(runner.indexOf('public static class QaEdgeSurface'), runner.indexOf("if ($name -eq 'control')"));
+  const order = ["throw 'generated surface DevTools target is ambiguous'", "throw 'generated surface page changed, navigated or lost its identity'", "throw 'owned Edge was not started'", "throw 'owned Edge has ended'",
+    "throw 'owned Edge identity changed'", '$_.CreationDate -ge $p.StartTime', "throw 'owned Edge surface identity is not established' }\n  [void](Assert-QaEdgeSurfacePage", "throw 'an owned Edge window caption could not be read: the surface window is unresolved'",
+    "throw 'owned generated surface window not found'", "throw 'owned generated surface window is ambiguous'", "throw 'owned generated surface window changed'"];
+  let at = -1;
+  for (const o of order) { const k = lookup.indexOf(o, at + 1); assert.ok(k > at, o); at = k; }
+  assert.ok(lookup.includes("location.href.toLowerCase() !== \" + $expected + \" || typeof window.__qaSurfaceTruth !== 'function') throw Error('generated surface target mismatch')"));
+  assert.ok(lookup.includes("$letters = 'ghijklmnopqrstuv'"));
+  const sock = runner.slice(runner.indexOf('function Get-QaEdgeSocket {'), runner.indexOf('function Assert-QaEdgeSurfacePage($identity) {'));
+  assert.ok(sock.length > 0 && sock.length < 3000);
+  let k = -1;
+  for (const o of ["throw 'generated surface URL is not known'", "Where-Object { (ConvertTo-QaUrlKey ([string]$_.url)) -eq $want }", "throw 'generated surface DevTools target is ambiguous'",
+    "throw 'generated surface DevTools target navigated or ended'", "throw 'no DevTools target for the generated surface'", "throw 'generated surface DevTools target changed'", "throw 'generated surface DevTools connection closed'"]) { const at = sock.indexOf(o, k + 1); assert.ok(at > k, o); k = at; }
+  const bindFn = runner.slice(runner.indexOf('function Set-QaEdgeSurfaceIdentity'), runner.indexOf("function Window-Handle([string]$name) {"));
+  k = -1;
+  for (const o of ["throw 'generated surface URL changed or escaped'", "throw 'generated surface title identity was not set'", "throw 'generated surface viewport unavailable'", '$identity = [ordered]@{ token = $token;',
+    "throw 'an owned Edge window caption could not be read: the surface window is unresolved'", "throw 'owned generated surface window not found'", "throw 'owned generated surface window is ambiguous'", '$area = [QaPlacementNative]::ClientBounds($found[0])',
+    "throw 'owned generated surface window DPI disagrees with its page'", "throw 'owned generated surface window cannot hold its page'", '[void](Assert-QaEdgeSurfacePage $identity)', '$identity.handle = $found[0]', '$script:qaEdgeIdentity = $identity']) { const at = bindFn.indexOf(o, k + 1); assert.ok(at > k, o); k = at; }
+  const branch = runner.slice(runner.indexOf('elseif ($null -ne $step.edgeStart) {'), runner.indexOf('elseif ($null -ne $step.consoleStart) {'));
+  assert.ok(branch.trimEnd().endsWith("        $script:qaEdgeSurfaceUrl = [string]$step.edgeStart\n        [void](Eval 'edge' 'new Promise(r => document.readyState === \"complete\" ? r(true) : addEventListener(\"load\", () => r(true)))')\n        Set-QaEdgeSurfaceIdentity $entry ([string]$step.edgeStart)\n      }"));
+  assert.ok(runner.includes("function Get-Socket([string]$target) {\n  if ($target -eq 'edge') { return Get-QaEdgeSocket }\n  $cached = $sockets[$target]"));
+  assert.equal(runner.split('Set-QaEdgeSurfaceIdentity $entry').length, 2);
+  const bind = runner.slice(runner.indexOf('function Set-QaEdgeSurfaceIdentity'), runner.indexOf("function Window-Handle([string]$name) {"));
+  assert.equal(bind.split('$script:qaEdgeIdentity =').length, 2);
+  assert.equal(/Raise|SetWindowPos|ShowWindow|setWindowBounds|MoveWindow/.test(lookup), false);                       // the identity path never acts on a window
+  assert.equal(base.manifest.surfaceUrl, JSON.parse(base.payload['steps.json'])[0].edgeStart);
+});
+test('the emitted identity blocks are pinned by their reviewed hashes', () => {
+  const blocks = edgeIdentityBlocks(), h = t => createHash('sha256').update(t).digest('hex');
+  for (const b of Object.values(blocks)) assert.ok(runner.includes(b));
+  assert.deepEqual(Object.fromEntries(Object.entries(blocks).map(([k, v]) => [k, h(v)])), REVIEWED_IDENTITY_BLOCKS);
+});
 test('every guard of the emitted identity rule is present as an exact line, as often as it should be', () => {
+  const block = Object.values(edgeIdentityBlocks()).join('\n');
   for (const [line, n] of [
-    ["      if (!IsWindowVisible(h) || Array.IndexOf(pids, pid) < 0) return true;", 1],
-    ["      if (s.ToString().IndexOf(token, StringComparison.Ordinal) >= 0) found.Add(h);", 1],
-    ["      if (n <= 0 || n > 4096) return true;", 1],
+    ["    if (n == 0) return Marshal.GetLastWin32Error() == 0 ? 0 : (IsOwned(h, pids) ? -1 : -2);", 1],
+    ["    if (n < 0 || n > 4096) return IsOwned(h, pids) ? -1 : -2;", 1],
+    ["    if (!IsOwned(h, pids)) return -2;", 2],
+    ["    if (r != n || GetWindowTextLength(h) != n) return -1;", 1],
+    ["      if (!IsWindowVisible(h) || !IsOwned(h, pids)) return true;", 1],
+    ["      else if (c == -1) unknown.Add(h);", 1],
     ["function ConvertTo-QaUrlKey([string]$u) { return $u.ToLowerInvariant() }", 1],
     ["      $match = @($pages | Where-Object { (ConvertTo-QaUrlKey ([string]$_.url)) -eq $want })", 1],
     ["      if ($match.Count -gt 1) { throw 'generated surface DevTools target is ambiguous' }", 1],
     ["      if ($cached) { throw 'generated surface DevTools target navigated or ended' }", 1],
     ["    if ([string]$cached.id -cne [string]$t.id) { throw 'generated surface DevTools target changed' }", 1],
+    ["  if (-not ($same -is [bool] -and $same)) { throw 'generated surface page changed, navigated or lost its identity' }", 1],
     ["  if ([uint32]$p.Id -ne $identity.pid -or $p.StartTime -ne $identity.start) { throw 'owned Edge identity changed' }", 1],
     ["  $kids = @(Get-CimInstance Win32_Process -Filter \"ParentProcessId=$($p.Id)\" | Where-Object { $_.CreationDate -and $_.CreationDate -ge $p.StartTime } | ForEach-Object { [uint32]$_.ProcessId })", 1],
     ["  return [QaEdgeSurface]::Find([uint32[]]@(Get-QaOwnedEdgeIds $identity), [string]$identity.token)", 1],
+    ["  if ($null -eq $script:qaEdgeIdentity) { throw 'owned Edge surface identity is not established' }", 1],
+    ["  [void](Assert-QaEdgeSurfacePage $script:qaEdgeIdentity)", 1],
+    ["  [void](Assert-QaEdgeSurfacePage $script:qaEdgeIdentity)     # and still the same page after the window scan", 1],
+    ["    if ((Window-Handle 'edge') -ne $window) { throw 'owned Edge window changed before placement' }", 1],
+    ["  if (@($scan.Unknown).Count -gt 0) { throw 'an owned Edge window caption could not be read: the surface window is unresolved' }", 2],
     ["  if ($found.Count -eq 0) { throw 'owned generated surface window not found' }", 2],
     ["  if ($found.Count -gt 1) { throw 'owned generated surface window is ambiguous' }", 2],
     ["  if ($found[0] -ne $script:qaEdgeIdentity.handle) { throw 'owned generated surface window changed' }", 1],
@@ -252,13 +416,16 @@ test('every guard of the emitted identity rule is present as an exact line, as o
     ["  if (-not ([string]$page.title).EndsWith(' ' + $token, [StringComparison]::Ordinal)) { throw 'generated surface title identity was not set' }", 1],
     ["  if ($area[4] -ne [int][Math]::Round([double]$page.dpr * 96)) { throw 'owned generated surface window DPI disagrees with its page' }", 1],
     ["  if (($area[2] - $area[0]) -lt [Math]::Round([double]$page.inner_width * [double]$page.dpr) - 2 -or ($area[3] - $area[1]) -lt [Math]::Round([double]$page.inner_height * [double]$page.dpr) - 2) { throw 'owned generated surface window cannot hold its page' }", 1],
-    ["    $found = @(Find-QaEdgeSurface $identity)", 1],
-    ["  $found = @(Find-QaEdgeSurface $script:qaEdgeIdentity)", 1],
-    ["  if ($null -eq $script:qaEdgeIdentity) { throw 'owned Edge surface identity is not established' }", 1],
+    ["  [void](Assert-QaEdgeSurfacePage $identity)", 1],
+    ["  $script:qaEdgeIdentity = $identity", 1],
+    ["      $caption = [QaEdgeSurface]::Caption($h, $ids, [string]$identity.token)", 1],
+    ["      if ($caption -eq -2) { $row.status = 'owner_changed' }", 1],
+    ["        if (-not [QaEdgeSurface]::IsOwned($h, $ids)) { $row.status = 'owner_changed' }", 1],
+    ["      if (IsWindowVisible(h) && IsOwned(h, pids)) found.Add(h);", 1],
     ["  if ($target -eq 'edge') { return Get-QaEdgeSocket }", 1],
     ["  if ($name -eq 'edge') { return Get-QaEdgeSurfaceWindow }", 1],
+    ["    $socket = Assert-QaEdgeSurfacePage $script:qaEdgeIdentity   # the bound page, freshly, right before each window change", 1],
   ]) {
-    const block = Object.values(edgeIdentityBlocks()).join('\n');                         // the reviewed blocks, which the emitted runner contains (pinned above)
     assert.equal(block.split('\n').filter(l => l === line).length, n, line);
     assert.ok(runner.includes(line), line);
   }

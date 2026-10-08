@@ -1,0 +1,122 @@
+{
+  "kind": "qa-tts-edge-identity-correction/r2",
+  "assignment": "handoff_a05ac9a096200016381d14ded6c42c0c (Support HOLD 6c7872d on b9ce4cc: R1-R3)",
+  "corrects": "b9ce4cc56c375909befea38d410bc9e233ebc953",
+  "production_commit": "52be105a148a28e677f83cc4b7077665f2ff372c",
+  "stage_tree_sha256": "531943a83d3572ca9c686c7d8cd62bd88da5b0401b84050487722b8e87a02669",
+  "wrapper_sha256": "aad5e81b76e8b329b3c95c6b7ee31359443f6a47ede55312af2ff751fa416816",
+  "candidate_sha256": "03344f776afb4ff2110e7450b8c48d86fd0b9d7b394e5473e3ccd7959770cde9",
+  "payload_sha256": {
+    "runner.ps1": "301b5053e758938df97059fa52a60715d6ed7d9423a7e44de5e30df681c59dfa",
+    "steps.json": "e4059d8a69efe5038c61924ccef58a224b52aa658c11b1724faa8ec6ef53dd9f",
+    "surface.html": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2"
+  },
+  "source_files_pinned_by_candidate": {
+    "qa_tts_output_candidate.mjs": "3070bad0a46c3987eb36fce6ab657852c19a429b746c60b2dd516098c5a6a059",
+    "qa_tts_stage_check.py": "9e0a8257f740ee6d7e8924ac848de2fc7ddfd9b7621967e8a7f67c1c518b810f",
+    "qa_live_stage_check.py": "8bdd042b426c0784500375a41fe874e41b80186a6a8dddcc1d544213abd8c791",
+    "qa_visible_candidate.mjs": "9df43a98f64c67559029d31bc41573db4df4df94341ef48845687987b5460410",
+    "qa_edge_placement.ps1": "e527a59e63f6823adc9aaa1b5d9619661d8299769985ae1a0bf108749c2535bb",
+    "qa_display_admission.ps1": "b4f586b7c987f533f318eb72ebffe318482ed2c2aa7f7f720574147071747590",
+    "qa-electron-runner.ps1": "1a0dfc3f178a1d6f59233c2a7d6a836ce68b18887affd2f6431c2d4ef5c48218",
+    "signin_cleanup.mjs": "efa06295262ea27006769e0dea363051fbd6401f4c810d2049db5937ee939b2b",
+    "qa_visible_drag.mjs": "fa7491499aad6c289793fec195a11993b3d102415347a7251e82592362940d1e",
+    "surface.html": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2"
+  },
+  "reviewed_emitted_blocks_sha256": {
+    "admission_listing": "8669891a7eae6e4f3d641dee6ec2320390a78c36c2d8b0f2cde540480eb7ed50",
+    "admission_guard": "1222e15da6e564ccda5fbf5d49c11c841c2cd8c7d0a51bfc3836715a1b6c8287",
+    "edge_socket": "9ef77d2c3110b3fbc110d9062243a954e8c991c789e405d201eab4d7e9ec6e9c",
+    "edge_lookup": "0107b4da53eb342c627f9462a4603aec566e55fe67e22b227706030a743bea0b",
+    "edge_bind": "fb8a41b80ea87ef4c7050ebcdc341bbc2f25f68f3e5154c70216440c02b7686b",
+    "edge_fullscreen": "27aaa0bc0b7b321f5e3e94dab17a8ff3062475fa9d6f413ec3d751259efa48ee"
+  },
+  "launch_identity_for_allocation": {
+    "source": "52be105a148a28e677f83cc4b7077665f2ff372c",
+    "stage": "/mnt/c/Users/ROG/AppData/Local/Temp/lc-windows-tts-52be105",
+    "tree": "531943a83d3572ca9c686c7d8cd62bd88da5b0401b84050487722b8e87a02669",
+    "work": "/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-tts-output-77fadf1af4554e9dbd361e200b896aaa",
+    "electron": "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-electron-44.5.1-win32-x64\\electron.exe",
+    "edge": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+    "appPort": 43123,
+    "edgePort": 45123
+  },
+  "native_invocation_for_allocation": {
+    "executable": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "arguments": [
+      "-NoProfile",
+      "-NonInteractive",
+      "-ExecutionPolicy",
+      "RemoteSigned",
+      "-File",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-tts-output-77fadf1af4554e9dbd361e200b896aaa\\runner.ps1",
+      "-Electron",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-electron-44.5.1-win32-x64\\electron.exe",
+      "-Stage",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-windows-tts-52be105",
+      "-UserData",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-tts-output-77fadf1af4554e9dbd361e200b896aaa\\userdata",
+      "-StepsFile",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-tts-output-77fadf1af4554e9dbd361e200b896aaa\\steps.json",
+      "-OutDir",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-tts-output-77fadf1af4554e9dbd361e200b896aaa\\out",
+      "-Edge",
+      "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+      "-AppTemp",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-tts-output-77fadf1af4554e9dbd361e200b896aaa\\apptemp"
+    ]
+  },
+  "new_work_folder_existed_at_preparation": false,
+  "tests": {
+    "test_qa_run_tts_candidate.mjs": {
+      "sha256": "7cf8e400701e35feccfb55aae2cbd4aa8e839642b65517a72335a912f0744f7c",
+      "pass": 54,
+      "fail": 0,
+      "child_process_permission": "withheld"
+    },
+    "test_qa_tts_output_candidate.mjs": {
+      "sha256": "a0e053b6b5ce24b3230af413026ff8b1cf849c592e039bf04cf4a05e38b68ce0",
+      "pass": 41,
+      "fail": 0
+    }
+  },
+  "rule_mutants": {
+    "run": 28,
+    "caught_beyond_hash_pin": 28
+  },
+  "support_probe": {
+    "source": "6c7872d:tests/probes/support/review_edge_identity_counterexamples.mjs",
+    "sha256": "f3050a437b89c0e785063739e1def1b59abe30714c2a8d8339defd80d0a885b7",
+    "before_b9ce4cc": {
+      "exit": 0,
+      "reproduced": [
+        "r1 raise A after the target changed",
+        "r2 read failure and over-limit second window accepted as unique",
+        "r3 caption read for foreign pid 23092"
+      ]
+    },
+    "after_r2_pins_only": {
+      "exit": 1,
+      "stopped_at_probe_line": 35,
+      "model_refusal": "generated surface DevTools target is not known",
+      "reading": "input-format mismatch (flat target vs {target, page}); not evidence of the fix; probe line 23 still passes on r2; R2/R3 parts not reached (old Find signature)"
+    }
+  },
+  "logs": {
+    "generator-checks.txt": "f5cb3ff76e8572a34af199d7a710cfb287aae307d80883128a30f42db5e84180",
+    "wrapper-checks.txt": "b0d79048eb097e65a126e534fd7729e8a05e68dd03ac53efe9494246b04914f6",
+    "candidate-check.json": "86597521b1384548bd991dff57180d538277ff8a3353ef448797a8e34efdf3ba",
+    "rule-mutants.txt": "f0006ebe240e4ed231746265f54ac1aeda9b309042168c1a3f4f4084b8922aa5",
+    "rule-mutants.py": "d2133edec956bd6fe74aefb3524b29427216e0cdf037e20b2d48895480188492",
+    "support-probe-before.txt": "d3c670912c9becaa87d0bd124ba580c8660e7df04440726c5c2e30c477a2d355",
+    "support-probe-after.txt": "13087b07ab885154535c7b86f5c8658518ea9d17aa0545f70c2f7583f68fe7c3",
+    "internal-reviews.md": "9a6ff32c048cf6187f0ca382157c5468c4638c26941754ad645914d00454b408"
+  },
+  "execution": {
+    "windows_calls": 0,
+    "native_attempts": 0,
+    "provider_attempts": 0,
+    "display_allocation": "NONE",
+    "powershell_or_csharp_executed_or_compiled": false
+  }
+}
