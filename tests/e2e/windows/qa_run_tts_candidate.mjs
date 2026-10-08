@@ -11,8 +11,8 @@ import { argv, isChild, lookCommand, readLook, releaseOwned, windowsCalls } from
 
 const here = dirname(fileURLToPath(import.meta.url)), repo = resolve(here, '../../..');
 const candidateDir = join(repo, 'docs/verification/qa/p0-13-tts-52be105/candidate-admission-20261008');
-const candidateHash = 'f580ef5c93484c4cbe89ff3d8af8c53b99571bac897d8570ad1a638f6dd6dc58';
-const pins = { 'runner.ps1': '986077ec88ef8c4d3e626edbb4397e5bd1d56a587bebb5038d8e41c5ab12fad6',
+const candidateHash = 'c083ad0eb5540632e9a2d5acf57bd5a09e5b5f82869fe05345c325ef263e34e6';
+const pins = { 'runner.ps1': '6728ec6cf8a5a2030059f8b31bddaa2b7d059f757730698ef38d5a2fad6c1c28',
   'steps.json': 'c7b8f5ed842856de42e0ddd25ac8e534f57eafb40a64e3ca2af0e1ffbef7baa3',
   'surface.html': '69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2' };
 const psBin = '/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe';
@@ -26,7 +26,7 @@ const equal = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 
 // LAUNCH ADMISSION SCOPED TO THIS RUN. The same electron.exe rule is emitted into this candidate's native runner
 // (qa_tts_output_candidate.mjs, Get-QaLaunchRelevance), where the full rationale is. A process is relevant if a field
-// cannot be read, if it is a main process of the candidate runtime without an absolute app argument, or if its
+// cannot be read, if it is a main process of the candidate runtime whose first argument is not an absolute app path, or if its
 // executable or arguments name the candidate stage or this run's new folder, or carry a port/inspect/debug switch for
 // one of the two debugging ports. Every other process belongs to another owner: listed by PID only, never signalled and
 // never a reason to refuse. The cleanup (releaseOwned) still gets the complete, unfiltered process list: this
@@ -80,11 +80,13 @@ export function ttsLaunchRelevance(p, scope) {
   if (!readable(p.command_line)) return 'unreadable_command_line';
   const args = argv(p.command_line);
   if (isCandidateRuntime(p.exe, scope) && !isChild(p)) {
-    // The candidate runtime: which app it runs decides. Without an app, or with one relative to a working folder that
-    // cannot be read, it cannot be told apart from the candidate.
-    const app = args.slice(1).find(a => !isSwitch(a));
-    if (app === undefined) return 'candidate_runtime_without_app';
-    if (!/^(?:[a-z]:\\|\\\\)/.test(pathKey(app))) return 'candidate_runtime_relative_app';
+    // The candidate runtime: which app it runs decides, and only an absolute path given FIRST establishes it. A switch
+    // first may take the next token as its value (no command-line parser is attempted), a relative path depends on a
+    // working folder that cannot be read, and no argument at all is the bare runtime: none can be told apart from the
+    // candidate.
+    if (args.length < 2) return 'candidate_runtime_without_app';
+    if (isSwitch(args[1])) return 'candidate_runtime_app_unresolved';
+    if (!/^(?:[a-z]:\\|\\\\)/.test(pathKey(args[1]))) return 'candidate_runtime_relative_app';
   }
   if (namesThisRun(p.exe, scope)) return 'names_this_run';
   return argumentRelevance(args, scope);

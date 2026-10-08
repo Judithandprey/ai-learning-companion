@@ -25,7 +25,9 @@ An `electron.exe` process refuses the run when:
 
 - its creation time, executable path or command line cannot be read, or Windows cannot split its command line;
 - it is a main process of the candidate runtime (the pinned path, or an `electron.exe` in a folder of that runtime's
-  name or 8.3 short name) with no app argument, or a relative one (its working folder cannot be read);
+  name or 8.3 short name) whose FIRST argument is not an absolute app path: no argument, a switch first (it may take
+  the next token as its value; no command-line parser is attempted) or a relative path (its working folder cannot be
+  read) cannot be told apart from the candidate;
 - its executable, or any argument, names the candidate stage or this run's new folder as a whole path component.
   The new folder holds the run's user data, Edge profile, steps and output.
   - Arguments are split by Windows' own `CommandLineToArgvW` in the runner and by the same rules in the wrapper.
@@ -74,11 +76,11 @@ command line shows.
 
 | | |
 | --- | --- |
-| Candidate | [candidate-admission-20261008/candidate.json](../candidate-admission-20261008/candidate.json) sha256 `f580ef5c93484c4cbe89ff3d8af8c53b99571bac897d8570ad1a638f6dd6dc58` |
-| Emitted runner | `986077ec88ef8c4d3e626edbb4397e5bd1d56a587bebb5038d8e41c5ab12fad6` |
+| Candidate | [candidate-admission-20261008/candidate.json](../candidate-admission-20261008/candidate.json) sha256 `c083ad0eb5540632e9a2d5acf57bd5a09e5b5f82869fe05345c325ef263e34e6` |
+| Emitted runner | `6728ec6cf8a5a2030059f8b31bddaa2b7d059f757730698ef38d5a2fad6c1c28` |
 | Steps | `c7b8f5ed842856de42e0ddd25ac8e534f57eafb40a64e3ca2af0e1ffbef7baa3` |
 | Surface | `69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2` (unchanged) |
-| Wrapper | `tests/e2e/windows/qa_run_tts_candidate.mjs` sha256 `9f3bc94052246981b9f554823400df4882acdc0906f34b916e7036b952ff7e3f` |
+| Wrapper | `tests/e2e/windows/qa_run_tts_candidate.mjs` sha256 `84009e821d3495c153a1ff04e042f8027070c9dac0b8ac5e91cd239051dfd941` |
 | New work folder | `%TEMP%\lc-qa-tts-output-afad96151bad482f8f4883656cb58e5f`, absent when prepared |
 
 [artifacts.json](artifacts.json) gives the exact `launch_identity` and `native_invocation` an allocation must bind,
@@ -97,7 +99,7 @@ audio or speech helper are enforced as before.
 
 ## Checks (offline, injected Windows)
 
-- [wrapper-checks.txt](wrapper-checks.txt): **53 pass, 0 fail**, run with child processes denied (`--permission`).
+- [wrapper-checks.txt](wrapper-checks.txt): **54 pass, 0 fail**, run with child processes denied (`--permission`).
   - Unrelated readable Electron apps survive admission and are never signalled. The cleanup sees them as foreign or as
     children.
   - Another owner's staged app on the same runtime is admitted. Candidate-runtime main processes with no app or a
@@ -134,6 +136,17 @@ audio or speech helper are enforced as before.
 **PowerShell and C# were not executed or compiled here** (no PowerShell or C# compiler on this host). They were checked
 by reading. The wrapper's own pre-launch parser step and the lead's or Support's Windows-side review remain the
 compile checks.
+
+## Lead must-fix (handoff_56cec023)
+
+The lead and Support found that `electron.exe --user-data-dir C:\Other\Profile .`, `electron.exe --require
+C:\Other\preload.cjs .` and `electron.exe --user-data-dir C:\Other\Profile` on the candidate runtime were admitted:
+the rule took the first non-switch token as the app, but it may be a switch's value. Now only an absolute path as the
+FIRST argument establishes the app; a switch first refuses as `candidate_runtime_app_unresolved`. The three cases, a
+`/` switch first, and an absolute app first followed by such options (still another owner's) are tests. Reverting
+either the wrapper or the emitted rule to the old behaviour fails the tests. The candidate was regenerated with the
+same never-created work folder: steps and the guard block are unchanged; the listing block, runner and candidate are
+re-pinned.
 
 ## Lead counterexample (handoff_eaea203f)
 

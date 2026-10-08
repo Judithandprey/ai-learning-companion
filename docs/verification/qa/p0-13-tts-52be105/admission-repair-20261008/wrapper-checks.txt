@@ -37,7 +37,7 @@ $ node --permission --allow-fs-read=<worktree> --allow-fs-read=<new work folder>
 ✔ the candidate stage or this run's folder named in any form is relevant; quoting is read by Windows' rules
 ✔ arguments that only resemble the stage or folder are not relevant (whole path components are compared)
 ✔ a debugging-port argument for either test port is relevant; other numbers, other keys and a bare number are not
-✔ a main process of the candidate runtime refuses without an absolute app argument; with another absolute app it is another owner's; unreadable fields refuse
+✔ a main process of the candidate runtime refuses unless its FIRST argument is an absolute app path; with another absolute app it is another owner's; unreadable fields refuse
 ✔ Edge: only this run's folder or a test-port argument is relevant; the user's browser and unreadable rows are not
 ✔ namesThisRun compares 8.3 short names by their six-character prefix only, and only for components with ~N
 ✔ scoped refusal before anything starts: another runtime naming the stage
@@ -45,6 +45,7 @@ $ node --permission --allow-fs-read=<worktree> --allow-fs-read=<new work folder>
 ✔ scoped refusal before anything starts: another runtime with the app port argument
 ✔ scoped refusal before anything starts: an unreadable executable
 ✔ scoped refusal before anything starts: the candidate runtime with a relative app
+✔ scoped refusal before anything starts: the candidate runtime with a switch before its app
 ✔ scoped refusal before anything starts: Edge using this run's profile
 ✔ another owner's readable Electron app (main and children) is admitted, seen by the complete cleanup look, and never signalled; only this run's exact launches are
 ✔ a PID of another owner's app reused by this run's launch is owned by its new identity only
@@ -52,9 +53,9 @@ $ node --permission --allow-fs-read=<worktree> --allow-fs-read=<new work folder>
 ✔ cleanup bounds are unchanged: complete looks of both images, held-handle signals, 1 s / 5 s / 5 s waits in 250 ms steps
 ✔ a staged app of another owner on the same cached runtime (another absolute stage, its own port) is admitted and never signalled
 ✔ after the run the cleanup still sees everything: a young unreadable row makes the exit unknown (passed false), a listener that is not ours is said
-ℹ tests 53
+ℹ tests 54
 ℹ suites 0
-ℹ pass 53
+ℹ pass 54
 ℹ fail 0
 ℹ cancelled 0
 ℹ skipped 0

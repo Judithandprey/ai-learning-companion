@@ -229,11 +229,12 @@ function Get-QaLaunchRelevance($p) {
   if ($null -eq $a) { return 'unparsable_command_line' }
   $child = @($a | Select-Object -Skip 1 | Where-Object { $_.StartsWith('--type=', [StringComparison]::Ordinal) }).Count -gt 0
   if ((Test-QaRuntime ([string]$p.ExecutablePath)) -and -not $child) {
-    # The candidate runtime: which app it runs decides. Without an app, or with one relative to a working folder that
-    # cannot be read, it cannot be told apart from the candidate.
-    $app = @($a | Select-Object -Skip 1 | Where-Object { -not (Test-QaSwitch $_) }) | Select-Object -First 1
-    if ($null -eq $app) { return 'candidate_runtime_without_app' }
-    if (-not [regex]::IsMatch((ConvertTo-QaPathKey $app), '^(?:[a-z]:\\|\\\\)')) { return 'candidate_runtime_relative_app' }
+    # The candidate runtime: only an absolute app path given FIRST establishes which app it runs. A switch first may
+    # take the next token as its value, a relative path depends on an unreadable working folder, no argument is the
+    # bare runtime: none can be told apart from the candidate.
+    if ($a.Count -lt 2) { return 'candidate_runtime_without_app' }
+    if (Test-QaSwitch $a[1]) { return 'candidate_runtime_app_unresolved' }
+    if (-not [regex]::IsMatch((ConvertTo-QaPathKey $a[1]), '^(?:[a-z]:\\|\\\\)')) { return 'candidate_runtime_relative_app' }
   }
   if (Test-QaNamesThisRun ([string]$p.ExecutablePath)) { return 'names_this_run' }
   for ($i = 1; $i -lt $a.Count; $i++) {

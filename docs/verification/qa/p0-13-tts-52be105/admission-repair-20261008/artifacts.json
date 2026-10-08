@@ -5,15 +5,15 @@
   "assignment": "handoff_ffff4e5f0aabea316351ecf893b9313a with handoff_f530b0ce49426ce28fafb9d9f918dc52 and handoff_bf81e29bf2d9dde72c1343d82abeafd1",
   "production_commit": "52be105a148a28e677f83cc4b7077665f2ff372c",
   "stage_tree_sha256": "531943a83d3572ca9c686c7d8cd62bd88da5b0401b84050487722b8e87a02669",
-  "wrapper_sha256": "9f3bc94052246981b9f554823400df4882acdc0906f34b916e7036b952ff7e3f",
-  "candidate_sha256": "f580ef5c93484c4cbe89ff3d8af8c53b99571bac897d8570ad1a638f6dd6dc58",
+  "wrapper_sha256": "84009e821d3495c153a1ff04e042f8027070c9dac0b8ac5e91cd239051dfd941",
+  "candidate_sha256": "c083ad0eb5540632e9a2d5acf57bd5a09e5b5f82869fe05345c325ef263e34e6",
   "payload_sha256": {
-    "runner.ps1": "986077ec88ef8c4d3e626edbb4397e5bd1d56a587bebb5038d8e41c5ab12fad6",
+    "runner.ps1": "6728ec6cf8a5a2030059f8b31bddaa2b7d059f757730698ef38d5a2fad6c1c28",
     "steps.json": "c7b8f5ed842856de42e0ddd25ac8e534f57eafb40a64e3ca2af0e1ffbef7baa3",
     "surface.html": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2"
   },
   "source_files_pinned_by_candidate": {
-    "qa_tts_output_candidate.mjs": "4c4dac7649210c28b780da8123cfef69f2378897af01d6e7c6ca887c055e96a4",
+    "qa_tts_output_candidate.mjs": "6545dc452dcc88536ebd2a963385dca68d15cdaa9cd385c0d6474e8f1c4affbc",
     "qa_tts_stage_check.py": "9e0a8257f740ee6d7e8924ac848de2fc7ddfd9b7621967e8a7f67c1c518b810f",
     "qa_live_stage_check.py": "8bdd042b426c0784500375a41fe874e41b80186a6a8dddcc1d544213abd8c791",
     "qa_visible_candidate.mjs": "9df43a98f64c67559029d31bc41573db4df4df94341ef48845687987b5460410",
@@ -25,7 +25,7 @@
     "surface.html": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2"
   },
   "reviewed_emitted_blocks_sha256": {
-    "listing": "4632e764ea307acaf840b7469d9fe0e850612267b44a800e9e32d1ab61cbbdfb",
+    "listing": "8669891a7eae6e4f3d641dee6ec2320390a78c36c2d8b0f2cde540480eb7ed50",
     "guard": "1222e15da6e564ccda5fbf5d49c11c841c2cd8c7d0a51bfc3836715a1b6c8287"
   },
   "launch_identity_for_allocation": {
@@ -66,13 +66,13 @@
   "new_work_folder_existed_at_preparation": false,
   "tests": {
     "test_qa_run_tts_candidate.mjs": {
-      "sha256": "70d383398801ecf38d93f1cff2c781c8eeed7692adc31c5f3766596b87214312",
-      "pass": 53,
+      "sha256": "9b0bfc94e83e2febaa5ead6d909f4b79acca5a252a6b15500a1e12f9d5d981b4",
+      "pass": 54,
       "fail": 0,
       "child_process_permission": "withheld"
     },
     "test_qa_tts_output_candidate.mjs": {
-      "sha256": "a46c46f69bb727eee254d594b4ac1f7893c5a22c8fee692a55c6110851871c2f",
+      "sha256": "ea2063919a47e6f4c5ba1003aed87569b70f101b2976fd656b0effe6e6ac66b7",
       "pass": 23,
       "fail": 0
     },
@@ -82,10 +82,10 @@
     }
   },
   "logs": {
-    "wrapper-checks.txt": "dfeeddec1cb8a9ec041889b433e889fdffe50f3a7c91e0d61a3c97931b7283d7",
+    "wrapper-checks.txt": "9d4fd250ee15d05255c5544ded0ec70a854506a9619bafc4f803340638bee4ff",
     "generator-checks.txt": "56e3075d4be4f2233752facbd062391f2aa64efd54c538fe7c2b64d942747722",
     "cleanup-checks.txt": "1031ac781943393a34a926df61342bf09093bf6535ac2b128a22f00d9cb76891",
-    "candidate-check.json": "0f70da1edeb95675e7f876c3a04359698b79330f952c447b2e92a7e4cc1dfc4c"
+    "candidate-check.json": "a99fc17ee0a9c76abe7dac69b19dde2c044de02fd7d1767e59e19599775f1183"
   },
   "unchanged": [
     "signin_cleanup.mjs",
@@ -104,5 +104,6 @@
     "provider_attempts": 0,
     "display_allocation": "NONE"
   },
-  "lead_counterexample_handoff_eaea203f": "Middle path components with a trailing dot or space were already trimmed per component in b79d195 (wrapper namesThisRun and emitted Test-QaNamesThisRun); focused cases added to both test files."
+  "lead_counterexample_handoff_eaea203f": "Middle path components with a trailing dot or space were already trimmed per component in b79d195 (wrapper namesThisRun and emitted Test-QaNamesThisRun); focused cases added to both test files.",
+  "lead_must_fix_handoff_56cec023": "A candidate-runtime main process now needs an absolute app path as its FIRST argument; a switch first (its value may be the next token), a relative path or no argument refuses. Same unused work folder; steps and the guard block unchanged; listing block, runner and candidate re-pinned."
 }

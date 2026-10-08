@@ -48,7 +48,7 @@ test('a same-length change to the reviewed physical point set is rejected', () =
 
 // ---- the scoped launch admission in the emitted runner ---------------------------------------------------------------
 const runner = base.payload['runner.ps1'].toString();
-const REVIEWED_BLOCKS = { listing: '4632e764ea307acaf840b7469d9fe0e850612267b44a800e9e32d1ab61cbbdfb', guard: '1222e15da6e564ccda5fbf5d49c11c841c2cd8c7d0a51bfc3836715a1b6c8287' };
+const REVIEWED_BLOCKS = { listing: '8669891a7eae6e4f3d641dee6ec2320390a78c36c2d8b0f2cde540480eb7ed50', guard: '1222e15da6e564ccda5fbf5d49c11c841c2cd8c7d0a51bfc3836715a1b6c8287' };
 const ctx = { appPort: base.manifest.appPort, edgePort: base.manifest.edgePort, edgeArgs: base.manifest.edgeArgs, surfaceUrl: base.manifest.surfaceUrl, profile: base.manifest.profile, edgePlacement: true };
 test('the emitted runner no longer refuses beside every other Electron app, and never reads -AllowForeign', () => {
   assert.equal(runner.includes('another Electron app is running on the shared display'), false);
@@ -76,10 +76,11 @@ test('the native rule is the wrapper\'s: Windows\' own argument splitter, the sa
   assert.ok(runner.includes("if ($c -match '^([^~]{6})~[0-9]+(\\.[^\\\\]*)?$') {"));
   assert.ok(runner.includes("$d = $c.TrimEnd([char[]]@('.', ' '))"));                    // each component's trailing dot/space, as Windows ignores them
   assert.ok(runner.includes(`[regex]::IsMatch($name, '^(?:(?:.*-)?port|inspect(?:-brk|-wait)?|debug(?:-brk)?)\\z', 'IgnoreCase, CultureInvariant') -and [regex]::IsMatch($val, '(?:^|:)\\+?0*(?:${ctx.appPort}|${ctx.edgePort})\\z')`));
-  assert.ok(runner.includes("if (-not [regex]::IsMatch((ConvertTo-QaPathKey $app), '^(?:[a-z]:\\\\|\\\\\\\\)')) { return 'candidate_runtime_relative_app' }"));
+  assert.ok(runner.includes("if (Test-QaSwitch $a[1]) { return 'candidate_runtime_app_unresolved' }"));
+  assert.ok(runner.includes("if (-not [regex]::IsMatch((ConvertTo-QaPathKey $a[1]), '^(?:[a-z]:\\\\|\\\\\\\\)')) { return 'candidate_runtime_relative_app' }"));
   assert.ok(runner.includes(`foreach ($port in @(${ctx.appPort}, ${ctx.edgePort})) {`));
   assert.ok(runner.includes('$qaRefs = @((ConvertTo-QaPathKey ([IO.Path]::GetFullPath($Stage))), (ConvertTo-QaPathKey ([IO.Path]::GetFullPath((Split-Path -Parent $StepsFile)))))'));
-  for (const reason of ['unreadable_creation', 'unreadable_executable', 'unreadable_command_line', 'unparsable_command_line', 'candidate_runtime_without_app', 'candidate_runtime_relative_app', 'names_this_run', 'test_port_argument'])
+  for (const reason of ['unreadable_creation', 'unreadable_executable', 'unreadable_command_line', 'unparsable_command_line', 'candidate_runtime_without_app', 'candidate_runtime_app_unresolved', 'candidate_runtime_relative_app', 'names_this_run', 'test_port_argument'])
     assert.ok(runner.includes(`return '${reason}'`), reason);
   assert.equal(/\.StartsWith\('[^']*'\)|\.IndexOf\('/.test(runner.slice(runner.indexOf('function ConvertTo-QaPathKey'), runner.indexOf('function Foreign-Electron'))), false);   // ordinal only
   const args = base.manifest.proposed_native_invocation.arguments;

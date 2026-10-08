@@ -300,10 +300,16 @@ test('a debugging-port argument for either test port is relevant; other numbers,
     'report 43123', 'port 43123', 'inspect=127.0.0.1:43123', '--report 43123', '--import=x:45123', '--support=43123', '--remote-debugging-address=127.0.0.1', '--renderer-client-id=43123', '--mojo-platform-channel-handle=45123'])
     assert.equal(rel(`"${OTHER_EXE}" ${f}`), null, f);
 });
-test('a main process of the candidate runtime refuses without an absolute app argument; with another absolute app it is another owner\'s; unreadable fields refuse', () => {
+test('a main process of the candidate runtime refuses unless its FIRST argument is an absolute app path; with another absolute app it is another owner\'s; unreadable fields refuse', () => {
   const rt = (command_line, exe = candidate.electron) => rel(command_line, { exe });
   assert.equal(rt('electron.exe'), 'candidate_runtime_without_app');
-  assert.equal(rt('electron.exe --inspect=9229'), 'candidate_runtime_without_app');
+  assert.equal(rt('electron.exe --inspect=9229'), 'candidate_runtime_app_unresolved');
+  // A switch first: the next token may be its value, not the app (lead and Support counterexamples, handoff_56cec023).
+  assert.equal(rt('electron.exe --user-data-dir C:\\Other\\Profile .'), 'candidate_runtime_app_unresolved');
+  assert.equal(rt('electron.exe --require C:\\Other\\preload.cjs .'), 'candidate_runtime_app_unresolved');
+  assert.equal(rt('electron.exe --user-data-dir C:\\Other\\Profile'), 'candidate_runtime_app_unresolved');
+  assert.equal(rt('electron.exe /inspect C:\\Other\\app'), 'candidate_runtime_app_unresolved');
+  assert.equal(rt('electron.exe "C:\\Other\\app" --user-data-dir C:\\Other\\Profile'), null);   // an absolute app FIRST stays another owner's
   assert.equal(rt('electron.exe .'), 'candidate_runtime_relative_app');
   assert.equal(rt('electron.exe dist\\apps\\windows\\src\\main\\main.js'), 'candidate_runtime_relative_app');
   assert.equal(rt('electron.exe ""'), 'candidate_runtime_relative_app');
@@ -341,6 +347,7 @@ for (const [name, mutate, reason, list = 'electron_launch_conflicts'] of [
   ['another runtime with the app port argument', s => { s.appLook.processes = [otherMain(53, { command_line: `"${OTHER_EXE}" x --remote-debugging-port=43123` })]; }, 'test_port_argument'],
   ['an unreadable executable', s => { s.appLook.processes = [otherMain(54, { exe: null })]; }, 'unreadable_executable'],
   ['the candidate runtime with a relative app', s => { s.appLook.processes = [processRow({ pid: 56, command_line: 'electron.exe .' })]; }, 'candidate_runtime_relative_app'],
+  ['the candidate runtime with a switch before its app', s => { s.appLook.processes = [processRow({ pid: 57, command_line: 'electron.exe --user-data-dir C:\\Other\\Profile .' })]; }, 'candidate_runtime_app_unresolved'],
   ['Edge using this run\'s profile', s => { s.edgeLook.processes = [{ pid: 55, created: '1', exe: candidate.edge, command_line: `"${candidate.edge}" --user-data-dir=${WORK}\\edge-profile` }]; }, 'names_this_run', 'edge_launch_conflicts'],
 ]) test(`scoped refusal before anything starts: ${name}`, async () => {
   const v = setup(s => { mutate(s); s.appLook.processes.push(otherMain(), otherChild(100570)); });
