@@ -1,0 +1,47 @@
+✔ argv follows the Windows rules: program name, quotes, backslashes before a quote, a doubled quote inside quotes (1.839278ms)
+✔ the exact launches are owned; the path comparison ignores letter case (0.299074ms)
+✔ a longer port that only begins with this check's port is not owned and not even doubtful (0.290898ms)
+✔ this check's exact port argument in any other launch is not owned: it is unresolved, never signalled (0.256552ms)
+✔ the checker as Windows reports it when started from WSL (the bare program name first) is owned (0.165978ms)
+✔ a child process of an Electron app, and a readable other app, are foreign (0.1722ms)
+✔ an unreadable command line: unresolved if the process was made since the check began (whatever its path looks like), else foreign (0.993927ms)
+✔ the commands are built only for a real port and a whole identity, and carry the texts encoded (0.662591ms)
+✔ the look is read from its one line; anything else is refused (0.73014ms)
+✔ nothing of the check is running: exit confirmed, the folder it made is removed, nothing is signalled (0.730852ms)
+✔ the app ends by itself during the first wait: no signal (0.380049ms)
+✔ the app stays: a close request, it ends, and only then is the folder removed (0.523094ms)
+✔ an app that needs time to quit after the close request is waited for, not forced (0.23981ms)
+✔ the app ignores the close request and the checker has no window: both are ended by force, and only they (0.420827ms)
+✔ the app survives even force: still running is said, and the folder is kept (0.201397ms)
+✔ the look fails at once: nothing is signalled, nothing is removed, the exit is unknown (3.614512ms)
+✔ the look fails in the middle of a wait: nothing is signalled on the earlier answer (0.372665ms)
+✔ the look fails after the close request: no force follows, the folder is kept (0.574131ms)
+✔ the look fails after force: the exit is unknown and the folder is kept (0.390479ms)
+✔ a folder this check did not make is never removed, even when the exit is confirmed (0.175116ms)
+✔ a process on the port that is not owned is never signalled, and keeps the folder (0.230542ms)
+✔ an owned process and a not-owned one on the port together: only the owned one is signalled (0.553672ms)
+✔ a process that ended by itself is not sent a close request later (0.28672ms)
+✔ a signal that throws is recorded, the next stage still follows, and the record is returned (0.772542ms)
+✔ a folder that cannot be removed is said, not hidden (0.115892ms)
+✔ the waits are wall time: slow looks do not stretch them (0.106494ms)
+✔ (1) the PID is used again by another process before the close request: that process is never signalled (0.939792ms)
+✔ (1) the PID is used again between the look and the signal: the signal is told the old identity and signals nothing (0.202568ms)
+✔ (2) a remembered process is still there but its command line can no longer be read, and nothing listens: unknown, nothing signalled, folder kept (0.117716ms)
+✔ (2) the same when the process was never seen readable: a young process of this runtime without a readable command line is unresolved (0.086445ms)
+✔ (2) the launch identity changes between the look and the signal: the signal answers unverified and everything stops (0.207868ms)
+✔ (3) another program with a longer port, or another script with the same port, is never signalled (0.27611ms)
+✔ force goes only to what is owned at that look, not to what was owned before (0.220553ms)
+✔ an unverified answer stops everything, even when the next look is readable again (0.204232ms)
+✔ a process caught unreadable while it exits is looked at again, not reported at once: gone at the next look is confirmed (0.249569ms)
+✔ through the launcher's own look: a remembered process that later shows a --type= command line is still seen: not revalidated, unknown, nothing signalled, folder kept (0.588088ms)
+✔ through the launcher's own look: the app's child processes are seen, never signalled, reported apart from foreign apps, and do not stand in the way (0.525338ms)
+✔ through the launcher's own signal: the identity goes into the command, and an answer that is not one of the five is an error (1.433489ms)
+✔ before the start only: child processes are left out of "is an Electron app open?", and a process that cannot be read is not left out (0.11493ms)
+ℹ tests 39
+ℹ suites 0
+ℹ pass 39
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 29.495945

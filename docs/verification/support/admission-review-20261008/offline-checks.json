@@ -1,0 +1,71 @@
+[
+  {
+    "name": "wrapper",
+    "command": [
+      "/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node",
+      "--permission",
+      "--allow-fs-read=/tmp/support-admission-78d6de0-vo86dg3i",
+      "--allow-fs-read=/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-tts-output-*",
+      "tests/e2e/windows/test_qa_run_tts_candidate.mjs"
+    ],
+    "cwd": "/tmp/support-admission-78d6de0-vo86dg3i",
+    "static_receipt": "/tmp/support-admission-78d6de0-vo86dg3i/docs/verification/qa/p0-13-tts-52be105/stage-identity.json",
+    "exit_code": 0,
+    "summary": [
+      "\u2139 tests 53",
+      "\u2139 suites 0",
+      "\u2139 pass 53",
+      "\u2139 fail 0",
+      "\u2139 cancelled 0",
+      "\u2139 skipped 0",
+      "\u2139 todo 0",
+      "\u2139 duration_ms 322.51831"
+    ]
+  },
+  {
+    "name": "generator",
+    "command": [
+      "/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node",
+      "--permission",
+      "--allow-fs-read=/tmp/support-admission-78d6de0-vo86dg3i",
+      "--allow-fs-read=/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-tts-output-*",
+      "tests/e2e/windows/test_qa_tts_output_candidate.mjs"
+    ],
+    "cwd": "/tmp/support-admission-78d6de0-vo86dg3i",
+    "static_receipt": "/tmp/support-admission-78d6de0-vo86dg3i/docs/verification/qa/p0-13-tts-52be105/stage-identity.json",
+    "exit_code": 0,
+    "summary": [
+      "\u2139 tests 23",
+      "\u2139 suites 0",
+      "\u2139 pass 23",
+      "\u2139 fail 0",
+      "\u2139 cancelled 0",
+      "\u2139 skipped 0",
+      "\u2139 todo 0",
+      "\u2139 duration_ms 60.890323"
+    ]
+  },
+  {
+    "name": "cleanup",
+    "command": [
+      "/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node",
+      "--permission",
+      "--allow-fs-read=/tmp/support-admission-78d6de0-vo86dg3i",
+      "--allow-fs-read=/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-tts-output-*",
+      "tests/e2e/windows/signin_cleanup.test.mjs"
+    ],
+    "cwd": "/tmp/support-admission-78d6de0-vo86dg3i",
+    "static_receipt": "/tmp/support-admission-78d6de0-vo86dg3i/docs/verification/qa/p0-13-tts-52be105/stage-identity.json",
+    "exit_code": 0,
+    "summary": [
+      "\u2139 tests 39",
+      "\u2139 suites 0",
+      "\u2139 pass 39",
+      "\u2139 fail 0",
+      "\u2139 cancelled 0",
+      "\u2139 skipped 0",
+      "\u2139 todo 0",
+      "\u2139 duration_ms 29.495945"
+    ]
+  }
+]

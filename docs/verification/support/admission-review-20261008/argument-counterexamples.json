@@ -1,0 +1,42 @@
+{
+  "candidate": "78d6de0f1e1b92113d0829a1f88be6fb84ae96f8",
+  "native_executions": 0,
+  "interpretation": "An option value does not establish an unambiguous absolute application identity.",
+  "results": [
+    {
+      "name": "absolute_app_control",
+      "synthetic_command": "electron.exe \"C:\\Other\\Application\"",
+      "expected_relevant": false,
+      "actual_reason": null,
+      "matches_required_boundary": true
+    },
+    {
+      "name": "relative_app_control",
+      "synthetic_command": "electron.exe .",
+      "expected_relevant": true,
+      "actual_reason": "candidate_runtime_relative_app",
+      "matches_required_boundary": true
+    },
+    {
+      "name": "split_profile_then_relative_app",
+      "synthetic_command": "electron.exe --user-data-dir C:\\Other\\Profile .",
+      "expected_relevant": true,
+      "actual_reason": null,
+      "matches_required_boundary": false
+    },
+    {
+      "name": "split_require_then_relative_app",
+      "synthetic_command": "electron.exe --require C:\\Other\\preload.cjs .",
+      "expected_relevant": true,
+      "actual_reason": null,
+      "matches_required_boundary": false
+    },
+    {
+      "name": "split_option_without_established_app",
+      "synthetic_command": "electron.exe --user-data-dir C:\\Other\\Profile",
+      "expected_relevant": true,
+      "actual_reason": null,
+      "matches_required_boundary": false
+    }
+  ]
+}
