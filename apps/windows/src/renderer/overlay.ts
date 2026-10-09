@@ -34,7 +34,7 @@ import { speechPieces } from '../shared/voice.ts';
 import { alignmentOf, DETAIL_DELTA, detailChange, detailGrid, fingerprintFromBase64, fingerprintToBase64, lumaChange, luminance, sampleState, toFramePixels, type Alignment, type Detail, type DisplaySample, type InkMarks } from '../shared/samples.ts';
 
 type Api = {
-  ready(): Promise<{ source_id: string; display: DesktopDisplay; doc: DesktopInk; address_sha256: string; retention_policy?: RetentionPolicy; development?: boolean; subscription?: boolean; work_area?: Rect; places?: DisplayPlaces; speech_rate?: number; voice?: { audible: boolean } | null; live?: Live } | null>;
+  ready(): Promise<{ source_id: string; display: DesktopDisplay; doc: DesktopInk; address_sha256: string; retention_policy?: RetentionPolicy; development?: boolean; subscription?: boolean; work_area?: Rect; places?: DisplayPlaces; speech_rate?: number; voice?: { audible: boolean } | null; live?: Live; admission?: boolean } | null>;
   place(surface: Surface, place: Place): Promise<Saved>;
   speechRate(rate: number): Promise<Saved>;
   onWorkArea(fn: (area: Rect) => void): void;
@@ -46,6 +46,8 @@ type Api = {
   observationGap(gap: { sample_seq: number; gap_ms: number; sampled_at: string; monotonic_ms: number }): void;
   stopping(pendingFrames: Array<{ sample_seq: number; deferred_samples_not_retained: number[] }>): void;
   armCapture(): Promise<boolean>;
+  /** With a test's source check on: the main process admits a frame's taking ('pre', a one-use ticket) and the frame taken ('post'). */
+  admitFrame(phase: 'pre' | 'post', sampleSeq: number, facts: { ticket: string; raw_sha256: string; width: number; height: number } | null): Promise<{ ok: boolean; ticket?: string }>;
   sample(s: DisplaySample): void;
   interactive(on: boolean): void;
   saveInk(doc: DesktopInk, images: Array<{ sha256: string; bytes: Uint8Array }>): Promise<({ ok: true } | { ok: false; reason: string; conflict?: true }) & { pictures_received: string[]; pictures_invalid: string[] }>;
@@ -112,6 +114,11 @@ const development = info.development === true;
  * started by the user's own Start in the control window, within the bounds chosen there, and said in the toolbar.
  */
 const subscription = info.subscription === true;
+/**
+ * A test's source check is on (never in the product): each frame is taken from the stream only between two
+ * admissions by the main process, and is shown, kept or sent only when the second admits it.
+ */
+const admission = info.admission === true;
 let live: Live = info.live ?? { state: 'none' };
 /** The unique AI session id that has been offered its first picture, or needs none; and whether an offer is on its way. */
 let lookGiven: string | null = null;
@@ -420,7 +427,7 @@ let presentedSeen = 0;
  * The frame held: taken in sample `seq`, when `presented` frames had been presented, the newest of them at
  * `presentedAt` (performance time of its callback). The image is that frame, or one presented just after it.
  */
-type HeldFrame = { bitmap: ImageBitmap; seq: number; at: string; liveSession: string | null; presented: number; presentedAt: number };
+type HeldFrame = { bitmap: ImageBitmap; seq: number; at: string; liveSession: string | null; presented: number; presentedAt: number; /** With a test's source check on: its pixels' SHA-256 as admitted. */ sha: string | null };
 let raw: HeldFrame | null = null;
 /** The latest composed frame with what it was made from. */
 /**
@@ -460,6 +467,8 @@ let startsWaiting = 0;
 const frameShas = new Map<number, string>();
 let prevGrid: Uint8Array | null = null;
 let seq = 0;
+/** The sample whose grab from the stream began last (with a test's source check, a sample's grab waits for its admission). */
+let grabbedSeq = 0;
 let ended = false;
 let endReason = '';
 const samples: DisplaySample[] = [];
@@ -567,28 +576,54 @@ function inkMarks(ink: InkDocument): InkMarks {
  * document are taken once, before anything is awaited.
  */
 async function takeSample(lateMs: number): Promise<void> {
-  const newFrame = presented > presentedSeen;
-  const presentedNow = presented; // the stream's progress when the image is taken, kept with the image
-  const presentedAtNow = presentedAt;
+  let newFrame = presented > presentedSeen;
+  let presentedNow = presented; // the stream's progress when the image is taken, kept with the image
+  let presentedAtNow = presentedAt;
   presentedSeen = presented;
   const { state, gap_ms } = sampleState({ ended, newFrame, lateMs, periodMs: PERIOD_MS });
   const mySeq = ++seq;
   // (a session started since the held picture was taken is owed one taken after its Start, even with no new frame
   // of the stream: the picture is taken again from the stream as it is now, and its time is this one)
   if (!ended && video.videoWidth > 0 && (newFrame || !raw || (lookOwed() !== null && (raw.liveSession !== sessionNow() || Date.parse(raw.at) < Date.parse(lookOwed()!))))) {
+    // With a test's source check on, the frame is taken only once the main process admits the source now, and it is
+    // the overlay's (shown, kept, looked at, circled, sent) only if it admits it again just after, with the frame's
+    // own pixels' hash: else it is closed unused. A Stop during either wait takes or keeps nothing.
+    let ticket: string | null = null;
+    if (admission) {
+      const pre = await lc.admitFrame('pre', mySeq, null).catch(() => ({ ok: false, ticket: undefined }));
+      if (!pre.ok || typeof pre.ticket !== 'string' || ended) return;
+      ticket = pre.ticket;
+      // (the stream as it is now, when the image is taken: frames it presented during the wait are this image's)
+      newFrame ||= presented > presentedNow;
+      presentedNow = presented;
+      presentedAtNow = presentedAt;
+      presentedSeen = presented;
+    }
     const liveSession = sessionNow(); // binds acquisition before awaiting: a later Start cannot make this picture its own
     const at = now(); // (when it is taken from the stream: never later than the picture itself)
+    grabbedSeq = mySeq;
     const bitmap = await createImageBitmap(video);
+    let sha: string | null = null;
+    if (ticket !== null) {
+      try {
+        sha = await pixelsSha(bitmap);
+      } catch (error) {
+        bitmap.close(); // (never held: closed here)
+        throw error;
+      }
+      const post = await lc.admitFrame('post', mySeq, { ticket, raw_sha256: sha, width: bitmap.width, height: bitmap.height }).catch(() => ({ ok: false }));
+      if (!post.ok || ended) return void bitmap.close();
+    }
     if (ended) {
       if (startsWaiting === 0) return bitmap.close();
       // Taken before the end for a stroke that began just before it: held for that stroke's starting context.
       const previous = raw;
-      raw = { bitmap, seq: mySeq, at, liveSession, presented: presentedNow, presentedAt: presentedAtNow };
+      raw = { bitmap, seq: mySeq, at, liveSession, presented: presentedNow, presentedAt: presentedAtNow, sha };
       if (previous) release(previous.bitmap);
       return;
     }
     const previous = raw;
-    raw = { bitmap, seq: mySeq, at, liveSession, presented: presentedNow, presentedAt: presentedAtNow };
+    raw = { bitmap, seq: mySeq, at, liveSession, presented: presentedNow, presentedAt: presentedAtNow, sha };
     if (previous) release(previous.bitmap); // unless a stroke in progress was written over it
     recheckAlignment();
     noteContextChange();
@@ -616,7 +651,7 @@ async function takeSample(lateMs: number): Promise<void> {
     };
   }
   const made = composed;
-  const rawSha = held ? await pixelsSha(held.bitmap) : null;
+  const rawSha = held ? (held.sha ?? (await pixelsSha(held.bitmap))) : null; // (as admitted, when a test's source check is on)
   if (held && rawSha) {
     frameShas.set(held.seq, rawSha);
     for (const k of frameShas.keys()) if (frameShas.size > 30) frameShas.delete(k);
@@ -1067,7 +1102,7 @@ function resetAsk(): void {
 /** What an error says of itself (its message, when it has one). */
 const why = (error: unknown): string => (typeof (error as { message?: unknown } | null)?.message === 'string' ? (error as { message: string }).message : String(error));
 /** The whole frame held now, composed with the ink as it is, with the facts of exactly those: what the AI is given. */
-function wholeFrame(): { canvas: OffscreenCanvas; facts: { frame_seq: number; frame_captured_at: string; frame_width: number; frame_height: number; ink_session: string; ink_revision: number; visible_strokes: number }; ink: Uint8Array } | null {
+function wholeFrame(): { canvas: OffscreenCanvas; facts: { frame_seq: number; frame_captured_at: string; frame_width: number; frame_height: number; raw_sha256: string | null; ink_session: string; ink_revision: number; visible_strokes: number }; ink: Uint8Array } | null {
   const held = ended ? null : raw;
   if (!held) return null;
   const inkDoc = doc;
@@ -1075,7 +1110,8 @@ function wholeFrame(): { canvas: OffscreenCanvas; facts: { frame_seq: number; fr
   // bitmap, and a later save may put another ink document in the place of this one.
   return {
     canvas: compose(held.bitmap, inkDoc.ink),
-    facts: { frame_seq: held.seq, frame_captured_at: held.at, frame_width: held.bitmap.width, frame_height: held.bitmap.height, ink_session: inkDoc.id, ink_revision: inkDoc.ink.revision, visible_strokes: inkDoc.ink.visible.length },
+    // (raw_sha256: the admitted hash of the frame it is composed from, with a test's source check on; else null)
+    facts: { frame_seq: held.seq, frame_captured_at: held.at, frame_width: held.bitmap.width, frame_height: held.bitmap.height, raw_sha256: held.sha, ink_session: inkDoc.id, ink_revision: inkDoc.ink.revision, visible_strokes: inkDoc.ink.visible.length },
     ink: new TextEncoder().encode(JSON.stringify(inkDoc)),
   };
 }
@@ -1382,7 +1418,9 @@ canvas.addEventListener('pointerdown', (e) => {
   // the system delivered newer frames since the last sample, one is sampled now, so the picture is not of
   // what the screen showed before (say) a scroll.
   if (kind === 'ink' && !ended) {
-    const sampledAfter = seq; // a frame from a later sample was taken at or after this pen-down (or just before it)
+    // a frame from a later sample was taken at or after this pen-down (or just before it). With a test's source check,
+    // a sample may still be waiting for its admission: its grab, made after this pen-down, counts as later.
+    const sampledAfter = admission ? grabbedSeq : seq;
     const pinStart = (fresh: boolean): void => {
       if (g.open && raw && g.contexts.length === 0 && (fresh ? raw.seq > sampledAfter : !ended)) {
         g.contexts.push({ frame: raw, from_point: 0, reason: 'writing_started' });

@@ -25,6 +25,9 @@
 // - Whole-display frames showing a material step are retained as files (userData/captures/<session>/:
 //   raw and composed PNGs by file SHA-256 under frames/, one manifest.jsonl line per retained, not
 //   retained, refused and ended event), within per-session caps; nothing retained is ever deleted.
+// - A test's source check (LC_SOURCE_ADMISSION, source-admission.ts; off in the product): when configured, the capture
+//   is armed, each frame is taken from the stream, and each request is sent to ChatGPT only after a fresh decision of
+//   the test's checker; a frame is used only if its own taking was admitted; anything but "allow" ends the capture.
 // - Renderers are sandboxed with context isolation and no Node; they are served only from this app's
 //   build over app://, may not navigate or open windows, and their IPC is checked by sender and shape.
 
@@ -43,6 +46,7 @@ import { earlierNotes, readConnectorConfig, Subscription, type ConnectorEnd, typ
 import { clampRate, isPlace, isSurface, NO_PREFERENCES, placesOf, readPreferences, storedPreferences, withPlace, type Preferences, type Rect } from '../shared/placement.ts';
 import { speechCultures, speechPieces, type Culture } from '../shared/voice.ts';
 import { bundledSystemVoice } from './native-speech.ts';
+import { readAdmissionConfig, SourceChecker, type AdmissionAsk, type AdmissionConfig } from './source-admission.ts';
 
 const HERE = dirname(fileURLToPath(import.meta.url)); // dist/apps/windows/src/main
 const DIST = normalize(join(HERE, '..', '..', '..', '..')); // dist/
@@ -71,8 +75,8 @@ type Session = {
   ignoring: boolean;
   samples: DisplaySample[];
   ending: boolean;
-  /** One capture per session: armed by the overlay just before it asks, then granted once. */
-  capture: 'unused' | 'armed' | 'granting' | 'used';
+  /** One capture per session: armed by the overlay just before it asks (after the test's source check, when one is configured), then granted once. */
+  capture: 'unused' | 'arming' | 'armed' | 'granting' | 'used';
   /** A saved document offered to the overlay, waiting for it to confirm. */
   opening: { doc: DesktopInk; resolve: (r: OpenResult) => void } | null;
   /** The newest document the overlay sent (saved or not). */
@@ -98,7 +102,37 @@ type Session = {
   /** Of live.jsonl (it spans every AI session of the capture): the bytes known to hold whole lines, and the lines that could not be written. */
   liveBytes: number;
   liveUnwritten: number;
+  /** The test's source check of this capture (null in the product: none is configured). */
+  admission: Admission | null;
 };
+/**
+ * The test's source check of one capture. A frame is used (published in the overlay, kept, looked at, circled, asked
+ * about) only if its own taking from the stream was admitted before and after; every request is admitted again just
+ * before it is sent. The first violation is latched and ends the whole capture.
+ */
+type Admission = {
+  readonly checker: SourceChecker;
+  /** The one-use ticket of the frame being taken now: issued when its taking was admitted, consumed by its second check. */
+  ticket: { sample_seq: number; ticket: string } | null;
+  /** Frames whose taking was admitted (by the overlay's frame seq; the newest ADMITTED_MAX), with their pixels' hash and size. */
+  readonly admitted: Map<number, FrameSource>;
+  /** Why the check stopped this capture, or null. */
+  violation: string | null;
+  /** This capture's overlay window as main told the checker at arm (its process and native handle), or null before. */
+  overlay: { readonly pid: number; readonly hwnd: string } | null;
+  /** The checker admitted the arming of this capture. */
+  armed: boolean;
+  /** Lines of admission.jsonl written, and its bytes known to hold whole lines (a torn tail is cut back first). */
+  recorded: number;
+  recordBytes: number;
+};
+const ADMITTED_MAX = 64;
+/**
+ * Where a frame came from, with the test's source check on: its own admitted taking from the stream of this capture.
+ * `frame_seq` is the overlay's number of that frame (the sample it was taken in, `sample_seq`), never the number an
+ * AI session gives the frames it is sent (LiveContext.frame_seq).
+ */
+type FrameSource = { readonly capture_id: string; readonly sample_seq: number; readonly frame_seq: number; readonly raw_sha256: string; readonly width: number; readonly height: number };
 type Retention = {
   /** Why no further whole-display frame of this capture is kept (its cap is reached), or null. */
   closed: string | null;
@@ -144,6 +178,10 @@ let subscription: Subscription | null = null;
 let endingConnector: Promise<void> | null = null;
 let endNoteSaid = false;
 let subscriptionStatus: SubscriptionStatus = { mode: 'off' };
+/** The test's source check (LC_SOURCE_ADMISSION): off (null), its configuration, or why it cannot be used (then no Start). */
+let admissionSetting: AdmissionConfig | { error: string } | null = null;
+/** Checkers not yet ended (the app waits for their end when it quits). */
+const openCheckers = new Set<SourceChecker>();
 
 const secure = (extra: Electron.WebPreferences = {}): Electron.WebPreferences => ({ contextIsolation: true, sandbox: true, nodeIntegration: false, webviewTag: false, spellcheck: false, ...extra });
 
@@ -165,6 +203,8 @@ const exclusionUnsupported = (): boolean => process.platform === 'win32' && Numb
 export async function start(sourceId: string, ai: { policy: Policy } | null = null): Promise<{ ok: true } | { ok: false; reason: string }> {
   writeUnrecordedEnds();
   if (current || starting) return { ok: false, reason: current ? 'a session is running; stop it first' : 'a session is starting' };
+  // A test's source check that is configured and cannot be used refuses the capture: there is no capture without it.
+  if (admissionSetting && 'error' in admissionSetting) return { ok: false, reason: `${admissionSetting.error}, so nothing is captured` };
   if (exclusionUnsupported()) return { ok: false, reason: `this Windows version (${release()}) cannot leave the overlay out of the capture; Windows 10 version 2004 or later is needed` };
   const pending: { cancelled: string | null } = { cancelled: null };
   starting = pending; // reserved before anything is awaited: one Start at a time, and Stop can cancel it
@@ -203,10 +243,12 @@ export async function start(sourceId: string, ai: { policy: Policy } | null = nu
   overlay.setIgnoreMouseEvents(true, { forward: true });
   const s: Session = { sourceId, display, overlay, doc: newDesktopInk(id, sha256(id), new Date().toISOString(), display), ignoring: true, samples: [], ending: false, capture: 'unused', opening: null, offered: null, shown: false,
     retention: { closed: null, id, startedAt: new Date().toISOString(), policy: retentionPolicy, frames: 0, bytes: 0, notRetained: 0, refused: 0, unwritten: 0, headerWritten: false, validBytes: 0, pending: new Map(), answered: new Set(), unfinished: null, endRecorded: false },
-    progress: 0, ask: null, talk: { on: false, muted: false }, reading: null, live: null, liveStarting: false, liveOff: null, liveBytes: 0, liveUnwritten: 0 };
+    progress: 0, ask: null, talk: { on: false, muted: false }, reading: null, live: null, liveStarting: false, liveOff: null, liveBytes: 0, liveUnwritten: 0,
+    admission: admissionSetting && !('error' in admissionSetting) ? { checker: tracked(new SourceChecker({ config: admissionSetting })), ticket: null, admitted: new Map(), violation: null, overlay: null, armed: false, recorded: 0, recordBytes: 0 } : null };
   current = s;
   lastEnd = null;
   lastEnded = null;
+  if (s.admission) s.admission.checker.onFailure = (why) => violate(s, why); // (its own end, or an answer out of turn, ends the capture at once)
   link?.begin(id, captureDir(id)); // the explicit user Start is the only one that asks for a stream
   notifyControl(); // Stop works while the overlay loads
   // Closing the overlay ends the session the normal way, so its newest ink is saved or kept.
@@ -323,6 +365,9 @@ function finish(s: Session, reason: string): void {
   writeUnrecordedAsks();
   s.opening?.resolve({ ok: false, reason: 'the session ended' });
   s.opening = null;
+  // The checker ends with its capture: how its end went is recorded (an end that was not seen is said as that).
+  // (a capture stopped before it was armed has no checker, and no record is made for it)
+  if (s.admission) void s.admission.checker.close().then((x) => (x.spawned || s.admission!.recorded > 0 ? recordAdmission(s, { kind: 'checker_end', spawned: x.spawned, exit_seen: x.exit_seen, code: x.code, signal: x.signal, killed: x.killed }) : undefined));
   if (!s.overlay.isDestroyed()) s.overlay.destroy();
   if (s.retention.headerWritten || s.retention.unwritten > 0) {
     const endLine = { kind: 'ended', at: new Date().toISOString(), reason: lastEnd ?? reason };
@@ -338,8 +383,18 @@ function finish(s: Session, reason: string): void {
 
 const sessionInfo = (): unknown =>
   current
-    ? { running: true, starting: !current.shown, ending: current.ending, display: current.display, session_id: String(current.overlay.id), live: liveInfo(current) }
+    ? { running: true, starting: !current.shown, ending: current.ending, display: current.display, session_id: String(current.overlay.id), live: liveInfo(current), ...sourceAdmissionInfo(current) }
     : { running: false, starting: starting !== null, ended: lastEnd, live_unwritten: lastEnded?.liveUnwritten ?? 0 };
+/**
+ * With a test's source check configured only: which capture it binds and its overlay window (as told to the checker
+ * at arm), and whether that capture is checked now (armed, not ending, no violation). Read-only facts for the
+ * test's runner; nothing here can be set from a window.
+ */
+function sourceAdmissionInfo(s: Session): { source_admission?: unknown } {
+  const a = s.admission;
+  if (!a) return {};
+  return { source_admission: { capture_id: s.retention.id, overlay: a.overlay, active: current === s && !s.ending && a.armed && a.violation === null } };
+}
 function notifyControl(): void {
   if (!control || control.isDestroyed()) return;
   control.webContents.send('lc:session', sessionInfo());
@@ -653,6 +708,149 @@ function readInkOriginal(value: unknown, c: Record<string, unknown>): { sha256: 
   return { sha256: sha, bytes: data.length, data };
 }
 
+// ---- the test's source check (off in the product) -----------------------------------------------------------------
+/** A window's native handle as a positive decimal number (an HWND on Windows), or '' when it has none. */
+function windowHandle(w: BrowserWindow): string {
+  if (w.isDestroyed()) return '';
+  const b = w.getNativeWindowHandle();
+  const n = b.length >= 8 ? b.readBigUInt64LE(0) : b.length >= 4 ? BigInt(b.readUInt32LE(0)) : 0n;
+  return n > 0n ? n.toString() : '';
+}
+/** A checker counted among those the app waits for when it quits, until its own end. */
+function tracked(c: SourceChecker): SourceChecker {
+  openCheckers.add(c);
+  const close = c.close.bind(c);
+  c.close = () => close().finally(() => openCheckers.delete(c));
+  return c;
+}
+const admissionFile = (id: string): string => join(captureDir(id), 'admission.jsonl');
+/** One line of what the test's checker was asked and decided, or of a violation (no pixels). False when it could not be written. */
+function recordAdmission(s: Session, line: Record<string, unknown>): boolean {
+  const a = s.admission!;
+  const file = admissionFile(s.retention.id);
+  try {
+    mkdirSync(captureDir(s.retention.id), { recursive: true });
+    const size = existsSync(file) ? statSync(file).size : 0;
+    if (size > a.recordBytes) truncateSync(file, a.recordBytes); // a torn line: only whole lines are kept
+    const text = `${JSON.stringify({ at: new Date().toISOString(), ...line })}\n`;
+    appendFileSync(file, text);
+    a.recordBytes = Math.min(size, a.recordBytes) + Buffer.byteLength(text);
+    a.recorded += 1;
+    return true;
+  } catch {
+    return false;
+  }
+}
+const askOf = (phase: AdmissionAsk['phase'], o: Partial<Omit<AdmissionAsk, 'phase' | 'capture_id'>>): Omit<AdmissionAsk, 'capture_id'> =>
+  ({ phase, display: null, overlay: null, sample_seq: null, frame_seq: null, raw_sha256: null, raw_size: null, request_id: null, image_sha256: null, ...o });
+/**
+ * Asks the test's checker about this capture. Never while the capture is ending (refused here: `local`, not a
+ * violation), and never after a violation. The decision is recorded; one that cannot be recorded is not allowed.
+ */
+async function admit(s: Session, ask: Omit<AdmissionAsk, 'capture_id'>, still: () => boolean = () => true, more: Record<string, unknown> = {}): Promise<{ ok: true } | { ok: false; reason: string; local: boolean }> {
+  const a = s.admission!;
+  const holds = (): boolean => current === s && !s.ending && a.violation === null && still();
+  if (!holds()) return { ok: false, reason: a.violation ?? 'what it was for no longer holds', local: true };
+  // (asked only if this still holds when its turn comes; `more`: what main records with it, never sent)
+  const d = await a.checker.decide({ ...ask, capture_id: s.retention.id }, holds);
+  if (!d.ok && d.withdrawn) return { ok: false, reason: d.reason, local: true };
+  // (refused here without being asked, after a failure of the check: that failure is what is recorded, not a decision)
+  if (!d.ok && !d.written) return { ok: false, reason: d.reason, local: false };
+  const written = recordAdmission(s, { kind: 'decision', phase: ask.phase, sample_seq: ask.sample_seq, frame_seq: ask.frame_seq, raw_sha256: ask.raw_sha256, raw_size: ask.raw_size, request_id: ask.request_id, image_sha256: ask.image_sha256, ...more, allowed: d.ok, denied: !d.ok && d.denied, reason: d.ok ? null : d.reason, ms: d.ms });
+  if (!d.ok) return { ok: false, reason: d.reason, local: false };
+  return written ? { ok: true } : { ok: false, reason: 'a decision of the source check could not be recorded on this device', local: false };
+}
+/** The test's source check refused or could not decide: latched and recorded, and the whole capture is ended (what it kept stays). */
+function violate(s: Session, reason: string): void {
+  const a = s.admission;
+  if (!a) return;
+  if (a.violation === null) {
+    a.violation = reason;
+    a.ticket = null;
+    recordAdmission(s, { kind: 'violation', reason });
+  }
+  if (current === s && !s.ending) end(`the test's source check ended the capture: ${a.violation}`);
+}
+/**
+ * With the test's source check on, the overlay takes a frame from the stream only between two admissions: 'pre' just
+ * before (a one-use ticket for that sample), 'post' just after, with that ticket and the frame's own pixel hash and
+ * size. Only then is the frame the overlay's to show, keep or send. After each wait the capture is checked again: a
+ * Stop meanwhile admits nothing.
+ */
+async function admitFrame(s: Session, phase: unknown, sampleSeq: unknown, factsValue: unknown): Promise<{ ok: true; ticket?: string } | { ok: false }> {
+  const a = s.admission;
+  if (!a || s.ending || a.violation !== null) return { ok: false };
+  if ((phase !== 'pre' && phase !== 'post') || !isSeq(sampleSeq)) {
+    violate(s, 'the overlay asked for an admission that is malformed');
+    return { ok: false };
+  }
+  if (phase === 'pre') {
+    a.ticket = null; // (an earlier ticket is void)
+    const d = await admit(s, askOf('pre_acquire', { sample_seq: sampleSeq }));
+    if (current !== s || s.ending) return { ok: false };
+    if (!d.ok) {
+      if (!d.local) violate(s, d.reason);
+      return { ok: false };
+    }
+    const ticket = randomBytes(16).toString('hex');
+    a.ticket = { sample_seq: sampleSeq, ticket };
+    return { ok: true, ticket };
+  }
+  const t = a.ticket;
+  a.ticket = null; // one use, whatever comes of it
+  const f = factsValue;
+  const most = (dip: number): number => Math.ceil(dip * s.display.scale_factor) + 16;
+  if (!t || t.sample_seq !== sampleSeq || !isObj(f) || f['ticket'] !== t.ticket || !isHex(f['raw_sha256'], 64) || !isSeq(f['width']) || !isSeq(f['height']) || f['width'] > most(s.display.bounds.width) || f['height'] > most(s.display.bounds.height)) {
+    violate(s, 'a frame was presented as taken without the ticket of its own admission, or with facts that are not its own');
+    return { ok: false };
+  }
+  // (the frame's own number in the overlay is the sample it was taken in)
+  const taken: FrameSource = { capture_id: s.retention.id, sample_seq: sampleSeq, frame_seq: sampleSeq, raw_sha256: f['raw_sha256'], width: f['width'], height: f['height'] };
+  const d = await admit(s, askOf('post_acquire', { sample_seq: sampleSeq, frame_seq: sampleSeq, raw_sha256: taken.raw_sha256, raw_size: { width: taken.width, height: taken.height } }));
+  if (current !== s || s.ending) return { ok: false };
+  if (!d.ok) {
+    if (!d.local) violate(s, d.reason);
+    return { ok: false };
+  }
+  a.admitted.set(sampleSeq, taken);
+  for (const k of a.admitted.keys()) if (a.admitted.size > ADMITTED_MAX) a.admitted.delete(k);
+  return { ok: true };
+}
+/**
+ * With the test's source check on: the admitted taking a frame was made from (its frame seq, its pixels' hash and its
+ * size as the overlay presents them), or a violation (null). With none configured, no source is needed ('none').
+ */
+function sourceOf(s: Session, frameSeq: unknown, rawSha: unknown, width: unknown, height: unknown): FrameSource | 'none' | null {
+  const a = s.admission;
+  if (!a) return 'none';
+  const got = isSeq(frameSeq) ? a.admitted.get(frameSeq) : undefined;
+  if (got && got.raw_sha256 === rawSha && got.width === width && got.height === height) return got;
+  violate(s, `frame ${isSeq(frameSeq) ? frameSeq : '(none)'} was to be used without an admitted taking of its own, or its pixels are not the admitted ones`);
+  return null;
+}
+/**
+ * With the test's source check on, just before a request is sent: its frame must come from an admitted taking of this
+ * capture, and the source is admitted again now. After that wait the capture, the AI session and the request are
+ * checked again: a Stop, an end or a cancel meanwhile sends nothing. Null: send it; else how it ended, not sent.
+ */
+async function sendAdmitted(s: Session, live: Live, t: Turn, frame: Frame, wanted: () => boolean): Promise<TurnOutcome | null> {
+  const refused = (reason: string): TurnOutcome => ({ status: 'refused', code: 'source_not_admitted', reason, submission: 'not_submitted' });
+  const src = frame.source;
+  if (!src || src.capture_id !== s.retention.id) {
+    violate(s, `request ${t.request_id} carried a frame without an admitted taking of this capture`);
+    return refused('its picture was not admitted by the test\'s source check, so it was not sent');
+  }
+  const going = (): boolean => s.live === live && live.ended === null && wanted();
+  // (main also records the AI session's own number of the frame, and its ink, to relate the two; neither is sent)
+  const d = await admit(s, askOf('send', { sample_seq: src.sample_seq, frame_seq: src.frame_seq, raw_sha256: src.raw_sha256, raw_size: { width: src.width, height: src.height }, request_id: t.request_id, image_sha256: t.image.sha256 }), going,
+    { live_session_id: live.id, ai_frame_seq: t.context.frame_seq, trigger: t.trigger, ink_revision: t.context.ink_revision, ink_sha256: t.context.ink_sha256 });
+  // (a failure of the check is latched even when the request was withdrawn meanwhile: it is never just dropped)
+  if (!d.ok && !d.local && current === s && !s.ending) violate(s, d.reason);
+  if (current !== s || s.ending || !going()) return { status: 'cancelled', uncertain: false, unsettled: false, submission: 'not_submitted' };
+  if (!d.ok) return refused(`the test's source check did not admit it (${d.reason}), so it was not sent`);
+  return null;
+}
+
 function retainFrame(s: Session, factsValue: unknown, rawValue: unknown, composedValue: unknown, inkValue: unknown = null): RetainAnswer {
   const r = s.retention;
   const problem = factsProblem(factsValue, composedValue !== null);
@@ -675,6 +873,9 @@ function retainFrame(s: Session, factsValue: unknown, rawValue: unknown, compose
     return { ok: false, reason, ...kind };
   };
   if (width > most(s.display.bounds.width) || height > most(s.display.bounds.height)) return refuse(`a ${width}×${height} frame is larger than the chosen display`);
+  // (with the test's source check on, only a frame whose own taking was admitted is kept: else nothing is written)
+  const source = sourceOf(s, f.frame_seq, f.raw['pixels_sha256'], width, height);
+  if (source === null) return refuse('its taking from the stream was not admitted by the test\'s source check, so it is not kept');
   const raw = readPicture(rawValue, width, height, r.id);
   if (typeof raw === 'string') return refuse(`the raw picture is ${raw}`);
   const composed = composedValue === null ? null : readPicture(composedValue, width, height, r.id);
@@ -726,7 +927,7 @@ function retainFrame(s: Session, factsValue: unknown, rawValue: unknown, compose
   // A frame kept as a material step is also what the AI is given to look at, when a session runs (as it is on this
   // device: the composed picture when there is ink, else the raw one).
   // Kept even if its encoding crossed a Stop/Start; it is observed only in the session that acquired its pixels.
-  if (f['live_session_id'] === s.live?.id) lookAt(s, composed ?? raw, new Date(f['taken_at'] as string).toISOString(), composed && f.composed ? { revision: f.composed['ink_revision'] as number, sha256: inkData?.sha256 ?? null } : { revision: null, sha256: null });
+  if (f['live_session_id'] === s.live?.id) lookAt(s, composed ?? raw, new Date(f['taken_at'] as string).toISOString(), source === 'none' ? null : source, composed && f.composed ? { revision: f.composed['ink_revision'] as number, sha256: inkData?.sha256 ?? null } : { revision: null, sha256: null });
   return { ok: true };
 }
 /**
@@ -753,6 +954,8 @@ function lookFrame(s: Session, factsValue: unknown, pngValue: unknown, inkValue:
   if (!isObj(f) || typeof f['stream_new_frame'] !== 'boolean' || !(f['stream_frame_age_ms'] === null || isMs(f['stream_frame_age_ms']))) return missed('the first picture\'s facts are malformed');
   const read = readFrame(s, f, pngValue, inkValue, live.frames + 1);
   if (typeof read === 'string') return missed(read);
+  const source = sourceOf(s, f['frame_seq'], f['raw_sha256'], f['frame_width'], f['frame_height']);
+  if (source === null) return { ok: false }; // (the capture ends)
   const at = new Date(f['frame_captured_at'] as string).toISOString(); // (a time: readFrame checked it)
   if (f['live_session_id'] !== live.id || Date.parse(at) < live.since) return { ok: false, retry: true }; // from before the Start: never taken as its first look
   const { image, context } = read.frame;
@@ -764,7 +967,7 @@ function lookFrame(s: Session, factsValue: unknown, pngValue: unknown, inkValue:
   if (unstored !== null) return missed(`its first picture could not be kept on this device (${unstored}), and only a kept picture is given to ChatGPT by itself`);
   notifyRetention(s); // (what is kept of this capture grew, or not: said as it is now)
   appendLive(s, live, { kind: 'first_picture', session_id: live.id, frame_seq: live.frames + 1, frame_captured_at: at, image: { file, sha256: image.sha256 }, ink_revision: context.ink_revision, ink_sha256: context.ink_sha256, stream_new_frame: f['stream_new_frame'], stream_frame_age_ms: f['stream_frame_age_ms'] });
-  lookAt(s, image, at, { revision: context.ink_revision, sha256: context.ink_sha256 });
+  lookAt(s, image, at, source === 'none' ? null : source, { revision: context.ink_revision, sha256: context.ink_sha256 });
   return { ok: true };
 }
 /** Samples observed but not retained (a run of them, with the reason), as the overlay reports them. */
@@ -830,7 +1033,8 @@ function continues(doc: DesktopInk): { ok: true } | { ok: false; reason: string 
 // never the provider's quota, and the session is never renewed or started again by this app. One line of what it did
 // is kept per event under the capture's folder (live.jsonl); the pictures it was given are the capture's own files.
 /** A whole frame of the display as it is given to the AI: where and when it was taken, and its picture. */
-type Frame = { readonly context: LiveContext; readonly image: Picture };
+/** `source`: with the test's source check on, the admitted taking this picture was made from; null when no check is configured. */
+type Frame = { readonly context: LiveContext; readonly image: Picture; readonly source: FrameSource | null };
 type Live = {
   readonly id: string;
   readonly model: string;
@@ -985,11 +1189,15 @@ function turnOf(live: Live, frame: Frame, o: Pick<Turn, 'request_id' | 'trigger'
  * "not taken" (a sign-in, an allowance, a rate limit, the connector, an answer that did not come or was not bound)
  * ends the session: nothing more is sent by itself, and only the user starts the AI again.
  */
-async function sendTurn(s: Session, live: Live, t: Turn, frame: Frame): Promise<TurnOutcome> {
+async function sendTurn(s: Session, live: Live, t: Turn, frame: Frame, wanted: () => boolean = () => true, gated: () => void = () => undefined): Promise<TurnOutcome> {
   live.latest = frame;
   live.out += 1;
   notifyLive(s);
-  const out = await subscription!.turn(t);
+  // (with the test's source check on, it is sent only after the source is admitted again now; else as it is.
+  // `gated`: the moment it goes on to be sent, or not)
+  const held = s.admission ? await sendAdmitted(s, live, t, frame, wanted) : null;
+  gated();
+  const out = held ?? (await subscription!.turn(t));
   live.out -= 1;
   if (out.submission !== 'not_submitted') live.used += 1;
   if (live.ended !== null) appendLive(s, live, { kind: 'settled', session_id: live.id, request_id: t.request_id, status: out.status, submission: out.submission, used: live.used, out: live.out });
@@ -1009,7 +1217,7 @@ async function sendTurn(s: Session, live: Live, t: Turn, frame: Frame): Promise<
  * still waiting becomes a gap), and it is sent when nothing else is out and the least time between two looks has
  * passed. Never for every frame, and never into the requests kept for the user's own focus and follow-ups.
  */
-function lookAt(s: Session, picture: Picture, capturedAt: string, ink: { revision: number | null; sha256: string | null }): void {
+function lookAt(s: Session, picture: Picture, capturedAt: string, source: FrameSource | null, ink: { revision: number | null; sha256: string | null }): void {
   const live = s.live;
   if (!subscription || !live || live.ended !== null || s.ending || current !== s) return;
   if (Date.parse(capturedAt) < live.since) return; // taken before the user started this session: not its to look at, and not a frame of it
@@ -1017,7 +1225,7 @@ function lookAt(s: Session, picture: Picture, capturedAt: string, ink: { revisio
   const seq = (live.frames += 1);
   if (live.paused !== null) return void gap(s, live, seq, 'budget');
   if (live.waiting) gap(s, live, live.waiting.context.frame_seq, 'coalesced');
-  live.waiting = { context: liveContext(s, seq, picture, capturedAt, ink), image: picture };
+  live.waiting = { context: liveContext(s, seq, picture, capturedAt, ink), image: picture, source };
   flushLook(s, live);
 }
 function flushLook(s: Session, live: Live): void {
@@ -1041,14 +1249,15 @@ async function look(s: Session, live: Live, frame: Frame): Promise<void> {
     gap(s, live, seq, 'not_observed');
     return notifyLive(s);
   }
-  // The least time between two unattended looks starts when one is sent.
+  // The least time between two unattended looks starts when one is sent (after its source check, when there is one).
   live.cooling = true;
-  setTimeout(() => {
-    live.cooling = false;
-    flushLook(s, live);
-  }, live.policy.min_observation_interval_ms);
+  const cool = (): void =>
+    void setTimeout(() => {
+      live.cooling = false;
+      flushLook(s, live);
+    }, live.policy.min_observation_interval_ms);
   appendLive(s, live, { kind: 'look', session_id: live.id, request_id: t.request_id, frame_seq: seq, frame_captured_at: frame.context.frame_captured_at, image: { file: `frames/${frame.image.sha256}.png`, sha256: frame.image.sha256 }, ink_revision: frame.context.ink_revision, ink_sha256: frame.context.ink_sha256 });
-  const out = await sendTurn(s, live, t, frame);
+  const out = await sendTurn(s, live, t, frame, () => true, cool);
   if (out.status === 'answered') {
     live.seen = { at: new Date().toISOString(), frame_seq: seq };
     live.missed = null;
@@ -1173,7 +1382,7 @@ function readFrame(s: Session, f: Record<string, unknown>, pngValue: unknown, in
     ...('data' in ink ? [{ name: `ink/${ink.sha256}.json`, file: inkOriginalFile(s.retention.id, ink.sha256), sha: ink.sha256, data: ink.data }] : []),
   ];
   const kept: Kept = { sample_seq: f['frame_seq'], image: { file: originals[0]!.name, sha256: image.sha256, bytes: image.bytes, width: image.width, height: image.height }, ink_original: 'data' in ink ? { file: `ink/${ink.sha256}.json`, sha256: ink.sha256, bytes: ink.bytes } : { refused: ink.refused } };
-  return { frame: { context, image }, kept, originals };
+  return { frame: { context, image, source: null }, kept, originals }; // (its source is its caller's to bind)
 }
 /** Writes a frame's originals at their content addresses (and `more`, after them). Null, or why not (nothing is replaced). */
 function storeOriginals(s: Session, originals: Original[], more: () => void = () => undefined): string | null {
@@ -1214,7 +1423,10 @@ function retainSelection(s: Session, factsValue: unknown, pngValue: unknown, ink
   const live = s.live && s.live.ended === null ? s.live : null;
   const read = readFrame(s, f, pngValue, inkValue, live ? live.frames + 1 : 0);
   if (typeof read === 'string') return { ok: false, reason: read };
-  const { frame, kept } = read;
+  const source = sourceOf(s, f['frame_seq'], f['raw_sha256'], f['frame_width'], f['frame_height']);
+  if (source === null) return { ok: false, reason: 'its frame was not admitted by the test\'s source check, so it was not kept' };
+  const frame: Frame = { ...read.frame, source: source === 'none' ? null : source };
+  const { kept } = read;
   // The pixels of the circle are worked out here, from the display and the frame, not taken from the overlay.
   const focus = focusOf({ x: f['region_dip'].x, y: f['region_dip'].y, width: f['region_dip'].width, height: f['region_dip'].height }, { width: frame.image.width, height: frame.image.height, seq: frame.context.frame_seq }, s.display.bounds);
   if (!focus) return { ok: false, reason: 'the selected region is not inside the display' };
@@ -1268,25 +1480,28 @@ function submitAsk(s: Session, selectionId: unknown, questionValue: unknown, ass
   if (!isObj(factsValue)) return { ok: false, reason: 'the frame facts are malformed' };
   const read = readFrame(s, factsValue, pngValue, inkValue, live.frames + 1);
   if (typeof read === 'string') return { ok: false, reason: read };
+  const source = sourceOf(s, factsValue['frame_seq'], factsValue['raw_sha256'], factsValue['frame_width'], factsValue['frame_height']);
+  if (source === null) return { ok: false, reason: 'its frame was not admitted by the test\'s source check, so it was not sent' };
+  const frame: Frame = { ...read.frame, source: source === 'none' ? null : source };
   // The picture and the ink are the circle's own, as it was made.
-  const unchanged = read.frame.image.sha256 === sel.frame.image.sha256 && read.frame.context.ink_revision === sel.frame.context.ink_revision && read.frame.context.ink_sha256 === sel.frame.context.ink_sha256;
+  const unchanged = frame.image.sha256 === sel.frame.image.sha256 && frame.context.ink_revision === sel.frame.context.ink_revision && frame.context.ink_sha256 === sel.frame.context.ink_sha256;
   // The frame the circle went out with in this AI session, with nothing newer sent since, and the same picture and ink: it IS that frame.
   const usable = sel.origin !== null && sel.origin.session_id === live.id && sel.sent !== null;
   if (usable && unchanged && live.latest === sel.sent!.frame) return submitTurn(s, sel, 'text_followup', question, assistanceValue as Assistance, sel.sent!.frame, sel.sent!.kept);
   // A later frame. When its picture and ink are still the circle's own but the circle never went out in this AI
   // session (the AI was not running then, or this is another session), the circle is worked out anew on this frame
   // and is this request's focus: the user circled exactly these pixels.
-  const anew = unchanged && !usable ? focusOf(sel.focus.region_dip, { width: read.frame.image.width, height: read.frame.image.height, seq: read.frame.context.frame_seq }, s.display.bounds) : null;
+  const anew = unchanged && !usable ? focusOf(sel.focus.region_dip, { width: frame.image.width, height: frame.image.height, seq: frame.context.frame_seq }, s.display.bounds) : null;
   // Its picture is kept only once the request is known to be one that can be sent (nothing is kept that no record names).
   let keptNow = false;
-  const sent = submitTurn(s, sel, 'text_followup', question, assistanceValue as Assistance, read.frame, read.kept, anew, () => {
+  const sent = submitTurn(s, sel, 'text_followup', question, assistanceValue as Assistance, frame, read.kept, anew, () => {
     const problem = storeOriginals(s, read.originals);
     if (problem) return problem.replace(/^it could not/, 'the display\'s picture could not');
     live.frames += 1;
     keptNow = true;
     return null;
   });
-  if (!sent.ok && keptNow && live.ended === null) gap(s, live, read.frame.context.frame_seq, 'not_observed'); // kept, and not given to the AI
+  if (!sent.ok && keptNow && live.ended === null) gap(s, live, frame.context.frame_seq, 'not_observed'); // kept, and not given to the AI
   return sent;
 }
 /** One request about the current selection is written, then sent, once: the circle's own hint, or a follow-up. */
@@ -1335,7 +1550,7 @@ function submitTurn(s: Session, sel: Selection, trigger: 'focus' | 'text_followu
     sel.origin = provenanceOf(t);
     sel.sent = { frame, kept };
   }
-  void sendTurn(s, live, t, frame).then((out) => {
+  void sendTurn(s, live, t, frame, () => mine.state === 'asking').then((out) => {
     askEnded(s, live, sel, mine, entry, t, out);
     // A request that was sent and not answered: the AI was not given its frame, unless it saw that frame with
     // another request (a follow-up on the circle's own frame). Said as a gap in the requests to come. Answered: no gap.
@@ -1957,7 +2172,7 @@ ipcMain.handle('lc:speech-rate', (e, rate: unknown) => {
 ipcMain.handle('lc:overlay-ready', (e) => {
   if (!fromOverlay(e) || !current) return null;
   return {
-    work_area: workAreaOf(current), places: placesOf(preferences, current.display.display_id), speech_rate: preferences.speech_rate, voice: voice ? { audible: voice.audible } : null, live: liveInfo(current), source_id: current.sourceId, display: current.display, doc: current.doc, address_sha256: sha256(current.doc.id), retention_policy: current.retention.policy, development: linkStatus.mode === 'development', subscription: subscriptionStatus.mode === 'managed' };
+    work_area: workAreaOf(current), places: placesOf(preferences, current.display.display_id), speech_rate: preferences.speech_rate, voice: voice ? { audible: voice.audible } : null, live: liveInfo(current), admission: current.admission !== null, source_id: current.sourceId, display: current.display, doc: current.doc, address_sha256: sha256(current.doc.id), retention_policy: current.retention.policy, development: linkStatus.mode === 'development', subscription: subscriptionStatus.mode === 'managed' };
 });
 // ASK: a circle is retained with the whole display it is on, and (with the AI's session running) a small hint about
 // it is asked for at once; a follow-up is sent only by lc:ask-submit, the user's own press.
@@ -1997,12 +2212,30 @@ ipcMain.on('lc:stopping', (e, pending: unknown) => {
     r.pending.set(seq, deferred as number[]);
   }
 });
-ipcMain.handle('lc:arm-capture', (e) => {
+ipcMain.handle('lc:arm-capture', async (e) => {
   const s = current;
   if (!fromOverlay(e) || !s || s.ending || s.capture !== 'unused') return false;
+  const a = s.admission;
+  if (a) {
+    // With the test's source check on, the stream is asked for only once its checker is ready and admits the source.
+    s.capture = 'arming';
+    // This capture's overlay window, as main knows it (never from a window): the checker binds it for its lifetime.
+    a.overlay = { pid: process.pid, hwnd: windowHandle(s.overlay) };
+    const problem = a.overlay.hwnd === '' ? 'the overlay window has no native handle' : await a.checker.open();
+    const b = s.display.bounds;
+    const d = problem === null ? await admit(s, askOf('arm', { display: { id: s.display.display_id, bounds: { x: b.x, y: b.y, width: b.width, height: b.height }, scale_factor: s.display.scale_factor }, overlay: a.overlay })) : { ok: false as const, reason: problem, local: false };
+    if (current !== s || s.ending) return false;
+    if (!d.ok) {
+      violate(s, d.reason);
+      return false;
+    }
+    a.armed = true;
+  }
   s.capture = 'armed';
   return true;
 });
+// With the test's source check on: the overlay's two admissions of each frame it takes from the stream.
+ipcMain.handle('lc:admit-frame', (e, phase: unknown, sampleSeq: unknown, facts: unknown) => (fromOverlay(e) && current ? admitFrame(current, phase, sampleSeq, facts) : { ok: false }));
 ipcMain.handle('lc:save-ink', (e, doc: unknown, images: unknown) => (fromOverlay(e) ? saveInk(doc, images) : { ok: false, reason: 'refused', pictures_received: [], pictures_invalid: [] }));
 ipcMain.on('lc:load-result', (e, r: unknown) => {
   const s = current;
@@ -2059,10 +2292,11 @@ const endVoice = (): Promise<void> =>
   });
 let linkQuitDone = false;
 app.on('will-quit', (e) => {
-  if ((!link && !subscription && !voice) || linkQuitDone) return;
+  if ((!link && !subscription && !voice && openCheckers.size === 0) || linkQuitDone) return;
   e.preventDefault();
-  // (the voice's own child is ended with the app: asked to, then ended, and its end waited for within its bound)
-  linkQuitting ??= Promise.allSettled([link?.quit(20_000), subscription?.quit(), endVoice()]) // each is waited for, whatever the others come to
+  // (the voice's own child is ended with the app: asked to, then ended, and its end waited for within its bound; so is
+  // a test's source checker)
+  linkQuitting ??= Promise.allSettled([link?.quit(20_000), subscription?.quit(), endVoice(), ...[...openCheckers].map((c) => c.close())]) // each is waited for, whatever the others come to
     .then(() => {
       linkQuitDone = true;
       // In a later task, never from here: with nothing to stop this runs while Electron is still delivering this
@@ -2126,6 +2360,7 @@ function notifySubscription(): void {
 }
 
 app.whenReady().then(async () => {
+  admissionSetting = readAdmissionConfig(process.env); // a test's source check: off unless configured for this launch
   connectVoice(bundledSystemVoice()); // fixed hash-checked local bundle; lazy and silent until an authorized Talk response
   // Development only: explicitly configured, the test database only; earlier streams are reconciled (reads and
   // control only) before any Start can ask for a new one.

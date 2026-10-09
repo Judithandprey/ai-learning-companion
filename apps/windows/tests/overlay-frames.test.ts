@@ -49,6 +49,7 @@ test("a sample reports the held image's own frame count and age; frames arriving
     lookOwed: () => null,
     sessionNow: () => null,
     offerLook() {},
+    admission: false, // (the product: no test's source check)
     render() {},
     display: { bounds: { width: 100, height: 100 } },
     lc: { sample: (s: never) => void sent.push(s), ended() {} },

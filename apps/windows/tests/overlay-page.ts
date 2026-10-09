@@ -34,6 +34,8 @@ export type Review = {
   sample(late?: number): Promise<void>;
   /** A sample that finds no new frame, taken `late` ms after it was due. */
   sameFrameLate(late: number): Promise<void>;
+  /** The stream presents a new frame now (no sample is taken). */
+  present(): void;
   retention(): { retained: number; refused: number; deferred: number; pinned: number; queue: Promise<void> };
   /** Each visible stroke's alignment as drawn. */
   aligned(): Record<string, string>;
@@ -68,19 +70,22 @@ function averaged(src: Luma, [sx, sy, sw, sh]: number[], cw: number, ch: number,
 }
 
 /** The overlay page for session `s`, with pointer input into its ink canvas and a gate on PNG encoding. */
-export async function overlayPage(h: H, s: Session, policy?: retention.RetentionPolicy, options: { /** A stand-in voice is connected to the main process (the product connects none in this build); 'silent': one that only synthesizes. */ voice?: boolean | 'silent' } = {}) {
+export async function overlayPage(h: H, s: Session, policy?: retention.RetentionPolicy, options: { /** A stand-in voice is connected to the main process (the product connects none in this build); 'silent': one that only synthesizes. */ voice?: boolean | 'silent'; /** A test's source check is configured: no frame is preset, and arming goes to the main process. */ admission?: boolean } = {}) {
   /**
    * What the fake screen shows: every pixel's shade (grids, hashes and fingerprints read it), or, when a test sets
    * `luma`, that grayscale 1280×800 screen: each frame taken keeps its own pixels, and canvases read back the area
    * average of what was drawn into them, so local changes and separately pinned frames are real.
    */
-  const scene = { shade: 20, luma: null as Uint8Array | null, exactPng: false, grabs: 0, /** Encoding a picture fails from now (a test's fault). */ encodingFails: false };
+  const scene = { shade: 20, luma: null as Uint8Array | null, exactPng: false, grabs: 0, /** Encoding a picture fails from now (a test's fault). */ encodingFails: false,
+    /** Reading back the pixels of the next N whole frames fails (a test's fault). */ hashFails: 0, /** The bitmap the last grab returned. */ lastGrab: null as { width: number; height: number } | null };
   if (policy) (s as unknown as { retention: { policy: retention.RetentionPolicy } }).retention.policy = policy; // the main process enforces the same
   const nodes = new Map<string, FakeNode>();
   const events = new Map<string, (...a: unknown[]) => void>();
   const acks: Array<string | null> = [];
   const saves: desktopInk.DesktopInk[] = [];
   const encoding = { gate: null as Promise<void> | null };
+  /** What the page asked the main process to admit (phase, sample), in order. */
+  const admits: Array<[string, number]> = [];
   /** What the page asked of the main process about taking the pointer (NAV passes clicks through unless over a surface). */
   const interactive: boolean[] = [];
   /**
@@ -142,6 +147,10 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
           this.drawn = { src, rect: a.length === 8 ? a.slice(0, 4) : [0, 0, src.width ?? this.width, src.height ?? this.height] };
         },
         getImageData: (x: number, y: number, w: number, h: number) => {
+          if (scene.hashFails > 0 && w * h >= 1280 * 800) {
+            scene.hashFails -= 1;
+            throw new Error('the pixels could not be read back (injected)');
+          }
           // A frame with pixels (drawn directly, or through a composed canvas drawn from it) reads back its pixels.
           const d = this.drawn;
           const src = d?.src.luma ? d.src : d?.src.drawn?.src.luma ? d.src.drawn.src : null;
@@ -242,7 +251,12 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
     talk: (on: boolean, muted: boolean) => void h.handlers['lc:talk']!({ sender: s.overlay.webContents }, on, muted),
     say: async (id: string, request: string, at: number) => plain(await h.handlers['lc:say']!({ sender: s.overlay.webContents }, id, request, at)),
     hush: () => void h.handlers['lc:hush']!({ sender: s.overlay.webContents }),
-    armCapture: async () => true,
+    // With a test's source check on, the capture is armed by the main process itself (it asks the checker first).
+    armCapture: async () => (options.admission ? Boolean(await h.handlers['lc:arm-capture']!({ sender: s.overlay.webContents })) : true),
+    admitFrame: async (phase: string, sampleSeq: number, facts: unknown) => {
+      admits.push([phase, sampleSeq]);
+      return plain(await h.handlers['lc:admit-frame']!({ sender: s.overlay.webContents }, phase, sampleSeq, plain(facts)));
+    },
     saveInk: async (d: desktopInk.DesktopInk, p: unknown[]) => {
       saves.push(plain(d) as desktopInk.DesktopInk);
       return h.handlers['lc:save-ink']!({ sender: s.overlay.webContents }, plain(d), p);
@@ -307,7 +321,7 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
     console,
     performance,
     OffscreenCanvas: FakeNode,
-    createImageBitmap: async () => { scene.grabs += 1; return frame(); },
+    createImageBitmap: async () => { scene.grabs += 1; return (scene.lastGrab = frame()); },
     document: { getElementById: node, createElement: () => ({ videoWidth: 1280, requestVideoFrameCallback() {} }), querySelectorAll: (q: string) => (q.includes('assistance') ? radios : buttons), querySelector: (q: string) => (q.includes('assistance') ? radios.find((r) => r.checked) ?? null : null), addEventListener: (n: string, f: (e: unknown) => void) => void documentHandlers.set(n, f), elementFromPoint: surfaceAt, documentElement: root },
     window: Object.assign(windowSize, { devicePixelRatio: 1, addEventListener: (n: string, f: () => void) => void windowHandlers.push([n, f]) }),
     // (as the browser's: told when an observed element's laid-out size changes; here, when a test changes it)
@@ -333,11 +347,12 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
   };
   vm.createContext(sandbox);
   await vm.runInContext(
-    `(async () => { ${OVERLAY}\nglobalThis.review = { mode: (m) => setMode({ ...mode, mode: m }), frame: (f) => { raw = f; presented = f.presented; presentedAt = f.presentedAt; seq = f.seq; }, endCapture, pending: () => Promise.all([saveChain, encoding, sampling]), state: () => ({ doc, gesture, ended }), sample: (late = 0) => { presented += 1; return (sampling = sampling.then(() => takeSample(late))); }, sameFrameLate: (late) => (sampling = sampling.then(() => takeSample(late))), retention: () => ({ ...__lcOverlay.state().retention, pinned: pins.size, queue: retention }), aligned: () => __lcOverlay.state().aligned, samples: () => __lcOverlay.state().samples, card: () => __lcOverlay.state().card }; })()`,
+    `(async () => { ${OVERLAY}\nglobalThis.review = { mode: (m) => setMode({ ...mode, mode: m }), frame: (f) => { raw = f; presented = f.presented; presentedAt = f.presentedAt; seq = f.seq; grabbedSeq = f.seq; }, present: () => { presented += 1; presentedAt = performance.now(); }, endCapture, pending: () => Promise.all([saveChain, encoding, sampling]), state: () => ({ doc, gesture, ended }), sample: (late = 0) => { presented += 1; return (sampling = sampling.then(() => takeSample(late))); }, sameFrameLate: (late) => (sampling = sampling.then(() => takeSample(late))), retention: () => ({ ...__lcOverlay.state().retention, pinned: pins.size, queue: retention }), aligned: () => __lcOverlay.state().aligned, samples: () => __lcOverlay.state().samples, card: () => __lcOverlay.state().card }; })()`,
     sandbox,
   );
   const review = (sandbox as unknown as { review: Review }).review;
-  review.frame({ bitmap: frame(), seq: 1, at: '2026-09-30T12:00:00.000Z', presented: 1, presentedAt: performance.now() });
+  // (with a test's source check on, no frame is held until one is taken between its two admissions)
+  if (!options.admission) review.frame({ bitmap: frame(), seq: 1, at: '2026-09-30T12:00:00.000Z', presented: 1, presentedAt: performance.now() });
   let submitAck: Promise<void> = Promise.resolve();
   let presentAck: Promise<void> = Promise.resolve();
   /** Holds the main process's go-ahead for showing an answer (lc:ask-present) back from the overlay until the returned function is called. */
@@ -381,5 +396,5 @@ export async function overlayPage(h: H, s: Session, policy?: retention.Retention
   const box = (id: string) => node(id).getBoundingClientRect();
   const talkLabel = (): string | null => node('talk').getAttribute('aria-label');
   const talkState = () => ({ controls: !node('talkControls').hidden, talk: node('talk').getAttribute('aria-pressed') === 'true', muted: node('mute').getAttribute('aria-pressed') === 'true', mute: !node('mute').hidden, interrupt: !node('interrupt').hidden, rate: node('rate').hidden ? null : node('rate').textContent, status: node('talkStatus').hidden ? null : node('talkStatus').textContent });
-  return { on, mouseMove, box, node, root, interactive, voice, talkState, talkLabel, /** From now the stand-in voice throws when asked to say or to stop. */ breakVoice: () => void (voice.broken = true), review, scene, acks, saves, encoding, pointer, click, hint: () => node('hint').textContent, undoDisabled: () => node('undo').disabled, userData: h.userData, captureId: s.doc.id, ask, choose, press, holdSubmitAck, holdPresentAck, resize, resizeWindow, question: (text: string) => void (node('question').value = text) };
+  return { on, mouseMove, box, node, root, interactive, voice, talkState, talkLabel, /** From now the stand-in voice throws when asked to say or to stop. */ breakVoice: () => void (voice.broken = true), review, scene, acks, saves, encoding, pointer, click, hint: () => node('hint').textContent, undoDisabled: () => node('undo').disabled, userData: h.userData, captureId: s.doc.id, ask, choose, press, holdSubmitAck, holdPresentAck, resize, resizeWindow, admits, arm: () => lc.armCapture(), question: (text: string) => void (node('question').value = text) };
 }

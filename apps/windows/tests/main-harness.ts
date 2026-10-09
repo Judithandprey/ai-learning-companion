@@ -13,6 +13,7 @@ import { fingerprintToBase64 } from '../src/shared/samples.ts';
 import * as retention from '../src/shared/retention.ts';
 import { CaptureLink, readLinkConfig, type LinkOptions } from '../src/main/capture-link.ts';
 import { earlierNotes, readConnectorConfig, Subscription, type SubscriptionOptions } from '../src/main/subscription.ts';
+import { readAdmissionConfig, SourceChecker, type CheckerOptions } from '../src/main/source-admission.ts';
 import * as live from '../src/shared/live.ts';
 import { clampRate, isPlace, isSurface, NO_PREFERENCES, placesOf, readPreferences, storedPreferences, withPlace } from '../src/shared/placement.ts';
 import { speechCultures, speechPieces } from '../src/shared/voice.ts';
@@ -26,8 +27,9 @@ export const SOURCE = appSource('src/main/main.ts')
 
 const links: CaptureLink[] = [];
 const subscriptions: Subscription[] = [];
+const checkers: SourceChecker[] = [];
 /** Every capture link and subscription connector an app under test made is stopped (its child ended), even after a failed test. */
-export const quitLinks = async (): Promise<void> => void (await Promise.all([...links.splice(0).map((l) => l.quit(10_000)), ...subscriptions.splice(0).map((x) => x.quit())]));
+export const quitLinks = async (): Promise<void> => void (await Promise.all([...links.splice(0).map((l) => l.quit(10_000)), ...subscriptions.splice(0).map((x) => x.quit()), ...checkers.splice(0).map((c) => c.close())]));
 
 /** App data folders of the apps under test (they hold retained pictures): removed when the test process ends. */
 const appData: string[] = [];
@@ -64,6 +66,12 @@ export class FakeWindow extends EventEmitter {
     return FakeWindow.all.indexOf(this) + 1;
   }
   removeMenu() {}
+  /** As Electron's on 64-bit Windows: the HWND, 8 bytes little-endian (a made-up one per window here). */
+  getNativeWindowHandle(): Buffer {
+    const b = Buffer.alloc(8);
+    b.writeBigUInt64LE(0x10000n + BigInt(this.id));
+    return b;
+  }
   setAlwaysOnTop() {}
   setContentProtection() {}
   setIgnoreMouseEvents() {}
@@ -107,7 +115,7 @@ export type Review = {
  * `env`: the app's environment (empty by default: the development capture link stays off). `link`: options added to
  * the app's own capture link (a recording transport, shorter bounds), for tests.
  */
-export function harness(options: { env?: Record<string, string>; /** The app data folder of an earlier harness: the next launch of the same app. */ userData?: string; link?: Partial<LinkOptions>; subscription?: Partial<SubscriptionOptions>; /** For one test: the subscription layer forgets to cancel (the app's own fence must still hold). */ leakySubscription?: boolean } = {}) {
+export function harness(options: { env?: Record<string, string>; /** The app data folder of an earlier harness: the next launch of the same app. */ userData?: string; link?: Partial<LinkOptions>; subscription?: Partial<SubscriptionOptions>; /** For one test: the subscription layer forgets to cancel (the app's own fence must still hold). */ leakySubscription?: boolean; /** A test's source checker: how its child is spawned (with LC_SOURCE_ADMISSION in `env`). */ admission?: Partial<CheckerOptions> } = {}) {
   FakeWindow.all = [];
   const userData = options.userData ?? fs.mkdtempSync(path.join(os.tmpdir(), 'lc-main-test-'));
   if (!options.userData) appData.push(userData);
@@ -217,6 +225,14 @@ export function harness(options: { env?: Record<string, string>; /** The app dat
     },
     readConnectorConfig,
     earlierNotes,
+    // A test's source check: the app's own class, with a test's checker child in place of a real one.
+    SourceChecker: class extends SourceChecker {
+      constructor(o: CheckerOptions) {
+        super({ ...o, ...options.admission });
+        checkers.push(this);
+      }
+    },
+    readAdmissionConfig,
     ...live,
     clampRate,
     isPlace,

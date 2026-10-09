@@ -4,6 +4,8 @@ const { contextBridge, ipcRenderer } = require('electron');
 contextBridge.exposeInMainWorld('lc', {
   ready: () => ipcRenderer.invoke('lc:overlay-ready'),
   armCapture: () => ipcRenderer.invoke('lc:arm-capture'),
+  // A test's source check only: asks the main process to admit a frame's taking. It decides; this page only asks.
+  admitFrame: (phase, sampleSeq, facts) => ipcRenderer.invoke('lc:admit-frame', String(phase), Number(sampleSeq), facts ?? null),
   retainFrame: (facts, raw, composed, ink) => ipcRenderer.invoke('lc:retain-frame', facts, raw, composed ?? null, ink ?? null),
   notRetained: (run) => ipcRenderer.send('lc:not-retained', run),
   observationGap: (gap) => ipcRenderer.send('lc:observation-gap', gap),
