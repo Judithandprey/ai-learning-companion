@@ -49,7 +49,7 @@
       "account/model/billing change",
       "automatic restart or retry"
     ],
-    "next_owner": "Original QA corrects same driver using Lead exact-step probes/decisions; Support independently reviews frozen source; Lead reconciles verdict and exact command before any resource allocation.",
+    "next_owner": "Original QA amends e0bd4b3 for the remaining Support findings; Support clarifies F3 and reviews corrected boundaries; Lead resolves any cross-owner seam and integrates before exact command/resource allocation.",
     "production_source_commit": "175515308f509fb8c0f531dbdb10e57313fcde5a",
     "stage_name": "lc-windows-live-1755153",
     "stage_tree_sha256": "3387824a0dee70013104388d4acec2b810475e98953e7c3f196063a8781fd154",
@@ -122,6 +122,46 @@
         "execution_started_at_dispatch": false,
         "lead_baseline": "b63ecdcf9dd436a60a3de702dfa8c7ee39a3232a",
         "scope": "same-owner source/offline correction; no resource allocation"
+      },
+      "latest_correction": {
+        "source_commit": "e0bd4b37dc788a766ed3f6fe86602f556b04d4cd",
+        "message_id": "handoff_1db90d738e09039116a04a78d8f84961",
+        "candidate_sha256": "74ebc3942022fe0549aa691b45ff5cc4949a56041b2f424b22f4786eb4374fbc",
+        "integrated": false,
+        "lead_focused_checks": {
+          "passed": 23,
+          "failed": 0,
+          "native": false,
+          "provider": false
+        },
+        "status": "remaining_independent_findings_open"
+      },
+      "support_verdict": {
+        "source_commit": "38230e1f63c4c3dcbdf28b03c07520db9ea8206d",
+        "integrated_as": "16e257d",
+        "reviewed_qa": "b8f0d9c23a0091c76fd2def239f445d1b8d04854",
+        "message_id": "handoff_306b8df25c41e31565c5bd9cacba02e6",
+        "verdict": "HOLD",
+        "remaining_on_latest": [
+          "applicable_spend_bucket",
+          "source_lifetime_full_admission",
+          "complete_receipt_collection_and_counts",
+          "observed_lifecycle_release",
+          "uncertain_or_conflicting_submission"
+        ]
+      },
+      "same_task_amendment": {
+        "message_id": "handoff_3b1cdc65a16b36d56c69069a8351350f",
+        "accepted": true,
+        "execution_started_at_dispatch": false,
+        "scope": "same QA source/offline correction; no execution allocation"
+      },
+      "source_seam_clarification": {
+        "message_id": "handoff_1574632a1503864240e752bc4d9507fa",
+        "accepted": true,
+        "execution_started_at_dispatch": false,
+        "owner": "support",
+        "scope": "F3 exact capture/send guard placement only; no implementation duplication or native/provider call"
       }
     }
   },

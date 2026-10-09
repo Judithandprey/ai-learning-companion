@@ -158,9 +158,17 @@ Actual QA `b8f0d9c` / `handoff_a2f89cda91b9465425a8ca4eeec4cce6` delivers
 the62-step current-package driver, source/offline only. Lead holds it for reproduced
 included-credit false denial and unknown-Start undercount.
 [Exact review and engineering decisions](verification/lead/live-windows/nonvoice-driver-review/README.md).
-Support independent review is assigned via `handoff_dc6421e3ff2c4836f05f61dcab7e7985`;
-QA received same-candidate correction `handoff_3ec98086b3b4b0a1a8b4c17b14a8746a`
-(accepted, execution initially unconfirmed). Real0/4 unchanged, no active resource allocation.
+QA's actual correction `e0bd4b3` / `handoff_1db90d738e09039116a04a78d8f84961`
+fixes those two findings and applies Lead D1–D10; Lead ran its focused23/23 checks
+on the exact source archive. It remains unintegrated/pending remaining review.
+Support HOLD `38230e1` / `handoff_306b8df25c41e31565c5bd9cacba02e6` integrates
+as`16e257d`: remaining source-lifetime admission, receipt/counting, watcher release
+and uncertain-Stop evidence defects stay open. Same QA task amendment
+`handoff_3b1cdc65a16b36d56c69069a8351350f` is accepted (execution initially unconfirmed).
+Support clarifies only the F3 source-guard seam via
+`handoff_1574632a1503864240e752bc4d9507fa`; Lead coordinates any production ownership.
+Real0/4 unchanged, no active resource allocation; next is the corrected candidate
+and changed-boundary independent review, not another completed-diagnostic run.
 Keep normal-band/foreground/16-point/display guards and exact-owned cleanup;
 no largest-window-only trust, foreign mutation or allocation before the reviewed correction. Actual
 popup content is unknown; the product and complete live/audio gates remain untested.

@@ -1,13 +1,17 @@
 # Current-package nonvoice driver review — 2026-10-09
 
-**HOLD exact QA `b8f0d9c23a0091c76fd2def239f445d1b8d04854` for correction; no execution allocation.**
+**HOLD latest QA `e0bd4b37dc788a766ed3f6fe86602f556b04d4cd` pending the remaining independent findings; no execution allocation.**
+The first correction is received and its focused checks pass; it does not close
+the independent review of its parent `b8f0d9c`.
 Actual delivery `handoff_a2f89cda91b9465425a8ca4eeec4cce6` follows the existing
 P0-13 preparation assignment. Product remains52be105, staged77-file tree531943a8;
 the successful AI-disabled diagnostic and all3consumed slots remain closed.
 Real actions remain0/4. This review invokes no Windows/account/model/audio action.
 
-Existing Support received exact-source independent review
-`handoff_dc6421e3ff2c4836f05f61dcab7e7985`; its verdict is pending. Lead owns the
+Existing Support completed exact-source independent review
+`handoff_dc6421e3ff2c4836f05f61dcab7e7985`: **HOLD**, delivered in
+`handoff_306b8df25c41e31565c5bd9cacba02e6`, Support commit `38230e1`,
+integrated as `16e257d`. Lead owns the
 engineering choices below and final integration. QA can repair the concrete Lead findings in the same assignment while Support
 reviews the frozen baseline. Additional review findings amend that task, not a
 second implementation owner or duplicate test campaign.
@@ -67,3 +71,60 @@ execution_started=false. It assigns the two reproduced corrections and D1–D10
 within the existing task; Support continues the frozen-source independent review.
 Delivery acceptance is not a completed repair or actual execution proof. No
 display/account/audio lease or provider request was created.
+
+## Received correction and consolidated independent findings
+
+QA delivery `handoff_1db90d738e09039116a04a78d8f84961` supplies exact
+`e0bd4b37dc788a766ed3f6fe86602f556b04d4cd`, with candidate-nonvoice-02
+`74ebc3942022fe0549aa691b45ff5cc4949a56041b2f424b22f4786eb4374fbc`.
+The prior candidate and evidence are preserved. Lead reviewed the changed source
+and ran the actual authored suite once from an exact Git archive: **23/23 pass**,
+exit 0, no skips, with Node child-process and filesystem-write permissions
+withheld. [Command/result](e0bd4b3-focused-checks.json) and
+[actual output](e0bd4b3-focused-checks.txt). These are offline driver checks,
+not independent product acceptance. The author additionally reports 35/35
+mutation detections; Lead did not rerun or add them to its check count.
+
+The actual account-ready expression now permits included exhaustion/reached
+markers and unknown allowance. Reached Start with missing later records consumes
+one uncertain slot; known pre-trigger refusal remains distinguishable. D1–D10
+changes are visible in the source, including the fixed outer bound, typed-request
+explain override and raw receipt exclusion. Applicable spend-bucket selection
+still needs the correction below.
+
+The full [Support report](../../../support/nonvoice-live-b8f0d9c-review-20261009/README.md)
+and its concrete probes are integrated. They review frozen parent `b8f0d9c`, so
+their already-corrected F1/F2 portions are not presented as newly reproduced
+defects in `e0bd4b3`. Remaining corrections in that latest source are:
+
+- **F1 applicability:** scope spend/workspace controls to the selected
+  model/Codex limit exactly as the real consumer does; an unrelated bucket is
+  not a universal Start veto. Preserve applicable authoritative restrictions.
+- **F3 source lifetime:** after Start, 16-point/topology checks do not revalidate
+  the exact full-display Edge/browser geometry. Automatic frames and submissions
+  also occur between explicit UI steps. Bind fresh complete admission to the
+  actual frame/send path; do not claim an atomic desktop guarantee. Lead is
+  resolving any necessary production-owner seam before authorizing such edits.
+- **F4 evidence:** collection failures, malformed records, fourth-action tools,
+  wrong Codex digest and extra cumulative turns must not yield mechanical
+  success. Reconcile all actions/receipts without double-counting cumulative
+  counters, and validate receipt containment/identity before copying.
+- **F5 lifecycle:** an empty/end-only watcher cannot prove connector release.
+  Establish readiness and sufficiently correlated observed lifecycle evidence;
+  missed descendants remain unknown, with no expanded signalling authority.
+- **F6 phase:** uncertain submission remains unknown; contradictory ask,
+  receipt and settled records cannot prove an in-flight Stop fence.
+
+These are source/synthetic counterexamples, not observed private capture,
+extra real requests, tool execution or process leaks. The actual main production
+slice and earlier native diagnostic evidence are unchanged.
+
+Same-owner amendment `handoff_3b1cdc65a16b36d56c69069a8351350f` was accepted,
+initially unread/execution_started=false. It preserves QA's correction and adds
+the remaining findings in the existing P0-13 task. Support received one bounded
+F3 seam clarification `handoff_1574632a1503864240e752bc4d9507fa`, also accepted
+with execution initially unconfirmed; this is not a repeated whole review.
+Next: QA returns one corrected candidate; Support reviews the changed boundaries;
+Lead integrates and then resolves exact command/resource admission. No current
+display/account lease exists, real actions remain **0/4**, and the old diagnostic
+remains **3/3 consumed and closed**.
