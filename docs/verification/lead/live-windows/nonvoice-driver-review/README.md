@@ -1,10 +1,12 @@
 # Current-package nonvoice driver review — 2026-10-09
 
-**REVIEWING latest QA `9614947fa2a3cfae3dd5e3d154011b3c6dbaa82b`; no execution allocation.**
-Its focused30checks pass. Independent changed-boundary review, the exact owned
-overlay predicate and Web's app interlock/build remain dependencies. Interim
-candidate03 mechanically refuses execution against old production52be105.
-Actual delivery `handoff_a2f89cda91b9465425a8ca4eeec4cce6` follows the existing
+**HOLD latest QA `9614947fa2a3cfae3dd5e3d154011b3c6dbaa82b`; no execution allocation.**
+Support's independent review `5083814` is integrated as `0ac8605`. It closes the
+applicable-quota finding and reproduces remaining ledger, Stop, watcher and
+typed-receipt defects. QA repairs those boundaries and the exact current-overlay
+predicate; Web implements the app interlock and trusted capture binding. Interim
+candidate 03 correctly refuses execution against old production 52be105.
+Initial delivery `handoff_a2f89cda91b9465425a8ca4eeec4cce6` follows the existing
 P0-13 preparation assignment. Product remains52be105, staged77-file tree531943a8;
 the successful AI-disabled diagnostic and all3consumed slots remain closed.
 Real actions remain0/4. This review invokes no Windows/account/model/audio action.
@@ -228,13 +230,14 @@ Each request has these fields:
 | `phase` | `arm`, `pre_acquire`, `post_acquire` or `send` |
 | `capture_id` | Actual 16-hex capture identity |
 | `display` | On arm, `{id,bounds:{x,y,width,height},scale_factor}` from the main-owned display; otherwise null. Actual product `id` is a decimal string; the adapter may also accept a lossless safe nonnegative integer representation, compared to the same admitted source and echoed without changing its JSON type. |
+| `overlay` | On arm, `{pid,hwnd}` authored by main from `process.pid` and this capture's `s.overlay.getNativeWindowHandle()`; `pid` is a positive safe integer and `hwnd` a positive decimal string. Otherwise null. It is never supplied by the renderer or discovered by title. |
 | `sample_seq` | Acquisition sampler invocation, positive safe integer; null on arm |
 | `frame_seq` | Acquired **HeldFrame.seq**, never renumbered AI `LiveContext.frame_seq`; null until post-acquire |
 | `raw_sha256`, `raw_size` | Bitmap RGBA SHA-256 and `{width,height}` after acquisition; null before it |
 | `request_id`, `image_sha256` | On send, actual model request ID and SHA-256 of the exact PNG sent; otherwise null |
 | `sent_at` | ISO timestamp at actual write, not enqueue |
 
-Phase binding is explicit: arm has only display/capture facts. Pre-acquire has
+Phase binding is explicit: arm has only display/capture/overlay facts. Pre-acquire has
 `sample_seq` but null frame/hash/size. Post-acquire repeats that sample and sets
 `frame_seq` to its acquired HeldFrame.seq, plus raw hash/size. Send names that
 same admitted raw frame and its original acquisition sample, even when reused;
@@ -246,7 +249,7 @@ re-decoding of the renderer's trusted bitmap hash.
 
 Reply has exactly all request fields **except `sent_at`**, echoed equal,
 plus `verdict` (`allow`/`deny`) and `reason` (null or at most 300 characters).
-This includes display and raw size. Main keeps the request immutable. Only one
+This includes display, overlay and raw size. Main keeps the request immutable. Only one
 is outstanding; start its deadline at write, recheck capture/live/request state
 before writing a queued request and after the reply, and bound/cancel queued
 waits. Every checker decision performs fresh full native admission; no cached
@@ -254,6 +257,27 @@ allow. Missing, stale, mismatched, malformed, replayed or extra-key replies,
 unexpected exit/EOF and failed evidence writes latch ordinary whole-capture
 Stop. Intentional disposal and late replies cannot reopen a capture or overwrite
 its original stop reason. Remaining uncertain lifecycle is not a release pass.
+
+**Current overlay binding.** QA independently records the launched product's
+PID and native creation ticks before capture starts. At arm it binds that
+immutable process identity to main's exact overlay HWND and `capture_id` for
+the entire capture. A later matching title or a new per-decision handle cannot
+replace it. Web exposes only a test-configured read-only `source_admission`
+fact through the existing session-info response:
+`{capture_id,overlay:{pid,hwnd},active}`. `active` requires the current, non-ending
+capture and accepted checker arm; it becomes false or absent after Stop. The
+existing `session_id` is the overlay ID, not the capture identity. This adds no
+writable IPC or renderer authority. QA correlates this fact with its launch
+identity and accepted arm; native exclusion and stacking checks remain QA-owned.
+
+At every relevant checker and runner point, require positive successful
+`WDA_EXCLUDEFROMCAPTURE` (17), current owner/title/class/bounds/visibility/topmost,
+and exact generated Edge directly below after excluding only that overlay.
+`WDA_MONITOR`, unreadable affinity, an intervening control/foreign window or
+unknown metadata denies. Preserve the same predicate in both `onTop` checks,
+foreground, all point checks and final identity/geometry revalidation. Do not
+move, hide or disable a window to make admission pass. This is an unreleased
+test-interface refinement, not proof of native stacking or atomic capture.
 
 Main owns the one-use acquisition ticket, consumes it before awaiting the post
 decision, and verifies admitted raw lineage at every retention, first-look,
@@ -295,10 +319,39 @@ Its `interlockProduction=null` deliberately refuses every allocation because
 Web source/build is available and all candidate pins are regenerated. Earlier
 candidates/evidence remain intact. No QA source is integrated yet.
 
-Support receives the concrete changed-boundary review in
-`handoff_26fac298197c97826e4184e71ff22557` (accepted, execution initially
-unconfirmed). This covers its F1/F3–F6/reader findings and the remaining source
-predicate, not another whole-product campaign. QA receives the following Lead
+Support completed the changed-boundary review assigned in
+`handoff_26fac298197c97826e4184e71ff22557`: actual reply
+`handoff_8ef9e664b0bb7595d0608518155fd790`, exact commit
+`5083814d8fb096dc0b080282533f022903ce2efe`, integrated as `0ac8605`.
+The [full review and synthetic witnesses](../../../support/nonvoice-live-9614947-review-20261009/README.md)
+close F1 and retain HOLD for the concrete repairs below. Support executed 11
+boundary scenarios (8 controls, 3 defect witnesses) and 2 ledger controls with
+6 negative inputs, 5 of which incorrectly passed mechanics. These results do
+not inherit the author's checks or establish actual capture/provider behavior.
+
+| Finding | Same QA task correction |
+| --- | --- |
+| R1 | Classify every observed request or mark evidence incomplete; missing/unknown trigger cannot remove an extra request from the ledger. |
+| R2 | Reconcile published-turn counts and request phases per launch before totals; a proven-unsent slot cannot absorb an unexplained published attempt. |
+| R3 | Reconcile all matching Stop/settlement records and identities; missing phases remain unknown and contradictory later records cannot disappear. |
+| R4 | Require a live watcher at admission, preserve subsequent coverage loss as unknown, and validate appearance/exit order and identity before claiming release. |
+| R5 | Validate bounded receipt field types before copy and public projection; exact keys alone cannot prevent nested malformed values. No actual disclosure was observed. |
+
+The trusted overlay binding above resolves the remaining cross-owner interface
+choice. Same-task QA amendment `handoff_e893ca27aaf7622da5bf6ad6e059c5ee` and
+Web amendment `handoff_f9c208600bcc9b8d39ba033019464857` were accepted, initially
+unread with execution not started. Existing owner worktrees contain partial
+checker/interlock edits; these are activity evidence, not delivered repairs or
+adoption of the latest amendments. Support is idle until corrected changed
+boundaries are ready, with no duplicate implementation assignment.
+
+Lead integration checks matched all 24 recorded source/payload/manifest hashes
+against the exact QA Git objects, resolved this review's local links, parsed the
+budget JSON and confirmed unchanged 0/4 usage with no active lease.
+`git diff --check` passed. The independent probes were not rerun; no native or
+provider action was performed. The unrelated directory edit remains excluded.
+
+QA had received the following Lead
 decisions in `handoff_1698eb178ef50ac35b1b960a035cfbae`; Web receives the actual
 checker delivery and coordination in `handoff_c899b66b9fb10e64d25e305d1cadc258`.
 Both accepted receipts are dispatch evidence, not completed follow-up work.
@@ -315,8 +368,8 @@ Both accepted receipts are dispatch evidence, not completed follow-up work.
   still denies. No PID/title-only exception, global foreign allowance, window
   mutation or expansion of cleanup ownership. Support reviews equivalence; this
   is a pending source repair, not a claim the native predicate is available or
-  has passed. Web preserves ordinary input behavior and proposes any minimal
-  main-owned arm identity addition through Lead before changing both sides.
+  has passed. Web preserves ordinary input behavior and implements the
+  main-owned arm identity addition specified above with QA's matching consumer.
 - **Timing:** keep4actions/60s/60s and the600s outer bound. The revised wait
   worst case588s is a source calculation. The estimated3s/decision comes from
   earlier helper timings, not a checker measurement. Unfinished actions remain

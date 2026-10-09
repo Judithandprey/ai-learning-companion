@@ -49,7 +49,7 @@
       "account/model/billing change",
       "automatic restart or retry"
     ],
-    "next_owner": "Web delivers the app interlock; QA completes exact-owned overlay predicate and normal-reviewed targeted parse/compile checks; Support reviews changed boundaries at9614947; Lead integrates and reviews exact command/resource release only when ready.",
+    "next_owner": "QA repairs Support R1-R5 and the exact current-overlay predicate; Web delivers the main-owned capture binding and interlock. Support reviews corrected changed boundaries, then Lead integrates and reviews exact build/command/resource release. No current allocation.",
     "production_source_commit": "175515308f509fb8c0f531dbdb10e57313fcde5a",
     "stage_name": "lc-windows-live-1755153",
     "stage_tree_sha256": "3387824a0dee70013104388d4acec2b810475e98953e7c3f196063a8781fd154",
@@ -136,14 +136,47 @@
           "provider": false
         },
         "execution_gate": "interlockProduction=null; every allocation refused",
-        "status": "independent_review_and_app_interlock_pending",
+        "status": "independent_HOLD_owner_corrections_and_app_interlock_pending",
         "support_review_dispatch": "handoff_26fac298197c97826e4184e71ff22557",
         "support_review_accepted": true,
-        "support_verdict": "pending",
+        "support_verdict": "HOLD",
         "qa_decisions_dispatch": "handoff_1698eb178ef50ac35b1b960a035cfbae",
         "qa_decisions_accepted": true,
         "web_checker_handoff": "handoff_c899b66b9fb10e64d25e305d1cadc258",
-        "web_checker_handoff_accepted": true
+        "web_checker_handoff_accepted": true,
+        "support_review_delivery": {
+          "source_commit": "5083814d8fb096dc0b080282533f022903ce2efe",
+          "integrated_as": "0ac8605",
+          "message_id": "handoff_8ef9e664b0bb7595d0608518155fd790",
+          "review": "docs/verification/support/nonvoice-live-9614947-review-20261009/README.md",
+          "closed": [
+            "F1_applicable_quota_controls"
+          ],
+          "remaining": [
+            "R1_unclassified_requests",
+            "R2_per_launch_attempt_reconciliation",
+            "R3_all_settlement_phases",
+            "R4_watcher_readiness_and_lifecycle_order",
+            "R5_typed_receipt_values",
+            "F3_exact_current_capture_overlay_binding"
+          ],
+          "actual_checks": {
+            "boundary_controls": 8,
+            "boundary_defect_witnesses": 3,
+            "ledger_controls": 2,
+            "ledger_negative_inputs": 6,
+            "ledger_negative_inputs_incorrectly_passed": 5,
+            "native": false,
+            "provider": false
+          }
+        },
+        "same_task_amendment": {
+          "message_id": "handoff_e893ca27aaf7622da5bf6ad6e059c5ee",
+          "accepted": true,
+          "execution_started_at_dispatch": false,
+          "adoption_confirmed": false,
+          "scope": "R1-R5 and current capture overlay binding; preserve existing owner work; source/offline only"
+        }
       },
       "support_verdict": {
         "source_commit": "38230e1f63c4c3dcbdf28b03c07520db9ea8206d",
@@ -152,12 +185,12 @@
         "message_id": "handoff_306b8df25c41e31565c5bd9cacba02e6",
         "verdict": "HOLD",
         "remaining_on_latest": [
-          "applicable_spend_bucket",
           "source_lifetime_full_admission",
           "complete_receipt_collection_and_counts",
           "observed_lifecycle_release",
           "uncertain_or_conflicting_submission"
-        ]
+        ],
+        "superseded_by_review": "5083814d8fb096dc0b080282533f022903ce2efe"
       },
       "same_task_amendment": {
         "message_id": "handoff_3b1cdc65a16b36d56c69069a8351350f",
@@ -195,7 +228,18 @@
         "web_interface_decision_message": "handoff_65d44351ffdfa6c2126f9f94ab6687f3",
         "qa_interface_binding_message": "handoff_bd7d451fa1ab12ebd2e49666fc009394",
         "interface_messages_accepted": true,
-        "implementation_delivered": false
+        "implementation_delivered": false,
+        "current_overlay_binding_decision": {
+          "web_message_id": "handoff_f9c208600bcc9b8d39ba033019464857",
+          "qa_message_id": "handoff_e893ca27aaf7622da5bf6ad6e059c5ee",
+          "accepted": true,
+          "execution_started_at_dispatch": false,
+          "adoption_confirmed": false,
+          "protocol": "lc-source-admission/1 (unreleased test adapter)",
+          "arm_overlay": "main-authored {pid,hwnd}; null in other phases; exact reply echo",
+          "runner_binding": "frozen native launch PID/creation ticks plus exact capture/HWND; read-only test-configured source_admission fact; no title-only or per-decision rebinding",
+          "scope": "source/offline only; production shared wire versions unchanged"
+        }
       },
       "previous_correction": {
         "source_commit": "e0bd4b37dc788a766ed3f6fe86602f556b04d4cd",

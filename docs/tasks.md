@@ -178,11 +178,19 @@ delivered. The eventual candidate must pin the changed production build,
 preserving52be105 evidence.
 QA actual `9614947` / `handoff_32491a1ff558dee96f8f508ca0d71439` delivers the
 next source correction and native checker. Lead exact-source30/30 checks pass;
-Support changed-boundary review `handoff_26fac298197c97826e4184e71ff22557` is
-accepted, verdict pending. Candidate03 refuses execution until Web interlock
+Support changed-boundary review `5083814` / `handoff_8ef9e664b0bb7595d0608518155fd790`
+integrates as `0ac8605`: applicable quota controls pass independently; remaining
+R1–R5 request/count/Stop/watcher/typed-receipt findings stay HOLD. Candidate03 refuses execution until Web interlock
 production is reviewed and pinned. QA continues exact-owned overlay recognition
 and bounded parse/compile checks (`handoff_1698eb178ef50ac35b1b960a035cfbae`);
 Web received checker/interface coordination `handoff_c899b66b9fb10e64d25e305d1cadc258`.
+QA same-task correction `handoff_e893ca27aaf7622da5bf6ad6e059c5ee` and Web current
+capture/overlay binding `handoff_f9c208600bcc9b8d39ba033019464857` are accepted;
+latest-message adoption is not yet confirmed. Both owners have partial source
+edits, not delivered repairs. The main-authored capture/PID/HWND plus QA's frozen
+native creation identity must agree across checker and runner, with positive
+exclusion/stacking checks; no title-only allowance. Support waits for the corrected
+changed boundaries, then Lead integrates and reviews the exact new build/command.
 Real0/4 unchanged, no active resource allocation; these source checks are not
 a native/live acceptance and do not repeat the completed diagnostic.
 Keep normal-band/foreground/16-point/display guards and exact-owned cleanup;
