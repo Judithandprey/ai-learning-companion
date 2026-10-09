@@ -154,6 +154,12 @@ account/display execution is allocated. Lead reviews that candidate before any
 separate real acceptance release; Web receives concrete product defects only.
 Actual continuation dispatch `handoff_59edc35ceda51f82acabeb24e3edffb0` is accepted at
 `86e429c`, initially unread/execution_started=false; preparation is not a real test.
+Actual QA `b8f0d9c` / `handoff_a2f89cda91b9465425a8ca4eeec4cce6` delivers
+the62-step current-package driver, source/offline only. Lead holds it for reproduced
+included-credit false denial and unknown-Start undercount.
+[Exact review and engineering decisions](verification/lead/live-windows/nonvoice-driver-review/README.md).
+Support independent review is assigned via `handoff_dc6421e3ff2c4836f05f61dcab7e7985`;
+QA repairs the same candidate. Real0/4 unchanged, no active resource allocation.
 Keep normal-band/foreground/16-point/display guards and exact-owned cleanup;
 no largest-window-only trust, foreign mutation or allocation before the reviewed correction. Actual
 popup content is unknown; the product and complete live/audio gates remain untested.

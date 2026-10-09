@@ -19,7 +19,7 @@
   "allocation_retired_reason": "QA actual handoff_ec31e85d736c7661fbb4022aa0d2cb52 confirms 0 of 1 used. This selected-image allocation is not additive to the next changed-flow allocation.",
   "live_changed_flow_allocation": {
     "allocation_id": "handoff_fd794043a20068a1b52853cbb6ff884e",
-    "status": "diagnostic_passed_next_driver_preparation_execution_unreleased",
+    "status": "prepared_driver_held_for_source_correction_execution_unreleased",
     "candidate_commit": "24c48c38aee660b606ebff5285acbd2ccb300392",
     "maximum_potential_submissions": 5,
     "purpose_slots": [
@@ -49,7 +49,7 @@
       "account/model/billing change",
       "automatic restart or retry"
     ],
-    "next_owner": "Original QA prepares minimal current52be105 nonvoice driver; Lead reviews exact source and safe current prerequisites before fresh allocation. No model/account/audio execution released.",
+    "next_owner": "Original QA corrects same driver using Lead exact-step probes/decisions; Support independently reviews frozen source; Lead reconciles verdict and exact command before any resource allocation.",
     "production_source_commit": "175515308f509fb8c0f531dbdb10e57313fcde5a",
     "stage_name": "lc-windows-live-1755153",
     "stage_tree_sha256": "3387824a0dee70013104388d4acec2b810475e98953e7c3f196063a8781fd154",
@@ -105,6 +105,17 @@
       "execution_started_at_dispatch": false,
       "source_baseline": "86e429ca411d0b67a7d2b22bb9d01b0ae7e79b52",
       "scope": "existing P0-13 executable four-action nonvoice driver; source/offline only; no resource lease"
+    },
+    "prepared_delivery": {
+      "source_commit": "b8f0d9c23a0091c76fd2def239f445d1b8d04854",
+      "message_id": "handoff_a2f89cda91b9465425a8ca4eeec4cce6",
+      "review": "docs/verification/lead/live-windows/nonvoice-driver-review/README.md",
+      "support_review_dispatch": "handoff_dc6421e3ff2c4836f05f61dcab7e7985",
+      "lead_findings": [
+        "included_usage_credit_false_denial",
+        "unknown_start_undercount"
+      ],
+      "execution_allocated": false
     }
   },
   "approved_ai_disabled_diagnostic": {

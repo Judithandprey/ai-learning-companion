@@ -1,0 +1,98 @@
+{
+  "source": "b8f0d9c23a0091c76fd2def239f445d1b8d04854",
+  "scenario": "Start step was invoked, but later session policy/records are missing; actual submission unknown",
+  "cases": [
+    {
+      "capture_start_returned_ok": true,
+      "ledger": {
+        "kind": "qa-live-nonvoice-ledger/1",
+        "slots": [
+          {
+            "slot": 1,
+            "purpose": "unattended whole-screen observation",
+            "state": "NOT_RUN",
+            "counted": false
+          },
+          {
+            "slot": 2,
+            "purpose": "automatic focus response",
+            "state": "NOT_RUN",
+            "counted": false
+          },
+          {
+            "slot": 3,
+            "purpose": "typed follow-up after controlled screen change",
+            "state": "NOT_RUN",
+            "counted": false
+          },
+          {
+            "slot": 4,
+            "purpose": "Stop/fence attempt",
+            "state": "NOT_RUN",
+            "counted": false
+          }
+        ],
+        "extra_requests": [],
+        "attempts_used": 0,
+        "attempts_remaining": 4,
+        "ceiling_ok": true,
+        "app_counted": null,
+        "submitted_slots": 0,
+        "live_lines_unwritten": 0,
+        "sessions_started": 0,
+        "start_attempts": 0,
+        "restarted": false,
+        "retried": false,
+        "all_silent": true,
+        "rule": "Every assigned action counts once, submitted, unknown or not_submitted; not Ask presses. No retry, no restart."
+      }
+    },
+    {
+      "capture_start_returned_ok": false,
+      "ledger": {
+        "kind": "qa-live-nonvoice-ledger/1",
+        "slots": [
+          {
+            "slot": 1,
+            "purpose": "unattended whole-screen observation",
+            "state": "NOT_RUN",
+            "counted": false
+          },
+          {
+            "slot": 2,
+            "purpose": "automatic focus response",
+            "state": "NOT_RUN",
+            "counted": false
+          },
+          {
+            "slot": 3,
+            "purpose": "typed follow-up after controlled screen change",
+            "state": "NOT_RUN",
+            "counted": false
+          },
+          {
+            "slot": 4,
+            "purpose": "Stop/fence attempt",
+            "state": "NOT_RUN",
+            "counted": false
+          }
+        ],
+        "extra_requests": [],
+        "attempts_used": 0,
+        "attempts_remaining": 4,
+        "ceiling_ok": true,
+        "app_counted": null,
+        "submitted_slots": 0,
+        "live_lines_unwritten": 0,
+        "sessions_started": 0,
+        "start_attempts": 0,
+        "restarted": false,
+        "retried": false,
+        "all_silent": true,
+        "rule": "Every assigned action counts once, submitted, unknown or not_submitted; not Ask presses. No retry, no restart."
+      }
+    }
+  ],
+  "windows_calls": 0,
+  "provider_calls": 0
+}

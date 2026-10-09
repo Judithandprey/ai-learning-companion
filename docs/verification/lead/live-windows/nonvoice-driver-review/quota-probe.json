@@ -1,0 +1,70 @@
+{
+  "source": "b8f0d9c23a0091c76fd2def239f445d1b8d04854",
+  "actual_candidate_step": "account_ready",
+  "cases": [
+    {
+      "case": "included_exhausted_ordinary_credits_available",
+      "synthetic_quota": {
+        "available": true,
+        "ordinary_usage_allowed": false,
+        "windows": [
+          {
+            "credits": {
+              "has_credits": true,
+              "unlimited": false,
+              "balance": "100"
+            },
+            "rate_limit_reached_type": "rate_limit_reached",
+            "spend_control_reached": false
+          }
+        ]
+      },
+      "observed": "the server states a usage limit as reached: the run stops before Start"
+    },
+    {
+      "case": "included_allowed_reached_marker_and_credits",
+      "synthetic_quota": {
+        "available": true,
+        "ordinary_usage_allowed": true,
+        "windows": [
+          {
+            "credits": {
+              "has_credits": true,
+              "unlimited": false,
+              "balance": "100"
+            },
+            "rate_limit_reached_type": "rate_limit_reached",
+            "spend_control_reached": false
+          }
+        ]
+      },
+      "observed": "the server states a usage limit as reached: the run stops before Start"
+    },
+    {
+      "case": "unknown_allowance",
+      "synthetic_quota": null,
+      "observed": "allowed"
+    },
+    {
+      "case": "spend_control_reached",
+      "synthetic_quota": {
+        "available": true,
+        "ordinary_usage_allowed": true,
+        "windows": [
+          {
+            "credits": {
+              "has_credits": true,
+              "unlimited": false,
+              "balance": "100"
+            },
+            "spend_control_reached": true
+          }
+        ]
+      },
+      "observed": "the server states a usage limit as reached: the run stops before Start"
+    }
+  ],
+  "windows_calls": 0,
+  "provider_calls": 0,
+  "limits": "Synthetic account data only. No actual balance read. Rejected branches are harness findings, not server refusals."
+}
