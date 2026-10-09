@@ -1,18 +1,19 @@
 # Current-package nonvoice driver review — 2026-10-09
 
-**Windows interlock integrated and separately staged; QA driver correction remains HOLD.**
+**Windows interlock integrated/staged; QA correction 05 delivered, independent retest pending.**
 Web's reviewed source through `ebbd1ed` integrates as `0ff325b`; its Windows tree
 matches exactly. Lead's final holding-membership case passes, and TypeScript plus
 static packaging pass. The distinct 81-file `%TEMP%\lc-windows-admission-0ff325b`
 stage has tree `081a130c1f492c98d78fec8d67463a36c80126ea1ca72eede99d043ca616a46a`.
 All 77 earlier 52be105-stage files still match. No application was launched.
 
-QA correction `937788d` (README correction `a46d497`) remains unintegrated.
-Support's delivered review `c2ee58a`, integrated as `cc3402d`, closes selected prior
-R1/R2/R4/R5 witnesses but finds five remaining checker/evidence defects. The same
-QA candidate05 task is amended in `handoff_fd7cc02d2c0bdd337d6210cbcac304a9`.
-Interim candidate 04 still has
-`interlockProduction=null` and cannot run. QA's separately assigned pure-data
+QA correction `df536b8` now addresses Support's five remaining `937788d` findings
+and pins the real staged product. Its exact-source regeneration, 32 pins and
+inactive/wrong-product allocation refusals pass Lead's checks. Support's focused
+independent retest is pending; source integration and execution remain held.
+The actual candidate05 parse check has zero errors for both scripts and its one
+changed C# literal compiles; these are static results only. Candidate05's template
+is inactive. Historical candidate04 retains `interlockProduction=null`. QA's separately assigned pure-data
 PowerShell fixture check was refused before loading by Windows execution policy;
 no cases ran and no alternate invocation was attempted. Details below.
 
@@ -672,3 +673,40 @@ QA runs only relevant offline controls/counterexamples; no full campaign or
 PowerShell fixture retry is assigned. Support returns idle until the corrected
 source is delivered, then independently retests these changed boundaries.
 Real actions remain **0/4**, old diagnostic **3/3 closed**, no resource lease.
+
+### Candidate 05 delivered; exact package and static validation
+
+Actual `handoff_7baa8e8fe4cdefc05ace4d0d424efbc8` delivers QA `df536b8`, on
+`a58d583`. Lead read the full report and changed generator, wrapper, ledger,
+predicate, stage verifier and allocation template. [Exact checks and receipts](candidate05-review.json)
+record 32 matched artifact/source pins and a successful exact-source candidate
+regeneration. Both the inactive template and wrong-product allocation are refused
+by the real exported validator; its execution function was never called. Node had
+no write or child-process capability. Candidate scratch is still unused.
+
+Candidate05 pins product `0ff325b`, all 81 staged files and its unchanged connector
+configuration. `services/` and `packages/` equal the older 52be105 copy; the runtime
+connector pin remains that reviewed identical source, while the owner separately
+reports the 280-file comparison to 0ff325b. No account state or inference is inferred
+from that static comparison. The candidate has 63 steps, a prepared 600-second
+outer bound and an inactive allocation template; none is an execution release.
+
+Existing Support retest `handoff_aadbc5026bd6f0ad59ea27d32cb6ea18` is accepted,
+initially unread/execution_started=false. It covers the five specific corrections
+and directly changed complete-trace/lifecycle paths only, with positive and
+negative controls. Author 34/34 results are not inherited independent acceptance.
+
+The required check of changed PowerShell/C# bytes was assigned to QA in
+`handoff_42053bfccd6885bbee9fe5b3ee7a3d23`. Actual result
+`handoff_601bf879adf9776101253329ec0ee27d`, evidence commit `565bc3d`, reports
+both exact candidate scripts parsed with zero errors and the one changed C# block
+compiled to a DLL; five unchanged blocks were not repeated. Lead read the check
+script and structured output. No runner/checker top-level script, fixture or native
+method was called. This does not retry the earlier refused pure-fixture command,
+which remains NOT_RUN; no script policy changed. The temporary staging was removed.
+
+Lead retains final command/allocation review after the independent verdict. The
+prepared runner and child checker use process-only RemoteSigned; previous
+AI-disabled approvals are not automatically a real-subscription execution release.
+Display, current managed sign-in/lock, actual overlay affinity/stdin/timing and
+provider response remain runtime dependencies. Real0/4, diagnostic3/3closed, no lease.

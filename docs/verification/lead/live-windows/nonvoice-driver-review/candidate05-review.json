@@ -1,0 +1,57 @@
+{
+  "source_commit": "df536b84eada2782b30ccca9c6781d12ea48e050",
+  "delivery": "handoff_7baa8e8fe4cdefc05ace4d0d424efbc8",
+  "integrated": false,
+  "artifact_pin_checks": 32,
+  "export_files": 107,
+  "stage_manifest_matches_exact_lead_release": "194986dea3e120a3b8806a9e7bb2c06bfefb5cf7",
+  "candidate_reproduction": {
+    "passed": true,
+    "exit_code": 0,
+    "scratch_unused": true,
+    "execution_admitted": false,
+    "native_executed": false,
+    "provider_attempts": 0,
+    "source_commit": "0ff325beadb7c689244610307b6aa16d638fd2e6",
+    "stage_tree_sha256": "081a130c1f492c98d78fec8d67463a36c80126ea1ca72eede99d043ca616a46a",
+    "runner_sha256": "2fbb5eb3c5e734719f6b26fc8066b55626078d3ffdb075d5dc65936326ca2cdb",
+    "steps": 63
+  },
+  "allocation_controls": {
+    "inactive_template_refused": true,
+    "wrong_product_refused": true,
+    "execution_function_called": false,
+    "exit_code": 0
+  },
+  "lead_check_permissions": {
+    "node": "24.21.0",
+    "permission_mode": true,
+    "read": "exact Git export plus fixed unused candidate scratch path for existence check only",
+    "write": false,
+    "child_process": false
+  },
+  "independent_retest_dispatch": {
+    "message_id": "handoff_aadbc5026bd6f0ad59ea27d32cb6ea18",
+    "accepted": true,
+    "execution_started_at_dispatch": false,
+    "verdict": "pending"
+  },
+  "author_parse_compile": {
+    "assignment": "handoff_42053bfccd6885bbee9fe5b3ee7a3d23",
+    "actual_reply": "handoff_601bf879adf9776101253329ec0ee27d",
+    "source_evidence_commit": "565bc3d070ba12074d1365dd78f93276f27fc9a7",
+    "runner_parse_errors": 0,
+    "checker_parse_errors": 0,
+    "changed_CSharp_blocks_compiled": 1,
+    "unchanged_blocks_not_repeated": 5,
+    "exit_code": 0,
+    "top_level_scripts_or_native_methods_invoked": false,
+    "pure_fixture": "NOT_RUN; prior OS policy refusal retained"
+  },
+  "resource_lease": false,
+  "real_actions_used": 0,
+  "diagnostic": "3/3 closed",
+  "native_bound_ms_prepared_not_released": 600000,
+  "native_worst_case_ms_engineering_bound": 589000,
+  "command_review": "Exact runner/checker use process-only RemoteSigned. No command executed; old AI-disabled approvals are not a live allocation. Independent source review and applicable final command approval remain prerequisites."
+}

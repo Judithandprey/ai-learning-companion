@@ -19,7 +19,7 @@
   "allocation_retired_reason": "QA actual handoff_ec31e85d736c7661fbb4022aa0d2cb52 confirms 0 of 1 used. This selected-image allocation is not additive to the next changed-flow allocation.",
   "live_changed_flow_allocation": {
     "allocation_id": "handoff_fd794043a20068a1b52853cbb6ff884e",
-    "status": "app_integrated_staged_driver_HOLD_correction_execution_unreleased",
+    "status": "app_staged_candidate05_delivered_independent_retest_pending_execution_unreleased",
     "candidate_commit": "24c48c38aee660b606ebff5285acbd2ccb300392",
     "maximum_potential_submissions": 5,
     "purpose_slots": [
@@ -49,7 +49,7 @@
       "account/model/billing change",
       "automatic restart or retry"
     ],
-    "next_owner": "QA corrects five Support findings and complete-trace evidence in current candidate05 preparation; then Support changed-boundary retest and Lead exact command review. Product0ff325b/stage unchanged; no lease.",
+    "next_owner": "Support retests QA df536b8 changed boundaries; Lead reviews exact candidate and command before integration/allocation. Candidate05 static reproduction/pins/negative allocation and author parse/compile pass; no lease.",
     "production_source_commit": "175515308f509fb8c0f531dbdb10e57313fcde5a",
     "stage_name": "lc-windows-live-1755153",
     "stage_tree_sha256": "3387824a0dee70013104388d4acec2b810475e98953e7c3f196063a8781fd154",
@@ -128,80 +128,36 @@
         "scope": "same-owner source/offline correction; no resource allocation"
       },
       "latest_correction": {
-        "source_commit": "937788ded4e2bff1db8b94dce175a7152e01609d",
-        "message_id": "handoff_dda3b90d4fb1c1ef5371fd6c0317239f",
-        "readme_correction": "a46d4977976f2e80ddcc244d4dc807f6bc5e7052",
-        "candidate_sha256": "4cb6032ef8eccea7306cdd624cf2e7846e04c07ca801145dba5490eb232c7410",
-        "wrapper_sha256": "3a537fa1df6b1b74311e3146ba7f3ec021d7b64291313d6b2d3504564a68487b",
+        "source_commit": "df536b84eada2782b30ccca9c6781d12ea48e050",
+        "message_id": "handoff_7baa8e8fe4cdefc05ace4d0d424efbc8",
         "integrated": false,
-        "status": "independent_HOLD_same_task_correction",
-        "support_review_dispatch": "handoff_981cd2ed93608575ff5c842feea1a89f",
-        "support_review_accepted": true,
-        "execution_gate": "interlockProduction=null; every allocation refused",
-        "pure_fixture": {
-          "dispatch": "handoff_709b36d599e63812ff2ac13dfcde75c1",
-          "actual_reply": "handoff_2dc78deb7b6d2bf22ed6e64be8c7ed44",
-          "source_evidence": "a58d583d6056dc1c24b8ba15fd92352caa362ccf",
-          "status": "OS_execution_policy_refused_before_script_loaded",
-          "cases_executed": 0,
-          "exit_code": 1,
-          "retried": false,
-          "resource_lease": false
-        },
-        "next_candidate_preparation": {
-          "message_id": "handoff_1345f6e5e40879b62b1c1d0dbb85512c",
+        "candidate_sha256": "5e7fdcd513c355d0f63a4c36e778d0fdc457e550ca781da29c6f8b7901d2aebb",
+        "wrapper_sha256": "58a0a9923f55631fcdd36426f567ed81469ded230146af04c933f412fc4e79f4",
+        "status": "independent_changed_boundary_retest_pending",
+        "execution_gate": "Exact reviewed product pinned; allocation template inactive, no lease",
+        "lead_evidence": "docs/verification/lead/live-windows/nonvoice-driver-review/candidate05-review.json",
+        "lead_artifact_pins_matched": 32,
+        "lead_candidate_reproduction": true,
+        "lead_inactive_and_wrong_product_refused": true,
+        "support_retest": {
+          "message_id": "handoff_aadbc5026bd6f0ad59ea27d32cb6ea18",
           "accepted": true,
           "execution_started_at_dispatch": false,
-          "source_baseline": "194986d",
-          "product_commit": "0ff325beadb7c689244610307b6aa16d638fd2e6",
-          "scope": "Same P0-13 candidate05/pins/INACTIVE template against staged81-file product; source/offline only, independent verdict pending",
-          "resource_lease": false,
-          "pure_fixture_retry_authorized": false
+          "verdict": "pending"
         },
-        "support_activity_observed": {
-          "kind": "read_only_worktree_status",
-          "paths": [
-            "docs/verification/support/nonvoice-live-937788d-review-20261009/",
-            "tests/probes/support/nonvoice_live_937788d_boundaries.mjs",
-            "tests/probes/support/nonvoice_live_937788d_ledger.mjs"
-          ],
-          "state": "new untracked review/probe files present; final verdict not delivered"
+        "author_parse_compile": {
+          "assignment": "handoff_42053bfccd6885bbee9fe5b3ee7a3d23",
+          "actual_reply": "handoff_601bf879adf9776101253329ec0ee27d",
+          "source_evidence_commit": "565bc3d070ba12074d1365dd78f93276f27fc9a7",
+          "runner_parse_errors": 0,
+          "checker_parse_errors": 0,
+          "changed_CSharp_blocks_compiled": 1,
+          "unchanged_blocks_not_repeated": 5,
+          "exit_code": 0,
+          "top_level_scripts_or_native_methods_invoked": false,
+          "pure_fixture": "NOT_RUN; prior OS policy refusal retained"
         },
-        "support_verdict": "HOLD",
-        "support_review_delivery": {
-          "source_commit": "c2ee58ae7f48d65decfecd94f13c979678d6bd3a",
-          "integrated_as": "cc3402d",
-          "message_id": "handoff_18efe6273ef8cda939acd76033541f95",
-          "review": "docs/verification/support/nonvoice-live-937788d-review-20261009/README.md",
-          "closed_selected_prior": [
-            "R1",
-            "R2",
-            "R4",
-            "R5"
-          ],
-          "remaining": [
-            "F3-A_stack_owner_read_validation",
-            "F3-B_final_bound_NAV_predicate",
-            "F3-C_capture_and_folder_provenance",
-            "F3-D_consistent_main_verdict",
-            "R3-A_known_same_session_fence"
-          ],
-          "synthetic_scenarios": 27,
-          "controls": 8,
-          "corrected_negatives": 15,
-          "remaining_counterexamples": 3,
-          "coverage_observations": 1,
-          "native": false,
-          "provider": false,
-          "lead_matched_source_hashes": 90
-        },
-        "same_task_amendment": {
-          "message_id": "handoff_fd7cc02d2c0bdd337d6210cbcac304a9",
-          "accepted": true,
-          "execution_started_at_dispatch": false,
-          "scope": "Five remaining driver findings plus complete capture-scoped ordered/multiplicity-aware all-phase evidence and observed checker termination; same candidate05 preparation, no native/PowerShell retry",
-          "new_resource_allocation": false
-        }
+        "resource_lease": false
       },
       "support_verdict": {
         "source_commit": "38230e1f63c4c3dcbdf28b03c07520db9ea8206d",
@@ -459,6 +415,82 @@
             "execution_started_at_dispatch": false,
             "adoption_confirmed": false,
             "scope": "R1-R5 and current capture overlay binding; preserve existing owner work; source/offline only"
+          }
+        },
+        {
+          "source_commit": "937788ded4e2bff1db8b94dce175a7152e01609d",
+          "message_id": "handoff_dda3b90d4fb1c1ef5371fd6c0317239f",
+          "readme_correction": "a46d4977976f2e80ddcc244d4dc807f6bc5e7052",
+          "candidate_sha256": "4cb6032ef8eccea7306cdd624cf2e7846e04c07ca801145dba5490eb232c7410",
+          "wrapper_sha256": "3a537fa1df6b1b74311e3146ba7f3ec021d7b64291313d6b2d3504564a68487b",
+          "integrated": false,
+          "status": "independent_HOLD_same_task_correction",
+          "support_review_dispatch": "handoff_981cd2ed93608575ff5c842feea1a89f",
+          "support_review_accepted": true,
+          "execution_gate": "interlockProduction=null; every allocation refused",
+          "pure_fixture": {
+            "dispatch": "handoff_709b36d599e63812ff2ac13dfcde75c1",
+            "actual_reply": "handoff_2dc78deb7b6d2bf22ed6e64be8c7ed44",
+            "source_evidence": "a58d583d6056dc1c24b8ba15fd92352caa362ccf",
+            "status": "OS_execution_policy_refused_before_script_loaded",
+            "cases_executed": 0,
+            "exit_code": 1,
+            "retried": false,
+            "resource_lease": false
+          },
+          "next_candidate_preparation": {
+            "message_id": "handoff_1345f6e5e40879b62b1c1d0dbb85512c",
+            "accepted": true,
+            "execution_started_at_dispatch": false,
+            "source_baseline": "194986d",
+            "product_commit": "0ff325beadb7c689244610307b6aa16d638fd2e6",
+            "scope": "Same P0-13 candidate05/pins/INACTIVE template against staged81-file product; source/offline only, independent verdict pending",
+            "resource_lease": false,
+            "pure_fixture_retry_authorized": false
+          },
+          "support_activity_observed": {
+            "kind": "read_only_worktree_status",
+            "paths": [
+              "docs/verification/support/nonvoice-live-937788d-review-20261009/",
+              "tests/probes/support/nonvoice_live_937788d_boundaries.mjs",
+              "tests/probes/support/nonvoice_live_937788d_ledger.mjs"
+            ],
+            "state": "new untracked review/probe files present; final verdict not delivered"
+          },
+          "support_verdict": "HOLD",
+          "support_review_delivery": {
+            "source_commit": "c2ee58ae7f48d65decfecd94f13c979678d6bd3a",
+            "integrated_as": "cc3402d",
+            "message_id": "handoff_18efe6273ef8cda939acd76033541f95",
+            "review": "docs/verification/support/nonvoice-live-937788d-review-20261009/README.md",
+            "closed_selected_prior": [
+              "R1",
+              "R2",
+              "R4",
+              "R5"
+            ],
+            "remaining": [
+              "F3-A_stack_owner_read_validation",
+              "F3-B_final_bound_NAV_predicate",
+              "F3-C_capture_and_folder_provenance",
+              "F3-D_consistent_main_verdict",
+              "R3-A_known_same_session_fence"
+            ],
+            "synthetic_scenarios": 27,
+            "controls": 8,
+            "corrected_negatives": 15,
+            "remaining_counterexamples": 3,
+            "coverage_observations": 1,
+            "native": false,
+            "provider": false,
+            "lead_matched_source_hashes": 90
+          },
+          "same_task_amendment": {
+            "message_id": "handoff_fd7cc02d2c0bdd337d6210cbcac304a9",
+            "accepted": true,
+            "execution_started_at_dispatch": false,
+            "scope": "Five remaining driver findings plus complete capture-scoped ordered/multiplicity-aware all-phase evidence and observed checker termination; same candidate05 preparation, no native/PowerShell retry",
+            "new_resource_allocation": false
           }
         }
       ]
