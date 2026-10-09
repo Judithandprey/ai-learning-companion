@@ -4,8 +4,8 @@
 Support's independent review `5083814` is integrated as `0ac8605`. It closes the
 applicable-quota finding and reproduces remaining ledger, Stop, watcher and
 typed-receipt defects. QA repairs those boundaries and the exact current-overlay
-predicate. Web delivered `48c20c4`; Lead reproduced late-response deadline defects
-and returned a bounded correction while Support reviews the capture consumers. Interim
+predicate. Web delivered `48c20c4` and client correction `9c3beab`; Lead's focused
+deadline/BOM check passes while Support reviews the capture consumers. Interim
 candidate 03 correctly refuses execution against old production 52be105.
 Initial delivery `handoff_a2f89cda91b9465425a8ca4eeec4cce6` follows the existing
 P0-13 preparation assignment. Product remains52be105, staged77-file tree531943a8;
@@ -439,3 +439,26 @@ dependency handoff `handoff_0326d79a1396534848f475da12bef664`, accepted with
 adoption unconfirmed. Preserve both owners' ongoing changes. No package is
 staged or approved yet; final app/checker composition and pins remain required.
 Real actions stay **0/4**, old diagnostic **3/3 closed**, with no resource lease.
+
+### Corrected Web client `9c3beab`
+
+Actual reply `handoff_1c26ffb9de8e59ae8836af51308b2f50` delivers
+`9c3beab5d9bfae4ebd295af5a3db5baf99b4038c`, one leaf on preserved `48c20c4`,
+Windows tree `5725405fe8c6bef2fbb47ed902d9ad8233ee31e8`. The three-file delta
+uses monotonic elapsed-time checks when reading ready/decision responses and
+retains then rejects the BOM. It corrects the report's checker status and prior
+interlock count: **10 + 17**, not 10 + 18. No main/overlay consumer changed.
+
+Lead read the exact delta and ran only the new focused deadline test from a Git
+export under Node read-only permissions and in-process test isolation: **1 pass,
+0 fail**, covering normal controls, delayed ready/decision callbacks and BOM.
+[Actual command/output and failed first invocation](web-client-correction-9c3beab.json)
+preserve the initial path-discovery failure: that invocation did not execute a
+test. A premature success sentence to Support was immediately withdrawn in
+`handoff_45080d7a7e6c9c90ff949c41932f5a7a`; only the later recorded invocation
+passed. No full suite, mutation campaign or native/provider operation was repeated.
+
+The client findings are closed at this exact source. Support's existing review
+was updated to `9c3beab` through `handoff_c39d67709daee9055c7a9d24614e97a7`;
+its independent consumer verdict and QA's corrected checker are still required.
+The app remains unintegrated/unstaged, and no execution allocation is created.

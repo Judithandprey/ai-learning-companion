@@ -1,0 +1,24 @@
+{
+  "source_commit": "9c3beab5d9bfae4ebd295af5a3db5baf99b4038c",
+  "scope": "One focused corrected-client test, in-process fake streams; no child-process/write grant, native APIs, account or provider.",
+  "first_invocation": {
+    "test_executed": false,
+    "stderr": "Could not find '/tmp/lc-lead-web-9c3beab-u7pperh6/apps/windows/tests/source-admission.test.ts'",
+    "note": "Source file exists. Initial runner path discovery from repository cwd did not resolve within its allowed read root; corrected working directory to the exact export. Initial shell chained cat, so its zero exit did not represent a test pass."
+  },
+  "corrected_invocation": {
+    "cwd": "/tmp/lc-lead-web-9c3beab-u7pperh6",
+    "argv": [
+      "node",
+      "--permission",
+      "--allow-fs-read=/tmp/lc-lead-web-9c3beab-u7pperh6",
+      "--test",
+      "--test-isolation=none",
+      "--test-name-pattern=late is late at its receipt",
+      "apps/windows/tests/source-admission.test.ts"
+    ],
+    "exit_code": 0,
+    "output": "✔ late is late at its receipt: an answer after its bound, or a ready line after its bound, is refused even when the event loop was held up so its timer had not run yet; in time is still accepted; a byte-order mark before the ready line is refused (1209.64851ms)\nℹ tests 1\nℹ suites 0\nℹ pass 1\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 1280.352636\n"
+  },
+  "handoff_correction": "Initial premature pass sentence in handoff_c39d67709daee9055c7a9d24614e97a7 was immediately withdrawn by handoff_45080d7a7e6c9c90ff949c41932f5a7a before the corrected run."
+}

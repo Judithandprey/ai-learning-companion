@@ -189,9 +189,13 @@ Web actual `48c20c4` / `handoff_4df62e69d2eab17b382e8ec9e77c25ca` delivers the
 capture/send interlock and confirms current overlay-binding adoption. Source and
 Linux author checks only; not integrated or staged. Lead reproduced late-deadline
 acceptance and BOM mismatch; correction `handoff_6d04d5f2fce4ecf54550d070b1dd7b1b`
-is accepted. Support consumer review `handoff_91bcc765776fedd7445855f09561f618`
-and QA exact-source handoff `handoff_0326d79a1396534848f475da12bef664` are accepted,
-execution/adoption initially unconfirmed. The main-authored capture/PID/HWND plus QA's frozen
+is fulfilled by `9c3beab` / `handoff_1c26ffb9de8e59ae8836af51308b2f50`;
+Lead's exact-source focused deadline/BOM check passes (1 test; first path-resolution
+failure retained). Support consumer review `handoff_91bcc765776fedd7445855f09561f618`
+now targets this corrected source via `handoff_c39d67709daee9055c7a9d24614e97a7`,
+with verdict pending. QA's corrected checker remains in progress; its exact-source
+handoff `handoff_0326d79a1396534848f475da12bef664` is accepted, adoption initially
+unconfirmed. The main-authored capture/PID/HWND plus QA's frozen
 native creation identity must agree across checker and runner, with positive
 exclusion/stacking checks; no title-only allowance. Lead integrates after the bounded
 correction and independent review, then reviews the exact new build/command.

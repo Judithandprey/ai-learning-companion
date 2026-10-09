@@ -49,7 +49,7 @@
       "account/model/billing change",
       "automatic restart or retry"
     ],
-    "next_owner": "Web corrects delayed ready/decision receipt deadlines and BOM handling at 48c20c4; Support independently reviews changed capture consumers; QA continues R1-R5/native overlay and exact client compatibility. Lead integrates after review and pins a distinct build before resource release.",
+    "next_owner": "Support reviews Web consumer at corrected 9c3beab; QA completes R1-R5/native overlay and client compatibility. Lead client deadline/BOM check passes. Integrate and pin distinct build after independent review; no current resource release.",
     "production_source_commit": "175515308f509fb8c0f531dbdb10e57313fcde5a",
     "stage_name": "lc-windows-live-1755153",
     "stage_tree_sha256": "3387824a0dee70013104388d4acec2b810475e98953e7c3f196063a8781fd154",
@@ -247,7 +247,7 @@
           "message_id": "handoff_4df62e69d2eab17b382e8ec9e77c25ca",
           "integrated": false,
           "staged": false,
-          "status": "client_correction_and_independent_consumer_review_pending",
+          "status": "client_findings_closed_at_9c3beab_independent_consumer_review_pending",
           "author_tests": {
             "passed": 486,
             "failed": 0,
@@ -264,7 +264,25 @@
           "support_review_dispatch": "handoff_91bcc765776fedd7445855f09561f618",
           "qa_dependency_dispatch": "handoff_0326d79a1396534848f475da12bef664",
           "dispatches_accepted": true,
-          "dispatch_execution_started": false
+          "dispatch_execution_started": false,
+          "client_correction": {
+            "source_commit": "9c3beab5d9bfae4ebd295af5a3db5baf99b4038c",
+            "apps_windows_tree": "5725405fe8c6bef2fbb47ed902d9ad8233ee31e8",
+            "message_id": "handoff_1c26ffb9de8e59ae8836af51308b2f50",
+            "lead_delta_review": "passed",
+            "lead_focused_check": {
+              "passed": 1,
+              "failed": 0,
+              "initial_path_resolution_failure_preserved": true,
+              "native": false,
+              "provider": false
+            },
+            "evidence": "docs/verification/lead/live-windows/nonvoice-driver-review/web-client-correction-9c3beab.json",
+            "support_source_update": "handoff_c39d67709daee9055c7a9d24614e97a7",
+            "premature_test_claim_withdrawal": "handoff_45080d7a7e6c9c90ff949c41932f5a7a",
+            "integrated": false,
+            "staged": false
+          }
         }
       },
       "previous_correction": {
