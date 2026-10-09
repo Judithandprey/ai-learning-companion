@@ -7,7 +7,9 @@ typed-receipt defects. QA repairs those boundaries and the exact current-overlay
 predicate. Web delivered `48c20c4` and client correction `9c3beab`; Lead's focused
 deadline/BOM check passes. Support's consumer review `dbb42ab` is integrated as
 `ff51068` and finds C1–C3 below. Web correction `4778908` passes Lead's three
-focused cases; Support's changed-boundary retest is pending. Interim
+focused cases and Support's original-defect/pending-lifetime regressions. Only
+C3-A unknown holding-ID refusal remains for the current Web release; QA's own
+checker/driver correction remains separate. Interim
 candidate 03 correctly refuses execution against old production 52be105.
 Initial delivery `handoff_a2f89cda91b9465425a8ca4eeec4cce6` follows the existing
 P0-13 preparation assignment. Product remains52be105, staged77-file tree531943a8;
@@ -522,3 +524,38 @@ It covers C1–C3 and the new pending-use lifetime, not the whole product or QA 
 Final independent verdict and QA's corrected checker remain dependencies before
 source integration, a distinct package and exact execution release. No resource
 lease or real action was used by these checks.
+
+### Independent retest closes original C1–C3; one list-validation fix remains
+
+Actual `handoff_a5e35052f0cc066e5a3926a8278d6da7` delivers Support
+`fa786982f4b0b5624a5c30d21aafc5cb0dd9cb6d`, integrated as `d1a4d92`.
+Lead read the [full retest and probes](../../../support/windows-admission-4778908-retest-20261009/README.md).
+The retest closes the original C1/C2/C3 counterexamples. Retention, first-look,
+circle and follow-up each keep frame 1 valid through 70 later acquisitions,
+complete its intake, release the reference and permit later retirement without
+Stop. Support actually ran 23 synthetic scenario rows: 13 controls, 8 repaired
+or lifetime regressions, and two residual witnesses (one conditional). These
+are not native evidence or inherited author test counts.
+
+**C3-A remains:** an unknown earlier ID in `holding` is accepted at pre-check,
+although it never creates an admission and actual use is still refused. Require
+membership in the existing admitted map before pruning or asking the checker;
+keep a known-held positive and unknown-empty-map negative. Web same-task
+`handoff_f0f1935e1cb76d22f361e920e9b67721` is accepted, initially unread/execution
+not started. Lead will review this localized delta and focused checks directly;
+another full independent campaign is unnecessary.
+
+**Lead decision on conditional C3-B:** the 16-entry receiver bound and existing
+fail-closed capture termination remain an explicit ceiling of this opt-in test
+adapter. Seventeen concurrent distinct circle encodings exceed the current
+four-action candidate. Do not silently drop pending references, expand the bound
+or add a new queue now. Preserve existing originals and cleanup. This is not an
+ordinary-product interaction limit, measured native failure or full-experience
+acceptance; any later test-scope expansion must revisit the ceiling first. It
+neither adds a task nor blocks this candidate's four-action allowance on its own.
+Support's original conditional finding is preserved rather than marked repaired.
+
+Support is idle. QA continues the existing checker/driver correction, and Lead
+integrates the app after C3-A closes, then verifies a distinct build and final
+checker composition. No lease exists; real actions remain **0/4**, old diagnostic
+**3/3 closed**. No new user decision is needed for the narrow source correction.

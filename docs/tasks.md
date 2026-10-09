@@ -197,8 +197,14 @@ returns HOLD on this corrected source: `dbb42ab` /
 consumer race, C2 acquisition-state mismatch and conditional C3 pending-original
 cache expiry go to Web in same-task `handoff_09a84c59045de0dbcd52f6829e5b98a9`.
 Actual repair `4778908` / `handoff_62b67a565d6db48314b98d4f70e1de1c` passes Lead's
-three changed cases; Support's bounded retest `handoff_71972c17fbe888d529689cf3aabd8aef`
-is accepted, verdict pending. No source integration or new package is accepted yet.
+three changed cases. Support retest `fa78698` /
+`handoff_a5e35052f0cc066e5a3926a8278d6da7` integrates as `d1a4d92`, closing original
+C1–C3 and all four pending-consumer lifetime regressions. Only C3-A unknown
+holding-ID validation remains for this Web slice; accepted same-owner
+`handoff_f0f1935e1cb76d22f361e920e9b67721` requests that small fix and focused
+control, which Lead reviews directly. Conditional C3-B is retained as a documented
+opt-in test-adapter ceiling beyond the four-action candidate; no ordinary-product
+limit or expanded allowance follows. No source integration or new package is accepted yet.
 QA's corrected checker remains in progress; its exact-source
 handoff `handoff_0326d79a1396534848f475da12bef664` is accepted, adoption initially
 unconfirmed. The main-authored capture/PID/HWND plus QA's frozen

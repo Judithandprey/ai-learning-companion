@@ -49,7 +49,7 @@
       "account/model/billing change",
       "automatic restart or retry"
     ],
-    "next_owner": "Support retests only C1-C3 at delivered Web 4778908; Lead three focused cases pass. QA continues existing R1-R5/native checker correction. Lead integrates after independent approval and pins a distinct build before exact release. No current resource lease.",
+    "next_owner": "Web adds the narrow C3-A holding membership check; Lead reviews that delta directly. Independent original C1-C3 and four pending-consumer lifetime checks pass. QA continues its checker/driver repair. Then integrate app, distinct build and exact checker composition before release; no current lease.",
     "production_source_commit": "175515308f509fb8c0f531dbdb10e57313fcde5a",
     "stage_name": "lc-windows-live-1755153",
     "stage_tree_sha256": "3387824a0dee70013104388d4acec2b810475e98953e7c3f196063a8781fd154",
@@ -247,7 +247,7 @@
           "message_id": "handoff_4df62e69d2eab17b382e8ec9e77c25ca",
           "integrated": false,
           "staged": false,
-          "status": "consumer_correction_4778908_focused_pass_independent_retest_pending",
+          "status": "original_consumer_findings_closed_C3A_membership_fix_pending",
           "author_tests": {
             "passed": 486,
             "failed": 0,
@@ -320,9 +320,33 @@
               "support_retest_dispatch": "handoff_71972c17fbe888d529689cf3aabd8aef",
               "dispatch_accepted": true,
               "execution_started_at_dispatch": false,
-              "independent_verdict": "pending",
+              "independent_verdict": "HOLD_C3A_only_for_current_candidate",
               "integrated": false,
-              "staged": false
+              "staged": false,
+              "support_retest": {
+                "source_commit": "fa786982f4b0b5624a5c30d21aafc5cb0dd9cb6d",
+                "integrated_as": "d1a4d92",
+                "message_id": "handoff_a5e35052f0cc066e5a3926a8278d6da7",
+                "closed": [
+                  "C1",
+                  "C2",
+                  "C3_original_eviction",
+                  "four_pending_consumer_lifetimes"
+                ],
+                "controls": 13,
+                "fixed_or_lifetime_regressions": 8,
+                "residual_witnesses": 2,
+                "native": false,
+                "provider": false,
+                "remaining_current_release_condition": "C3A_unknown_holding_identity_membership",
+                "C3B_decision": "Keep explicit fail-closed 16-entry opt-in test-adapter ceiling; 17 concurrent distinct circle encodings are outside the four-action candidate. Preserve pending references, original evidence and cleanup; revisit before future test expansion. Not an ordinary-product limit or native acceptance."
+              },
+              "narrow_correction_dispatch": {
+                "message_id": "handoff_f0f1935e1cb76d22f361e920e9b67721",
+                "accepted": true,
+                "execution_started_at_dispatch": false,
+                "next_reviewer": "Lead; localized membership check and focused controls, no full campaign"
+              }
             }
           }
         }
