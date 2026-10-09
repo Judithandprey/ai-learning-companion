@@ -66,10 +66,16 @@ export function transport(receipt, imageSha256, { codexSha256 = null } = {}) {
 export function buildLedger({ steps, results, liveLines = [], asks = [], receipts = {}, codexSha256 = null }) {
   const entries = new Map((results?.steps ?? []).map(s => [s.i, s]));
   const at = predicate => { const k = steps.findIndex(predicate); return k >= 0 ? entries.get(k + 1) ?? null : null; };
-  const policy = at(s => s.as === 'live_policy');
+  const policy = at(s => s.as === 'live_policy'), start = at(s => 'captureStart' in s);
   const triggers = [null, at(s => Array.isArray(s.stroke)), at(s => s.as === 'action3_submit'), at(s => s.as === 'action4_submit')];
   const starts = liveLines.filter(l => l.kind === 'started').length, refusedStarts = liveLines.filter(l => l.kind === 'not_started');
-  const assigned = [starts > 0 || policy?.ok === true, !!triggers[1], !!triggers[2], !!triggers[3]];
+  // Slot 1 is assigned once Start was reached: the first look may already have been sent even when every later record is
+  // missing (an unknown is never a reusable zero). Known not started: the connector's own refusal of the session
+  // (not_started), or the final surface admission refused, so the Start expression never ran.
+  const admissions = Object.values(results?.values ?? {}).filter(v => v && typeof v === 'object');
+  const startNeverRan = admissions.some(v => v.phase === 'before_capture_start' && v.accepted === false);
+  const startReached = !!start && !startNeverRan && refusedStarts.length === 0;
+  const assigned = [starts > 0 || policy?.ok === true || startReached, !!triggers[1], !!triggers[2], !!triggers[3]];
   const looks = liveLines.filter(l => l.kind === 'look');
   const entriesAll = asks.filter(a => Array.isArray(a?.requests)).flatMap(a => a.requests.filter(q => q && typeof q === 'object').map(q => ({ ...q })))
     .sort((a, b) => String(a.submitted_at ?? '').localeCompare(String(b.submitted_at ?? '')));
@@ -79,8 +85,10 @@ export function buildLedger({ steps, results, liveLines = [], asks = [], receipt
   const extra = [...looks.slice(1).map(l => l.request_id), ...focus.slice(1).map(q => q.request_id), ...typed.slice(2).map(q => q.request_id)];
   const slots = SLOT_PURPOSES.map((purpose, k) => {
     const reqs = slotRequests[k];
-    if (!assigned[k] && reqs.length === 0) return { slot: k + 1, purpose, state: k === 0 && refusedStarts.length ? 'NOT_RUN_session_not_started' : 'NOT_RUN', counted: false };
+    if (!assigned[k] && reqs.length === 0) return { slot: k + 1, purpose, state: k === 0 && refusedStarts.length ? 'NOT_RUN_session_not_started' : k === 0 && startNeverRan ? 'NOT_RUN_start_not_evaluated' : 'NOT_RUN', counted: false };
     const request = reqs[0] ?? null;
+    if (!request && k === 0) return { slot: 1, purpose, state: starts > 0 ? 'session_started_no_look_recorded' : 'start_reached_outcome_unknown', counted: true,
+      start_step_ok: start?.ok ?? null, note: 'Start was reached; whether the first look was sent is unknown, so it is counted (conservative)' };
     if (!request) {
       const failed = triggers[k] && triggers[k].ok === false;
       return { slot: k + 1, purpose, state: failed ? 'trigger_failed_before_action' : 'assigned_no_request_recorded', counted: true, trigger_error: failed ? triggers[k].error ?? null : null,
@@ -125,7 +133,7 @@ export function fenceVerdict(ledger, liveLines, values = {}) {
   const noLater = ledger.extra_requests.length === 0 && !afterEnd.some(l => l.kind === 'looked' || l.kind === 'look');
   const cardClean = !!cardAfter && (cardAfter.answer_hidden === true || cardAfter.answer === (before?.answer ?? null));
   const notShown = slot.shown !== true && slot.presentation !== 'shown' && cardClean;
-  const facts = { stopped_by_user: stopped, request_recorded: recorded, out_at_stop: stop?.out_at_stop ?? null, settled_after_stop: settledAfterStop, request_outcome: slot.state,
+  const facts = { stop_scope: 'the AI session (#liveStop); the capture kept running until the wind-down capture Stop', stopped_by_user: stopped, request_recorded: recorded, out_at_stop: stop?.out_at_stop ?? null, settled_after_stop: settledAfterStop, request_outcome: slot.state,
     submission: slot.submission ?? null, shown: slot.shown ?? null, presentation: slot.presentation ?? null, card_after_stop_clean: cardClean, no_later_request: noLater, end_reason: ended?.reason ?? null };
   if (!stopped || !recorded || !outAtStop || !settledAfterStop) return { verdict: 'unknown', ...facts };
   if (!notShown || !noLater) return { verdict: 'not_fenced', ...facts };

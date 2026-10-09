@@ -1,0 +1,75 @@
+{
+  "kind": "qa-live-nonvoice-driver/correction-02",
+  "status": "PREPARED_ONLY_NOT_REVIEWED_NOT_AUTHORIZED",
+  "corrects": "b8f0d9c23a0091c76fd2def239f445d1b8d04854",
+  "lead_hold": "b63ecdc (handoff_3ec98086)",
+  "findings": [
+    "L1 included-use veto removed; spend control kept",
+    "L2 a reached Start counts slot 1 (unknown); known pre-Start stops do not"
+  ],
+  "decisions_applied": "D1-D10 of b63ecdc",
+  "real_actions": "0/4 (unchanged)",
+  "candidate_sha256": "74ebc3942022fe0549aa691b45ff5cc4949a56041b2f424b22f4786eb4374fbc",
+  "payload_sha256": {
+    "runner.ps1": "0f5c23f03e8900b96f0e3c29ea6494af3b510bde3de6b1aefe335f747c6e9590",
+    "steps.json": "560461adeb84bfb7e614bd29c337b3e72b3363a6c643047fc533b96fc84c4d7a",
+    "surface.html": "be82967ae45d36bece4ac4858d6f45d0e90e58d088203b71323b74e6ae5e1067",
+    "sub-live.json": "4729ca1a25ec09a64349c68c5ccb0eb41b4e9f83e161fb9c4a29b0ce26b948d4"
+  },
+  "native_bound_ms": 600000,
+  "native_worst_case_ms": 519000,
+  "work": "/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-live-nonvoice-29b2ae8a1d4443c0ac905187afed9991",
+  "assistance": "explain",
+  "questions": {
+    "followup": "Please read the four-digit numbers on the cards in the top row, from left to right.",
+    "fence": "Please also read the four-digit numbers on the cards in the bottom row."
+  },
+  "source_files_pinned_by_candidate": {
+    "qa_live_candidate.mjs": "a8f936adad9885071a2a49a5e2c0b5080790d4ce5c51b24f366e6d82ea5cfe32",
+    "qa_tts_output_candidate.mjs": "02fd39d06c29eb89d60ed113bb13e97726cc503a2e9678da713a3422b3f6cf83",
+    "qa_visible_candidate.mjs": "9df43a98f64c67559029d31bc41573db4df4df94341ef48845687987b5460410",
+    "qa_edge_placement.ps1": "e527a59e63f6823adc9aaa1b5d9619661d8299769985ae1a0bf108749c2535bb",
+    "qa_display_admission.ps1": "b4f586b7c987f533f318eb72ebffe318482ed2c2aa7f7f720574147071747590",
+    "qa-electron-runner.ps1": "1a0dfc3f178a1d6f59233c2a7d6a836ce68b18887affd2f6431c2d4ef5c48218",
+    "qa_tts_stage_check.py": "9e0a8257f740ee6d7e8924ac848de2fc7ddfd9b7621967e8a7f67c1c518b810f",
+    "qa_live_stage_check.py": "8bdd042b426c0784500375a41fe874e41b80186a6a8dddcc1d544213abd8c791",
+    "surface_live.html": "be82967ae45d36bece4ac4858d6f45d0e90e58d088203b71323b74e6ae5e1067",
+    "sub_copy.mjs": "d9df3fe96a1c3c99b161552cd6c547c9a7c64dad4e23f05f57eed922013a85f5",
+    "qa_sub_copy_check.py": "73b765943887cab143f530deb3deb7ac415cabce13bc2bd9f7498c1c56320d10",
+    "qa_live_copy_check.py": "1784a01195500bda2fe84971e837978043cc74d3ad4e1a119dd5452863b92425",
+    "signin_cleanup.mjs": "efa06295262ea27006769e0dea363051fbd6401f4c810d2049db5937ee939b2b",
+    "qa_live_ledger.mjs": "03777e0ada7eac8e4b2936fa5e7f418f6989a7ff67e8f56cfff2f54393936353",
+    "qa_run_tts_candidate.mjs": "153db051aa92a39a5f59859c1d85b107867a6fc6fa1c30eb033692f83ebdbda3",
+    "qa_sub_watch.py": "42be06a3b2d07d2feb16b306bfefe9d2c44bfdd8d88554853eb9a7ea6112d1b8"
+  },
+  "driver_files_sha256": {
+    "qa_live_candidate.mjs": "a8f936adad9885071a2a49a5e2c0b5080790d4ce5c51b24f366e6d82ea5cfe32",
+    "qa_live_ledger.mjs": "03777e0ada7eac8e4b2936fa5e7f418f6989a7ff67e8f56cfff2f54393936353",
+    "qa_run_live_candidate.mjs": "9db4b2d39de5df8e7b28d97c801423d4ed0ef00511b42aa2b509bc070acb0454",
+    "surface_live.html": "be82967ae45d36bece4ac4858d6f45d0e90e58d088203b71323b74e6ae5e1067",
+    "qa_live_copy_check.py": "1784a01195500bda2fe84971e837978043cc74d3ad4e1a119dd5452863b92425",
+    "test_qa_live_candidate.mjs": "8aec6ec2989979c7b9db27ff536925a928bf77876d605d3748ed3c739816f420"
+  },
+  "checks": {
+    "failures_before_on_b8f0d9c": "9/23 failing (L1, L2, D8 and the decisions)",
+    "passes_after": "23/23 (child processes withheld)",
+    "mutants": "35/35",
+    "candidate_check": "passed, scratch unused",
+    "connector_copy": "280 files equal; ask and live paths load from the copy"
+  },
+  "logs": {
+    "failures-before-b8f0d9c.txt": "895054369e341f287fbcf44b425f302d7da99d37a1111f8e94f4f61038d94dee",
+    "passes-after.txt": "9d5178fe85a994d2faed173834193e94373e6d8b7ebc9ea73f13f1559e87e38d",
+    "driver-mutants.txt": "cbb2b46ade1493ba10aa5ac70ebaf9367b12063718f9b366843041facaf0c632",
+    "driver-mutants.py": "e7754ffa2bae07ce34b3375ba182293051dbd207edb8152a30e307bff8b43ac0",
+    "candidate-check.json": "44770f622329a4b5bfa2de99829c675d4b8354f41254b732db84de0505e68e7a",
+    "connector-copy-check.json": "e9a43c1abf3ca541b9f782a5df5d55b999262f3fb3c9d7756852861f63ccb246",
+    "allocation.template.json": "6626d109c64ecd386e03c1405a7fa5d1a97cfab8bbfe12fbb6ecd1b7dd5f95dc"
+  },
+  "execution": {
+    "windows_calls": 0,
+    "native_attempts": 0,
+    "provider_attempts": 0,
+    "display_or_account_lease": "NONE"
+  }
+}

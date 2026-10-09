@@ -51,13 +51,19 @@ export const CONNECTOR = {
 export const POLICY = { requests: 4, minutes: 1, seconds: 60 };
 export const POLICY_MS = { max_submissions: 4, max_session_ms: 60000, min_observation_interval_ms: 60000 };
 export const ACTIONS = ['unattended whole-screen observation', 'automatic focus response', 'typed follow-up after controlled screen change', 'Stop/fence attempt'];
-// Fixed before the run, with no card values in them (the values exist only as pixels).
+// Fixed before the run, with no card values in them (the values exist only as pixels), and not telling the model that the
+// cards changed (Lead D9, b63ecdc).
 export const QUESTIONS = {
-  followup: 'The cards on the screen just changed. Please read the four-digit numbers on the cards in the top row, from left to right.',
+  followup: 'Please read the four-digit numbers on the cards in the top row, from left to right.',
   fence: 'Please also read the four-digit numbers on the cards in the bottom row.',
 };
-// The help level on the card for the typed requests: the product's default. Any other level is a Lead decision.
-export const ASSISTANCE = 'hint';
+// The help level for the two typed visual-reading requests: 'explain', selected on the card as a user would (Lead D1,
+// b63ecdc: they ask to read generated pixels, not to solve a learner's problem; recorded as a test override). The
+// automatic circle request stays hint-first: the product itself caps it and the driver never touches its level.
+export const ASSISTANCE = 'explain';
+export const CIRCLE_ASSISTANCE = 'hint (the product\'s own cap for a circle without words)';
+// One fixed outer bound for the native run: setup, the 60 s session and cleanup (Lead D6). Not an execution approval.
+export const NATIVE_BOUND_MS = 600000;
 const sourceNames = ['qa_live_candidate.mjs', 'qa_tts_output_candidate.mjs', 'qa_visible_candidate.mjs', 'qa_edge_placement.ps1', 'qa_display_admission.ps1',
   'qa-electron-runner.ps1', 'qa_tts_stage_check.py', 'qa_live_stage_check.py', 'surface_live.html', 'sub_copy.mjs', 'qa_sub_copy_check.py', 'qa_live_copy_check.py',
   'signin_cleanup.mjs', 'qa_live_ledger.mjs', 'qa_run_tts_candidate.mjs', 'qa_sub_watch.py'];
@@ -130,17 +136,21 @@ export function liveSteps({ surfaceUrl, profile }) {
     // Check connection, once: the app's own account read (the official managed lock). No sign-in, no polling of the account.
     ctl("(() => { const b = document.getElementById('subCheck'); if (b.hidden || b.disabled) throw Error('Check connection unavailable'); b.click(); return true; })()", 'check_pressed'),
     { target: 'control', waitEval: "(async () => { const a = await lc.subState(); return a.mode !== 'managed' || (a.state !== 'checking' && a.state !== 'not_checked'); })()", timeoutMs: 45000 },
-    // Stop before Start on: not signed in, a pending sign-in or request, a selected model that takes no picture, a quota
-    // the server states as reached or not allowed (an unknown quota is not zero: it does not stop the run).
+    // Stop before Start on: not signed in, a pending sign-in or request, a selected model that takes no picture, or a
+    // spend control the server states as reached (an authoritative stop). An exhausted INCLUDED window is not all of the
+    // allowance: ordinary credits can still serve requests (the actual credit-backed image result, 91e72fe), and an unknown
+    // quota is not zero. Neither stops the run; the server stays authoritative, with no retry, reset credit or billing change.
     ctl(`(async () => { const a = await lc.subState();
       if (a.mode !== 'managed' || a.state !== 'signed_in') throw Error('not signed in (' + (a.state ?? a.mode) + '): the run stops here; signing in is the user\\'s own step');
       if (a.login !== 'none' || a.asking) throw Error('a sign-in or a request is pending');
       const chosen = (a.models || []).find(m => m.id === a.model);
       if (!chosen || !chosen.image_input) throw Error('the selected model does not take pictures');
-      const q = a.quota, reached = !!q && (q.ordinary_usage_allowed === false || (q.windows || []).some(b => b.rate_limit_reached_type || b.spend_control_reached === true));
-      if (reached) throw Error('the server states a usage limit as reached: the run stops before Start');
+      const q = a.quota, windows = q ? q.windows || [] : [];
+      if (windows.some(b => b.spend_control_reached === true)) throw Error('the server states a spend control as reached: the run stops before Start');
       if (document.getElementById('aiOn').disabled) throw Error('the AI session cannot be started from the control window');
-      return JSON.stringify({ state: a.state, model: a.model, image_input: true, quota_read: a.quota_read_at !== null, quota_available: q ? q.available : null, ordinary_usage_allowed: q ? q.ordinary_usage_allowed : null }); })()`, 'account_ready'),
+      return JSON.stringify({ state: a.state, model: a.model, image_input: true, quota_read: a.quota_read_at !== null, quota_available: q ? q.available : null,
+        included_usage_allowed: q ? q.ordinary_usage_allowed : null, included_reached: windows.some(b => !!b.rate_limit_reached_type),
+        credits_present: windows.some(b => !!b.credits && (b.credits.has_credits === true || b.credits.unlimited === true)), spend_control_reached: false }); })()`, 'account_ready'),
     { productPlacement: 'control' },
     raise, truth('surface_at_start'), onTop,
     // The Start: the three policy fields set through DevTools (value + input event, not OS typing), the AI box ticked,
@@ -232,6 +242,7 @@ function payloadFor(ctx, work) {
 }
 function manifestFor(work) {
   const ctx = context(work), payload = payloadFor(ctx, work);
+  if (worstCaseMs(liveSteps(ctx)) > NATIVE_BOUND_MS) throw Error('the steps can outlast the fixed native bound');
   const fileArgs = ['-File', win(join(work, 'runner.ps1')), '-Electron', electron, '-Stage', win(stage), '-UserData', win(join(work, 'userdata')), '-StepsFile', win(join(work, 'steps.json')), '-OutDir', win(join(work, 'out')), '-Edge', edge, '-AppTemp', win(join(work, 'apptemp')), '-LinkDir', ctx.linkDir];
   const manifest = {
     kind: 'qa-live-nonvoice-offline-candidate/v1', prepared_only: true, execution_authorized: false,
@@ -242,9 +253,13 @@ function manifestFor(work) {
     app_entry: { executable: electron, app_arguments: [win(stage)], package_main: 'dist/apps/windows/src/main/main.js', main_sha256: entry, native_helper_sha256: helper, electron_sha256: runtime },
     connector: CONNECTOR, policy: POLICY, policy_ms: POLICY_MS, actions: ACTIONS, questions: QUESTIONS, assistance: ASSISTANCE,
     talk: 'off: the product default at every Start, checked on the overlay before the first action; asked_as must stay silent',
-    input_method: 'Inside the product windows only: DevTools DOM value + input event for the three policy fields, the question and the help level; DOM clicks for Check connection, Start, ASK, Send and Stop the AI (the product\'s own handlers); CDP pen events for the circle. No OS typing or physical input.',
+    input_method: 'NONPHYSICAL (Lead D2): inside the product windows only, DevTools DOM value + input event for the three policy fields, the question and the help level; DOM clicks for Check connection, Start, ASK, Send and Stop the AI (the product\'s own handlers); CDP pen events for the circle. No OS typing, mouse, pen or keyboard.',
+    circle_assistance: CIRCLE_ASSISTANCE, assistance_override: 'explain for the two typed visual-reading requests only (Lead D1, b63ecdc); recorded as a test override',
+    stop_scope: 'Stop the AI (#liveStop) fences the AI requests; the capture keeps running until the wind-down capture Stop (Lead D3)',
+    native_bound_ms: NATIVE_BOUND_MS, lead_decisions: 'docs/verification/lead/live-windows/nonvoice-driver-review/README.md at b63ecdc (D1-D10)',
     expected_fence: 'Stop is clicked as soon as the 4th request is out; the connector usually has not written turn/start yet, so the likely verdict is fenced_before_submission. Fencing a turn already at the provider would need a different trigger (a Lead decision).',
     native_worst_case_ms: worstCaseMs(liveSteps(ctx)),
+    raw_receipts: 'Kept outside the repository (~/.local/state/lc-qa-live/<run>/receipts, 0700); only an allowlisted, sanitized set of generated evidence is for Git (Lead D8).',
     script_permission: 'A separate, exact, process-only RemoteSigned permission for this runner with real subscription use is required; the AI-disabled approvals do not carry over.',
     proposed_native_invocation: { executable: String.raw`C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`, arguments: ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'RemoteSigned', ...fileArgs], status: 'NOT_ALLOCATED_NOT_EXECUTED', persistent_policy_changes: false },
     capture_prerequisite_mode: 'REAL_SUBSCRIPTION_NONVOICE_GENERATED_SURFACE',

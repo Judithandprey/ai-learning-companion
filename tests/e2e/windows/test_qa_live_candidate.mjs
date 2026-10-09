@@ -35,6 +35,7 @@ test('the candidate is offline-only, reproduces from the sources, and its scratc
   assert.throws(() => checkLiveCandidate(base.manifest, { ...base.payload, 'steps.json': base.payload['steps.json'].replace('"live"', '"fake"') }, identity));
   assert.throws(() => checkLiveCandidate(base.manifest, base.payload, { ...identity, tree_sha256: '0'.repeat(64) }));
   assert.equal(base.manifest.native_worst_case_ms, worstCaseMs(steps)); assert.ok(base.manifest.native_worst_case_ms > 300000);
+  assert.equal(base.manifest.native_bound_ms, 600000); assert.ok(base.manifest.native_worst_case_ms <= base.manifest.native_bound_ms);   // Lead D6: one fixed bound
   for (const k of ['input_method', 'expected_fence', 'script_permission', 'talk']) assert.equal(typeof base.manifest[k], 'string', k);
   assert.ok(base.manifest.source_files['qa_run_tts_candidate.mjs'] && base.manifest.source_files['qa_sub_watch.py']);
 });
@@ -80,7 +81,7 @@ test('the steps hold exactly the four released actions, the actual UI Start once
   for (const [id, v] of [['aiRequests', POLICY.requests], ['aiMinutes', POLICY.minutes], ['aiInterval', POLICY.seconds]]) assert.ok(start.includes(`['${id}', ${v}]`), id);
   assert.ok(start.includes('box.checked = true') && start.includes('start.click()'));
   assert.deepEqual(POLICY_MS, { max_submissions: 4, max_session_ms: 60000, min_observation_interval_ms: 60000 });
-  assert.equal(ACTIONS.length, 4); assert.equal(ASSISTANCE, 'hint');
+  assert.equal(ACTIONS.length, 4); assert.equal(ASSISTANCE, 'explain');                                               // Lead D1: typed visual-reading requests only
 });
 test('every action is bracketed: assigned only while the session is on with the exact count, and a stop leaves the rest NOT_RUN', () => {
   const g = n => idx(s => s.as === `action${n}`);
@@ -102,7 +103,8 @@ test('every action is bracketed: assigned only while the session is on with the 
   assert.ok(steps[idx(s => s.as === 'action4_stop') - 1].waitEval.includes('l.out > 0'));
   // Before Start: a selected model without pictures, a reached quota, a pending sign-in stop the run; Talk off is checked.
   const ready = evalOf(steps[idx(s => s.as === 'account_ready')]);
-  for (const part of ['m.id === a.model', 'ordinary_usage_allowed === false', 'rate_limit_reached_type', 'spend_control_reached === true', "a.login !== 'none'"]) assert.ok(ready.includes(part), part);
+  for (const part of ['m.id === a.model', 'spend_control_reached === true', "a.login !== 'none'"]) assert.ok(ready.includes(part), part);
+  assert.equal(ready.includes('ordinary_usage_allowed === false'), false);                                          // included use is not all of the allowance (L1)
   assert.ok(evalOf(steps[idx(s => s.as === 'overlay_ready')]).includes("getAttribute('aria-pressed') === 'true'"));
   // An answered action must show a NEW answer (an unsent request leaves the earlier one up).
   assert.ok(steps.filter(s => evalOf(s).includes('send.click()')).every(s => evalOf(s).includes('window.__qaAnswerBefore =')));
@@ -124,8 +126,10 @@ test('every action is bracketed: assigned only while the session is on with the 
   for (const s of steps.slice(idx(s => s.as === 'action4_card') + 1, idx(s => s.as === 'stop_pressed'))) assert.equal(s.required, false);
   for (const k of ['closeApp', 'edgeClose']) assert.equal(steps.find(s => k in s).required, false);
 });
-test('the typed requests carry no card value, and the help level is the product default', () => {
-  for (const q of Object.values(QUESTIONS)) assert.equal(/\d/.test(q), false, q);
+test('the typed requests carry no card value and do not say the cards changed; they select explain, the circle is left at the product\'s hint', () => {
+  for (const q of Object.values(QUESTIONS)) { assert.equal(/\d/.test(q), false, q); assert.equal(/chang|new|different/i.test(q), false, q); }
+  const circleAt = idx(s => Array.isArray(s.stroke));
+  assert.equal(steps.slice(circleAt - 2, circleAt + 8).some(s => evalOf(s).includes('assistance')), false);          // nothing sets the circle's level
   for (const s of steps.filter(s => evalOf(s).includes('send.click()'))) {
     assert.ok(evalOf(s).includes(`[value=${ASSISTANCE}]`));
     assert.ok(Object.values(QUESTIONS).some(q => evalOf(s).includes(JSON.stringify(q))));
@@ -310,7 +314,7 @@ test('wrapper: only an exact, active live allocation bound to the four-action bo
   const at = Date.parse('2026-10-09T06:10:00Z');
   assert.equal(wrapper.validateLiveAllocation(goodAllocation(), base.manifest, 'w'.repeat(64), at), Date.parse('2026-10-09T06:30:00Z'));
   for (const [k, v] of [['schema', 'qa-tts-display-allocation/1'], ['mode', 'AI_DISABLED_GENERATED_SURFACE_ONLY'], ['account_access', true], ['voice', true], ['microphone_access', true],
-    ['retry', true], ['restart', true], ['max_native_attempts', 2], ['max_real_actions', 5], ['real_actions_already_used', 1], ['native_bound_ms', 1200000], ['native_bound_ms', 300000],
+    ['retry', true], ['restart', true], ['max_native_attempts', 2], ['max_real_actions', 5], ['real_actions_already_used', 1], ['native_bound_ms', 1200000], ['native_bound_ms', 300000], ['native_bound_ms', 900000],
     ['exclusive_display', false], ['audio_access', true], ['cleanup_only_after_expiry', false], ['payload_sha256', { ...wrapper.pins, 'steps.json': '0'.repeat(64) }],
     ['native_invocation', { executable: 'powershell.exe', arguments: [] }], ['approval_scope', 'ai_disabled_display_diagnostic'], ['command_approval_ref', 'short'],
     ['command_approval_ref', 'human-bounded-retest-20261008:d41dbbfae11448f7847e26cb54afcd44'], ['script_permission_ref', 'approved-two-gates-20261002:571427dcdc434c0f820236892925aedf'],
@@ -366,9 +370,9 @@ test('wrapper: the watch summary sees the connector and every descendant; a miss
 });
 test('wrapper: with an exact allocation it still refuses at the connector checks before any Windows call, any folder or any process', async () => {
   const realFs = await import('node:fs');
-  const saved = JSON.parse(realFs.readFileSync(new URL('../../../docs/verification/qa/p0-13-live-52be105/candidate-nonvoice-01/candidate.json', import.meta.url)));
+  const saved = JSON.parse(realFs.readFileSync(new URL('../../../docs/verification/qa/p0-13-live-52be105/candidate-nonvoice-02/candidate.json', import.meta.url)));
   const wrapperHash = sha(realFs.readFileSync(new URL('qa_run_live_candidate.mjs', import.meta.url)));
-  const record = { ...goodAllocation(), wrapper_sha256: wrapperHash, native_bound_ms: saved.native_worst_case_ms,
+  const record = { ...goodAllocation(), wrapper_sha256: wrapperHash, native_bound_ms: saved.native_bound_ms,
     native_invocation: { executable: saved.proposed_native_invocation.executable, arguments: saved.proposed_native_invocation.arguments },
     launch_identity: { source: saved.production_commit, stage: saved.stage, tree: saved.stage_tree_sha256, work: saved.work, electron: saved.electron, edge: saved.edge, appPort: saved.appPort, edgePort: saved.edgePort } };
   const allocationPath = '/tmp/qa-live-test-allocation.json', bytes = Buffer.from(JSON.stringify(record));
@@ -385,4 +389,67 @@ test('wrapper: with an exact allocation it still refuses at the connector checks
     assert.deepEqual(calls.filter(c => c[0] === 'exec').map(c => c[1]), ['python3']);                                  // the Linux stage check only
     assert.deepEqual(calls.filter(c => ['mkdir', 'write', 'spawn', 'spawnSync'].includes(c[0])), []);
   }
+});
+
+// ---- Lead HOLD b63ecdc: L1 (credits beside an exhausted included window) and L2 (a reached Start with missing records) ----
+test('L1: the actual account_ready step lets ordinary credits, an exhausted included window and an unknown quota through, and stops on a stated spend control', async () => {
+  const text = evalOf(steps[idx(s => s.as === 'account_ready')]);
+  const model = { id: 'gpt-6-astra', image_input: true };
+  const bucket = over => ({ limit_id: 'codex', normal_model_slug: null, primary: { used_percent: 100, window_duration_mins: 10080, resets_at: '2026-10-12T00:00:00Z' }, secondary: null,
+    credits: { has_credits: true, unlimited: false, balance: '100' }, rate_limit_reached_type: null, spend_control_reached: false, individual_limit: null, ...over });
+  const state = over => ({ mode: 'managed', state: 'signed_in', plan: 'plus', quota: { available: true, ordinary_usage_allowed: true, windows: [bucket({})] }, quota_read_at: '2026-10-09T07:00:00Z',
+    models: [model, { id: 'text-only', image_input: false }], model: model.id, login: 'none', detail: null, asking: false, ...over });
+  const run = (sub, aiOff = false) => vm.runInNewContext(text, { lc: { subState: async () => sub }, document: { getElementById: () => ({ disabled: aiOff }) }, JSON, Error, Promise });
+  // Through (the server decides): the lead's reproductions and the observed credit-backed situation.
+  for (const quota of [
+    { available: true, ordinary_usage_allowed: false, windows: [bucket({ rate_limit_reached_type: 'rate_limit_reached' })] },                 // included exhausted, credits
+    { available: true, ordinary_usage_allowed: true, windows: [bucket({ rate_limit_reached_type: 'rate_limit_reached' })] },                  // reached marker, credits
+    null,                                                                                                                                    // unknown allowance
+    { available: false, ordinary_usage_allowed: null, windows: [] },                                                                         // not read
+    { available: true, ordinary_usage_allowed: false, windows: [bucket({ credits: null, rate_limit_reached_type: 'rate_limit_reached' })] },  // unknown balance
+  ]) {
+    const r = JSON.parse(await run(state({ quota })));
+    assert.equal(r.spend_control_reached, false); assert.equal(r.image_input, true);
+  }
+  const facts = JSON.parse(await run(state({ quota: { available: true, ordinary_usage_allowed: false, windows: [bucket({ rate_limit_reached_type: 'rate_limit_reached' })] } })));
+  assert.deepEqual([facts.included_usage_allowed, facts.included_reached, facts.credits_present], [false, true, true]);
+  // Stopped before Start: an authoritative spend control, and the unchanged account/model gates.
+  await assert.rejects(run(state({ quota: { available: true, ordinary_usage_allowed: true, windows: [bucket({ spend_control_reached: true })] } })), /spend control/);
+  await assert.rejects(run(state({ state: 'signed_out' })), /not signed in/);
+  await assert.rejects(run(state({ login: 'waiting' })), /sign-in or a request is pending/);
+  await assert.rejects(run(state({ asking: true })), /pending/);
+  await assert.rejects(run(state({ model: 'text-only' })), /does not take pictures/);
+  await assert.rejects(run(state({ model: null })), /does not take pictures/);
+  await assert.rejects(run(state({}), true), /cannot be started/);
+});
+test('L2: a reached Start whose later records are missing counts the first look as used (unknown); a known pre-Start stop does not', () => {
+  const at = stepIndex('capture_start');
+  for (const ok of [true, false]) {
+    const results = ranTo(at); results.steps.at(-1).ok = ok; if (!ok) results.steps.at(-1).error = 'guarded capture Start failed';
+    const l = buildLedger({ steps, results, liveLines: [], asks: [], receipts: {} });                                   // the lead's reproduction (unknown-start-probe.json)
+    assert.deepEqual([l.slots[0].state, l.slots[0].counted, l.attempts_used, l.attempts_remaining], ['start_reached_outcome_unknown', true, 1, 3], `capture_start ok=${ok}`);
+    assert.deepEqual(l.slots.slice(1).map(s => s.state), ['NOT_RUN', 'NOT_RUN', 'NOT_RUN']);
+  }
+  const lost = ranTo(at - 1);                                                                                         // the Start step's own entry lost, the session started
+  assert.deepEqual(buildLedger({ steps, results: lost, liveLines: [{ kind: 'started' }], asks: [], receipts: {} }).slots[0].state, 'session_started_no_look_recorded');
+  const refused = ranTo(at); refused.steps.at(-1).ok = false;
+  const r = buildLedger({ steps, results: refused, liveLines: [{ kind: 'not_started', code: 'unauthenticated' }], asks: [], receipts: {} });
+  assert.deepEqual([r.slots[0].state, r.slots[0].counted, r.attempts_used], ['NOT_RUN_session_not_started', false, 0]);
+  const admission = ranTo(at); admission.steps.at(-1).ok = false; admission.values = { qa_display_admission_011: { phase: 'before_capture_start', accepted: false, error: 'owned surface lost' } };
+  const a = buildLedger({ steps, results: admission, liveLines: [], asks: [], receipts: {} });
+  assert.deepEqual([a.slots[0].state, a.slots[0].counted, a.attempts_used], ['NOT_RUN_start_not_evaluated', false, 0]);
+  assert.deepEqual(buildLedger({ steps, results: ranTo(at - 1), liveLines: [], asks: [], receipts: {} }).attempts_used, 0);   // Start never reached
+});
+test('D8: raw receipts are written outside the repository; only sanitized fields and an allowlist of generated files are for Git', () => {
+  assert.equal(wrapper.rawReceiptsRoot.startsWith(new URL('../../..', import.meta.url).pathname), false);
+  assert.match(wrapper.rawReceiptsRoot, /^\/home\/[^/]+\/\.local\/state\/[^/]+$/);                                  // the user's local state, never a checkout
+  assert.equal(/\/(Projects|docs|verification|wt-[^/]*|repo)(\/|$)/.test(wrapper.rawReceiptsRoot), false);
+  const raw = { 'live-1.look.1': { ...receipt('live-1.look.1', 'a1'), thread_id: 'thr_secret', turn_id: 'turn_secret', codex_executable: '/home/x/codex', format: 'lc-subscription-ask-receipt/1' } };
+  const clean = wrapper.sanitizeReceipts(raw)['live-1.look.1'];
+  for (const k of ['thread_id', 'turn_id', 'codex_executable']) assert.equal(k in clean, false, k);
+  assert.equal(clean.image_sha256, 'a1'); assert.equal(clean.submission, 'acknowledged');
+  const tree = { '/o': ['run.json', 'ledger.json', 'receipts-sanitized.json', 'runner-results.json', 'connector-watch.jsonl', 'runner.stdout.bin', 'captures', 'private', 'preflight-refusal.json'],
+    '/o/captures': ['0123abcd'], '/o/captures/0123abcd': ['live.jsonl', 'asks', 'frames'], '/o/captures/0123abcd/asks': ['ask-1.json', 'f.png'], '/o/captures/0123abcd/frames': ['x.png'], '/o/private': ['receipt.json'] };
+  const io = { readdirSync: d => tree[d], statSync: p => ({ isDirectory: () => p in tree }) };
+  assert.deepEqual(wrapper.publishAllowlist(io, '/o').files, ['captures/0123abcd/asks/ask-1.json', 'captures/0123abcd/live.jsonl', 'connector-watch.jsonl', 'ledger.json', 'receipts-sanitized.json', 'run.json', 'runner-results.json', 'runner.stdout.bin']);
 });

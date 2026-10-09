@@ -1,0 +1,145 @@
+# The corrected test file (this commit) run against the HELD sources b8f0d9c (tests/e2e/windows and the candidate at b8f0d9c).
+$ node --permission --allow-fs-read=<copy> --allow-fs-read=<live scratch pattern> tests/e2e/windows/test_qa_live_candidate.mjs
+✖ the candidate is offline-only, reproduces from the sources, and its scratch is unused
+✔ the runner is the reviewed r4 runner byte for byte, apart from the one work-folder name
+✔ the package pins are the accepted diagnostic's (52be105, its 77-file tree, Electron 44.5.1, Edge)
+✔ the connector configuration is the trusted real one: the exact private 52be105 copy, the pinned codex binary, the product's own state
+✖ the steps hold exactly the four released actions, the actual UI Start once, and nothing fake, restarted or signed in
+✖ every action is bracketed: assigned only while the session is on with the exact count, and a stop leaves the rest NOT_RUN
+✖ the typed requests carry no card value and do not say the cards changed; they select explain, the circle is left at the product's hint
+✔ the live surface changes its cards in place: new values never shown before, same page, same geometry, same truth format
+✔ ledger: all four actions counted once each, the whole picture at the provider boundary for each answered one, the Stop fenced
+✔ ledger: unknown and proven not_submitted outcomes count; failed triggers count but are named; a session that never started counts nothing
+✔ ledger: a session that ended before an action leaves it and every later one NOT_RUN; extra requests, restarts and a disagreeing app count are flagged
+✔ fence: needs Stop by the user with the request out and settling after it, nothing shown or sent later; otherwise unknown or not fenced
+✔ transport: no receipt, another image, no text or image input, or a request not submitted is never the picture at the provider; tools are flagged
+✔ pixel rules: only values new after the change and absent from earlier AI text prove fresh pixels; formatted values are read; a question with a value is a leak
+✔ wrapper: nothing runs without --execute, a new evidence folder and an independently supplied allocation hash
+✖ wrapper: only an exact, active live allocation bound to the four-action bounds, no voice, no retry or restart, is accepted
+✔ wrapper: the connector side refuses a missing or inexact copy, anything running in it, or another codex binary, before any Windows call
+✔ wrapper: the mechanical result needs every term, the connector and its children gone, and keeps acceptance NOT_JUDGED
+✔ wrapper: the watch summary sees the connector and every descendant; a missing end or log is unknown, never released
+✖ wrapper: with an exact allocation it still refuses at the connector checks before any Windows call, any folder or any process
+✖ L1: the actual account_ready step lets ordinary credits, an exhausted included window and an unknown quota through, and stops on a stated spend control
+✖ L2: a reached Start whose later records are missing counts the first look as used (unknown); a known pre-Start stop does not
+✖ D8: raw receipts are written outside the repository; only sanitized fields and an allowlist of generated files are for Git
+ℹ tests 23
+ℹ suites 0
+ℹ pass 14
+ℹ fail 9
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms (omitted)
+
+✖ failing tests:
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:23:1
+✖ the candidate is offline-only, reproduces from the sources, and its scratch is unused
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - 600000
+  
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: 600000,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:69:1
+✖ the steps hold exactly the four released actions, the actual UI Start once, and nothing fake, restarted or signed in
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  'hint' !== 'explain'
+  
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'hint',
+    expected: 'explain',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:86:1
+✖ every action is bracketed: assigned only while the session is on with the exact count, and a stop leaves the rest NOT_RUN
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:129:1
+✖ the typed requests carry no card value and do not say the cards changed; they select explain, the circle is left at the product's hint
+  AssertionError [ERR_ASSERTION]: The cards on the screen just changed. Please read the four-digit numbers on the cards in the top row, from left to right.
+  
+  true !== false
+  
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:313:1
+✖ wrapper: only an exact, active live allocation bound to the four-action bounds, no voice, no retry or restart, is accepted
+  AssertionError [ERR_ASSERTION]: Missing expected exception (Error): native_bound_ms
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: [Function],
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:371:1
+✖ wrapper: with an exact allocation it still refuses at the connector checks before any Windows call, any folder or any process
+  Error: ENOENT: no such file or directory, open '<copy>/docs/verification/qa/p0-13-live-52be105/candidate-nonvoice-02/candidate.json'
+    errno: -2,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: '<copy>/docs/verification/qa/p0-13-live-52be105/candidate-nonvoice-02/candidate.json'
+  }
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:395:1
+✖ L1: the actual account_ready step lets ordinary credits, an exhausted included window and an unknown quota through, and stops on a stated spend control
+  Error: the server states a usage limit as reached: the run stops before Start
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:425:1
+✖ L2: a reached Start whose later records are missing counts the first look as used (unknown); a known pre-Start stop does not
+  AssertionError [ERR_ASSERTION]: capture_start ok=true
+  + actual - expected
+  
+    [
+  +   'NOT_RUN',
+  +   false,
+  +   0,
+  +   4
+  -   'start_reached_outcome_unknown',
+  -   true,
+  -   1,
+  -   3
+    ]
+  
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: [Array],
+    expected: [Array],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:443:1
+✖ D8: raw receipts are written outside the repository; only sanitized fields and an allowlist of generated files are for Git
+  TypeError: Cannot read properties of undefined (reading 'startsWith')

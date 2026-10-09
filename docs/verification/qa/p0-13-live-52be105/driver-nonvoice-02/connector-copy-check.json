@@ -1,0 +1,25 @@
+{
+ "copy": "/home/agentsdock/.local/share/lc-qa/subscription-source-52be105a148a",
+ "commit": "52be105a148a28e677f83cc4b7077665f2ff372c",
+ "equal": true,
+ "files": 280,
+ "missing": 0,
+ "differing": 0,
+ "extra": 0,
+ "ask_path": {
+  "ok": true,
+  "prompt_bytes": 2094,
+  "project_modules_loaded": 9,
+  "modules_loaded_from_elsewhere": [],
+  "packages_contracts_loaded": true
+ },
+ "live_path": {
+  "ok": true,
+  "project_modules_loaded": 13,
+  "modules_loaded_from_elsewhere": [],
+  "live_modules": [
+   "services.learning.live_session",
+   "services.worker.connectors.chatgpt_live"
+  ]
+ }
+}

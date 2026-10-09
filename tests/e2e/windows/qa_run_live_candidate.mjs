@@ -20,12 +20,13 @@ import { lookCommand, readLook, releaseOwned, windowsCalls } from './signin_clea
 import { askPathCheck, compareCopy } from './sub_copy.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url)), repo = resolve(here, '../../..');
-export const candidateDir = join(repo, 'docs/verification/qa/p0-13-live-52be105/candidate-nonvoice-01');
-export const candidateHash = '694a1acccc6b572fecb9c1516dd8bfd1b5fc744232a9a5a4cb98bab1e456af3b';
-export const pins = { 'runner.ps1': 'f372426256ab31d243dbea1a0bf8fa05a9af20d0bc4ae3e367f622af93a807be', 'steps.json': '535bb56e32512177db30361925f797642e0c64b9902c8b7e73818d06d1ec154c', 'surface.html': 'be82967ae45d36bece4ac4858d6f45d0e90e58d088203b71323b74e6ae5e1067', 'sub-live.json': '4729ca1a25ec09a64349c68c5ccb0eb41b4e9f83e161fb9c4a29b0ce26b948d4' };
+export const candidateDir = join(repo, 'docs/verification/qa/p0-13-live-52be105/candidate-nonvoice-02');
+export const candidateHash = '74ebc3942022fe0549aa691b45ff5cc4949a56041b2f424b22f4786eb4374fbc';
+export const pins = { 'runner.ps1': '0f5c23f03e8900b96f0e3c29ea6494af3b510bde3de6b1aefe335f747c6e9590', 'steps.json': '560461adeb84bfb7e614bd29c337b3e72b3363a6c643047fc533b96fc84c4d7a', 'surface.html': 'be82967ae45d36bece4ac4858d6f45d0e90e58d088203b71323b74e6ae5e1067', 'sub-live.json': '4729ca1a25ec09a64349c68c5ccb0eb41b4e9f83e161fb9c4a29b0ce26b948d4' };
 const psBin = '/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe';
 const managedState = '/home/agentsdock/.local/share/LearningCompanion/managed-chatgpt';   // state_dir null: the product's own
-const MAX_BOUND_MS = 900000;
+// Raw provider receipts (thread/turn ids) stay outside the repository and Git: one 0700 folder per run (Lead D8).
+export const rawReceiptsRoot = '/home/agentsdock/.local/state/lc-qa-live';
 // Approvals that cover only AI-disabled runs: never a permission for this real-subscription runner.
 const AI_DISABLED_APPROVALS = ['approved-two-gates-20261002:571427dcdc434c0f820236892925aedf', 'human-bounded-retest-20261008:d41dbbfae11448f7847e26cb54afcd44',
   'human-approve-read-arithmetic:1341e2b5d73b432eaefa988058e79172', 'human-approve-admission-20261008:2dde43ea7f4842619709d034fb8b0534'];
@@ -47,7 +48,7 @@ export function validateLiveAllocation(record, candidate, wrapperHash, now) {
       || record.voice !== false || record.max_native_attempts !== 1 || record.retry !== false || record.restart !== false
       || !equal(record.policy, POLICY_MS) || record.max_real_actions !== 4 || !Number.isInteger(record.real_actions_already_used) || record.real_actions_already_used !== 0
       || record.cleanup_only_after_expiry !== true
-      || !Number.isInteger(record.native_bound_ms) || record.native_bound_ms < candidate.native_worst_case_ms || record.native_bound_ms > MAX_BOUND_MS
+      || record.native_bound_ms !== candidate.native_bound_ms || candidate.native_bound_ms !== 600000 || candidate.native_worst_case_ms > candidate.native_bound_ms
       || typeof record.allocation_id !== 'string' || !/^[A-Za-z0-9._:-]{1,128}$/.test(record.allocation_id)
       || record.approval_scope !== 'real_subscription_nonvoice_four_actions'
       || typeof record.command_approval_ref !== 'string' || record.command_approval_ref.length < 8 || AI_DISABLED_APPROVALS.includes(record.command_approval_ref)
@@ -187,6 +188,7 @@ export async function runLiveCandidate(options, injected = {}) {
     Object.assign(report, judgeMechanics(report));
     // This does not close the runtime display/account lease; QA must explicitly report actual release to Lead.
     io.writeFileSync(join(out, 'run.json'), JSON.stringify(report, null, 2) + '\n');
+    try { io.writeFileSync(join(out, 'publish-allowlist.json'), JSON.stringify(publishAllowlist(io, out), null, 2) + '\n'); } catch { /* run.json says what was collected */ }
   }
   return report;
 }
@@ -221,6 +223,23 @@ export function judgeMechanics(report) {
   };
   return { mechanics: terms, mechanics_passed: Object.values(terms).every(Boolean), passed: Object.values(terms).every(Boolean),
     acceptance: 'NOT_JUDGED: the pixel matchers in evidence are necessary, never sufficient; QA and the Lead read every verbatim text.' };
+}
+
+const RECEIPT_FIELDS = ['request_id', 'input_types', 'text_bytes', 'image_bytes', 'image_sha256', 'submission', 'terminal_status', 'outcome', 'produced_item_types', 'thread_start_count', 'turn_start_count', 'actual_model', 'codex_version', 'codex_sha256', 'explicit_bin_override'];
+/** Only the receipt fields the review needs: never thread_id, turn_id, the executable path or anything else. */
+export function sanitizeReceipts(receipts) {
+  return Object.fromEntries(Object.entries(receipts).map(([rid, r]) => [rid, Object.fromEntries(RECEIPT_FIELDS.filter(k => k in (r ?? {})).map(k => [k, r[k]]))]));
+}
+/**
+ * The files of this run's evidence folder that may go to Git after review: generated, sanitized records only. Raw receipts
+ * are elsewhere; anything not listed here (for example a future private file) is excluded by default.
+ */
+export function publishAllowlist(io, out) {
+  const allowed = [], walk = (dir, rel) => { for (const name of io.readdirSync(dir)) { const full = join(dir, name), r = rel ? `${rel}/${name}` : name;
+    if (io.statSync(full).isDirectory()) walk(full, r);
+    else if (/^(run|ledger|receipts-sanitized|runner-results|connector-watch)\.json(l)?$|^runner\.(stdout|stderr)\.bin$|^captures\/[0-9a-f]+\/(live\.jsonl|asks\/[A-Za-z0-9._-]+\.json)$/.test(r)) allowed.push(r); } };
+  walk(out, '');
+  return { kind: 'qa-live-publish-allowlist/1', files: allowed.sort(), excluded_by_default: 'everything else; raw receipts are outside the repository', review: 'QA and the Lead read each listed file before commit' };
 }
 
 /** This run's own results, records and receipts (a failed copy is reported, never fatal to the report). */
@@ -266,9 +285,10 @@ function collect(io, regularRead, candidate, out, report) {
       const name = `${sha(Buffer.from(rid, 'utf8'))}.json`, file = join(root, launch, name);
       if (io.existsSync(file)) {
         const bytes = regularRead(file);
-        // Private (they hold provider thread/turn ids): kept beside the evidence, not for commit before the Lead decides.
-        io.mkdirSync(join(out, 'private', 'receipts', launch), { recursive: true, mode: 0o700 });
-        io.writeFileSync(join(out, 'private', 'receipts', launch, name), bytes);
+        // Raw (they hold provider thread/turn ids): outside the repository, never in the evidence folder.
+        const raw = join(rawReceiptsRoot, out.split('/').at(-1), 'receipts', launch);
+        io.mkdirSync(raw, { recursive: true, mode: 0o700 });
+        io.writeFileSync(join(raw, name), bytes);
         receipts[rid] = JSON.parse(bytes);
       }
     }
@@ -279,6 +299,8 @@ function collect(io, regularRead, candidate, out, report) {
   report.evidence = evidence({ ledger: report.ledger, liveLines, cards: { action2: read('action2_card'), action3: read('action3_card') }, truthBefore: read('surface_before'), truthAfter: read('surface_changed') });
   report.collect_errors = errors;
   io.writeFileSync(join(out, 'ledger.json'), JSON.stringify(report.ledger, null, 2) + '\n');
+  // Sanitized receipt facts (no thread or turn id, no executable path) for review; the raw files stay outside Git.
+  io.writeFileSync(join(out, 'receipts-sanitized.json'), JSON.stringify(sanitizeReceipts(receipts), null, 2) + '\n');
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

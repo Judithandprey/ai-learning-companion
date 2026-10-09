@@ -1,0 +1,80 @@
+# 35 targeted mutants (the 27 of b8f0d9c, the bound mutant rewritten for the fixed 600 s, and new L1, L2 and D8 mutants), each in a /tmp copy
+# without execution-* folders. CAUGHT: a test fails that does not merely refuse a changed source pin.
+
+transport: not-submitted counted as at provider: CAUGHT
+    - ledger: all four actions counted once each, the whole picture at the provider boundary for each answered one, the Stop fenced
+    - transport: no receipt, another image, no text or image input, or a request not submitted is never the picture at the provider; tools are fla
+transport: text input not required: CAUGHT
+    - transport: no receipt, another image, no text or image input, or a request not submitted is never the picture at the provider; tools are fla
+transport: tools not flagged: CAUGHT
+    - transport: no receipt, another image, no text or image input, or a request not submitted is never the picture at the provider; tools are fla
+fence: later requests ignored: CAUGHT
+    - fence: needs Stop by the user with the request out and settling after it, nothing shown or sent later; otherwise unknown or not fenced
+fence: out at Stop not required: CAUGHT
+    - fence: needs Stop by the user with the request out and settling after it, nothing shown or sent later; otherwise unknown or not fenced
+fence: settling after Stop not required: CAUGHT
+    - fence: needs Stop by the user with the request out and settling after it, nothing shown or sent later; otherwise unknown or not fenced
+fence: actual card ignored: CAUGHT
+    - fence: needs Stop by the user with the request out and settling after it, nothing shown or sent later; otherwise unknown or not fenced
+fence: user Stop not required: CAUGHT
+    - fence: needs Stop by the user with the request out and settling after it, nothing shown or sent later; otherwise unknown or not fenced
+ledger: extra focus not detected: CAUGHT
+    - ledger: a session that ended before an action leaves it and every later one NOT_RUN; extra requests, restarts and a disagreeing app count ar
+ledger: extra typed not detected: CAUGHT
+    - fence: needs Stop by the user with the request out and settling after it, nothing shown or sent later; otherwise unknown or not fenced
+    - ledger: a session that ended before an action leaves it and every later one NOT_RUN; extra requests, restarts and a disagreeing app count ar
+ledger: slot 1 from a failed live_policy: CAUGHT
+    - ledger: unknown and proven not_submitted outcomes count; failed triggers count but are named; a session that never started counts nothing
+ledger: failed trigger not named: CAUGHT
+    - ledger: unknown and proven not_submitted outcomes count; failed triggers count but are named; a session that never started counts nothing
+ledger: app count not cross-checked: CAUGHT
+    - ledger: a session that ended before an action leaves it and every later one NOT_RUN; extra requests, restarts and a disagreeing app count ar
+ledger: spoken requests pass as silent: CAUGHT
+    - ledger: a session that ended before an action leaves it and every later one NOT_RUN; extra requests, restarts and a disagreeing app count ar
+ledger: restart via not_started ignored: CAUGHT
+    - ledger: a session that ended before an action leaves it and every later one NOT_RUN; extra requests, restarts and a disagreeing app count ar
+evidence: earlier AI text not excluded in action 3: CAUGHT
+    - pixel rules: only values new after the change and absent from earlier AI text prove fresh pixels; formatted values are read; a question with
+evidence: formatted numbers not read: CAUGHT
+    - pixel rules: only values new after the change and absent from earlier AI text prove fresh pixels; formatted values are read; a question with
+wrapper: connector admission skipped: CAUGHT
+    - wrapper: with an exact allocation it still refuses at the connector checks before any Windows call, any folder or any process
+wrapper: connector release not required: CAUGHT
+    - wrapper: the mechanical result needs every term, the connector and its children gone, and keeps acceptance NOT_JUDGED
+wrapper: whole picture not required: CAUGHT
+    - wrapper: the mechanical result needs every term, the connector and its children gone, and keeps acceptance NOT_JUDGED
+wrapper: question leaks not required: CAUGHT
+    - wrapper: the mechanical result needs every term, the connector and its children gone, and keeps acceptance NOT_JUDGED
+wrapper: exclusive display not required: CAUGHT
+    - wrapper: only an exact, active live allocation bound to the four-action bounds, no voice, no retry or restart, is accepted
+wrapper: script permission not required: CAUGHT
+    - wrapper: only an exact, active live allocation bound to the four-action bounds, no voice, no retry or restart, is accepted
+wrapper: AI-disabled approvals accepted: CAUGHT
+    - wrapper: only an exact, active live allocation bound to the four-action bounds, no voice, no retry or restart, is accepted
+wrapper: any native bound accepted (D6): CAUGHT
+    - wrapper: only an exact, active live allocation bound to the four-action bounds, no voice, no retry or restart, is accepted
+L1: included-use veto restored: CAUGHT
+    - L1: the actual account_ready step lets ordinary credits, an exhausted included window and an unknown quota through, and stops on a stated sp
+    - every action is bracketed: assigned only while the session is on with the exact count, and a stop leaves the rest NOT_RUN
+L1: spend control ignored: CAUGHT
+    - L1: the actual account_ready step lets ordinary credits, an exhausted included window and an unknown quota through, and stops on a stated sp
+    - every action is bracketed: assigned only while the session is on with the exact count, and a stop leaves the rest NOT_RUN
+L2: a reached Start not counted: CAUGHT
+    - L2: a reached Start whose later records are missing counts the first look as used (unknown); a known pre-Start stop does not
+L2: refused admission counted as reached: CAUGHT
+    - L2: a reached Start whose later records are missing counts the first look as used (unknown); a known pre-Start stop does not
+L2: not_started counted as reached: CAUGHT
+    - L2: a reached Start whose later records are missing counts the first look as used (unknown); a known pre-Start stop does not
+    - ledger: unknown and proven not_submitted outcomes count; failed triggers count but are named; a session that never started counts nothing
+D8: thread id kept in sanitized receipts: CAUGHT
+    - D8: raw receipts are written outside the repository; only sanitized fields and an allowlist of generated files are for Git
+D8: raw receipts inside the repository: CAUGHT
+    - D8: raw receipts are written outside the repository; only sanitized fields and an allowlist of generated files are for Git
+D8: allowlist admits everything: CAUGHT
+    - D8: raw receipts are written outside the repository; only sanitized fields and an allowlist of generated files are for Git
+wrapper: missing watch end counted released: CAUGHT
+    - wrapper: the watch summary sees the connector and every descendant; a missing end or log is unknown, never released
+wrapper: askPathCheck refusal dropped: CAUGHT
+    - wrapper: the connector side refuses a missing or inexact copy, anything running in it, or another codex binary, before any Windows call
+
+35/35 caught by a test other than the pinned-candidate checks
