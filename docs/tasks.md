@@ -170,8 +170,12 @@ an independent watchdog cannot prevent already retained/sent invalid frames.
 Web P0-12 receives `handoff_18b4ff71bb8202171b38c72be18194e1` for bounded
 opt-in capture/send interlocks in apps/windows; QA receives same-task coordination
 `handoff_3c83dc63c604c41bcc77f8ca91fa7406` and retains checker/runner ownership.
-Both deliveries are accepted; execution initially unconfirmed. The eventual
-candidate must pin the changed production build, preserving52be105 evidence.
+Web actual reply `handoff_1b7f16285d35144c7c876d11402e08a8` reports interlock
+implementation under way. Lead decides the bounded main-owned JSONL checker
+interface; Web decision `handoff_65d44351ffdfa6c2126f9f94ab6687f3` and QA binding
+`handoff_bd7d451fa1ab12ebd2e49666fc009394` are accepted, implementation not yet
+delivered. The eventual candidate must pin the changed production build,
+preserving52be105 evidence.
 Real0/4 unchanged, no active resource allocation; next is the corrected candidate
 and changed-boundary independent review, not another completed-diagnostic run.
 Keep normal-band/foreground/16-point/display guards and exact-owned cleanup;

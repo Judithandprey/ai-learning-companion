@@ -179,7 +179,14 @@
         "qa_coordination_message": "handoff_3c83dc63c604c41bcc77f8ca91fa7406",
         "qa_coordination_accepted": true,
         "scope": "source/offline only; new reviewed production package required; no current resource allocation",
-        "implemented": false
+        "implemented": false,
+        "owner_activity_reply": "handoff_1b7f16285d35144c7c876d11402e08a8",
+        "owner_reported_state": "local_state_binding_lifecycle_implementation_under_way",
+        "interface_decision": "docs/verification/lead/live-windows/nonvoice-driver-review/README.md#checker-interface-decision--source-implementation-only",
+        "web_interface_decision_message": "handoff_65d44351ffdfa6c2126f9f94ab6687f3",
+        "qa_interface_binding_message": "handoff_bd7d451fa1ab12ebd2e49666fc009394",
+        "interface_messages_accepted": true,
+        "implementation_delivered": false
       }
     }
   },

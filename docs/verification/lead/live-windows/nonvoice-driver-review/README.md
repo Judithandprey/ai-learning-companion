@@ -172,8 +172,97 @@ unconfirmed; it retains native checker/runner/evidence ownership under
 `tests/e2e/windows` and QA docs, and continues the independent F1/F4–F6 fixes.
 There is one active task per owner, no duplicate implementation.
 
+Actual Web reply `handoff_1b7f16285d35144c7c876d11402e08a8` confirms the local
+state/binding/lifecycle implementation is under way and supplies a checker
+interface proposal. This is observed owner activity, not a completed patch.
+Lead returns the concrete decision in `handoff_65d44351ffdfa6c2126f9f94ab6687f3`
+and gives QA the same interface in `handoff_bd7d451fa1ab12ebd2e49666fc009394`;
+both are accepted, with execution initially unconfirmed. No extra task is created.
+
 The later live candidate must pin the resulting reviewed production build;
 `52be105` and its completed diagnostic remain historical exact evidence, not
 proof for changed bytes. No resource allocation or new native attempt follows
 from source dispatch. Support is idle until the corrected boundary is ready for
 review. Real actions remain 0/4; no additional AI-disabled diagnostic slot exists.
+
+## Checker interface decision — source implementation only
+
+This is the private opt-in test adapter, not a new product wire contract or
+permission to execute it. Existing shared contract versions remain unchanged.
+Web owns the app client and QA the native checker/runner. Their final sources,
+helper/configuration hashes and exact command still require review before a
+resource allocation. All ordinary product and Stop behavior remains covered.
+
+**Activation and trust.** The runner writes one pinned configuration before
+launch and sets `LC_SOURCE_ADMISSION` only for that product process. Main reads
+the file once. Its fields are exactly `format` =
+`lc-windows-source-admission-config/v1`, `checker` (`command`, `args`),
+`ready_ms` and `decision_ms`. Command is an absolute executable; arguments are
+at most 32 fixed strings of at most 4096 characters without NUL/CR/LF. The actual
+QA candidate must use the existing Windows PowerShell and one reviewed frozen
+checker script/arguments, all covered by pins. This is not a renderer-selected
+command, alternate engine or arbitrary command/encoded-command bridge. General
+parser ceilings (ready 1000–120000 ms, decision 100–30000 ms) are not execution
+authority: prepare fixed **10000/5000 ms** initially, revising only with evidence
+and reviewed pins before release. Unset keeps the ordinary path; configured but
+invalid/unavailable refuses Start/checking without fallback.
+
+Main spawns one checker per capture at arm, before `getDisplayMedia`, using
+`shell:false`, hidden window and stdin/stdout pipes; remove `LC_*` from its
+child environment. No command, environment or private path enters public
+evidence. The checker never receives pixel data or instruction authority from
+the captured screen. Sanitized error facts remain available. End closes stdin,
+waits at most 3 seconds, then may signal only the exact directly spawned child;
+there is no descendant/foreign-process termination authority. Unconfirmed exit
+remains unknown. A new Start is explicit, never automatic recovery.
+
+**JSONL protocol.** UTF-8 records, at most 4096 bytes per line. First record is
+exactly `{"format":"lc-source-admission/1","ready":true}` within ready timeout.
+Each request has these fields:
+
+| Field | Meaning |
+| --- | --- |
+| `format` | `lc-source-admission/1` |
+| `id`, `seq` | Unique random 32-lowercase-hex request ID and increasing positive safe-integer sequence |
+| `phase` | `arm`, `pre_acquire`, `post_acquire` or `send` |
+| `capture_id` | Actual 16-hex capture identity |
+| `display` | On arm, `{id,bounds:{x,y,width,height},scale_factor}` from the main-owned display; otherwise null |
+| `sample_seq` | Acquisition sampler invocation, positive safe integer; null on arm |
+| `frame_seq` | Acquired **HeldFrame.seq**, never renumbered AI `LiveContext.frame_seq`; null until post-acquire |
+| `raw_sha256`, `raw_size` | Bitmap RGBA SHA-256 and `{width,height}` after acquisition; null before it |
+| `request_id`, `image_sha256` | On send, actual model request ID and SHA-256 of the exact PNG sent; otherwise null |
+| `sent_at` | ISO timestamp at actual write, not enqueue |
+
+Phase binding is explicit: arm has only display/capture facts. Pre-acquire has
+`sample_seq` but null frame/hash/size. Post-acquire repeats that sample and sets
+`frame_seq` to its acquired HeldFrame.seq, plus raw hash/size. Send names that
+same admitted raw frame and its original acquisition sample, even when reused;
+it adds request ID and actual composed/raw PNG hash. The separately renumbered
+AI-context frame sequence is correlated in main's evidence, not substituted for
+the acquisition identity. Preserve presented-frame age and ink/composition
+lineage. Main checks received PNG bytes as before; this is not independent
+re-decoding of the renderer's trusted bitmap hash.
+
+Reply has exactly all request fields **except `sent_at`**, echoed equal,
+plus `verdict` (`allow`/`deny`) and `reason` (null or at most 300 characters).
+This includes display and raw size. Main keeps the request immutable. Only one
+is outstanding; start its deadline at write, recheck capture/live/request state
+before writing a queued request and after the reply, and bound/cancel queued
+waits. Every checker decision performs fresh full native admission; no cached
+allow. Missing, stale, mismatched, malformed, replayed or extra-key replies,
+unexpected exit/EOF and failed evidence writes latch ordinary whole-capture
+Stop. Intentional disposal and late replies cannot reopen a capture or overwrite
+its original stop reason. Remaining uncertain lifecycle is not a release pass.
+
+Main owns the one-use acquisition ticket, consumes it before awaiting the post
+decision, and verifies admitted raw lineage at every retention, first-look,
+circle and follow-up intake and at send. Late results after Stop cannot publish,
+retain new unapproved content or send. Accepted originals already queued for
+durable storage remain preserved. A refused send gate records not-submitted
+only because the actual connector call was never made; prior out requests retain
+their actual uncertain/submitted status and ordinary cancellation.
+
+Focused implementation checks include acquisition versus AI sequence numbering,
+unchanged-frame follow-up, delayed/coalesced frames and ink lineage, invalid post
+checks, replay/mismatch, Stop while queued/awaiting and ordinary unconfigured
+behavior. These are required source checks, not claims they have already run.
