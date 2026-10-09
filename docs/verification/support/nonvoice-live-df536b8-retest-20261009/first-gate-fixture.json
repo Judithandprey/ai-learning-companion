@@ -1,0 +1,6 @@
+{
+  "exit_code": 1,
+  "script_sha256": "dc5ebd61a0bd4e04542ea7983a4b44ef17dde51b1d459007fcb1a8a4cfa97373",
+  "failure": "The in-memory active-shaped control inherited the template connector commit 52be105, while exported CONNECTOR.commit is 0ff325b; refusal is correct. Use exported CONNECTOR for this positive validator fixture. Production/QA files unchanged.",
+  "earlier_trace_assertions": "20 scenario assertions reached before the gate assertion; no JSON result emitted, not counted as a successful run."
+}

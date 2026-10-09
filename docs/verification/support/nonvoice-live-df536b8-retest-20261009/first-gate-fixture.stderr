@@ -1,0 +1,19 @@
+node:internal/modules/run_main:107
+    triggerUncaughtException(
+    ^
+
+AssertionError [ERR_ASSERTION]: synthetic active-shaped validator control
+
+false !== true
+
+    at gate (file:///home/agentsdock/Projects/learning-companion/wt-support/tests/probes/support/nonvoice_live_df536b8_retest.mjs:132:9)
+    at file:///home/agentsdock/Projects/learning-companion/wt-support/tests/probes/support/nonvoice_live_df536b8_retest.mjs:136:1 {
+  generatedMessage: false,
+  code: 'ERR_ASSERTION',
+  actual: false,
+  expected: true,
+  operator: 'strictEqual',
+  diff: 'simple'
+}
+
+Node.js v24.21.0
