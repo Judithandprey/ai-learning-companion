@@ -21,8 +21,8 @@ import { lookCommand, readLook, releaseOwned, windowsCalls } from './signin_clea
 import { askPathCheck, compareCopy } from './sub_copy.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url)), repo = resolve(here, '../../..');
-export const candidateDir = join(repo, 'docs/verification/qa/p0-13-live-0ff325b/candidate-nonvoice-05');
-export const candidateHash = '5e7fdcd513c355d0f63a4c36e778d0fdc457e550ca781da29c6f8b7901d2aebb';
+export const candidateDir = join(repo, 'docs/verification/qa/p0-13-live-0ff325b/candidate-nonvoice-06');
+export const candidateHash = '288191f78a39ea242a59b867d0831808a3e22c762eff013c65669eed9d05c172';
 export const pins = { 'runner.ps1': '2fbb5eb3c5e734719f6b26fc8066b55626078d3ffdb075d5dc65936326ca2cdb', 'steps.json': '70e89d51c0489a8c9472bf25a8438b08ff493f5be2c59148bc92baf10778874f', 'surface.html': 'be82967ae45d36bece4ac4858d6f45d0e90e58d088203b71323b74e6ae5e1067', 'sub-live.json': '4729ca1a25ec09a64349c68c5ccb0eb41b4e9f83e161fb9c4a29b0ce26b948d4',
   'admission-checker.ps1': '9637db613373ef5ba63bc10753033aedaab90bf749aeaa982fed9b65c91eccf1', 'admission-live.json': '6e86df7d74f52ce54b879d1c14d6d71b7548c69127d0f787a0a1be2fb46d7cc3' };
 const psBin = '/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe';

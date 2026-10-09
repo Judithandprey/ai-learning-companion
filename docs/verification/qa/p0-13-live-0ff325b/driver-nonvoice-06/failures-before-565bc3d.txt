@@ -1,0 +1,76 @@
+# 565bc3d sources (git archive 565bc3d) with the corrected test file and the candidate-nonvoice-06 folder; node v24.21.0 --permission (read-only: the archive and the unused scratch path; no child process, no write)
+✔ the candidate is offline-only, reproduces from the sources, and its scratch is unused (39.60204ms)
+✔ the runner is the reviewed r4 runner byte for byte, apart from the one work-folder name and the source-admission delta (6.059817ms)
+✔ the package pins are the Lead's staged 0ff325b build (81 files, its tree and entry; native helper, Electron 44.5.1 and Edge as in the accepted diagnostic) (0.576956ms)
+✔ the connector configuration is the trusted real one: the exact private 52be105 copy, the pinned codex binary, the product's own state (0.373777ms)
+✔ the steps hold exactly the four released actions, the actual UI Start once, and nothing fake, restarted or signed in (0.747503ms)
+✔ every action is bracketed: assigned only while the session is on with the exact count, and a stop leaves the rest NOT_RUN (0.662921ms)
+✔ the typed requests carry no card value and do not say the cards changed; they select explain, the circle is left at the product's hint (0.337377ms)
+✔ the live surface changes its cards in place: new values never shown before, same page, same geometry, same truth format (12.657117ms)
+✔ ledger: all four actions counted once each, the whole picture at the provider boundary for each answered one, the Stop fenced (5.399056ms)
+✔ ledger: unknown and proven not_submitted outcomes count; failed triggers count but are named; a session that never started counts nothing (0.768023ms)
+✔ ledger: a session that ended before an action leaves it and every later one NOT_RUN; extra requests, restarts and a disagreeing app count are flagged (1.98099ms)
+✔ fence: needs Stop by the user with the request out and settling after it, nothing shown or sent later; otherwise unknown or not fenced (1.286323ms)
+✔ transport: no receipt, another image, no text or image input, or a request not submitted is never the picture at the provider; tools are flagged (0.131903ms)
+✔ pixel rules: only values new after the change and absent from earlier AI text prove fresh pixels; formatted values are read; a question with a value is a leak (1.724388ms)
+✔ wrapper: nothing runs without --execute, a new evidence folder and an independently supplied allocation hash (0.789324ms)
+✔ wrapper: only an exact, active live allocation bound to the four-action bounds, no voice, no retry or restart, is accepted (0.927669ms)
+✔ wrapper: the connector side refuses a missing or inexact copy, anything running in it, or another codex binary, before any Windows call (0.529296ms)
+✔ wrapper: the mechanical result needs every term, the connector and its children gone, and keeps acceptance NOT_JUDGED (1.383233ms)
+✔ wrapper: the watch summary is released only with the whole lifecycle observed; anything less is unknown or left running (0.794784ms)
+✔ wrapper: with an exact allocation it still refuses at the connector checks before any Windows call, any folder or any process (37.42275ms)
+✔ L1: the actual account_ready step lets ordinary credits, an exhausted included window and an unknown quota through, and stops on a stated spend control (8.130939ms)
+✔ L2: a reached Start whose later records are missing counts the first look as used (unknown); a known pre-Start stop does not (1.309051ms)
+✔ D8: raw receipts are written outside the repository; only sanitized fields and an allowlist of generated files are for Git (0.655898ms)
+✔ F1: the spend/workspace veto reads only the bucket the connector applies to the selected model, as 52be105 chatgpt_rpc.py selects it (9.261181ms)
+✔ F4: Support's receipt witness cases fail the mechanics; collection, records, tools, digest and provider turns are judged for every action (2.794861ms)
+✔ F5: the watch must record its own clean start before anything can launch; not ready, it is stopped, a refusal is written and nothing runs (1.930213ms)
+✔ receipt reader: only this run's new launches, real folders and files, the connector format and this request id, checked before any byte is kept (2.444168ms)
+✔ F3 checker: the reviewed admission with exactly four overlay substitutions, the one shared predicate, read-only natives, and the Lead protocol (4.585786ms)
+✔ F3 configuration and runner delta: the frozen checker and Lead timings; LC_SOURCE_ADMISSION only for the product launch; the context after the launch is recorded; the one predicate in the runner point checks (0.665046ms)
+✔ F3 ledger: every possibly sent request needs an admitted send for its exact PNG naming an acquisition admitted before and after; a deny, a gap or an unrecorded send fails (3.88925ms)
+✔ F3 overlay predicate: the pure functions are cut unchanged into the prepared fixture check; every refusal has a negative fixture; read-only native type (not executed) (0.908051ms)
+✔ R1-R3 (Support 5083814): its two controls pass; an unclassified request, unexplained or inconsistent turns, and an ignored or missing phase all fail (3.78519ms)
+✔ R4-R5 (Support 5083814): an exited watcher is not ready; the lifecycle must be ordered; receipt values must be of the writer's bounded types before copy, and only typed values are published (325.058198ms)
+✔ Support c2ee58ae (937788d HOLD): its controls pass; a missing Stop-session link, a foreign capture, a contradictory main verdict and a sends-only main record all fail (2.176164ms)
+✖ Support b93fc60 (df536b8 HOLD P2): QA's checker log holds exactly one end of input, as its last line; an earlier or a second end is not one observed lifecycle (1.581764ms)
+ℹ tests 35
+ℹ suites 0
+ℹ pass 34
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 491.171472
+
+✖ failing tests:
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:1062:1
+✖ Support b93fc60 (df536b8 HOLD P2): QA's checker log holds exactly one end of input, as its last line; an earlier or a second end is not one observed lifecycle (1.581764ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    [
+  +   true,
+  +   true,
+  +   true
+  -   false,
+  -   false,
+  -   false
+    ]
+  
+      at TestContext.<anonymous> (file:///tmp/qa-06-before-k2KW/tests/e2e/windows/test_qa_live_candidate.mjs:1067:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [Array],
+    expected: [Array],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+exit=1

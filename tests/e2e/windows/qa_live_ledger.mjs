@@ -216,11 +216,13 @@ export function sourceAdmission(ledger, checkerLines, displayChoice, mainByCaptu
   const mainAgrees = !!main && main.length > 0 && otherCaptures.length === 0 && main.every(l => ['decision', 'violation', 'checker_end'].includes(l.kind))
     && !main.some(l => l.kind === 'violation') && verdictsConsistent && sameTrace;
   // The checker's lifecycle: main saw this capture's checker start and exit by itself, cleanly (code 0, no signal, not
-  // killed), and QA's own log ends with its end of input after every decision. Missing or unknown cleanup is not released.
+  // killed), and QA's own log holds exactly one end of input, as its last line, after every decision. The checker exits
+  // as soon as it writes it, so an earlier or second end is not one observed lifecycle (Support b93fc60). Missing or
+  // unknown cleanup is not released.
   const ends = main ? main.filter(l => l.kind === 'checker_end') : [];
-  const lastQa = lines.at(-1);
+  const eofs = lines.filter(l => l.event === 'eof'), lastQa = lines.at(-1);
   const checkerReleased = ends.length === 1 && ends[0].spawned === true && ends[0].exit_seen === true && ends[0].killed === false && ends[0].code === 0 && ends[0].signal === null
-    && lastQa?.event === 'eof' && lastQa.requests === decisions.length;
+    && eofs.length === 1 && lastQa === eofs[0] && lastQa.requests === decisions.length;
   const all = lines[0]?.event === 'ready' && !!arm && oneCapture && displayMatches && mainAgrees && ordered && unrecorded.length === 0
     && (firstDeny < 0 || decisions.slice(firstDeny + 1).every(d => d.verdict !== 'allow'))
     && checked.every(r => r.bound !== false);

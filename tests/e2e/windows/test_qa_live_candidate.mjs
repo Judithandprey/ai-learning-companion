@@ -440,7 +440,7 @@ test('wrapper: the watch summary is released only with the whole lifecycle obser
 });
 test('wrapper: with an exact allocation it still refuses at the connector checks before any Windows call, any folder or any process', async () => {
   const realFs = await import('node:fs');
-  const saved = JSON.parse(realFs.readFileSync(new URL('../../../docs/verification/qa/p0-13-live-0ff325b/candidate-nonvoice-05/candidate.json', import.meta.url)));
+  const saved = JSON.parse(realFs.readFileSync(new URL('../../../docs/verification/qa/p0-13-live-0ff325b/candidate-nonvoice-06/candidate.json', import.meta.url)));
   const wrapperHash = sha(realFs.readFileSync(new URL('qa_run_live_candidate.mjs', import.meta.url)));
   const record = { ...goodAllocation(), wrapper_sha256: wrapperHash, native_bound_ms: saved.native_bound_ms,
     native_invocation: { executable: saved.proposed_native_invocation.executable, arguments: saved.proposed_native_invocation.arguments },
@@ -1058,4 +1058,12 @@ test('Support c2ee58ae (937788d HOLD): its controls pass; a missing Stop-session
   Object.assign(mu['0123456789abcdef'].at(-1), { exit_seen: false, code: null, killed: true });
   ur.source_admission = sourceAdmission(ur.ledger, unseen.checker, choice, mu);
   const uj = wrapper.judgeMechanics(ur); assert.deepEqual([uj.mechanics.checker_lifecycle_released, uj.passed], [false, false]);
+});
+test('Support b93fc60 (df536b8 HOLD P2): QA\'s checker log holds exactly one end of input, as its last line; an earlier or a second end is not one observed lifecycle', () => {
+  const released = checker => { const f = supportFixture(), r = supportReport(f);
+    r.source_admission = sourceAdmission(r.ledger, checker(f.checker), choice, mainFrom(f.checker));   // main's record of the unchanged trace
+    const j = wrapper.judgeMechanics(r); return [r.source_admission.checker_released, j.mechanics.checker_lifecycle_released, j.passed]; };
+  assert.deepEqual(released(c => c), [true, true, true]);                                                              // the ordinary terminal end of input
+  assert.deepEqual(released(c => { c.splice(2, 0, { event: 'eof', requests: 1 }); return c; }), [false, false, false]);   // Support's counterexample: an end after ready and arm
+  assert.deepEqual(released(c => [...c, { ...c.at(-1) }]), [false, false, false]);                                      // a second end, same count
 });

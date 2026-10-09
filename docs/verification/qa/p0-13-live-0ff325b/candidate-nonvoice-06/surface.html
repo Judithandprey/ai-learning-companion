@@ -1,0 +1,109 @@
+<!doctype html>
+<html lang="en" translate="no">
+<head>
+<meta charset="utf-8">
+<meta name="google" content="notranslate">
+<title>QA test surface</title>
+<!-- QA-authored, non-sensitive test surface for the managed-subscription ASK acceptance (ADR 0003).
+     Twelve cards, each a colored shape and a 4-digit number, are chosen at random when the page loads and exist only as
+     pixels of the canvas: which number, shape and color a card has is in no file, title, URL, DOM text or attribute.
+     (This file holds only the vocabulary the cards are drawn from, and it is never given to the app.)
+     The cards sit at fixed SCREEN positions (DIP), whatever the window chrome, so the harness's strokes can be planned
+     before the page exists. The truth is handed to the harness once through DevTools (window.__qaSurfaceTruth()) and is
+     never sent to the app.
+     LIVE VARIANT (surface_live.html, the nonvoice live driver only): window.__qaSurfaceChange() draws twelve NEW cards in
+     place, without a reload (a reload would lose the run's Edge title token). Their numbers are fresh random values that
+     differ from every number shown before, so a later answer naming one of them can only have come from the new pixels:
+     earlier AI observations and answers, which the app passes back as history, name only earlier numbers. -->
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #ffffff; }
+  canvas { position: fixed; left: 0; top: 0; display: block; }
+</style>
+</head>
+<body>
+<canvas id="surface" aria-hidden="true"></canvas>
+<script>
+(() => {
+  // Screen layout in DIP (the harness has the same numbers): a 4 x 3 grid, clear of the app's toolbar and ASK card.
+  const GRID = { x: 40, y: 90, cols: 4, rows: 3, w: 190, h: 150, gap: 20 };
+  // No 'circle' and no 'purple': the test ink is a purple pen circle, and an answer that mentions the ink must not be
+  // taken for a card's shape or color. No 'black' either (the digits are black).
+  const SHAPES = ['square', 'triangle', 'star', 'heart', 'diamond'];
+  const COLORS = { red: '#d62728', blue: '#1f5fbf', green: '#1e8e3e', orange: '#f28c00' };
+  const pick = (n) => { const a = new Uint32Array(1); let v; do { crypto.getRandomValues(a); v = a[0]; } while (v >= Math.floor(0x100000000 / n) * n); return v % n; };
+  let generatedAt = new Date().toISOString(); // at load, and again at each change
+  let cards = [], changes = 0;
+  // Every number shown so far (a change never repeats one), and numbers the app's own request metadata holds (display
+  // sizes, the year in its timestamps): an answer naming one of those could have read it from the metadata.
+  const year = new Date().getUTCFullYear();
+  const used = new Set([1280, 1504, 1600, 2560, year, year + 1]);
+  function generate() {
+    const fresh = [];
+    for (let i = 0; i < GRID.cols * GRID.rows; i++) {
+      let number;
+      do { number = 1000 + pick(9000); } while (used.has(number));
+      used.add(number);
+      fresh.push({ index: i, number, shape: SHAPES[pick(SHAPES.length)], color: Object.keys(COLORS)[pick(Object.keys(COLORS).length)],
+                   rect_dip: { x: GRID.x + (i % GRID.cols) * (GRID.w + GRID.gap), y: GRID.y + Math.floor(i / GRID.cols) * (GRID.h + GRID.gap), width: GRID.w, height: GRID.h } });
+    }
+    return fresh;
+  }
+  cards = generate();
+
+  const canvas = document.getElementById('surface');
+  function shape(c, kind, cx, cy, r) {
+    c.beginPath();
+    if (kind === 'square') c.rect(cx - r, cy - r, 2 * r, 2 * r);
+    else if (kind === 'triangle') { c.moveTo(cx, cy - r); c.lineTo(cx + r, cy + r); c.lineTo(cx - r, cy + r); c.closePath(); }
+    else if (kind === 'star') { for (let k = 0; k < 10; k++) { const a = -Math.PI / 2 + (k * Math.PI) / 5, q = k % 2 ? r * 0.42 : r; c[k ? 'lineTo' : 'moveTo'](cx + q * Math.cos(a), cy + q * Math.sin(a)); } c.closePath(); }
+    else if (kind === 'diamond') { c.moveTo(cx, cy - r); c.lineTo(cx + r * 0.78, cy); c.lineTo(cx, cy + r); c.lineTo(cx - r * 0.78, cy); c.closePath(); }
+    else { // heart: two lobes and a point
+      c.moveTo(cx, cy + r); c.bezierCurveTo(cx - r * 1.6, cy - r * 0.1, cx - r * 0.7, cy - r * 1.25, cx, cy - r * 0.35);
+      c.bezierCurveTo(cx + r * 0.7, cy - r * 1.25, cx + r * 1.6, cy - r * 0.1, cx, cy + r); c.closePath();
+    }
+    c.fill();
+  }
+  let offset = null;
+  function draw() {
+    // Where the viewport sits on the screen (DIP): fullscreen gives (0, 0); a maximized app window has a title bar.
+    offset = { x: Math.round(window.screenX + (window.outerWidth - window.innerWidth) / 2), y: Math.round(window.screenY + (window.outerHeight - window.innerHeight)) };
+    if (window.innerWidth === screen.width && window.innerHeight === screen.height) offset = { x: 0, y: 0 };
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = Math.round(window.innerWidth * dpr); canvas.height = Math.round(window.innerHeight * dpr);
+    canvas.style.width = window.innerWidth + 'px'; canvas.style.height = window.innerHeight + 'px';
+    const c = canvas.getContext('2d');
+    c.setTransform(dpr, 0, 0, dpr, 0, 0);
+    c.fillStyle = '#ffffff'; c.fillRect(0, 0, window.innerWidth, window.innerHeight);
+    c.translate(-offset.x, -offset.y); // from here on, coordinates are screen DIP
+    c.fillStyle = '#444444'; c.font = '600 22px "Segoe UI", Arial, sans-serif'; c.textBaseline = 'middle'; c.textAlign = 'left';
+    c.fillText('QA test surface: generated cards, not course content', GRID.x, GRID.y - 34);
+    for (const card of cards) {
+      const r = card.rect_dip;
+      c.fillStyle = '#f4f6f8'; c.fillRect(r.x, r.y, r.width, r.height);
+      c.strokeStyle = '#9aa4ad'; c.lineWidth = 2; c.strokeRect(r.x + 1, r.y + 1, r.width - 2, r.height - 2);
+      c.fillStyle = COLORS[card.color]; shape(c, card.shape, r.x + 50, r.y + r.height / 2, 28);
+      // 34 px digits end near card x 170: about 10 DIP clear of the pen ellipse, which passes at card x 180..183.
+      c.fillStyle = '#111111'; c.font = '700 34px "Segoe UI", Arial, sans-serif'; c.textAlign = 'left';
+      c.fillText(String(card.number), r.x + 92, r.y + r.height / 2 + 2);
+    }
+  }
+  draw();
+  addEventListener('resize', draw);
+  // For the harness only (DevTools): the controlled screen change. Same page, same geometry, new cards; returns the
+  // change count only (the new truth is read through __qaSurfaceTruth, as before).
+  window.__qaSurfaceChange = () => { cards = generate(); generatedAt = new Date().toISOString(); changes += 1; draw(); return changes; };
+  // For the harness only (DevTools): the truth and whether every card is fully inside the viewport at its screen place.
+  window.__qaSurfaceTruth = () => {
+    const last = cards[cards.length - 1].rect_dip;
+    return JSON.stringify({ format: 'qa-subscription-surface/2', generated_at: generatedAt, changes, read_at: new Date().toISOString(), grid: GRID, cards, viewport_offset_dip: offset,
+      viewport: { width: window.innerWidth, height: window.innerHeight, dpr: window.devicePixelRatio, screen: [screen.width, screen.height] },
+      fits: GRID.x - offset.x >= 0 && GRID.y - 60 - offset.y >= 0 && last.x + last.width - offset.x <= window.innerWidth && last.y + last.height - offset.y <= window.innerHeight,
+      // The page is the whole visible display (no title bar, no taskbar): the viewport is the screen.
+      full_screen: window.innerWidth === screen.width && window.innerHeight === screen.height && offset.x === 0 && offset.y === 0,
+      // What the page exposes as text anywhere outside the canvas pixels (must hold none of the random values).
+      dom_text: document.documentElement.innerText, title: document.title, url_has_query: location.search.length > 0 || location.hash.length > 0 });
+  };
+})();
+</script>
+</body>
+</html>
