@@ -1,0 +1,96 @@
+{
+  "folder": "/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-parse-6e7f25d8d917475dbcb4f8c049dc13db",
+  "win_folder": "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-parse-6e7f25d8d917475dbcb4f8c049dc13db",
+  "staged": {
+    "runner.ps1": {
+      "sha256": "2fbb5eb3c5e734719f6b26fc8066b55626078d3ffdb075d5dc65936326ca2cdb"
+    },
+    "admission-checker.ps1": {
+      "sha256": "9637db613373ef5ba63bc10753033aedaab90bf749aeaa982fed9b65c91eccf1"
+    },
+    "cs-00-QaAdmissionMonitor.cs": {
+      "sha256_of_literal": "caee186fa0835a02330c9877eb41b86b1455f98126a736054742819bddeb750e",
+      "first_class": "QaAdmissionMonitor",
+      "in": [
+        "admission-checker.ps1",
+        "runner.ps1"
+      ],
+      "changed_since_candidate_04": false
+    },
+    "cs-01-QaArgv.cs": {
+      "sha256_of_literal": "61e10ba7bd7d49b9e360ead7a7120bfe1fb7de9c092fdb07a4f9acfb11fd9a20",
+      "first_class": "QaArgv",
+      "in": [
+        "runner.ps1"
+      ],
+      "changed_since_candidate_04": false
+    },
+    "cs-02-QaEdgeScan.cs": {
+      "sha256_of_literal": "bccf532ebb7afa449916d956995d610d492558ee017071f6747acf55a22db382",
+      "first_class": "QaEdgeScan",
+      "in": [
+        "admission-checker.ps1",
+        "runner.ps1"
+      ],
+      "changed_since_candidate_04": false
+    },
+    "cs-03-QaOverlayFacts.cs": {
+      "sha256_of_literal": "7a7c27e53f80acaf374083ce406883f8ecccd2c955baf6aa8466ad5221ada3ea",
+      "first_class": "QaOverlayFacts",
+      "in": [
+        "admission-checker.ps1",
+        "runner.ps1"
+      ],
+      "changed_since_candidate_04": true
+    },
+    "cs-04-QaPlacementMetadata.cs": {
+      "sha256_of_literal": "d5f69ab1e91089fe2da9fbd3299311ba51242ddc32b05e5b71d40dd14792e21e",
+      "first_class": "QaPlacementMetadata",
+      "in": [
+        "admission-checker.ps1",
+        "runner.ps1"
+      ],
+      "changed_since_candidate_04": false
+    },
+    "cs-05-QaWin.cs": {
+      "sha256_of_literal": "300879c63d5d78ca9c6df64a2dd9d314fdfb50faf9c97145cf28dc6b6c8caea7",
+      "first_class": "QaWin",
+      "in": [
+        "admission-checker.ps1",
+        "runner.ps1"
+      ],
+      "changed_since_candidate_04": false
+    }
+  },
+  "compiled_now": [
+    "cs-03-QaOverlayFacts.cs"
+  ],
+  "not_compiled_now": {
+    "cs-00-QaAdmissionMonitor.cs": "unchanged since candidate 04, where it compiled (driver-nonvoice-04/parse-compile)",
+    "cs-01-QaArgv.cs": "unchanged since candidate 04, where it compiled (driver-nonvoice-04/parse-compile)",
+    "cs-02-QaEdgeScan.cs": "unchanged since candidate 04, where it compiled (driver-nonvoice-04/parse-compile)",
+    "cs-04-QaPlacementMetadata.cs": "unchanged since candidate 04, where it compiled (driver-nonvoice-04/parse-compile)",
+    "cs-05-QaWin.cs": "unchanged since candidate 04, where it compiled (driver-nonvoice-04/parse-compile)"
+  },
+  "assignment": "Lead handoff_42053bfccd6885bbee9fe5b3ee7a3d23: parse the exact candidate-05 runner and checker and compile their changed literal C# blocks (Parser::ParseFile, Add-Type -OutputAssembly); nothing executed",
+  "command": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe -NoProfile -NonInteractive -Command -   (stdin: check.ps1)",
+  "started_utc": "2026-10-09T10:34:12Z",
+  "exit_code": 0,
+  "result": {
+    "powershell": "5.1.26100.9444",
+    "clr": "4.0.30319.42000",
+    "parse": {
+      "runner.ps1": {
+        "errors": []
+      },
+      "admission-checker.ps1": {
+        "errors": []
+      }
+    },
+    "compile": {
+      "cs-03-QaOverlayFacts.cs": {
+        "compiled": true
+      }
+    }
+  }
+}
