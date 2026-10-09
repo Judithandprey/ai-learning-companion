@@ -1,0 +1,26 @@
+# 9 mutants of the step-9 geometry tolerance; copies exclude execution-* folders. Script geometry-mutants.py (cwd = worktree root, LC_QA_NODE = node).
+
+height term dropped: CAUGHT
+    - attempt 1 (before): its runner hides the script WebClient from the Edge socket lookup in step 9; the new runner has no such case
+    - step 9: the emitted check is the model: the page box is recorded first, each side under one CSS pixel, every other term unchanged
+width term dropped: CAUGHT
+    - attempt 1 (before): its runner hides the script WebClient from the Edge socket lookup in step 9; the new runner has no such case
+    - step 9: the emitted check is the model: the page box is recorded first, each side under one CSS pixel, every other term unchanged
+tolerance one CSS px too wide (-gt): CAUGHT
+    - step 9: the emitted check is the model: the page box is recorded first, each side under one CSS pixel, every other term unchanged
+tolerance fixed at 4 px: CAUGHT
+    - step 9: the emitted check is the model: the page box is recorded first, each side under one CSS pixel, every other term unchanged
+dpi term dropped: CAUGHT
+    - attempt 1 (before): its runner hides the script WebClient from the Edge socket lookup in step 9; the new runner has no such case
+    - step 9: the emitted check is the model: the page box is recorded first, each side under one CSS pixel, every other term unchanged
+centre-x term dropped: CAUGHT
+    - step 9: the emitted check is the model: the page box is recorded first, each side under one CSS pixel, every other term unchanged
+box record dropped: CAUGHT
+    - step 9: the emitted check is the model: the page box is recorded first, each side under one CSS pixel, every other term unchanged
+    - the deltas are exactly the scoped admission, the owned Edge surface identity, the admission points, the placement client area and its tolerance: rever
+box record after the check: CAUGHT
+    - step 9: the emitted check is the model: the page box is recorded first, each side under one CSS pixel, every other term unchanged
+delta not applied: CAUGHT
+    - tests/e2e/windows/test_qa_tts_output_candidate.mjs
+
+9/9 caught beyond the hash pins and the whole-runner comparison

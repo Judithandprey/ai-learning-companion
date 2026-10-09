@@ -10,10 +10,10 @@ import { checkTtsCandidate } from './qa_tts_output_candidate.mjs';
 import { argv, isChild, lookCommand, readLook, releaseOwned, windowsCalls } from './signin_cleanup.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url)), repo = resolve(here, '../../..');
-const candidateDir = join(repo, 'docs/verification/qa/p0-13-tts-52be105/candidate-r3-20261008');
-const candidateHash = '320ba2c1dee4b6eb769beec6fafd2b61b085684eeddc14b335fd28a6f41bbcbc';
-const pins = { 'runner.ps1': '01f35325d8c10cfe0b66cdbfc2cf17486e8deb215d5bec033499df9aa4d42d15',
-  'steps.json': 'b7c5cc0b7c04867c1ac95a9399d24e06809043eb2c84a9300ffe5cce4769edf5',
+const candidateDir = join(repo, 'docs/verification/qa/p0-13-tts-52be105/candidate-r4-20261009');
+const candidateHash = 'f2104545cdc393522de46ab108fa928bfe475e1cab400cf9af3fbfb6ce8c1503';
+const pins = { 'runner.ps1': 'd6640e6c8f24b51dc87feb12f8ce83832c7a6c28c380de8f0b02d1eb644b28c2',
+  'steps.json': '9af8002cbadc799bab4dbf7882b35043b0ac50e3ca620c95f0e76c81684a145b',
   'surface.html': '69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2' };
 const psBin = '/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe';
 const oldApproval = 'approved-two-gates-20261002:571427dcdc434c0f820236892925aedf';

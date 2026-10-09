@@ -1,0 +1,122 @@
+{
+  "kind": "qa-tts-r4-candidate/prepared",
+  "status": "PREPARED_ONLY_NOT_REVIEWED_NOT_AUTHORIZED",
+  "context": "attempt 2 of human-bounded-retest-20261008:d41dbbfa stopped at step 9 (control client vs viewport); lead handoff_4dd40db9 + handoff_fbb48f42",
+  "builds_on": "a3f12b3 (Support 55582e0), attempt-2 record b80c023",
+  "targets_runner_of_attempt_2": "01f35325d8c10cfe0b66cdbfc2cf17486e8deb215d5bec033499df9aa4d42d15",
+  "changes_vs_attempt_2_runner": [
+    "line 1026 -> 1026-1027: control_box recorded before the check; each client side within less than one CSS pixel of viewport x dpr",
+    "work folder"
+  ],
+  "edge_1599_observation": "same HWND 10688924 and same reader (GetWindowRect): 1600 through the step-6 admission, 1599 at step 9 after the product took foreground; cause unresolved; full-surface gates unchanged (may refuse at steps 11-13)",
+  "production_commit": "52be105a148a28e677f83cc4b7077665f2ff372c",
+  "stage_tree_sha256": "531943a83d3572ca9c686c7d8cd62bd88da5b0401b84050487722b8e87a02669",
+  "wrapper_sha256": "153db051aa92a39a5f59859c1d85b107867a6fc6fa1c30eb033692f83ebdbda3",
+  "candidate_sha256": "f2104545cdc393522de46ab108fa928bfe475e1cab400cf9af3fbfb6ce8c1503",
+  "payload_sha256": {
+    "runner.ps1": "d6640e6c8f24b51dc87feb12f8ce83832c7a6c28c380de8f0b02d1eb644b28c2",
+    "steps.json": "9af8002cbadc799bab4dbf7882b35043b0ac50e3ca620c95f0e76c81684a145b",
+    "surface.html": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2"
+  },
+  "source_files_pinned_by_candidate": {
+    "qa_tts_output_candidate.mjs": "02fd39d06c29eb89d60ed113bb13e97726cc503a2e9678da713a3422b3f6cf83",
+    "qa_tts_stage_check.py": "9e0a8257f740ee6d7e8924ac848de2fc7ddfd9b7621967e8a7f67c1c518b810f",
+    "qa_live_stage_check.py": "8bdd042b426c0784500375a41fe874e41b80186a6a8dddcc1d544213abd8c791",
+    "qa_visible_candidate.mjs": "9df43a98f64c67559029d31bc41573db4df4df94341ef48845687987b5460410",
+    "qa_edge_placement.ps1": "e527a59e63f6823adc9aaa1b5d9619661d8299769985ae1a0bf108749c2535bb",
+    "qa_display_admission.ps1": "b4f586b7c987f533f318eb72ebffe318482ed2c2aa7f7f720574147071747590",
+    "qa-electron-runner.ps1": "1a0dfc3f178a1d6f59233c2a7d6a836ce68b18887affd2f6431c2d4ef5c48218",
+    "signin_cleanup.mjs": "efa06295262ea27006769e0dea363051fbd6401f4c810d2049db5937ee939b2b",
+    "qa_visible_drag.mjs": "fa7491499aad6c289793fec195a11993b3d102415347a7251e82592362940d1e",
+    "surface.html": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2"
+  },
+  "reviewed_emitted_blocks_sha256": {
+    "admission_listing": "8669891a7eae6e4f3d641dee6ec2320390a78c36c2d8b0f2cde540480eb7ed50",
+    "admission_guard": "1222e15da6e564ccda5fbf5d49c11c841c2cd8c7d0a51bfc3836715a1b6c8287",
+    "edge_socket": "9ef77d2c3110b3fbc110d9062243a954e8c991c789e405d201eab4d7e9ec6e9c",
+    "edge_lookup": "0107b4da53eb342c627f9462a4603aec566e55fe67e22b227706030a743bea0b",
+    "edge_bind": "fb8a41b80ea87ef4c7050ebcdc341bbc2f25f68f3e5154c70216440c02b7686b",
+    "edge_fullscreen": "27aaa0bc0b7b321f5e3e94dab17a8ff3062475fa9d6f413ec3d751259efa48ee",
+    "admission_points_line": "d37acc4bd1f07ce53f2e2dcd0c7918d4a6066ed5d568777d462786c5e0baa1e3",
+    "placement_client_lines": "d30e56a28b09cbd6ab1cf87a08946c3b3bb1476ee2672a7bfa8166a927b9e34e",
+    "placement_geometry_lines": "b231e245241d45309af3f304b6024971134a6be5a94241f1ec7c9f9691226f48"
+  },
+  "launch_identity_for_allocation": {
+    "source": "52be105a148a28e677f83cc4b7077665f2ff372c",
+    "stage": "/mnt/c/Users/ROG/AppData/Local/Temp/lc-windows-tts-52be105",
+    "tree": "531943a83d3572ca9c686c7d8cd62bd88da5b0401b84050487722b8e87a02669",
+    "work": "/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-tts-output-27f0531f6f574cf2b67b1f650525e89d",
+    "electron": "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-electron-44.5.1-win32-x64\\electron.exe",
+    "edge": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+    "appPort": 43123,
+    "edgePort": 45123
+  },
+  "native_invocation_for_allocation": {
+    "executable": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "arguments": [
+      "-NoProfile",
+      "-NonInteractive",
+      "-ExecutionPolicy",
+      "RemoteSigned",
+      "-File",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-tts-output-27f0531f6f574cf2b67b1f650525e89d\\runner.ps1",
+      "-Electron",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-electron-44.5.1-win32-x64\\electron.exe",
+      "-Stage",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-windows-tts-52be105",
+      "-UserData",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-tts-output-27f0531f6f574cf2b67b1f650525e89d\\userdata",
+      "-StepsFile",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-tts-output-27f0531f6f574cf2b67b1f650525e89d\\steps.json",
+      "-OutDir",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-tts-output-27f0531f6f574cf2b67b1f650525e89d\\out",
+      "-Edge",
+      "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+      "-AppTemp",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-tts-output-27f0531f6f574cf2b67b1f650525e89d\\apptemp"
+    ]
+  },
+  "new_work_folder_existed_at_preparation": false,
+  "tests": {
+    "test_qa_run_tts_candidate.mjs": {
+      "sha256": "ba4e4b9fe7b68b1fce7bc2bc3d07587a8f8e5181987c7e62fc8ddf52628128ec",
+      "pass": 54,
+      "fail": 0,
+      "child_process_permission": "withheld"
+    },
+    "test_qa_tts_output_candidate.mjs": {
+      "sha256": "802e61239beea45d9958798fa282c5e3f33ada2cfc328f99867d69d872f734a2",
+      "pass": 50,
+      "fail": 0
+    }
+  },
+  "mutants": {
+    "geometry": "9/9",
+    "r3_fixes": "12/12",
+    "edge_identity_r1_r3": "28/28"
+  },
+  "powershell_check": {
+    "authorization_type": "human-approve-read-arithmetic:1341e2b5 (arithmetic + Parser.ParseFile only)",
+    "version": "5.1.26100.9444",
+    "result": "old line refuses attempt-2 client for innerHeight 684/685; new passes both, refuses 683/686/width 446/centre outside; r4 runner 0 parse errors"
+  },
+  "logs": {
+    "generator-checks.txt": "243aea0bd458ab84bba0f685053057629c91f495d300fde2597b55e373331b3c",
+    "wrapper-checks.txt": "a40cf841d1606781e0056547f3e5ac115cf1ab9a2281f8030473fedf8cb8087f",
+    "candidate-check.json": "d6d3286febee920f8cc975475723616a97acbb6fd055cb50fe05e6e28a50bfa4",
+    "geometry-arith-parse-check.ps1": "f39cbe2b089e56249eb8ed026052b6affeba93a80f342161b590323842c4266c",
+    "geometry-arith-parse-check.out.json": "d1f9c565f3b1ff81ca92bdd9588aa699b19168d3dc01afc6f92be0fc0d779169",
+    "geometry-mutants.txt": "c1056794966b19b4c466cfb6b064fa2a266025277c50e858ce0c458c040d4638",
+    "geometry-mutants.py": "a415ab24acf9db887e7acccdf9ff1703967f6f8ac45d7c9efeb24d2453dc4f3c",
+    "r3-mutants.txt": "4fe07dde86db1b05f4b34d017afcb0995484574fc5bfe397cc476a6cd205eb4a",
+    "r3-mutants.py": "d1b064fec2db4eb2ee80d7d8fb64ff13bcc934ae99dfb8278b046f269d526112",
+    "rule-mutants-r1-r3.txt": "03c524e0ac5bbad419311324c8db4ac45fe8997118589f2790b144344a631a7c",
+    "rule-mutants-r1-r3.py": "de6bd8cd9c72a384e76b7cef1d734fe3d298fbb94fa47045ce68828162964393"
+  },
+  "execution": {
+    "windows_calls": "PowerShell arithmetic/parse only",
+    "native_attempts": 0,
+    "provider_attempts": 0,
+    "display_allocation": "NONE"
+  }
+}

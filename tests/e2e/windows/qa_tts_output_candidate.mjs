@@ -539,6 +539,39 @@ export function revertPlacementClient(runner) {
   if (runner.includes('$clientArea')) throw Error('renamed placement client area duplicated');
   return runner;
 }
+// PLACEMENT CLIENT/VIEWPORT TOLERANCE (this TTS candidate only; qa_edge_placement.ps1 and its other callers are unchanged).
+// Attempt 2 (execution-bounded-20261008-02) stopped at step 9 on "owned control client and browser geometry disagree".
+// The product's control window is 460 x 720 DIP with a standard frame; at 192 dpi its client area was 894 x 1369 px,
+// i.e. 447 x 684.5 DIP. The check required each client side to EQUAL innerWidth/innerHeight x devicePixelRatio. The DPR
+// check before it passed (2), and innerHeight is an integer, so an odd 1369 can never equal it: the height comparison
+// failed. Windows frames can leave such an odd physical size. Each side may now differ from viewport x dpr by LESS THAN
+// ONE CSS PIXEL (fewer than dpr physical px: 0 or 1 at dpr 2); dpi 192, dpr 2, the option centre inside the viewport,
+// the root window at the computed point, and the unchanged client rectangle are all still required. The page's
+// viewport and option box are now recorded in the step (control_box) before the check, so a refusal shows both sides.
+const placementGeometryHead = String.raw`  if ($clientArea[4] -ne 192 -or $clientArea[2] - $clientArea[0] -ne $box.viewport[0] * $box.dpr -or $clientArea[3] - $clientArea[1] -ne $box.viewport[1] * $box.dpr -or $box.x -le 0 -or $box.x -ge $box.viewport[0] -or $box.y -le 0 -or $box.y -ge $box.viewport[1]) { throw 'owned control client and browser geometry disagree' }`;
+const placementGeometryFixed = String.raw`  $entry.control_box = [ordered]@{ viewport = @($box.viewport); dpr = $box.dpr; x = $box.x; y = $box.y; width = $box.width; height = $box.height; shown = $box.shown }
+  if ($clientArea[4] -ne 192 -or [Math]::Abs(($clientArea[2] - $clientArea[0]) - $box.viewport[0] * $box.dpr) -ge $box.dpr -or [Math]::Abs(($clientArea[3] - $clientArea[1]) - $box.viewport[1] * $box.dpr) -ge $box.dpr -or $box.x -le 0 -or $box.x -ge $box.viewport[0] -or $box.y -le 0 -or $box.y -ge $box.viewport[1]) { throw 'owned control client and browser geometry disagree' }`;
+/** The emitted control-box record and tolerant check, for the reviewed-hash pin in the focused test. */
+export const placementGeometryBlock = () => placementGeometryFixed;
+export function applyPlacementGeometry(runner) {
+  if (runner.includes('$entry.control_box =')) throw Error('placement geometry tolerance already present');
+  if (runner.split(placementGeometryHead).length !== 2) throw Error('runner placement geometry check changed; substitution refused');
+  return runner.replace(placementGeometryHead, () => placementGeometryFixed);
+}
+export function revertPlacementGeometry(runner) {
+  if (runner.split(placementGeometryFixed).length !== 2) throw Error('placement geometry tolerance missing or changed');
+  runner = runner.replace(placementGeometryFixed, () => placementGeometryHead);
+  if (runner.includes('$entry.control_box =')) throw Error('placement geometry tolerance duplicated');
+  return runner;
+}
+/** A model of the placement geometry rule (old: exact; new: under one CSS pixel per side), only for the offline tests. */
+export function controlGeometryModel({ client, box }, rule = 'new') {
+  const [x0, y0, x1, y1, dpi] = client, w = x1 - x0, h = y1 - y0;
+  const side = (px, css) => rule === 'old' ? px === css * box.dpr : Math.abs(px - css * box.dpr) < box.dpr;
+  if (!box.shown || box.dpr !== 2) throw Error('owned display-option geometry unavailable');
+  if (dpi !== 192 || !side(w, box.viewport[0]) || !side(h, box.viewport[1]) || box.x <= 0 || box.x >= box.viewport[0] || box.y <= 0 || box.y >= box.viewport[1]) throw Error('owned control client and browser geometry disagree');
+  return [x0 + Math.round(box.x * box.dpr), y0 + Math.round(box.y * box.dpr)];
+}
 /**
  * Models of the emitted rule, only for the offline tests: the native PowerShell cannot run on this host. `windows` are
  * top-level windows in z-order: { handle, pid, visible, title } where `title: null` stands for a caption that cannot be
@@ -632,9 +665,9 @@ export function edgeRaiseModel(state, action = 'raise') {
 }
 export function assertReviewedPlacement(ctx, built) {
   // Only the literal, isolated Edge profile, the scoped launch admission, the owned Edge surface identity, the
-  // parenthesized admission points and the renamed placement client area change in the emitted runner. The previous
-  // parse/compile receipt applies to its saved bytes, not this new file.
-  if (sha(revertScopedAdmission(revertEdgeIdentity(revertAdmissionPoints(revertPlacementClient(built.runner))), ctx).replaceAll(ctx.profile, priorCandidate.profile)) !== priorRunnerHash || built.steps.length !== 32) throw Error('reviewed placement runner/steps changed');
+  // parenthesized admission points, the renamed placement client area and its sub-pixel tolerance change in the emitted
+  // runner. The previous parse/compile receipt applies to its saved bytes, not this new file.
+  if (sha(revertScopedAdmission(revertEdgeIdentity(revertAdmissionPoints(revertPlacementClient(revertPlacementGeometry(built.runner)))), ctx).replaceAll(ctx.profile, priorCandidate.profile)) !== priorRunnerHash || built.steps.length !== 32) throw Error('reviewed placement runner/steps changed');
   if (built.steps[0].edgeStart !== ctx.surfaceUrl || built.steps[0].profile !== ctx.profile) throw Error('owned Edge first step changed');
   const normalized = structuredClone(built.steps);
   normalized[0].edgeStart = priorCandidate.surfaceUrl;
@@ -643,7 +676,7 @@ export function assertReviewedPlacement(ctx, built) {
 }
 function payloadFor(ctx) {
   const built = buildVisibleCandidate(ctx);
-  built.runner = applyPlacementClient(applyAdmissionPoints(applyEdgeIdentity(applyScopedAdmission(built.runner, ctx))));
+  built.runner = applyPlacementGeometry(applyPlacementClient(applyAdmissionPoints(applyEdgeIdentity(applyScopedAdmission(built.runner, ctx)))));
   assertReviewedPlacement(ctx, built);
   return { 'runner.ps1': built.runner, 'steps.json': JSON.stringify(built.steps, null, 2) + '\n', 'surface.html': readFileSync(join(here, 'surface.html')) };
 }
@@ -658,7 +691,7 @@ export function prepareTtsCandidate(work = stage.replace(/lc-windows-tts-52be105
     files: Object.fromEntries(Object.entries(payload).map(([n, bytes]) => [n, sha(bytes)])),
     prior_placement_runner_sha256: priorRunnerHash, prior_placement_descriptor_sha256: sha(priorCandidateBytes),
     prior_tts_candidate_sha256: firstTtsCandidateHash,
-    runner_delta: 'literal isolated Edge profile; the start-up Foreign-Electron listing and refusal replaced by a launch admission scoped to this run; the owned Edge window bound to the generated surface by a title token set through its verified DevTools target, the bound page checked again before every window action, unknown captions refused, and the receipt confined to the owned processes; the 16 points of the product-launch admission computed with each coordinate parenthesized (in PowerShell the comma binds before arithmetic); the product placement client area renamed so it no longer hides the script WebClient from the Edge lookup',
+    runner_delta: 'literal isolated Edge profile; the start-up Foreign-Electron listing and refusal replaced by a launch admission scoped to this run; the owned Edge window bound to the generated surface by a title token set through its verified DevTools target, the bound page checked again before every window action, unknown captions refused, and the receipt confined to the owned processes; the 16 points of the product-launch admission computed with each coordinate parenthesized (in PowerShell the comma binds before arithmetic); the product placement client area renamed so it no longer hides the script WebClient from the Edge lookup; each control client side allowed to differ from viewport x dpr by less than one CSS pixel, with the page box recorded',
     source_files: Object.fromEntries(sourceNames.map(n => [n, sha(readFileSync(join(here, n)))])),
     app_entry: { executable: electron, app_arguments: [win(stage)], package_main: 'dist/apps/windows/src/main/main.js', main_sha256: entry, native_helper_sha256: helper, electron_sha256: runtime },
     proposed_native_invocation: { executable: String.raw`C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`, arguments: ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'RemoteSigned', ...fileArgs], status: 'NOT_ALLOCATED_NOT_EXECUTED', persistent_policy_changes: false },

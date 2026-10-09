@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import test from 'node:test';
 import { createHash } from 'node:crypto';
-import { admissionPointsBlock, applyAdmissionPoints, applyEdgeIdentity, applyPlacementClient, applyScopedAdmission, assertReviewedPlacement, checkTtsCandidate, edgeBindGeometryModel, edgeIdentityBlocks, edgeLookupModel, edgePageModel, edgeRaiseModel, edgeReceiptModel, edgeScanModel, edgeSurfaceModel, edgeTargetModel, placementClientBlock, prepareTtsCandidate, revertAdmissionPoints, revertEdgeIdentity, revertPlacementClient, revertScopedAdmission, scopedAdmissionBlocks } from './qa_tts_output_candidate.mjs';
+import { admissionPointsBlock, applyAdmissionPoints, applyEdgeIdentity, applyPlacementClient, applyPlacementGeometry, applyScopedAdmission, controlGeometryModel, assertReviewedPlacement, checkTtsCandidate, edgeBindGeometryModel, edgeIdentityBlocks, edgeLookupModel, edgePageModel, edgeRaiseModel, edgeReceiptModel, edgeScanModel, edgeSurfaceModel, edgeTargetModel, placementClientBlock, placementGeometryBlock, prepareTtsCandidate, revertAdmissionPoints, revertEdgeIdentity, revertPlacementClient, revertPlacementGeometry, revertScopedAdmission, scopedAdmissionBlocks } from './qa_tts_output_candidate.mjs';
 import vm from 'node:vm';
 import { buildVisibleCandidate } from './qa_visible_candidate.mjs';
 
@@ -106,10 +106,12 @@ test('the controlled-surface gates and the owned-only termination paths of the r
   assert.deepEqual(runner.match(/Stop-Process[^\n]*/g), ['Stop-Process -Id $script:app.Id -Force -ErrorAction SilentlyContinue']);   // the owned app only (endHungApp, not among the 32 steps)
   assert.equal(/taskkill|\.Kill\(\)|Get-Process[^\n]*\| *Stop/.test(runner), false);
 });
-test('the deltas are exactly the scoped admission, the owned Edge surface identity, the admission points and the placement client area: reverting all gives the reviewed runner; each applies once', () => {
+test('the deltas are exactly the scoped admission, the owned Edge surface identity, the admission points, the placement client area and its tolerance: reverting all gives the reviewed runner; each applies once', () => {
   const built = buildVisibleCandidate(ctx);
-  assert.equal(applyPlacementClient(applyAdmissionPoints(applyEdgeIdentity(applyScopedAdmission(built.runner, ctx)))), runner);
-  assert.equal(revertScopedAdmission(revertEdgeIdentity(revertAdmissionPoints(revertPlacementClient(runner))), ctx), built.runner);
+  assert.equal(applyPlacementGeometry(applyPlacementClient(applyAdmissionPoints(applyEdgeIdentity(applyScopedAdmission(built.runner, ctx))))), runner);
+  assert.equal(revertScopedAdmission(revertEdgeIdentity(revertAdmissionPoints(revertPlacementClient(revertPlacementGeometry(runner)))), ctx), built.runner);
+  assert.throws(() => applyPlacementGeometry(runner), /already present/);
+  assert.throws(() => revertPlacementGeometry(revertPlacementGeometry(runner)), /missing or changed/);
   assert.throws(() => applyAdmissionPoints(runner), /already present/);
   assert.throws(() => applyPlacementClient(runner), /already present/);
   assert.throws(() => revertPlacementClient(revertPlacementClient(runner)), /missing or changed/);
@@ -491,10 +493,11 @@ test('attempt 1 (before): its runner has exactly one comma-precedence hazard, th
   assert.equal(shared.split('\n').filter(l => l === POINTS_OLD).length, 1);                                        // the shared helper is unchanged
 });
 const CLIENT_OLD = placementClientBlock().replaceAll('$clientArea', '$client');
-test('the new runner differs from the runner that ran as attempt 1 only in the point-list line, the placement client-area name and its work folder', () => {
+test('the new runner differs from the runner that ran as attempt 1 only in the point-list line, the placement client-area name, its tolerance and its work folder', () => {
   const work = base.manifest.work.split('/').pop();
   assert.equal(attempt1Runner.split(CLIENT_OLD).length, 2);
-  assert.equal(attempt1Runner.replaceAll('lc-qa-tts-output-77fadf1af4554e9dbd361e200b896aaa', work).replace(POINTS_OLD, POINTS_NEW).replace(CLIENT_OLD, placementClientBlock()), runner);
+  const geometryOld = placementClientBlock().split('\n')[1];
+  assert.equal(attempt1Runner.replaceAll('lc-qa-tts-output-77fadf1af4554e9dbd361e200b896aaa', work).replace(POINTS_OLD, POINTS_NEW).replace(CLIENT_OLD, placementClientBlock()).replace(geometryOld, placementGeometryBlock()), runner);
   assert.equal(runner.split('\n').filter(l => l === POINTS_NEW).length, 1);
   assert.equal(runner.includes(POINTS_OLD), false);
   const admission = runner.slice(runner.indexOf('function Assert-QaSurfaceAdmission('), runner.indexOf('\n# Candidate-only, non-pixel window metadata.'));
@@ -628,4 +631,47 @@ test('attempt 1 (before): its runner hides the script WebClient from the Edge so
   assert.equal(/\$client\b(?!Area)/.test(after), false);                                                             // no unqualified $client left in it
   assert.ok(after.includes('  $clientArea = $entry.control_client') && after.includes('$point = @(($clientArea[0] + [int][Math]::Round($box.x * $box.dpr)), ($clientArea[1] + [int][Math]::Round($box.y * $box.dpr)))'));
   assert.equal(runner.split('$clientArea').length - 1, placementClientBlock().split('$clientArea').length - 1);      // only in the renamed lines
+});
+
+// ---- step 9: the control window's client area against the page viewport (attempt 2 stopped here) ----
+const attempt2Runner = readFileSync(new URL('../../../docs/verification/qa/p0-13-tts-52be105/candidate-r3-20261008/runner.ps1', import.meta.url), 'utf8');
+assert.equal(createHash('sha256').update(attempt2Runner).digest('hex'), '01f35325d8c10cfe0b66cdbfc2cf17486e8deb215d5bec033499df9aa4d42d15');   // ran as attempt 2
+const ATTEMPT2_CLIENT = [833, 90, 1727, 1459, 192];   // saved by attempt 2 (execution-bounded-20261008-02, step 9 control_client)
+const option = (viewport, x = 223.5, y = 300) => ({ viewport, dpr: 2, x, y, width: 400, height: 60, shown: true });
+test('step 9 before/after (model): attempt 2 client area 894 x 1369 at dpr 2 cannot pass the exact rule for any integer innerHeight; under one CSS pixel it passes', () => {
+  for (const h of [684, 685]) {
+    assert.throws(() => controlGeometryModel({ client: ATTEMPT2_CLIENT, box: option([447, h]) }, 'old'), /geometry disagree/);   // before: refused
+    assert.deepEqual(controlGeometryModel({ client: ATTEMPT2_CLIENT, box: option([447, h]) }), [833 + 447, 90 + 600]);         // after: same point
+  }
+  for (let h = 600; h < 800; h++) assert.throws(() => controlGeometryModel({ client: ATTEMPT2_CLIENT, box: option([447, h]) }, 'old'));   // no integer works
+  // Still refused: a whole CSS pixel or more off, another dpi or dpr, the option centre outside, the option hidden.
+  for (const [client, box, why] of [
+    [ATTEMPT2_CLIENT, option([446, 684]), /geometry disagree/], [ATTEMPT2_CLIENT, option([447, 683]), /geometry disagree/], [ATTEMPT2_CLIENT, option([447, 686]), /geometry disagree/],
+    [[833, 90, 1727, 1459, 144], option([447, 684]), /geometry disagree/], [ATTEMPT2_CLIENT, { ...option([447, 684]), dpr: 1.5 }, /unavailable/],
+    [ATTEMPT2_CLIENT, option([447, 684], 0), /geometry disagree/], [ATTEMPT2_CLIENT, option([447, 684], 447), /geometry disagree/], [ATTEMPT2_CLIENT, option([447, 684], 100, 684), /geometry disagree/],
+    [ATTEMPT2_CLIENT, { ...option([447, 684]), shown: false }, /unavailable/]]) assert.throws(() => controlGeometryModel({ client, box }), why);
+  assert.deepEqual(controlGeometryModel({ client: [833, 90, 1727, 1458, 192], box: option([447, 684]) }), [1280, 690]);       // an exact client still passes
+});
+test('step 9: the emitted check is the model: the page box is recorded first, each side under one CSS pixel, every other term unchanged', () => {
+  const old = attempt2Runner.split('\n')[1025];
+  assert.ok(old.startsWith('  if ($clientArea[4] -ne 192 -or $clientArea[2] - $clientArea[0] -ne $box.viewport[0] * $box.dpr'));
+  const [record, check] = placementGeometryBlock().split('\n');
+  assert.equal(runner.split('\n').filter(l => l === record).length, 1);
+  assert.equal(runner.split('\n').filter(l => l === check).length, 1);
+  assert.equal(runner.includes(old), false);
+  for (const part of ['$clientArea[4] -ne 192', '[Math]::Abs(($clientArea[2] - $clientArea[0]) - $box.viewport[0] * $box.dpr) -ge $box.dpr',
+    '[Math]::Abs(($clientArea[3] - $clientArea[1]) - $box.viewport[1] * $box.dpr) -ge $box.dpr', '$box.x -le 0', '$box.x -ge $box.viewport[0]', '$box.y -le 0', '$box.y -ge $box.viewport[1]',
+    "{ throw 'owned control client and browser geometry disagree' }"]) assert.ok(check.includes(part), part);
+  // Every non-size term of the old line is kept verbatim.
+  for (const term of old.slice(old.indexOf('(') + 1, old.lastIndexOf(') {')).split(' -or ').filter(t => !t.includes('$box.viewport[0] * $box.dpr') && !t.includes('$box.viewport[1] * $box.dpr'))) assert.ok(check.includes(term), term);
+  for (const k of ['viewport = @($box.viewport)', 'dpr = $box.dpr', 'x = $box.x', 'y = $box.y', 'width = $box.width', 'height = $box.height', 'shown = $box.shown']) assert.ok(record.includes(k), k);
+  const fn = runner.slice(runner.indexOf('function Assert-QaProductPlacement('), runner.indexOf('\n}\n', runner.indexOf('function Assert-QaProductPlacement(')));
+  let at = -1;
+  for (const part of ["if (-not $box.shown -or $box.dpr -ne 2) { throw 'owned display-option geometry unavailable' }", '  $clientArea = $entry.control_client', record, check,
+    '$point = @(($clientArea[0] + [int][Math]::Round($box.x * $box.dpr)), ($clientArea[1] + [int][Math]::Round($box.y * $box.dpr)))',
+    "if ($entry.point_window.handle -ne $control.ToInt64().ToString()) { throw 'owned display option is covered at its centre' }",
+    "if (($entry.control_client -join ',') -ne ([QaPlacementNative]::ClientBounds($control) -join ',')) { throw 'owned control client geometry changed during point checks' }"]) { const k = fn.indexOf(part, at + 1); assert.ok(k > at, part); at = k; }
+  assert.deepEqual(commaArithmeticHazards(runner), []);
+  assert.deepEqual(scopeShadowHazards(runner), []);
+  assert.equal(createHash('sha256').update(placementGeometryBlock()).digest('hex'), 'b231e245241d45309af3f304b6024971134a6be5a94241f1ec7c9f9691226f48');
 });

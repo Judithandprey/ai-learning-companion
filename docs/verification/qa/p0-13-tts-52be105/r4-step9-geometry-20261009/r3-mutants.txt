@@ -1,0 +1,32 @@
+# The 12 r3 fix mutants rerun on the r4 generator (apply-chain anchors adapted to the added geometry delta). Script r3-mutants.py.
+
+only x parenthesized (y still beside the comma): CAUGHT
+    - attempt 1 (before): its runner has exactly one comma-precedence hazard, the admission point list; the new runner has none
+    - step 9: the emitted check is the model: the page box is recorded first, each side under one CSS pixel, every other term unchanged
+    - the 16 admission points, computed from the emitted coordinates, are exactly the on-top points that passed on the display
+only y parenthesized: CAUGHT
+    - attempt 1 (before): its runner has exactly one comma-precedence hazard, the admission point list; the new runner has none
+    - step 9: the emitted check is the model: the page box is recorded first, each side under one CSS pixel, every other term unchanged
+    - the 16 admission points, computed from the emitted coordinates, are exactly the on-top points that passed on the display
+scale dropped on y: CAUGHT
+    - the 16 admission points, computed from the emitted coordinates, are exactly the on-top points that passed on the display
+column count 3 instead of 4: CAUGHT
+    - the 16 admission points, computed from the emitted coordinates, are exactly the on-top points that passed on the display
+x and y swapped: CAUGHT
+    - the 16 admission points, computed from the emitted coordinates, are exactly the on-top points that passed on the display
+card centre offset 95 -> 90: CAUGHT
+    - the 16 admission points, computed from the emitted coordinates, are exactly the on-top points that passed on the display
+one array of three values: CAUGHT
+    - the 16 admission points, computed from the emitted coordinates, are exactly the on-top points that passed on the display
+a corner dropped [in qa_display_admission.ps1]: CAUGHT
+    - tests/e2e/windows/test_qa_tts_output_candidate.mjs
+client area: only its first line renamed: CAUGHT
+    - tests/e2e/windows/test_qa_tts_output_candidate.mjs
+client area: renamed to a different name: CAUGHT
+    - tests/e2e/windows/test_qa_tts_output_candidate.mjs
+client area: delta not applied: CAUGHT
+    - tests/e2e/windows/test_qa_tts_output_candidate.mjs
+delta not applied (old line emitted): CAUGHT
+    - tests/e2e/windows/test_qa_tts_output_candidate.mjs
+
+12/12 caught beyond the hash pins and the whole-runner comparison

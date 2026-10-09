@@ -1,0 +1,43 @@
+{
+    "powershell":  "5.1.26100.9444",
+    "cases":  {
+                  "h684":  {
+                               "old":  "refused: owned control client and browser geometry disagree",
+                               "new":  "pass {\"viewport\":[447,684],\"dpr\":2,\"x\":223.5,\"y\":300,\"width\":400,\"height\":60,\"shown\":true}"
+                           },
+                  "h685":  {
+                               "old":  "refused: owned control client and browser geometry disagree",
+                               "new":  "pass {\"viewport\":[447,685],\"dpr\":2,\"x\":223.5,\"y\":300,\"width\":400,\"height\":60,\"shown\":true}"
+                           },
+                  "h683":  {
+                               "old":  "refused: owned control client and browser geometry disagree",
+                               "new":  "refused: owned control client and browser geometry disagree {\"viewport\":[447,683],\"dpr\":2,\"x\":223.5,\"y\":300,\"width\":400,\"height\":60,\"shown\":true}"
+                           },
+                  "h686":  {
+                               "old":  "refused: owned control client and browser geometry disagree",
+                               "new":  "refused: owned control client and browser geometry disagree {\"viewport\":[447,686],\"dpr\":2,\"x\":223.5,\"y\":300,\"width\":400,\"height\":60,\"shown\":true}"
+                           },
+                  "w446":  {
+                               "old":  "refused: owned control client and browser geometry disagree",
+                               "new":  "refused: owned control client and browser geometry disagree {\"viewport\":[446,684],\"dpr\":2,\"x\":223.5,\"y\":300,\"width\":400,\"height\":60,\"shown\":true}"
+                           },
+                  "xout":  {
+                               "old":  "refused: owned control client and browser geometry disagree",
+                               "new":  "refused: owned control client and browser geometry disagree {\"viewport\":[447,684],\"dpr\":2,\"x\":447,\"y\":300,\"width\":400,\"height\":60,\"shown\":true}"
+                           }
+              },
+    "r4_runner":  {
+                      "parse_errors":  0,
+                      "array_arith_hits":  0,
+                      "product_placement_assigns":  [
+                                                        "box",
+                                                        "clientArea",
+                                                        "control",
+                                                        "edge",
+                                                        "last",
+                                                        "overlay",
+                                                        "point",
+                                                        "socket"
+                                                    ]
+                  }
+}
