@@ -1,0 +1,91 @@
+{
+  "qa_result_message": "handoff_4feb06a5c86a34f92da3b0bcdcd28c11",
+  "source_commit": "30c12c6aa7c51f167974471e7701ea27a0ab8b8b",
+  "reported_start_utc": "2026-10-09T05:58:02Z",
+  "reported_end_utc": "2026-10-09T05:59:39Z",
+  "wrapper_exit": 0,
+  "native_attempts": 1,
+  "provider_attempts": 0,
+  "passed": true,
+  "steps_passed": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31,
+    32
+  ],
+  "display_released_utc": "2026-10-09T05:59:49Z",
+  "cleanup_confirmed": true,
+  "foreign_applications_unsignalled": true,
+  "actual_review": {
+    "control_client": [
+      833,
+      90,
+      1727,
+      1459,
+      192
+    ],
+    "control_viewport": [
+      447,
+      685
+    ],
+    "dpr": 2,
+    "edge_before_raise": [
+      0,
+      0,
+      2560,
+      1599
+    ],
+    "edge_after_raise": [
+      0,
+      0,
+      2560,
+      1600
+    ],
+    "toolbar_drag": "CDP pointer input; movement and gotpointercapture recorded; os_fallback=false",
+    "card_drag": "CDP pointer input; movement and gotpointercapture recorded; os_fallback=false",
+    "application_closed_exit_code": 0,
+    "NOT_PROVEN": [
+      "physical mouse or pen input",
+      "spoken response or caption synchronization",
+      "real provider receipt",
+      "continuous screen understanding",
+      "microphone or system audio"
+    ]
+  },
+  "evidence_hashes": {
+    "run.json": "b02ffa753aeb61884a3adf533946b06dbcc29832d1d34b0ea94421131b236e43",
+    "runner-results.json": "db540285caf7954e073d4c82adde66da7f14f37cad9f938a7aff6ce402e95254"
+  },
+  "raw_evidence_commit": "07bcfccd3241218a2bee768804f7630ba97304eb",
+  "integrated_as": "8c37d04",
+  "final_delivery_message": "handoff_d76cb37f62339eeae7b7b72a5db88bce",
+  "lead_saved_result_assertions": "passed on integrated source; 32/32steps, 14 admissions, two CDP drags, clean exit/release; no rerun"
+}

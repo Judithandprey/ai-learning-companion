@@ -79,8 +79,12 @@ Edge's 61 reads were all `[0, 0, 2560, 1600]`, except for:
 - one `[0, 0, 2560, 1599]` at step 10 `before_window`, while the product's control window held the foreground after
   step 9 raised it. The read right after the raise was `[0, 0, 2560, 1600]` in the foreground.
 
-So in both attempts Edge's window lost 1 px at the bottom while another app's window was active, and returned to full
-size when raised. The cause is still unknown. The exact full-surface gates were not changed and passed.
+Both attempts observed the1-px shortfall while another app's window was active. This third run directly records
+restoration after the owned-window raise; attempt2 stopped before that later raise, so no restoration is inferred
+for it. The cause remains unknown. The exact full-surface gates were unchanged and passed in attempt3.
+
+Both drags used CDP pointer input (`after_cdp`, `os_fallback:false`), with movement and pointer capture recorded.
+They do not prove physical mouse, pen or native hardware input.
 
 ## Files
 

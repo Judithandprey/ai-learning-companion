@@ -199,3 +199,29 @@ No AI/account/microphone/audio/TTS; no fourth run or retry after a new refusal.
 Actual final-slot dispatch `handoff_6968c97920e69b27bbb6c5ebcb06a48e` was accepted
 unread, execution_started=false, against pushed release `1f6f0ff`. This receipt is
 not proof of execution; actual result and explicit display release are pending.
+
+## Attempt3 — passed diagnostic; display released
+
+Original QA invoked once05:58:02–05:59:39Z, exit0. Actual release
+`handoff_4feb06a5c86a34f92da3b0bcdcd28c11` at05:59:49Z precedes final delivery
+`handoff_d76cb37f62339eeae7b7b72a5db88bce`. QA07bcfcc integrates as8c37d04.
+[Result summary](attempt-03-result.json) and [raw per-step evidence](../../../../qa/p0-13-tts-52be105/execution-bounded-20261008-03/README.md)
+show32/32steps,14display admissions, both CDP pointer drags and clean Stop/close.
+Lead checked saved JSON and hashes, without rerunning a native command.
+Exact-owned cleanup confirms no leftover/unresolved process, force or foreign
+application signal. The live allocation is marked released; issued bytes stay
+immutable. All3slots consumed,zero remain; no fourth diagnostic run.
+
+Control viewport447×685/DPR2 versus client894×1369 directly demonstrates the
+1px rounding mismatch in this run. Both pointer drags reportafter_cdp and
+os_fallback=false; these are not physical mouse/pen evidence. Edge1599before
+raise restored to1600afterward in this run, and all exact source guards passed.
+That does not establish a cause or retrospectively prove attempt2restoration.
+
+No AI/account/microphone/audio/TTS was used. Real requests remain0/4; continuous
+real-AI context, automatic focus answer, spoken follow-up, audible captions,
+physical pen and Mac interaction remain open. The next existing QA action is
+minimal executable nonvoice live-driver preparation at exact52be105 with focused
+offline checks and the existing four-action ledger; no current resource lease or
+real submission is authorized by this preparation. Lead reviews it, then directs
+any real defects to the original product owner.

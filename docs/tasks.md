@@ -138,12 +138,20 @@ QA's geometry correction `30c12c6` and Support approval `184f712` integrate as
 `4f465e5`/`56b3d40`. Resulting main50generator+54wrapper checks pass;15pins match
 QA and77/77stage files match. D1 corrects an evidence overstatement: the unsaved
 page width/strict-centre terms remain unknown. Candidate bytes stay unchanged.
-The last third slot is reserved in a fresh allocation at05:56:28Z, expiring06:26:28Z;
-dispatch and actual result are recorded separately in the canonical budget.
-Two actual invocations confirmed,zero additional unreserved slots; no fourth run.
-Unresolved Edge1599height must still fail exact full-source coverage if it persists.
-No guard removal or blind resend.
-No product or live/audio acceptance follows from these harness steps.
+The third/final slot ran05:58:02–05:59:39Z, exit0: **all32steps passed**, including
+capture-only startup, CDP toolbar/card drags, Stop and clean close. QA `07bcfcc`
+integrates as`8c37d04`; exact-owned cleanup and DISPLAY RELEASE05:59:49Z are
+confirmed by `handoff_4feb06a5c86a34f92da3b0bcdcd28c11` and final report
+`handoff_d76cb37f62339eeae7b7b72a5db88bce`. All3slots consumed; no active display,
+no fourth run. Edge1599height returned to1600 on the existing owned-window raise
+in this run; cause remains unknown and exact source guards were unchanged.
+Both drags used CDP pointer input, not physical mouse/pen proof. RealAI/audio were
+disabled. No full product/live/audio acceptance follows from this diagnostic.
+Next existing QA action is the minimal executable four-action nonvoice live-flow
+driver on exact52be105, reusing admitted geometry/cleanup and preserving the
+existing0/4real-action counter. Prepare source and offline checks only; no fresh
+account/display execution is allocated. Lead reviews that candidate before any
+separate real acceptance release; Web receives concrete product defects only.
 Keep normal-band/foreground/16-point/display guards and exact-owned cleanup;
 no largest-window-only trust, foreign mutation or allocation before the reviewed correction. Actual
 popup content is unknown; the product and complete live/audio gates remain untested.

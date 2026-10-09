@@ -1,5 +1,14 @@
 # Windows live companion implementation checkpoint
 
+Current diagnostic outcome (2026-10-09): exact52be105 passed all32steps of the
+AI-disabled generated-display check, including capture-only startup, CDP
+toolbar/card drag and Stop/close. QA07bcfcc integrates as8c37d04; display released,
+all3authorized diagnostic attempts consumed, no fourth run.
+[Actual evidence and limits](approved-two-gates/bounded-retest-20261008/README.md#attempt3--passed-diagnostic-display-released).
+This is not physical input, real AI, speech or full-product acceptance. Next is
+QA's executable nonvoice live-flow driver preparation using the existing0/4real
+action ledger; no account/display/audio allocation is active.
+
 Current Windows production source: `52be105` (2026-10-03), adding reviewed native output to `1755153`; [77-file compiled candidate and evidence](approved-two-gates/tts-integration/README.md). No device run is implied. Prior QA readiness `85edcac` integrates as `0fd810e`. [Exact-package readiness and conditional nonvoice continuation](consumer-review/correction/qa-readiness/README.md). Mac live plus correction `29bdeb4` integrate through `b422391` after independent9/9 and classifier15/15; exact8018c92 native CI now passes build/package,156 native tests and live211 fixture checks. [Review](macos-live-review/correction-02/README.md). Complete journeys and remaining
 production consumers are navigable in [requirements traceability](../../../requirements-traceability.md#user-journeys).
 This delivery continues implementing the existing full-screen/conversation requirements;
