@@ -1,0 +1,30 @@
+{
+  "author_suite": {
+    "qa_commit": "b8f0d9c23a0091c76fd2def239f445d1b8d04854",
+    "cwd": "/tmp/support-live-b8f0d9c-f9zpt0tl",
+    "argv": ["/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node", "--permission", "--allow-fs-read=/tmp/support-live-b8f0d9c-f9zpt0tl", "--allow-fs-read=/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-live-nonvoice-*", "tests/e2e/windows/test_qa_live_candidate.mjs"],
+    "began_at": "2026-10-09 07:15:39 UTC",
+    "ended_at": "2026-10-09 07:15:40 UTC",
+    "exit_code": 0,
+    "tests": 20,
+    "pass": 20,
+    "fail": 0,
+    "skipped": 0
+  },
+  "watcher_probe": {
+    "cwd": "/home/agentsdock/Projects/learning-companion/wt-support",
+    "argv": ["/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node", "--permission", "--allow-fs-read=/tmp/support-live-b8f0d9c-f9zpt0tl", "--allow-fs-read=/home/agentsdock/Projects/learning-companion/wt-support/tests/probes/support/nonvoice_live_watch_b8f0d9c.mjs", "tests/probes/support/nonvoice_live_watch_b8f0d9c.mjs", "/tmp/support-live-b8f0d9c-f9zpt0tl"],
+    "exit_code": 0,
+    "asserted_classifications": 4,
+    "reproduced_defects": 2
+  },
+  "receipt_witness": {
+    "execution_record": "receipt-witness.md",
+    "exit_code": 0,
+    "controls": 1,
+    "counterexamples": 6,
+    "output_records": 7,
+    "assertion_test_count_claimed": false
+  },
+  "scope": "Offline evidence only. Node child processes and writes withheld. Shell output redirection saves public probe results in Support paths. No live or native execution."
+}

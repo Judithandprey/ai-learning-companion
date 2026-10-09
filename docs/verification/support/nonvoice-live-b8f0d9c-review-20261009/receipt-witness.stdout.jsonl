@@ -1,0 +1,7 @@
+{"case":"control","passed":true,"fence":"fenced_before_submission"}
+{"case":"collection_error","passed":true,"fence":"fenced_before_submission","errors":["receipts: invalid JSON"]}
+{"case":"fourth_turn_tool","passed":true,"fence":"fenced_in_flight","non_plain_items":["commandExecution"]}
+{"case":"wrong_connector_digest","passed":true,"fence":"fenced_before_submission","matches":false}
+{"case":"five_provider_turns","passed":true,"fence":"fenced_before_submission","attempts":4,"receipt_turns":5}
+{"case":"contradictory_fence_phase","passed":true,"fence":"fenced_in_flight","receipt_submission":"not_submitted","settled_submission":"not_submitted"}
+{"case":"uncertain_receipt","submission":"uncertain","verdict":"inputs prepared; not submitted (uncertain)"}

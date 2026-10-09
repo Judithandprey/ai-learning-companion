@@ -1,0 +1,50 @@
+{
+  "qa_commit": "b8f0d9c23a0091c76fd2def239f445d1b8d04854",
+  "checks": 4,
+  "counterexamples": 2,
+  "interpretation": "Successful reproduction of two classifier defects; not a product pass or an observed process leak.",
+  "observations": [
+    {
+      "name": "observed live child remains",
+      "expected_evidence_state": "left_running",
+      "observed": {
+        "state": "left_running",
+        "appeared": 1,
+        "remaining": [
+          7
+        ]
+      },
+      "counterexample": false
+    },
+    {
+      "name": "observed lifecycle ended",
+      "expected_evidence_state": "released",
+      "observed": {
+        "state": "released",
+        "appeared": 1,
+        "remaining": []
+      },
+      "counterexample": false
+    },
+    {
+      "name": "started but observed no process",
+      "expected_evidence_state": "unknown",
+      "observed": {
+        "state": "released",
+        "appeared": 0,
+        "remaining": []
+      },
+      "counterexample": true
+    },
+    {
+      "name": "only end record survives",
+      "expected_evidence_state": "unknown",
+      "observed": {
+        "state": "released",
+        "appeared": 0,
+        "remaining": []
+      },
+      "counterexample": true
+    }
+  ]
+}

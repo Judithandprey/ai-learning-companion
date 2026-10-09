@@ -1,0 +1,28 @@
+✔ the candidate is offline-only, reproduces from the sources, and its scratch is unused (20.701287ms)
+✔ the runner is the reviewed r4 runner byte for byte, apart from the one work-folder name (0.967806ms)
+✔ the package pins are the accepted diagnostic's (52be105, its 77-file tree, Electron 44.5.1, Edge) (0.398364ms)
+✔ the connector configuration is the trusted real one: the exact private 52be105 copy, the pinned codex binary, the product's own state (0.270108ms)
+✔ the steps hold exactly the four released actions, the actual UI Start once, and nothing fake, restarted or signed in (0.60462ms)
+✔ every action is bracketed: assigned only while the session is on with the exact count, and a stop leaves the rest NOT_RUN (0.606323ms)
+✔ the typed requests carry no card value, and the help level is the product default (0.209101ms)
+✔ the live surface changes its cards in place: new values never shown before, same page, same geometry, same truth format (14.826449ms)
+✔ ledger: all four actions counted once each, the whole picture at the provider boundary for each answered one, the Stop fenced (9.085787ms)
+✔ ledger: unknown and proven not_submitted outcomes count; failed triggers count but are named; a session that never started counts nothing (0.929312ms)
+✔ ledger: a session that ended before an action leaves it and every later one NOT_RUN; extra requests, restarts and a disagreeing app count are flagged (1.278553ms)
+✔ fence: needs Stop by the user with the request out and settling after it, nothing shown or sent later; otherwise unknown or not fenced (0.888615ms)
+✔ transport: no receipt, another image, no text or image input, or a request not submitted is never the picture at the provider; tools are flagged (0.145009ms)
+✔ pixel rules: only values new after the change and absent from earlier AI text prove fresh pixels; formatted values are read; a question with a value is a leak (1.388483ms)
+✔ wrapper: nothing runs without --execute, a new evidence folder and an independently supplied allocation hash (0.655107ms)
+✔ wrapper: only an exact, active live allocation bound to the four-action bounds, no voice, no retry or restart, is accepted (0.927479ms)
+✔ wrapper: the connector side refuses a missing or inexact copy, anything running in it, or another codex binary, before any Windows call (0.389807ms)
+✔ wrapper: the mechanical result needs every term, the connector and its children gone, and keeps acceptance NOT_JUDGED (0.440986ms)
+✔ wrapper: the watch summary sees the connector and every descendant; a missing end or log is unknown, never released (0.284315ms)
+✔ wrapper: with an exact allocation it still refuses at the connector checks before any Windows call, any folder or any process (11.921625ms)
+ℹ tests 20
+ℹ suites 0
+ℹ pass 20
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 75.396628
