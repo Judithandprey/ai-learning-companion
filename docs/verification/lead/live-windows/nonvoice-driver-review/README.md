@@ -1,19 +1,18 @@
 # Current-package nonvoice driver review — 2026-10-09
 
-**Windows interlock integrated/staged; candidate05's five findings independently closed, one narrow evidence correction remains.**
+**Windows interlock staged; candidate06 source reviewed and integrated. Exact live script scope and resource allocation remain unreleased.**
 Web's reviewed source through `ebbd1ed` integrates as `0ff325b`; its Windows tree
 matches exactly. Lead's final holding-membership case passes, and TypeScript plus
 static packaging pass. The distinct 81-file `%TEMP%\lc-windows-admission-0ff325b`
 stage has tree `081a130c1f492c98d78fec8d67463a36c80126ea1ca72eede99d043ca616a46a`.
 All 77 earlier 52be105-stage files still match. No application was launched.
 
-QA correction `df536b8` now addresses Support's five remaining `937788d` findings
-and pins the real staged product. Its exact-source regeneration, 32 pins and
-inactive/wrong-product allocation refusals pass Lead's checks. Support's focused
-independent retest `b93fc60` closes those five findings. A duplicate-EOF trace
-still passes the ledger, so the same QA owner is correcting that one condition
-and the inactive template's stale connector commit before final integration.
-Execution remains unreleased.
+Support `b93fc60` independently closes candidate05's five findings. QA `5bdbc1d`
+then fixes its final duplicate-EOF gap and stale connector template pin, integrated
+as `5ba6f50` with the preceding reviewed QA chain. Lead's independent three-case
+EOF probe, actual pure template validator and exact candidate reproduction pass.
+All six native payloads are unchanged from candidate05. See the final review below.
+Execution remains unreleased; source checks do not establish native acceptance.
 The actual candidate05 parse check has zero errors for both scripts and its one
 changed C# literal compiles; these are static results only. Candidate05's template
 is inactive. Historical candidate04 retains `interlockProduction=null`. QA's separately assigned pure-data
@@ -741,3 +740,41 @@ checks the ordinary EOF control, the reported counterexample and corrected pin
 shape, then integrates. No repeated 25/34-case campaign, unchanged compilation,
 PowerShell fixture retry or new native run is assigned. Support is idle/on demand.
 Real actions **0/4**, diagnostic **3/3 closed**, all resource leases remain absent.
+
+### Candidate06 integrated and exact command prepared
+
+Actual delivery `handoff_c87248cccee2984d245e6febaa91cc0a` supplies
+`5bdbc1d54bdf0dcf1f061f545c005c26456b9a76`. Its EOF guard requires exactly one
+terminal event and retains the count check. The fresh inactive template matches
+the exported `0ff325b` connector commit; candidates01–05 remain historical.
+The nine reviewed QA commits integrate without conflict through `5ba6f50`; the
+integrated QA source/evidence paths are byte-identical to the delivered branch.
+
+[Lead's exact review](candidate06-review.json) and [independent three-case result](candidate06-eof-result.json)
+confirm the ordinary EOF passes and both early/duplicate EOF traces fail. The
+[actual template-validator result](candidate06-template-result.json) refuses the
+saved inactive template and old connector pin, while accepting the corrected
+shape only in synthetic memory. Exact candidate regeneration also passes; scratch
+is unused. Node had read-only file grants, no child-process or write grants.
+No unchanged full suite, compilation or refused PowerShell fixture was repeated.
+
+[Prepared command review](candidate06-command-review.json) pins candidate
+`288191f7…`, wrapper `3ca43f76…`, the unchanged runner `2fbb5eb3…` and checker
+`9637db61…`. It reuses the staged 81-file product and production UI handlers for
+four bounded actions: observation, automatic circle focus, typed follow-up after
+a generated screen change, and Stop. The test session is 60 seconds; the whole
+native setup/test/close sequence has a 600-second bound, followed only by bounded
+owned cleanup. Latency may leave later actions NOT_RUN. No retry, audio, microphone,
+Talk/TTS, private screen, account/model change or separate billing is included.
+
+The [reviewed draft](candidate06-allocation.draft.json) is **inactive**, with no
+validity window or resource lease. The previous explicit human `RemoteSigned`
+approvals were for the 140-second AI-disabled diagnostic. The remaining concrete
+decision is the process-only script scope for this distinct live runner and the
+checker started by the product; existing generated-content subscription-test
+authorization is retained. Windows' earlier actual policy refusal remains
+recorded, not bypassed by retrying that fixture or calling this source review an
+execution result. After that scope is confirmed, Lead releases a fresh timed
+display/account allocation to the same QA owner for normal tool review and one
+attempt. Current login/lock/display conditions are checked then, not assumed from
+old evidence. Real actions **0/4**; diagnostic **3/3 closed**; no active resource lease.

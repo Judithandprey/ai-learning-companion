@@ -1,0 +1,48 @@
+{
+  "source": "5bdbc1d54bdf0dcf1f061f545c005c26456b9a76",
+  "observations": [
+    {
+      "name": "ordinary terminal EOF",
+      "kind": "control",
+      "mechanical_pass": true,
+      "source_bound": true,
+      "main_agrees": true,
+      "checker_released": true,
+      "other_capture_records": 0,
+      "fence": "fenced_before_submission",
+      "session_identity": "same",
+      "failed_terms": []
+    },
+    {
+      "name": "early EOF before decisions and final EOF",
+      "kind": "corrected_counterexample",
+      "mechanical_pass": false,
+      "source_bound": true,
+      "main_agrees": true,
+      "checker_released": false,
+      "other_capture_records": 0,
+      "fence": "fenced_before_submission",
+      "session_identity": "same",
+      "failed_terms": [
+        "checker_lifecycle_released"
+      ]
+    },
+    {
+      "name": "second EOF after final EOF",
+      "kind": "negative",
+      "mechanical_pass": false,
+      "source_bound": true,
+      "main_agrees": true,
+      "checker_released": false,
+      "other_capture_records": 0,
+      "fence": "fenced_before_submission",
+      "session_identity": "same",
+      "failed_terms": [
+        "checker_lifecycle_released"
+      ]
+    }
+  ],
+  "native_operations": 0,
+  "provider_calls": 0,
+  "resource_lease": false
+}

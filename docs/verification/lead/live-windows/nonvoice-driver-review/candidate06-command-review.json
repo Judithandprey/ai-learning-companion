@@ -1,0 +1,75 @@
+{
+  "kind": "lead-live-command-source-review/1",
+  "integrated_driver_commit": "5ba6f50ff07d52a773bb8b9516e4e6da2dadd917",
+  "product_commit": "0ff325beadb7c689244610307b6aa16d638fd2e6",
+  "candidate_sha256": "288191f78a39ea242a59b867d0831808a3e22c762eff013c65669eed9d05c172",
+  "wrapper_sha256": "3ca43f76a73abc7669f64452bf6ab3dee39caeccbb736a2f9642fdd3e65b2b25",
+  "review_verdict": "source_ready; exact live script scope confirmation and fresh resource allocation pending",
+  "native_invocation": {
+    "executable": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "arguments": [
+      "-NoProfile",
+      "-NonInteractive",
+      "-ExecutionPolicy",
+      "RemoteSigned",
+      "-File",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-live-nonvoice-e72ea0f932d148c0a48d4c101c69d328\\runner.ps1",
+      "-Electron",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-electron-44.5.1-win32-x64\\electron.exe",
+      "-Stage",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-windows-admission-0ff325b",
+      "-UserData",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-live-nonvoice-e72ea0f932d148c0a48d4c101c69d328\\userdata",
+      "-StepsFile",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-live-nonvoice-e72ea0f932d148c0a48d4c101c69d328\\steps.json",
+      "-OutDir",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-live-nonvoice-e72ea0f932d148c0a48d4c101c69d328\\out",
+      "-Edge",
+      "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+      "-AppTemp",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-live-nonvoice-e72ea0f932d148c0a48d4c101c69d328\\apptemp",
+      "-LinkDir",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-live-nonvoice-e72ea0f932d148c0a48d4c101c69d328\\link"
+    ]
+  },
+  "checker_invocation": {
+    "format": "lc-windows-source-admission-config/v1",
+    "checker": {
+      "command": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "args": [
+        "-NoProfile",
+        "-NonInteractive",
+        "-ExecutionPolicy",
+        "RemoteSigned",
+        "-File",
+        "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-live-nonvoice-e72ea0f932d148c0a48d4c101c69d328\\admission-checker.ps1",
+        "-Context",
+        "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-live-nonvoice-e72ea0f932d148c0a48d4c101c69d328\\link\\admission-context.json",
+        "-Log",
+        "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-live-nonvoice-e72ea0f932d148c0a48d4c101c69d328\\out\\admission-checker.jsonl"
+      ]
+    },
+    "ready_ms": 10000,
+    "decision_ms": 5000
+  },
+  "wrapper_entrypoint": "tests/e2e/windows/qa_run_live_candidate.mjs --execute <fresh QA evidence directory> <fresh allocation file> <separately pinned allocation SHA256>",
+  "native_bound_ms": 600000,
+  "max_real_actions": 4,
+  "test_session_ms": 60000,
+  "one_native_attempt": true,
+  "retry": false,
+  "required_current_checks": [
+    "exact stage and connector copy/codex digest",
+    "unused scratch and output folder",
+    "current process/port/display and generated-page checks",
+    "normal managed account lock; stop on missing login/auth/quota/capability failure",
+    "source-admission checker binding pre/post acquisition and send",
+    "all-action ledger and exact-owned cleanup plus explicit display/account release"
+  ],
+  "no_microphone_or_audio": true,
+  "no_persistent_policy_change": true,
+  "private_content_or_other_app_control_authorized": false,
+  "prior_fixture_refusal": "a58d583 OS policy refusal retained; zero cases, no retry",
+  "scope_distinction": "Earlier explicit RemoteSigned human decisions cover the AI-disabled 140-second diagnostic. This distinct live runner has a 600-second native bound and a product-started checker. Existing subscription test permission is retained; do not substitute those old diagnostic IDs for this script scope.",
+  "allocation_active": false
+}

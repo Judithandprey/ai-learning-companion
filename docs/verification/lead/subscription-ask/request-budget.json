@@ -19,7 +19,7 @@
   "allocation_retired_reason": "QA actual handoff_ec31e85d736c7661fbb4022aa0d2cb52 confirms 0 of 1 used. This selected-image allocation is not additive to the next changed-flow allocation.",
   "live_changed_flow_allocation": {
     "allocation_id": "handoff_fd794043a20068a1b52853cbb6ff884e",
-    "status": "app_staged_candidate05_five_findings_closed_EOF_pin_correction_pending_execution_unreleased",
+    "status": "candidate06_reviewed_integrated_exact_live_script_scope_and_allocation_pending",
     "candidate_commit": "24c48c38aee660b606ebff5285acbd2ccb300392",
     "maximum_potential_submissions": 5,
     "purpose_slots": [
@@ -49,7 +49,7 @@
       "account/model/billing change",
       "automatic restart or retry"
     ],
-    "next_owner": "QA fixes one duplicate-EOF acceptance gap and stale inactive connector pin; Lead performs targeted independent review and integration, then exact command/allocation review. Support five-finding retest delivered; no lease.",
+    "next_owner": "Lead obtains the concrete process-only RemoteSigned scope for the reviewed live runner and product-started checker, then allocates one timed nonvoice run to current QA. Candidate/source review complete; current account/display conditions checked only at execution. No lease.",
     "production_source_commit": "175515308f509fb8c0f531dbdb10e57313fcde5a",
     "stage_name": "lc-windows-live-1755153",
     "stage_tree_sha256": "3387824a0dee70013104388d4acec2b810475e98953e7c3f196063a8781fd154",
@@ -128,49 +128,26 @@
         "scope": "same-owner source/offline correction; no resource allocation"
       },
       "latest_correction": {
-        "source_commit": "df536b84eada2782b30ccca9c6781d12ea48e050",
-        "message_id": "handoff_7baa8e8fe4cdefc05ace4d0d424efbc8",
-        "integrated": false,
-        "candidate_sha256": "5e7fdcd513c355d0f63a4c36e778d0fdc457e550ca781da29c6f8b7901d2aebb",
-        "wrapper_sha256": "58a0a9923f55631fcdd36426f567ed81469ded230146af04c933f412fc4e79f4",
-        "status": "five_findings_independently_closed_one_EOF_gap_and_stale_template_pin",
-        "execution_gate": "Exact reviewed product pinned; allocation template inactive, no lease",
-        "lead_evidence": "docs/verification/lead/live-windows/nonvoice-driver-review/candidate05-review.json",
-        "lead_artifact_pins_matched": 32,
-        "lead_candidate_reproduction": true,
-        "lead_inactive_and_wrong_product_refused": true,
-        "support_retest": {
-          "message_id": "handoff_aadbc5026bd6f0ad59ea27d32cb6ea18",
-          "accepted": true,
-          "execution_started_at_dispatch": false,
-          "verdict": "five_prior_findings_closed_one_new_P2_HOLD",
-          "delivery": "handoff_241caeca474e0a08310b461c9b222ef0",
-          "commit": "b93fc60fa0237b08ef83ba125c3f646dc2bb3904",
-          "integrated_commit": "4717a00",
-          "source_hashes_matched": 83,
-          "probe_hash_matched": true,
-          "scenarios_recorded_not_rerun": 25,
-          "remaining": "Exactly one terminal EOF required; inactive template connector commit must match exported 0ff325b, not the older copy directory label."
+        "source_commit": "5bdbc1d54bdf0dcf1f061f545c005c26456b9a76",
+        "message_id": "handoff_c87248cccee2984d245e6febaa91cc0a",
+        "integrated": true,
+        "integrated_commit": "5ba6f50",
+        "status": "source_reviewed_exact_live_script_scope_and_allocation_pending",
+        "candidate_sha256": "288191f78a39ea242a59b867d0831808a3e22c762eff013c65669eed9d05c172",
+        "wrapper_sha256": "3ca43f76a73abc7669f64452bf6ab3dee39caeccbb736a2f9642fdd3e65b2b25",
+        "lead_evidence": "docs/verification/lead/live-windows/nonvoice-driver-review/candidate06-review.json",
+        "source_checks": {
+          "EOF_cases_passed": 3,
+          "template_validator_passed": true,
+          "candidate_reproduction_passed": true,
+          "integrated_paths_equal": true,
+          "unchanged_native_payloads": 6
         },
-        "author_parse_compile": {
-          "assignment": "handoff_42053bfccd6885bbee9fe5b3ee7a3d23",
-          "actual_reply": "handoff_601bf879adf9776101253329ec0ee27d",
-          "source_evidence_commit": "565bc3d070ba12074d1365dd78f93276f27fc9a7",
-          "runner_parse_errors": 0,
-          "checker_parse_errors": 0,
-          "changed_CSharp_blocks_compiled": 1,
-          "unchanged_blocks_not_repeated": 5,
-          "exit_code": 0,
-          "top_level_scripts_or_native_methods_invoked": false,
-          "pure_fixture": "NOT_RUN; prior OS policy refusal retained"
-        },
-        "resource_lease": false,
-        "narrow_correction_dispatch": {
-          "message_id": "handoff_830791faa9be1e46c34d5e72a72d1394",
-          "accepted": true,
-          "execution_started_at_dispatch": false,
-          "scope": "Same QA task: one EOF guard and connector template pin, affected mechanical pins, positive/counterexample only; no native/PowerShell fixture retry, provider, audio or resource lease."
-        }
+        "command_review": "docs/verification/lead/live-windows/nonvoice-driver-review/candidate06-command-review.json",
+        "allocation_draft": "docs/verification/lead/live-windows/nonvoice-driver-review/candidate06-allocation.draft.json",
+        "script_scope": "pending exact live runner and product-started checker process-only RemoteSigned; previous explicit script approvals cover AI-disabled diagnostic",
+        "native_executed": false,
+        "resource_lease": false
       },
       "support_verdict": {
         "source_commit": "38230e1f63c4c3dcbdf28b03c07520db9ea8206d",
@@ -504,6 +481,51 @@
             "execution_started_at_dispatch": false,
             "scope": "Five remaining driver findings plus complete capture-scoped ordered/multiplicity-aware all-phase evidence and observed checker termination; same candidate05 preparation, no native/PowerShell retry",
             "new_resource_allocation": false
+          }
+        },
+        {
+          "source_commit": "df536b84eada2782b30ccca9c6781d12ea48e050",
+          "message_id": "handoff_7baa8e8fe4cdefc05ace4d0d424efbc8",
+          "integrated": false,
+          "candidate_sha256": "5e7fdcd513c355d0f63a4c36e778d0fdc457e550ca781da29c6f8b7901d2aebb",
+          "wrapper_sha256": "58a0a9923f55631fcdd36426f567ed81469ded230146af04c933f412fc4e79f4",
+          "status": "five_findings_independently_closed_one_EOF_gap_and_stale_template_pin",
+          "execution_gate": "Exact reviewed product pinned; allocation template inactive, no lease",
+          "lead_evidence": "docs/verification/lead/live-windows/nonvoice-driver-review/candidate05-review.json",
+          "lead_artifact_pins_matched": 32,
+          "lead_candidate_reproduction": true,
+          "lead_inactive_and_wrong_product_refused": true,
+          "support_retest": {
+            "message_id": "handoff_aadbc5026bd6f0ad59ea27d32cb6ea18",
+            "accepted": true,
+            "execution_started_at_dispatch": false,
+            "verdict": "five_prior_findings_closed_one_new_P2_HOLD",
+            "delivery": "handoff_241caeca474e0a08310b461c9b222ef0",
+            "commit": "b93fc60fa0237b08ef83ba125c3f646dc2bb3904",
+            "integrated_commit": "4717a00",
+            "source_hashes_matched": 83,
+            "probe_hash_matched": true,
+            "scenarios_recorded_not_rerun": 25,
+            "remaining": "Exactly one terminal EOF required; inactive template connector commit must match exported 0ff325b, not the older copy directory label."
+          },
+          "author_parse_compile": {
+            "assignment": "handoff_42053bfccd6885bbee9fe5b3ee7a3d23",
+            "actual_reply": "handoff_601bf879adf9776101253329ec0ee27d",
+            "source_evidence_commit": "565bc3d070ba12074d1365dd78f93276f27fc9a7",
+            "runner_parse_errors": 0,
+            "checker_parse_errors": 0,
+            "changed_CSharp_blocks_compiled": 1,
+            "unchanged_blocks_not_repeated": 5,
+            "exit_code": 0,
+            "top_level_scripts_or_native_methods_invoked": false,
+            "pure_fixture": "NOT_RUN; prior OS policy refusal retained"
+          },
+          "resource_lease": false,
+          "narrow_correction_dispatch": {
+            "message_id": "handoff_830791faa9be1e46c34d5e72a72d1394",
+            "accepted": true,
+            "execution_started_at_dispatch": false,
+            "scope": "Same QA task: one EOF guard and connector template pin, affected mechanical pins, positive/counterexample only; no native/PowerShell fixture retry, provider, audio or resource lease."
           }
         }
       ]

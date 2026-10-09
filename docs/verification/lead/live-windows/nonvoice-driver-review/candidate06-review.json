@@ -1,0 +1,49 @@
+{
+  "source_commit": "5bdbc1d54bdf0dcf1f061f545c005c26456b9a76",
+  "export_root": "/tmp/lc-lead-candidate06-vmbo5zl5",
+  "candidate_diff": [
+    "/source_files/qa_live_ledger.mjs"
+  ],
+  "template_diff": [
+    "/wrapper_sha256",
+    "/connector/commit",
+    "/candidate_sha256"
+  ],
+  "identical_payloads": 6,
+  "candidate_sha256": "288191f78a39ea242a59b867d0831808a3e22c762eff013c65669eed9d05c172",
+  "probe_sha256": "638eafe70d128fc02b1193ffdf0f53d302e6e502552fa4a787a3dfb6ed79f383",
+  "resource_lease": false,
+  "integrated_commit": "5ba6f50ff07d52a773bb8b9516e4e6da2dadd917",
+  "integrated_QA_paths_equal": true,
+  "eof_check": {
+    "exit_code": 0,
+    "controls": 1,
+    "rejected_counterexamples": 2,
+    "evidence": "candidate06-eof-result.json",
+    "source": "candidate06-eof-probe.mjs",
+    "read_only_Node_permissions": true
+  },
+  "template_check": {
+    "exit_code": 0,
+    "evidence": "candidate06-template-result.json",
+    "saved_template_inactive_and_refused": true,
+    "synthetic_active_shape_accepted": true,
+    "old_connector_pin_refused": true,
+    "no_actual_allocation": true
+  },
+  "candidate_check": {
+    "exit_code": 0,
+    "identity_passed": true,
+    "scratch_unused": true,
+    "execution_admitted": false,
+    "native_executed": false,
+    "provider_attempts": 0,
+    "stage_evidence": "saved point-in-time receipt, not fresh live verification"
+  },
+  "limits": {
+    "unchanged_full_suites_repeated": false,
+    "unchanged_PowerShell_compile_repeated": false,
+    "refused_fixture_retried": false,
+    "native_execution": false
+  }
+}
