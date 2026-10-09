@@ -1,6 +1,8 @@
 # R3 coordinate/scope source review — 2026-10-09 UTC
 
-**Source inspection: no must-fix found in the two bounded changes. Complete independent verification: HOLD.** The attempted offline Node suite refused during module loading, before its 48 cases ran. Support stopped at that new refusal without widening read access, substituting another execution route, or repeating the command. This record does not release a native/display run.
+**Current verdict: APPROVE the bounded source candidate.** The original independent-check HOLD was closed after Lead made the required subprocess read configuration explicit; [completion evidence](completed/README.md) records 48 generator and 54 wrapper passes, exact commands and verified pins. This does not release a native/display run.
+
+**Initial review history, retained:** source inspection found no must-fix, but independent verification was HOLD. The first offline Node suite refused during module loading, before its 48 cases ran (NOT_RUN). Support stopped that attempt without widening read access or substituting an execution route. The initial invocation, refusal output and source findings below remain unchanged evidence of that attempt.
 
 ## Assignment and exact scope
 
@@ -59,4 +61,4 @@ These are the exact pins in the assignment and inspected descriptor/wrapper; the
 | Wrapper | `8f7d7132ffe8d3edb1477d7716345fb52ba619f6ebc6edec59102e14389ec6bc` |
 | Steps | `b7c5cc0b7c04867c1ac95a9399d24e06809043eb2c84a9300ffe5cce4769edf5` |
 
-Lead receives the source finding, reviewed QA receipt and new independent-verification stop. Original QA has delivered its approved native/result checks; Lead must resolve the missing independent Node check before treating this as a completed independent verification, and retains integration and any fresh allocation. Support has no display allocation and consumed no diagnostic attempt; the last supplied shared budget remains 1 of 3 consumed, 2 remaining. No live request, product acceptance, queue completion or main-integration claim is made.
+At the initial handoff, Lead received the source finding, reviewed QA receipt and independent-verification stop. The subsequent [completion](completed/README.md) resolves the missing Node check; Lead retains integration and any fresh allocation. Support has no display allocation and consumed no diagnostic attempt; the last supplied shared budget remains 1 of 3 consumed, 2 remaining. No live request, product acceptance, queue completion or main-integration claim is made.

@@ -1,0 +1,214 @@
+TAP version 13
+# Subtest: valid new-package descriptor admits identity only, with no execution path
+ok 1 - valid new-package descriptor admits identity only, with no execution path
+  ---
+  duration_ms: 6.547131
+  type: 'test'
+  ...
+# Subtest: manifest execution flag cannot activate execution
+ok 2 - manifest execution flag cannot activate execution
+  ---
+  duration_ms: 0.269827
+  type: 'test'
+  ...
+# Subtest: historical approval cannot be rebound
+ok 3 - historical approval cannot be rebound
+  ---
+  duration_ms: 0.209522
+  type: 'test'
+  ...
+# Subtest: old package is rejected
+ok 4 - old package is rejected
+  ---
+  duration_ms: 0.198401
+  type: 'test'
+  ...
+# Subtest: wrong entry or launch argument is rejected
+ok 5 - wrong entry or launch argument is rejected
+  ---
+  duration_ms: 5.980731
+  type: 'test'
+  ...
+# Subtest: altered planned PowerShell arguments are rejected
+ok 6 - altered planned PowerShell arguments are rejected
+  ---
+  duration_ms: 5.578299
+  type: 'test'
+  ...
+# Subtest: wrong source pin is rejected
+ok 7 - wrong source pin is rejected
+  ---
+  duration_ms: 3.854233
+  type: 'test'
+  ...
+# Subtest: missing placement step is rejected
+ok 8 - missing placement step is rejected
+  ---
+  duration_ms: 3.530913
+  type: 'test'
+  ...
+# Subtest: historical runner mixture is rejected
+ok 9 - historical runner mixture is rejected
+  ---
+  duration_ms: 3.330759
+  type: 'test'
+  ...
+# Subtest: changed surface is rejected
+ok 10 - changed surface is rejected
+  ---
+  duration_ms: 4.010392
+  type: 'test'
+  ...
+# Subtest: missing package file receipt is rejected
+ok 11 - missing package file receipt is rejected
+  ---
+  duration_ms: 4.898205
+  type: 'test'
+  ...
+# Subtest: extra package file receipt is rejected
+ok 12 - extra package file receipt is rejected
+  ---
+  duration_ms: 4.437777
+  type: 'test'
+  ...
+# Subtest: altered package file receipt is rejected
+ok 13 - altered package file receipt is rejected
+  ---
+  duration_ms: 4.02917
+  type: 'test'
+  ...
+# Subtest: different compiled helper is rejected
+ok 14 - different compiled helper is rejected
+  ---
+  duration_ms: 3.445488
+  type: 'test'
+  ...
+# Subtest: different Electron bytes are rejected
+ok 15 - different Electron bytes are rejected
+  ---
+  duration_ms: 4.284157
+  type: 'test'
+  ...
+# Subtest: a same-length change to the reviewed physical point set is rejected
+ok 16 - a same-length change to the reviewed physical point set is rejected
+  ---
+  duration_ms: 0.876761
+  type: 'test'
+  ...
+# Subtest: the emitted runner no longer refuses beside every other Electron app, and never reads -AllowForeign
+ok 17 - the emitted runner no longer refuses beside every other Electron app, and never reads -AllowForeign
+  ---
+  duration_ms: 0.729078
+  type: 'test'
+  ...
+# Subtest: Foreign-Electron keeps its three call sites (start gate, desktop screenshot, end record) and lists PIDs and reasons only
+ok 18 - Foreign-Electron keeps its three call sites (start gate, desktop screenshot, end record) and lists PIDs and reasons only
+  ---
+  duration_ms: 0.262153
+  type: 'test'
+  ...
+# Subtest: the native rule is the wrapper's: Windows' own argument splitter, the same path, short-name, runtime and port patterns, the two ports, the stage and this run's folder
+ok 19 - the native rule is the wrapper's: Windows' own argument splitter, the same path, short-name, runtime and port patterns, the two ports, the stage and this run's folder
+  ---
+  duration_ms: 0.412431
+  type: 'test'
+  ...
+# Subtest: the runner reads only-unreadable rows once more before refusing, and refuses on any relevant row or listener
+ok 20 - the runner reads only-unreadable rows once more before refusing, and refuses on any relevant row or listener
+  ---
+  duration_ms: 0.098148
+  type: 'test'
+  ...
+# Subtest: the two emitted blocks are pinned by their reviewed hashes (any change to the native rule must be reviewed again)
+ok 21 - the two emitted blocks are pinned by their reviewed hashes (any change to the native rule must be reviewed again)
+  ---
+  duration_ms: 0.127164
+  type: 'test'
+  ...
+# Subtest: the controlled-surface gates and the owned-only termination paths of the runner are unchanged
+ok 22 - the controlled-surface gates and the owned-only termination paths of the runner are unchanged
+  ---
+  duration_ms: 0.206065
+  type: 'test'
+  ...
+# Subtest: the deltas are exactly the scoped admission, the owned Edge surface identity, the admission points and the placement client area: reverting all gives the reviewed runner; each applies once
+ok 23 - the deltas are exactly the scoped admission, the owned Edge surface identity, the admission points and the placement client area: reverting all gives the reviewed runner; each applies once
+  ---
+  duration_ms: 2.047257
+  type: 'test'
+  ...
+# Subtest: identity model: an owned popup first in z-order is never taken; the window showing the generated surface is
+ok 24 - identity model: an owned popup first in z-order is never taken; the window showing the generated surface is
+  ---
+  duration_ms: 0.400929
+  type: 'test'
+  ...
+# Subtest: identity model: another window of the same Edge process, a hidden window, and another app's window with the same title are not the surface
+ok 25 - identity model: another window of the same Edge process, a hidden window, and another app's window with the same title are not the surface
+  ---
+  duration_ms: 0.212708
+  type: 'test'
+  ...
+# Subtest: identity model: a child process window counts only if the child was created after the launched Edge
+ok 26 - identity model: a child process window counts only if the child was created after the launched Edge
+  ---
+  duration_ms: 0.259718
+  type: 'test'
+  ...
+# Subtest: identity model: no match, two matches, an ended or replaced Edge, a missing identity and a changed window all refuse
+ok 27 - identity model: no match, two matches, an ended or replaced Edge, a missing identity and a changed window all refuse
+  ---
+  duration_ms: 0.302179
+  type: 'test'
+  ...
+# Subtest: R2 model: a readable token window PLUS an eligible owned window whose caption cannot be read is unresolved, never unique
+ok 28 - R2 model: a readable token window PLUS an eligible owned window whose caption cannot be read is unresolved, never unique
+  ---
+  duration_ms: 0.272533
+  type: 'test'
+  ...
+# Subtest: target model: only the page showing the generated surface, the same one every time; another page first, two, none or a navigation refuses
+ok 29 - target model: only the page showing the generated surface, the same one every time; another page first, two, none or a navigation refuses
+  ---
+  duration_ms: 0.212056
+  type: 'test'
+  ...
+# Subtest: page model: the bound page must still be at the URL, still the generated surface and still carry the token (a reloaded page is not tagged again)
+ok 30 - page model: the bound page must still be at the URL, still the generated surface and still carry the token (a reloaded page is not tagged again)
+  ---
+  duration_ms: 0.169234
+  type: 'test'
+  ...
+# Subtest: bind model: the found window must have the page's DPI and a client area that holds its viewport; unreadable geometry refuses
+ok 31 - bind model: the found window must have the page's DPI and a client area that holds its viewport; unreadable geometry refuses
+  ---
+  duration_ms: 0.269928
+  type: 'test'
+  ...
+# Subtest: R1 action model: bind, then the page or target changes before a raise, full-screen write or front: refusal and zero actions
+ok 32 - R1 action model: bind, then the page or target changes before a raise, full-screen write or front: refusal and zero actions
+  ---
+  duration_ms: 0.904104
+  type: 'test'
+  ...
+# Subtest: R1, Support's 6c7872d fixture in the model's {target, page} input: the same window, owner, band and token caption; only the page's URL/target changed
+ok 33 - R1, Support's 6c7872d fixture in the model's {target, page} input: the same window, owner, band and token caption; only the page's URL/target changed
+  ---
+  duration_ms: 0.209201
+  type: 'test'
+  ...
+# Subtest: R3 receipt model: the processes are fixed before the walk; a window whose owner changed to another process gets no caption read
+ok 34 - R3 receipt model: the processes are fixed before the walk; a window whose owner changed to another process gets no caption read
+  ---
+  duration_ms: 0.197649
+  type: 'test'
+  ...
+1..34
+# tests 34
+# suites 0
+# pass 34
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 101.153302

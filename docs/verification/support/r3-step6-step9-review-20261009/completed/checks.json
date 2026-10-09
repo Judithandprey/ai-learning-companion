@@ -1,0 +1,133 @@
+{
+  "source_commit": "a3f12b30cd954099398018a742d3348cc7e62332",
+  "qa_native_receipt_commit": "e1ce5965c32a89d1d76eb8094c4201e34bdfa59e",
+  "continuation_message": "handoff_ed8207657422d1bf9ba0b4a87d592824",
+  "prior_evidence_commit": "c363948dd5eb53e4207686286e2c2f2e1e9a66a1",
+  "initial_generator_state": "NOT_RUN: module-load ERR_ACCESS_DENIED from self-imposed Node read grants; preserved in ../generator-startup-refusal.tap",
+  "source_export": "/tmp/support-r3-a3f12b3-3ich5ffk",
+  "export_files_verified": 62,
+  "node_writes_granted": false,
+  "node_child_processes_granted": false,
+  "host_permissions_changed": false,
+  "tools_approval_refused": false,
+  "native_commands_executed": 0,
+  "display_allocation": "NONE",
+  "tests": {
+    "generator": {
+      "began_at": {
+        "current_time": "2026-10-09 05:34:16 UTC"
+      },
+      "ended_at": {
+        "current_time": "2026-10-09 05:34:16 UTC"
+      },
+      "name": "generator",
+      "cwd": "/tmp/support-r3-a3f12b3-3ich5ffk",
+      "argv": [
+        "/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node",
+        "--permission",
+        "--allow-fs-read=/tmp/support-r3-a3f12b3-3ich5ffk",
+        "--allow-fs-read=/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-tts-output-*",
+        "tests/e2e/windows/test_qa_tts_output_candidate.mjs"
+      ],
+      "command": "LC_QA_TTS_STATIC_RECEIPT=/tmp/support-r3-a3f12b3-3ich5ffk/docs/verification/qa/p0-13-tts-52be105/stage-identity.json /home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node --permission --allow-fs-read=/tmp/support-r3-a3f12b3-3ich5ffk --allow-fs-read='/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-tts-output-*' tests/e2e/windows/test_qa_tts_output_candidate.mjs > /tmp/support-r3-a3f12b3-3ich5ffk/generator-final.txt 2> /tmp/support-r3-a3f12b3-3ich5ffk/generator-final.stderr",
+      "env": {
+        "LC_QA_TTS_STATIC_RECEIPT": "/tmp/support-r3-a3f12b3-3ich5ffk/docs/verification/qa/p0-13-tts-52be105/stage-identity.json"
+      },
+      "chunk_id": "4aa337",
+      "wall_time_seconds": 0.051429695,
+      "exit_code": 0,
+      "original_token_count": 0,
+      "output": "",
+      "passed": 48,
+      "failed": 0,
+      "skipped": 0,
+      "stdout_file": "generator-final.txt",
+      "stderr_bytes": 0
+    },
+    "wrapper": {
+      "name": "wrapper",
+      "argv": [
+        "/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node",
+        "--permission",
+        "--allow-fs-read=/tmp/support-r3-a3f12b3-3ich5ffk",
+        "--allow-fs-read=/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-tts-output-*",
+        "--test-isolation=none",
+        "--test",
+        "--test-reporter=tap",
+        "tests/e2e/windows/test_qa_run_tts_candidate.mjs"
+      ],
+      "command": "LC_QA_TTS_STATIC_RECEIPT=/tmp/support-r3-a3f12b3-3ich5ffk/docs/verification/qa/p0-13-tts-52be105/stage-identity.json /home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node --permission --allow-fs-read=/tmp/support-r3-a3f12b3-3ich5ffk --allow-fs-read='/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-tts-output-*' --test-isolation=none --test --test-reporter=tap tests/e2e/windows/test_qa_run_tts_candidate.mjs > /tmp/support-r3-a3f12b3-3ich5ffk/wrapper-completed.tap 2> /tmp/support-r3-a3f12b3-3ich5ffk/wrapper-completed.stderr",
+      "cwd": "/tmp/support-r3-a3f12b3-3ich5ffk",
+      "env": {
+        "LC_QA_TTS_STATIC_RECEIPT": "/tmp/support-r3-a3f12b3-3ich5ffk/docs/verification/qa/p0-13-tts-52be105/stage-identity.json"
+      },
+      "chunk_id": "ddccd6",
+      "wall_time_seconds": 0.422036578,
+      "exit_code": 0,
+      "original_token_count": 0,
+      "output": "",
+      "began_at": {
+        "current_time": "2026-10-09 05:33:19 UTC"
+      },
+      "ended_at": {
+        "current_time": "2026-10-09 05:33:19 UTC"
+      },
+      "passed": 54,
+      "failed": 0,
+      "skipped": 0,
+      "stdout_file": "wrapper-completed.tap",
+      "stderr_bytes": 0
+    }
+  },
+  "incomplete_generator_invocation": {
+    "name": "generator",
+    "argv": [
+      "/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node",
+      "--permission",
+      "--allow-fs-read=/tmp/support-r3-a3f12b3-3ich5ffk",
+      "--allow-fs-read=/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-tts-output-*",
+      "--test-isolation=none",
+      "--test",
+      "--test-reporter=tap",
+      "tests/e2e/windows/test_qa_tts_output_candidate.mjs"
+    ],
+    "command": "LC_QA_TTS_STATIC_RECEIPT=/tmp/support-r3-a3f12b3-3ich5ffk/docs/verification/qa/p0-13-tts-52be105/stage-identity.json /home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node --permission --allow-fs-read=/tmp/support-r3-a3f12b3-3ich5ffk --allow-fs-read='/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-tts-output-*' --test-isolation=none --test --test-reporter=tap tests/e2e/windows/test_qa_tts_output_candidate.mjs > /tmp/support-r3-a3f12b3-3ich5ffk/generator-completed.tap 2> /tmp/support-r3-a3f12b3-3ich5ffk/generator-completed.stderr",
+    "cwd": "/tmp/support-r3-a3f12b3-3ich5ffk",
+    "env": {
+      "LC_QA_TTS_STATIC_RECEIPT": "/tmp/support-r3-a3f12b3-3ich5ffk/docs/verification/qa/p0-13-tts-52be105/stage-identity.json"
+    },
+    "chunk_id": "4c163c",
+    "wall_time_seconds": 0.121713322,
+    "exit_code": 0,
+    "original_token_count": 0,
+    "output": "",
+    "began_at": {
+      "current_time": "2026-10-09 05:33:19 UTC"
+    },
+    "ended_at": {
+      "current_time": "2026-10-09 05:33:19 UTC"
+    },
+    "observed_passes": 34,
+    "expected_cases": 48,
+    "accepted_as_complete": false,
+    "stdout_file": "generator-incomplete.tap",
+    "stderr_bytes": 0,
+    "cause": "Exact-source export lacked candidate-edge-identity-20261008/runner.ps1, read at test module line 242 before the final 14 tests could register.",
+    "resolution": "Added only that exact Git blob; unchanged test file then ran directly with Node as in Lead's prior command. No test/code mutation or new read grant."
+  },
+  "output_sha256": {
+    "generator-final.txt": "b10ec8cc24c98c0158d0b68c473c4283dcba52699cacb95a2eab69b975c4de5e",
+    "wrapper-completed.tap": "ccaef2dedf9f2faed412b64f54a5207e6221b444d5d76fe002680d95d959a7a8",
+    "generator-incomplete.tap": "28e138ec03eab02f5c531a1b854877ca017899de35cc37da29bb3d81bd1f249d"
+  },
+  "source_sha256": {
+    "docs/verification/qa/p0-13-tts-52be105/candidate-r3-20261008/candidate.json": "320ba2c1dee4b6eb769beec6fafd2b61b085684eeddc14b335fd28a6f41bbcbc",
+    "docs/verification/qa/p0-13-tts-52be105/candidate-r3-20261008/runner.ps1": "01f35325d8c10cfe0b66cdbfc2cf17486e8deb215d5bec033499df9aa4d42d15",
+    "docs/verification/qa/p0-13-tts-52be105/candidate-r3-20261008/steps.json": "b7c5cc0b7c04867c1ac95a9399d24e06809043eb2c84a9300ffe5cce4769edf5",
+    "docs/verification/qa/p0-13-tts-52be105/candidate-r3-20261008/surface.html": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2",
+    "tests/e2e/windows/qa_run_tts_candidate.mjs": "8f7d7132ffe8d3edb1477d7716345fb52ba619f6ebc6edec59102e14389ec6bc",
+    "tests/e2e/windows/qa_tts_output_candidate.mjs": "cb2f69fb90e25ff8c3ca32d7d4dc35845b6c6ba9c9cefe84fd722702d7bebb12"
+  },
+  "candidate_source_pins_match": 10,
+  "candidate_bytes_unchanged_at_qa_receipt": true
+}

@@ -1,0 +1,334 @@
+TAP version 13
+# Subtest: actual child-process permission is withheld
+ok 1 - actual child-process permission is withheld
+  ---
+  duration_ms: 2.128292
+  type: 'test'
+  ...
+# Subtest: no explicit execute mode
+ok 2 - no explicit execute mode
+  ---
+  duration_ms: 1.537939
+  type: 'test'
+  ...
+# Subtest: independent allocation hash required
+ok 3 - independent allocation hash required
+  ---
+  duration_ms: 0.489889
+  type: 'test'
+  ...
+# Subtest: self-reviewed altered record cannot replace the independent hash
+ok 4 - self-reviewed altered record cannot replace the independent hash
+  ---
+  duration_ms: 8.435139
+  type: 'test'
+  ...
+# Subtest: released allocation
+ok 5 - released allocation
+  ---
+  duration_ms: 5.800005
+  type: 'test'
+  ...
+# Subtest: expired allocation
+ok 6 - expired allocation
+  ---
+  duration_ms: 5.715899
+  type: 'test'
+  ...
+# Subtest: historical approval cannot authorize the updated command
+ok 7 - historical approval cannot authorize the updated command
+  ---
+  duration_ms: 6.238698
+  type: 'test'
+  ...
+# Subtest: wrong wrapper source
+ok 8 - wrong wrapper source
+  ---
+  duration_ms: 4.211511
+  type: 'test'
+  ...
+# Subtest: wrong runner binding
+ok 9 - wrong runner binding
+  ---
+  duration_ms: 4.318681
+  type: 'test'
+  ...
+# Subtest: Bypass cannot replace the exact process-only RemoteSigned command
+ok 10 - Bypass cannot replace the exact process-only RemoteSigned command
+  ---
+  duration_ms: 4.887254
+  type: 'test'
+  ...
+# Subtest: alternate PowerShell engine cannot replace the pinned command
+ok 11 - alternate PowerShell engine cannot replace the pinned command
+  ---
+  duration_ms: 5.172244
+  type: 'test'
+  ...
+# Subtest: wrong launch work/port
+ok 12 - wrong launch work/port
+  ---
+  duration_ms: 4.930698
+  type: 'test'
+  ...
+# Subtest: nonexclusive display
+ok 13 - nonexclusive display
+  ---
+  duration_ms: 4.078974
+  type: 'test'
+  ...
+# Subtest: sound/model scope expansion
+ok 14 - sound/model scope expansion
+  ---
+  duration_ms: 3.97803
+  type: 'test'
+  ...
+# Subtest: fresh package failure must precede every Windows call/cleanup
+ok 15 - fresh package failure must precede every Windows call/cleanup
+  ---
+  duration_ms: 9.171812
+  type: 'test'
+  ...
+# Subtest: altered saved candidate rejects before fresh identity or Windows
+ok 16 - altered saved candidate rejects before fresh identity or Windows
+  ---
+  duration_ms: 0.312168
+  type: 'test'
+  ...
+# Subtest: altered saved steps reject before fresh identity or Windows
+ok 17 - altered saved steps reject before fresh identity or Windows
+  ---
+  duration_ms: 0.370341
+  type: 'test'
+  ...
+# Subtest: valid injected admission orders fresh identity, preflight, copies, parser, one runner and both cleanup looks
+ok 18 - valid injected admission orders fresh identity, preflight, copies, parser, one runner and both cleanup looks
+  ---
+  duration_ms: 10.96407
+  type: 'test'
+  ...
+# Subtest: parser rejection starts nothing and performs no termination/cleanup queries
+ok 19 - parser rejection starts nothing and performs no termination/cleanup queries
+  ---
+  duration_ms: 9.730243
+  type: 'test'
+  ...
+# Subtest: expiry during the first lookup prevents all later non-cleanup Windows calls
+ok 20 - expiry during the first lookup prevents all later non-cleanup Windows calls
+  ---
+  duration_ms: 9.586087
+  type: 'test'
+  ...
+# Subtest: throw performs both exact cleanup observations with no retry
+ok 21 - throw performs both exact cleanup observations with no retry
+  ---
+  duration_ms: 9.120984
+  type: 'test'
+  ...
+# Subtest: timeout performs both exact cleanup observations with no retry
+ok 22 - timeout performs both exact cleanup observations with no retry
+  ---
+  duration_ms: 9.235435
+  type: 'test'
+  ...
+# Subtest: incomplete native result cannot pass the diagnostic
+ok 23 - incomplete native result cannot pass the diagnostic
+  ---
+  duration_ms: 10.17152
+  type: 'test'
+  ...
+# Subtest: sanitized preflight refusal: app port only
+ok 24 - sanitized preflight refusal: app port only
+  ---
+  duration_ms: 16.561526
+  type: 'test'
+  ...
+# Subtest: sanitized preflight refusal: Edge port only
+ok 25 - sanitized preflight refusal: Edge port only
+  ---
+  duration_ms: 9.558453
+  type: 'test'
+  ...
+# Subtest: sanitized preflight refusal: both ports
+ok 26 - sanitized preflight refusal: both ports
+  ---
+  duration_ms: 9.286489
+  type: 'test'
+  ...
+# Subtest: sanitized preflight refusal: the candidate stage on the candidate runtime
+ok 27 - sanitized preflight refusal: the candidate stage on the candidate runtime
+  ---
+  duration_ms: 10.588331
+  type: 'test'
+  ...
+# Subtest: sanitized preflight refusal: unreadable command and executable
+ok 28 - sanitized preflight refusal: unreadable command and executable
+  ---
+  duration_ms: 11.41206
+  type: 'test'
+  ...
+# Subtest: sanitized preflight refusal: child missing creation
+ok 29 - sanitized preflight refusal: child missing creation
+  ---
+  duration_ms: 11.334127
+  type: 'test'
+  ...
+# Subtest: readable children are judged by their own arguments: a plain child (of another runtime or of the candidate runtime) is admitted; one naming the stage refuses
+ok 30 - readable children are judged by their own arguments: a plain child (of another runtime or of the candidate runtime) is admitted; one naming the stage refuses
+  ---
+  duration_ms: 25.615843
+  type: 'test'
+  ...
+# Subtest: refusal mkdir failure still starts and signals nothing
+ok 31 - refusal mkdir failure still starts and signals nothing
+  ---
+  duration_ms: 8.170642
+  type: 'test'
+  ...
+# Subtest: refusal write failure still starts and signals nothing
+ok 32 - refusal write failure still starts and signals nothing
+  ---
+  duration_ms: 8.788394
+  type: 'test'
+  ...
+# Subtest: output occupied during preflight is preserved without starting or signalling anything
+ok 33 - output occupied during preflight is preserved without starting or signalling anything
+  ---
+  duration_ms: 8.33789
+  type: 'test'
+  ...
+# Subtest: metadata allowlist preserves separate snapshot clocks, reasons and safe known-stage classification
+ok 34 - metadata allowlist preserves separate snapshot clocks, reasons and safe known-stage classification
+  ---
+  duration_ms: 0.819392
+  type: 'test'
+  ...
+# Subtest: path keys follow Windows: letter case, / or \\, a \\\\?\\ prefix, doubled and trailing separators, trailing dots and spaces
+ok 35 - path keys follow Windows: letter case, / or \\, a \\\\?\\ prefix, doubled and trailing separators, trailing dots and spaces
+  ---
+  duration_ms: 0.141852
+  type: 'test'
+  ...
+# Subtest: the candidate stage or this run's folder named in any form is relevant; quoting is read by Windows' rules
+ok 36 - the candidate stage or this run's folder named in any form is relevant; quoting is read by Windows' rules
+  ---
+  duration_ms: 0.332097
+  type: 'test'
+  ...
+# Subtest: arguments that only resemble the stage or folder are not relevant (whole path components are compared)
+ok 37 - arguments that only resemble the stage or folder are not relevant (whole path components are compared)
+  ---
+  duration_ms: 0.231064
+  type: 'test'
+  ...
+# Subtest: a debugging-port argument for either test port is relevant; other numbers, other keys and a bare number are not
+ok 38 - a debugging-port argument for either test port is relevant; other numbers, other keys and a bare number are not
+  ---
+  duration_ms: 0.525549
+  type: 'test'
+  ...
+# Subtest: a main process of the candidate runtime refuses unless its FIRST argument is an absolute app path; with another absolute app it is another owner's; unreadable fields refuse
+ok 39 - a main process of the candidate runtime refuses unless its FIRST argument is an absolute app path; with another absolute app it is another owner's; unreadable fields refuse
+  ---
+  duration_ms: 0.338049
+  type: 'test'
+  ...
+# Subtest: Edge: only this run's folder or a test-port argument is relevant; the user's browser and unreadable rows are not
+ok 40 - Edge: only this run's folder or a test-port argument is relevant; the user's browser and unreadable rows are not
+  ---
+  duration_ms: 0.106224
+  type: 'test'
+  ...
+# Subtest: namesThisRun compares 8.3 short names by their six-character prefix only, and only for components with ~N
+ok 41 - namesThisRun compares 8.3 short names by their six-character prefix only, and only for components with ~N
+  ---
+  duration_ms: 0.063301
+  type: 'test'
+  ...
+# Subtest: scoped refusal before anything starts: another runtime naming the stage
+ok 42 - scoped refusal before anything starts: another runtime naming the stage
+  ---
+  duration_ms: 8.422791
+  type: 'test'
+  ...
+# Subtest: scoped refusal before anything starts: another runtime naming this run's user data
+ok 43 - scoped refusal before anything starts: another runtime naming this run's user data
+  ---
+  duration_ms: 8.608048
+  type: 'test'
+  ...
+# Subtest: scoped refusal before anything starts: another runtime with the app port argument
+ok 44 - scoped refusal before anything starts: another runtime with the app port argument
+  ---
+  duration_ms: 7.684859
+  type: 'test'
+  ...
+# Subtest: scoped refusal before anything starts: an unreadable executable
+ok 45 - scoped refusal before anything starts: an unreadable executable
+  ---
+  duration_ms: 8.661808
+  type: 'test'
+  ...
+# Subtest: scoped refusal before anything starts: the candidate runtime with a relative app
+ok 46 - scoped refusal before anything starts: the candidate runtime with a relative app
+  ---
+  duration_ms: 8.125786
+  type: 'test'
+  ...
+# Subtest: scoped refusal before anything starts: the candidate runtime with a switch before its app
+ok 47 - scoped refusal before anything starts: the candidate runtime with a switch before its app
+  ---
+  duration_ms: 7.362369
+  type: 'test'
+  ...
+# Subtest: scoped refusal before anything starts: Edge using this run's profile
+ok 48 - scoped refusal before anything starts: Edge using this run's profile
+  ---
+  duration_ms: 9.047953
+  type: 'test'
+  ...
+# Subtest: another owner's readable Electron app (main and children) is admitted, seen by the complete cleanup look, and never signalled; only this run's exact launches are
+ok 49 - another owner's readable Electron app (main and children) is admitted, seen by the complete cleanup look, and never signalled; only this run's exact launches are
+  ---
+  duration_ms: 10.203431
+  type: 'test'
+  ...
+# Subtest: a PID of another owner's app reused by this run's launch is owned by its new identity only
+ok 50 - a PID of another owner's app reused by this run's launch is owned by its new identity only
+  ---
+  duration_ms: 11.625329
+  type: 'test'
+  ...
+# Subtest: this run's PID taken by another process between the look and the signal: the signal finds it stale and nothing is signalled
+ok 51 - this run's PID taken by another process between the look and the signal: the signal finds it stale and nothing is signalled
+  ---
+  duration_ms: 8.036156
+  type: 'test'
+  ...
+# Subtest: cleanup bounds are unchanged: complete looks of both images, held-handle signals, 1 s / 5 s / 5 s waits in 250 ms steps
+ok 52 - cleanup bounds are unchanged: complete looks of both images, held-handle signals, 1 s / 5 s / 5 s waits in 250 ms steps
+  ---
+  duration_ms: 0.210624
+  type: 'test'
+  ...
+# Subtest: a staged app of another owner on the same cached runtime (another absolute stage, its own port) is admitted and never signalled
+ok 53 - a staged app of another owner on the same cached runtime (another absolute stage, its own port) is admitted and never signalled
+  ---
+  duration_ms: 9.204375
+  type: 'test'
+  ...
+# Subtest: after the run the cleanup still sees everything: a young unreadable row makes the exit unknown (passed false), a listener that is not ours is said
+ok 54 - after the run the cleanup still sees everything: a young unreadable row makes the exit unknown (passed false), a listener that is not ours is said
+  ---
+  duration_ms: 16.880698
+  type: 'test'
+  ...
+1..54
+# tests 54
+# suites 0
+# pass 54
+# fail 0
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 400.548332
