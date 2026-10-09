@@ -58,3 +58,12 @@ Support's review may identify additional concrete corrections; do not waive them
 Neither20author checks nor a source review proves real inference, native interaction,
 voice, or either full §7.1 gate. No further diagnostic run, new account/spending,
 model/effort/permission/service change or monitoring is authorized here.
+
+## Actual correction handoff
+
+Published Lead baseline `b63ecdcf9dd436a60a3de702dfa8c7ee39a3232a` was returned to
+original QA in `handoff_3ec98086b3b4b0a1a8b4c17b14a8746a`, accepted unread with
+execution_started=false. It assigns the two reproduced corrections and D1–D10
+within the existing task; Support continues the frozen-source independent review.
+Delivery acceptance is not a completed repair or actual execution proof. No
+display/account/audio lease or provider request was created.

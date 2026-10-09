@@ -115,7 +115,14 @@
         "included_usage_credit_false_denial",
         "unknown_start_undercount"
       ],
-      "execution_allocated": false
+      "execution_allocated": false,
+      "correction_dispatch": {
+        "message_id": "handoff_3ec98086b3b4b0a1a8b4c17b14a8746a",
+        "accepted": true,
+        "execution_started_at_dispatch": false,
+        "lead_baseline": "b63ecdcf9dd436a60a3de702dfa8c7ee39a3232a",
+        "scope": "same-owner source/offline correction; no resource allocation"
+      }
     }
   },
   "approved_ai_disabled_diagnostic": {

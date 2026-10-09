@@ -159,7 +159,8 @@ the62-step current-package driver, source/offline only. Lead holds it for reprod
 included-credit false denial and unknown-Start undercount.
 [Exact review and engineering decisions](verification/lead/live-windows/nonvoice-driver-review/README.md).
 Support independent review is assigned via `handoff_dc6421e3ff2c4836f05f61dcab7e7985`;
-QA repairs the same candidate. Real0/4 unchanged, no active resource allocation.
+QA received same-candidate correction `handoff_3ec98086b3b4b0a1a8b4c17b14a8746a`
+(accepted, execution initially unconfirmed). Real0/4 unchanged, no active resource allocation.
 Keep normal-band/foreground/16-point/display guards and exact-owned cleanup;
 no largest-window-only trust, foreign mutation or allocation before the reviewed correction. Actual
 popup content is unknown; the product and complete live/audio gates remain untested.
