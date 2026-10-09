@@ -195,3 +195,7 @@ allocation. This reserves the last of3slots under the original nonce, not a new 
 Two actual invocations are confirmed; no further unreserved attempt remains.
 Record accepted dispatch, actual start/outcome and explicit release separately.
 No AI/account/microphone/audio/TTS; no fourth run or retry after a new refusal.
+
+Actual final-slot dispatch `handoff_6968c97920e69b27bbb6c5ebcb06a48e` was accepted
+unread, execution_started=false, against pushed release `1f6f0ff`. This receipt is
+not proof of execution; actual result and explicit display release are pending.

@@ -350,7 +350,7 @@
       },
       {
         "number": 3,
-        "status": "reserved_not_yet_dispatched",
+        "status": "dispatched_execution_unconfirmed",
         "allocation_id": "lc-bounded-display-20261008-03",
         "allocation_sha256": "57604d8eba94e103397a96d7b7341ae9d06eef35027851590f88612e530ba51c",
         "allocation_record": "docs/verification/lead/live-windows/approved-two-gates/bounded-retest-20261008/attempt-03-allocation.json",
@@ -363,11 +363,15 @@
         "wrapper_invoked": null,
         "display_released": false,
         "evidence_path": "docs/verification/qa/p0-13-tts-52be105/execution-bounded-20261008-03",
-        "scratch": "/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-tts-output-27f0531f6f574cf2b67b1f650525e89d"
+        "scratch": "/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-tts-output-27f0531f6f574cf2b67b1f650525e89d",
+        "dispatch_message": "handoff_6968c97920e69b27bbb6c5ebcb06a48e",
+        "dispatch_accepted": true,
+        "execution_started_at_dispatch": false,
+        "release_commit": "1f6f0ff2a1d20484ee3db55daeb0a6b42bb6f9cf"
       }
     ],
     "next_owner_action": "QA executes the final third wrapper once after fresh runtime admission, then exact-owned cleanup and DISPLAY RELEASE. No fourth attempt; genuine new refusal stops. No account/provider/audio.",
-    "continuation_status": "attempt03_reserved_reviewed_not_yet_dispatched",
+    "continuation_status": "attempt03_dispatched_awaiting_actual_result",
     "new_refusal": {
       "reported_by": "qa",
       "evidence_commit": "b586e8a",
