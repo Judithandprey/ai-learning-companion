@@ -176,8 +176,15 @@ interface; Web decision `handoff_65d44351ffdfa6c2126f9f94ab6687f3` and QA bindin
 `handoff_bd7d451fa1ab12ebd2e49666fc009394` are accepted, implementation not yet
 delivered. The eventual candidate must pin the changed production build,
 preserving52be105 evidence.
-Real0/4 unchanged, no active resource allocation; next is the corrected candidate
-and changed-boundary independent review, not another completed-diagnostic run.
+QA actual `9614947` / `handoff_32491a1ff558dee96f8f508ca0d71439` delivers the
+next source correction and native checker. Lead exact-source30/30 checks pass;
+Support changed-boundary review `handoff_26fac298197c97826e4184e71ff22557` is
+accepted, verdict pending. Candidate03 refuses execution until Web interlock
+production is reviewed and pinned. QA continues exact-owned overlay recognition
+and bounded parse/compile checks (`handoff_1698eb178ef50ac35b1b960a035cfbae`);
+Web received checker/interface coordination `handoff_c899b66b9fb10e64d25e305d1cadc258`.
+Real0/4 unchanged, no active resource allocation; these source checks are not
+a native/live acceptance and do not repeat the completed diagnostic.
 Keep normal-band/foreground/16-point/display guards and exact-owned cleanup;
 no largest-window-only trust, foreign mutation or allocation before the reviewed correction. Actual
 popup content is unknown; the product and complete live/audio gates remain untested.

@@ -49,7 +49,7 @@
       "account/model/billing change",
       "automatic restart or retry"
     ],
-    "next_owner": "Web implements bounded trusted test-path acquisition/send interlocks; QA continues same receipt/ledger/lifecycle correction and binds its native checker after Lead interface coordination; Support reviews changed boundaries before Lead integration/resource admission.",
+    "next_owner": "Web delivers the app interlock; QA completes exact-owned overlay predicate and normal-reviewed targeted parse/compile checks; Support reviews changed boundaries at9614947; Lead integrates and reviews exact command/resource release only when ready.",
     "production_source_commit": "175515308f509fb8c0f531dbdb10e57313fcde5a",
     "stage_name": "lc-windows-live-1755153",
     "stage_tree_sha256": "3387824a0dee70013104388d4acec2b810475e98953e7c3f196063a8781fd154",
@@ -124,17 +124,26 @@
         "scope": "same-owner source/offline correction; no resource allocation"
       },
       "latest_correction": {
-        "source_commit": "e0bd4b37dc788a766ed3f6fe86602f556b04d4cd",
-        "message_id": "handoff_1db90d738e09039116a04a78d8f84961",
-        "candidate_sha256": "74ebc3942022fe0549aa691b45ff5cc4949a56041b2f424b22f4786eb4374fbc",
+        "source_commit": "9614947fa2a3cfae3dd5e3d154011b3c6dbaa82b",
+        "message_id": "handoff_32491a1ff558dee96f8f508ca0d71439",
+        "candidate_sha256": "db83ff5c52bbbdef4d4fb361522c4a2d2b8168fab7face4805efb4ba30bd3df6",
+        "wrapper_sha256": "ddbd65f80720f5cb109906e4d01aa3f3dd93c40f2beac8519fa7fd645c83d2cd",
         "integrated": false,
         "lead_focused_checks": {
-          "passed": 23,
+          "passed": 30,
           "failed": 0,
           "native": false,
           "provider": false
         },
-        "status": "remaining_independent_findings_open"
+        "execution_gate": "interlockProduction=null; every allocation refused",
+        "status": "independent_review_and_app_interlock_pending",
+        "support_review_dispatch": "handoff_26fac298197c97826e4184e71ff22557",
+        "support_review_accepted": true,
+        "support_verdict": "pending",
+        "qa_decisions_dispatch": "handoff_1698eb178ef50ac35b1b960a035cfbae",
+        "qa_decisions_accepted": true,
+        "web_checker_handoff": "handoff_c899b66b9fb10e64d25e305d1cadc258",
+        "web_checker_handoff_accepted": true
       },
       "support_verdict": {
         "source_commit": "38230e1f63c4c3dcbdf28b03c07520db9ea8206d",
@@ -187,6 +196,19 @@
         "qa_interface_binding_message": "handoff_bd7d451fa1ab12ebd2e49666fc009394",
         "interface_messages_accepted": true,
         "implementation_delivered": false
+      },
+      "previous_correction": {
+        "source_commit": "e0bd4b37dc788a766ed3f6fe86602f556b04d4cd",
+        "message_id": "handoff_1db90d738e09039116a04a78d8f84961",
+        "candidate_sha256": "74ebc3942022fe0549aa691b45ff5cc4949a56041b2f424b22f4786eb4374fbc",
+        "integrated": false,
+        "lead_focused_checks": {
+          "passed": 23,
+          "failed": 0,
+          "native": false,
+          "provider": false
+        },
+        "status": "remaining_independent_findings_open"
       }
     }
   },

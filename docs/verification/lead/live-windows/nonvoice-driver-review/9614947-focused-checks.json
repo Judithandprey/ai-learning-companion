@@ -1,0 +1,17 @@
+{
+  "commit": "9614947fa2a3cfae3dd5e3d154011b3c6dbaa82b",
+  "export": "/tmp/lc-lead-live-9614947-8r7yalrg",
+  "command": [
+    "/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node",
+    "--permission",
+    "--allow-fs-read=/tmp/lc-lead-live-9614947-8r7yalrg",
+    "--allow-fs-read=/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-live-nonvoice-*",
+    "tests/e2e/windows/test_qa_live_candidate.mjs"
+  ],
+  "exit_code": 0,
+  "elapsed_seconds": 0.202,
+  "native": false,
+  "provider": false,
+  "child_process_permission": false,
+  "node_fs_write_permission": false
+}
