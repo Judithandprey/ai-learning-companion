@@ -49,7 +49,7 @@
       "account/model/billing change",
       "automatic restart or retry"
     ],
-    "next_owner": "Support reviews Web consumer at corrected 9c3beab; QA completes R1-R5/native overlay and client compatibility. Lead client deadline/BOM check passes. Integrate and pin distinct build after independent review; no current resource release.",
+    "next_owner": "Web repairs independently reproduced C1-C3 consumer boundaries at 9c3beab; QA continues its existing R1-R5/native checker correction. Support is idle until corrected changed boundaries are ready, then Lead reviews/integrates and pins a distinct build. No resource release.",
     "production_source_commit": "175515308f509fb8c0f531dbdb10e57313fcde5a",
     "stage_name": "lc-windows-live-1755153",
     "stage_tree_sha256": "3387824a0dee70013104388d4acec2b810475e98953e7c3f196063a8781fd154",
@@ -247,7 +247,7 @@
           "message_id": "handoff_4df62e69d2eab17b382e8ec9e77c25ca",
           "integrated": false,
           "staged": false,
-          "status": "client_findings_closed_at_9c3beab_independent_consumer_review_pending",
+          "status": "client_findings_closed_consumer_HOLD_C1_C2_conditional_C3",
           "author_tests": {
             "passed": 486,
             "failed": 0,
@@ -282,6 +282,30 @@
             "premature_test_claim_withdrawal": "handoff_45080d7a7e6c9c90ff949c41932f5a7a",
             "integrated": false,
             "staged": false
+          },
+          "consumer_review": {
+            "source_commit": "dbb42ab61b444759e954f6af829fbe98a556dbc7",
+            "integrated_as": "ff51068",
+            "reviewed_web": "9c3beab5d9bfae4ebd295af5a3db5baf99b4038c",
+            "message_id": "handoff_d7913179342e20a911a317c3cf0d63f2",
+            "verdict": "HOLD",
+            "review": "docs/verification/support/windows-admission-9c3beab-review-20261009/README.md",
+            "findings": [
+              "C1_synchronous_failure_not_fencing_consumers",
+              "C2_acquisition_progress_state_mismatch",
+              "C3_conditional_pending_original_cache_eviction"
+            ],
+            "actual_offline_probes": {
+              "controls": 5,
+              "defect_witnesses": 3,
+              "conditional_cache_witnesses": 1,
+              "initial_extraction_failure_preserved": true,
+              "native": false,
+              "provider": false
+            },
+            "same_task_correction_dispatch": "handoff_09a84c59045de0dbcd52f6829e5b98a9",
+            "dispatch_accepted": true,
+            "execution_started_at_dispatch": false
           }
         }
       },

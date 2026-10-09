@@ -192,8 +192,12 @@ acceptance and BOM mismatch; correction `handoff_6d04d5f2fce4ecf54550d070b1dd7b1
 is fulfilled by `9c3beab` / `handoff_1c26ffb9de8e59ae8836af51308b2f50`;
 Lead's exact-source focused deadline/BOM check passes (1 test; first path-resolution
 failure retained). Support consumer review `handoff_91bcc765776fedd7445855f09561f618`
-now targets this corrected source via `handoff_c39d67709daee9055c7a9d24614e97a7`,
-with verdict pending. QA's corrected checker remains in progress; its exact-source
+returns HOLD on this corrected source: `dbb42ab` /
+`handoff_d7913179342e20a911a317c3cf0d63f2` integrates as `ff51068`. C1 known-failure
+consumer race, C2 acquisition-state mismatch and conditional C3 pending-original
+cache expiry go to Web in accepted same-task `handoff_09a84c59045de0dbcd52f6829e5b98a9`;
+actual repair delivery is pending. Support is idle until that correction is ready.
+QA's corrected checker remains in progress; its exact-source
 handoff `handoff_0326d79a1396534848f475da12bef664` is accepted, adoption initially
 unconfirmed. The main-authored capture/PID/HWND plus QA's frozen
 native creation identity must agree across checker and runner, with positive

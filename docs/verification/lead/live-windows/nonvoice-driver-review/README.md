@@ -5,7 +5,8 @@ Support's independent review `5083814` is integrated as `0ac8605`. It closes the
 applicable-quota finding and reproduces remaining ledger, Stop, watcher and
 typed-receipt defects. QA repairs those boundaries and the exact current-overlay
 predicate. Web delivered `48c20c4` and client correction `9c3beab`; Lead's focused
-deadline/BOM check passes while Support reviews the capture consumers. Interim
+deadline/BOM check passes. Support's consumer review `dbb42ab` is integrated as
+`ff51068` and finds C1–C3 below; the same Windows owner is assigned their repair. Interim
 candidate 03 correctly refuses execution against old production 52be105.
 Initial delivery `handoff_a2f89cda91b9465425a8ca4eeec4cce6` follows the existing
 P0-13 preparation assignment. Product remains52be105, staged77-file tree531943a8;
@@ -462,3 +463,30 @@ The client findings are closed at this exact source. Support's existing review
 was updated to `9c3beab` through `handoff_c39d67709daee9055c7a9d24614e97a7`;
 its independent consumer verdict and QA's corrected checker are still required.
 The app remains unintegrated/unstaged, and no execution allocation is created.
+
+### Independent consumer review received — C1–C3 correction assigned
+
+Actual `handoff_d7913179342e20a911a317c3cf0d63f2` delivers Support
+`dbb42ab61b444759e954f6af829fbe98a556dbc7`, integrated as `ff51068`.
+Lead read the [full report](../../../support/windows-admission-9c3beab-review-20261009/README.md)
+and both exact-source probes; the verdict is **HOLD at Web `9c3beab`**.
+
+| Finding | Evidence and bounded owner correction |
+| --- | --- |
+| C1, P1 | An allow and its replay in one stdout chunk synchronously latch `checker.failure`, but main consumers act before the deferred failure notification. The probe reaches one fake connector call and separately returns an admitted frame while failure is already known. Fence the existing consumer side effects on that synchronous latch after waits, preserving decision/violation order and Stop reason. This is distinct from the disclosed native time-of-check race. |
+| C2, P2 | A frame arriving during pre-admission updates progress facts but leaves the sample/retention state `no_new_frame`. Derive state from the actual acquisition facts, preserving gap/ended precedence. |
+| C3, conditional P2 | After admission 65 evicts frame 1 from a 64-entry cache, its genuinely approved but pending retention intake is refused and ends capture. Preserve admission lifetime for pending originals or establish an enforced bound. No real encoder delay or native original loss was measured; already stored originals are intact. |
+
+Support executed only two minimal offline probes: 5 controls, 3 defect witnesses
+and 1 conditional cache witness. Its first extraction-anchor failure is retained,
+not counted as a pass. Successful probe exits reproduce defects rather than pass
+the product. The deadline/BOM fix remains verified separately. No real connector,
+display, provider, account, audio or TTS operation occurred.
+
+Web same-task repair `handoff_09a84c59045de0dbcd52f6829e5b98a9` is accepted,
+initially unread/execution not started. It requests one minimal correction and
+focused positive/negative checks, preserving earlier fixes and originals; no
+full-suite or mutation rerun, new framework or protocol. Support is idle until
+the corrected boundaries are ready. QA continues its existing R1–R5/native
+checker correction independently. Lead retains integration and exact candidate
+release after review. Real actions **0/4**, old diagnostic **3/3 closed**, no lease.
