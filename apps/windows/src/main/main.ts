@@ -797,7 +797,8 @@ async function admitFrame(s: Session, phase: unknown, sampleSeq: unknown, factsV
     // With it, the overlay says which admitted frames it still holds or uses (its held frame, and pictures still being
     // made or kept from earlier frames): every other admission is let go now. A frame it leaves out is refused later.
     const holding = isObj(factsValue) && sameMembers(factsValue, ['holding']) ? factsValue['holding'] : undefined;
-    if (!Array.isArray(holding) || holding.length > HOLDING_MAX || !holding.every((x) => isSeq(x) && x < sampleSeq)) {
+    // (each must name a frame this capture admitted and still keeps: an unknown number is refused, never ignored)
+    if (!Array.isArray(holding) || holding.length > HOLDING_MAX || !holding.every((x) => isSeq(x) && x < sampleSeq && a.admitted.has(x))) {
       violate(s, 'the overlay asked for an admission that is malformed');
       return { ok: false };
     }

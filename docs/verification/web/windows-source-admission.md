@@ -298,6 +298,39 @@ Checks for this correction, focused as asked; the whole suite and the full mutat
   - malformed `holding` lists.
 - Six reverted-fix mutants (C1, C2, three for C3, and the `holding` validation) are each killed by them.
 
+## Final correction after Support's retest of `4778908`
+
+Lead `handoff_f0f1935e1cb76d22f361e920e9b67721` forwarded Support's retest (Support commit `fa78698`,
+`docs/verification/support/windows-admission-4778908-retest-20261009/README.md`). Support closed C1, C2 and the
+original C3, and verified all four pending consumers across 70 later acquisitions. One condition remained:
+
+- **C3-A: an unknown number in `holding` was accepted.** With nothing admitted, `pre(7, {holding: [1]})` asked the
+  checker and went on. It could not mint authority: pruning only deletes entries, and `sourceOf` still refused frame
+  1 at use. Now every number in `holding` must name a frame this capture admitted and still keeps, or it is a
+  violation before the checker is asked. The hash and size checks at use are unchanged.
+
+**Test-mode ceiling, a lead decision for the conditional C3-B.** The overlay may name at most 16 frames that it
+still holds or uses. If more than 16 distinct frames are in use at once, the next admission is refused and the whole
+capture ends with its ordinary Stop and cleanup; it fails closed. This needs, for example, 17 circles on distinct
+frames whose pictures are all still being encoded. That is far beyond the current four-action candidate. Still-needed
+references are never dropped to fit, and the bound is not widened. This is a limit of this opt-in test adapter only:
+
+- it is not a limit of the ordinary product (unconfigured, none of this runs);
+- it is not a measured native failure;
+- it is not an action budget;
+- it is not acceptance of the complete user experience.
+
+A future wider test scope must revisit it before release.
+
+Checks for this correction (focused, as asked):
+
+- `tsc --noEmit` is clean.
+- `tests/app-admission.test.ts` (20) and `tests/source-admission.test.ts` (11) pass, run twice. They include:
+  - the empty-map unknown-number negative (no checker request; the capture ends);
+  - a known held frame accepted;
+  - a let-go frame named again, refused.
+- Without the new check (reverted in a scratch copy), the holding test fails (19 pass, 1 fail).
+
 ## Next
 
 1. **QA**: add the `overlay` member to the checker, then build candidate 03 against this commit. The lead

@@ -873,12 +873,29 @@ test('[synthetic checker] an admission is kept while the overlay still holds or 
   await lies.ended();
   assert.match(lies.state().ended ?? '', /frame 1 was to be used without an admitted taking of its own/);
   assert.equal(lies.jsonl('manifest.jsonl').some((l) => l['kind'] === 'retained' && l['frame_seq'] === 1), false);
-  // What the overlay says it holds: at most 16 earlier frames, each an earlier sample; else the capture ends.
-  for (const [what, facts] of [['missing', null], ['not a list', { holding: 3 }], ['a later frame', { holding: [7] }], ['too many', { holding: Array.from({ length: 17 }, (_, i) => i + 1) }], ['another member', { holding: [], more: 1 }]] as const) {
+  // What the overlay says it holds: at most 16 earlier frames, each one this capture admitted and still keeps; else
+  // the capture ends, and the checker is not asked.
+  for (const [what, facts] of [['missing', null], ['not a list', { holding: 3 }], ['a later frame', { holding: [7] }], ['a frame never admitted (none is)', { holding: [1] }], ['too many', { holding: Array.from({ length: 17 }, (_, i) => i + 1) }], ['another member', { holding: [], more: 1 }]] as const) {
     const x = await app();
     assert.equal(await x.page.arm(), true);
     assert.deepEqual(plain(await x.h.handlers['lc:admit-frame']!({ sender: x.s.overlay.webContents }, 'pre', 7, facts)), { ok: false }, what);
     await x.ended();
     assert.equal(x.c().of('pre_acquire').length, 0, what);
   }
+  // A frame admitted and kept may be named; one admitted and let go may not; one never admitted may not.
+  const k = await app();
+  assert.equal(await k.page.arm(), true);
+  const by = { sender: k.s.overlay.webContents };
+  const admit = async (sample: number, holding: number[]): Promise<boolean> => {
+    const pre = plain(await k.h.handlers['lc:admit-frame']!(by, 'pre', sample, { holding })) as { ok: boolean; ticket?: string };
+    if (!pre.ok) return false;
+    return (plain(await k.h.handlers['lc:admit-frame']!(by, 'post', sample, { ticket: pre.ticket, raw_sha256: String(sample % 10).repeat(64), width: 1280, height: 800 })) as { ok: boolean }).ok;
+  };
+  assert.equal(await admit(1, []), true);
+  assert.equal(await admit(2, [1]), true, 'frame 1 is admitted and kept: it may be named');
+  assert.equal(await admit(3, [2]), true, 'frame 1 is let go here');
+  assert.equal(k.h.current() !== null, true);
+  assert.deepEqual(plain(await k.h.handlers['lc:admit-frame']!(by, 'pre', 4, { holding: [1, 3] })), { ok: false }, 'frame 1 was let go: it may not be named again');
+  await k.ended();
+  assert.deepEqual([k.c().of('pre_acquire').length, k.state().ended], [3, 'the test\'s source check ended the capture: the overlay asked for an admission that is malformed']);
 });
