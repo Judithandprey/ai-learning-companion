@@ -6,7 +6,8 @@ applicable-quota finding and reproduces remaining ledger, Stop, watcher and
 typed-receipt defects. QA repairs those boundaries and the exact current-overlay
 predicate. Web delivered `48c20c4` and client correction `9c3beab`; Lead's focused
 deadline/BOM check passes. Support's consumer review `dbb42ab` is integrated as
-`ff51068` and finds C1–C3 below; the same Windows owner is assigned their repair. Interim
+`ff51068` and finds C1–C3 below. Web correction `4778908` passes Lead's three
+focused cases; Support's changed-boundary retest is pending. Interim
 candidate 03 correctly refuses execution against old production 52be105.
 Initial delivery `handoff_a2f89cda91b9465425a8ca4eeec4cce6` follows the existing
 P0-13 preparation assignment. Product remains52be105, staged77-file tree531943a8;
@@ -484,9 +485,40 @@ the product. The deadline/BOM fix remains verified separately. No real connector
 display, provider, account, audio or TTS operation occurred.
 
 Web same-task repair `handoff_09a84c59045de0dbcd52f6829e5b98a9` is accepted,
-initially unread/execution not started. It requests one minimal correction and
+initially unread/execution not started, and is now delivered below. It requested one minimal correction and
 focused positive/negative checks, preserving earlier fixes and originals; no
 full-suite or mutation rerun, new framework or protocol. Support is idle until
 the corrected boundaries are ready. QA continues its existing R1–R5/native
 checker correction independently. Lead retains integration and exact candidate
 release after review. Real actions **0/4**, old diagnostic **3/3 closed**, no lease.
+
+### C1–C3 source correction delivered; focused checks pass
+
+Actual `handoff_62b67a565d6db48314b98d4f70e1de1c` delivers Web
+`477890829c4afe880a151f3ce151b98b97405414`, a child of `9c3beab`, Windows tree
+`7c20539ef16478d96f6719d8236078fea96daa09`. Lead read the five-file delta and
+the owner's full correction record. It checks the synchronous failure latch
+after recording the real answer, recalculates frame state at acquisition, and
+keeps admissions for frames still held or pending intake. The bounded
+app-internal `holding` list retains at most 16 earlier frames plus the newly
+admitted frame; it does not alter the checker protocol or ordinary configuration.
+Retention, first-look, circle and follow-up mark their pending frame use and
+release it after handoff. Malformed lists and later use of a dropped admission
+still refuse. The unconfigured branch keeps the original behavior; no additional
+ordinary-mode defect was identified in this delta review.
+
+Lead ran only the three affected integration-style unit cases from an exact Git
+export: **3 pass / 0 fail**, including same-chunk replay fencing, arrival during
+admission, delayed frame-1 retention after 70 newer frames, omitted-frame refusal
+and malformed lists. [Actual command/output](web-consumer-correction-4778908.json).
+Node had no child-process permission; writes were limited to the test's dedicated
+temporary directory. Electron, checker, connector and display were synthetic.
+The author's wider 193-pass/5-skip run and six reverted-fix mutations remain
+separate evidence, not repeated or added to Lead's count.
+
+Support receives the single changed-boundary retest in accepted
+`handoff_71972c17fbe888d529689cf3aabd8aef`, initially unread/execution not started.
+It covers C1–C3 and the new pending-use lifetime, not the whole product or QA WIP.
+Final independent verdict and QA's corrected checker remain dependencies before
+source integration, a distinct package and exact execution release. No resource
+lease or real action was used by these checks.

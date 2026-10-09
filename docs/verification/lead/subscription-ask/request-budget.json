@@ -49,7 +49,7 @@
       "account/model/billing change",
       "automatic restart or retry"
     ],
-    "next_owner": "Web repairs independently reproduced C1-C3 consumer boundaries at 9c3beab; QA continues its existing R1-R5/native checker correction. Support is idle until corrected changed boundaries are ready, then Lead reviews/integrates and pins a distinct build. No resource release.",
+    "next_owner": "Support retests only C1-C3 at delivered Web 4778908; Lead three focused cases pass. QA continues existing R1-R5/native checker correction. Lead integrates after independent approval and pins a distinct build before exact release. No current resource lease.",
     "production_source_commit": "175515308f509fb8c0f531dbdb10e57313fcde5a",
     "stage_name": "lc-windows-live-1755153",
     "stage_tree_sha256": "3387824a0dee70013104388d4acec2b810475e98953e7c3f196063a8781fd154",
@@ -247,7 +247,7 @@
           "message_id": "handoff_4df62e69d2eab17b382e8ec9e77c25ca",
           "integrated": false,
           "staged": false,
-          "status": "client_findings_closed_consumer_HOLD_C1_C2_conditional_C3",
+          "status": "consumer_correction_4778908_focused_pass_independent_retest_pending",
           "author_tests": {
             "passed": 486,
             "failed": 0,
@@ -305,7 +305,25 @@
             },
             "same_task_correction_dispatch": "handoff_09a84c59045de0dbcd52f6829e5b98a9",
             "dispatch_accepted": true,
-            "execution_started_at_dispatch": false
+            "execution_started_at_dispatch": false,
+            "correction": {
+              "source_commit": "477890829c4afe880a151f3ce151b98b97405414",
+              "apps_windows_tree": "7c20539ef16478d96f6719d8236078fea96daa09",
+              "message_id": "handoff_62b67a565d6db48314b98d4f70e1de1c",
+              "lead_focused_checks": {
+                "passed": 3,
+                "failed": 0,
+                "native": false,
+                "provider": false
+              },
+              "evidence": "docs/verification/lead/live-windows/nonvoice-driver-review/web-consumer-correction-4778908.json",
+              "support_retest_dispatch": "handoff_71972c17fbe888d529689cf3aabd8aef",
+              "dispatch_accepted": true,
+              "execution_started_at_dispatch": false,
+              "independent_verdict": "pending",
+              "integrated": false,
+              "staged": false
+            }
           }
         }
       },

@@ -195,8 +195,10 @@ failure retained). Support consumer review `handoff_91bcc765776fedd7445855f09561
 returns HOLD on this corrected source: `dbb42ab` /
 `handoff_d7913179342e20a911a317c3cf0d63f2` integrates as `ff51068`. C1 known-failure
 consumer race, C2 acquisition-state mismatch and conditional C3 pending-original
-cache expiry go to Web in accepted same-task `handoff_09a84c59045de0dbcd52f6829e5b98a9`;
-actual repair delivery is pending. Support is idle until that correction is ready.
+cache expiry go to Web in same-task `handoff_09a84c59045de0dbcd52f6829e5b98a9`.
+Actual repair `4778908` / `handoff_62b67a565d6db48314b98d4f70e1de1c` passes Lead's
+three changed cases; Support's bounded retest `handoff_71972c17fbe888d529689cf3aabd8aef`
+is accepted, verdict pending. No source integration or new package is accepted yet.
 QA's corrected checker remains in progress; its exact-source
 handoff `handoff_0326d79a1396534848f475da12bef664` is accepted, adoption initially
 unconfirmed. The main-authored capture/PID/HWND plus QA's frozen

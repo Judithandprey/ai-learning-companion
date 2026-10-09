@@ -1,0 +1,19 @@
+{
+  "source_commit": "477890829c4afe880a151f3ce151b98b97405414",
+  "apps_windows_tree": "7c20539ef16478d96f6719d8236078fea96daa09",
+  "scope": "Three changed C1/C2/C3 tests; real main/overlay under synthetic checker, connector, display and Electron boundary fakes. No Windows/native/provider/account/audio; no child-process permission.",
+  "cwd": "/tmp/lc-lead-web-4778908-yw09tbtq",
+  "temporary_files": "Only /tmp/lc-lead-web-4778908-yw09tbtq/runtime allowed for writes; test-local TMPDIR points there.",
+  "argv": [
+    "node",
+    "--permission",
+    "--allow-fs-read=/tmp/lc-lead-web-4778908-yw09tbtq",
+    "--allow-fs-write=/tmp/lc-lead-web-4778908-yw09tbtq/runtime",
+    "--test",
+    "--test-isolation=none",
+    "--test-name-pattern=checker already failed|a frame the stream presented|an admission is kept",
+    "apps/windows/tests/app-admission.test.ts"
+  ],
+  "exit_code": 0,
+  "output": "(node:2) ExperimentalWarning: stripTypeScriptTypes is an experimental feature and might change at any time\n(Use `node --trace-warnings ...` to show where the warning was created)\n✔ [synthetic checker] an \"allow\" whose checker already failed in the same read (its answer given again) allows nothing: no send reaches the connector and no frame is admitted; the decision and then the violation are recorded (79.427882ms)\n✔ [synthetic checker] a frame the stream presented while the admission before a taking was out makes that sample fresh, not still; with none, it stays still (75.300461ms)\n✔ [synthetic checker] an admission is kept while the overlay still holds or uses its frame, however many frames are taken meanwhile (a slow picture of frame 1 after 70 more); one the overlay lets go is refused later; what it says it holds is checked (245.187746ms)\nℹ tests 3\nℹ suites 0\nℹ pass 3\nℹ fail 0\nℹ cancelled 0\nℹ skipped 0\nℹ todo 0\nℹ duration_ms 510.002888\n"
+}
