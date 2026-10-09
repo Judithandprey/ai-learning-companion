@@ -1,0 +1,30 @@
+TAP version 13
+# Subtest: tests/e2e/windows/test_qa_tts_output_candidate.mjs
+not ok 1 - tests/e2e/windows/test_qa_tts_output_candidate.mjs
+  ---
+  duration_ms: 0.488517
+  type: 'test'
+  location: '/tmp/support-r3-a3f12b3-3ich5ffk/tests/e2e/windows/test_qa_tts_output_candidate.mjs:1:1'
+  permission: 'FileSystemRead'
+  resource: '/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-tts-output-fc266a5e4978412cbfe3c3fe73c070da'
+  error: 'Access to this API has been restricted. Use --allow-fs-read to manage permissions.'
+  code: 'ERR_ACCESS_DENIED'
+  stack: |-
+    existsSync (node:fs:293:18)
+    prepareTtsCandidate (file:///tmp/support-r3-a3f12b3-3ich5ffk/tests/e2e/windows/qa_tts_output_candidate.mjs:651:100)
+    file:///tmp/support-r3-a3f12b3-3ich5ffk/tests/e2e/windows/test_qa_tts_output_candidate.mjs:12:14
+    ModuleJob.run (node:internal/modules/esm/module_job:561:25)
+    async node:internal/modules/esm/loader:647:26
+    async node:internal/test_runner/runner:1091:15
+    async runFiles (node:internal/test_runner/runner:1057:9)
+    async runChain (node:internal/test_runner/runner:1135:5)
+  ...
+1..1
+# tests 1
+# suites 0
+# pass 0
+# fail 1
+# cancelled 0
+# skipped 0
+# todo 0
+# duration_ms 20.897473
