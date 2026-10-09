@@ -1,0 +1,40 @@
+# corrected sources (team/qa, committed with this folder); node v24.21.0 --permission (no child process, no write)
+✔ the candidate is offline-only, reproduces from the sources, and its scratch is unused (33.310773ms)
+✔ the runner is the reviewed r4 runner byte for byte, apart from the one work-folder name and the source-admission delta (3.074828ms)
+✔ the package pins are the accepted diagnostic's (52be105, its 77-file tree, Electron 44.5.1, Edge) (0.402252ms)
+✔ the connector configuration is the trusted real one: the exact private 52be105 copy, the pinned codex binary, the product's own state (0.313371ms)
+✔ the steps hold exactly the four released actions, the actual UI Start once, and nothing fake, restarted or signed in (0.575474ms)
+✔ every action is bracketed: assigned only while the session is on with the exact count, and a stop leaves the rest NOT_RUN (0.680775ms)
+✔ the typed requests carry no card value and do not say the cards changed; they select explain, the circle is left at the product's hint (0.395408ms)
+✔ the live surface changes its cards in place: new values never shown before, same page, same geometry, same truth format (10.851943ms)
+✔ ledger: all four actions counted once each, the whole picture at the provider boundary for each answered one, the Stop fenced (6.047519ms)
+✔ ledger: unknown and proven not_submitted outcomes count; failed triggers count but are named; a session that never started counts nothing (1.055714ms)
+✔ ledger: a session that ended before an action leaves it and every later one NOT_RUN; extra requests, restarts and a disagreeing app count are flagged (1.335972ms)
+✔ fence: needs Stop by the user with the request out and settling after it, nothing shown or sent later; otherwise unknown or not fenced (1.393767ms)
+✔ transport: no receipt, another image, no text or image input, or a request not submitted is never the picture at the provider; tools are flagged (0.140699ms)
+✔ pixel rules: only values new after the change and absent from earlier AI text prove fresh pixels; formatted values are read; a question with a value is a leak (1.603586ms)
+✔ wrapper: nothing runs without --execute, a new evidence folder and an independently supplied allocation hash (0.931406ms)
+✔ wrapper: only an exact, active live allocation bound to the four-action bounds, no voice, no retry or restart, is accepted (1.098938ms)
+✔ wrapper: the connector side refuses a missing or inexact copy, anything running in it, or another codex binary, before any Windows call (0.587296ms)
+✔ wrapper: the mechanical result needs every term, the connector and its children gone, and keeps acceptance NOT_JUDGED (1.338157ms)
+✔ wrapper: the watch summary is released only with the whole lifecycle observed; anything less is unknown or left running (0.663542ms)
+✔ wrapper: with an exact allocation it still refuses at the connector checks before any Windows call, any folder or any process (31.918239ms)
+✔ L1: the actual account_ready step lets ordinary credits, an exhausted included window and an unknown quota through, and stops on a stated spend control (5.763926ms)
+✔ L2: a reached Start whose later records are missing counts the first look as used (unknown); a known pre-Start stop does not (0.77673ms)
+✔ D8: raw receipts are written outside the repository; only sanitized fields and an allowlist of generated files are for Git (0.655267ms)
+✔ F1: the spend/workspace veto reads only the bucket the connector applies to the selected model, as 52be105 chatgpt_rpc.py selects it (8.333587ms)
+✔ F4: Support's receipt witness cases fail the mechanics; collection, records, tools, digest and provider turns are judged for every action (2.352909ms)
+✔ F5: the watch must record its own clean start before anything can launch; not ready, it is stopped, a refusal is written and nothing runs (1.585371ms)
+✔ receipt reader: only this run's new launches, real folders and files, the connector format and this request id, checked before any byte is kept (2.055336ms)
+✔ F3 checker: the reviewed admission definitions are inserted unchanged; the checker only reads, runs no command, and follows the Lead protocol (3.897283ms)
+✔ F3 configuration and runner delta: Windows PowerShell with the frozen checker and the Lead timings; LC_SOURCE_ADMISSION only for the product launch, after its admission and the frozen context (0.450314ms)
+✔ F3 ledger: every possibly sent request needs an admitted send for its exact PNG naming an acquisition admitted before and after; a deny, a gap or an unrecorded send fails (0.926137ms)
+ℹ tests 30
+ℹ suites 0
+ℹ pass 30
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 134.131733
+exit=0

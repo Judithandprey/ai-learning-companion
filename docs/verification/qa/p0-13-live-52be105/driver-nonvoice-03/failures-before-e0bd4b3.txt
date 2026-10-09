@@ -1,0 +1,347 @@
+# e0bd4b3 sources (git archive e0bd4b3) with the corrected test file; node v24.21.0 --permission (no child process, no write)
+✔ the candidate is offline-only, reproduces from the sources, and its scratch is unused (21.071297ms)
+✖ the runner is the reviewed r4 runner byte for byte, apart from the one work-folder name and the source-admission delta (0.598748ms)
+✔ the package pins are the accepted diagnostic's (52be105, its 77-file tree, Electron 44.5.1, Edge) (0.54217ms)
+✔ the connector configuration is the trusted real one: the exact private 52be105 copy, the pinned codex binary, the product's own state (0.309354ms)
+✔ the steps hold exactly the four released actions, the actual UI Start once, and nothing fake, restarted or signed in (0.668833ms)
+✔ every action is bracketed: assigned only while the session is on with the exact count, and a stop leaves the rest NOT_RUN (0.528194ms)
+✔ the typed requests carry no card value and do not say the cards changed; they select explain, the circle is left at the product's hint (0.289255ms)
+✔ the live surface changes its cards in place: new values never shown before, same page, same geometry, same truth format (10.280728ms)
+✖ ledger: all four actions counted once each, the whole picture at the provider boundary for each answered one, the Stop fenced (5.49501ms)
+✔ ledger: unknown and proven not_submitted outcomes count; failed triggers count but are named; a session that never started counts nothing (0.80268ms)
+✔ ledger: a session that ended before an action leaves it and every later one NOT_RUN; extra requests, restarts and a disagreeing app count are flagged (1.299573ms)
+✔ fence: needs Stop by the user with the request out and settling after it, nothing shown or sent later; otherwise unknown or not fenced (1.360439ms)
+✖ transport: no receipt, another image, no text or image input, or a request not submitted is never the picture at the provider; tools are flagged (0.327488ms)
+✔ pixel rules: only values new after the change and absent from earlier AI text prove fresh pixels; formatted values are read; a question with a value is a leak (1.195303ms)
+✔ wrapper: nothing runs without --execute, a new evidence folder and an independently supplied allocation hash (0.737374ms)
+✖ wrapper: only an exact, active live allocation bound to the four-action bounds, no voice, no retry or restart, is accepted (0.198521ms)
+✖ wrapper: the connector side refuses a missing or inexact copy, anything running in it, or another codex binary, before any Windows call (0.520458ms)
+✖ wrapper: the mechanical result needs every term, the connector and its children gone, and keeps acceptance NOT_JUDGED (0.367234ms)
+✖ wrapper: the watch summary is released only with the whole lifecycle observed; anything less is unknown or left running (0.679132ms)
+✖ wrapper: with an exact allocation it still refuses at the connector checks before any Windows call, any folder or any process (0.374008ms)
+✖ L1: the actual account_ready step lets ordinary credits, an exhausted included window and an unknown quota through, and stops on a stated spend control (3.241578ms)
+✔ L2: a reached Start whose later records are missing counts the first look as used (unknown); a known pre-Start stop does not (0.768945ms)
+✖ D8: raw receipts are written outside the repository; only sanitized fields and an allowlist of generated files are for Git (0.726253ms)
+✖ F1: the spend/workspace veto reads only the bucket the connector applies to the selected model, as 52be105 chatgpt_rpc.py selects it (0.715262ms)
+✖ F4: Support's receipt witness cases fail the mechanics; collection, records, tools, digest and provider turns are judged for every action (0.278143ms)
+✖ F5: the watch must record its own clean start before anything can launch; not ready, it is stopped, a refusal is written and nothing runs (0.290517ms)
+✖ receipt reader: only this run's new launches, real folders and files, the connector format and this request id, checked before any byte is kept (0.584622ms)
+✖ F3 checker: the reviewed admission definitions are inserted unchanged; the checker only reads, runs no command, and follows the Lead protocol (0.276691ms)
+✖ F3 configuration and runner delta: Windows PowerShell with the frozen checker and the Lead timings; LC_SOURCE_ADMISSION only for the product launch, after its admission and the frozen context (0.18771ms)
+✖ F3 ledger: every possibly sent request needs an admitted send for its exact PNG naming an acquisition admitted before and after; a deny, a gap or an unrecorded send fails (0.320274ms)
+ℹ tests 30
+ℹ suites 0
+ℹ pass 13
+ℹ fail 17
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 64.647603
+
+✖ failing tests:
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:46:1
+✖ the runner is the reviewed r4 runner byte for byte, apart from the one work-folder name and the source-admission delta (0.598748ms)
+  TypeError: revertAdmissionDelta is not a function
+      at TestContext.<anonymous> (file:///tmp/qa-before-e0bd4b3/tests/e2e/windows/test_qa_live_candidate.mjs:50:90)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:209:1
+✖ ledger: all four actions counted once each, the whole picture at the provider boundary for each answered one, the Stop fenced (5.49501ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'inputs prepared; not submitted (not_submitted)'
+  - 'inputs prepared; not submitted'
+                                   ^
+  
+      at TestContext.<anonymous> (file:///tmp/qa-before-e0bd4b3/tests/e2e/windows/test_qa_live_candidate.mjs:214:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'inputs prepared; not submitted (not_submitted)',
+    expected: 'inputs prepared; not submitted',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:285:1
+✖ transport: no receipt, another image, no text or image input, or a request not submitted is never the picture at the provider; tools are flagged (0.327488ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'inputs prepared; not submitted (not_submitted)'
+  - 'inputs prepared; not submitted'
+                                   ^
+  
+      at TestContext.<anonymous> (file:///tmp/qa-before-e0bd4b3/tests/e2e/windows/test_qa_live_candidate.mjs:290:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'inputs prepared; not submitted (not_submitted)',
+    expected: 'inputs prepared; not submitted',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:340:1
+✖ wrapper: only an exact, active live allocation bound to the four-action bounds, no voice, no retry or restart, is accepted (0.198521ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + undefined
+  - null
+  
+      at TestContext.<anonymous> (file:///tmp/qa-before-e0bd4b3/tests/e2e/windows/test_qa_live_candidate.mjs:343:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: undefined,
+    expected: null,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:363:1
+✖ wrapper: the connector side refuses a missing or inexact copy, anything running in it, or another codex binary, before any Windows call (0.520458ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /home is not the one/. Input:
+  
+  'Error: the pinned codex binary digest does not match'
+  
+      at TestContext.<anonymous> (file:///tmp/qa-before-e0bd4b3/tests/e2e/windows/test_qa_live_candidate.mjs:373:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: the pinned codex binary digest does not match
+        at Module.connectorAdmission (file:///tmp/qa-before-e0bd4b3/tests/e2e/windows/qa_run_live_candidate.mjs:74:83)
+        at file:///tmp/qa-before-e0bd4b3/tests/e2e/windows/test_qa_live_candidate.mjs:373:31
+        at getActual (node:assert:611:5)
+        at strict.throws (node:assert:759:24)
+        at TestContext.<anonymous> (file:///tmp/qa-before-e0bd4b3/tests/e2e/windows/test_qa_live_candidate.mjs:373:10)
+        at Test.runInAsyncScope (node:async_hooks:227:14)
+        at Test.run (node:internal/test_runner/test:1402:25)
+        at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+        at Test.postRun (node:internal/test_runner/test:1542:19)
+        at Test.run (node:internal/test_runner/test:1467:12),
+    expected: /home is not the one/,
+    operator: 'throws',
+    diff: 'simple'
+  }
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:377:1
+✖ wrapper: the mechanical result needs every term, the connector and its children gone, and keeps acceptance NOT_JUDGED (0.367234ms)
+  TypeError: sourceAdmission is not a function
+      at TestContext.<anonymous> (file:///tmp/qa-before-e0bd4b3/tests/e2e/windows/test_qa_live_candidate.mjs:380:129)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:396:1
+✖ wrapper: the watch summary is released only with the whole lifecycle observed; anything less is unknown or left running (0.679132ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    [
+      'released',
+  +   undefined,
+  +   undefined
+  -   true,
+  -   1
+    ]
+  
+      at TestContext.<anonymous> (file:///tmp/qa-before-e0bd4b3/tests/e2e/windows/test_qa_live_candidate.mjs:403:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [Array],
+    expected: [Array],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:421:1
+✖ wrapper: with an exact allocation it still refuses at the connector checks before any Windows call, any folder or any process (0.374008ms)
+  Error: ENOENT: no such file or directory, open '/tmp/qa-before-e0bd4b3/docs/verification/qa/p0-13-live-52be105/candidate-nonvoice-03/candidate.json'
+      at Object.openSync (node:fs:621:18)
+      at Module.readFileSync (node:fs:487:35)
+      at TestContext.<anonymous> (file:///tmp/qa-before-e0bd4b3/tests/e2e/windows/test_qa_live_candidate.mjs:423:35)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -2,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: '/tmp/qa-before-e0bd4b3/docs/verification/qa/p0-13-live-52be105/candidate-nonvoice-03/candidate.json'
+  }
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:449:1
+✖ L1: the actual account_ready step lets ordinary credits, an exhausted included window and an unknown quota through, and stops on a stated spend control (3.241578ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /spend or workspace limit/. Input:
+  
+  'Error: the server states a spend control as reached: the run stops before Start'
+  
+      at async TestContext.<anonymous> (file:///tmp/qa-before-e0bd4b3/tests/e2e/windows/test_qa_live_candidate.mjs:471:3)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: the server states a spend control as reached: the run stops before Start
+        at evalmachine.<anonymous>:7:70
+        at async waitForActual (node:assert:646:5)
+        at async strict.rejects (node:assert:769:25)
+        at async TestContext.<anonymous> (file:///tmp/qa-before-e0bd4b3/tests/e2e/windows/test_qa_live_candidate.mjs:471:3)
+        at async Test.run (node:internal/test_runner/test:1409:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:974:7),
+    expected: /spend or workspace limit/,
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:497:1
+✖ D8: raw receipts are written outside the repository; only sanitized fields and an allowlist of generated files are for Git (0.726253ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    [
+  -   'admission-checker.jsonl',
+      'captures/0123abcd/asks/ask-1.json',
+      'captures/0123abcd/live.jsonl',
+      'connector-watch.jsonl',
+      'ledger.json',
+      'receipts-sanitized.json',
+  
+      at TestContext.<anonymous> (file:///tmp/qa-before-e0bd4b3/tests/e2e/windows/test_qa_live_candidate.mjs:508:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [Array],
+    expected: [Array],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:512:1
+✖ F1: the spend/workspace veto reads only the bucket the connector applies to the selected model, as 52be105 chatgpt_rpc.py selects it (0.715262ms)
+  AssertionError [ERR_ASSERTION]: [["codex",null,true,null]]
+      at async TestContext.<anonymous> (file:///tmp/qa-before-e0bd4b3/tests/e2e/windows/test_qa_live_candidate.mjs:523:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: Error: the server states a spend control as reached: the run stops before Start
+        at evalmachine.<anonymous>:7:70
+        at async waitForActual (node:assert:646:5)
+        at async strict.rejects (node:assert:769:25)
+        at async TestContext.<anonymous> (file:///tmp/qa-before-e0bd4b3/tests/e2e/windows/test_qa_live_candidate.mjs:523:5)
+        at async Test.run (node:internal/test_runner/test:1409:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:974:7),
+    expected: /spend or workspace limit for this model/,
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:539:1
+✖ F4: Support's receipt witness cases fail the mechanics; collection, records, tools, digest and provider turns are judged for every action (0.278143ms)
+  TypeError: sourceAdmission is not a function
+      at reportOf (file:///tmp/qa-before-e0bd4b3/tests/e2e/windows/test_qa_live_candidate.mjs:538:21)
+      at TestContext.<anonymous> (file:///tmp/qa-before-e0bd4b3/tests/e2e/windows/test_qa_live_candidate.mjs:540:42)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:581:1
+✖ F5: the watch must record its own clean start before anything can launch; not ready, it is stopped, a refusal is written and nothing runs (0.290517ms)
+  TypeError: wrapper.startWatch is not a function
+      at TestContext.<anonymous> (file:///tmp/qa-before-e0bd4b3/tests/e2e/windows/test_qa_live_candidate.mjs:593:29)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:617:1
+✖ receipt reader: only this run's new launches, real folders and files, the connector format and this request id, checked before any byte is kept (0.584622ms)
+  TypeError: wrapper.readOwnReceipts is not a function
+      at TestContext.<anonymous> (file:///tmp/qa-before-e0bd4b3/tests/e2e/windows/test_qa_live_candidate.mjs:632:21)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:657:1
+✖ F3 checker: the reviewed admission definitions are inserted unchanged; the checker only reads, runs no command, and follows the Lead protocol (0.276691ms)
+  TypeError: checkerDefinitions is not a function
+      at TestContext.<anonymous> (file:///tmp/qa-before-e0bd4b3/tests/e2e/windows/test_qa_live_candidate.mjs:658:65)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:713:1
+✖ F3 configuration and runner delta: Windows PowerShell with the frozen checker and the Lead timings; LC_SOURCE_ADMISSION only for the product launch, after its admission and the frozen context (0.18771ms)
+  SyntaxError: "undefined" is not valid JSON
+      at JSON.parse (<anonymous>)
+      at TestContext.<anonymous> (file:///tmp/qa-before-e0bd4b3/tests/e2e/windows/test_qa_live_candidate.mjs:714:18)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:737:1
+✖ F3 ledger: every possibly sent request needs an admitted send for its exact PNG naming an acquisition admitted before and after; a deny, a gap or an unrecorded send fails (0.320274ms)
+  TypeError: sourceAdmission is not a function
+      at TestContext.<anonymous> (file:///tmp/qa-before-e0bd4b3/tests/e2e/windows/test_qa_live_candidate.mjs:739:16)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+exit=1

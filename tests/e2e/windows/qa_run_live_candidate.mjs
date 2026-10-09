@@ -11,18 +11,20 @@
 import { execFileSync, spawn, spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
+import { homedir } from 'node:os';
 import { dirname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { CONNECTOR, POLICY_MS, checkLiveCandidate, names } from './qa_live_candidate.mjs';
-import { buildLedger, evidence, fenceVerdict, liveImportCheck, parseJsonl } from './qa_live_ledger.mjs';
+import { CONNECTOR, POLICY_MS, checkLiveCandidate, linkNames, names } from './qa_live_candidate.mjs';
+import { buildLedger, evidence, fenceVerdict, liveImportCheck, parseJsonl, sourceAdmission } from './qa_live_ledger.mjs';
 import { summarizeTtsPreflight, ttsAdmission } from './qa_run_tts_candidate.mjs';
 import { lookCommand, readLook, releaseOwned, windowsCalls } from './signin_cleanup.mjs';
 import { askPathCheck, compareCopy } from './sub_copy.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url)), repo = resolve(here, '../../..');
-export const candidateDir = join(repo, 'docs/verification/qa/p0-13-live-52be105/candidate-nonvoice-02');
-export const candidateHash = '74ebc3942022fe0549aa691b45ff5cc4949a56041b2f424b22f4786eb4374fbc';
-export const pins = { 'runner.ps1': '0f5c23f03e8900b96f0e3c29ea6494af3b510bde3de6b1aefe335f747c6e9590', 'steps.json': '560461adeb84bfb7e614bd29c337b3e72b3363a6c643047fc533b96fc84c4d7a', 'surface.html': 'be82967ae45d36bece4ac4858d6f45d0e90e58d088203b71323b74e6ae5e1067', 'sub-live.json': '4729ca1a25ec09a64349c68c5ccb0eb41b4e9f83e161fb9c4a29b0ce26b948d4' };
+export const candidateDir = join(repo, 'docs/verification/qa/p0-13-live-52be105/candidate-nonvoice-03');
+export const candidateHash = 'db83ff5c52bbbdef4d4fb361522c4a2d2b8168fab7face4805efb4ba30bd3df6';
+export const pins = { 'runner.ps1': '4f3fe4d3a09d4b1dd1f530d659a2974b4e0142686ca027612756fff6c9f0473f', 'steps.json': 'a513585ed4e1e63b588c0770b08661bd211f065735f63392c2a6916a377e8d6c', 'surface.html': 'be82967ae45d36bece4ac4858d6f45d0e90e58d088203b71323b74e6ae5e1067', 'sub-live.json': '4729ca1a25ec09a64349c68c5ccb0eb41b4e9f83e161fb9c4a29b0ce26b948d4',
+  'admission-checker.ps1': '920255cf6b610abbbe43a5f90cc5c637f5548cfff36c3ccf302746fd05e5d447', 'admission-live.json': '51b05f5afb5aa96f0294fc4ca0c39ae9a8c9a282d61fe5cdd0a2c26653f97d11' };
 const psBin = '/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe';
 const managedState = '/home/agentsdock/.local/share/LearningCompanion/managed-chatgpt';   // state_dir null: the product's own
 // Raw provider receipts (thread/turn ids) stay outside the repository and Git: one 0700 folder per run (Lead D8).
@@ -31,6 +33,7 @@ export const rawReceiptsRoot = '/home/agentsdock/.local/state/lc-qa-live';
 const AI_DISABLED_APPROVALS = ['approved-two-gates-20261002:571427dcdc434c0f820236892925aedf', 'human-bounded-retest-20261008:d41dbbfae11448f7847e26cb54afcd44',
   'human-approve-read-arithmetic:1341e2b5d73b432eaefa988058e79172', 'human-approve-admission-20261008:2dde43ea7f4842619709d034fb8b0534'];
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
+const msg = error => String(error?.message ?? error).slice(0, 120);
 const equal = (a, b) => JSON.stringify(a) === JSON.stringify(b);
 const win = path => {
   if (!path.startsWith('/mnt/c/') || /['\r\n]/.test(path)) throw Error('unexpected Windows path');
@@ -41,7 +44,14 @@ export function processesIn(dir, io = fs) {
   return io.readdirSync('/proc').filter(n => /^\d+$/.test(n)).filter(n => { try { const cwd = io.readlinkSync(`/proc/${n}/cwd`); return cwd === dir || cwd.startsWith(`${dir}/`); } catch { return false; } }).map(Number);
 }
 
-export function validateLiveAllocation(record, candidate, wrapperHash, now) {
+// F3: the reviewed production build whose main process starts QA's source-admission checker (Web's interlock). Unset
+// until that build is reviewed and the candidate regenerated for it: until then every allocation is refused, whatever
+// else it states. 52be105 never starts the checker, so a run of it would send real requests without source admission.
+export const interlockProduction = null;
+export function validateLiveAllocation(record, candidate, wrapperHash, now, interlock = interlockProduction) {
+  if (typeof interlock !== 'string' || !/^[0-9a-f]{40}$/.test(interlock) || candidate?.production_commit !== interlock) {
+    throw Error('the candidate does not pin a reviewed production build that starts the source-admission checker; no allocation is accepted');
+  }
   if (record?.schema !== 'qa-live-nonvoice-allocation/1' || record.state !== 'active' || record.lead_reviewed !== true
       || record.mode !== 'REAL_SUBSCRIPTION_NONVOICE_GENERATED_SURFACE' || record.exclusive_display !== true
       || record.account_access !== 'official_managed_lock_through_the_product' || record.audio_access !== false || record.microphone_access !== false
@@ -64,7 +74,9 @@ export function validateLiveAllocation(record, candidate, wrapperHash, now) {
 }
 
 /** The connector side, before any Windows call: the exact private copy, its question and live paths, the codex digest. */
-export function connectorAdmission(io = fs, checks = { compareCopy, askPathCheck, liveImportCheck }) {
+export function connectorAdmission(io = fs, checks = { compareCopy, askPathCheck, liveImportCheck }, home = homedir()) {
+  // The product's managed state and the raw-receipt root are this user's: the connector runs as this same WSL user.
+  if (home !== `/home/${CONNECTOR.user}` || !managedState.startsWith(home + '/') || !rawReceiptsRoot.startsWith(home + '/')) throw Error('the connector user\'s home is not the one the receipt folders assume');
   if (!io.existsSync(CONNECTOR.copy)) throw Error('the private 52be105 Backend copy is missing (qa_live_candidate.mjs prepare-connector)');
   const same = checks.compareCopy(CONNECTOR.commit, CONNECTOR.copy);
   if (!same.equal) throw Error('the private Backend copy is not exactly 52be105 services/ and packages/');
@@ -101,7 +113,7 @@ export async function runLiveCandidate(options, injected = {}) {
   const allocationBytes = regularRead(allocationPath);
   if (sha(allocationBytes) !== options.allocationSha256) throw Error('allocation differs from independently reviewed hash');
   const record = JSON.parse(allocationBytes), wrapperHash = sha(regularRead(fileURLToPath(import.meta.url)));
-  const deadline = validateLiveAllocation(record, candidate, wrapperHash, now());
+  const deadline = validateLiveAllocation(record, candidate, wrapperHash, now(), injected.interlock ?? interlockProduction);
   const stillActive = () => { if (now() >= deadline) throw Error('allocation expired before admission/launch; no retry'); };
   // Linux file inspection only, after the allocation gate and before any Windows call.
   const identity = JSON.parse(runFile('python3', ['-B', join(here, 'qa_tts_stage_check.py')], { encoding: 'utf8', timeout: 30000 }));
@@ -132,18 +144,22 @@ export async function runLiveCandidate(options, injected = {}) {
   const expectedEdge = { exe: candidate.edge, app: candidate.edgeArgs, checker: ['unlaunched-qa-checker'], markers: [`--remote-debugging-port=${candidate.edgePort}`], notBefore: beforeEdge.now };
   stillActive();
   io.mkdirSync(out, { recursive: true, mode: 0o700 });
-  // mkdir without recursive refuses an occupied scratch; it permanently consumes this candidate's one attempt.
-  io.mkdirSync(candidate.work, { recursive: false });
+  // The read-only watch starts first and must be ready before anything can start a connector (F5). Not ready: nothing is
+  // launched and the scratch stays unused.
+  const watch = await startWatch(io, start, sleep, out);
+  if (!watch.ready.ready) throw Error(`the connector watch is not ready (${watch.ready.reason}); nothing launched, scratch unused`);
+  const launchesBefore = watch.launchesBefore;
+  // mkdir without recursive refuses an occupied scratch; it permanently consumes this candidate's one attempt. A refusal
+  // here stops the watch (nothing was launched).
+  try { stillActive(); io.mkdirSync(candidate.work, { recursive: false }); } catch (error) { await watch.stop(); throw error; }
   const report = { kind: 'four-action nonvoice live run (real subscription, generated surface)', passed: false, identity, connector,
     wrapper_sha256: wrapperHash, candidate_sha256: candidateHash, allocation_sha256: options.allocationSha256, allocation_id: record.allocation_id,
-    scratch: candidate.work, scratch_preserved: true, native_attempts: 0, microphone_access: false, audio_access: false, voice: false, cleanup: {},
+    scratch: candidate.work, scratch_preserved: true, native_attempts: 0, watch_ready: watch.ready, receipt_launches_before: launchesBefore.length, microphone_access: false, audio_access: false, voice: false, cleanup: {},
     limitation: 'CDP/DOM input inside the product windows; one display configuration; no speech, captions, physical pen or full-product acceptance.' };
-  let watcher = null;
-  const watchFile = join(out, 'connector-watch.jsonl'), stopFile = join(out, 'connector-watch.stop');
   try {
     for (const name of ['out', 'apptemp', 'link']) io.mkdirSync(join(candidate.work, name));
     for (const name of names) {
-      const target = name === 'sub-live.json' ? join(candidate.work, 'link', name) : join(candidate.work, name);
+      const target = linkNames.includes(name) ? join(candidate.work, 'link', name) : join(candidate.work, name);
       io.writeFileSync(target, payload[name]);
       if (sha(regularRead(target)) !== pins[name]) throw Error('copied payload differs; launch refused');
     }
@@ -154,9 +170,6 @@ export async function runLiveCandidate(options, injected = {}) {
     else {
       stillActive();
       if (now() + record.native_bound_ms > deadline) throw Error('allocation has too little time for the bounded native attempt');
-      // Read-only: when the connector and its children appear and exit (qa_sub_watch.py signals nothing).
-      watcher = start('python3', [join(here, 'qa_sub_watch.py'), '--root', CONNECTOR.copy, '--out', watchFile, '--stop', stopFile], { cwd: '/tmp', stdio: 'ignore' });
-      watcher.on?.('error', error => { report.watch_error = String(error?.message ?? error).slice(0, 120); });
       report.native_attempts = 1;
       const invocation = candidate.proposed_native_invocation;
       const result = run(psBin, invocation.arguments, { cwd: '/mnt/c', timeout: record.native_bound_ms, maxBuffer: 4 * 1024 * 1024 });
@@ -178,11 +191,11 @@ export async function runLiveCandidate(options, injected = {}) {
     // The connector ends with the app (its pipes close). Observed only: nothing in the copy or below it is ever signalled.
     let left = [];
     for (let waited = 0; waited <= 15000; waited += 500) { left = processesIn(CONNECTOR.copy, io); if (!left.length) break; await sleep(500); }
-    try { io.writeFileSync(stopFile, ''); } catch { /* the watch stops by itself after its own bound */ }
-    if (watcher) await new Promise(r => { const t = setTimeout(r, 5000); watcher.on?.('exit', () => { clearTimeout(t); r(); }); });
+    await watch.stop();
+    report.watch_error = watch.state.error; report.watch_exited = watch.state.exited;
     report.connector_left_running = left;
-    report.connector_watch = watchSummary(io, watchFile, report.native_attempts > 0);
-    try { collect(io, regularRead, candidate, out, report); }
+    report.connector_watch = watchSummary(io, watch.file, report.native_attempts > 0);
+    try { collect(io, regularRead, candidate, out, report, launchesBefore); }
     catch (error) { report.collect_failed = String(error?.message ?? error).slice(0, 200); }
     report.owned_launch_cleanup_confirmed = ['electron', 'edge'].every(label => report.cleanup[label]?.exit === 'confirmed');
     Object.assign(report, judgeMechanics(report));
@@ -193,32 +206,91 @@ export async function runLiveCandidate(options, injected = {}) {
   return report;
 }
 
-/** The read-only watch of the connector and every descendant (the Codex app server runs in its own folder). */
-export function watchSummary(io, file, expected) {
-  if (!expected) return { state: 'not_started' };
-  try {
-    const events = parseJsonl(io.readFileSync(file, 'utf8'));
-    const end = events.findLast(e => e.event === 'watch_end');
-    const appeared = events.filter(e => e.event === 'appear').length;
-    if (!end) return { state: 'unknown', appeared, note: 'the watch did not record its end' };
-    return { state: end.remaining.length ? 'left_running' : 'released', appeared, remaining: end.remaining };
-  } catch { return { state: 'unknown', note: 'the watch log could not be read' }; }
+/**
+ * The read-only watch of the connector and every descendant (qa_sub_watch.py lists /proc and signals nothing), started
+ * and awaited until it records its own start with the private copy present and nothing in it; then the names of the
+ * receipt launches already present (so that only later ones are this run's). Not ready: the watch is stopped and a
+ * refusal written. Nothing here starts a connector.
+ */
+export async function startWatch(io, start, sleep, out) {
+  const file = join(out, 'connector-watch.jsonl'), stopFile = join(out, 'connector-watch.stop');
+  const watcher = start('python3', [join(here, 'qa_sub_watch.py'), '--root', CONNECTOR.copy, '--out', file, '--stop', stopFile], { cwd: '/tmp', stdio: 'ignore' });
+  const state = { error: null, exited: false };
+  const exited = new Promise(r => { watcher.on?.('exit', () => { state.exited = true; r(); }); });
+  watcher.on?.('error', error => { state.error = msg(error); });
+  const stop = async () => {
+    try { io.writeFileSync(stopFile, ''); } catch { /* the watch stops by itself after its own bound */ }
+    let t;
+    await Promise.race([exited, new Promise(r => { t = setTimeout(r, 5000); })]);
+    clearTimeout(t);
+  };
+  const ready = await watchReady(io, file, sleep);
+  let launchesBefore = null;
+  try { if (ready.ready) launchesBefore = receiptLaunches(io); } catch (error) { Object.assign(ready, { ready: false, reason: msg(error) }); }
+  if (!ready.ready) {
+    await stop();
+    io.writeFileSync(join(out, 'watch-refusal.json'), JSON.stringify({ ready, watch_error: state.error, native_attempts: 0, scratch_consumed: false }, null, 2) + '\n', { mode: 0o600, flag: 'wx' });
+  }
+  return { file, ready, launchesBefore, state, stop };
+}
+/** The watch's own start record, awaited (bounded) before anything can start a connector. */
+export async function watchReady(io, file, sleep, limitMs = 5000) {
+  for (let waited = 0; waited <= limitMs; waited += 100) {
+    let start = null;
+    try { start = parseJsonl(io.readFileSync(file, 'utf8')).find(e => e.event === 'watch_start') ?? null; } catch { /* not written yet */ }
+    if (start) return start.root_exists !== true ? { ready: false, reason: 'the private copy is missing' }
+      : !Array.isArray(start.already_there) || start.already_there.length ? { ready: false, reason: 'a process already runs in the private copy' } : { ready: true, at: start.at ?? null };
+    await sleep(100);
+  }
+  return { ready: false, reason: 'the watch recorded no start in time' };
 }
 /**
- * The mechanical result: every step, the exact cleanup, the connector and its children gone, the ledger within the
- * ceiling with no retry or restart, silent requests, the whole picture at the provider boundary for the three answered
- * actions, the Stop fenced, and no card value in QA's questions. Acceptance itself stays NOT_JUDGED: the texts are read.
+ * The read-only watch of the connector and every descendant (the Codex app server runs in its own folder). Released only
+ * with the whole lifecycle observed: the watch started before the launch, saw the connector itself appear, saw every
+ * appeared process exit, and ended with nothing left. Anything less is unknown, never released.
+ */
+export function watchSummary(io, file, expected) {
+  if (!expected) return { state: 'not_started' };
+  let events;
+  try { events = parseJsonl(io.readFileSync(file, 'utf8')); } catch { return { state: 'unknown', note: 'the watch log could not be read' }; }
+  const start = events.find(e => e.event === 'watch_start'), end = events.findLast(e => e.event === 'watch_end');
+  const key = e => `${e.pid}/${e.start_ticks ?? '?'}`;
+  const appeared = events.filter(e => e.event === 'appear'), exited = new Set(events.filter(e => e.event === 'exit').map(key));
+  const facts = { appeared: appeared.length, connector_seen: appeared.some(e => e.role === 'in_root'), descendants: appeared.filter(e => e.role === 'descendant').length,
+    not_seen_exiting: appeared.filter(e => !exited.has(key(e))).map(e => e.pid), unreadable_lines: events.filter(e => e.kind === 'unreadable_line').length };
+  if (end && Array.isArray(end.remaining) && end.remaining.length) return { state: 'left_running', remaining: end.remaining, ...facts };
+  const missing = !start ? 'the watch recorded no start' : start.root_exists !== true || !Array.isArray(start.already_there) || start.already_there.length ? 'the watch did not start clean'
+    : !end || !Array.isArray(end.remaining) ? 'the watch recorded no end' : !facts.connector_seen ? 'the connector was never seen'
+    : facts.not_seen_exiting.length ? 'a process was not seen exiting' : facts.unreadable_lines ? 'the watch log has unreadable lines' : null;
+  return missing ? { state: 'unknown', note: missing, ...facts } : { state: 'released', remaining: [], ...facts };
+}
+/**
+ * The mechanical result: every step, complete collection and records, the exact cleanup, the connector and its children
+ * observed gone, the ledger within the ceiling with the provider's turns reconciled and no retry or restart, silent
+ * requests, the whole picture at the provider boundary with clean receipt facts for the three answered actions, the Stop
+ * attempt's own facts, the Stop fenced, every possibly sent request bound to admitted source checks (F3), and no card
+ * value in QA's questions. Acceptance stays NOT_JUDGED: the texts are read.
  */
 export function judgeMechanics(report) {
-  const l = report.ledger, slots = l?.slots ?? [];
+  const l = report.ledger, slots = l?.slots ?? [], stop = slots[3]?.transport;
+  // A receipt's facts: no item beyond a plain question and answer, the pinned codex digest and the explicit binary.
+  const clean = t => t?.receipt === true && Array.isArray(t.non_plain_items) && t.non_plain_items.length === 0 && t.identity_ok === true;
   const terms = {
-    launcher_ok: report.launcher?.status === 0, not_aborted: !report.aborted, steps_ok: report.steps_ok === true, collected: !report.collect_failed,
+    launcher_ok: report.launcher?.status === 0, not_aborted: !report.aborted, steps_ok: report.steps_ok === true,
+    collected: !report.collect_failed && Array.isArray(report.collect_errors) && report.collect_errors.length === 0, records_complete: l?.records_complete === true,
     owned_cleanup_confirmed: report.owned_launch_cleanup_confirmed === true,
     connector_released: (report.connector_left_running ?? ['?']).length === 0 && report.connector_watch?.state === 'released',
-    ceiling_ok: l?.ceiling_ok === true, no_retry_or_restart: !!l && !l.restarted && !l.retried, all_silent: l?.all_silent === true,
+    // A request sent through the connector ran in its Codex child: the watch must have seen a descendant.
+    connector_lifecycle_correlated: !!l && (l.sent_receipts === 0 || report.connector_watch?.descendants > 0),
+    ceiling_ok: l?.ceiling_ok === true, provider_turns_reconciled: l?.turns_consistent === true, no_retry_or_restart: !!l && !l.restarted && !l.retried, all_silent: l?.all_silent === true,
     four_actions_counted: slots.length === 4 && slots.every(s => s.counted),
-    whole_picture_at_provider: slots.slice(0, 3).every(s => s.transport?.verdict === 'whole picture at the provider boundary' && s.transport.non_plain_items.length === 0),
+    whole_picture_at_provider: slots.length === 4 && slots.slice(0, 3).every(s => s.transport?.verdict === 'whole picture at the provider boundary' && clean(s.transport)),
+    // The Stop attempt: its receipt's facts when it has one (inputs, when set, are the app's frame); without one, every
+    // record must say not submitted (a genuinely unsent attempt need not have a receipt).
+    stop_attempt_facts_ok: slots.length === 4 && (stop?.receipt ? clean(stop) && (stop.input_types.length === 0 || stop.image_sha256_matches_app_record === true) : report.fence?.phase === 'not_submitted'),
     fenced: typeof report.fence?.verdict === 'string' && report.fence.verdict.startsWith('fenced'),
+    // F3: every request that may have reached the provider went out only with an admitted source (QA's checker log).
+    source_admission_bound: report.source_admission?.all_bound === true,
     no_value_in_questions: (report.evidence?.leaks_in_questions ?? ['?']).length === 0,
   };
   return { mechanics: terms, mechanics_passed: Object.values(terms).every(Boolean), passed: Object.values(terms).every(Boolean),
@@ -237,13 +309,59 @@ export function sanitizeReceipts(receipts) {
 export function publishAllowlist(io, out) {
   const allowed = [], walk = (dir, rel) => { for (const name of io.readdirSync(dir)) { const full = join(dir, name), r = rel ? `${rel}/${name}` : name;
     if (io.statSync(full).isDirectory()) walk(full, r);
-    else if (/^(run|ledger|receipts-sanitized|runner-results|connector-watch)\.json(l)?$|^runner\.(stdout|stderr)\.bin$|^captures\/[0-9a-f]+\/(live\.jsonl|asks\/[A-Za-z0-9._-]+\.json)$/.test(r)) allowed.push(r); } };
+    else if (/^(run|ledger|receipts-sanitized|runner-results|connector-watch|admission-checker)\.json(l)?$|^runner\.(stdout|stderr)\.bin$|^captures\/[0-9a-f]+\/(live\.jsonl|asks\/[A-Za-z0-9._-]+\.json)$/.test(r)) allowed.push(r); } };
   walk(out, '');
   return { kind: 'qa-live-publish-allowlist/1', files: allowed.sort(), excluded_by_default: 'everything else; raw receipts are outside the repository', review: 'QA and the Lead read each listed file before commit' };
 }
 
+const RECEIPT_KEYS = ['request_id', 'input_types', 'text_bytes', 'text_sha256', 'image_bytes', 'image_sha256', 'submission', 'terminal_status', 'outcome', 'produced_item_types',
+  'thread_start_count', 'turn_start_count', 'actual_model', 'thread_id', 'turn_id', 'format', 'codex_executable', 'codex_version', 'codex_sha256', 'explicit_bin_override'].sort();
+/** The launch folder names under the product's receipts/ (names only; nothing opened), or none. */
+export function receiptLaunches(io = fs, root = join(managedState, 'receipts')) {
+  if (!io.existsSync(root)) return [];
+  const st = io.lstatSync(root);
+  if (!st.isDirectory() || st.isSymbolicLink() || io.realpathSync(root) !== root) throw Error('the receipts folder is not the product\'s own real folder');
+  return io.readdirSync(root).sort();
+}
+/**
+ * This run's own receipts, each checked before a byte of it is copied: only launch folders that did not exist just before
+ * the native launch, each a real folder named as the connector names it, inside the real receipts/ folder; only
+ * <launch>/<sha256(request_id)>.json for this run's request ids, opened without following a link, a regular single-link
+ * file of at most 16 KiB, in the connector's receipt format with exactly its fields, naming that request id, and found in
+ * one launch only. Anything else is an error, never a receipt. (The codex digest is judged in the ledger, not here.)
+ */
+export function readOwnReceipts(io, before, requestIds, root = join(managedState, 'receipts')) {
+  const receipts = {}, raw = [], errors = [];
+  let launches = [];
+  try { launches = receiptLaunches(io, root).filter(n => !before.includes(n)); } catch (error) { return { receipts, raw, errors: ['receipts: ' + msg(error)], launches }; }
+  for (const launch of launches) {
+    const dir = join(root, launch);
+    try {
+      if (!/^[0-9a-f]{32}$/.test(launch)) throw Error('an entry not named as the connector names a launch');
+      const st = io.lstatSync(dir);
+      if (!st.isDirectory() || st.isSymbolicLink() || io.realpathSync(dir) !== dir) throw Error('not a real folder inside receipts/');
+    } catch (error) { errors.push(`receipts/${launch.slice(0, 40)}: ${msg(error)}`); continue; }
+    for (const rid of requestIds) {
+      const name = `${sha(Buffer.from(rid, 'utf8'))}.json`;
+      let fd = null;
+      try {
+        try { fd = io.openSync(join(dir, name), fs.constants.O_RDONLY | fs.constants.O_NOFOLLOW); } catch (error) { if (error?.code === 'ENOENT') continue; throw error; }
+        const st = io.fstatSync(fd);
+        if (!st.isFile() || st.nlink !== 1 || st.size > 16384) throw Error('not a regular single-link file of at most 16 KiB');
+        const bytes = io.readFileSync(fd), r = JSON.parse(bytes.toString('utf8'));
+        if (!r || typeof r !== 'object' || Array.isArray(r) || r.format !== 'lc-subscription-ask-receipt/1' || r.request_id !== rid || !equal(Object.keys(r).sort(), RECEIPT_KEYS)) throw Error('not this request\'s receipt in the connector\'s format');
+        if (rid in receipts) throw Error('the request has receipts in two launches');
+        receipts[rid] = { ...r, __launch: launch };
+        raw.push({ launch, name, bytes });
+      } catch (error) { errors.push(`receipts/${launch}/${name.slice(0, 12)}: ${msg(error)}`); }
+      finally { if (fd !== null) try { io.closeSync(fd); } catch { /* closed */ } }
+    }
+  }
+  return { receipts, raw, errors, launches };
+}
+
 /** This run's own results, records and receipts (a failed copy is reported, never fatal to the report). */
-function collect(io, regularRead, candidate, out, report) {
+function collect(io, regularRead, candidate, out, report, launchesBefore) {
   const errors = [];
   let results = null;
   try {
@@ -256,46 +374,59 @@ function collect(io, regularRead, candidate, out, report) {
   report.steps_ok = !!results && results.steps.length === steps.length && results.steps.every(s => s.ok === true);
   const liveLines = [], asks = [], requestIds = [];
   const captures = join(candidate.work, 'userdata', 'captures');
+  // Every record file on its own: one unreadable file is an error (the evidence incomplete), never a skipped success.
   try {
     if (io.existsSync(captures)) for (const cap of io.readdirSync(captures)) {
       const liveFile = join(captures, cap, 'live.jsonl');
-      if (io.existsSync(liveFile)) {
-        const text = regularRead(liveFile);
-        io.mkdirSync(join(out, 'captures', cap), { recursive: true, mode: 0o700 });
-        io.writeFileSync(join(out, 'captures', cap, 'live.jsonl'), text);
-        liveLines.push(...parseJsonl(text));
-      }
+      try {
+        if (io.existsSync(liveFile)) {
+          const text = regularRead(liveFile);
+          io.mkdirSync(join(out, 'captures', cap), { recursive: true, mode: 0o700 });
+          io.writeFileSync(join(out, 'captures', cap, 'live.jsonl'), text);
+          liveLines.push(...parseJsonl(text));
+        }
+      } catch (error) { errors.push(`records ${cap.slice(0, 40)}/live.jsonl: ${msg(error)}`); }
       const askDir = join(captures, cap, 'asks');
-      if (io.existsSync(askDir)) for (const name of io.readdirSync(askDir).filter(n => n.endsWith('.json'))) {
-        const bytes = regularRead(join(askDir, name));
-        io.mkdirSync(join(out, 'captures', cap, 'asks'), { recursive: true, mode: 0o700 });
-        io.writeFileSync(join(out, 'captures', cap, 'asks', name), bytes);
-        asks.push(JSON.parse(bytes));
-      }
+      try {
+        if (io.existsSync(askDir)) for (const name of io.readdirSync(askDir).filter(n => n.endsWith('.json'))) {
+          try {
+            const bytes = regularRead(join(askDir, name));
+            io.mkdirSync(join(out, 'captures', cap, 'asks'), { recursive: true, mode: 0o700 });
+            io.writeFileSync(join(out, 'captures', cap, 'asks', name), bytes);
+            asks.push(JSON.parse(bytes));
+          } catch (error) { errors.push(`records ${cap.slice(0, 40)}/asks/${name.slice(0, 40)}: ${msg(error)}`); }
+        }
+      } catch (error) { errors.push(`records ${cap.slice(0, 40)}/asks: ${msg(error)}`); }
     }
-  } catch (error) { errors.push('records: ' + String(error?.message ?? error).slice(0, 120)); }
+  } catch (error) { errors.push('records: ' + msg(error)); }
   for (const l of liveLines) if (l.request_id && !requestIds.includes(l.request_id)) requestIds.push(l.request_id);
-  for (const a of asks) for (const q of a.requests ?? []) if (!requestIds.includes(q.request_id)) requestIds.push(q.request_id);
-  // Only the receipts of this run's requests: receipts/<launch>/<sha256(request_id)>.json. Nothing else in the product's
-  // managed state is listed, opened or copied.
-  const receipts = {};
+  for (const a of asks) for (const q of Array.isArray(a?.requests) ? a.requests : []) if (typeof q?.request_id === 'string' && !requestIds.includes(q.request_id)) requestIds.push(q.request_id);
+  // Only the receipts of this run's requests, in launches new since just before the native launch, each checked before it
+  // is copied (readOwnReceipts). Nothing else in the product's managed state is opened or copied.
+  const own = readOwnReceipts(io, launchesBefore ?? [], requestIds);
+  errors.push(...own.errors);
+  report.receipt_launches_new = own.launches.length;
   try {
-    const root = join(managedState, 'receipts');
-    if (io.existsSync(root)) for (const launch of io.readdirSync(root)) for (const rid of requestIds) {
-      const name = `${sha(Buffer.from(rid, 'utf8'))}.json`, file = join(root, launch, name);
-      if (io.existsSync(file)) {
-        const bytes = regularRead(file);
-        // Raw (they hold provider thread/turn ids): outside the repository, never in the evidence folder.
-        const raw = join(rawReceiptsRoot, out.split('/').at(-1), 'receipts', launch);
-        io.mkdirSync(raw, { recursive: true, mode: 0o700 });
-        io.writeFileSync(join(raw, name), bytes);
-        receipts[rid] = JSON.parse(bytes);
-      }
+    for (const { launch, name, bytes } of own.raw) {
+      // Raw (they hold provider thread/turn ids): outside the repository, never in the evidence folder.
+      const raw = join(rawReceiptsRoot, out.split('/').at(-1), 'receipts', launch);
+      io.mkdirSync(raw, { recursive: true, mode: 0o700 });
+      io.writeFileSync(join(raw, name), bytes, { mode: 0o600, flag: 'wx' });
     }
-  } catch (error) { errors.push('receipts: ' + String(error?.message ?? error).slice(0, 120)); }
+  } catch (error) { errors.push('raw receipts: ' + msg(error)); }
+  const receipts = own.receipts;
   const values = results?.values ?? {}, read = k => { try { return JSON.parse(values[k]); } catch { return null; } };
   report.ledger = buildLedger({ steps, results, liveLines, asks, receipts, codexSha256: CONNECTOR.codex_sha256 });
   report.fence = fenceVerdict(report.ledger, liveLines, values);
+  // QA's own source-admission checker log (metadata only: phases, verdicts, sequences, hashes and admission times).
+  let checkerLines = [];
+  try {
+    const bytes = regularRead(join(candidate.work, 'out', 'admission-checker.jsonl'));
+    io.writeFileSync(join(out, 'admission-checker.jsonl'), bytes);
+    checkerLines = parseJsonl(bytes.toString('utf8'));
+    if (checkerLines.some(l => l.kind === 'unreadable_line')) errors.push('admission checker log: unreadable lines');
+  } catch (error) { errors.push('admission checker log: ' + msg(error)); }
+  report.source_admission = sourceAdmission(report.ledger, checkerLines);
   report.evidence = evidence({ ledger: report.ledger, liveLines, cards: { action2: read('action2_card'), action3: read('action3_card') }, truthBefore: read('surface_before'), truthAfter: read('surface_changed') });
   report.collect_errors = errors;
   io.writeFileSync(join(out, 'ledger.json'), JSON.stringify(report.ledger, null, 2) + '\n');

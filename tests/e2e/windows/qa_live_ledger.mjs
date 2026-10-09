@@ -51,12 +51,16 @@ export function transport(receipt, imageSha256, { codexSha256 = null } = {}) {
   const types = receipt.input_types ?? [], items = receipt.produced_item_types ?? [];
   const inputs = types.includes('text') && types.includes('image') && receipt.image_sha256 === imageSha256 && typeof imageSha256 === 'string';
   const submitted = receipt.submission === 'acknowledged' || receipt.submission === 'written';
+  // 'uncertain' is written before any byte is published and kept on ambiguous write/cancel paths: submission unknown.
+  const phase = submitted ? 'submitted' : receipt.submission === 'not_submitted' ? 'not_submitted' : 'unknown';
   const tools = items.filter(t => !PLAIN_ITEMS.has(t));
   const identity = { codex_sha256_matches: codexSha256 === null ? null : receipt.codex_sha256 === codexSha256, explicit_bin_override: receipt.explicit_bin_override ?? null };
   return { receipt: true, input_types: types, image_sha256_matches_app_record: receipt.image_sha256 === imageSha256, submission: receipt.submission ?? null,
     outcome: receipt.outcome ?? null, terminal_status: receipt.terminal_status ?? null, actual_model: receipt.actual_model ?? null,
     produced_item_types: items, non_plain_items: tools, thread_start_count: receipt.thread_start_count ?? null, turn_start_count: receipt.turn_start_count ?? null, ...identity,
-    verdict: !inputs ? 'official image input: not shown' : !submitted ? `inputs prepared; not submitted (${receipt.submission ?? 'unknown'})` : 'whole picture at the provider boundary' };
+    phase, identity_ok: (codexSha256 === null || receipt.codex_sha256 === codexSha256) && receipt.explicit_bin_override === true,
+    verdict: !inputs ? 'official image input: not shown' : phase === 'not_submitted' ? 'inputs prepared; not submitted'
+      : phase === 'unknown' ? `inputs at the boundary; submission unknown (${receipt.submission ?? 'missing'})` : 'whole picture at the provider boundary' };
 }
 
 /**
@@ -106,16 +110,70 @@ export function buildLedger({ steps, results, liveLines = [], asks = [], receipt
       transport: transport(receipts[request.request_id], request.frame?.image?.sha256, { codexSha256 }) };
   });
   const used = slots.filter(s => s.counted).length + extra.length;
+  // Provider turns: each receipt carries its connector client's CUMULATIVE turn/start count, so a launch's total is its
+  // largest count (never a sum of repeated counts); launches add up. It must fit the actions and cover the sent ones.
+  const launches = new Map();
+  for (const r of Object.values(receipts)) if (r && typeof r === 'object') launches.set(r.__launch ?? 'unknown', Math.max(launches.get(r.__launch ?? 'unknown') ?? 0, Number.isInteger(r.turn_start_count) ? r.turn_start_count : Infinity));
+  const providerTurns = [...launches.values()].reduce((a, b) => a + b, 0);
+  const sentReceipts = Object.values(receipts).filter(r => r && (r.submission === 'acknowledged' || r.submission === 'written')).length;
+  const turnsConsistent = Number.isFinite(providerTurns) && providerTurns <= used && providerTurns <= 4 && providerTurns >= sentReceipts;
+  // Incomplete evidence stays incomplete: an unreadable live line, an ask record without requests or a request without an id.
+  const unreadable = liveLines.filter(l => l.kind === 'unreadable_line').length + asks.filter(a => !a || !Array.isArray(a.requests)).length
+    + asks.filter(a => Array.isArray(a?.requests)).flatMap(a => a.requests).filter(q => !q || typeof q !== 'object' || typeof q.request_id !== 'string').length;
   // The app's own count (submitted + unknown), from its records and the guards' reads: it must agree with the ledger.
   const values = results?.values ?? {}, read = k => { try { return JSON.parse(values[k]); } catch { return null; } };
   const appUsed = Math.max(-1, ...liveLines.filter(l => typeof l.used === 'number').map(l => l.used), ...['action1', 'action2', 'action3', 'action4_after'].map(k => read(k)?.used).filter(n => typeof n === 'number'));
   const submittedSlots = slots.filter(s => s.counted && s.submission && s.submission !== 'not_submitted').length;
   const unwritten = Math.max(0, ...['action1', 'action2', 'action3', 'action4_after'].map(k => read(k)?.unwritten).filter(n => typeof n === 'number'));
   return { kind: 'qa-live-nonvoice-ledger/1', slots, extra_requests: extra, attempts_used: used, attempts_remaining: Math.max(0, 4 - used),
-    ceiling_ok: used <= 4 && unwritten === 0 && (appUsed < 0 || appUsed <= submittedSlots + extra.length), app_counted: appUsed < 0 ? null : appUsed, submitted_slots: submittedSlots, live_lines_unwritten: unwritten,
+    ceiling_ok: used <= 4 && unwritten === 0 && (appUsed < 0 || appUsed <= submittedSlots + extra.length) && turnsConsistent, app_counted: appUsed < 0 ? null : appUsed, submitted_slots: submittedSlots, live_lines_unwritten: unwritten,
+    provider_turns: Number.isFinite(providerTurns) ? providerTurns : null, receipt_launches: launches.size, sent_receipts: sentReceipts, turns_consistent: turnsConsistent,
+    records_complete: unreadable === 0, unreadable_records: unreadable,
     sessions_started: starts, start_attempts: starts + refusedStarts.length, restarted: starts + refusedStarts.length > 1, retried: extra.length > 0,
     all_silent: slots.every(s => !s.asked_as || (s.asked_as === 'silent' && !s.spoken)),
     rule: 'Every assigned action counts once, submitted, unknown or not_submitted; not Ask presses. No retry, no restart.' };
+}
+
+/**
+ * F3: every request that may have reached the provider was sent only with an admitted source, as QA's own checker log
+ * records it (the decisions are logged before they are answered): the checker started, armed this capture with a fresh
+ * full admission, and for the request's exact PNG allowed a send that names an acquisition it had allowed after
+ * acquiring (post_acquire) and before (pre_acquire), all with fresh full admissions, in that order, and nothing allowed
+ * after a deny. Requests proven not submitted need no send. An allowed send the app's records do not hold is flagged:
+ * the records would be incomplete. Logical ordering only; an OS change between two native observations remains possible.
+ */
+export function sourceAdmission(ledger, checkerLines) {
+  const lines = (checkerLines ?? []).filter(l => l && typeof l === 'object');
+  const decisions = lines.filter(l => l.event === 'decision');
+  const ok = d => d.verdict === 'allow' && d.reason === null && d.admission?.accepted === true;
+  const firstDeny = decisions.findIndex(d => d.verdict !== 'allow');
+  const ordered = decisions.every((d, i) => Number.isSafeInteger(d.seq) && (i === 0 || d.seq > decisions[i - 1].seq));
+  const arm = decisions[0]?.phase === 'arm' && ok(decisions[0]) ? decisions[0] : null;
+  const same = (d, e) => d.sample_seq === e.sample_seq && d.frame_seq === e.frame_seq && d.raw_sha256 === e.raw_sha256 && d.raw_size?.width === e.raw_size?.width && d.raw_size?.height === e.raw_size?.height;
+  const bind = (rid, image) => {
+    const k = decisions.findIndex(d => d.phase === 'send' && d.request_id === rid);
+    if (k < 0) return { bound: false, reason: 'no checker send decision for this request' };
+    const send = decisions[k];
+    if (!ok(send)) return { bound: false, reason: 'the send was not admitted' };
+    if (send.image_sha256 !== image || typeof image !== 'string') return { bound: false, reason: 'the admitted send names another image' };
+    const p = decisions.slice(0, k).findLastIndex(d => d.phase === 'post_acquire' && ok(d) && same(d, send));
+    if (p < 0) return { bound: false, reason: 'no admitted acquisition before the send' };
+    const q = decisions.slice(0, p).findLastIndex(d => d.phase === 'pre_acquire' && ok(d) && d.sample_seq === send.sample_seq);
+    if (q < 0) return { bound: false, reason: 'no admitted check before the acquisition' };
+    return { bound: true, sample_seq: send.sample_seq, frame_seq: send.frame_seq, raw_sha256: send.raw_sha256, send_admitted_at: send.admission.at, acquired_admitted_at: decisions[p].admission.at };
+  };
+  const requests = ledger.slots.filter(s => s.counted).map(s => ({ slot: s.slot, request_id: s.request_id ?? null, image_sha256: s.image_sha256 ?? null, submission: s.submission ?? null }))
+    .concat(ledger.extra_requests.map(rid => ({ slot: null, request_id: rid, image_sha256: null, submission: null })));
+  const checked = requests.map(r => !r.request_id ? { ...r, bound: false, reason: 'a counted action without a recorded request: its source is unknown' }
+    : r.submission === 'not_submitted' ? { ...r, bound: null, reason: 'proven not submitted: no send needed' } : { ...r, ...bind(r.request_id, r.image_sha256) });
+  const known = new Set(requests.map(r => r.request_id));
+  const unrecorded = decisions.filter(d => d.phase === 'send' && d.verdict === 'allow' && !known.has(d.request_id)).map(d => d.seq);
+  const all = lines[0]?.event === 'ready' && !!arm && ordered && unrecorded.length === 0
+    && (firstDeny < 0 || decisions.slice(firstDeny + 1).every(d => d.verdict !== 'allow'))
+    && checked.every(r => r.bound !== false);
+  return { all_bound: all, checker_ready: lines[0]?.event === 'ready', armed: !!arm, decisions: decisions.length, ordered, denied: firstDeny >= 0 ? { seq: decisions[firstDeny].seq, phase: decisions[firstDeny].phase, reason: decisions[firstDeny].reason } : null,
+    requests: checked, unrecorded_admitted_sends: unrecorded,
+    residual: 'Logical ordering of fresh full native admissions around acquisition and send; an OS change between two native observations is not excluded.' };
 }
 
 /** The Stop/fence verdict for slot 4: the app's records, the out count when Stop was clicked, and the actual card after it. */
@@ -135,9 +193,15 @@ export function fenceVerdict(ledger, liveLines, values = {}) {
   const notShown = slot.shown !== true && slot.presentation !== 'shown' && cardClean;
   const facts = { stop_scope: 'the AI session (#liveStop); the capture kept running until the wind-down capture Stop', stopped_by_user: stopped, request_recorded: recorded, out_at_stop: stop?.out_at_stop ?? null, settled_after_stop: settledAfterStop, request_outcome: slot.state,
     submission: slot.submission ?? null, shown: slot.shown ?? null, presentation: slot.presentation ?? null, card_after_stop_clean: cardClean, no_later_request: noLater, end_reason: ended?.reason ?? null };
-  if (!stopped || !recorded || !outAtStop || !settledAfterStop) return { verdict: 'unknown', ...facts };
+  // The phase from every record that has one: the ask entry, the settled line, the receipt. They must agree (F6).
+  const settledLine = afterEnd.find(l => l.kind === 'settled' && l.request_id === slot.request_id);
+  const phases = [slot.submission, settledLine?.submission, slot.transport?.receipt ? slot.transport.phase : undefined].filter(p => p !== undefined && p !== null)
+    .map(p => (p === 'unknown' || p === 'uncertain' ? 'unknown' : p));
+  const phase = phases.length && phases.every(p => p === phases[0]) ? phases[0] : 'conflicting';
+  Object.assign(facts, { phases_seen: phases, phase, receipt: !!slot.transport?.receipt });
+  if (!stopped || !recorded || !outAtStop || !settledAfterStop || phase === 'conflicting') return { verdict: 'unknown', ...facts };
   if (!notShown || !noLater) return { verdict: 'not_fenced', ...facts };
-  return { verdict: slot.submission === 'not_submitted' ? 'fenced_before_submission' : slot.submission === 'submitted' ? 'fenced_in_flight' : 'fenced_submission_unknown', ...facts };
+  return { verdict: phase === 'not_submitted' ? 'fenced_before_submission' : phase === 'submitted' ? 'fenced_in_flight' : 'fenced_submission_unknown', ...facts };
 }
 
 /** The pre-fixed pixel readings per action (the truths are the runner's private DevTools reads; never given to the app). */

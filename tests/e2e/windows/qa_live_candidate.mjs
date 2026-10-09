@@ -6,8 +6,10 @@
 //   prepare-connector                       the private exact-source 52be105 Backend copy the real connector runs from
 //
 // Reuse, not a new framework: the runner is byte for byte the reviewed r4 diagnostic runner (Support 184f712; attempt 3
-// passed 32/32), only its new work folder differs. The steps keep that run's Edge identity, display and 16-point admission,
-// control/overlay placement and exact-owned cleanup, and replace its AI-disabled parts with the four released actions:
+// passed 32/32) with its new work folder and one delta (F3: the frozen admission context and LC_SOURCE_ADMISSION for the
+// product launch); the source-admission checker is that runner's own admission code. The steps keep that run's Edge
+// identity, display and 16-point admission, control/overlay placement and exact-owned cleanup, and replace its
+// AI-disabled parts with the four released actions:
 //   1 the first unattended whole-screen observation (it happens by itself after the actual UI Start);
 //   2 one circle in ASK mode: the app asks for a hint by itself (no Ask press, no typed text);
 //   3 one typed follow-up on the card after a controlled screen change (new cards, same page);
@@ -66,8 +68,10 @@ export const CIRCLE_ASSISTANCE = 'hint (the product\'s own cap for a circle with
 export const NATIVE_BOUND_MS = 600000;
 const sourceNames = ['qa_live_candidate.mjs', 'qa_tts_output_candidate.mjs', 'qa_visible_candidate.mjs', 'qa_edge_placement.ps1', 'qa_display_admission.ps1',
   'qa-electron-runner.ps1', 'qa_tts_stage_check.py', 'qa_live_stage_check.py', 'surface_live.html', 'sub_copy.mjs', 'qa_sub_copy_check.py', 'qa_live_copy_check.py',
-  'signin_cleanup.mjs', 'qa_live_ledger.mjs', 'qa_run_tts_candidate.mjs', 'qa_sub_watch.py'];
-export const names = ['runner.ps1', 'steps.json', 'surface.html', 'sub-live.json'];
+  'signin_cleanup.mjs', 'qa_live_ledger.mjs', 'qa_run_tts_candidate.mjs', 'qa_sub_watch.py', 'qa_admission_checker.ps1'];
+export const names = ['runner.ps1', 'steps.json', 'surface.html', 'sub-live.json', 'admission-checker.ps1', 'admission-live.json'];
+// The payloads the product reads through the link folder (named for that one app process); the others sit in the scratch.
+export const linkNames = ['sub-live.json', 'admission-live.json'];
 const sha = data => createHash('sha256').update(data).digest('hex');
 const win = p => {
   if (!p.startsWith('/mnt/c/') || /['\r\n]/.test(p)) throw Error('unexpected Windows path');
@@ -126,7 +130,9 @@ export function liveSteps({ surfaceUrl, profile }) {
     // The generated surface, owned and identified, full screen, the only thing on the display (as in the accepted run).
     { edgeStart: surfaceUrl, profile, as: 'edge', fullscreen: true }, raise, { edgeFullscreen: true }, truth('surface_before'), onTop,
     // The product, with the real connector named for this process only.
-    { launchApp: true, as: 'app', sub: 'live' },
+    // ... and the QA source-admission checker for every capture (F3, Lead interface 4f7d9fa): LC_SOURCE_ADMISSION names
+    // its pinned configuration for this process only; the runner freezes the admitted Edge/display context just before.
+    { launchApp: true, as: 'app', sub: 'live', admission: 'live' },
     { target: 'control', waitEval: 'document.querySelectorAll("#displays li[role=option]").length === 1', timeoutMs: 15000 },
     ctl(`(async () => { const a = await lc.subState(), l = await lc.linkState(), s = await lc.sessionState();
       if (a.mode !== 'managed') throw Error('the trusted connector configuration was not taken: ' + a.mode + (a.reason ? ' (' + a.reason + ')' : ''));
@@ -145,12 +151,17 @@ export function liveSteps({ surfaceUrl, profile }) {
       if (a.login !== 'none' || a.asking) throw Error('a sign-in or a request is pending');
       const chosen = (a.models || []).find(m => m.id === a.model);
       if (!chosen || !chosen.image_input) throw Error('the selected model does not take pictures');
+      // The applicable bucket as the connector selects it (52be105 chatgpt_rpc.py ask): the Codex limit for this model,
+      // or the one unnamed bucket; only its spend control or workspace limit stops the run, never another model's bucket.
       const q = a.quota, windows = q ? q.windows || [] : [];
-      if (windows.some(b => b.spend_control_reached === true)) throw Error('the server states a spend control as reached: the run stops before Start');
+      let applicable = windows.filter(b => b.limit_id === 'codex' && (b.normal_model_slug === null || b.normal_model_slug === a.model));
+      if (!applicable.length && windows.length === 1 && windows[0].limit_id === null) applicable = windows.filter(b => b.normal_model_slug === null || b.normal_model_slug === a.model);
+      const workspace = ['workspace_owner_credits_depleted', 'workspace_member_credits_depleted', 'workspace_owner_usage_limit_reached', 'workspace_member_usage_limit_reached'];
+      if (applicable.length === 1 && (applicable[0].spend_control_reached === true || workspace.includes(applicable[0].rate_limit_reached_type))) throw Error('the server states a spend or workspace limit for this model as reached: the run stops before Start');
       if (document.getElementById('aiOn').disabled) throw Error('the AI session cannot be started from the control window');
       return JSON.stringify({ state: a.state, model: a.model, image_input: true, quota_read: a.quota_read_at !== null, quota_available: q ? q.available : null,
         included_usage_allowed: q ? q.ordinary_usage_allowed : null, included_reached: windows.some(b => !!b.rate_limit_reached_type),
-        credits_present: windows.some(b => !!b.credits && (b.credits.has_credits === true || b.credits.unlimited === true)), spend_control_reached: false }); })()`, 'account_ready'),
+        credits_present: windows.some(b => !!b.credits && (b.credits.has_credits === true || b.credits.unlimited === true)), applicable_buckets: applicable.length, spend_control_reached: false }); })()`, 'account_ready'),
     { productPlacement: 'control' },
     raise, truth('surface_at_start'), onTop,
     // The Start: the three policy fields set through DevTools (value + input event, not OS typing), the AI box ticked,
@@ -160,14 +171,16 @@ export function liveSteps({ surfaceUrl, profile }) {
       for (const [id, v] of [['aiRequests', ${POLICY.requests}], ['aiMinutes', ${POLICY.minutes}], ['aiInterval', ${POLICY.seconds}]]) { const f = document.getElementById(id); f.value = String(v); f.dispatchEvent(new Event('input', { bubbles: true })); }
       const start = document.getElementById('start'); if (start.disabled) throw Error('capture Start unavailable'); start.click();
       return JSON.stringify({ requests: document.getElementById('aiRequests').value, minutes: document.getElementById('aiMinutes').value, seconds: document.getElementById('aiInterval').value, ai: box.checked }); })()`, as: 'capture_start' },
-    { target: 'control', waitEval: `(async () => { const s = await lc.sessionState(); return s.running && !s.starting && !!s.live && s.live.state !== 'starting'; })()`, timeoutMs: 20000 },
+    { target: 'control', waitEval: `(async () => { const s = await lc.sessionState(); return s.running && !s.starting && !!s.live && s.live.state !== 'starting'; })()`, timeoutMs: 30000 },
     // The production policy as the app took it: exactly the set bounds, one session.
     ctl(`(async () => { const l = ${live};
       if (!l || l.state !== 'on') throw Error('the AI session did not start: ' + (l ? l.state + (l.reason ? ' (' + l.reason + ')' : '') : 'none'));
       const span = Date.parse(l.expires_at) - Date.parse(l.since);
       if (l.max_submissions !== ${POLICY_MS.max_submissions} || l.min_observation_interval_ms !== ${POLICY_MS.min_observation_interval_ms} || Math.abs(span - ${POLICY_MS.max_session_ms}) > 2000) throw Error('the session policy is not 4 / 1 min / 60 s');
       return JSON.stringify({ id: l.id, model: l.model, since: l.since, expires_at: l.expires_at, span_ms: span, max_submissions: l.max_submissions, reserve: l.reserve, min_observation_interval_ms: l.min_observation_interval_ms, used: l.used, out: l.out }); })()`, 'live_policy'),
-    { target: 'overlay', waitEval: 'typeof __lcOverlay !== "undefined" && __lcOverlay.state().frame !== null', timeoutMs: 15000 },
+    // (The first frame is published only after the checker started and admitted arm, pre- and post-acquisition: about
+    // 3 s per decision from the accepted diagnostic's admission timings, plus the checker's start; hence 30 s.)
+    { target: 'overlay', waitEval: 'typeof __lcOverlay !== "undefined" && __lcOverlay.state().frame !== null', timeoutMs: 30000 },
     { productPlacement: 'overlay' },
     // Talk is off (nothing is read aloud; requests go out as silent) and no card is up.
     ov("(() => { if (document.getElementById('talk').getAttribute('aria-pressed') === 'true') throw Error('Talk is on'); if (!document.getElementById('card').hidden) throw Error('a card is up before any circle'); return JSON.stringify({ talk: 'off', card_hidden: true }); })()", 'overlay_ready'),
@@ -180,17 +193,18 @@ export function liveSteps({ surfaceUrl, profile }) {
     // app asks for a hint by itself (no Ask press, no typed text).
     onTop,
     ov("document.querySelector('[data-mode=ASK]').click(), true"), { stroke: circle, pointerType: 'pen' },
-    started(2, 10000), ended(45000), settled, card('action2_card'), answered, guard('action2', 2),
+    // (A send waits for its own admission, possibly queued behind an acquisition's two: up to 20 s before it is out.)
+    started(2, 20000), ended(45000), settled, card('action2_card'), answered, guard('action2', 2),
     // ACTION 3: the controlled screen change (new cards, same page); the overlay must hold a NEW frame before anything is
     // sent; the scene checked again; then one typed follow-up on the card.
     ov(`(() => { window.__qaFrameBefore = ${newest}; return JSON.stringify(window.__qaFrameBefore); })()`, 'frame_before_change'),
     evalStep('edge', 'window.__qaSurfaceChange()', 'surface_change'), truth('surface_changed'),
-    { target: 'overlay', waitEval: `(() => { const n = ${newest}; return n.sha !== null && n.sha !== window.__qaFrameBefore.sha && n.frame !== window.__qaFrameBefore.frame; })()`, timeoutMs: 6000 },
+    { target: 'overlay', waitEval: `(() => { const n = ${newest}; return n.sha !== null && n.sha !== window.__qaFrameBefore.sha && n.frame !== window.__qaFrameBefore.frame; })()`, timeoutMs: 20000 },
     ov(`JSON.stringify(${newest})`, 'frame_after_change'), onTop,
-    ask(QUESTIONS.followup, 'action3_submit'), started(3, 10000), ended(45000), settled, card('action3_card'), answered, guard('action3', 3),
+    ask(QUESTIONS.followup, 'action3_submit'), started(3, 20000), ended(45000), settled, card('action3_card'), answered, guard('action3', 3),
     // ACTION 4: the scene checked right before the frame, one more typed request, and Stop the AI as soon as it is out.
     onTop, ask(QUESTIONS.fence, 'action4_submit'),
-    { target: 'control', waitEval: `(async () => { const l = ${live}; return !l || l.state !== 'on' || l.out > 0 || l.used >= 4; })()`, timeoutMs: 10000 },
+    { target: 'control', waitEval: `(async () => { const l = ${live}; return !l || l.state !== 'on' || l.out > 0 || l.used >= 4; })()`, timeoutMs: 20000 },
     ctl(`(async () => { const l = ${live}; const b = document.getElementById('liveStop'); if (b.hidden || b.disabled) throw Error('Stop the AI unavailable');
       b.click(); return JSON.stringify({ out_at_stop: l ? l.out : null, used_at_stop: l ? l.used : null, state_at_stop: l ? l.state : null, at: new Date().toISOString() }); })()`, 'action4_stop'),
     { target: 'control', waitEval: `(async () => { const l = ${live}; return !l || l.state === 'ended' || l.state === 'off'; })()`, timeoutMs: 20000 },
@@ -217,19 +231,109 @@ export function worstCaseMs(steps) {
   return steps.reduce((sum, s) => sum + (s.waitEval ? s.timeoutMs ?? 15000 : s.sleep ?? (s.closeApp ? (s.waitMs ?? 3000) + 2000 : Object.keys(fixed).find(k => k in s) ? fixed[Object.keys(fixed).find(k => k in s)] : 1000)), 0) + 30000;   // + the runner's start-up and finally
 }
 
-/** The runner: the reviewed r4 runner's bytes, rebuilt from the same sources and deltas, naming this run's folder. */
-function liveRunner(ctx) {
+/** The reviewed r4 runner's bytes, rebuilt from the same sources and deltas, naming this run's folder. */
+function reviewedRunner(ctx) {
   const built = buildVisibleCandidate(ctx);
   return applyPlacementGeometry(applyPlacementClient(applyAdmissionPoints(applyEdgeIdentity(applyScopedAdmission(built.runner, ctx)))));
 }
-/** The reviewed runner with this run's folder, or a refusal: the live candidate changes no runner byte. */
+function liveRunner(ctx) { return applyAdmissionDelta(reviewedRunner(ctx)); }
+/** The reviewed runner with this run's folder plus exactly the source-admission delta, or a refusal. */
 export function assertReviewedRunner(runner, work) {
+  runner = revertAdmissionDelta(runner);
   const reviewed = readFileSync(join(repo, REVIEWED_RUNNER.file));
   if (sha(reviewed) !== REVIEWED_RUNNER.sha256) throw Error('reviewed r4 runner bytes changed');
   const folder = work.split('/').at(-1);
   const text = reviewed.toString('utf8');
   if (text.split(REVIEWED_RUNNER.folder).length !== 2 || runner.split(folder).length !== 2) throw Error('the work folder is named more than once');
   if (text.replace(REVIEWED_RUNNER.folder, folder) !== runner) throw Error('live runner differs from the reviewed r4 runner');
+}
+// ---- F3: the source-admission checker (Lead interface 4f7d9fa; Web owns the app side in apps/windows) ----
+// The checker reuses the reviewed runner's admission byte for byte: these definitions are cut from the emitted runner and
+// inserted unchanged into qa_admission_checker.ps1 (which adds only the protocol loop and the frozen context).
+const CHECKER_TYPES = ['QaWin', 'QaEdgeSurface', 'QaDisplayAdmissionNative', 'QaPlacementNative'];
+// The runner's statement right after its QaWin type: the process works in physical pixels (RootAt's 16 points are
+// physical coordinates of the 2560x1600 display); without it the checker would test virtualized logical coordinates.
+const CHECKER_FOLLOWING = { QaWin: '[void][QaWin]::SetProcessDPIAware()\n' };
+const CHECKER_FUNCTIONS = ['Receive-Message', 'Invoke-Cdp', 'Target-Url', 'Get-Socket', 'Eval', 'ConvertTo-QaUrlKey', 'Get-QaEdgeSocket', 'Assert-QaEdgeSurfacePage',
+  'Get-QaOwnedEdgeIds', 'Find-QaEdgeSurface', 'Get-QaEdgeSurfaceWindow', 'Window-Handle', 'New-QaAdmissionEvidence', 'Read-QaDisplaySnapshot', 'Assert-QaDisplayBaseline', 'Assert-QaSurfaceAdmission'];
+const CHECKER_MARKER = '# @@QA_REVIEWED_ADMISSION_DEFINITIONS@@';
+/** The reviewed definitions the checker needs, each cut whole and unchanged from the runner (or a refusal). */
+export function checkerDefinitions(runner) {
+  const blocks = [], starts = [...runner.matchAll(/^Add-Type @'\n/gm)].map(m => m.index);
+  for (const type of CHECKER_TYPES) {
+    const found = starts.map(i => runner.slice(i, runner.indexOf("\n'@\n", i) + 4)).filter(b => new RegExp(`public (static |sealed )?class ${type} \\{`).test(b));
+    if (found.length !== 1) throw Error(`reviewed type ${type} not found once`);
+    const next = CHECKER_FOLLOWING[type], at = runner.indexOf(found[0]) + found[0].length;
+    if (next && runner.slice(at, at + next.length) !== next) throw Error(`reviewed statement after ${type} changed`);
+    blocks.push(found[0] + (next ?? ''));
+  }
+  for (const name of CHECKER_FUNCTIONS) {
+    const heads = [...runner.matchAll(new RegExp(`^function ${name.replace('-', '\\-')}[ (]`, 'gm'))].map(m => m.index);
+    if (heads.length !== 1) throw Error(`reviewed function ${name} not found once`);
+    const lineEnd = runner.indexOf('\n', heads[0]), first = runner.slice(heads[0], lineEnd);
+    const end = first.trimEnd().endsWith('}') && (first.match(/\{/g) ?? []).length === (first.match(/\}/g) ?? []).length ? lineEnd : runner.indexOf('\n}\n', heads[0]) + 2;
+    blocks.push(runner.slice(heads[0], end) + '\n');
+  }
+  return blocks.join('\n');
+}
+/** The frozen checker script: the protocol loop with the reviewed admission definitions inserted at its marker. */
+export function admissionChecker(runner) {
+  const template = readFileSync(join(here, 'qa_admission_checker.ps1'), 'utf8');
+  if (template.split(CHECKER_MARKER).length !== 2) throw Error('checker template marker missing or repeated');
+  return template.replace(CHECKER_MARKER, () => '# ---- reviewed runner definitions, unchanged (qa_live_candidate.mjs checkerDefinitions) ----\n' + checkerDefinitions(runner) + '# ---- end of reviewed definitions ----');
+}
+const POWERSHELL = String.raw`C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`;
+export const ADMISSION_TIMING = { ready_ms: 10000, decision_ms: 5000 };   // the Lead's initial fixed values (4f7d9fa)
+/** The pinned checker configuration (lc-windows-source-admission-config/v1): Windows PowerShell and the frozen script. */
+export function admissionConfig(work, ctx) {
+  return JSON.stringify({ format: 'lc-windows-source-admission-config/v1', checker: { command: POWERSHELL,
+    args: ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'RemoteSigned', '-File', win(join(work, 'admission-checker.ps1')), '-Context', ctx.linkDir + '\\admission-context.json', '-Log', win(join(work, 'out', 'admission-checker.jsonl'))] },
+    ...ADMISSION_TIMING }) + '\n';
+}
+// The runner's one delta: before the product launch, right after its full admission, freeze the admitted context for the
+// checker (the owned Edge process, surface page token and window, DevTools port, display signature) and name the
+// checker configuration in LC_SOURCE_ADMISSION for that process only (cleared at start, set inside the launch, removed in
+// its finally, like the connector's configuration).
+const ADMISSION_CONTEXT_FUNCTION = `function Write-QaAdmissionContext([string]$path) {
+  if ($null -eq $script:qaEdgeIdentity -or $null -eq $script:qaDisplayBaseline) { throw 'source admission context is not established' }
+  $p = $started['edge']
+  if (-not $p -or $p.HasExited -or [uint32]$p.Id -ne $script:qaEdgeIdentity.pid -or $p.StartTime -ne $script:qaEdgeIdentity.start) { throw 'owned Edge changed before the source admission context' }
+  $context = [ordered]@{ format = 'lc-qa-admission-context/1'; edge_pid = [int]$p.Id; edge_start_ticks = $p.StartTime.Ticks.ToString(); token = [string]$script:qaEdgeIdentity.token
+    handle = $script:qaEdgeIdentity.handle.ToInt64().ToString(); surface_url = [string]$script:qaEdgeSurfaceUrl; edge_port = [int]$script:edgePort; display_signature = [string]$script:qaDisplayBaselineSignature }
+  $bytes = (New-Object System.Text.UTF8Encoding($false)).GetBytes(($context | ConvertTo-Json -Compress) + "\`n")
+  $stream = New-Object System.IO.FileStream($path, [System.IO.FileMode]::CreateNew, [System.IO.FileAccess]::Write, [System.IO.FileShare]::None)
+  try { $stream.Write($bytes, 0, $bytes.Length); $stream.Flush($true) } finally { $stream.Dispose() }
+}
+`;
+const RUNNER_ADMISSION_DELTA = [
+  ["foreach ($k in @('LC_SUBSCRIPTION_CONNECTOR', 'LC_DEV_CAPTURE_HOST', 'ELECTRON_RUN_AS_NODE')) {", "foreach ($k in @('LC_SUBSCRIPTION_CONNECTOR', 'LC_DEV_CAPTURE_HOST', 'LC_SOURCE_ADMISSION', 'ELECTRON_RUN_AS_NODE')) {"],
+  ["function Start-App([string]$key, [string]$link = '', [string]$sub = '') {\n  $linkFile = $null\n  $subFile = $null\n",
+   "function Start-App([string]$key, [string]$link = '', [string]$sub = '', [string]$admission = '') {\n  $linkFile = $null\n  $subFile = $null\n  $admissionFile = $null\n" +
+   "  if ($admission) {\n    # The QA source-admission checker's pinned configuration, for this app process only (F3).\n    if ($admission -notmatch '^[a-z0-9-]+$' -or -not $LinkDir) { throw \"bad source admission config name $admission\" }\n" +
+   "    $admissionFile = Join-Path $LinkDir \"admission-$admission.json\"\n    if (-not (Test-Path -LiteralPath $admissionFile -PathType Leaf)) { throw \"no source admission config $admission\" }\n  }\n"],
+  ["  if ($subFile) { $env:LC_SUBSCRIPTION_CONNECTOR = $subFile }\n  try { Assert-QaSurfaceAdmission 'before_product_launch'; $script:app = Start-Process",
+   "  if ($subFile) { $env:LC_SUBSCRIPTION_CONNECTOR = $subFile }\n  Remove-Item Env:\\LC_SOURCE_ADMISSION -ErrorAction SilentlyContinue\n  try { Assert-QaSurfaceAdmission 'before_product_launch'; if ($admissionFile) { Write-QaAdmissionContext (Join-Path $LinkDir 'admission-context.json'); $env:LC_SOURCE_ADMISSION = $admissionFile }; $script:app = Start-Process"],
+  ["Remove-Item Env:\\LC_SUBSCRIPTION_CONNECTOR -ErrorAction SilentlyContinue; $env:TMP = $saved.TMP;", "Remove-Item Env:\\LC_SUBSCRIPTION_CONNECTOR -ErrorAction SilentlyContinue; Remove-Item Env:\\LC_SOURCE_ADMISSION -ErrorAction SilentlyContinue; $env:TMP = $saved.TMP;"],
+  ["  if ($subFile) { $results.processes[$key].sub_config_sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $subFile).Hash.ToLower() }\n",
+   "  if ($subFile) { $results.processes[$key].sub_config_sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $subFile).Hash.ToLower() }\n  $results.processes[$key].admission = $admission\n  if ($admissionFile) { $results.processes[$key].admission_config_sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $admissionFile).Hash.ToLower() }\n"],
+  ["        Start-App ([string]$step.as) ([string]$step.link) ([string]$step.sub)\n", "        Start-App ([string]$step.as) ([string]$step.link) ([string]$step.sub) ([string]$step.admission)\n"],
+  ["function Assert-QaSurfaceAdmission([string]$phase) {", ADMISSION_CONTEXT_FUNCTION + "function Assert-QaSurfaceAdmission([string]$phase) {"],
+];
+/** The live candidate's one runner delta (above), applied to the reviewed bytes; each site must be found exactly once. */
+export function applyAdmissionDelta(runner) {
+  for (const [from, to] of RUNNER_ADMISSION_DELTA) {
+    if (runner.split(from).length !== 2 || runner.includes(to)) throw Error('runner changed; source admission delta refused');
+    runner = runner.replace(from, () => to);
+  }
+  return runner;
+}
+export function revertAdmissionDelta(runner) {
+  for (const [from, to] of [...RUNNER_ADMISSION_DELTA].reverse()) {
+    if (runner.split(to).length !== 2) throw Error('source admission delta missing or changed');
+    runner = runner.replace(to, () => from);
+  }
+  if (/LC_SOURCE_ADMISSION|Write-QaAdmissionContext|admissionFile/.test(runner)) throw Error('source admission delta left traces');
+  return runner;
 }
 export function connectorConfig() {
   return JSON.stringify({ format: 'lc-windows-subscription-connector/v1', launch: { kind: 'wsl', distribution: CONNECTOR.distribution, user: CONNECTOR.user, cd: CONNECTOR.copy, python: CONNECTOR.python },
@@ -238,7 +342,8 @@ export function connectorConfig() {
 function payloadFor(ctx, work) {
   const runner = liveRunner(ctx);
   assertReviewedRunner(runner, work);
-  return { 'runner.ps1': runner, 'steps.json': JSON.stringify(liveSteps(ctx), null, 2) + '\n', 'surface.html': readFileSync(join(here, 'surface_live.html')), 'sub-live.json': connectorConfig() };
+  return { 'runner.ps1': runner, 'steps.json': JSON.stringify(liveSteps(ctx), null, 2) + '\n', 'surface.html': readFileSync(join(here, 'surface_live.html')), 'sub-live.json': connectorConfig(),
+    'admission-checker.ps1': admissionChecker(runner), 'admission-live.json': admissionConfig(work, ctx) };
 }
 function manifestFor(work) {
   const ctx = context(work), payload = payloadFor(ctx, work);
@@ -260,11 +365,12 @@ function manifestFor(work) {
     expected_fence: 'Stop is clicked as soon as the 4th request is out; the connector usually has not written turn/start yet, so the likely verdict is fenced_before_submission. Fencing a turn already at the provider would need a different trigger (a Lead decision).',
     native_worst_case_ms: worstCaseMs(liveSteps(ctx)),
     raw_receipts: 'Kept outside the repository (~/.local/state/lc-qa-live/<run>/receipts, 0700); only an allowlisted, sanitized set of generated evidence is for Git (Lead D8).',
-    script_permission: 'A separate, exact, process-only RemoteSigned permission for this runner with real subscription use is required; the AI-disabled approvals do not carry over.',
+    script_permission: 'A separate, exact, process-only RemoteSigned permission is required for this runner with real subscription use AND for the checker the product starts per capture (Windows PowerShell -NoProfile -NonInteractive -ExecutionPolicy RemoteSigned -File admission-checker.ps1, from admission-live.json); the AI-disabled approvals do not carry over.',
+    source_admission: 'F3 (Lead interface 4f7d9fa): the product\'s main process starts admission-checker.ps1 once per capture from admission-live.json (LC_SOURCE_ADMISSION, this process only) and asks it at arm, before and after each frame acquisition and before each send; every decision is a fresh full native admission (the reviewed Assert-QaSurfaceAdmission, with the normal-band predicate read on the admitted window just before and after) against the context the runner froze right before the launch, logged before it is answered; about 3 s per decision by the accepted diagnostic\'s admission timings (not measured with the checker), within decision_ms 5000. Logical ordering only: an OS change between two native observations remains possible. The app side is Web\'s (apps/windows); 52be105 does not start the checker, and the wrapper refuses every allocation until a reviewed interlock build is named.',
     proposed_native_invocation: { executable: String.raw`C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`, arguments: ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'RemoteSigned', ...fileArgs], status: 'NOT_ALLOCATED_NOT_EXECUTED', persistent_policy_changes: false },
     capture_prerequisite_mode: 'REAL_SUBSCRIPTION_NONVOICE_GENERATED_SURFACE',
     provider_attempts: 0, native_script_executed: false, display_account_audio_lease: 'NONE',
-    execution_block: 'Prepared only. Lead reviews this exact package, the current prerequisites and the decisions it names, then issues a separate exclusive display/account allocation for qa_run_live_candidate.mjs.',
+    execution_block: 'Prepared only. Interim: production 52be105 predates the Lead-assigned app interlock for F3 (frame admission before automatic retention/submission); the live candidate must be regenerated for that reviewed production commit and stage, never run as 52be105. Lead reviews the exact package, the current prerequisites and the decisions it names, then issues a separate exclusive display/account allocation for qa_run_live_candidate.mjs.',
   };
   return { manifest, payload };
 }

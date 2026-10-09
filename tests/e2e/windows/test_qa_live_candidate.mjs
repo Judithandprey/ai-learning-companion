@@ -4,12 +4,16 @@
 //     --test tests/e2e/windows/test_qa_live_candidate.mjs
 import assert from 'node:assert/strict';
 import { createHash, webcrypto } from 'node:crypto';
-import { readFileSync } from 'node:fs';
+import { constants as fsConstants, readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
-import { ACTIONS, ASSISTANCE, CONNECTOR, POLICY, POLICY_MS, QUESTIONS, REVIEWED_RUNNER, assertReviewedRunner, checkLiveCandidate, connectorConfig, names, prepareLiveCandidate } from './qa_live_candidate.mjs';
-import { buildLedger, evidence, fenceVerdict, leaks, parseJsonl, pixelEvidence, transport } from './qa_live_ledger.mjs';
-import { worstCaseMs } from './qa_live_candidate.mjs';
+// Namespace imports: run against an older source (the failures-before check), a missing export fails only its own tests.
+import * as candidateModule from './qa_live_candidate.mjs';
+import * as ledgerModule from './qa_live_ledger.mjs';
+
+const { ACTIONS, ADMISSION_TIMING, ASSISTANCE, CONNECTOR, POLICY, POLICY_MS, QUESTIONS, REVIEWED_RUNNER, admissionChecker, applyAdmissionDelta, assertReviewedRunner, checkLiveCandidate,
+  checkerDefinitions, connectorConfig, linkNames, names, prepareLiveCandidate, revertAdmissionDelta, worstCaseMs } = candidateModule;
+const { buildLedger, evidence, fenceVerdict, leaks, parseJsonl, pixelEvidence, sourceAdmission, transport } = ledgerModule;
 
 const identity = JSON.parse(readFileSync(new URL('../../../docs/verification/qa/p0-13-tts-52be105/stage-identity.json', import.meta.url)));
 const base = prepareLiveCandidate();
@@ -39,11 +43,13 @@ test('the candidate is offline-only, reproduces from the sources, and its scratc
   for (const k of ['input_method', 'expected_fence', 'script_permission', 'talk']) assert.equal(typeof base.manifest[k], 'string', k);
   assert.ok(base.manifest.source_files['qa_run_tts_candidate.mjs'] && base.manifest.source_files['qa_sub_watch.py']);
 });
-test('the runner is the reviewed r4 runner byte for byte, apart from the one work-folder name', () => {
+test('the runner is the reviewed r4 runner byte for byte, apart from the one work-folder name and the source-admission delta', () => {
   assertReviewedRunner(runner, base.manifest.work);
   const r4 = readFileSync(new URL('../../../' + REVIEWED_RUNNER.file, import.meta.url), 'utf8');
   assert.equal(sha(r4), REVIEWED_RUNNER.sha256);
-  assert.equal(r4.replace(REVIEWED_RUNNER.folder, base.manifest.work.split('/').at(-1)), runner);
+  assert.equal(r4.replace(REVIEWED_RUNNER.folder, base.manifest.work.split('/').at(-1)), revertAdmissionDelta(runner));
+  assert.equal(applyAdmissionDelta(revertAdmissionDelta(runner)), runner);
+  assert.throws(() => assertReviewedRunner(revertAdmissionDelta(runner), base.manifest.work), /delta missing/);
   assert.throws(() => assertReviewedRunner(runner.replace("throw 'owned generated surface window changed'", "throw 'x'"), base.manifest.work), /differs/);
   assert.equal(runner.includes('-LinkDir') || /\[string\]\$LinkDir/.test(runner), true);                         // the shared runner already takes it
 });
@@ -166,6 +172,21 @@ test('the live surface changes its cards in place: new values never shown before
 });
 
 // ---- the ledger ----
+// QA's checker log for a ledger as the checker writes it when every request went out admitted: ready, arm, then for each
+// request that may have been sent one acquisition (pre, post) and its send, each with an accepted fresh admission.
+function checkerLog(ledger, { skip = [] } = {}) {
+  let seq = 0, sample = 0;
+  const admitted = phase => ({ phase: 'checker_' + phase, at: `2026-10-09T06:00:${String(10 + seq).padStart(2, '0')}.000Z`, accepted: true, error: null, owned_points: 16 });
+  const decision = (phase, extra) => { seq += 1; return { event: 'decision', seq, id: seq.toString(16).padStart(32, '0'), phase, capture_id: '0123456789abcdef', sample_seq: null, frame_seq: null, raw_sha256: null, raw_size: null,
+    request_id: null, image_sha256: null, verdict: 'allow', reason: null, admission: admitted(phase), ...extra }; };
+  const lines = [{ event: 'ready' }, decision('arm', {})];
+  for (const s of ledger.slots.filter(x => x.counted && x.request_id && x.submission !== 'not_submitted' && !skip.includes(x.request_id))) {
+    sample += 1;
+    const frame = { sample_seq: sample, frame_seq: 100 + sample, raw_sha256: sample.toString(16).padStart(64, 'e'), raw_size: { width: 2560, height: 1600 } };
+    lines.push(decision('pre_acquire', { sample_seq: sample }), decision('post_acquire', frame), decision('send', { ...frame, request_id: s.request_id, image_sha256: s.image_sha256 }));
+  }
+  return lines;
+}
 const stepIndex = as => idx(s => s.as === as) + 1, strokeAt = idx(s => Array.isArray(s.stroke)) + 1;
 const ranTo = (n, values = {}) => ({ steps: steps.slice(0, n).map((_, k) => ({ i: k + 1, ok: true })), values });
 const look = (rid, sha256) => [{ kind: 'started', session_id: 'live-1' }, { kind: 'look', request_id: rid, image: { file: `frames/${sha256}.png`, sha256 } }, { kind: 'looked', request_id: rid, text: 'Cards 4821 and 5532 are visible.' }];
@@ -179,7 +200,9 @@ const values = { action1: JSON.stringify({ used: 1, unwritten: 0 }), action2: JS
 function happy() {
   const liveLines = [...look('live-1.look.1', 'a1'), { kind: 'ended', reason: 'stopped by you', used: 3 }, { kind: 'settled', request_id: 'sel.3', submission: 'not_submitted', used: 3 }];
   const asks = [{ requests: [entry('sel.1', 'focus'), entry('sel.2', 'text_followup'), entry('sel.3', 'text_followup', { question: QUESTIONS.fence, outcome: { status: 'cancelled', uncertain: false }, shown: false, presentation: undefined, submission: 'not_submitted' })] }];
-  const receipts = { 'live-1.look.1': receipt('live-1.look.1', 'a1'), 'sel.1': receipt('sel.1', 'f5'), 'sel.2': receipt('sel.2', 'f5'), 'sel.3': receipt('sel.3', 'f5', { submission: 'not_submitted', outcome: 'not_submitted' }) };
+  // One connector launch: its turn/start count is cumulative (1, 2, 3; the unsent fourth adds none).
+  const receipts = { 'live-1.look.1': receipt('live-1.look.1', 'a1', { turn_start_count: 1 }), 'sel.1': receipt('sel.1', 'f5', { turn_start_count: 2 }), 'sel.2': receipt('sel.2', 'f5', { turn_start_count: 3 }),
+    'sel.3': receipt('sel.3', 'f5', { submission: 'not_submitted', outcome: 'not_submitted', turn_start_count: 3 }) };
   return { liveLines, asks, receipts, results: ranTo(steps.length, { ...values }) };
 }
 const ledgerOf = h => buildLedger({ steps, ...h, codexSha256: CONNECTOR.codex_sha256 });
@@ -188,9 +211,10 @@ test('ledger: all four actions counted once each, the whole picture at the provi
   assert.equal(l.attempts_used, 4); assert.equal(l.ceiling_ok, true); assert.equal(l.restarted, false); assert.equal(l.retried, false); assert.equal(l.all_silent, true);
   assert.deepEqual(l.slots.map(s => s.counted), [true, true, true, true]); assert.equal(l.app_counted, 3); assert.equal(l.submitted_slots, 3);
   assert.ok(l.slots.slice(0, 3).every(s => s.transport.verdict === 'whole picture at the provider boundary' && s.transport.codex_sha256_matches === true));
-  assert.equal(l.slots[3].transport.verdict, 'inputs prepared; not submitted (not_submitted)');                       // a receipt alone is not the picture at the provider
+  assert.equal(l.slots[3].transport.verdict, 'inputs prepared; not submitted');                                       // a receipt alone is not the picture at the provider
   assert.equal(fenceVerdict(l, h.liveLines, h.results.values).verdict, 'fenced_before_submission');
-  const inFlight = structuredClone(h); inFlight.asks[0].requests[2].submission = 'submitted';
+  // In flight only when the ask record, the settled line and the receipt all say it was sent.
+  const inFlight = structuredClone(h); inFlight.asks[0].requests[2].submission = 'submitted'; inFlight.liveLines.at(-1).submission = 'submitted'; inFlight.receipts['sel.3'].submission = 'acknowledged';
   assert.equal(fenceVerdict(ledgerOf(inFlight), inFlight.liveLines, inFlight.results.values).verdict, 'fenced_in_flight');
 });
 test('ledger: unknown and proven not_submitted outcomes count; failed triggers count but are named; a session that never started counts nothing', () => {
@@ -253,16 +277,19 @@ test('fence: needs Stop by the user with the request out and settling after it, 
   assert.equal(verdict(unrecorded), 'unknown');
   const answered = structuredClone(h); answered.asks[0].requests[2].outcome = { status: 'answered' }; answered.asks[0].requests[2].presentation = 'unconfirmed';
   assert.equal(verdict(answered), 'unknown');
-  const unknown = structuredClone(h); unknown.asks[0].requests[2].submission = 'unknown';
+  const unknown = structuredClone(h); unknown.asks[0].requests[2].submission = 'unknown'; unknown.liveLines.at(-1).submission = 'unknown'; unknown.receipts['sel.3'].submission = 'uncertain';
   assert.equal(verdict(unknown), 'fenced_submission_unknown');
+  const noReceipt = structuredClone(h); delete noReceipt.receipts['sel.3'];                                         // a genuinely unsent attempt need not have one
+  assert.equal(verdict(noReceipt), 'fenced_before_submission');
 });
 test('transport: no receipt, another image, no text or image input, or a request not submitted is never the picture at the provider; tools are flagged', () => {
   assert.equal(transport(null, 'a').verdict, 'official image input: not shown (no receipt)');
   assert.equal(transport(receipt('r', 'b'), 'a').verdict, 'official image input: not shown');
   assert.equal(transport({ ...receipt('r', 'a'), input_types: ['text'] }, 'a').verdict, 'official image input: not shown');
   assert.equal(transport({ ...receipt('r', 'a'), input_types: ['image'] }, 'a').verdict, 'official image input: not shown');
-  assert.equal(transport({ ...receipt('r', 'a'), submission: 'not_submitted' }, 'a').verdict, 'inputs prepared; not submitted (not_submitted)');
-  assert.equal(transport({ ...receipt('r', 'a'), submission: 'uncertain' }, 'a').verdict, 'inputs prepared; not submitted (uncertain)');
+  assert.equal(transport({ ...receipt('r', 'a'), submission: 'not_submitted' }, 'a').verdict, 'inputs prepared; not submitted');
+  assert.equal(transport({ ...receipt('r', 'a'), submission: 'uncertain' }, 'a').verdict, 'inputs at the boundary; submission unknown (uncertain)');
+  assert.equal(transport({ ...receipt('r', 'a'), submission: undefined }, 'a').phase, 'unknown');
   assert.equal(transport(receipt('r', 'a'), 'a').verdict, 'whole picture at the provider boundary');
   assert.deepEqual(transport({ ...receipt('r', 'a'), produced_item_types: ['userMessage', 'commandExecution'] }, 'a').non_plain_items, ['commandExecution']);
   assert.equal(transport({ ...receipt('r', 'a'), codex_sha256: 'x' }, 'a', { codexSha256: CONNECTOR.codex_sha256 }).codex_sha256_matches, false);
@@ -311,8 +338,12 @@ const goodAllocation = () => ({ schema: 'qa-live-nonvoice-allocation/1', state: 
   launch_identity: { source: base.manifest.production_commit, stage: base.manifest.stage, tree: base.manifest.stage_tree_sha256, work: base.manifest.work, electron: base.manifest.electron, edge: base.manifest.edge, appPort: base.manifest.appPort, edgePort: base.manifest.edgePort },
   valid_from_utc: '2026-10-09T06:00:00Z', valid_until_utc: '2026-10-09T06:30:00Z' });
 test('wrapper: only an exact, active live allocation bound to the four-action bounds, no voice, no retry or restart, is accepted', () => {
-  const at = Date.parse('2026-10-09T06:10:00Z');
-  assert.equal(wrapper.validateLiveAllocation(goodAllocation(), base.manifest, 'w'.repeat(64), at), Date.parse('2026-10-09T06:30:00Z'));
+  const at = Date.parse('2026-10-09T06:10:00Z'), reviewed = base.manifest.production_commit;   // as if this build were the reviewed interlock build
+  // F3 gate: no reviewed interlock build is named yet, so every allocation is refused (52be105 never starts the checker).
+  assert.equal(wrapper.interlockProduction, null);
+  assert.throws(() => wrapper.validateLiveAllocation(goodAllocation(), base.manifest, 'w'.repeat(64), at), /starts the source-admission checker/);
+  assert.throws(() => wrapper.validateLiveAllocation(goodAllocation(), base.manifest, 'w'.repeat(64), at, 'a'.repeat(40)), /starts the source-admission checker/);
+  assert.equal(wrapper.validateLiveAllocation(goodAllocation(), base.manifest, 'w'.repeat(64), at, reviewed), Date.parse('2026-10-09T06:30:00Z'));
   for (const [k, v] of [['schema', 'qa-tts-display-allocation/1'], ['mode', 'AI_DISABLED_GENERATED_SURFACE_ONLY'], ['account_access', true], ['voice', true], ['microphone_access', true],
     ['retry', true], ['restart', true], ['max_native_attempts', 2], ['max_real_actions', 5], ['real_actions_already_used', 1], ['native_bound_ms', 1200000], ['native_bound_ms', 300000], ['native_bound_ms', 900000],
     ['exclusive_display', false], ['audio_access', true], ['cleanup_only_after_expiry', false], ['payload_sha256', { ...wrapper.pins, 'steps.json': '0'.repeat(64) }],
@@ -321,12 +352,13 @@ test('wrapper: only an exact, active live allocation bound to the four-action bo
     ['script_permission_ref', undefined],
     ['policy', { ...POLICY_MS, max_submissions: 12 }], ['connector', { ...CONNECTOR, state_dir: '/tmp/x' }], ['connector', { ...CONNECTOR, codex_bin: '/home/agentsdock/.local/bin/codex' }],
     ['candidate_sha256', '0'.repeat(64)], ['lead_reviewed', false], ['state', 'expired']]) {
-    assert.throws(() => wrapper.validateLiveAllocation({ ...goodAllocation(), [k]: v }, base.manifest, 'w'.repeat(64), at), Error, k);
+    assert.throws(() => wrapper.validateLiveAllocation({ ...goodAllocation(), [k]: v }, base.manifest, 'w'.repeat(64), at, reviewed), Error, k);
   }
-  assert.throws(() => wrapper.validateLiveAllocation(goodAllocation(), base.manifest, 'x'.repeat(64), at));                       // another wrapper
-  assert.throws(() => wrapper.validateLiveAllocation(goodAllocation(), base.manifest, 'w'.repeat(64), Date.parse('2026-10-09T06:31:00Z')), /not currently active/);
+  assert.throws(() => wrapper.validateLiveAllocation(goodAllocation(), base.manifest, 'x'.repeat(64), at, reviewed));             // another wrapper
+  assert.throws(() => wrapper.validateLiveAllocation(goodAllocation(), base.manifest, 'w'.repeat(64), Date.parse('2026-10-09T06:31:00Z'), reviewed), /not currently active/);
   const moved = goodAllocation(); moved.launch_identity.work = '/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-live-nonvoice-' + '0'.repeat(32);
-  assert.throws(() => wrapper.validateLiveAllocation(moved, base.manifest, 'w'.repeat(64), at));
+  assert.throws(() => wrapper.validateLiveAllocation(moved, base.manifest, 'w'.repeat(64), at, reviewed));
+  assert.deepEqual(Object.keys(wrapper.pins), names);                                                                   // every payload the product or runner reads is pinned
 });
 test('wrapper: the connector side refuses a missing or inexact copy, anything running in it, or another codex binary, before any Windows call', () => {
   const codex = Buffer.from('not codex');
@@ -338,20 +370,22 @@ test('wrapper: the connector side refuses a missing or inexact copy, anything ru
   assert.throws(() => wrapper.connectorAdmission(io(), { ...ok, liveImportCheck: () => ({ ok: false }) }), /cannot prepare/);
   assert.throws(() => wrapper.connectorAdmission(io(), { ...ok, askPathCheck: () => ({ ok: false }) }), /cannot prepare/);
   assert.throws(() => wrapper.connectorAdmission(io(), ok), /codex binary digest/);
+  assert.throws(() => wrapper.connectorAdmission(io(), ok, '/home/someone-else'), /home is not the one/);           // the receipt roots assume this user
   assert.deepEqual(wrapper.processesIn(CONNECTOR.copy, io({ readlinkSync: p => (p === '/proc/1/cwd' ? CONNECTOR.copy : '/') })), [1]);
 });
 
 test('wrapper: the mechanical result needs every term, the connector and its children gone, and keeps acceptance NOT_JUDGED', () => {
   const h = happy(), ledger = ledgerOf(h);
-  const report = { launcher: { status: 0 }, aborted: null, steps_ok: true, owned_launch_cleanup_confirmed: true, connector_left_running: [], connector_watch: { state: 'released' },
-    ledger, fence: fenceVerdict(ledger, h.liveLines, h.results.values), evidence: { leaks_in_questions: [] } };
+  const report = { launcher: { status: 0 }, aborted: null, steps_ok: true, collect_errors: [], owned_launch_cleanup_confirmed: true, connector_left_running: [], connector_watch: { state: 'released', descendants: 1 },
+    ledger, fence: fenceVerdict(ledger, h.liveLines, h.results.values), evidence: { leaks_in_questions: [] }, source_admission: sourceAdmission(ledger, checkerLog(ledger)) };
   const ok = wrapper.judgeMechanics(report);
   assert.equal(ok.mechanics_passed, true); assert.match(ok.acceptance, /^NOT_JUDGED/);
-  for (const [k, v] of [['launcher', { status: 1 }], ['aborted', 'x'], ['steps_ok', false], ['collect_failed', 'x'], ['owned_launch_cleanup_confirmed', false], ['connector_left_running', [123]],
+  for (const [k, v] of [['launcher', { status: 1 }], ['aborted', 'x'], ['steps_ok', false], ['collect_failed', 'x'], ['collect_errors', ['receipts: x']], ['collect_errors', undefined], ['owned_launch_cleanup_confirmed', false], ['connector_left_running', [123]],
+    ['connector_watch', { state: 'released', descendants: 0 }], ['source_admission', { all_bound: false }], ['source_admission', undefined],
     ['connector_watch', { state: 'left_running' }], ['connector_watch', { state: 'unknown' }], ['fence', { verdict: 'unknown' }], ['evidence', { leaks_in_questions: [{ value: 4444 }] }], ['evidence', undefined]]) {
     assert.equal(wrapper.judgeMechanics({ ...report, [k]: v }).mechanics_passed, false, k);
   }
-  const notAtProvider = structuredClone(ledger); notAtProvider.slots[1].transport.verdict = 'inputs prepared; not submitted (not_submitted)';
+  const notAtProvider = structuredClone(ledger); notAtProvider.slots[1].transport.verdict = 'inputs prepared; not submitted';
   assert.equal(wrapper.judgeMechanics({ ...report, ledger: notAtProvider }).mechanics_passed, false);
   const tool = structuredClone(ledger); tool.slots[2].transport.non_plain_items = ['webSearch'];
   assert.equal(wrapper.judgeMechanics({ ...report, ledger: tool }).mechanics_passed, false);
@@ -359,18 +393,34 @@ test('wrapper: the mechanical result needs every term, the connector and its chi
   const restarted = structuredClone(ledger); restarted.restarted = true; assert.equal(wrapper.judgeMechanics({ ...report, ledger: restarted }).mechanics_passed, false);
   const cut = structuredClone(ledger); cut.slots[3] = { slot: 4, state: 'NOT_RUN', counted: false }; assert.equal(wrapper.judgeMechanics({ ...report, ledger: cut }).mechanics_passed, false);
 });
-test('wrapper: the watch summary sees the connector and every descendant; a missing end or log is unknown, never released', () => {
+test('wrapper: the watch summary is released only with the whole lifecycle observed; anything less is unknown or left running', () => {
   const io = text => ({ readFileSync: () => text });
   assert.deepEqual(wrapper.watchSummary(io(''), 'w', false), { state: 'not_started' });
   const log = (...e) => e.map(x => JSON.stringify(x)).join('\n');
-  assert.equal(wrapper.watchSummary(io(log({ event: 'watch_start' }, { event: 'appear', pid: 5, role: 'in_root' }, { event: 'appear', pid: 6, role: 'descendant' }, { event: 'exit', pid: 5 }, { event: 'exit', pid: 6 }, { event: 'watch_end', remaining: [] })), 'w', true).state, 'released');
-  assert.deepEqual(wrapper.watchSummary(io(log({ event: 'appear', pid: 6, role: 'descendant' }, { event: 'watch_end', remaining: [6] })), 'w', true), { state: 'left_running', appeared: 1, remaining: [6] });
-  assert.equal(wrapper.watchSummary(io(log({ event: 'appear', pid: 6 })), 'w', true).state, 'unknown');
+  const begin = { event: 'watch_start', root_exists: true, already_there: [] };
+  const life = [{ event: 'appear', pid: 5, start_ticks: 50, role: 'in_root' }, { event: 'appear', pid: 6, start_ticks: 60, role: 'descendant' }, { event: 'exit', pid: 5, start_ticks: 50 }, { event: 'exit', pid: 6, start_ticks: 60 }];
+  const full = wrapper.watchSummary(io(log(begin, ...life, { event: 'watch_end', remaining: [] })), 'w', true);
+  assert.deepEqual([full.state, full.connector_seen, full.descendants], ['released', true, 1]);
+  assert.equal(wrapper.watchSummary(io(log(begin, life[0], life[1], { event: 'watch_end', remaining: [6] })), 'w', true).state, 'left_running');
+  for (const [events, why] of [
+    [[begin, { event: 'watch_end', remaining: [] }], /never seen/],                                                 // Support: started, observed no process
+    [[{ event: 'watch_end', remaining: [] }], /no start/],                                                          // Support: only the end record
+    [[...life, { event: 'watch_end', remaining: [] }], /no start/],                                                 // a lifecycle without the start record (readiness unproven)
+    [[{ ...begin, root_exists: false }, ...life, { event: 'watch_end', remaining: [] }], /did not start clean/],
+    [[{ ...begin, already_there: [3] }, ...life, { event: 'watch_end', remaining: [] }], /did not start clean/],
+    [[begin, ...life], /no end/],
+    [[begin, life[0], life[1], life[2], { event: 'watch_end', remaining: [] }], /not seen exiting/],               // pid 6 vanished from the record
+    [[begin, life[1], life[3], { event: 'watch_end', remaining: [] }], /never seen/],                               // only a descendant
+  ]) {
+    const r = wrapper.watchSummary(io(log(...events)), 'w', true);
+    assert.equal(r.state, 'unknown', String(why)); assert.match(r.note, why);
+  }
+  assert.match(wrapper.watchSummary(io(log(begin, ...life, { event: 'watch_end', remaining: [] }) + '\n{broken'), 'w', true).note, /unreadable/);
   assert.equal(wrapper.watchSummary({ readFileSync: () => { throw Error('none'); } }, 'w', true).state, 'unknown');
 });
 test('wrapper: with an exact allocation it still refuses at the connector checks before any Windows call, any folder or any process', async () => {
   const realFs = await import('node:fs');
-  const saved = JSON.parse(realFs.readFileSync(new URL('../../../docs/verification/qa/p0-13-live-52be105/candidate-nonvoice-02/candidate.json', import.meta.url)));
+  const saved = JSON.parse(realFs.readFileSync(new URL('../../../docs/verification/qa/p0-13-live-52be105/candidate-nonvoice-03/candidate.json', import.meta.url)));
   const wrapperHash = sha(realFs.readFileSync(new URL('qa_run_live_candidate.mjs', import.meta.url)));
   const record = { ...goodAllocation(), wrapper_sha256: wrapperHash, native_bound_ms: saved.native_bound_ms,
     native_invocation: { executable: saved.proposed_native_invocation.executable, arguments: saved.proposed_native_invocation.arguments },
@@ -384,8 +434,12 @@ test('wrapper: with an exact allocation it still refuses at the connector checks
       readdirSync: p => (p === '/proc' ? [] : realFs.readdirSync(p)), readlinkSync: () => '/',
       mkdirSync: p => { calls.push(['mkdir', p]); }, writeFileSync: p => { calls.push(['write', p]); } };
     const exec = (file, args) => { calls.push(['exec', file]); if (file === 'python3') return JSON.stringify(identity); throw Error('no Windows in this test'); };
+    const injected = { fs, execFileSync: exec, spawnSync: () => { calls.push(['spawnSync']); throw Error('no'); }, spawn: () => { calls.push(['spawn']); throw Error('no'); }, now: () => Date.parse('2026-10-09T06:10:00Z'), checks };
+    // Without a reviewed interlock build the exact allocation is refused before the Linux stage check or anything else.
+    await assert.rejects(wrapper.runLiveCandidate({ execute: true, out: '/tmp/qa-live-test-out', allocation: allocationPath, allocationSha256: sha(bytes) }, injected), /starts the source-admission checker/);
+    assert.deepEqual(calls.filter(c => c[0] !== 'exists'), []);
     await assert.rejects(wrapper.runLiveCandidate({ execute: true, out: '/tmp/qa-live-test-out', allocation: allocationPath, allocationSha256: sha(bytes) },
-      { fs, execFileSync: exec, spawnSync: () => { calls.push(['spawnSync']); throw Error('no'); }, spawn: () => { calls.push(['spawn']); throw Error('no'); }, now: () => Date.parse('2026-10-09T06:10:00Z'), checks }), why);
+      { ...injected, interlock: saved.production_commit }), why);
     assert.deepEqual(calls.filter(c => c[0] === 'exec').map(c => c[1]), ['python3']);                                  // the Linux stage check only
     assert.deepEqual(calls.filter(c => ['mkdir', 'write', 'spawn', 'spawnSync'].includes(c[0])), []);
   }
@@ -414,7 +468,7 @@ test('L1: the actual account_ready step lets ordinary credits, an exhausted incl
   const facts = JSON.parse(await run(state({ quota: { available: true, ordinary_usage_allowed: false, windows: [bucket({ rate_limit_reached_type: 'rate_limit_reached' })] } })));
   assert.deepEqual([facts.included_usage_allowed, facts.included_reached, facts.credits_present], [false, true, true]);
   // Stopped before Start: an authoritative spend control, and the unchanged account/model gates.
-  await assert.rejects(run(state({ quota: { available: true, ordinary_usage_allowed: true, windows: [bucket({ spend_control_reached: true })] } })), /spend control/);
+  await assert.rejects(run(state({ quota: { available: true, ordinary_usage_allowed: true, windows: [bucket({ spend_control_reached: true })] } })), /spend or workspace limit/);
   await assert.rejects(run(state({ state: 'signed_out' })), /not signed in/);
   await assert.rejects(run(state({ login: 'waiting' })), /sign-in or a request is pending/);
   await assert.rejects(run(state({ asking: true })), /pending/);
@@ -448,8 +502,262 @@ test('D8: raw receipts are written outside the repository; only sanitized fields
   const clean = wrapper.sanitizeReceipts(raw)['live-1.look.1'];
   for (const k of ['thread_id', 'turn_id', 'codex_executable']) assert.equal(k in clean, false, k);
   assert.equal(clean.image_sha256, 'a1'); assert.equal(clean.submission, 'acknowledged');
-  const tree = { '/o': ['run.json', 'ledger.json', 'receipts-sanitized.json', 'runner-results.json', 'connector-watch.jsonl', 'runner.stdout.bin', 'captures', 'private', 'preflight-refusal.json'],
+  const tree = { '/o': ['run.json', 'ledger.json', 'receipts-sanitized.json', 'runner-results.json', 'connector-watch.jsonl', 'admission-checker.jsonl', 'runner.stdout.bin', 'captures', 'private', 'preflight-refusal.json'],
     '/o/captures': ['0123abcd'], '/o/captures/0123abcd': ['live.jsonl', 'asks', 'frames'], '/o/captures/0123abcd/asks': ['ask-1.json', 'f.png'], '/o/captures/0123abcd/frames': ['x.png'], '/o/private': ['receipt.json'] };
   const io = { readdirSync: d => tree[d], statSync: p => ({ isDirectory: () => p in tree }) };
-  assert.deepEqual(wrapper.publishAllowlist(io, '/o').files, ['captures/0123abcd/asks/ask-1.json', 'captures/0123abcd/live.jsonl', 'connector-watch.jsonl', 'ledger.json', 'receipts-sanitized.json', 'run.json', 'runner-results.json', 'runner.stdout.bin']);
+  assert.deepEqual(wrapper.publishAllowlist(io, '/o').files, ['admission-checker.jsonl', 'captures/0123abcd/asks/ask-1.json', 'captures/0123abcd/live.jsonl', 'connector-watch.jsonl', 'ledger.json', 'receipts-sanitized.json', 'run.json', 'runner-results.json', 'runner.stdout.bin']);
+});
+
+// ---- Support HOLD 38230e1 (F1, F4, F5, F6, receipt reader); F3 is held for the Lead's interlock decision ----
+test('F1: the spend/workspace veto reads only the bucket the connector applies to the selected model, as 52be105 chatgpt_rpc.py selects it', async () => {
+  const text = evalOf(steps[idx(s => s.as === 'account_ready')]);
+  const model = { id: 'gpt-6-astra', image_input: true };
+  const b = over => ({ limit_id: 'codex', normal_model_slug: null, primary: null, secondary: null, credits: { has_credits: true, unlimited: false, balance: '5' }, rate_limit_reached_type: null, spend_control_reached: false, individual_limit: null, ...over });
+  const run = windows => vm.runInNewContext(text, { lc: { subState: async () => ({ mode: 'managed', state: 'signed_in', quota: { available: true, ordinary_usage_allowed: true, windows }, quota_read_at: 'x',
+    models: [model], model: model.id, login: 'none', asking: false }) }, document: { getElementById: () => ({ disabled: false }) }, JSON, Error, Promise });
+  const workspace = ['workspace_owner_credits_depleted', 'workspace_member_credits_depleted', 'workspace_owner_usage_limit_reached', 'workspace_member_usage_limit_reached'];
+  // Refused: the one applicable bucket (Codex for any model or this one, or the single unnamed bucket) states a spend
+  // control or a workspace limit; credits elsewhere do not lift it.
+  for (const windows of [[b({ spend_control_reached: true })], [b({ normal_model_slug: model.id, spend_control_reached: true })], [b({ limit_id: null, spend_control_reached: true })],
+    [b({ spend_control_reached: true }), b({ normal_model_slug: 'another-model' })], ...workspace.map(code => [b({ rate_limit_reached_type: code })])]) {
+    await assert.rejects(run(windows), /spend or workspace limit for this model/, JSON.stringify(windows.map(w => [w.limit_id, w.normal_model_slug, w.spend_control_reached, w.rate_limit_reached_type])));
+  }
+  // Through (the server decides): another model's bucket, another limit, an ambiguous pair, two unnamed buckets, an
+  // included window reached beside credits, an unknown spend state.
+  for (const windows of [[b({ normal_model_slug: 'another-model', spend_control_reached: true })], [b({ limit_id: 'other_limit', spend_control_reached: true })],
+    [b({ spend_control_reached: true }), b({ normal_model_slug: model.id })], [b({ limit_id: null, spend_control_reached: true }), b({ limit_id: null })],
+    [b({ rate_limit_reached_type: 'rate_limit_reached' })], [b({ spend_control_reached: null })], [b({ limit_id: null, normal_model_slug: 'another-model', spend_control_reached: true })]]) {
+    const r = JSON.parse(await run(windows));
+    assert.equal(r.spend_control_reached, false);
+  }
+  assert.equal(JSON.parse(await run([b({}), b({ normal_model_slug: 'another-model' })])).applicable_buckets, 1);
+});
+
+const reportOf = (h, over = {}) => { const ledger = ledgerOf(h); return { launcher: { status: 0 }, aborted: null, steps_ok: true, collect_errors: [], owned_launch_cleanup_confirmed: true,
+  connector_left_running: [], connector_watch: { state: 'released', descendants: 1 }, ledger, fence: fenceVerdict(ledger, h.liveLines, h.results.values), evidence: { leaks_in_questions: [] },
+  source_admission: sourceAdmission(ledger, checkerLog(ledger)), ...over }; };
+test('F4: Support\'s receipt witness cases fail the mechanics; collection, records, tools, digest and provider turns are judged for every action', () => {
+  const control = wrapper.judgeMechanics(reportOf(happy()));
+  assert.equal(control.mechanics_passed, true, JSON.stringify(control.mechanics));
+  const failsOn = (r, term) => { const j = wrapper.judgeMechanics(r); assert.equal(j.mechanics[term], false, term); assert.equal(j.mechanics_passed, false, term); };
+  failsOn(reportOf(happy(), { collect_errors: ['receipts: invalid JSON'] }), 'collected');                       // collection_error
+  const f4 = happy(); f4.asks[0].requests[2].submission = 'submitted'; f4.liveLines.at(-1).submission = 'submitted'; f4.liveLines.at(-1).used = 4;
+  f4.results.values.action4_after = JSON.stringify({ used: 4, unwritten: 0 }); Object.assign(f4.receipts['sel.3'], { submission: 'acknowledged', produced_item_types: ['commandExecution'], turn_start_count: 4 });
+  failsOn(reportOf(f4), 'stop_attempt_facts_ok');                                                               // fourth_turn_tool
+  assert.equal(reportOf(f4).fence.verdict, 'fenced_in_flight');                                                 // (the fence itself agrees: the tool is what fails)
+  const digest = happy(); digest.receipts['sel.1'].codex_sha256 = 'c'.repeat(64);
+  failsOn(reportOf(digest), 'whole_picture_at_provider');                                                       // wrong_connector_digest, slot 2
+  const bin = happy(); bin.receipts['sel.3'].explicit_bin_override = false;
+  failsOn(reportOf(bin), 'stop_attempt_facts_ok');                                                              // the Stop attempt's receipt is judged too
+  const five = happy(); five.receipts['sel.2'].turn_start_count = 5;
+  failsOn(reportOf(five), 'provider_turns_reconciled');                                                         // five_provider_turns
+  const phase = happy(); phase.asks[0].requests[2].submission = 'submitted';
+  assert.equal(reportOf(phase).fence.verdict, 'unknown'); failsOn(reportOf(phase), 'fenced');                  // contradictory_fence_phase
+  assert.match(transport({ ...receipt('r', 'a'), submission: 'uncertain' }, 'a').verdict, /submission unknown/);  // uncertain_receipt
+  // Cumulative counts are never summed within one launch; separate launches add up; a missing count is not zero.
+  assert.equal(ledgerOf(happy()).provider_turns, 3);
+  const two = happy(); two.receipts['live-1.look.1'].__launch = 'A'; for (const [k, n] of [['sel.1', 1], ['sel.2', 2], ['sel.3', 2]]) Object.assign(two.receipts[k], { __launch: 'B', turn_start_count: n });
+  assert.deepEqual([ledgerOf(two).provider_turns, ledgerOf(two).receipt_launches, wrapper.judgeMechanics(reportOf(two)).mechanics_passed], [3, 2, true]);
+  const missing = happy(); delete missing.receipts['sel.2'].turn_start_count;
+  failsOn(reportOf(missing), 'provider_turns_reconciled');
+  const fewer = happy(); fewer.receipts['sel.2'].turn_start_count = 2; fewer.receipts['sel.3'].turn_start_count = 2;   // three sent, two turns recorded
+  failsOn(reportOf(fewer), 'provider_turns_reconciled');
+  // Incomplete records stay incomplete.
+  const broken = happy(); broken.liveLines.push(...parseJsonl('{"kind":"looked"\n[1]'));
+  failsOn(reportOf(broken), 'records_complete');
+  const noRequests = happy(); noRequests.asks.push({ request_id: 'x' });
+  failsOn(reportOf(noRequests), 'records_complete');
+  const noId = happy(); noId.asks[0].requests.push({ trigger: 'focus' });
+  failsOn(reportOf(noId), 'records_complete');
+  // A sent request without a Codex child seen by the watch is not a correlated lifecycle.
+  failsOn(reportOf(happy(), { connector_watch: { state: 'released', descendants: 0 } }), 'connector_lifecycle_correlated');
+  // The Stop attempt without a receipt passes only if every record says not submitted.
+  const unsent = happy(); delete unsent.receipts['sel.3'];
+  assert.equal(wrapper.judgeMechanics(reportOf(unsent)).mechanics_passed, true);
+  const unsentUnknown = happy(); delete unsentUnknown.receipts['sel.3']; unsentUnknown.asks[0].requests[2].submission = 'unknown'; unsentUnknown.liveLines.at(-1).submission = 'unknown';
+  failsOn(reportOf(unsentUnknown), 'stop_attempt_facts_ok');
+});
+
+test('F5: the watch must record its own clean start before anything can launch; not ready, it is stopped, a refusal is written and nothing runs', async () => {
+  const setup = (text, over = {}) => {
+    const calls = [], watcher = { on: (ev, cb) => { if (ev === 'exit') watcher.exit = cb; } };
+    const io = { readFileSync: p => { calls.push(['read', p]); if (text === null) throw Error('ENOENT'); return text; },
+      writeFileSync: p => { calls.push(['write', p]); if (p.endsWith('connector-watch.stop')) watcher.exit?.(); }, existsSync: () => false, ...over };
+    const start = (cmd, args) => { calls.push(['spawn', cmd, ...args]); return watcher; };
+    const clock = { slept: 0 };
+    return { io, start, calls, clock, sleep: async ms => { clock.slept += ms; } };
+  };
+  const line = e => JSON.stringify({ event: 'watch_start', root_exists: true, already_there: [], at: '2026-10-09T06:00:00Z', ...e }) + '\n';
+  for (const [text, why] of [[null, /no start in time/], ['', /no start in time/], [line({ root_exists: false }), /private copy is missing/], [line({ already_there: [9] }), /already runs/]]) {
+    const t = setup(text);
+    const w = await wrapper.startWatch(t.io, t.start, t.sleep, '/tmp/qa-live-out');
+    assert.equal(w.ready.ready, false); assert.match(w.ready.reason, why);
+    assert.deepEqual(t.calls.filter(c => c[0] === 'write').map(c => c[1].split('/').at(-1)), ['connector-watch.stop', 'watch-refusal.json']);
+    assert.ok(t.clock.slept <= 5100);                                                                              // bounded
+  }
+  const t = setup(line({}));
+  const w = await wrapper.startWatch(t.io, t.start, t.sleep, '/tmp/qa-live-out');
+  assert.deepEqual([w.ready.ready, w.launchesBefore], [true, []]);
+  assert.deepEqual(t.calls[0].slice(0, 6), ['spawn', 'python3', new URL('qa_sub_watch.py', import.meta.url).pathname, '--root', CONNECTOR.copy, '--out']);
+  assert.equal(t.calls.some(c => c[0] === 'write'), false);
+  // The receipt launches already present are listed (names only) while the watch is ready; an odd root refuses.
+  const root = '/home/agentsdock/.local/share/LearningCompanion/managed-chatgpt/receipts';
+  const listed = setup(line({}), { existsSync: p => p === root, lstatSync: () => ({ isDirectory: () => true, isSymbolicLink: () => false }), realpathSync: p => p, readdirSync: () => ['b'.repeat(32), 'a'.repeat(32)] });
+  assert.deepEqual((await wrapper.startWatch(listed.io, listed.start, listed.sleep, '/tmp/o')).launchesBefore, ['a'.repeat(32), 'b'.repeat(32)]);
+  const linked = setup(line({}), { existsSync: p => p === root, lstatSync: () => ({ isDirectory: () => false, isSymbolicLink: () => true }), realpathSync: () => '/elsewhere', readdirSync: () => [] });
+  const lw = await wrapper.startWatch(linked.io, linked.start, linked.sleep, '/tmp/o');
+  assert.equal(lw.ready.ready, false); assert.match(lw.ready.reason, /receipts folder/);
+  // In the run: the watch is ready before the scratch is taken and before the native launch.
+  const src = readFileSync(new URL('qa_run_live_candidate.mjs', import.meta.url), 'utf8'), body = src.slice(src.indexOf('export async function runLiveCandidate('), src.indexOf('export async function startWatch('));
+  const order = ['await startWatch(io, start, sleep, out)', 'if (!watch.ready.ready) throw', 'io.mkdirSync(candidate.work, { recursive: false })', 'run(psBin, invocation.arguments'].map(x => body.indexOf(x));
+  assert.ok(order.every(i => i > 0) && order.every((i, k) => k === 0 || i > order[k - 1]), String(order));
+  assert.equal(body.includes("start('python3'"), false);                                                          // the only watch start is startWatch's
+});
+
+test('receipt reader: only this run\'s new launches, real folders and files, the connector format and this request id, checked before any byte is kept', () => {
+  const R = '/state/receipts', A = 'a'.repeat(32), B = 'b'.repeat(32), OLD = 'c'.repeat(32), rid = 'sel.1', rid2 = 'live-1.look.1';
+  const nameOf = r => sha(Buffer.from(r, 'utf8')) + '.json';
+  const full = (r, over = {}) => Buffer.from(JSON.stringify({ request_id: r, input_types: ['text', 'image'], text_bytes: 10, text_sha256: 'd'.repeat(64), image_bytes: 20, image_sha256: 'e'.repeat(64),
+    submission: 'acknowledged', terminal_status: 'completed', outcome: 'completed', produced_item_types: ['userMessage', 'agentMessage'], thread_start_count: 1, turn_start_count: 1, actual_model: 'gpt-6-astra',
+    thread_id: 'thr_x', turn_id: 'turn_x', format: 'lc-subscription-ask-receipt/1', codex_executable: '/x/codex', codex_version: '0.158.0', codex_sha256: CONNECTOR.codex_sha256, explicit_bin_override: true, ...over }));
+  const fake = ({ dirs, files = {}, links = [], real = {}, nlink = {} }) => {
+    const opened = [], held = new Map(); let next = 3;
+    return { opened, existsSync: p => p in dirs, lstatSync: p => ({ isDirectory: () => p in dirs && !links.includes(p), isSymbolicLink: () => links.includes(p) }), realpathSync: p => real[p] ?? p,
+      readdirSync: p => dirs[p], openSync: (p, flags) => { opened.push([p, flags]);
+        if (links.includes(p)) throw Object.assign(Error('ELOOP'), { code: 'ELOOP' }); if (!(p in files)) throw Object.assign(Error('ENOENT'), { code: 'ENOENT' }); held.set(next, p); return next++; },
+      fstatSync: fd => ({ isFile: () => true, nlink: nlink[held.get(fd)] ?? 1, size: files[held.get(fd)].length }), readFileSync: fd => files[held.get(fd)], closeSync: fd => held.delete(fd) };
+  };
+  const NOFOLLOW = fsConstants.O_NOFOLLOW;
+  const good = fake({ dirs: { [R]: [OLD, A], [`${R}/${A}`]: [], [`${R}/${OLD}`]: [] }, files: { [`${R}/${A}/${nameOf(rid)}`]: full(rid), [`${R}/${OLD}/${nameOf(rid2)}`]: full(rid2) } });
+  const g = wrapper.readOwnReceipts(good, [OLD], [rid, rid2], R);
+  assert.deepEqual([Object.keys(g.receipts), g.errors, g.launches, g.raw.map(x => [x.launch, x.name])], [[rid], [], [A], [[A, nameOf(rid)]]]);
+  assert.equal(g.receipts[rid].__launch, A); assert.ok(g.raw[0].bytes.equals(full(rid)));
+  assert.ok(good.opened.every(([p, flags]) => p.startsWith(`${R}/${A}/`) && (flags & NOFOLLOW) === NOFOLLOW));       // the earlier launch is never opened; no link followed
+  const bad = (spec, rids, why) => { const r = wrapper.readOwnReceipts(fake(spec), [], rids, R); assert.deepEqual([Object.keys(r.receipts), r.raw], [[], []], String(why)); assert.match(r.errors.join(' | '), why); return r; };
+  const one = (bytes, extra = {}) => ({ dirs: { [R]: [A], [`${R}/${A}`]: [] }, files: { [`${R}/${A}/${nameOf(rid)}`]: bytes }, ...extra });
+  bad(one(full(rid), { real: { [R]: '/elsewhere/receipts' } }), [rid], /not the product's own real folder/);        // the root resolves elsewhere
+  bad(one(full(rid), { links: [`${R}/${A}`] }), [rid], /not a real folder/);                                        // a linked launch folder
+  bad(one(full(rid), { real: { [`${R}/${A}`]: '/elsewhere/a' } }), [rid], /not a real folder/);
+  bad(one(full(rid), { links: [`${R}/${A}/${nameOf(rid)}`] }), [rid], /ELOOP/);                                     // a linked receipt file
+  bad(one(full(rid), { nlink: { [`${R}/${A}/${nameOf(rid)}`]: 2 } }), [rid], /single-link/);
+  bad(one(Buffer.alloc(16385, 32)), [rid], /16 KiB/);
+  bad(one(full('sel.2')), [rid], /this request's receipt/);                                                         // another request's bytes under this name
+  bad(one(full(rid, { format: 'other/1' })), [rid], /this request's receipt/);
+  bad(one(full(rid, { note: 'extra' })), [rid], /this request's receipt/);
+  bad(one(Buffer.from('{not json')), [rid], /JSON/);
+  bad({ dirs: { [R]: ['tmp'], [`${R}/tmp`]: [] } }, [rid], /not named as the connector names a launch/);
+  const twice = wrapper.readOwnReceipts(fake({ dirs: { [R]: [A, B], [`${R}/${A}`]: [], [`${R}/${B}`]: [] }, files: { [`${R}/${A}/${nameOf(rid)}`]: full(rid), [`${R}/${B}/${nameOf(rid)}`]: full(rid) } }), [], [rid], R);
+  assert.deepEqual([twice.raw.length, twice.errors.length], [1, 1]); assert.match(twice.errors[0], /two launches/);
+  // The run copies only what the reader admitted.
+  const src = readFileSync(new URL('qa_run_live_candidate.mjs', import.meta.url), 'utf8'), collectBody = src.slice(src.indexOf('function collect('));
+  assert.ok(collectBody.includes('for (const { launch, name, bytes } of own.raw)')); assert.equal(/regularRead\(file\)|managedState, 'receipts'\)/.test(collectBody), false);
+});
+
+// ---- F3 (Lead interface 4f7d9fa): QA's source-admission checker, its configuration, the runner delta and the binding ----
+test('F3 checker: the reviewed admission definitions are inserted unchanged; the checker only reads, runs no command, and follows the Lead protocol', () => {
+  const checker = base.payload['admission-checker.ps1'], defs = checkerDefinitions(runner);
+  assert.equal(checker, admissionChecker(runner)); assert.ok(checker.includes(defs));
+  for (const block of defs.split(/\n(?=function |Add-Type @')/)) assert.ok(runner.includes(block.trimEnd()), block.slice(0, 60));     // byte for byte from the runner
+  assert.equal(checker.includes('@@QA_REVIEWED_ADMISSION_DEFINITIONS@@'), false);
+  const at = runner.indexOf('function Assert-QaSurfaceAdmission('), admission = runner.slice(at, runner.indexOf('\n}\n', at) + 3);
+  assert.ok(checker.includes(admission));
+  for (const k of ['-not $state.Foreground', '-not $lastWindow.Foreground', "'0,0,2560,1600'", '$entry.owned_points++', 'Assert-QaDisplayBaseline $entry.native_final', 'fresh owned browser geometry changed']) assert.ok(admission.includes(k), k);   // no guard weakened
+  const uncommented = text => text.split('\n').filter(l => !l.trimStart().startsWith('#')).join('\n');
+  const code = uncommented(checker.replace(/Add-Type @'[\s\S]*?\n'@\n/g, ''));                                       // the PowerShell only, without comment lines
+  const defined = new Set([...code.matchAll(/^function ([A-Za-z-]+)/gm)].map(m => m[1]));
+  for (const name of new Set([...code.matchAll(/\b([A-Z][a-z]+-Qa[A-Za-z]+)\b/g)].map(m => m[1]).concat(['Invoke-Cdp', 'Receive-Message', 'Window-Handle', 'Target-Url', 'Get-Socket', 'Eval']))) {
+    if (name !== 'Write-QaAdmissionContext') assert.ok(defined.has(name), `${name} is defined in the checker`);
+  }
+  assert.deepEqual([...new Set([...code.matchAll(/\[(Qa\w+)\]::(\w+)/g)].map(m => `${m[1]}.${m[2]}`))].sort(),
+    ['QaDisplayAdmissionNative.ReadDisplays', 'QaDisplayAdmissionNative.ReadWindow', 'QaEdgeSurface.Find', 'QaPlacementNative.Read', 'QaWin.Find', 'QaWin.RootAt', 'QaWin.SetProcessDPIAware']);   // reads only: no raise, input or move
+  // Physical coordinates as in the runner (its statement right after the QaWin type), before any decision.
+  assert.ok(runner.includes("'@\n[void][QaWin]::SetProcessDPIAware()\n") && checker.includes("'@\n[void][QaWin]::SetProcessDPIAware()\n"));
+  assert.ok(checker.indexOf('[void][QaWin]::SetProcessDPIAware()') < checker.indexOf('# ---- start:'));
+  for (const bad of [/Start-Process/, /Stop-Process/, /Invoke-Expression|\biex\b/i, /EncodedCommand/i, /\.Kill\(/, /Invoke-Item/, /Set-ExecutionPolicy/, /Add-Content|Set-Content|Out-File/, /Remove-Item/, /Send-Cdp/, /dispatch(Mouse|Key|Touch)Event/]) {
+    assert.equal(bad.test(code), false, String(bad));
+  }
+  const template = readFileSync(new URL('qa_admission_checker.ps1', import.meta.url), 'utf8'), loop = template.slice(template.indexOf('# ---- start:'));
+  assert.equal(/\b(Eval|Invoke-Cdp|Get-Socket)\b/.test(loop), false);                                                   // no request text reaches the page
+  assert.ok(loop.includes(`$qaProtocolOut.WriteLine('{"format":"lc-source-admission/1","ready":true}')`));
+  assert.ok(template.includes("$qaReqNames = 'capture_id,display,format,frame_seq,id,image_sha256,phase,raw_sha256,raw_size,request_id,sample_seq,sent_at,seq'"));
+  const replyText = loop.slice(loop.indexOf('$reply = [ordered]@{'), loop.indexOf('$out = $reply'));
+  const replyKeys = [...replyText.matchAll(/(\w+) = /g)].map(m => m[1]).filter(k => k !== 'reply');
+  assert.deepEqual(replyKeys, ['format', 'id', 'seq', 'phase', 'capture_id', 'display', 'sample_seq', 'frame_seq', 'raw_sha256', 'raw_size', 'request_id', 'image_sha256', 'verdict', 'reason']);
+  for (const k of replyKeys.slice(0, 12)) assert.ok(replyText.includes(`${k} = $r.${k}`), `${k} echoed`);
+  assert.ok(loop.indexOf("event = 'decision'") < loop.indexOf('$qaProtocolOut.WriteLine($out)'));                    // logged before answered
+  assert.equal((template.match(/\$qaProtocolOut\.WriteLine\(/g) ?? []).length, 2);                                   // the protocol carries only ready and the logged replies
+  for (const k of ['AddSeconds(1800)', '$qaState.count -gt 4096', 'GetByteCount($line) -gt 4096', 'exit 2', 'exit 0', "if ($null -ne $qaState.denied) { $reason = 'an earlier decision denied this capture' }"]) assert.ok(loop.includes(k), k);
+  assert.equal((loop.match(/Assert-QaSurfaceAdmission/g) ?? []).length, 1); assert.ok(loop.includes('$results.values = [ordered]@{}'));   // one fresh admission per decision
+  // One decision: the normal band on the admitted window, the reviewed admission (its own two identity resolutions, the
+  // measured bulk), the normal band again; no further window resolution (the accepted diagnostic's timing, F3 latency).
+  const decide = loop.slice(loop.indexOf('$before = [QaPlacementNative]::Read($script:qaEdgeIdentity.handle)'), loop.indexOf("} catch { $reason = 'source admission refused"));
+  const steps3 = ['$before = [QaPlacementNative]::Read($script:qaEdgeIdentity.handle)', 'if ($before.Topmost -or $before.Minimized) { throw', "$null = Assert-QaSurfaceAdmission ('checker_' + $r.phase)",
+    '$after = [QaPlacementNative]::Read($script:qaEdgeIdentity.handle)', 'if ($after.Topmost -or $after.Minimized) { throw'].map(k => decide.indexOf(k));
+  assert.ok(steps3.every(i => i >= 0) && steps3.every((i, k) => k === 0 || i > steps3[k - 1]), String(steps3));
+  assert.equal(/Window-Handle|Get-QaEdgeSurfaceWindow|Assert-QaNormalEdge/.test(uncommented(loop)), false);
+  const ne = runner.slice(runner.indexOf('function Assert-QaNormalEdge('), runner.indexOf('\n}\n', runner.indexOf('function Assert-QaNormalEdge(')));
+  assert.ok(ne.includes('if ($snapshot.topmost -or $snapshot.minimized)'));                                              // the same band predicate as the reviewed one
+  // No line continues a condition with a leading binary operator (Windows PowerShell has no such continuation: a parse
+  // error that would keep the checker from ever starting); a leading -not must follow an operator ending the line before.
+  for (const [label, text] of [['checker', checker], ['runner delta', runner.slice(runner.indexOf('function Write-QaAdmissionContext('), runner.indexOf('function Assert-QaSurfaceAdmission('))]]) {
+    const lines = text.split('\n');
+    lines.forEach((l, i) => {
+      assert.equal(/^\s+-(or|and|xor|band|bor|bxor|eq|ne|ceq|cne|gt|ge|lt|le|match|cmatch|notmatch|like|is|isnot|contains|notcontains|in|notin|f|replace|split|join)\b/i.test(l), false, `${label} line ${i + 1}: ${l.trim().slice(0, 60)}`);
+      if (/^\s+-not\b/.test(l)) assert.match(lines[i - 1].trimEnd(), /(-or|-and|\()$/, `${label} line ${i + 1}`);
+    });
+  }
+  // The main-owned display id is a decimal string in the product (display_id); a number is accepted too, echoed unchanged.
+  assert.ok(template.includes("$idOk = ($d.id -is [string] -and $d.id -cmatch '^[0-9]{1,20}\\z') -or (Test-QaCheckerCount $d.id 0)"));
+  for (const k of ["'send names no admitted acquisition'", "'post_acquire names no admitted pre_acquire'", "'this request was already admitted for sending'", "'request identity replayed'", "'arm display is not the admitted display'"]) assert.ok(template.includes(k), k);
+});
+test('F3 configuration and runner delta: Windows PowerShell with the frozen checker and the Lead timings; LC_SOURCE_ADMISSION only for the product launch, after its admission and the frozen context', () => {
+  const c = JSON.parse(base.payload['admission-live.json']);
+  assert.deepEqual(Object.keys(c), ['format', 'checker', 'ready_ms', 'decision_ms']); assert.deepEqual(Object.keys(c.checker), ['command', 'args']);
+  assert.deepEqual([c.format, c.ready_ms, c.decision_ms], ['lc-windows-source-admission-config/v1', 10000, 5000]); assert.deepEqual(ADMISSION_TIMING, { ready_ms: 10000, decision_ms: 5000 });
+  assert.equal(c.checker.command, 'C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe');
+  assert.ok(c.checker.args.length <= 32 && c.checker.args.every(a => typeof a === 'string' && a.length <= 4096 && !/[\0\r\n]/.test(a)));
+  const w = base.manifest.work.replace('/mnt/c/', 'C:\\').replaceAll('/', '\\');
+  assert.deepEqual(c.checker.args, ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'RemoteSigned', '-File', `${w}\\admission-checker.ps1`, '-Context', `${w}\\link\\admission-context.json`, '-Log', `${w}\\out\\admission-checker.jsonl`]);
+  assert.deepEqual(linkNames, ['sub-live.json', 'admission-live.json']);
+  const launches = steps.filter(s => s.launchApp);
+  assert.equal(launches.length, 1); assert.deepEqual([launches[0].sub, launches[0].admission], ['live', 'live']);
+  const s0 = runner.indexOf('function Start-App('), start = runner.slice(s0, runner.indexOf('\n}\n', s0));
+  const tryLine = start.split('\n').find(l => l.startsWith('  try { Assert-QaSurfaceAdmission')), order = ["Assert-QaSurfaceAdmission 'before_product_launch'", 'Write-QaAdmissionContext', '$env:LC_SOURCE_ADMISSION = $admissionFile', 'Start-Process'].map(k => tryLine.indexOf(k));
+  assert.ok(order.every(i => i > 0) && order.every((i, k) => k === 0 || i > order[k - 1]), String(order));
+  assert.ok(start.split('\n').find(l => l.startsWith('  finally {')).includes('Remove-Item Env:\\LC_SOURCE_ADMISSION'));
+  assert.ok(runner.includes("foreach ($k in @('LC_SUBSCRIPTION_CONNECTOR', 'LC_DEV_CAPTURE_HOST', 'LC_SOURCE_ADMISSION', 'ELECTRON_RUN_AS_NODE'))"));
+  assert.equal((runner.match(/\$env:LC_SOURCE_ADMISSION = /g) ?? []).length, 1);
+  const c0 = runner.indexOf('function Write-QaAdmissionContext('), contextFn = runner.slice(c0, runner.indexOf('\n}\n', c0));
+  assert.ok(contextFn.includes('[System.IO.FileMode]::CreateNew'));
+  for (const k of ['edge_pid', 'edge_start_ticks', 'token', 'handle', 'surface_url', 'edge_port', 'display_signature']) assert.ok(contextFn.includes(`${k} = `), k);
+  assert.ok(base.payload['admission-checker.ps1'].includes("'display_signature,edge_pid,edge_port,edge_start_ticks,format,handle,surface_url,token'"));
+  assert.throws(() => applyAdmissionDelta(runner), /delta refused/);
+  assert.deepEqual(names.filter(n => base.manifest.files[n]).length, names.length);                                   // every payload pinned
+});
+test('F3 ledger: every possibly sent request needs an admitted send for its exact PNG naming an acquisition admitted before and after; a deny, a gap or an unrecorded send fails', () => {
+  const h = happy(), l = ledgerOf(h);
+  const good = sourceAdmission(l, checkerLog(l));
+  assert.equal(good.all_bound, true, JSON.stringify(good.requests)); assert.deepEqual(good.requests.map(r => r.bound), [true, true, true, null]);
+  const log = () => structuredClone(checkerLog(l));
+  const fails = (lines, why) => { const r = sourceAdmission(l, lines); assert.equal(r.all_bound, false, String(why)); if (why) assert.match(JSON.stringify(r), why); };
+  fails(log().slice(1), null);                                                                                          // no ready record
+  { const x = log(); Object.assign(x[1], { verdict: 'deny', reason: 'x' }); fails(x, null); }                          // arm denied
+  fails(checkerLog(l, { skip: ['sel.2'] }), /no checker send decision/);
+  { const x = log(); x.find(d => d.request_id === 'sel.1').image_sha256 = 'f'.repeat(64); fails(x, /another image/); }
+  { const x = log(); x.find(d => d.request_id === 'sel.1').raw_sha256 = '0'.repeat(64); fails(x, /no admitted acquisition/); }
+  { const x = log(); const k = x.findIndex(d => d.request_id === 'sel.1'); x.splice(k - 2, 1); fails(x, /no admitted check before/); }
+  { const x = log(); x.find(d => d.request_id === 'sel.2').admission.accepted = false; fails(x, /not admitted/); }
+  { const x = log(); const k = x.findIndex(d => d.request_id === 'sel.1'); [x[k - 1], x[k]] = [x[k], x[k - 1]]; fails(x, /no admitted acquisition/); }
+  { const x = log(); x.push({ ...x.at(-1), seq: 99, request_id: 'sel.unknown' }); fails(x, /"unrecorded_admitted_sends":\[99\]/); }
+  { const x = log(); x.splice(3, 0, { ...x[2], seq: 2.5 }); fails(x, null); }                                        // sequence not whole/increasing
+  { const x = log(); Object.assign(x[3], { verdict: 'deny', reason: 'source admission refused: owned surface lost' }); fails(x, null); }
+  { const x = log(); x.splice(2, 0, { ...x[2], seq: 1.5, sample_seq: 99, verdict: 'deny', reason: 'x' }); x.forEach((d, i) => { if (d.event === 'decision') d.seq = i; });   // a deny no binding needs, allows after it
+    fails(x, null); }
+  const f = happy(); f.asks[0].requests[2].submission = 'submitted'; f.liveLines.at(-1).submission = 'submitted'; f.receipts['sel.3'].submission = 'acknowledged';
+  const lf = ledgerOf(f);
+  assert.equal(sourceAdmission(lf, checkerLog(l)).all_bound, false); assert.equal(sourceAdmission(lf, checkerLog(lf)).all_bound, true);
+  const noRequest = buildLedger({ steps, results: ranTo(stepIndex('action3_submit')), liveLines: look('live-1.look.1', 'a1'), asks: [{ requests: [entry('sel.1', 'focus')] }], receipts: {} });
+  assert.equal(sourceAdmission(noRequest, checkerLog(noRequest)).all_bound, false);
+  const src = readFileSync(new URL('qa_run_live_candidate.mjs', import.meta.url), 'utf8');
+  assert.ok(src.includes("regularRead(join(candidate.work, 'out', 'admission-checker.jsonl'))") && src.includes('report.source_admission = sourceAdmission(report.ledger, checkerLines)'));
 });
