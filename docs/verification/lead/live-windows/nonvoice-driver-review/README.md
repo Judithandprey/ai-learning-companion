@@ -1,6 +1,6 @@
 # Current-package nonvoice driver review — 2026-10-09
 
-**Windows interlock integrated/staged; QA correction 05 delivered, independent retest pending.**
+**Windows interlock integrated/staged; candidate05's five findings independently closed, one narrow evidence correction remains.**
 Web's reviewed source through `ebbd1ed` integrates as `0ff325b`; its Windows tree
 matches exactly. Lead's final holding-membership case passes, and TypeScript plus
 static packaging pass. The distinct 81-file `%TEMP%\lc-windows-admission-0ff325b`
@@ -10,7 +10,10 @@ All 77 earlier 52be105-stage files still match. No application was launched.
 QA correction `df536b8` now addresses Support's five remaining `937788d` findings
 and pins the real staged product. Its exact-source regeneration, 32 pins and
 inactive/wrong-product allocation refusals pass Lead's checks. Support's focused
-independent retest is pending; source integration and execution remain held.
+independent retest `b93fc60` closes those five findings. A duplicate-EOF trace
+still passes the ledger, so the same QA owner is correcting that one condition
+and the inactive template's stale connector commit before final integration.
+Execution remains unreleased.
 The actual candidate05 parse check has zero errors for both scripts and its one
 changed C# literal compiles; these are static results only. Candidate05's template
 is inactive. Historical candidate04 retains `interlockProduction=null`. QA's separately assigned pure-data
@@ -685,9 +688,10 @@ by the real exported validator; its execution function was never called. Node ha
 no write or child-process capability. Candidate scratch is still unused.
 
 Candidate05 pins product `0ff325b`, all 81 staged files and its unchanged connector
-configuration. `services/` and `packages/` equal the older 52be105 copy; the runtime
-connector pin remains that reviewed identical source, while the owner separately
-reports the 280-file comparison to 0ff325b. No account state or inference is inferred
+configuration. `services/` and `packages/` equal the older 52be105 copy. The actual
+exported `CONNECTOR.commit` is `0ff325b`; only the copy directory's label remains
+52be105. The saved inactive template still has the old commit and needs correction.
+The owner separately reports the 280-file comparison to 0ff325b. No account state or inference is inferred
 from that static comparison. The candidate has 63 steps, a prepared 600-second
 outer bound and an inactive allocation template; none is an execution release.
 
@@ -710,3 +714,30 @@ prepared runner and child checker use process-only RemoteSigned; previous
 AI-disabled approvals are not automatically a real-subscription execution release.
 Display, current managed sign-in/lock, actual overlay affinity/stdin/timing and
 provider response remain runtime dependencies. Real0/4, diagnostic3/3closed, no lease.
+
+### Candidate05 independent verdict and final narrow correction
+
+Actual `handoff_241caeca474e0a08310b461c9b222ef0` delivers Support
+`b93fc60fa0237b08ef83ba125c3f646dc2bb3904`, integrated as `4717a00`.
+[Report and independent synthetic evidence](../../../support/nonvoice-live-df536b8-retest-20261009/README.md)
+close F3-A/B/C/D and R3-A on exact `df536b8`. Lead verified all 83 stored source
+hashes and the probe hash against Git objects. The recorded 25 scenarios were
+reviewed, not rerun or counted as native/product acceptance.
+
+One P2 remains: inserting an earlier EOF before more decisions and the final EOF
+still produces `checker_released=true`. The actual checker exits after its first
+EOF. Require exactly one terminal EOF and keep the existing request-count check;
+do not impose an unsupported main-process close-event ordering rule. The same
+owner also fixes the inactive template's connector commit to the real exported
+`0ff325b`, without changing the identical copy bytes or the historical path label.
+Support preserved its first synthetic gate-fixture failure from that mismatch;
+Lead's previous checks asserted only negative allocation cases, not a valid
+active-shaped positive.
+
+Same-task correction `handoff_830791faa9be1e46c34d5e72a72d1394` is accepted,
+initially unread/execution_started=false. QA changes only this lifecycle guard,
+the stale template metadata and necessary mechanical pins. Lead independently
+checks the ordinary EOF control, the reported counterexample and corrected pin
+shape, then integrates. No repeated 25/34-case campaign, unchanged compilation,
+PowerShell fixture retry or new native run is assigned. Support is idle/on demand.
+Real actions **0/4**, diagnostic **3/3 closed**, all resource leases remain absent.
