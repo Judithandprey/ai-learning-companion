@@ -4,7 +4,8 @@
 Support's independent review `5083814` is integrated as `0ac8605`. It closes the
 applicable-quota finding and reproduces remaining ledger, Stop, watcher and
 typed-receipt defects. QA repairs those boundaries and the exact current-overlay
-predicate; Web implements the app interlock and trusted capture binding. Interim
+predicate. Web delivered `48c20c4`; Lead reproduced late-response deadline defects
+and returned a bounded correction while Support reviews the capture consumers. Interim
 candidate 03 correctly refuses execution against old production 52be105.
 Initial delivery `handoff_a2f89cda91b9465425a8ca4eeec4cce6` follows the existing
 P0-13 preparation assignment. Product remains52be105, staged77-file tree531943a8;
@@ -394,3 +395,47 @@ reviews changed boundaries; Lead integrates and then considers exact command
 and resource admission. Real actions remain **0/4**, diagnostic **3/3 closed**,
 no active resource lease. No product source, user app/profile or automation state
 is changed by this review record.
+
+## Web consumer delivered; client correction and independent review active
+
+Actual message `handoff_4df62e69d2eab17b382e8ec9e77c25ca` delivers Web
+`48c20c410dc49c7805fa775013501222116cd2b3`, one leaf on `dff86d9`;
+`apps/windows` tree `6185479c728344519db21d7e88a56d8a184570dc`. Lead read the
+complete owner report and the client implementation. This confirms adoption of
+the current overlay-binding decision, not integration or native acceptance.
+The owner reports TypeScript/build success and 486 passing, 5 skipped tests,
+with the earlier bridge timeout and subsequent passing run preserved. These
+counts are author evidence; Lead did not repeat that full suite or mutation run.
+
+Lead's [small exact-source client probe](web-client-probe.mjs) produced these
+[actual synthetic results](web-client-probe-48c20c4.json):
+
+- In-bound decision control allows normally. With `decision_ms=100`, a bounded
+  150 ms event-loop stall followed by an exact response before the timer callback
+  still returns `ok:true, ms:150`. Readiness similarly accepts after its 1000 ms
+  bound when the event loop is stalled for 1050 ms. Enforce elapsed monotonic
+  deadlines on receipt, retaining write-time deadlines and cancellation.
+- The default UTF-8 decoder strips a BOM, so a BOM-prefixed ready line is
+  accepted despite the documented BOM-free protocol. The config rejection
+  control works. Align the reader and report with the specified ready format.
+
+The probe ran once under Node 24.21.0 `--permission`, with read access only to
+the exact Git export `/tmp/lc-lead-web-48c20c4-7qyblmyo` and the probe. It used
+in-process fake streams, no child-process or write permission. Shell redirection
+saved the synthetic result. Exit 0 means the counterexamples were reproduced;
+it is not a pass of the defective behavior or real Windows timing evidence.
+
+Same-owner correction `handoff_6d04d5f2fce4ecf54550d070b1dd7b1b` is accepted,
+initially unread/execution not started. Scope is the two receipt deadlines,
+BOM handling and focused controls, plus correcting the stale statement that
+QA's checker does not exist. QA already delivered its initial checker at
+`9614947`; its corrected consumer remains in progress.
+
+Support's bounded consumer review `handoff_91bcc765776fedd7445855f09561f618`
+is accepted, initially unread/execution not started. It covers intake/retention,
+frame/send lineage, cancellation, current overlay identity and child lifecycle;
+Lead handles the client protocol. QA receives exact Web source in same-task
+dependency handoff `handoff_0326d79a1396534848f475da12bef664`, accepted with
+adoption unconfirmed. Preserve both owners' ongoing changes. No package is
+staged or approved yet; final app/checker composition and pins remain required.
+Real actions stay **0/4**, old diagnostic **3/3 closed**, with no resource lease.

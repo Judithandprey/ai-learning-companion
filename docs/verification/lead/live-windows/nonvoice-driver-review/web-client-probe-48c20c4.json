@@ -1,0 +1,37 @@
+{
+  "source_commit": "48c20c410dc49c7805fa775013501222116cd2b3",
+  "source_sha256": "e1ef1e21b05ecb04c426e2473eea560d63faf53d3618fee7511729c69d85848b",
+  "scope": "In-memory child/streams; bounded event-loop stalls; no Windows, native, account, provider or actual process spawn.",
+  "observations": [
+    {
+      "name": "within-deadline control",
+      "result": {
+        "ok": true,
+        "ms": 0
+      },
+      "expected_allowed": true
+    },
+    {
+      "name": "reply after deadline before delayed timer callback",
+      "result": {
+        "ok": true,
+        "ms": 150
+      },
+      "expected_allowed": false
+    },
+    {
+      "name": "BOM-prefixed ready accepted",
+      "result": null,
+      "expected_ready": false
+    },
+    {
+      "name": "ready after deadline before delayed timer callback",
+      "result": null,
+      "expected_ready": false
+    },
+    {
+      "name": "BOM-prefixed config rejection control",
+      "refused": true
+    }
+  ]
+}

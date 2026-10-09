@@ -49,7 +49,7 @@
       "account/model/billing change",
       "automatic restart or retry"
     ],
-    "next_owner": "QA repairs Support R1-R5 and the exact current-overlay predicate; Web delivers the main-owned capture binding and interlock. Support reviews corrected changed boundaries, then Lead integrates and reviews exact build/command/resource release. No current allocation.",
+    "next_owner": "Web corrects delayed ready/decision receipt deadlines and BOM handling at 48c20c4; Support independently reviews changed capture consumers; QA continues R1-R5/native overlay and exact client compatibility. Lead integrates after review and pins a distinct build before resource release.",
     "production_source_commit": "175515308f509fb8c0f531dbdb10e57313fcde5a",
     "stage_name": "lc-windows-live-1755153",
     "stage_tree_sha256": "3387824a0dee70013104388d4acec2b810475e98953e7c3f196063a8781fd154",
@@ -221,24 +221,50 @@
         "qa_coordination_message": "handoff_3c83dc63c604c41bcc77f8ca91fa7406",
         "qa_coordination_accepted": true,
         "scope": "source/offline only; new reviewed production package required; no current resource allocation",
-        "implemented": false,
+        "implemented": true,
         "owner_activity_reply": "handoff_1b7f16285d35144c7c876d11402e08a8",
-        "owner_reported_state": "local_state_binding_lifecycle_implementation_under_way",
+        "owner_reported_state": "delivered_source_and_Linux_offline_checks_only",
         "interface_decision": "docs/verification/lead/live-windows/nonvoice-driver-review/README.md#checker-interface-decision--source-implementation-only",
         "web_interface_decision_message": "handoff_65d44351ffdfa6c2126f9f94ab6687f3",
         "qa_interface_binding_message": "handoff_bd7d451fa1ab12ebd2e49666fc009394",
         "interface_messages_accepted": true,
-        "implementation_delivered": false,
+        "implementation_delivered": true,
         "current_overlay_binding_decision": {
           "web_message_id": "handoff_f9c208600bcc9b8d39ba033019464857",
           "qa_message_id": "handoff_e893ca27aaf7622da5bf6ad6e059c5ee",
           "accepted": true,
           "execution_started_at_dispatch": false,
-          "adoption_confirmed": false,
+          "adoption_confirmed": true,
           "protocol": "lc-source-admission/1 (unreleased test adapter)",
           "arm_overlay": "main-authored {pid,hwnd}; null in other phases; exact reply echo",
           "runner_binding": "frozen native launch PID/creation ticks plus exact capture/HWND; read-only test-configured source_admission fact; no title-only or per-decision rebinding",
-          "scope": "source/offline only; production shared wire versions unchanged"
+          "scope": "source/offline only; production shared wire versions unchanged",
+          "adoption_scope": "Web source delivery only; QA corrected consumer adoption pending"
+        },
+        "delivery": {
+          "source_commit": "48c20c410dc49c7805fa775013501222116cd2b3",
+          "apps_windows_tree": "6185479c728344519db21d7e88a56d8a184570dc",
+          "message_id": "handoff_4df62e69d2eab17b382e8ec9e77c25ca",
+          "integrated": false,
+          "staged": false,
+          "status": "client_correction_and_independent_consumer_review_pending",
+          "author_tests": {
+            "passed": 486,
+            "failed": 0,
+            "skipped": 5,
+            "native": false,
+            "provider": false
+          },
+          "lead_probe": "docs/verification/lead/live-windows/nonvoice-driver-review/web-client-probe-48c20c4.json",
+          "lead_findings": [
+            "ready_and_decision_deadline_receipt_enforcement",
+            "BOM_ready_protocol_mismatch"
+          ],
+          "correction_dispatch": "handoff_6d04d5f2fce4ecf54550d070b1dd7b1b",
+          "support_review_dispatch": "handoff_91bcc765776fedd7445855f09561f618",
+          "qa_dependency_dispatch": "handoff_0326d79a1396534848f475da12bef664",
+          "dispatches_accepted": true,
+          "dispatch_execution_started": false
         }
       },
       "previous_correction": {

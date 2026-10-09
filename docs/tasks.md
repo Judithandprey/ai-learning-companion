@@ -184,13 +184,17 @@ R1–R5 request/count/Stop/watcher/typed-receipt findings stay HOLD. Candidate03
 production is reviewed and pinned. QA continues exact-owned overlay recognition
 and bounded parse/compile checks (`handoff_1698eb178ef50ac35b1b960a035cfbae`);
 Web received checker/interface coordination `handoff_c899b66b9fb10e64d25e305d1cadc258`.
-QA same-task correction `handoff_e893ca27aaf7622da5bf6ad6e059c5ee` and Web current
-capture/overlay binding `handoff_f9c208600bcc9b8d39ba033019464857` are accepted;
-latest-message adoption is not yet confirmed. Both owners have partial source
-edits, not delivered repairs. The main-authored capture/PID/HWND plus QA's frozen
+QA same-task correction `handoff_e893ca27aaf7622da5bf6ad6e059c5ee` remains in progress.
+Web actual `48c20c4` / `handoff_4df62e69d2eab17b382e8ec9e77c25ca` delivers the
+capture/send interlock and confirms current overlay-binding adoption. Source and
+Linux author checks only; not integrated or staged. Lead reproduced late-deadline
+acceptance and BOM mismatch; correction `handoff_6d04d5f2fce4ecf54550d070b1dd7b1b`
+is accepted. Support consumer review `handoff_91bcc765776fedd7445855f09561f618`
+and QA exact-source handoff `handoff_0326d79a1396534848f475da12bef664` are accepted,
+execution/adoption initially unconfirmed. The main-authored capture/PID/HWND plus QA's frozen
 native creation identity must agree across checker and runner, with positive
-exclusion/stacking checks; no title-only allowance. Support waits for the corrected
-changed boundaries, then Lead integrates and reviews the exact new build/command.
+exclusion/stacking checks; no title-only allowance. Lead integrates after the bounded
+correction and independent review, then reviews the exact new build/command.
 Real0/4 unchanged, no active resource allocation; these source checks are not
 a native/live acceptance and do not repeat the completed diagnostic.
 Keep normal-band/foreground/16-point/display guards and exact-owned cleanup;
