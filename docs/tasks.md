@@ -152,6 +152,8 @@ driver on exact52be105, reusing admitted geometry/cleanup and preserving the
 existing0/4real-action counter. Prepare source and offline checks only; no fresh
 account/display execution is allocated. Lead reviews that candidate before any
 separate real acceptance release; Web receives concrete product defects only.
+Actual continuation dispatch `handoff_59edc35ceda51f82acabeb24e3edffb0` is accepted at
+`86e429c`, initially unread/execution_started=false; preparation is not a real test.
 Keep normal-band/foreground/16-point/display guards and exact-owned cleanup;
 no largest-window-only trust, foreign mutation or allocation before the reviewed correction. Actual
 popup content is unknown; the product and complete live/audio gates remain untested.

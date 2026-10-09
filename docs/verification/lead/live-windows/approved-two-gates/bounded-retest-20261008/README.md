@@ -225,3 +225,8 @@ minimal executable nonvoice live-driver preparation at exact52be105 with focused
 offline checks and the existing four-action ledger; no current resource lease or
 real submission is authorized by this preparation. Lead reviews it, then directs
 any real defects to the original product owner.
+
+The next existing QA source/offline preparation was actually dispatched at
+`86e429c` through `handoff_59edc35ceda51f82acabeb24e3edffb0`, accepted unread with
+execution_started=false. The acceptance receipt does not prove worker activity or
+release a resource; no real request, display/audio run or fourth diagnostic is granted.

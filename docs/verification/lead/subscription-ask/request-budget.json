@@ -98,6 +98,13 @@
       "actual_real_attempts": 0,
       "display_or_account_lease": false,
       "prior_release_fields": "Historical1755153 release remains below; not a current allocation."
+    },
+    "next_preparation_dispatch": {
+      "message_id": "handoff_59edc35ceda51f82acabeb24e3edffb0",
+      "accepted": true,
+      "execution_started_at_dispatch": false,
+      "source_baseline": "86e429ca411d0b67a7d2b22bb9d01b0ae7e79b52",
+      "scope": "existing P0-13 executable four-action nonvoice driver; source/offline only; no resource lease"
     }
   },
   "approved_ai_disabled_diagnostic": {
