@@ -49,7 +49,7 @@
       "account/model/billing change",
       "automatic restart or retry"
     ],
-    "next_owner": "Original QA amends e0bd4b3 for the remaining Support findings; Support clarifies F3 and reviews corrected boundaries; Lead resolves any cross-owner seam and integrates before exact command/resource allocation.",
+    "next_owner": "Web implements bounded trusted test-path acquisition/send interlocks; QA continues same receipt/ledger/lifecycle correction and binds its native checker after Lead interface coordination; Support reviews changed boundaries before Lead integration/resource admission.",
     "production_source_commit": "175515308f509fb8c0f531dbdb10e57313fcde5a",
     "stage_name": "lc-windows-live-1755153",
     "stage_tree_sha256": "3387824a0dee70013104388d4acec2b810475e98953e7c3f196063a8781fd154",
@@ -161,7 +161,25 @@
         "accepted": true,
         "execution_started_at_dispatch": false,
         "owner": "support",
-        "scope": "F3 exact capture/send guard placement only; no implementation duplication or native/provider call"
+        "scope": "F3 exact capture/send guard placement only; no implementation duplication or native/provider call",
+        "completed": true,
+        "reply_message_id": "handoff_a7e5e910dfd42fec19ea4317afcf8c32",
+        "result": "independent watchdog does not establish preventive admission; awaited acquisition and send interlocks needed; OS observation race remains"
+      },
+      "capture_send_repair": {
+        "owner": "web",
+        "source_baseline": "93697b4bff7e60ab97e300dfce1d34041d822182",
+        "message_id": "handoff_18b4ff71bb8202171b38c72be18194e1",
+        "accepted": true,
+        "execution_started_at_dispatch": false,
+        "write_scope": [
+          "apps/windows",
+          "docs/verification/web"
+        ],
+        "qa_coordination_message": "handoff_3c83dc63c604c41bcc77f8ca91fa7406",
+        "qa_coordination_accepted": true,
+        "scope": "source/offline only; new reviewed production package required; no current resource allocation",
+        "implemented": false
       }
     }
   },

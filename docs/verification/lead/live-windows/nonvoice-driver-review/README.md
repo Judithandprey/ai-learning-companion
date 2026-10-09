@@ -103,8 +103,8 @@ defects in `e0bd4b3`. Remaining corrections in that latest source are:
 - **F3 source lifetime:** after Start, 16-point/topology checks do not revalidate
   the exact full-display Edge/browser geometry. Automatic frames and submissions
   also occur between explicit UI steps. Bind fresh complete admission to the
-  actual frame/send path; do not claim an atomic desktop guarantee. Lead is
-  resolving any necessary production-owner seam before authorizing such edits.
+  actual frame/send path; do not claim an atomic desktop guarantee. The bounded
+  production-owner repair is now assigned below.
 - **F4 evidence:** collection failures, malformed records, fourth-action tools,
   wrong Codex digest and extra cumulative turns must not yield mechanical
   success. Reconcile all actions/receipts without double-counting cumulative
@@ -122,9 +122,58 @@ slice and earlier native diagnostic evidence are unchanged.
 Same-owner amendment `handoff_3b1cdc65a16b36d56c69069a8351350f` was accepted,
 initially unread/execution_started=false. It preserves QA's correction and adds
 the remaining findings in the existing P0-13 task. Support received one bounded
-F3 seam clarification `handoff_1574632a1503864240e752bc4d9507fa`, also accepted
-with execution initially unconfirmed; this is not a repeated whole review.
-Next: QA returns one corrected candidate; Support reviews the changed boundaries;
-Lead integrates and then resolves exact command/resource admission. No current
+F3 seam clarification `handoff_1574632a1503864240e752bc4d9507fa` completed with
+actual reply `handoff_a7e5e910dfd42fec19ea4317afcf8c32`; see the decision below.
+Next: Web supplies the capture/send interlock and QA completes the same driver;
+Support reviews changed boundaries, then Lead integrates and resolves exact
+command/resource admission. No current
 display/account lease exists, real actions remain **0/4**, and the old diagnostic
 remains **3/3 consumed and closed**.
+
+## F3 decision: await admission in the actual capture/send consumers
+
+Support's source-only clarification at product `52be105` establishes ordering:
+`overlay.ts` acquires/publishes raw bitmaps in `takeSample`, then independently
+initiates retention and the first look. `main.ts` saves retained/first-look pixels
+before `lookAt`/`flushLook` reach the shared `sendTurn` and `subscription.turn`.
+A separate watchdog can therefore observe a violation after saving or sending;
+ordinary Stop cannot retract either. It can support a monitored-test claim, but
+does not close the preventive source check required for this candidate.
+
+Lead chooses two small, opt-in test-path interlocks, preserving real display
+pixels, existing retention, actual production handlers and the official connector:
+
+1. Arm before capture can produce its first sample. Await full native admission
+   before and after `takeSample`'s bitmap acquisition. Only publish/retain/use
+   the held frame after acceptance of that capture/sample and its actual raw
+   hash. Preserve original stream age, reused-frame and ink lineage facts.
+2. At `sendTurn`, require that exact image's admitted frame evidence plus a
+   current, non-invalidated session decision. Recheck Stop and capture/live
+   identity after awaits. Missing, stale, mismatched or timed-out decisions
+   latch ordinary whole-capture `end()`, not only AI `endLive()`; preserve
+   already accepted originals and uncertain request accounting.
+
+This is logical sequencing, not compositor atomicity: a transient OS change
+between native observations remains the disclosed race. Test configuration and
+decisions are trusted-main-owned; the renderer or captured page may not choose
+an executable/path/URL, issue an allow decision or disable checks. A configured
+but unavailable checker refuses; the ordinary unconfigured product behavior
+retains its existing checks. No new capture framework, arbitrary command bridge,
+model call or global permission change is part of this repair.
+
+**Ownership and actual handoffs:** Web's existing P0-12 continuation
+`handoff_18b4ff71bb8202171b38c72be18194e1` is accepted, initially unread and
+execution_started=false. Exact baseline is main `93697b4`; Web owns only
+`apps/windows` main/preload/renderer, its focused tests and owner evidence. It
+returns the minimal checker interface before committing a transport dependency
+on QA. QA receives the same-task F3 decision in
+`handoff_3c83dc63c604c41bcc77f8ca91fa7406`, accepted with execution initially
+unconfirmed; it retains native checker/runner/evidence ownership under
+`tests/e2e/windows` and QA docs, and continues the independent F1/F4–F6 fixes.
+There is one active task per owner, no duplicate implementation.
+
+The later live candidate must pin the resulting reviewed production build;
+`52be105` and its completed diagnostic remain historical exact evidence, not
+proof for changed bytes. No resource allocation or new native attempt follows
+from source dispatch. Support is idle until the corrected boundary is ready for
+review. Real actions remain 0/4; no additional AI-disabled diagnostic slot exists.
