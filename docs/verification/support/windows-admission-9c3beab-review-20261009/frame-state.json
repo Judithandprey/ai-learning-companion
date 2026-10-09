@@ -1,0 +1,51 @@
+{
+  "source": "9c3beab5d9bfae4ebd295af5a3db5baf99b4038c",
+  "controls": 3,
+  "counterexamples": 1,
+  "conditional_counterexamples": 1,
+  "rows": [
+    {
+      "name": "stream arrival before pre-admission",
+      "kind": "control",
+      "state": "fresh",
+      "offered_stream_new_frame": true,
+      "presented_frames": 1,
+      "retention_input_state": "fresh",
+      "required_state": "fresh"
+    },
+    {
+      "name": "stream arrival during pre-admission",
+      "kind": "counterexample",
+      "state": "no_new_frame",
+      "offered_stream_new_frame": true,
+      "presented_frames": 1,
+      "retention_input_state": "no_new_frame",
+      "required_state": "fresh"
+    },
+    {
+      "name": "stream arrival none pre-admission",
+      "kind": "control",
+      "state": "no_new_frame",
+      "offered_stream_new_frame": false,
+      "presented_frames": 0,
+      "retention_input_state": "no_new_frame",
+      "required_state": "no_new_frame"
+    },
+    {
+      "name": "frame 1 intake after 64 admitted frames",
+      "kind": "control",
+      "all_frames_previously_admitted": true,
+      "intake_allowed": true,
+      "capture_ending": false,
+      "limitation": "Function-level delayed-intake condition; no actual encoding or native timing was measured."
+    },
+    {
+      "name": "frame 1 intake after 65 admitted frames",
+      "kind": "conditional_counterexample",
+      "all_frames_previously_admitted": true,
+      "intake_allowed": false,
+      "capture_ending": true,
+      "limitation": "Function-level delayed-intake condition; no actual encoding or native timing was measured."
+    }
+  ]
+}

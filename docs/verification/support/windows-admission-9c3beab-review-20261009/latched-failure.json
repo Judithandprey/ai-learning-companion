@@ -1,0 +1,113 @@
+{
+  "source": "9c3beab5d9bfae4ebd295af5a3db5baf99b4038c",
+  "controls": 2,
+  "counterexamples": 2,
+  "scope": "Actual checker and extracted main consumers; in-memory boundary stubs; no full Electron/native/provider execution.",
+  "rows": [
+    {
+      "name": "single allow is delivered",
+      "phase": "send",
+      "response": "allow",
+      "result": {
+        "status": "answered",
+        "submission": "acknowledged"
+      },
+      "at_return": {
+        "failure": null,
+        "ending": false,
+        "calls": 1,
+        "admitted": false
+      },
+      "connector_calls": [
+        {
+          "request_id": "synthetic-request",
+          "failure_at_call": null,
+          "ending_at_call": false
+        }
+      ],
+      "ended_after_notification": false,
+      "decisions": [
+        {
+          "phase": "send",
+          "allowed": true
+        }
+      ]
+    },
+    {
+      "name": "deny fences the connector",
+      "phase": "send",
+      "response": "deny",
+      "result": {
+        "status": "cancelled",
+        "uncertain": false,
+        "unsettled": false,
+        "submission": "not_submitted"
+      },
+      "at_return": {
+        "failure": "the source check refused sending a request",
+        "ending": true,
+        "calls": 0,
+        "admitted": false
+      },
+      "connector_calls": [],
+      "ended_after_notification": true,
+      "decisions": [
+        {
+          "phase": "send",
+          "allowed": false
+        }
+      ]
+    },
+    {
+      "name": "known replay failure still reaches connector",
+      "phase": "send",
+      "response": "replay",
+      "result": {
+        "status": "answered",
+        "submission": "acknowledged"
+      },
+      "at_return": {
+        "failure": "the source check answered a request again",
+        "ending": false,
+        "calls": 1,
+        "admitted": false
+      },
+      "connector_calls": [
+        {
+          "request_id": "synthetic-request",
+          "failure_at_call": "the source check answered a request again",
+          "ending_at_call": false
+        }
+      ],
+      "ended_after_notification": true,
+      "decisions": [
+        {
+          "phase": "send",
+          "allowed": true
+        }
+      ]
+    },
+    {
+      "name": "known replay failure still admits acquired frame",
+      "phase": "post_acquire",
+      "response": "replay",
+      "result": {
+        "ok": true
+      },
+      "at_return": {
+        "failure": "the source check answered a request again",
+        "ending": false,
+        "calls": 0,
+        "admitted": true
+      },
+      "connector_calls": [],
+      "ended_after_notification": true,
+      "decisions": [
+        {
+          "phase": "post_acquire",
+          "allowed": true
+        }
+      ]
+    }
+  ]
+}
