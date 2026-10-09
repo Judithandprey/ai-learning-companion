@@ -134,3 +134,25 @@ wrapper8f7d7132 (full pins in the allocation) bind fresh scratch6bd71cac and the
 same32steps/140seconds. One earlier attempt consumed, this slot reserved, one
 further slot unreserved. Actual dispatch/result must be recorded separately.
 No allocation follows until this run returns cleanup and DISPLAY RELEASE.
+
+Actual attempt2 dispatch: `handoff_b80d989dd5af1ae5e2592dddbb2f91d9`, accepted,
+unread/execution_started=false at send. Published release `6eec313` includes the
+lease and reviewed evidence. Delivery acceptance is not actual execution proof;
+the second slot remains conservatively reserved until QA reports its outcome.
+
+## Attempt2 — consumed, geometry guard failure, display released
+
+QA invoked the wrapper once05:39:13–05:40:18Z, exit1, native1/provider0.
+The reported failure is `owned control client and browser geometry disagree`
+at step9, after the previous point-construction gate. The source-level scope
+rename's later call had not been reached. [Initial result](attempt-02-result.json)
+preserves the actual receipt `handoff_20143d8bbe58df77aacee28cfff80ee4`.
+Exact-owned cleanup confirmed: owned Edge131052 closed without force, no foreign
+app signalled; DISPLAY RELEASE05:40:44Z. Product launch is not inferred from
+no owned Electron being present at cleanup; actual step/lifecycle evidence follows.
+
+The `/tmp` allocation is marked released/consumed; issued bytes stay immutable.
+Two of3slots consumed,one remains. QA has the same-task geometry diagnosis and
+necessary scoped repair via `handoff_4dd40db9ebcf4404015a239b52184056`, using saved
+run evidence/source first. Preserve all geometry/DPI/ownership/foreground/display
+and16-point gates; independent Support review precedes any final fresh allocation.

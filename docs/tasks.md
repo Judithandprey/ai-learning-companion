@@ -126,9 +126,14 @@ step9 scope behavior still needs the native run. Support `55582e0` independently
 approves `a3f12b3` after48+54 passes; a missing Node test read grant/fixture was
 corrected without host permission changes. Source/receipts integrate through
 `39bb768`; resulting main48+54checks and77/77stage files pass,15pins match QA.
-Attempt2 has fresh allocation `lc-bounded-display-20261008-02` (05:37:57–06:07:57Z),
-actual dispatch pending. One consumed,second reserved,one further slot unreserved;
-no budget reset or duplicate task. Normal tool review/new-refusal stop remain.
+Attempt2 ran once05:39:13–05:40:18Z and failed at the step9 control-client/browser
+geometry guard; the point-construction error did not recur. Per-step/product launch
+evidence follows; no owned process at cleanup does not prove the product never ran.
+Exact-owned cleanup and DISPLAY RELEASE confirmed05:40:44Z in
+`handoff_20143d8bbe58df77aacee28cfff80ee4`. Two consumed,one remains; no active display.
+QA received the concrete geometry diagnosis/necessary repair continuation
+`handoff_4dd40db9ebcf4404015a239b52184056`; source changes get focused checks and
+Support review before the last allocation. No guard removal or blind third run.
 No product or live/audio acceptance follows from these harness steps.
 Keep normal-band/foreground/16-point/display guards and exact-owned cleanup;
 no largest-window-only trust, foreign mutation or allocation before the reviewed correction. Actual

@@ -1,0 +1,23 @@
+{
+  "attempt": 2,
+  "nonce": "human-bounded-retest-20261008:d41dbbfae11448f7847e26cb54afcd44",
+  "qa_source": "e1ce596",
+  "reported_start_utc": "2026-10-09T05:39:13Z",
+  "reported_end_utc": "2026-10-09T05:40:18Z",
+  "wrapper_invocations": 1,
+  "native_attempts": 1,
+  "provider_attempts": 0,
+  "wrapper_exit": 1,
+  "passed": false,
+  "aborted": "owned control client and browser geometry disagree",
+  "reported_failed_step": 9,
+  "per_step_evidence": "pending actual QA report",
+  "product_launch_state": "do not infer from no owned process seen at cleanup; awaiting step report",
+  "cleanup_confirmed": true,
+  "owned_edge_closed_without_force": 131052,
+  "foreign_apps_unsignalled": true,
+  "display_release_reported_utc": "2026-10-09T05:40:44Z",
+  "display_release_message": "handoff_20143d8bbe58df77aacee28cfff80ee4",
+  "repair_dispatch": "handoff_4dd40db9ebcf4404015a239b52184056",
+  "remaining_attempts": 1
+}
