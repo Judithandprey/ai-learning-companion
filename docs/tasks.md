@@ -115,17 +115,17 @@ launch with a PowerShell `op_Multiply` array error; steps7–32 NOT_RUN. Exact-o
 cleanup and DISPLAY RELEASE are confirmed in `handoff_d15c356ef2f7386a3b92d3a7dc4b8e7d`.
 One attempt consumed,2remain; the canonical counter is request-budget.json.
 QA received concrete same-path arithmetic repair `handoff_c880e9e3b0cc794cbccd89b0609f6a60`;
-The QA report `b586e8a` then disclosed a NEW automatic review refusal of
-a local Python result-file read, classified `Remote Shell Writes`. The human
-budget stops on a new refusal: Lead sent `handoff_8c9efa10693deb9a4826619d4efb6643`
-to preserve the checkpoint/no bypass; no attempt2 allocation is issued. Operator
-confirmed read rejection run_406725b9eedd4d38/seq25524 at22:53:14Z; the human
-decision is pending. QA delivery `handoff_90fca77dc824e62948b0cf8ff8159143` also
-reports a refused isolated arithmetic/AST check (`Auto-Mode Bypass`), not executed.
-QA stopped cleanly at `e8a5f64` (durable refusal record), with no source/candidate/pin change. Source-only fix is
-prepared conceptually; neither rejected operation is delegated or retried. Two
-slots remain unused. Lead's saved-receipt checks preceded disclosure and are not
-permission to substitute for the denied read.
+The historical `Remote Shell Writes` result-read refusal (seq25524) and
+`Auto-Mode Bypass` isolated-check refusal (seq25576) stopped work at `e8a5f64`.
+The human subsequently explicitly approved both scoped operations:
+`human-approve-read-arithmetic:1341e2b5d73b432eaefa988058e79172` on2026-10-09.
+[Exact approval/current review](verification/lead/live-windows/approved-two-gates/bounded-retest-20261008/README.md#specific-subsequent-approval-and-r3-review).
+Original QA was resumed by the operator. Prepared `a3f12b3` fixes coordinate
+parentheses and the placement `$client` name collision; actual PowerShell checks
+are pending. Support now has formal independent review
+`handoff_28588f71f1df7ab0e8f0975af9fc3723`. Lead integrates approved/checked source
+before issuing attempt2. One used,2remain; no budget reset, no display active,
+no duplicate repair task. Normal tool review and new-refusal stop conditions stay.
 No product or live/audio acceptance follows from these harness steps.
 Keep normal-band/foreground/16-point/display guards and exact-owned cleanup;
 no largest-window-only trust, foreign mutation or allocation before the reviewed correction. Actual

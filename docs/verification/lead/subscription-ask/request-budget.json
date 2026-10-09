@@ -305,8 +305,8 @@
         "failed_step": 6
       }
     ],
-    "next_owner_action": "Await the actual human decision covering the disclosed denied operations. QA has stopped at e8a5f64; no next allocation, substitute read or arithmetic check. Two attempts remain unused.",
-    "continuation_status": "stopped_new_auto_review_refusal",
+    "next_owner_action": "Original QA completes the specifically approved local read/arithmetic/parse checks under normal tool review; Support reviews a3f12b3 independently. Lead integrates checked source before a fresh attempt02 allocation. One consumed/two remain.",
+    "continuation_status": "human_approved_scoped_checks_review_in_progress",
     "new_refusal": {
       "reported_by": "qa",
       "evidence_commit": "b586e8a",
@@ -321,7 +321,7 @@
       "runtime_run": "run_406725b9eedd4d38",
       "runtime_seq": 25524,
       "denied_at_utc": "2026-10-08T22:53:14Z",
-      "human_decision": "pending"
+      "human_decision": "specifically approved by human-approve-read-arithmetic:1341e2b5d73b432eaefa988058e79172; normal tool review still required"
     },
     "additional_refusal": {
       "classification": "Auto-Mode Bypass",
@@ -329,18 +329,34 @@
       "report_message": "handoff_90fca77dc824e62948b0cf8ff8159143",
       "exact_event_time": "not established; QA corrected approximate time to 22:57Z",
       "executed": false,
-      "human_decision": "pending; do not infer coverage from the separate read decision"
+      "human_decision": "specifically approved by human-approve-read-arithmetic:1341e2b5d73b432eaefa988058e79172; normal tool review still required"
     },
     "repair_checkpoint": {
-      "qa_head": "e8a5f64",
+      "qa_head": "a3f12b30cd954099398018a742d3348cc7e62332",
       "worktree_clean": true,
-      "source_changed": false,
-      "candidate_changed": false,
-      "source_diagnosis": "Comma precedence in 16-point coordinate construction is suspected; proposed parentheses around each multiplication; not executed/verified.",
-      "support_review_dispatched": false,
+      "source_changed": true,
+      "candidate_changed": true,
+      "source_diagnosis": "Prepared point-parentheses and client-area local rename; static checks delivered, actual PowerShell receipt pending.",
+      "support_review_dispatched": true,
       "attempt_evidence_head": "b586e8a",
       "stop_record": "docs/verification/qa/p0-13-tts-52be105/repair-stopped-20261008/README.md",
-      "confirmation_message": "handoff_d042d87da1586296d824ff4db25da2b5"
+      "confirmation_message": "handoff_d042d87da1586296d824ff4db25da2b5",
+      "support_review_message": "handoff_28588f71f1df7ab0e8f0975af9fc3723",
+      "qa_check_coordination_message": "handoff_af95d9eaf8202a7edda645397db0ffff"
+    },
+    "approved_denied_operations": {
+      "authorization_nonce": "human-approve-read-arithmetic:1341e2b5d73b432eaefa988058e79172",
+      "human_reply": "批准",
+      "at": "2026-10-09T05:25:28.589796+00:00",
+      "record": "docs/verification/lead/live-windows/approved-two-gates/bounded-retest-20261008/approved-read-arithmetic.json",
+      "sha256": "6e39947d37b769fa951bd0f507c3542846a1109011b8eff57de74ce7dac975c9",
+      "runtime_sequences": [
+        25524,
+        25576
+      ],
+      "normal_tool_review_required": true,
+      "global_permissions_changed": false,
+      "native_attempt_budget_reset": false
     }
   }
 }

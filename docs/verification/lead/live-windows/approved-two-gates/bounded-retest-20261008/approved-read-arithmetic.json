@@ -1,0 +1,11 @@
+{
+  "at": "2026-10-09T05:25:28.589796+00:00",
+  "human_reply": "批准",
+  "disclosed_and_approved_actions": [
+    "QA只读解析execution-bounded-20261008-01/runner-results.json，打印step6/errors/processes；原拒绝seq25524，Remote Shell Writes。",
+    "QA运行已披露的隔离PowerShell纯算术与候选源Parser.ParseFile检查；原拒绝seq25576，Auto-Mode Bypass；仅数值运算/静态解析、输出本地记录，无产品、GUI、原生窗口进程操作。"
+  ],
+  "continuation": "按原范围修复、独立复核并继续剩余2次实机复测；3次总预算不重置，每次native至多140秒。",
+  "global_permissions_changed": false,
+  "nonce": "human-approve-read-arithmetic:1341e2b5d73b432eaefa988058e79172"
+}

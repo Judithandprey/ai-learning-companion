@@ -1,0 +1,12 @@
+{
+  "reviewed_sha": "a3f12b30cd954099398018a742d3348cc7e62332",
+  "hash_checks": 15,
+  "all_match": true,
+  "normalized_runner_hunks": 2,
+  "normalized_steps_identical": true,
+  "steps": 32,
+  "scratch_absent": true,
+  "windows_calls": 0,
+  "provider_calls": 0,
+  "limitation": "File-only source/pin review, not PowerShell or native execution."
+}

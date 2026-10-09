@@ -3,7 +3,9 @@
     "human-approval.json": "0549372eb4096b05812b1bc64ebf0e31b5c9b618a1590a33881305d0f948e0d6",
     "attempt-01-allocation.json": "d3f67d96e5654660ec4951f5a2027278b7d41f0fb1a59624349d15aa0c2007a6",
     "attempt-01-stage-recheck.json": "dade97eb3bff2ceb6b5b2665b8c4dbbcc305019a160869721b4092ece8c463b1",
-    "attempt-01-result.json": "73a5c761e36b8c0b2d0e5d78deb6f4982146cb4a13030efe2b60bbcd1a432b39"
+    "attempt-01-result.json": "73a5c761e36b8c0b2d0e5d78deb6f4982146cb4a13030efe2b60bbcd1a432b39",
+    "approved-read-arithmetic.json": "6e39947d37b769fa951bd0f507c3542846a1109011b8eff57de74ce7dac975c9",
+    "r3-source-check.json": "06b55194e1f6dce5d77899d669dbb67f4f0397fba6d434765d8d7ad2bc831dd6"
   },
   "authorization_nonce": "human-bounded-retest-20261008:d41dbbfae11448f7847e26cb54afcd44",
   "attempt_limit_total": 3

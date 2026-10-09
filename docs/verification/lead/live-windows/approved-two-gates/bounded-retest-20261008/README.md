@@ -56,19 +56,19 @@ New evidence: `docs/verification/qa/p0-13-tts-52be105/execution-bounded-20261008
 Source/fixture/parser/compilation evidence remains separate from an actual
 launched product, display/input behavior, real AI/audio and complete desktop gates.
 
-## New automatic-review refusal — further allocation withheld
+## Historical automatic-review refusals — specifically approved afterward
 
 The QA source report `b586e8a` discloses that its local Python read of
 `runner-results.json` (step6/full error/process fields) was denied as
 `Remote Shell Writes`. QA says it did not try another reading path. Operator now confirms run_406725b9eedd4d38/seq25524 at22:53:14Z: read-only
 local Python, no write/network, with an explicit prohibition on substitute
-tool/host/agent access to the same data. The human decision is pending. Lead sent
+tool/host/agent access to the same data. The decision was pending at that checkpoint. Lead sent
 `handoff_8c9efa10693deb9a4826619d4efb6643` to preserve that state and prevent
 substitution by another tool/role. Lead's saved-receipt review occurred before
 this disclosure; it is not approval to bypass the denial.
 
-Under the human's explicit stop condition, no attempt2 allocation will be issued
-while this new denial is unresolved. Attempt1 remains consumed/released;2slots
+Under the human's explicit stop condition, no attempt2 allocation was issued
+while those denials were unresolved. Attempt1 remains consumed/released;2slots
 remain unused. No new native call or automated retry. The QA raw report remains
 on its branch pending allowed review; it has not been integrated/pushed to main.
 
@@ -90,3 +90,23 @@ semantics. This is unexecuted/unverified, not an approved replacement route for
 either denied action. No Support review or second allocation was dispatched.
 Do not infer that a later decision about reading the result JSON also covers the
 separately refused PowerShell check. No global permission change is proposed.
+
+## Specific subsequent approval and r3 review
+
+The human replied “批准” after both refused operations were disclosed. The
+[exact approval](approved-read-arithmetic.json), dated2026-10-09T05:25:28Z,
+`human-approve-read-arithmetic:1341e2b5d73b432eaefa988058e79172`, covers original
+QA's read-only result parsing and isolated arithmetic/parse-only checks
+(seq25524/25576), followed by the same scoped repair/review and remaining2attempts.
+It does not disable tool review or change global permissions. The operator has
+already resumed original QA; Lead did not duplicate the repair/check assignment.
+
+Prepared QA source `a3f12b30cd954099398018a742d3348cc7e62332` contains the
+parenthesized coordinates and a `$clientArea` local rename that avoids hiding the
+script WebClient in the placement check. Product52be105,32steps and guards remain;
+source/Node checks alone do not establish actual PowerShell or native success.
+Lead sent formal source review to existing Support via
+`handoff_28588f71f1df7ab0e8f0975af9fc3723`, and coordination to the already-running
+QA via `handoff_af95d9eaf8202a7edda645397db0ffff`. Actual approved-check receipt and
+independent review are pending; no attempt2 allocation yet. Total remains1used,
+2unused, no display active. Any genuinely new refusal retains the stop condition.
