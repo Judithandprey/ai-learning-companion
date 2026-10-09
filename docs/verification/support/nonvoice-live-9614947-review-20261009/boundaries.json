@@ -1,0 +1,86 @@
+{
+  "source": "9614947fa2a3cfae3dd5e3d154011b3c6dbaa82b",
+  "scope": "Synthetic objects only, no native/private-state/provider operation; wrapper execution gate never bypassed.",
+  "assertions": 11,
+  "controls": 8,
+  "counterexamples": 3,
+  "observations": [
+    {
+      "name": "interim execution gate",
+      "kind": "control",
+      "refused": true
+    },
+    {
+      "name": "unrelated spend bucket plus included exhaustion",
+      "kind": "control",
+      "allowed": true
+    },
+    {
+      "name": "applicable spend cannot borrow unrelated credits",
+      "kind": "control",
+      "allowed": false,
+      "error": "the server states a spend or workspace limit for this model as reached: the run stops before Start"
+    },
+    {
+      "name": "single unnamed applicable workspace restriction",
+      "kind": "control",
+      "allowed": false,
+      "error": "the server states a spend or workspace limit for this model as reached: the run stops before Start"
+    },
+    {
+      "name": "unrelated limit restriction",
+      "kind": "control",
+      "allowed": true
+    },
+    {
+      "name": "running watcher readiness control",
+      "kind": "control",
+      "ready": true,
+      "exited": false,
+      "required_ready": true
+    },
+    {
+      "name": "exited watcher is still launch-ready",
+      "kind": "counterexample",
+      "ready": true,
+      "exited": true,
+      "required_ready": false
+    },
+    {
+      "name": "exit before appearance is accepted as released",
+      "kind": "counterexample",
+      "observed": {
+        "state": "released",
+        "remaining": [],
+        "appeared": 1,
+        "connector_seen": true,
+        "descendants": 0,
+        "not_seen_exiting": [],
+        "unreadable_lines": 0
+      },
+      "required_state": "unknown"
+    },
+    {
+      "name": "well-formed receipt projection",
+      "kind": "control",
+      "admitted": true,
+      "top_level_private_fields_omitted": true
+    },
+    {
+      "name": "wrong request identity",
+      "kind": "control",
+      "admitted": false
+    },
+    {
+      "name": "malformed receipt value survives public projection",
+      "kind": "counterexample",
+      "reader_errors": [],
+      "copied_receipts": 1,
+      "sanitized_actual_model": {
+        "thread_id": "SYNTHETIC_NESTED_THREAD",
+        "turn_id": "SYNTHETIC_NESTED_TURN"
+      },
+      "required": "Reject malformed field types before admitting/copying; sanitized metadata must remain typed."
+    }
+  ]
+}

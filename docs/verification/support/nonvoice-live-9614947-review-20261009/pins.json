@@ -1,0 +1,127 @@
+{
+  "qa_commit": "9614947fa2a3cfae3dd5e3d154011b3c6dbaa82b",
+  "source_files": 17,
+  "payloads": 6,
+  "checks": [
+    {
+      "kind": "source",
+      "file": "qa_live_candidate.mjs",
+      "sha256": "acef02e13ded078bc172843a7a1b9a65ac6c0beec38e3f6ac3b073b9d61053a5"
+    },
+    {
+      "kind": "source",
+      "file": "qa_tts_output_candidate.mjs",
+      "sha256": "02fd39d06c29eb89d60ed113bb13e97726cc503a2e9678da713a3422b3f6cf83"
+    },
+    {
+      "kind": "source",
+      "file": "qa_visible_candidate.mjs",
+      "sha256": "9df43a98f64c67559029d31bc41573db4df4df94341ef48845687987b5460410"
+    },
+    {
+      "kind": "source",
+      "file": "qa_edge_placement.ps1",
+      "sha256": "e527a59e63f6823adc9aaa1b5d9619661d8299769985ae1a0bf108749c2535bb"
+    },
+    {
+      "kind": "source",
+      "file": "qa_display_admission.ps1",
+      "sha256": "b4f586b7c987f533f318eb72ebffe318482ed2c2aa7f7f720574147071747590"
+    },
+    {
+      "kind": "source",
+      "file": "qa-electron-runner.ps1",
+      "sha256": "1a0dfc3f178a1d6f59233c2a7d6a836ce68b18887affd2f6431c2d4ef5c48218"
+    },
+    {
+      "kind": "source",
+      "file": "qa_tts_stage_check.py",
+      "sha256": "9e0a8257f740ee6d7e8924ac848de2fc7ddfd9b7621967e8a7f67c1c518b810f"
+    },
+    {
+      "kind": "source",
+      "file": "qa_live_stage_check.py",
+      "sha256": "8bdd042b426c0784500375a41fe874e41b80186a6a8dddcc1d544213abd8c791"
+    },
+    {
+      "kind": "source",
+      "file": "surface_live.html",
+      "sha256": "be82967ae45d36bece4ac4858d6f45d0e90e58d088203b71323b74e6ae5e1067"
+    },
+    {
+      "kind": "source",
+      "file": "sub_copy.mjs",
+      "sha256": "d9df3fe96a1c3c99b161552cd6c547c9a7c64dad4e23f05f57eed922013a85f5"
+    },
+    {
+      "kind": "source",
+      "file": "qa_sub_copy_check.py",
+      "sha256": "73b765943887cab143f530deb3deb7ac415cabce13bc2bd9f7498c1c56320d10"
+    },
+    {
+      "kind": "source",
+      "file": "qa_live_copy_check.py",
+      "sha256": "1784a01195500bda2fe84971e837978043cc74d3ad4e1a119dd5452863b92425"
+    },
+    {
+      "kind": "source",
+      "file": "signin_cleanup.mjs",
+      "sha256": "efa06295262ea27006769e0dea363051fbd6401f4c810d2049db5937ee939b2b"
+    },
+    {
+      "kind": "source",
+      "file": "qa_live_ledger.mjs",
+      "sha256": "8e5cf7a501ab153dfa69977764166920510a653b242acf48a858144440eb3dde"
+    },
+    {
+      "kind": "source",
+      "file": "qa_run_tts_candidate.mjs",
+      "sha256": "153db051aa92a39a5f59859c1d85b107867a6fc6fa1c30eb033692f83ebdbda3"
+    },
+    {
+      "kind": "source",
+      "file": "qa_sub_watch.py",
+      "sha256": "42be06a3b2d07d2feb16b306bfefe9d2c44bfdd8d88554853eb9a7ea6112d1b8"
+    },
+    {
+      "kind": "source",
+      "file": "qa_admission_checker.ps1",
+      "sha256": "3dfb0e943676d82646450bde37993239d41b1f733037b2bcb5f3cc68f7c336b6"
+    },
+    {
+      "kind": "payload",
+      "file": "runner.ps1",
+      "sha256": "4f3fe4d3a09d4b1dd1f530d659a2974b4e0142686ca027612756fff6c9f0473f"
+    },
+    {
+      "kind": "payload",
+      "file": "steps.json",
+      "sha256": "a513585ed4e1e63b588c0770b08661bd211f065735f63392c2a6916a377e8d6c"
+    },
+    {
+      "kind": "payload",
+      "file": "surface.html",
+      "sha256": "be82967ae45d36bece4ac4858d6f45d0e90e58d088203b71323b74e6ae5e1067"
+    },
+    {
+      "kind": "payload",
+      "file": "sub-live.json",
+      "sha256": "4729ca1a25ec09a64349c68c5ccb0eb41b4e9f83e161fb9c4a29b0ce26b948d4"
+    },
+    {
+      "kind": "payload",
+      "file": "admission-checker.ps1",
+      "sha256": "920255cf6b610abbbe43a5f90cc5c637f5548cfff36c3ccf302746fd05e5d447"
+    },
+    {
+      "kind": "payload",
+      "file": "admission-live.json",
+      "sha256": "51b05f5afb5aa96f0294fc4ca0c39ae9a8c9a282d61fe5cdd0a2c26653f97d11"
+    },
+    {
+      "kind": "manifest",
+      "file": "candidate.json",
+      "sha256": "db83ff5c52bbbdef4d4fb361522c4a2d2b8168fab7face4805efb4ba30bd3df6"
+    }
+  ]
+}
