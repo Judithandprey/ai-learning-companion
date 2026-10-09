@@ -1,0 +1,10 @@
+$ (regression) the accepted diagnostic's suites
+test_qa_tts_output_candidate.mjs: ℹ tests 50
+test_qa_tts_output_candidate.mjs: ℹ pass 50
+test_qa_tts_output_candidate.mjs: ℹ fail 0
+test_qa_run_tts_candidate.mjs: ℹ tests 54
+test_qa_run_tts_candidate.mjs: ℹ pass 26
+test_qa_run_tts_candidate.mjs: ℹ fail 28
+     16   'Error: new uncreated TTS scratch required'
+     16     actual: Error: new uncreated TTS scratch required
+     11   Error: new uncreated TTS scratch required

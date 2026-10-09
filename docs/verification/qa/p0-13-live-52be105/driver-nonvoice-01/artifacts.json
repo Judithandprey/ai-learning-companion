@@ -1,0 +1,91 @@
+{
+  "kind": "qa-live-nonvoice-driver/prepared",
+  "status": "PREPARED_ONLY_NOT_REVIEWED_NOT_AUTHORIZED",
+  "assignment": "handoff_59edc35ceda51f82acabeb24e3edffb0",
+  "baseline": "main 86e429c merged as team/qa f089243",
+  "real_actions": "0/4 (unchanged)",
+  "candidate_sha256": "694a1acccc6b572fecb9c1516dd8bfd1b5fc744232a9a5a4cb98bab1e456af3b",
+  "payload_sha256": {
+    "runner.ps1": "f372426256ab31d243dbea1a0bf8fa05a9af20d0bc4ae3e367f622af93a807be",
+    "steps.json": "535bb56e32512177db30361925f797642e0c64b9902c8b7e73818d06d1ec154c",
+    "surface.html": "be82967ae45d36bece4ac4858d6f45d0e90e58d088203b71323b74e6ae5e1067",
+    "sub-live.json": "4729ca1a25ec09a64349c68c5ccb0eb41b4e9f83e161fb9c4a29b0ce26b948d4"
+  },
+  "native_worst_case_ms": 519000,
+  "work": "/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-live-nonvoice-c7fc94ca00bd47afaab06da3cef17913",
+  "source_files_pinned_by_candidate": {
+    "qa_live_candidate.mjs": "57756f32430c6e7b888dd445ac1f7ee024de1323d785b64a63e72c43b1e35b73",
+    "qa_tts_output_candidate.mjs": "02fd39d06c29eb89d60ed113bb13e97726cc503a2e9678da713a3422b3f6cf83",
+    "qa_visible_candidate.mjs": "9df43a98f64c67559029d31bc41573db4df4df94341ef48845687987b5460410",
+    "qa_edge_placement.ps1": "e527a59e63f6823adc9aaa1b5d9619661d8299769985ae1a0bf108749c2535bb",
+    "qa_display_admission.ps1": "b4f586b7c987f533f318eb72ebffe318482ed2c2aa7f7f720574147071747590",
+    "qa-electron-runner.ps1": "1a0dfc3f178a1d6f59233c2a7d6a836ce68b18887affd2f6431c2d4ef5c48218",
+    "qa_tts_stage_check.py": "9e0a8257f740ee6d7e8924ac848de2fc7ddfd9b7621967e8a7f67c1c518b810f",
+    "qa_live_stage_check.py": "8bdd042b426c0784500375a41fe874e41b80186a6a8dddcc1d544213abd8c791",
+    "surface_live.html": "be82967ae45d36bece4ac4858d6f45d0e90e58d088203b71323b74e6ae5e1067",
+    "sub_copy.mjs": "d9df3fe96a1c3c99b161552cd6c547c9a7c64dad4e23f05f57eed922013a85f5",
+    "qa_sub_copy_check.py": "73b765943887cab143f530deb3deb7ac415cabce13bc2bd9f7498c1c56320d10",
+    "qa_live_copy_check.py": "1784a01195500bda2fe84971e837978043cc74d3ad4e1a119dd5452863b92425",
+    "signin_cleanup.mjs": "efa06295262ea27006769e0dea363051fbd6401f4c810d2049db5937ee939b2b",
+    "qa_live_ledger.mjs": "b6573db832743dc0b67308f9da9157a20351aa0493451241eeb30c5e300ae5fe",
+    "qa_run_tts_candidate.mjs": "153db051aa92a39a5f59859c1d85b107867a6fc6fa1c30eb033692f83ebdbda3",
+    "qa_sub_watch.py": "42be06a3b2d07d2feb16b306bfefe9d2c44bfdd8d88554853eb9a7ea6112d1b8"
+  },
+  "driver_files_sha256": {
+    "qa_live_candidate.mjs": "57756f32430c6e7b888dd445ac1f7ee024de1323d785b64a63e72c43b1e35b73",
+    "qa_live_ledger.mjs": "b6573db832743dc0b67308f9da9157a20351aa0493451241eeb30c5e300ae5fe",
+    "qa_run_live_candidate.mjs": "aaa85a7b139acaa113ebd734bff28ab11b64d63d44d8bbc179801e3b2bff8206",
+    "surface_live.html": "be82967ae45d36bece4ac4858d6f45d0e90e58d088203b71323b74e6ae5e1067",
+    "qa_live_copy_check.py": "1784a01195500bda2fe84971e837978043cc74d3ad4e1a119dd5452863b92425",
+    "test_qa_live_candidate.mjs": "94806a0f8f3d6ce8a821dec7b09974471bbe2cea24ed9bfff84f01727e1b1c04"
+  },
+  "connector": {
+    "commit": "52be105a148a28e677f83cc4b7077665f2ff372c",
+    "copy": "/home/agentsdock/.local/share/lc-qa/subscription-source-52be105a148a",
+    "python": "/home/agentsdock/Projects/learning-companion/repo/.venv/bin/python",
+    "codex_bin": "/home/agentsdock/.codex/packages/standalone/releases/0.158.0-x86_64-unknown-linux-musl/bin/codex",
+    "codex_sha256": "167c0148a849d2444f1b5a7fb5f8bb2de1de5ae13a2a504b833fc765980f5cd9",
+    "state_dir": null,
+    "distribution": "Ubuntu",
+    "user": "agentsdock"
+  },
+  "policy_ms": {
+    "max_submissions": 4,
+    "max_session_ms": 60000,
+    "min_observation_interval_ms": 60000
+  },
+  "actions": [
+    "unattended whole-screen observation",
+    "automatic focus response",
+    "typed follow-up after controlled screen change",
+    "Stop/fence attempt"
+  ],
+  "questions": {
+    "followup": "The cards on the screen just changed. Please read the four-digit numbers on the cards in the top row, from left to right.",
+    "fence": "Please also read the four-digit numbers on the cards in the bottom row."
+  },
+  "assistance": "hint",
+  "checks": {
+    "driver_tests": "20/20 (child processes withheld)",
+    "driver_mutants": "27/27",
+    "candidate_check": "passed, scratch unused",
+    "connector_copy": "280 files equal; ask and live paths load from the copy",
+    "diagnostic_generator_regression": "50/50",
+    "diagnostic_wrapper_regression": "26/54: pre-existing, the consumed r4 scratch"
+  },
+  "logs": {
+    "driver-checks.txt": "d6ab6f5bcf5710496e2e2f585256810a01d260ce0c86a3e37b4af6721d11352d",
+    "driver-mutants.txt": "1d950ba6c1a09474b1418d9ce13a58c7e0744f05422ce1ab62e798bff355a24a",
+    "driver-mutants.py": "cdee7187f2d9788695c32fcfa058225e22c40257a095778bc0615c77b3b97c49",
+    "candidate-check.json": "5b6602da7a53f9c0d1f41ee22fdf7ebb86f9f72fb7dc4e4a4e84c7c517dbdab8",
+    "connector-copy-check.json": "e9a43c1abf3ca541b9f782a5df5d55b999262f3fb3c9d7756852861f63ccb246",
+    "regression-checks.txt": "2b406b87bcb32e41c064868fb831003bb465198460804b2f32f4451bd956f338",
+    "allocation.template.json": "e6e8a56a213c64699721089ae0bdfe9f867f50213160d341dfa24dd01f711240"
+  },
+  "execution": {
+    "windows_calls": 0,
+    "native_attempts": 0,
+    "provider_attempts": 0,
+    "display_or_account_lease": "NONE"
+  }
+}

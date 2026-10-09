@@ -1,0 +1,61 @@
+# 27 targeted mutants of the ledger and wrapper logic, each in a /tmp copy without execution-* folders, the suite rerun.
+# CAUGHT: a test fails that does not merely refuse a changed source pin (the candidate pins the ledger; the allocation pins the wrapper).
+
+transport: not-submitted counted as at provider: CAUGHT
+    - ledger: all four actions counted once each, the whole picture at the provider boundary for each answered one, the Stop fenced
+    - transport: no receipt, another image, no text or image input, or a request not submitted is never the picture at the provider; tools are fla
+transport: text input not required: CAUGHT
+    - transport: no receipt, another image, no text or image input, or a request not submitted is never the picture at the provider; tools are fla
+transport: tools not flagged: CAUGHT
+    - transport: no receipt, another image, no text or image input, or a request not submitted is never the picture at the provider; tools are fla
+fence: later requests ignored: CAUGHT
+    - fence: needs Stop by the user with the request out and settling after it, nothing shown or sent later; otherwise unknown or not fenced
+fence: out at Stop not required: CAUGHT
+    - fence: needs Stop by the user with the request out and settling after it, nothing shown or sent later; otherwise unknown or not fenced
+fence: settling after Stop not required: CAUGHT
+    - fence: needs Stop by the user with the request out and settling after it, nothing shown or sent later; otherwise unknown or not fenced
+fence: actual card ignored: CAUGHT
+    - fence: needs Stop by the user with the request out and settling after it, nothing shown or sent later; otherwise unknown or not fenced
+fence: user Stop not required: CAUGHT
+    - fence: needs Stop by the user with the request out and settling after it, nothing shown or sent later; otherwise unknown or not fenced
+ledger: extra focus not detected: CAUGHT
+    - ledger: a session that ended before an action leaves it and every later one NOT_RUN; extra requests, restarts and a disagreeing app count ar
+ledger: extra typed not detected: CAUGHT
+    - fence: needs Stop by the user with the request out and settling after it, nothing shown or sent later; otherwise unknown or not fenced
+    - ledger: a session that ended before an action leaves it and every later one NOT_RUN; extra requests, restarts and a disagreeing app count ar
+ledger: slot 1 from a failed live_policy: CAUGHT
+    - ledger: unknown and proven not_submitted outcomes count; failed triggers count but are named; a session that never started counts nothing
+ledger: failed trigger not named: CAUGHT
+    - ledger: unknown and proven not_submitted outcomes count; failed triggers count but are named; a session that never started counts nothing
+ledger: app count not cross-checked: CAUGHT
+    - ledger: a session that ended before an action leaves it and every later one NOT_RUN; extra requests, restarts and a disagreeing app count ar
+ledger: spoken requests pass as silent: CAUGHT
+    - ledger: a session that ended before an action leaves it and every later one NOT_RUN; extra requests, restarts and a disagreeing app count ar
+ledger: restart via not_started ignored: CAUGHT
+    - ledger: a session that ended before an action leaves it and every later one NOT_RUN; extra requests, restarts and a disagreeing app count ar
+evidence: earlier AI text not excluded in action 3: CAUGHT
+    - pixel rules: only values new after the change and absent from earlier AI text prove fresh pixels; formatted values are read; a question with
+evidence: formatted numbers not read: CAUGHT
+    - pixel rules: only values new after the change and absent from earlier AI text prove fresh pixels; formatted values are read; a question with
+wrapper: connector admission skipped: CAUGHT
+    - wrapper: with an exact allocation it still refuses at the connector checks before any Windows call, any folder or any process
+wrapper: connector release not required: CAUGHT
+    - wrapper: the mechanical result needs every term, the connector and its children gone, and keeps acceptance NOT_JUDGED
+wrapper: whole picture not required: CAUGHT
+    - wrapper: the mechanical result needs every term, the connector and its children gone, and keeps acceptance NOT_JUDGED
+wrapper: question leaks not required: CAUGHT
+    - wrapper: the mechanical result needs every term, the connector and its children gone, and keeps acceptance NOT_JUDGED
+wrapper: exclusive display not required: CAUGHT
+    - wrapper: only an exact, active live allocation bound to the four-action bounds, no voice, no retry or restart, is accepted
+wrapper: script permission not required: CAUGHT
+    - wrapper: only an exact, active live allocation bound to the four-action bounds, no voice, no retry or restart, is accepted
+wrapper: AI-disabled approvals accepted: CAUGHT
+    - wrapper: only an exact, active live allocation bound to the four-action bounds, no voice, no retry or restart, is accepted
+wrapper: native bound below worst case: CAUGHT
+    - wrapper: only an exact, active live allocation bound to the four-action bounds, no voice, no retry or restart, is accepted
+wrapper: missing watch end counted released: CAUGHT
+    - wrapper: the watch summary sees the connector and every descendant; a missing end or log is unknown, never released
+wrapper: askPathCheck refusal dropped: CAUGHT
+    - wrapper: the connector side refuses a missing or inexact copy, anything running in it, or another codex binary, before any Windows call
+
+27/27 caught by a test other than the pinned-candidate checks

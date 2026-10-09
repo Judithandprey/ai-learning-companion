@@ -1,0 +1,144 @@
+{
+  "kind": "qa-live-nonvoice-offline-candidate/v1",
+  "prepared_only": true,
+  "execution_authorized": false,
+  "production_commit": "52be105a148a28e677f83cc4b7077665f2ff372c",
+  "release_commit": "ad7bd72a8e902b366fbbb71d90f530c18043a251",
+  "reviewed_runner": {
+    "file": "docs/verification/qa/p0-13-tts-52be105/candidate-r4-20261009/runner.ps1",
+    "sha256": "d6640e6c8f24b51dc87feb12f8ce83832c7a6c28c380de8f0b02d1eb644b28c2",
+    "folder": "lc-qa-tts-output-27f0531f6f574cf2b67b1f650525e89d"
+  },
+  "work": "/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-live-nonvoice-c7fc94ca00bd47afaab06da3cef17913",
+  "stage": "/mnt/c/Users/ROG/AppData/Local/Temp/lc-windows-tts-52be105",
+  "stage_payload_files": 77,
+  "stage_tree_sha256": "531943a83d3572ca9c686c7d8cd62bd88da5b0401b84050487722b8e87a02669",
+  "appPort": 43123,
+  "edgePort": 45123,
+  "profile": "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-live-nonvoice-c7fc94ca00bd47afaab06da3cef17913\\edge-profile",
+  "surfaceUrl": "file:///C:/Users/ROG/AppData/Local/Temp/lc-qa-live-nonvoice-c7fc94ca00bd47afaab06da3cef17913/surface.html",
+  "edgeArgs": [
+    "--user-data-dir=C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-live-nonvoice-c7fc94ca00bd47afaab06da3cef17913\\edge-profile",
+    "--no-first-run",
+    "--no-default-browser-check",
+    "--disable-sync",
+    "--disable-extensions",
+    "--disable-background-networking",
+    "--disable-component-update",
+    "--disable-domain-reliability",
+    "--disable-features=Translate,msTranslate,TranslateUI,MediaRouter,OptimizationHints",
+    "--lang=en-US",
+    "--remote-debugging-port=45123",
+    "--remote-debugging-address=127.0.0.1",
+    "--start-fullscreen",
+    "--app=file:///C:/Users/ROG/AppData/Local/Temp/lc-qa-live-nonvoice-c7fc94ca00bd47afaab06da3cef17913/surface.html"
+  ],
+  "edgePlacement": true,
+  "linkDir": "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-live-nonvoice-c7fc94ca00bd47afaab06da3cef17913\\link",
+  "electron": "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-electron-44.5.1-win32-x64\\electron.exe",
+  "edge": "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+  "files": {
+    "runner.ps1": "f372426256ab31d243dbea1a0bf8fa05a9af20d0bc4ae3e367f622af93a807be",
+    "steps.json": "535bb56e32512177db30361925f797642e0c64b9902c8b7e73818d06d1ec154c",
+    "surface.html": "be82967ae45d36bece4ac4858d6f45d0e90e58d088203b71323b74e6ae5e1067",
+    "sub-live.json": "4729ca1a25ec09a64349c68c5ccb0eb41b4e9f83e161fb9c4a29b0ce26b948d4"
+  },
+  "source_files": {
+    "qa_live_candidate.mjs": "57756f32430c6e7b888dd445ac1f7ee024de1323d785b64a63e72c43b1e35b73",
+    "qa_tts_output_candidate.mjs": "02fd39d06c29eb89d60ed113bb13e97726cc503a2e9678da713a3422b3f6cf83",
+    "qa_visible_candidate.mjs": "9df43a98f64c67559029d31bc41573db4df4df94341ef48845687987b5460410",
+    "qa_edge_placement.ps1": "e527a59e63f6823adc9aaa1b5d9619661d8299769985ae1a0bf108749c2535bb",
+    "qa_display_admission.ps1": "b4f586b7c987f533f318eb72ebffe318482ed2c2aa7f7f720574147071747590",
+    "qa-electron-runner.ps1": "1a0dfc3f178a1d6f59233c2a7d6a836ce68b18887affd2f6431c2d4ef5c48218",
+    "qa_tts_stage_check.py": "9e0a8257f740ee6d7e8924ac848de2fc7ddfd9b7621967e8a7f67c1c518b810f",
+    "qa_live_stage_check.py": "8bdd042b426c0784500375a41fe874e41b80186a6a8dddcc1d544213abd8c791",
+    "surface_live.html": "be82967ae45d36bece4ac4858d6f45d0e90e58d088203b71323b74e6ae5e1067",
+    "sub_copy.mjs": "d9df3fe96a1c3c99b161552cd6c547c9a7c64dad4e23f05f57eed922013a85f5",
+    "qa_sub_copy_check.py": "73b765943887cab143f530deb3deb7ac415cabce13bc2bd9f7498c1c56320d10",
+    "qa_live_copy_check.py": "1784a01195500bda2fe84971e837978043cc74d3ad4e1a119dd5452863b92425",
+    "signin_cleanup.mjs": "efa06295262ea27006769e0dea363051fbd6401f4c810d2049db5937ee939b2b",
+    "qa_live_ledger.mjs": "b6573db832743dc0b67308f9da9157a20351aa0493451241eeb30c5e300ae5fe",
+    "qa_run_tts_candidate.mjs": "153db051aa92a39a5f59859c1d85b107867a6fc6fa1c30eb033692f83ebdbda3",
+    "qa_sub_watch.py": "42be06a3b2d07d2feb16b306bfefe9d2c44bfdd8d88554853eb9a7ea6112d1b8"
+  },
+  "app_entry": {
+    "executable": "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-electron-44.5.1-win32-x64\\electron.exe",
+    "app_arguments": [
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-windows-tts-52be105"
+    ],
+    "package_main": "dist/apps/windows/src/main/main.js",
+    "main_sha256": "9969b8afa2b3f3df82d3733c5d6e8adec5c34393af49d2d10c88704d68982128",
+    "native_helper_sha256": "21c7bed3fedcdefdccc2f45b799bfebb417df7a56f44f656523d303e7b349e10",
+    "electron_sha256": "49b61a030a520fc36a4b8fa5cce53fb4e935a7bdbbe4b80e9222f598e49cc7fa"
+  },
+  "connector": {
+    "commit": "52be105a148a28e677f83cc4b7077665f2ff372c",
+    "copy": "/home/agentsdock/.local/share/lc-qa/subscription-source-52be105a148a",
+    "python": "/home/agentsdock/Projects/learning-companion/repo/.venv/bin/python",
+    "codex_bin": "/home/agentsdock/.codex/packages/standalone/releases/0.158.0-x86_64-unknown-linux-musl/bin/codex",
+    "codex_sha256": "167c0148a849d2444f1b5a7fb5f8bb2de1de5ae13a2a504b833fc765980f5cd9",
+    "state_dir": null,
+    "distribution": "Ubuntu",
+    "user": "agentsdock"
+  },
+  "policy": {
+    "requests": 4,
+    "minutes": 1,
+    "seconds": 60
+  },
+  "policy_ms": {
+    "max_submissions": 4,
+    "max_session_ms": 60000,
+    "min_observation_interval_ms": 60000
+  },
+  "actions": [
+    "unattended whole-screen observation",
+    "automatic focus response",
+    "typed follow-up after controlled screen change",
+    "Stop/fence attempt"
+  ],
+  "questions": {
+    "followup": "The cards on the screen just changed. Please read the four-digit numbers on the cards in the top row, from left to right.",
+    "fence": "Please also read the four-digit numbers on the cards in the bottom row."
+  },
+  "assistance": "hint",
+  "talk": "off: the product default at every Start, checked on the overlay before the first action; asked_as must stay silent",
+  "input_method": "Inside the product windows only: DevTools DOM value + input event for the three policy fields, the question and the help level; DOM clicks for Check connection, Start, ASK, Send and Stop the AI (the product's own handlers); CDP pen events for the circle. No OS typing or physical input.",
+  "expected_fence": "Stop is clicked as soon as the 4th request is out; the connector usually has not written turn/start yet, so the likely verdict is fenced_before_submission. Fencing a turn already at the provider would need a different trigger (a Lead decision).",
+  "native_worst_case_ms": 519000,
+  "script_permission": "A separate, exact, process-only RemoteSigned permission for this runner with real subscription use is required; the AI-disabled approvals do not carry over.",
+  "proposed_native_invocation": {
+    "executable": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "arguments": [
+      "-NoProfile",
+      "-NonInteractive",
+      "-ExecutionPolicy",
+      "RemoteSigned",
+      "-File",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-live-nonvoice-c7fc94ca00bd47afaab06da3cef17913\\runner.ps1",
+      "-Electron",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-electron-44.5.1-win32-x64\\electron.exe",
+      "-Stage",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-windows-tts-52be105",
+      "-UserData",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-live-nonvoice-c7fc94ca00bd47afaab06da3cef17913\\userdata",
+      "-StepsFile",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-live-nonvoice-c7fc94ca00bd47afaab06da3cef17913\\steps.json",
+      "-OutDir",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-live-nonvoice-c7fc94ca00bd47afaab06da3cef17913\\out",
+      "-Edge",
+      "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+      "-AppTemp",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-live-nonvoice-c7fc94ca00bd47afaab06da3cef17913\\apptemp",
+      "-LinkDir",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-live-nonvoice-c7fc94ca00bd47afaab06da3cef17913\\link"
+    ],
+    "status": "NOT_ALLOCATED_NOT_EXECUTED",
+    "persistent_policy_changes": false
+  },
+  "capture_prerequisite_mode": "REAL_SUBSCRIPTION_NONVOICE_GENERATED_SURFACE",
+  "provider_attempts": 0,
+  "native_script_executed": false,
+  "display_account_audio_lease": "NONE",
+  "execution_block": "Prepared only. Lead reviews this exact package, the current prerequisites and the decisions it names, then issues a separate exclusive display/account allocation for qa_run_live_candidate.mjs."
+}

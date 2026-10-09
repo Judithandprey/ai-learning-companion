@@ -1,0 +1,163 @@
+// The nonvoice live run's all-action ledger and its pre-fixed evidence rules (pure functions; offline-testable).
+//
+// What is counted: the four released ACTIONS, each from the moment the driver assigned it (the session started for the
+// unattended look; the circle's stroke, or a typed request's Send, ran), whatever came of it: submitted, unknown and proven
+// not_submitted alike. Never presses of an Ask button. Any request the app made beyond its slot (a second look, an extra
+// ask) counts too. The ceiling is 4; nothing is retried, so a slot is used at most once.
+//
+// The evidence rules are fixed here, before any run, and nothing in them is ever given to the app:
+//   - transport: the connector's receipt for the request names a text and an image input, and the image hash equals the
+//     app's own record of the whole frame it sent (the exact PNG bytes): the full picture reached the provider boundary;
+//   - pixels: the card values exist only as canvas pixels. The first look's request carries no earlier dialogue, so card
+//     values named in its text came from the picture. Later requests carry earlier AI text as history, so only values
+//     that first appeared after the controlled screen change (and in no earlier AI text) prove fresh pixels. A matcher hit
+//     is necessary, never sufficient: the verbatim text is read by QA and the Lead.
+import { execFileSync } from 'node:child_process';
+import { readFileSync } from 'node:fs';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const HERE = dirname(fileURLToPath(import.meta.url));
+export const SLOT_PURPOSES = ['unattended whole-screen observation', 'automatic focus response', 'typed follow-up after controlled screen change', 'Stop/fence attempt'];
+
+export const parseJsonl = text => String(text).split(/\r?\n/).filter(l => l.trim()).map(l => { try { const v = JSON.parse(l); return v && typeof v === 'object' && !Array.isArray(v) ? v : { kind: 'unreadable_line' }; } catch { return { kind: 'unreadable_line' }; } });
+// Card values as an answer may write them: full-width digits, and a thousands separator inside one value ("4,821", "4 821").
+const normal = text => String(text ?? '').replace(/[０-９]/g, d => String.fromCharCode(d.charCodeAt(0) - 0xFEE0)).replace(/(?<!\d)(\d)[,\u00a0\u202f ](\d{3})(?!\d)/g, '$1$2');
+const numbersIn = text => [...new Set((normal(text).match(/(?<!\d)\d{4}(?!\d)/g) ?? []).map(Number))];
+const cardNumbers = truth => (truth?.cards ?? []).map(c => c.number);
+const HEDGES = /\?|\b(?:not sure|unsure|maybe|might|perhaps|appears?|seems?|cannot|can't|unable|unclear|i think|or)\b/i;
+
+/** Which of the given card values a text names, split by where they could have come from. */
+export function pixelEvidence(text, { now, before = [], earlierText = [] }) {
+  const named = numbersIn(text), earlier = new Set(earlierText.flatMap(numbersIn));
+  const current = new Set(now), old = new Set(before);
+  const fresh = named.filter(n => current.has(n) && !old.has(n) && !earlier.has(n));
+  return { named, current: named.filter(n => current.has(n)), fresh_only_in_new_pixels: fresh, from_earlier_screen: named.filter(n => old.has(n)),
+    also_in_earlier_ai_text: named.filter(n => current.has(n) && earlier.has(n)), not_on_any_screen: named.filter(n => !current.has(n) && !old.has(n)),
+    hedged: HEDGES.test(String(text ?? '')),
+    matcher: fresh.length > 0 ? 'fresh_pixel_values_named' : named.some(n => current.has(n)) ? 'current_values_named_not_pixel_only' : 'no_current_value_named',
+    note: 'A matcher result is necessary, never sufficient; a hedged text and every verbatim text need a human reading.' };
+}
+/** QA-authored text must hold no card value (the values exist only as pixels). */
+export function leaks(texts, truths) {
+  const values = new Set(truths.flatMap(cardNumbers));
+  return texts.flatMap((t, i) => numbersIn(t).filter(n => values.has(n)).map(n => ({ text: i, value: n })));
+}
+// Item types a plain question-and-answer turn produces; anything else (a tool, a command, a file change...) is a stop sign.
+const PLAIN_ITEMS = new Set(['userMessage', 'agentMessage', 'reasoning']);
+/** Transport of the whole picture for one request: the receipt against the app's own record, and how far it went. */
+export function transport(receipt, imageSha256, { codexSha256 = null } = {}) {
+  if (!receipt) return { receipt: false, verdict: 'official image input: not shown (no receipt)' };
+  const types = receipt.input_types ?? [], items = receipt.produced_item_types ?? [];
+  const inputs = types.includes('text') && types.includes('image') && receipt.image_sha256 === imageSha256 && typeof imageSha256 === 'string';
+  const submitted = receipt.submission === 'acknowledged' || receipt.submission === 'written';
+  const tools = items.filter(t => !PLAIN_ITEMS.has(t));
+  const identity = { codex_sha256_matches: codexSha256 === null ? null : receipt.codex_sha256 === codexSha256, explicit_bin_override: receipt.explicit_bin_override ?? null };
+  return { receipt: true, input_types: types, image_sha256_matches_app_record: receipt.image_sha256 === imageSha256, submission: receipt.submission ?? null,
+    outcome: receipt.outcome ?? null, terminal_status: receipt.terminal_status ?? null, actual_model: receipt.actual_model ?? null,
+    produced_item_types: items, non_plain_items: tools, thread_start_count: receipt.thread_start_count ?? null, turn_start_count: receipt.turn_start_count ?? null, ...identity,
+    verdict: !inputs ? 'official image input: not shown' : !submitted ? `inputs prepared; not submitted (${receipt.submission ?? 'unknown'})` : 'whole picture at the provider boundary' };
+}
+
+/**
+ * The ledger. `steps`: the candidate steps; `results`: the runner's results.json; `liveLines`: every capture's live.jsonl
+ * lines; `asks`: every asks/<selection>.json record; `receipts`: request_id -> receipt (absent: none found).
+ */
+export function buildLedger({ steps, results, liveLines = [], asks = [], receipts = {}, codexSha256 = null }) {
+  const entries = new Map((results?.steps ?? []).map(s => [s.i, s]));
+  const at = predicate => { const k = steps.findIndex(predicate); return k >= 0 ? entries.get(k + 1) ?? null : null; };
+  const policy = at(s => s.as === 'live_policy');
+  const triggers = [null, at(s => Array.isArray(s.stroke)), at(s => s.as === 'action3_submit'), at(s => s.as === 'action4_submit')];
+  const starts = liveLines.filter(l => l.kind === 'started').length, refusedStarts = liveLines.filter(l => l.kind === 'not_started');
+  const assigned = [starts > 0 || policy?.ok === true, !!triggers[1], !!triggers[2], !!triggers[3]];
+  const looks = liveLines.filter(l => l.kind === 'look');
+  const entriesAll = asks.filter(a => Array.isArray(a?.requests)).flatMap(a => a.requests.filter(q => q && typeof q === 'object').map(q => ({ ...q })))
+    .sort((a, b) => String(a.submitted_at ?? '').localeCompare(String(b.submitted_at ?? '')));
+  const focus = entriesAll.filter(q => q.trigger === 'focus'), typed = entriesAll.filter(q => q.trigger === 'text_followup');
+  const byRequest = id => liveLines.filter(l => l.request_id === id);
+  const slotRequests = [looks.slice(0, 1), focus.slice(0, 1), typed.slice(0, 1), typed.slice(1, 2)];
+  const extra = [...looks.slice(1).map(l => l.request_id), ...focus.slice(1).map(q => q.request_id), ...typed.slice(2).map(q => q.request_id)];
+  const slots = SLOT_PURPOSES.map((purpose, k) => {
+    const reqs = slotRequests[k];
+    if (!assigned[k] && reqs.length === 0) return { slot: k + 1, purpose, state: k === 0 && refusedStarts.length ? 'NOT_RUN_session_not_started' : 'NOT_RUN', counted: false };
+    const request = reqs[0] ?? null;
+    if (!request) {
+      const failed = triggers[k] && triggers[k].ok === false;
+      return { slot: k + 1, purpose, state: failed ? 'trigger_failed_before_action' : 'assigned_no_request_recorded', counted: true, trigger_error: failed ? triggers[k].error ?? null : null,
+        note: 'assigned, so counted (conservative); the app recorded no request for it' };
+    }
+    if (k === 0) {
+      const settledLine = byRequest(request.request_id).find(l => ['looked', 'not_looked', 'settled'].includes(l.kind));
+      return { slot: 1, purpose, state: settledLine?.kind ?? 'outcome_not_recorded', counted: true, request_id: request.request_id, image_sha256: request.image?.sha256,
+        submission: settledLine?.kind === 'looked' ? 'submitted' : settledLine?.submission ?? null, transport: transport(receipts[request.request_id], request.image?.sha256, { codexSha256 }) };
+    }
+    return { slot: k + 1, purpose, state: request.outcome?.status ?? 'outcome_not_recorded', counted: true, request_id: request.request_id, trigger: request.trigger,
+      question: request.question, assistance: request.assistance, asked_as: request.asked_as, spoken: request.spoken ?? null, focus: request.frame?.focus,
+      frame_captured_at: request.frame?.captured_at ?? null, image_sha256: request.frame?.image?.sha256,
+      submission: request.submission ?? request.outcome?.submission ?? null, shown: request.shown, presentation: request.presentation ?? null,
+      transport: transport(receipts[request.request_id], request.frame?.image?.sha256, { codexSha256 }) };
+  });
+  const used = slots.filter(s => s.counted).length + extra.length;
+  // The app's own count (submitted + unknown), from its records and the guards' reads: it must agree with the ledger.
+  const values = results?.values ?? {}, read = k => { try { return JSON.parse(values[k]); } catch { return null; } };
+  const appUsed = Math.max(-1, ...liveLines.filter(l => typeof l.used === 'number').map(l => l.used), ...['action1', 'action2', 'action3', 'action4_after'].map(k => read(k)?.used).filter(n => typeof n === 'number'));
+  const submittedSlots = slots.filter(s => s.counted && s.submission && s.submission !== 'not_submitted').length;
+  const unwritten = Math.max(0, ...['action1', 'action2', 'action3', 'action4_after'].map(k => read(k)?.unwritten).filter(n => typeof n === 'number'));
+  return { kind: 'qa-live-nonvoice-ledger/1', slots, extra_requests: extra, attempts_used: used, attempts_remaining: Math.max(0, 4 - used),
+    ceiling_ok: used <= 4 && unwritten === 0 && (appUsed < 0 || appUsed <= submittedSlots + extra.length), app_counted: appUsed < 0 ? null : appUsed, submitted_slots: submittedSlots, live_lines_unwritten: unwritten,
+    sessions_started: starts, start_attempts: starts + refusedStarts.length, restarted: starts + refusedStarts.length > 1, retried: extra.length > 0,
+    all_silent: slots.every(s => !s.asked_as || (s.asked_as === 'silent' && !s.spoken)),
+    rule: 'Every assigned action counts once, submitted, unknown or not_submitted; not Ask presses. No retry, no restart.' };
+}
+
+/** The Stop/fence verdict for slot 4: the app's records, the out count when Stop was clicked, and the actual card after it. */
+export function fenceVerdict(ledger, liveLines, values = {}) {
+  const slot = ledger.slots[3];
+  if (slot.state.startsWith('NOT_RUN')) return { verdict: 'NOT_RUN' };
+  const read = k => { try { return JSON.parse(values[k]); } catch { return null; } };
+  const stop = read('action4_stop'), cardAfter = read('action4_card'), before = read('action3_card');
+  const ended = liveLines.find(l => l.kind === 'ended');
+  const afterEnd = ended ? liveLines.slice(liveLines.indexOf(ended) + 1) : [];
+  const settledAfterStop = !!slot.request_id && afterEnd.some(l => l.kind === 'settled' && l.request_id === slot.request_id);
+  const recorded = !!slot.request_id && slot.state !== 'outcome_not_recorded' && slot.state !== 'answered';
+  const stopped = !!ended && ended.reason === 'stopped by you';
+  const outAtStop = stop?.out_at_stop === 1;
+  const noLater = ledger.extra_requests.length === 0 && !afterEnd.some(l => l.kind === 'looked' || l.kind === 'look');
+  const cardClean = !!cardAfter && (cardAfter.answer_hidden === true || cardAfter.answer === (before?.answer ?? null));
+  const notShown = slot.shown !== true && slot.presentation !== 'shown' && cardClean;
+  const facts = { stopped_by_user: stopped, request_recorded: recorded, out_at_stop: stop?.out_at_stop ?? null, settled_after_stop: settledAfterStop, request_outcome: slot.state,
+    submission: slot.submission ?? null, shown: slot.shown ?? null, presentation: slot.presentation ?? null, card_after_stop_clean: cardClean, no_later_request: noLater, end_reason: ended?.reason ?? null };
+  if (!stopped || !recorded || !outAtStop || !settledAfterStop) return { verdict: 'unknown', ...facts };
+  if (!notShown || !noLater) return { verdict: 'not_fenced', ...facts };
+  return { verdict: slot.submission === 'not_submitted' ? 'fenced_before_submission' : slot.submission === 'submitted' ? 'fenced_in_flight' : 'fenced_submission_unknown', ...facts };
+}
+
+/** The pre-fixed pixel readings per action (the truths are the runner's private DevTools reads; never given to the app). */
+export function evidence({ ledger, liveLines, cards, truthBefore, truthAfter }) {
+  const before = cardNumbers(truthBefore), after = cardNumbers(truthAfter);
+  const lookText = liveLines.filter(l => l.kind === 'looked').map(l => l.text);
+  const a2 = cards.action2?.answer ?? '', a3 = cards.action3?.answer ?? '';
+  const frame3 = Date.parse(ledger.slots[2]?.frame_captured_at ?? ''), changed = Date.parse(truthAfter?.generated_at ?? '');
+  return {
+    action1: { text_source: 'live.jsonl looked (never shown on a card, by design)', ...pixelEvidence(lookText[0] ?? '', { now: before }),
+      note: 'The first look carries no earlier dialogue: card values named here came from the picture. Necessary, not sufficient.' },
+    action2: { text_source: 'card #answer (hint)', ...pixelEvidence(a2, { now: before, earlierText: lookText }),
+      note: 'A hint may name no value; values the first look already named are not pixel-only proof.' },
+    action3: { text_source: 'card #answer (typed follow-up after the screen change)', ...pixelEvidence(a3, { now: after, before, earlierText: [...lookText, a2] }),
+      top_row_now: after.slice(0, 4), top_row_named: after.slice(0, 4).filter(n => numbersIn(a3).includes(n)),
+      frame_after_change: Number.isFinite(frame3) && Number.isFinite(changed) ? frame3 >= changed : null },
+    leaks_in_questions: leaks([ledger.slots[2]?.question ?? '', ledger.slots[3]?.question ?? ''], [truthBefore, truthAfter].filter(Boolean)),
+    acceptance: 'NOT_JUDGED: QA and the Lead read every verbatim text; the matchers above are necessary, never sufficient.',
+  };
+}
+
+/** The connector copy's live path: the live modules load from the copy (offline; nothing is sent). Not for the tests. */
+export function liveImportCheck(python, dir) {
+  const code = readFileSync(join(HERE, 'qa_live_copy_check.py'), 'utf8');
+  try {
+    const out = execFileSync(python, ['-B', '-c', code], { cwd: dir, encoding: 'utf8', timeout: 60000, env: { PATH: '/usr/bin:/bin', HOME: process.env.HOME, PYTHONDONTWRITEBYTECODE: '1' } });
+    return JSON.parse(out.split('\n').filter(l => l.startsWith('{')).at(-1));
+  } catch (error) {
+    return { ok: false, error: String(error.stderr || error.message).split('\n').filter(Boolean).at(-1)?.slice(0, 300) ?? 'failed' };
+  }
+}
