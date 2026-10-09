@@ -1,20 +1,23 @@
 # Current-package nonvoice driver review — 2026-10-09
 
-**HOLD latest QA `9614947fa2a3cfae3dd5e3d154011b3c6dbaa82b`; no execution allocation.**
-Support's independent review `5083814` is integrated as `0ac8605`. It closes the
-applicable-quota finding and reproduces remaining ledger, Stop, watcher and
-typed-receipt defects. QA repairs those boundaries and the exact current-overlay
-predicate. Web delivered `48c20c4` and client correction `9c3beab`; Lead's focused
-deadline/BOM check passes. Support's consumer review `dbb42ab` is integrated as
-`ff51068` and finds C1–C3 below. Web correction `4778908` passes Lead's three
-focused cases and Support's original-defect/pending-lifetime regressions. Only
-C3-A unknown holding-ID refusal remains for the current Web release; QA's own
-checker/driver correction remains separate. Interim
-candidate 03 correctly refuses execution against old production 52be105.
-Initial delivery `handoff_a2f89cda91b9465425a8ca4eeec4cce6` follows the existing
-P0-13 preparation assignment. Product remains52be105, staged77-file tree531943a8;
-the successful AI-disabled diagnostic and all3consumed slots remain closed.
-Real actions remain0/4. This review invokes no Windows/account/model/audio action.
+**Windows interlock integrated and separately staged; QA driver review pending.**
+Web's reviewed source through `ebbd1ed` integrates as `0ff325b`; its Windows tree
+matches exactly. Lead's final holding-membership case passes, and TypeScript plus
+static packaging pass. The distinct 81-file `%TEMP%\lc-windows-admission-0ff325b`
+stage has tree `081a130c1f492c98d78fec8d67463a36c80126ea1ca72eede99d043ca616a46a`.
+All 77 earlier 52be105-stage files still match. No application was launched.
+
+QA correction `937788d` (README correction `a46d497`) is delivered and remains
+unintegrated pending Support's independent changed-boundary review, dispatched
+in `handoff_981cd2ed93608575ff5c842feea1a89f`. Interim candidate 04 still has
+`interlockProduction=null` and cannot run. QA's separately assigned pure-data
+PowerShell fixture check was refused before loading by Windows execution policy;
+no cases ran and no alternate invocation was attempted. Details below.
+
+Real actions **0/4**, old AI-disabled diagnostic **3/3 closed**, no resource lease.
+This is source/build preparation, not live vision, voice or full-product acceptance.
+The chronological findings below retain their original baselines and are superseded
+only by the specific later correction/integration records.
 
 Existing Support completed exact-source independent review
 `handoff_dc6421e3ff2c4836f05f61dcab7e7985`: **HOLD**, delivered in
@@ -559,3 +562,59 @@ Support is idle. QA continues the existing checker/driver correction, and Lead
 integrates the app after C3-A closes, then verifies a distinct build and final
 checker composition. No lease exists; real actions remain **0/4**, old diagnostic
 **3/3 closed**. No new user decision is needed for the narrow source correction.
+
+### Final Web correction integrated and a distinct package prepared
+
+Actual `handoff_44435548ba0ffd547421cd81e4a0b4a2` delivers Web `ebbd1ed`, a leaf
+on `4778908`. Lead reviewed its one-condition implementation change and focused
+controls: each named holding entry must exist in the admitted map before pruning
+or a checker request. The exact-source holding case passes, covering empty-map
+unknown, known-held and previously dropped IDs. This closes C3-A; Support's
+independent original C1–C3 and pending-consumer results are retained, not rerun.
+C3-B remains the documented test-only ceiling above.
+
+Reviewed leaves integrate as `a10f058`, `e78a368`, `50e2137`, `0ff325b`.
+[Integration/check record](web-final-integration.json) preserves source and main
+identities. Resulting Windows tree is `0d9618c2d2c562bedcb41d8ffca11a4f003b1e02`,
+identical to the delivered source. Clean TypeScript/static build succeeds. The
+unchanged previously compiled native helper is verified against its local build
+receipt and source; no new compilation or helper execution was needed.
+
+[Distinct stage and readback manifest](stage-0ff325b.json) pins all 81 files,
+entrypoint and cached Electron 44.5.1. Copying used an atomic fresh directory;
+old package/profile/auth were not modified, no download or Windows process ran.
+All 77 prior stage file hashes match before and after. This package is prepared
+for the existing four-action nonvoice acceptance; it is not a user-ready full
+companion or an execution lease. QA next repins its reviewed driver to this exact
+build after the independent driver verdict; Lead reviews the resulting command.
+
+### QA correction 04 and pure-data check outcome
+
+Actual `handoff_dda3b90d4fb1c1ef5371fd6c0317239f` delivers `937788d`; subsequent
+`handoff_79603b4e0455f0751e653ebddd5d81d5` corrects only review-count prose at
+`a46d497`. Source, pins and execution results are unchanged. QA reports R1–R5
+corrections, one shared exact-overlay predicate in checker/runner, display binding
+and agreement with main's admission record. Author results are 33 offline checks,
+three scripts parsed and six literal C# blocks compiled; these do not execute
+native window checks and are not independently inherited passes.
+
+Support's existing task is the exact `937788d` changed-boundary review via
+`handoff_981cd2ed93608575ff5c842feea1a89f` (accepted; final verdict pending), covering
+ledger/Stop/watcher/typed receipts and checker/runner composition. No whole
+campaign or real action was assigned. Candidate 04's wrapper remains gated.
+
+Lead read the complete 71-line composed pure fixture checker and synthetic JSON,
+then dispatched one ordinary offline execution as `handoff_709b36d599e63812ff2ac13dfcde75c1`.
+Actual `handoff_2dc78deb7b6d2bf22ed6e64be8c7ed44` / QA `a58d583` reports Windows
+`SecurityError / UnauthorizedAccess`: running scripts is disabled for the exact
+`-NoProfile -NonInteractive -File` command. Exit 1, empty stdout, zero fixture
+cases executed; owned staging removed. This was an OS policy refusal, not an
+AgentsDock automatic-review denial or a consumed native/display test. The machine's
+effective policy was not queried. No retry, inline substitute, alternate host or
+policy change followed. Keep this optional pure-fixture result NOT_RUN; it does
+not undo the actual parse/compile results or block independent package preparation.
+No approval for a new command is presumed by this record.
+
+The fixture inputs are pinned as `e09a7a942a3ef22fe2644f0b6dfcd2eadc6b0f7dccf837037b762b583c16729f`
+(script) and `6a513c5bd0062b0a17d88038ef882abb62c765e521fbbfbd2f87098392607bc3`
+(JSON). All native overlay/affinity/stdin/timing behavior remains unverified.

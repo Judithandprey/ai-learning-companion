@@ -1,0 +1,51 @@
+{
+  "source_commit": "ebbd1edc434023664c1fe0b098a076e6cd0c7726",
+  "integrated_as": "0ff325beadb7c689244610307b6aa16d638fd2e6",
+  "apps_windows_tree": "0d9618c2d2c562bedcb41d8ffca11a4f003b1e02",
+  "delivery": "handoff_44435548ba0ffd547421cd81e4a0b4a2",
+  "review": "C3-A holding entries must exist in the admitted map before pruning/checker request; unknown and retired frames refuse; known held frames remain usable. No authority can be minted. Existing Support original C1-C3 and pending-consumer review retained.",
+  "focused_check": {
+    "node": "24.21.0",
+    "test_file": "apps/windows/tests/app-admission.test.ts",
+    "name_pattern": "an admission is kept",
+    "passed": 1,
+    "failed": 0,
+    "exit_code": 0,
+    "test_isolation": "none",
+    "node_permission": true,
+    "fs_read": "exact commit archive",
+    "fs_write": "archive/runtime only",
+    "child_process": false,
+    "native": false,
+    "provider": false
+  },
+  "integration": [
+    {
+      "owner": "48c20c4",
+      "main": "a10f058"
+    },
+    {
+      "owner": "9c3beab",
+      "main": "e78a368"
+    },
+    {
+      "owner": "4778908",
+      "main": "50e2137"
+    },
+    {
+      "owner": "ebbd1ed",
+      "main": "0ff325b"
+    }
+  ],
+  "build": {
+    "typescript_exit_code": 0,
+    "copy_static_exit_code": 0,
+    "clean_dist": true,
+    "native_helper": "verified unchanged prior Lead local compilation; not executed",
+    "native_source_sha256": "c4c1f127a85ff1c871ce98895d51584af7936bbf23f3a35c7418002f201cbbfd",
+    "native_executable_sha256": "21c7bed3fedcdefdccc2f45b799bfebb417df7a56f44f656523d303e7b349e10"
+  },
+  "real_actions_used": 0,
+  "resource_lease": false,
+  "actual_native_or_provider_acceptance": false
+}

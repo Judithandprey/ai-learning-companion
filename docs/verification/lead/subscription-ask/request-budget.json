@@ -19,7 +19,7 @@
   "allocation_retired_reason": "QA actual handoff_ec31e85d736c7661fbb4022aa0d2cb52 confirms 0 of 1 used. This selected-image allocation is not additive to the next changed-flow allocation.",
   "live_changed_flow_allocation": {
     "allocation_id": "handoff_fd794043a20068a1b52853cbb6ff884e",
-    "status": "prepared_driver_held_for_source_correction_execution_unreleased",
+    "status": "app_integrated_staged_driver_review_pending_execution_unreleased",
     "candidate_commit": "24c48c38aee660b606ebff5285acbd2ccb300392",
     "maximum_potential_submissions": 5,
     "purpose_slots": [
@@ -49,7 +49,7 @@
       "account/model/billing change",
       "automatic restart or retry"
     ],
-    "next_owner": "Web adds the narrow C3-A holding membership check; Lead reviews that delta directly. Independent original C1-C3 and four pending-consumer lifetime checks pass. QA continues its checker/driver repair. Then integrate app, distinct build and exact checker composition before release; no current lease.",
+    "next_owner": "Support finishes exact QA937788 changed-boundary review; QA repins to integrated Windows0ff325b stage after that verdict; Lead reviews final command. Optional pure PowerShell fixture refused by OS policy, no retry. No lease.",
     "production_source_commit": "175515308f509fb8c0f531dbdb10e57313fcde5a",
     "stage_name": "lc-windows-live-1755153",
     "stage_tree_sha256": "3387824a0dee70013104388d4acec2b810475e98953e7c3f196063a8781fd154",
@@ -91,13 +91,17 @@
     "reviewed_driver_sha256": "0f6d0b28b7a7bf92adf437dc4d679ea3e53daea73e56c450a5cf34bd7b1f10ec",
     "human_approval_id": "approved-two-gates-20261002:571427dcdc434c0f820236892925aedf",
     "current_preparation_target": {
-      "product_commit": "52be105a148a28e677f83cc4b7077665f2ff372c",
-      "stage_tree_sha256": "531943a83d3572ca9c686c7d8cd62bd88da5b0401b84050487722b8e87a02669",
+      "product_commit": "0ff325beadb7c689244610307b6aa16d638fd2e6",
+      "stage_tree_sha256": "081a130c1f492c98d78fec8d67463a36c80126ea1ca72eede99d043ca616a46a",
       "qa_session": "sess_06a4c3cc6e214e96",
       "diagnostic_delivery": "07bcfcc",
       "actual_real_attempts": 0,
       "display_or_account_lease": false,
-      "prior_release_fields": "Historical1755153 release remains below; not a current allocation."
+      "prior_release_fields": "Historical1755153 release remains below; not a current allocation.",
+      "stage_name": "lc-windows-admission-0ff325b",
+      "stage_files": 81,
+      "stage_manifest": "docs/verification/lead/live-windows/nonvoice-driver-review/stage-0ff325b.json",
+      "previous_stage_preserved": "lc-windows-tts-52be105 (all77 files verified)"
     },
     "next_preparation_dispatch": {
       "message_id": "handoff_59edc35ceda51f82acabeb24e3edffb0",
@@ -124,58 +128,25 @@
         "scope": "same-owner source/offline correction; no resource allocation"
       },
       "latest_correction": {
-        "source_commit": "9614947fa2a3cfae3dd5e3d154011b3c6dbaa82b",
-        "message_id": "handoff_32491a1ff558dee96f8f508ca0d71439",
-        "candidate_sha256": "db83ff5c52bbbdef4d4fb361522c4a2d2b8168fab7face4805efb4ba30bd3df6",
-        "wrapper_sha256": "ddbd65f80720f5cb109906e4d01aa3f3dd93c40f2beac8519fa7fd645c83d2cd",
+        "source_commit": "937788ded4e2bff1db8b94dce175a7152e01609d",
+        "message_id": "handoff_dda3b90d4fb1c1ef5371fd6c0317239f",
+        "readme_correction": "a46d4977976f2e80ddcc244d4dc807f6bc5e7052",
+        "candidate_sha256": "4cb6032ef8eccea7306cdd624cf2e7846e04c07ca801145dba5490eb232c7410",
+        "wrapper_sha256": "3a537fa1df6b1b74311e3146ba7f3ec021d7b64291313d6b2d3504564a68487b",
         "integrated": false,
-        "lead_focused_checks": {
-          "passed": 30,
-          "failed": 0,
-          "native": false,
-          "provider": false
-        },
-        "execution_gate": "interlockProduction=null; every allocation refused",
-        "status": "independent_HOLD_owner_corrections_and_app_interlock_pending",
-        "support_review_dispatch": "handoff_26fac298197c97826e4184e71ff22557",
+        "status": "independent_changed_boundary_review_pending",
+        "support_review_dispatch": "handoff_981cd2ed93608575ff5c842feea1a89f",
         "support_review_accepted": true,
-        "support_verdict": "HOLD",
-        "qa_decisions_dispatch": "handoff_1698eb178ef50ac35b1b960a035cfbae",
-        "qa_decisions_accepted": true,
-        "web_checker_handoff": "handoff_c899b66b9fb10e64d25e305d1cadc258",
-        "web_checker_handoff_accepted": true,
-        "support_review_delivery": {
-          "source_commit": "5083814d8fb096dc0b080282533f022903ce2efe",
-          "integrated_as": "0ac8605",
-          "message_id": "handoff_8ef9e664b0bb7595d0608518155fd790",
-          "review": "docs/verification/support/nonvoice-live-9614947-review-20261009/README.md",
-          "closed": [
-            "F1_applicable_quota_controls"
-          ],
-          "remaining": [
-            "R1_unclassified_requests",
-            "R2_per_launch_attempt_reconciliation",
-            "R3_all_settlement_phases",
-            "R4_watcher_readiness_and_lifecycle_order",
-            "R5_typed_receipt_values",
-            "F3_exact_current_capture_overlay_binding"
-          ],
-          "actual_checks": {
-            "boundary_controls": 8,
-            "boundary_defect_witnesses": 3,
-            "ledger_controls": 2,
-            "ledger_negative_inputs": 6,
-            "ledger_negative_inputs_incorrectly_passed": 5,
-            "native": false,
-            "provider": false
-          }
-        },
-        "same_task_amendment": {
-          "message_id": "handoff_e893ca27aaf7622da5bf6ad6e059c5ee",
-          "accepted": true,
-          "execution_started_at_dispatch": false,
-          "adoption_confirmed": false,
-          "scope": "R1-R5 and current capture overlay binding; preserve existing owner work; source/offline only"
+        "execution_gate": "interlockProduction=null; every allocation refused",
+        "pure_fixture": {
+          "dispatch": "handoff_709b36d599e63812ff2ac13dfcde75c1",
+          "actual_reply": "handoff_2dc78deb7b6d2bf22ed6e64be8c7ed44",
+          "source_evidence": "a58d583d6056dc1c24b8ba15fd92352caa362ccf",
+          "status": "OS_execution_policy_refused_before_script_loaded",
+          "cases_executed": 0,
+          "exit_code": 1,
+          "retried": false,
+          "resource_lease": false
         }
       },
       "support_verdict": {
@@ -239,15 +210,15 @@
           "arm_overlay": "main-authored {pid,hwnd}; null in other phases; exact reply echo",
           "runner_binding": "frozen native launch PID/creation ticks plus exact capture/HWND; read-only test-configured source_admission fact; no title-only or per-decision rebinding",
           "scope": "source/offline only; production shared wire versions unchanged",
-          "adoption_scope": "Web source delivery only; QA corrected consumer adoption pending"
+          "adoption_scope": "Web integrated; QA937788 implementation delivered, independent source review pending"
         },
         "delivery": {
           "source_commit": "48c20c410dc49c7805fa775013501222116cd2b3",
           "apps_windows_tree": "6185479c728344519db21d7e88a56d8a184570dc",
           "message_id": "handoff_4df62e69d2eab17b382e8ec9e77c25ca",
-          "integrated": false,
-          "staged": false,
-          "status": "original_consumer_findings_closed_C3A_membership_fix_pending",
+          "integrated": true,
+          "staged": true,
+          "status": "reviewed_with_corrections_integrated_staged_no_execution",
           "author_tests": {
             "passed": 486,
             "failed": 0,
@@ -280,8 +251,9 @@
             "evidence": "docs/verification/lead/live-windows/nonvoice-driver-review/web-client-correction-9c3beab.json",
             "support_source_update": "handoff_c39d67709daee9055c7a9d24614e97a7",
             "premature_test_claim_withdrawal": "handoff_45080d7a7e6c9c90ff949c41932f5a7a",
-            "integrated": false,
-            "staged": false
+            "integrated": true,
+            "staged": true,
+            "integrated_as": "e78a368"
           },
           "consumer_review": {
             "source_commit": "dbb42ab61b444759e954f6af829fbe98a556dbc7",
@@ -320,9 +292,9 @@
               "support_retest_dispatch": "handoff_71972c17fbe888d529689cf3aabd8aef",
               "dispatch_accepted": true,
               "execution_started_at_dispatch": false,
-              "independent_verdict": "HOLD_C3A_only_for_current_candidate",
-              "integrated": false,
-              "staged": false,
+              "independent_verdict": "original_C1_C2_C3_closed_by_Support_C3A_closed_by_Lead_final_delta_review",
+              "integrated": true,
+              "staged": true,
               "support_retest": {
                 "source_commit": "fa786982f4b0b5624a5c30d21aafc5cb0dd9cb6d",
                 "integrated_as": "d1a4d92",
@@ -346,24 +318,96 @@
                 "accepted": true,
                 "execution_started_at_dispatch": false,
                 "next_reviewer": "Lead; localized membership check and focused controls, no full campaign"
+              },
+              "integrated_as": "50e2137",
+              "narrow_correction": {
+                "source_commit": "ebbd1edc434023664c1fe0b098a076e6cd0c7726",
+                "message_id": "handoff_44435548ba0ffd547421cd81e4a0b4a2",
+                "integrated_as": "0ff325beadb7c689244610307b6aa16d638fd2e6",
+                "lead_focused_checks": {
+                  "passed": 1,
+                  "failed": 0,
+                  "native": false,
+                  "provider": false
+                },
+                "evidence": "docs/verification/lead/live-windows/nonvoice-driver-review/web-final-integration.json",
+                "build": "TypeScript and static packaging pass; prior local native helper verified, not invoked"
               }
             }
-          }
+          },
+          "integrated_as": "a10f058"
         }
       },
-      "previous_correction": {
-        "source_commit": "e0bd4b37dc788a766ed3f6fe86602f556b04d4cd",
-        "message_id": "handoff_1db90d738e09039116a04a78d8f84961",
-        "candidate_sha256": "74ebc3942022fe0549aa691b45ff5cc4949a56041b2f424b22f4786eb4374fbc",
-        "integrated": false,
-        "lead_focused_checks": {
-          "passed": 23,
-          "failed": 0,
-          "native": false,
-          "provider": false
+      "earlier_corrections": [
+        {
+          "source_commit": "e0bd4b37dc788a766ed3f6fe86602f556b04d4cd",
+          "message_id": "handoff_1db90d738e09039116a04a78d8f84961",
+          "candidate_sha256": "74ebc3942022fe0549aa691b45ff5cc4949a56041b2f424b22f4786eb4374fbc",
+          "integrated": false,
+          "lead_focused_checks": {
+            "passed": 23,
+            "failed": 0,
+            "native": false,
+            "provider": false
+          },
+          "status": "remaining_independent_findings_open"
         },
-        "status": "remaining_independent_findings_open"
-      }
+        {
+          "source_commit": "9614947fa2a3cfae3dd5e3d154011b3c6dbaa82b",
+          "message_id": "handoff_32491a1ff558dee96f8f508ca0d71439",
+          "candidate_sha256": "db83ff5c52bbbdef4d4fb361522c4a2d2b8168fab7face4805efb4ba30bd3df6",
+          "wrapper_sha256": "ddbd65f80720f5cb109906e4d01aa3f3dd93c40f2beac8519fa7fd645c83d2cd",
+          "integrated": false,
+          "lead_focused_checks": {
+            "passed": 30,
+            "failed": 0,
+            "native": false,
+            "provider": false
+          },
+          "execution_gate": "interlockProduction=null; every allocation refused",
+          "status": "independent_HOLD_owner_corrections_and_app_interlock_pending",
+          "support_review_dispatch": "handoff_26fac298197c97826e4184e71ff22557",
+          "support_review_accepted": true,
+          "support_verdict": "HOLD",
+          "qa_decisions_dispatch": "handoff_1698eb178ef50ac35b1b960a035cfbae",
+          "qa_decisions_accepted": true,
+          "web_checker_handoff": "handoff_c899b66b9fb10e64d25e305d1cadc258",
+          "web_checker_handoff_accepted": true,
+          "support_review_delivery": {
+            "source_commit": "5083814d8fb096dc0b080282533f022903ce2efe",
+            "integrated_as": "0ac8605",
+            "message_id": "handoff_8ef9e664b0bb7595d0608518155fd790",
+            "review": "docs/verification/support/nonvoice-live-9614947-review-20261009/README.md",
+            "closed": [
+              "F1_applicable_quota_controls"
+            ],
+            "remaining": [
+              "R1_unclassified_requests",
+              "R2_per_launch_attempt_reconciliation",
+              "R3_all_settlement_phases",
+              "R4_watcher_readiness_and_lifecycle_order",
+              "R5_typed_receipt_values",
+              "F3_exact_current_capture_overlay_binding"
+            ],
+            "actual_checks": {
+              "boundary_controls": 8,
+              "boundary_defect_witnesses": 3,
+              "ledger_controls": 2,
+              "ledger_negative_inputs": 6,
+              "ledger_negative_inputs_incorrectly_passed": 5,
+              "native": false,
+              "provider": false
+            }
+          },
+          "same_task_amendment": {
+            "message_id": "handoff_e893ca27aaf7622da5bf6ad6e059c5ee",
+            "accepted": true,
+            "execution_started_at_dispatch": false,
+            "adoption_confirmed": false,
+            "scope": "R1-R5 and current capture overlay binding; preserve existing owner work; source/offline only"
+          }
+        }
+      ]
     }
   },
   "approved_ai_disabled_diagnostic": {
@@ -737,7 +781,7 @@
     },
     "approved_denied_operations": {
       "authorization_nonce": "human-approve-read-arithmetic:1341e2b5d73b432eaefa988058e79172",
-      "human_reply": "批准",
+      "human_reply": "\u6279\u51c6",
       "at": "2026-10-09T05:25:28.589796+00:00",
       "record": "docs/verification/lead/live-windows/approved-two-gates/bounded-retest-20261008/approved-read-arithmetic.json",
       "sha256": "6e39947d37b769fa951bd0f507c3542846a1109011b8eff57de74ce7dac975c9",
