@@ -1,0 +1,44 @@
+{
+  "integrated_commit": "56b3d408470b97b65b05b940c7dc258461426d6e",
+  "source_commit": "30c12c6aa7c51f167974471e7701ea27a0ab8b8b",
+  "support_approval": "184f712d79fe3a98fd94db7339440a9070f01755",
+  "support_verdict_message": "handoff_119330811df385d9e094526a9262e786",
+  "generator": {
+    "passed": 50,
+    "failed": 0
+  },
+  "wrapper": {
+    "passed": 54,
+    "failed": 0
+  },
+  "stage_matching_files": 77,
+  "hashes": {
+    "tests/e2e/windows/qa_tts_output_candidate.mjs": "02fd39d06c29eb89d60ed113bb13e97726cc503a2e9678da713a3422b3f6cf83",
+    "tests/e2e/windows/qa_tts_stage_check.py": "9e0a8257f740ee6d7e8924ac848de2fc7ddfd9b7621967e8a7f67c1c518b810f",
+    "tests/e2e/windows/qa_live_stage_check.py": "8bdd042b426c0784500375a41fe874e41b80186a6a8dddcc1d544213abd8c791",
+    "tests/e2e/windows/qa_visible_candidate.mjs": "9df43a98f64c67559029d31bc41573db4df4df94341ef48845687987b5460410",
+    "tests/e2e/windows/qa_edge_placement.ps1": "e527a59e63f6823adc9aaa1b5d9619661d8299769985ae1a0bf108749c2535bb",
+    "tests/e2e/windows/qa_display_admission.ps1": "b4f586b7c987f533f318eb72ebffe318482ed2c2aa7f7f720574147071747590",
+    "tests/e2e/windows/qa-electron-runner.ps1": "1a0dfc3f178a1d6f59233c2a7d6a836ce68b18887affd2f6431c2d4ef5c48218",
+    "tests/e2e/windows/signin_cleanup.mjs": "efa06295262ea27006769e0dea363051fbd6401f4c810d2049db5937ee939b2b",
+    "tests/e2e/windows/qa_visible_drag.mjs": "fa7491499aad6c289793fec195a11993b3d102415347a7251e82592362940d1e",
+    "tests/e2e/windows/surface.html": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2",
+    "docs/verification/qa/p0-13-tts-52be105/candidate-r4-20261009/runner.ps1": "d6640e6c8f24b51dc87feb12f8ce83832c7a6c28c380de8f0b02d1eb644b28c2",
+    "docs/verification/qa/p0-13-tts-52be105/candidate-r4-20261009/steps.json": "9af8002cbadc799bab4dbf7882b35043b0ac50e3ca620c95f0e76c81684a145b",
+    "docs/verification/qa/p0-13-tts-52be105/candidate-r4-20261009/surface.html": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2",
+    "tests/e2e/windows/qa_run_tts_candidate.mjs": "153db051aa92a39a5f59859c1d85b107867a6fc6fa1c30eb033692f83ebdbda3",
+    "docs/verification/qa/p0-13-tts-52be105/candidate-r4-20261009/candidate.json": "f2104545cdc393522de46ab108fa928bfe475e1cab400cf9af3fbfb6ce8c1503"
+  },
+  "source_bytes_match_qa": true,
+  "scratch_absent": true,
+  "qa_clean": true,
+  "windows_calls_by_lead": 0,
+  "provider_attempts": 0,
+  "new_native_display_attempts": 0,
+  "D1": "QA report corrected without candidate-byte changes; unsaved viewport/strict-centre terms unknown.",
+  "outputs": {
+    "stage-check.json": "dade97eb3bff2ceb6b5b2665b8c4dbbcc305019a160869721b4092ece8c463b1",
+    "wrapper-checks.txt": "ee9b4814d72e03797824af54f39861ac8d0326d2635323fd23dbe45e294405bc",
+    "generator-checks.txt": "c7cf25aa529a0dbaa6b424e6c30fba05d92e4481a8c62e6a5500e518ec3b0a95"
+  }
+}

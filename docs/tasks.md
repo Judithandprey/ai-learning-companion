@@ -134,9 +134,15 @@ integer CSS height×DPR2 exactly; page box was not recorded, so further details 
 inferred. QA also checks the saved Edge1599height against the later full-surface gate.
 Exact-owned cleanup and DISPLAY RELEASE confirmed05:40:44Z in
 `handoff_20143d8bbe58df77aacee28cfff80ee4`. Two consumed,one remains; no active display.
-QA received the concrete geometry diagnosis/necessary repair continuation
-`handoff_4dd40db9ebcf4404015a239b52184056`; source changes get focused checks and
-Support review before the last allocation. No guard removal or blind third run.
+QA's geometry correction `30c12c6` and Support approval `184f712` integrate as
+`4f465e5`/`56b3d40`. Resulting main50generator+54wrapper checks pass;15pins match
+QA and77/77stage files match. D1 corrects an evidence overstatement: the unsaved
+page width/strict-centre terms remain unknown. Candidate bytes stay unchanged.
+The last third slot is reserved in a fresh allocation at05:56:28Z, expiring06:26:28Z;
+dispatch and actual result are recorded separately in the canonical budget.
+Two actual invocations confirmed,zero additional unreserved slots; no fourth run.
+Unresolved Edge1599height must still fail exact full-source coverage if it persists.
+No guard removal or blind resend.
 No product or live/audio acceptance follows from these harness steps.
 Keep normal-band/foreground/16-point/display guards and exact-owned cleanup;
 no largest-window-only trust, foreign mutation or allocation before the reviewed correction. Actual

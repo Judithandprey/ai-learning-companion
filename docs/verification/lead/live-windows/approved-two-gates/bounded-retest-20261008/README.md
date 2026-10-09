@@ -165,3 +165,33 @@ multiplied byDPR2; the actual page box was not saved. This supports a geometry
 comparison defect but does not establish every expected/observed field. The saved
 Edge1599height is also with QA for narrow source/coverage follow-through; full-screen
 coverage guards stay. No additional native observation has been requested.
+
+## Reviewed r4 and final third allocation
+
+QA `30c12c6` and Support `184f712` integrate as `4f465e5`/`56b3d40`.
+Actual independent verdict `handoff_119330811df385d9e094526a9262e786` approves
+the code with50generator+54wrapper passes. Lead corrected Support D1 in QA's
+README: odd1369height cannot meet the old equality, but other unsaved predicates
+and their short-circuit order remain unknown. Original report remains in Git;
+candidate bytes do not change.
+
+[Resulting-main checks](integrated-r4/checks.json) also pass50+54 at exact
+`56b3d408470b97b65b05b940c7dc258461426d6e`, with77/77stage files and15pins matching
+the clean QA checkout. Lead invoked no Windows process. Candidate tolerance
+applies only to control client/viewport size, strictly less than one CSS pixel;
+source coverage, foreground/ownership/display/16points and cleanup stay exact.
+The prior Edge1599height remains unexplained; later gates must refuse if it persists.
+No speculative settle or product modification was added.
+
+[Issued final allocation](attempt-03-allocation.json), SHA256
+`57604d8eba94e103397a96d7b7341ae9d06eef35027851590f88612e530ba51c`,
+is valid05:56:28Z–06:26:28Z for original QA only, live at
+`/tmp/lc-bounded-display-20261008-03.json`. Candidatef2104545/runnerd6640e6c/
+wrapper153db051 bind the fresh unused27f0531f scratch; full pins and argv are in
+the allocation. Output is `execution-bounded-20261008-03`. The unchanged wrapper
+must check current process/port/display admission before its one140second run;
+coordinator allocation alone is not runtime admission. Other roles have no display
+allocation. This reserves the last of3slots under the original nonce, not a new budget.
+Two actual invocations are confirmed; no further unreserved attempt remains.
+Record accepted dispatch, actual start/outcome and explicit release separately.
+No AI/account/microphone/audio/TTS; no fourth run or retry after a new refusal.

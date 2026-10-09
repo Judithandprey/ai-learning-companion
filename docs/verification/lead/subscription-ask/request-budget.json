@@ -257,9 +257,9 @@
     "human_approval_sha256": "0549372eb4096b05812b1bc64ebf0e31b5c9b618a1590a33881305d0f948e0d6",
     "additional_attempt_limit": 3,
     "historical_attempts_not_reused": true,
-    "attempt_budget_committed": 2,
+    "attempt_budget_committed": 3,
     "actual_wrapper_invocations_confirmed": 2,
-    "remaining_unreserved_attempts": 1,
+    "remaining_unreserved_attempts": 0,
     "native_timeout_seconds_per_attempt": 140,
     "reviewed_steps": 32,
     "provider_attempts_allowed": 0,
@@ -270,7 +270,7 @@
     "automatic_blind_retry": false,
     "sequential_only": true,
     "stop_on_success_new_refusal_or_scope_change": true,
-    "display_allocation_active": false,
+    "display_allocation_active": true,
     "attempts": [
       {
         "number": 1,
@@ -347,10 +347,27 @@
         "failed_step": 9,
         "product_launched": true,
         "product_closed_in_finally": true
+      },
+      {
+        "number": 3,
+        "status": "reserved_not_yet_dispatched",
+        "allocation_id": "lc-bounded-display-20261008-03",
+        "allocation_sha256": "57604d8eba94e103397a96d7b7341ae9d06eef35027851590f88612e530ba51c",
+        "allocation_record": "docs/verification/lead/live-windows/approved-two-gates/bounded-retest-20261008/attempt-03-allocation.json",
+        "valid_from_utc": "2026-10-09T05:56:28Z",
+        "valid_until_utc": "2026-10-09T06:26:28Z",
+        "baseline": "56b3d408470b97b65b05b940c7dc258461426d6e",
+        "candidate_sha256": "f2104545cdc393522de46ab108fa928bfe475e1cab400cf9af3fbfb6ce8c1503",
+        "runner_sha256": "d6640e6c8f24b51dc87feb12f8ce83832c7a6c28c380de8f0b02d1eb644b28c2",
+        "wrapper_sha256": "153db051aa92a39a5f59859c1d85b107867a6fc6fa1c30eb033692f83ebdbda3",
+        "wrapper_invoked": null,
+        "display_released": false,
+        "evidence_path": "docs/verification/qa/p0-13-tts-52be105/execution-bounded-20261008-03",
+        "scratch": "/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-tts-output-27f0531f6f574cf2b67b1f650525e89d"
       }
     ],
-    "next_owner_action": "Original QA preserves attempt02 and diagnoses saved step9 geometry; necessary focused harness fix or exact product-owner finding, then Support independent review/Lead integration before last fresh allocation. Two consumed/one remains.",
-    "continuation_status": "attempt02_failed_released_focused_repair",
+    "next_owner_action": "QA executes the final third wrapper once after fresh runtime admission, then exact-owned cleanup and DISPLAY RELEASE. No fourth attempt; genuine new refusal stops. No account/provider/audio.",
+    "continuation_status": "attempt03_reserved_reviewed_not_yet_dispatched",
     "new_refusal": {
       "reported_by": "qa",
       "evidence_commit": "b586e8a",
@@ -405,6 +422,18 @@
       "normal_tool_review_required": true,
       "global_permissions_changed": false,
       "native_attempt_budget_reset": false
+    },
+    "r4_review": {
+      "qa_commit": "30c12c6aa7c51f167974471e7701ea27a0ab8b8b",
+      "qa_delivery_message": "handoff_113d42ffb3095e67afda36a4fedc9025",
+      "support_dispatch_message": "handoff_64ce00761ccd35cd3d93349558ef8393",
+      "support_dispatch_accepted": true,
+      "support_verdict": "APPROVE implementation; D1 evidence correction completed",
+      "native_attempts_in_preparation": 0,
+      "support_commit": "184f712d79fe3a98fd94db7339440a9070f01755",
+      "support_verdict_message": "handoff_119330811df385d9e094526a9262e786",
+      "integrated_commit": "56b3d408470b97b65b05b940c7dc258461426d6e",
+      "main_checks_passed": 104
     }
   }
 }

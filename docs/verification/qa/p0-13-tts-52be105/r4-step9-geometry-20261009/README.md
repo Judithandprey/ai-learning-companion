@@ -1,6 +1,6 @@
 # r4: step-9 control geometry after attempt 2 — 2026-10-09
 
-**Prepared; not yet reviewed by Support or authorized to run.** This answers the lead's `handoff_4dd40db9…` and
+**Source independently approved by Support `184f712`; native execution still requires a fresh Lead allocation.** This answers the lead's `handoff_4dd40db9…` and
 `handoff_fbb48f42…`, after [attempt 2](../execution-bounded-20261008-02/README.md). Attempts: 2 of 3 consumed, 1
 remaining; there is no allocation and no native run was made here. It builds on `a3f12b3` (Support-approved in
 `55582e0`), which this candidate keeps.
@@ -21,19 +21,23 @@ cleanup found no owned product process.
 **The page side (`$box`: viewport, DPR, option box) was not saved.** The runner kept it only in a local. What follows
 from the source:
 - the check just before it (`$box.shown` and `$box.dpr -eq 2`) passed, so the DPR was 2 and the option was visible at
-  its centre. `elementFromPoint` returns nothing outside the viewport, so the centre lay inside it;
+  its centre. This does not establish the strict positive-centre predicates below;
 - `innerWidth`/`innerHeight` are integers, so `innerHeight × 2` is even.
 
 **The product's window** (`apps/windows/src/main/main.ts:2236`) is 460 × 720 DIP, measured with the frame, which at 200 %
 is 920 × 1440 px. The frame takes 58 px at the top and 13 px at the sides and bottom. That leaves 894 × 1369 px, i.e.
-447 × 684.5 DIP. This is ordinary Windows framing, not a product defect, and no product change is needed.
+447 × 684.5 DIP. The saved dimensions support correcting the harness comparison; the precise
+framing/rounding cause and any other product behavior have not been independently established.
 
 ## The cause
 
 Established from the saved evidence and the source:
-- **The height term failed.** The check (runner line 1026, from the reviewed `qa_edge_placement.ps1:180`) required the
-  client height to equal `innerHeight × 2` exactly. 1369 is odd, so no integer `innerHeight` passes. The other terms
-  cannot explain the refusal: dpi was 192 as recorded, the centre lay inside the viewport, and `x`, `y` > 0.
+- **The exact-height predicate cannot succeed.** Given the recorded 1369-pixel native client height and DPR 2
+  established by the preceding guard, no integer `innerHeight` satisfies the old equality. This is sufficient for
+  the combined guard to refuse regardless of the other terms. The page viewport and option coordinates were not
+  saved, so whether width or strict-centre predicates also failed, and which short-circuited predicate ran first,
+  remain unknown. The r4 candidate records these values before the size/centre guard. This wording corrects
+  Support D1; the original report and actual observations remain in Git history.
 - **The width term** would pass if `innerWidth` was 447. Chromium derives the viewport from the same client area, and
   894 = 447 × 2. This is not recorded.
 - **Confirmed in PowerShell** (the same arithmetic/parse-only check the human approved, embedding the runner lines byte
@@ -120,7 +124,7 @@ weakened.**
   folder and pins changed.
 - [candidate-check.json](candidate-check.json): the offline identity check against the saved static stage receipt.
 
-## New candidate (unused, not reviewed)
+## New candidate (unused; source reviewed in Support `184f712`)
 
 | | |
 | --- | --- |
