@@ -1,0 +1,89 @@
+{
+  "source_commit": "30c12c6aa7c51f167974471e7701ea27a0ab8b8b",
+  "parent_commit": "b80c023983408dea31aef28e8f4ff264d09f5717",
+  "lead_commit": "dcf27e5f97a28c9530aef6386bb65ac0de97a9be",
+  "assignment_message": "handoff_64ce00761ccd35cd3d93349558ef8393",
+  "began_at": {
+    "current_time": "2026-10-09 05:52:07 UTC"
+  },
+  "ended_at": {
+    "current_time": "2026-10-09 05:52:08 UTC"
+  },
+  "node_writes_granted": false,
+  "node_child_processes_granted": false,
+  "host_permissions_changed": false,
+  "actual_tool_refusal": false,
+  "native_commands_executed": 0,
+  "display_allocation": "NONE",
+  "new_diagnostic_attempts": 0,
+  "new_provider_requests": 0,
+  "tests": [
+    {
+      "name": "generator",
+      "argv": [
+        "/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node",
+        "--permission",
+        "--allow-fs-read=/tmp/support-r4-30c12c6-aieqlot2",
+        "--allow-fs-read=/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-tts-output-*",
+        "tests/e2e/windows/test_qa_tts_output_candidate.mjs"
+      ],
+      "command": "LC_QA_TTS_STATIC_RECEIPT=/tmp/support-r4-30c12c6-aieqlot2/docs/verification/qa/p0-13-tts-52be105/stage-identity.json /home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node --permission --allow-fs-read=/tmp/support-r4-30c12c6-aieqlot2 --allow-fs-read='/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-tts-output-*' tests/e2e/windows/test_qa_tts_output_candidate.mjs > /tmp/support-r4-30c12c6-aieqlot2/generator.txt 2> /tmp/support-r4-30c12c6-aieqlot2/generator.stderr",
+      "cwd": "/tmp/support-r4-30c12c6-aieqlot2",
+      "env": {
+        "LC_QA_TTS_STATIC_RECEIPT": "/tmp/support-r4-30c12c6-aieqlot2/docs/verification/qa/p0-13-tts-52be105/stage-identity.json"
+      },
+      "chunk_id": "d9a8a1",
+      "wall_time_seconds": 0.141885891,
+      "exit_code": 0,
+      "original_token_count": 0,
+      "output": "",
+      "passed": 50,
+      "failed": 0,
+      "skipped": 0,
+      "stdout_file": "generator.txt",
+      "stderr_bytes": 0
+    },
+    {
+      "name": "wrapper",
+      "argv": [
+        "/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node",
+        "--permission",
+        "--allow-fs-read=/tmp/support-r4-30c12c6-aieqlot2",
+        "--allow-fs-read=/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-tts-output-*",
+        "tests/e2e/windows/test_qa_run_tts_candidate.mjs"
+      ],
+      "command": "LC_QA_TTS_STATIC_RECEIPT=/tmp/support-r4-30c12c6-aieqlot2/docs/verification/qa/p0-13-tts-52be105/stage-identity.json /home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node --permission --allow-fs-read=/tmp/support-r4-30c12c6-aieqlot2 --allow-fs-read='/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-tts-output-*' tests/e2e/windows/test_qa_run_tts_candidate.mjs > /tmp/support-r4-30c12c6-aieqlot2/wrapper.txt 2> /tmp/support-r4-30c12c6-aieqlot2/wrapper.stderr",
+      "cwd": "/tmp/support-r4-30c12c6-aieqlot2",
+      "env": {
+        "LC_QA_TTS_STATIC_RECEIPT": "/tmp/support-r4-30c12c6-aieqlot2/docs/verification/qa/p0-13-tts-52be105/stage-identity.json"
+      },
+      "chunk_id": "94c6ab",
+      "wall_time_seconds": 0.412387014,
+      "exit_code": 0,
+      "original_token_count": 0,
+      "output": "",
+      "passed": 54,
+      "failed": 0,
+      "skipped": 0,
+      "stdout_file": "wrapper.txt",
+      "stderr_bytes": 0
+    }
+  ],
+  "export_files_byte_identical": 69,
+  "output_sha256": {
+    "generator.txt": "5df72f2d271eba221808e4d04d6072d5f4734a17a2f575bc3d3bbf1bed59978d",
+    "wrapper.txt": "3f138bbfe2b8848641f04ee2424b1259a5ad2b2e18b57dbf7666c2b473d9fc90"
+  },
+  "sha256": {
+    "docs/verification/qa/p0-13-tts-52be105/candidate-r4-20261009/candidate.json": "f2104545cdc393522de46ab108fa928bfe475e1cab400cf9af3fbfb6ce8c1503",
+    "docs/verification/qa/p0-13-tts-52be105/candidate-r4-20261009/runner.ps1": "d6640e6c8f24b51dc87feb12f8ce83832c7a6c28c380de8f0b02d1eb644b28c2",
+    "docs/verification/qa/p0-13-tts-52be105/candidate-r4-20261009/steps.json": "9af8002cbadc799bab4dbf7882b35043b0ac50e3ca620c95f0e76c81684a145b",
+    "docs/verification/qa/p0-13-tts-52be105/candidate-r4-20261009/surface.html": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2",
+    "tests/e2e/windows/qa_tts_output_candidate.mjs": "02fd39d06c29eb89d60ed113bb13e97726cc503a2e9678da713a3422b3f6cf83",
+    "tests/e2e/windows/qa_run_tts_candidate.mjs": "153db051aa92a39a5f59859c1d85b107867a6fc6fa1c30eb033692f83ebdbda3"
+  },
+  "candidate_source_pins_match": 10,
+  "steps_unchanged_after_work_normalization": true,
+  "unchanged_supporting_source_files": 9,
+  "product_commit": "52be105a148a28e677f83cc4b7077665f2ff372c"
+}

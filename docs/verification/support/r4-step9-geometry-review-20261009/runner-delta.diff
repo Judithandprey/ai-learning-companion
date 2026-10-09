@@ -1,0 +1,12 @@
+--- r3-normalized-work-folder
++++ r4
+@@ -1023,7 +1023,8 @@
+   if (-not $box.shown -or $box.dpr -ne 2) { throw 'owned display-option geometry unavailable' }
+   $entry.control_client = [QaPlacementNative]::ClientBounds($control)
+   $clientArea = $entry.control_client
+-  if ($clientArea[4] -ne 192 -or $clientArea[2] - $clientArea[0] -ne $box.viewport[0] * $box.dpr -or $clientArea[3] - $clientArea[1] -ne $box.viewport[1] * $box.dpr -or $box.x -le 0 -or $box.x -ge $box.viewport[0] -or $box.y -le 0 -or $box.y -ge $box.viewport[1]) { throw 'owned control client and browser geometry disagree' }
++  $entry.control_box = [ordered]@{ viewport = @($box.viewport); dpr = $box.dpr; x = $box.x; y = $box.y; width = $box.width; height = $box.height; shown = $box.shown }
++  if ($clientArea[4] -ne 192 -or [Math]::Abs(($clientArea[2] - $clientArea[0]) - $box.viewport[0] * $box.dpr) -ge $box.dpr -or [Math]::Abs(($clientArea[3] - $clientArea[1]) - $box.viewport[1] * $box.dpr) -ge $box.dpr -or $box.x -le 0 -or $box.x -ge $box.viewport[0] -or $box.y -le 0 -or $box.y -ge $box.viewport[1]) { throw 'owned control client and browser geometry disagree' }
+   $point = @(($clientArea[0] + [int][Math]::Round($box.x * $box.dpr)), ($clientArea[1] + [int][Math]::Round($box.y * $box.dpr)))
+   $entry.control_point = $point
+   $entry.point_window = Read-QaPlacementWindow ([QaWin]::RootAt($point[0], $point[1])) $edge
