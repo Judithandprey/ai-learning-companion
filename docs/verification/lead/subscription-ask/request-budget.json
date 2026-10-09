@@ -147,7 +147,14 @@
         "allocation_draft": "docs/verification/lead/live-windows/nonvoice-driver-review/candidate06-allocation.draft.json",
         "script_scope": "pending exact live runner and product-started checker process-only RemoteSigned; previous explicit script approvals cover AI-disabled diagnostic",
         "native_executed": false,
-        "resource_lease": false
+        "resource_lease": false,
+        "next_owner_handoff": {
+          "message_id": "handoff_779938e612ae9d5987985b4aa24bcfde",
+          "accepted": true,
+          "execution_started_at_dispatch": false,
+          "review_baseline": "22de201",
+          "scope": "Current QA retains one conditional four-action nonvoice run after exact live script-scope confirmation and fresh pinned allocation; no execution or repeated preparation now."
+        }
       },
       "support_verdict": {
         "source_commit": "38230e1f63c4c3dcbdf28b03c07520db9ea8206d",

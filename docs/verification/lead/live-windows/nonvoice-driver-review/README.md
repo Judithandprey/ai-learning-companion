@@ -778,3 +778,11 @@ execution result. After that scope is confirmed, Lead releases a fresh timed
 display/account allocation to the same QA owner for normal tool review and one
 attempt. Current login/lock/display conditions are checked then, not assumed from
 old evidence. Real actions **0/4**; diagnostic **3/3 closed**; no active resource lease.
+
+The current QA owner received this exact next action at pushed `22de201` in
+`handoff_779938e612ae9d5987985b4aa24bcfde` (accepted, initially unread and not
+executing). No acknowledgement or repeated preparation is requested. Source and
+authored-document `git diff --check` passes; the full QA integration additionally
+reports 97 whitespace lines in ten preserved raw test/Windows output files.
+Those original evidence bytes were retained, not reformatted into a claimed
+clean raw-output check; details are in `candidate06-review.json`.

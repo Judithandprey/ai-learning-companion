@@ -45,5 +45,25 @@
     "unchanged_PowerShell_compile_repeated": false,
     "refused_fixture_retried": false,
     "native_execution": false
+  },
+  "diff_check": {
+    "source_and_authored_markdown_exit": 0,
+    "working_diff_exit": 0,
+    "full_QA_integration_exit": 2,
+    "preserved_raw_evidence_whitespace_reports": 97,
+    "raw_evidence_paths": [
+      "docs/verification/qa/p0-13-live-0ff325b/driver-nonvoice-05/failures-before-937788d.txt",
+      "docs/verification/qa/p0-13-live-0ff325b/driver-nonvoice-05/parse-compile/result.stdout.json",
+      "docs/verification/qa/p0-13-live-0ff325b/driver-nonvoice-06/failures-before-565bc3d.txt",
+      "docs/verification/qa/p0-13-live-52be105/driver-nonvoice-02/failures-before-b8f0d9c.txt",
+      "docs/verification/qa/p0-13-live-52be105/driver-nonvoice-03/failures-before-e0bd4b3.txt",
+      "docs/verification/qa/p0-13-live-52be105/driver-nonvoice-04/driver-mutants.txt",
+      "docs/verification/qa/p0-13-live-52be105/driver-nonvoice-04/failures-before-9614947.txt",
+      "docs/verification/qa/p0-13-live-52be105/driver-nonvoice-04/fixture-check-20261009/stderr.gbk.bin",
+      "docs/verification/qa/p0-13-live-52be105/driver-nonvoice-04/fixture-check-20261009/stderr.utf8.txt",
+      "docs/verification/qa/p0-13-live-52be105/driver-nonvoice-04/parse-compile/result.stdout.json"
+    ],
+    "raw_bytes_changed": false,
+    "first_formatter_error": "UTF-8 decoding failed on preserved GBK stderr; reporting decoded with replacement, no evidence bytes modified."
   }
 }
