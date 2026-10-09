@@ -156,3 +156,12 @@ Two of3slots consumed,one remains. QA has the same-task geometry diagnosis and
 necessary scoped repair via `handoff_4dd40db9ebcf4404015a239b52184056`, using saved
 run evidence/source first. Preserve all geometry/DPI/ownership/foreground/display
 and16-point gates; independent Support review precedes any final fresh allocation.
+
+Final QA attempt2 report `b80c023` integrates as`6704d9e`. Saved-result assertions
+confirm steps1–8 passed, productPID130764 actually launched, then closed in runner
+finally with exit0; steps10–32 NOT_RUN. Control client bounds833,90,1727,1459 at192dpi
+are894×1369pixels. The odd height cannot exactly equal integer CSS viewport height
+multiplied byDPR2; the actual page box was not saved. This supports a geometry
+comparison defect but does not establish every expected/observed field. The saved
+Edge1599height is also with QA for narrow source/coverage follow-through; full-screen
+coverage guards stay. No additional native observation has been requested.

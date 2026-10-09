@@ -333,7 +333,20 @@
         "wrapper_exit": 1,
         "aborted": "owned control client and browser geometry disagree",
         "cleanup_confirmed": true,
-        "per_step_report": "pending"
+        "per_step_report": "b80c023 integrated6704d9e",
+        "steps_passed": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8
+        ],
+        "failed_step": 9,
+        "product_launched": true,
+        "product_closed_in_finally": true
       }
     ],
     "next_owner_action": "Original QA preserves attempt02 and diagnoses saved step9 geometry; necessary focused harness fix or exact product-owner finding, then Support independent review/Lead integration before last fresh allocation. Two consumed/one remains.",

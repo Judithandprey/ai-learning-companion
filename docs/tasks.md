@@ -127,8 +127,11 @@ approves `a3f12b3` after48+54 passes; a missing Node test read grant/fixture was
 corrected without host permission changes. Source/receipts integrate through
 `39bb768`; resulting main48+54checks and77/77stage files pass,15pins match QA.
 Attempt2 ran once05:39:13–05:40:18Z and failed at the step9 control-client/browser
-geometry guard; the point-construction error did not recur. Per-step/product launch
-evidence follows; no owned process at cleanup does not prove the product never ran.
+geometry guard; the point-construction error did not recur. QA `b80c023` integrates
+as`6704d9e`: steps1–8 passed, productPID130764 launched then closed in runner
+finally (exit0); steps10–32 NOT_RUN. Control client894×1369 at192dpi cannot equal
+integer CSS height×DPR2 exactly; page box was not recorded, so further details remain
+inferred. QA also checks the saved Edge1599height against the later full-surface gate.
 Exact-owned cleanup and DISPLAY RELEASE confirmed05:40:44Z in
 `handoff_20143d8bbe58df77aacee28cfff80ee4`. Two consumed,one remains; no active display.
 QA received the concrete geometry diagnosis/necessary repair continuation
