@@ -19,7 +19,7 @@
   "allocation_retired_reason": "QA actual handoff_ec31e85d736c7661fbb4022aa0d2cb52 confirms 0 of 1 used. This selected-image allocation is not additive to the next changed-flow allocation.",
   "live_changed_flow_allocation": {
     "allocation_id": "handoff_fd794043a20068a1b52853cbb6ff884e",
-    "status": "app_integrated_staged_driver_review_pending_execution_unreleased",
+    "status": "app_integrated_staged_driver_HOLD_correction_execution_unreleased",
     "candidate_commit": "24c48c38aee660b606ebff5285acbd2ccb300392",
     "maximum_potential_submissions": 5,
     "purpose_slots": [
@@ -49,7 +49,7 @@
       "account/model/billing change",
       "automatic restart or retry"
     ],
-    "next_owner": "Support finishes exact QA937788 changed-boundary review; QA repins to integrated Windows0ff325b stage after that verdict; Lead reviews final command. Optional pure PowerShell fixture refused by OS policy, no retry. No lease.",
+    "next_owner": "QA corrects five Support findings and complete-trace evidence in current candidate05 preparation; then Support changed-boundary retest and Lead exact command review. Product0ff325b/stage unchanged; no lease.",
     "production_source_commit": "175515308f509fb8c0f531dbdb10e57313fcde5a",
     "stage_name": "lc-windows-live-1755153",
     "stage_tree_sha256": "3387824a0dee70013104388d4acec2b810475e98953e7c3f196063a8781fd154",
@@ -134,7 +134,7 @@
         "candidate_sha256": "4cb6032ef8eccea7306cdd624cf2e7846e04c07ca801145dba5490eb232c7410",
         "wrapper_sha256": "3a537fa1df6b1b74311e3146ba7f3ec021d7b64291313d6b2d3504564a68487b",
         "integrated": false,
-        "status": "independent_changed_boundary_review_pending",
+        "status": "independent_HOLD_same_task_correction",
         "support_review_dispatch": "handoff_981cd2ed93608575ff5c842feea1a89f",
         "support_review_accepted": true,
         "execution_gate": "interlockProduction=null; every allocation refused",
@@ -166,6 +166,41 @@
             "tests/probes/support/nonvoice_live_937788d_ledger.mjs"
           ],
           "state": "new untracked review/probe files present; final verdict not delivered"
+        },
+        "support_verdict": "HOLD",
+        "support_review_delivery": {
+          "source_commit": "c2ee58ae7f48d65decfecd94f13c979678d6bd3a",
+          "integrated_as": "cc3402d",
+          "message_id": "handoff_18efe6273ef8cda939acd76033541f95",
+          "review": "docs/verification/support/nonvoice-live-937788d-review-20261009/README.md",
+          "closed_selected_prior": [
+            "R1",
+            "R2",
+            "R4",
+            "R5"
+          ],
+          "remaining": [
+            "F3-A_stack_owner_read_validation",
+            "F3-B_final_bound_NAV_predicate",
+            "F3-C_capture_and_folder_provenance",
+            "F3-D_consistent_main_verdict",
+            "R3-A_known_same_session_fence"
+          ],
+          "synthetic_scenarios": 27,
+          "controls": 8,
+          "corrected_negatives": 15,
+          "remaining_counterexamples": 3,
+          "coverage_observations": 1,
+          "native": false,
+          "provider": false,
+          "lead_matched_source_hashes": 90
+        },
+        "same_task_amendment": {
+          "message_id": "handoff_fd7cc02d2c0bdd337d6210cbcac304a9",
+          "accepted": true,
+          "execution_started_at_dispatch": false,
+          "scope": "Five remaining driver findings plus complete capture-scoped ordered/multiplicity-aware all-phase evidence and observed checker termination; same candidate05 preparation, no native/PowerShell retry",
+          "new_resource_allocation": false
         }
       },
       "support_verdict": {

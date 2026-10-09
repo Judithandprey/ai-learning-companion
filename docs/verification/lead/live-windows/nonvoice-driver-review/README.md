@@ -1,15 +1,17 @@
 # Current-package nonvoice driver review — 2026-10-09
 
-**Windows interlock integrated and separately staged; QA driver review pending.**
+**Windows interlock integrated and separately staged; QA driver correction remains HOLD.**
 Web's reviewed source through `ebbd1ed` integrates as `0ff325b`; its Windows tree
 matches exactly. Lead's final holding-membership case passes, and TypeScript plus
 static packaging pass. The distinct 81-file `%TEMP%\lc-windows-admission-0ff325b`
 stage has tree `081a130c1f492c98d78fec8d67463a36c80126ea1ca72eede99d043ca616a46a`.
 All 77 earlier 52be105-stage files still match. No application was launched.
 
-QA correction `937788d` (README correction `a46d497`) is delivered and remains
-unintegrated pending Support's independent changed-boundary review, dispatched
-in `handoff_981cd2ed93608575ff5c842feea1a89f`. Interim candidate 04 still has
+QA correction `937788d` (README correction `a46d497`) remains unintegrated.
+Support's delivered review `c2ee58a`, integrated as `cc3402d`, closes selected prior
+R1/R2/R4/R5 witnesses but finds five remaining checker/evidence defects. The same
+QA candidate05 task is amended in `handoff_fd7cc02d2c0bdd337d6210cbcac304a9`.
+Interim candidate 04 still has
 `interlockProduction=null` and cannot run. QA's separately assigned pure-data
 PowerShell fixture check was refused before loading by Windows execution policy;
 no cases ran and no alternate invocation was attempted. Details below.
@@ -634,3 +636,39 @@ Read-only Support worktree status shows new `nonvoice-live-937788d-review-202610
 and two matching boundary/ledger probe files. This establishes preparation
 activity, not a completed review or passing result; unfinished files were not
 modified by Lead.
+
+### Independent correction-04 verdict and same-task repair
+
+Actual `handoff_18efe6273ef8cda939acd76033541f95` delivers Support `c2ee58a`,
+now integrated as `cc3402d`: [complete report and evidence](../../../support/nonvoice-live-937788d-review-20261009/README.md).
+Lead read the report, both probes and affected production/QA source. Ninety
+stored source hashes match exact Git objects. The 27 synthetic scenarios comprise
+8 controls, 15 corrected negative checks, 3 remaining counterexamples and one
+coverage observation. Source-only native findings are distinct from executed
+Node witnesses; no native test or product/provider leak is claimed.
+
+| Remaining finding | Required correction, same QA owner |
+| --- | --- |
+| F3-A, P1 | Reject failed/zero stack-owner reads and validate matched owner/class, preserving HWND binding. |
+| F3-B, P2 | Apply the bound point predicate even when NAV hit-tests Edge; recheck overlay state after final Edge re-resolution. |
+| F3-C, P1 | Bind all phases to the arm's capture and retain actual capture-folder identity in main-record collection. |
+| F3-D, P2 | Refuse contradictory main allow/denied/reason fields before reconciliation. |
+| R3-A, P2 | Require known same-session linkage for successful Stop mechanics; keep genuinely unknown provider submission distinct. |
+
+**Lead coverage decision:** the previous send-only subset check is correctly
+implemented to its old description, but is insufficient for the claimed complete
+trace. Require capture-scoped ordered/multiplicity-aware correspondence in both
+directions for every allowed arm/pre/post/send using fields the writers actually
+record. Do not add a production protocol field to repair QA's collection. Require
+observed checker termination for that capture and truthful exit status before
+claiming lifecycle release. Missing, duplicated, contradictory or unobserved
+records remain incomplete/unknown; they do not grant extra attempts or establish
+a product defect. This is test evidence completeness, not a new product requirement.
+
+Amendment `handoff_fd7cc02d2c0bdd337d6210cbcac304a9` is accepted, initially unread
+with execution_started=false. It folds these corrections into the candidate05
+preparation already dispatched, retaining any work and the exact `0ff325b` stage.
+QA runs only relevant offline controls/counterexamples; no full campaign or
+PowerShell fixture retry is assigned. Support returns idle until the corrected
+source is delivered, then independently retests these changed boundaries.
+Real actions remain **0/4**, old diagnostic **3/3 closed**, no resource lease.
