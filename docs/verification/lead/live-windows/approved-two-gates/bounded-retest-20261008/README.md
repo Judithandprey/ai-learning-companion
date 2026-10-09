@@ -69,8 +69,8 @@ this disclosure; it is not approval to bypass the denial.
 
 Under the human's explicit stop condition, no attempt2 allocation was issued
 while those denials were unresolved. Attempt1 remains consumed/released;2slots
-remain unused. No new native call or automated retry. The QA raw report remains
-on its branch pending allowed review; it has not been integrated/pushed to main.
+remain unused. No new native call or automated retry. At that checkpoint the QA raw report remained on its branch. Its preserved
+record and later authorized summary now integrate as `ff88c55` / `72b1496`.
 
 QA delivery `handoff_90fca77dc824e62948b0cf8ff8159143` reports a second refusal,
 `Auto-Mode Bypass`, on the isolated PowerShell arithmetic/AST check. It would have
@@ -110,3 +110,27 @@ Lead sent formal source review to existing Support via
 QA via `handoff_af95d9eaf8202a7edda645397db0ffff`. Actual approved-check receipt and
 independent review are pending; no attempt2 allocation yet. Total remains1used,
 2unused, no display active. Any genuinely new refusal retains the stop condition.
+
+## Reviewed r3 integration and attempt2 allocation
+
+QA a3f12b3/e1ce596 integrates as8187a26/72b1496; Support's final55582e0
+approval integrates as39bb768. The intermediate Support Node load failure was
+a missing subprocess read prerequisite, not automatic tool review. Its retained
+record is followed by48generator+54wrapper independent passes, without Node
+writes/child processes. No new denial occurred. Original QA's specifically
+approved checks both ran once successfully, with real arithmetic/parser evidence.
+
+[Resulting-main checks](integrated-r3/checks.json) at
+`39bb768c781b66272e80fe0b0c6433f9cad08bd1` also pass48+54. Fresh stage identity
+matches77/77files; all15source/payload pins match the clean QA checkout, its new
+scratch/output do not exist. Product52be105 remains unchanged. These checks
+invoke no Windows process and do not substitute for native behavior.
+
+Attempt2 is allocated to current QA only, valid2026-10-09T05:37:57Z–06:07:57Z:
+[issued allocation](attempt-02-allocation.json), SHA256
+`91e6a0a6656c25f706126ba8d445f0e3b67503f97739bae06ccfd1313876067b`, live path
+`/tmp/lc-bounded-display-20261008-02.json`. Candidate320ba2c1, runner01f35325,
+wrapper8f7d7132 (full pins in the allocation) bind fresh scratch6bd71cac and the
+same32steps/140seconds. One earlier attempt consumed, this slot reserved, one
+further slot unreserved. Actual dispatch/result must be recorded separately.
+No allocation follows until this run returns cleanup and DISPLAY RELEASE.

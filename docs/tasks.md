@@ -120,12 +120,15 @@ The historical `Remote Shell Writes` result-read refusal (seq25524) and
 The human subsequently explicitly approved both scoped operations:
 `human-approve-read-arithmetic:1341e2b5d73b432eaefa988058e79172` on2026-10-09.
 [Exact approval/current review](verification/lead/live-windows/approved-two-gates/bounded-retest-20261008/README.md#specific-subsequent-approval-and-r3-review).
-Original QA was resumed by the operator. Prepared `a3f12b3` fixes coordinate
-parentheses and the placement `$client` name collision; actual PowerShell checks
-are pending. Support now has formal independent review
-`handoff_28588f71f1df7ab0e8f0975af9fc3723`. Lead integrates approved/checked source
-before issuing attempt2. One used,2remain; no budget reset, no display active,
-no duplicate repair task. Normal tool review and new-refusal stop conditions stay.
+Original QA completed both specifically approved checks once in `e1ce596`, with
+no new tool refusal. The coordinate cause/fix is verified in real PowerShell;
+step9 scope behavior still needs the native run. Support `55582e0` independently
+approves `a3f12b3` after48+54 passes; a missing Node test read grant/fixture was
+corrected without host permission changes. Source/receipts integrate through
+`39bb768`; resulting main48+54checks and77/77stage files pass,15pins match QA.
+Attempt2 has fresh allocation `lc-bounded-display-20261008-02` (05:37:57–06:07:57Z),
+actual dispatch pending. One consumed,second reserved,one further slot unreserved;
+no budget reset or duplicate task. Normal tool review/new-refusal stop remain.
 No product or live/audio acceptance follows from these harness steps.
 Keep normal-band/foreground/16-point/display guards and exact-owned cleanup;
 no largest-window-only trust, foreign mutation or allocation before the reviewed correction. Actual

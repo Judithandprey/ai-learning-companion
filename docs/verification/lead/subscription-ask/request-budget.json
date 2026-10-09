@@ -257,9 +257,9 @@
     "human_approval_sha256": "0549372eb4096b05812b1bc64ebf0e31b5c9b618a1590a33881305d0f948e0d6",
     "additional_attempt_limit": 3,
     "historical_attempts_not_reused": true,
-    "attempt_budget_committed": 1,
+    "attempt_budget_committed": 2,
     "actual_wrapper_invocations_confirmed": 1,
-    "remaining_unreserved_attempts": 2,
+    "remaining_unreserved_attempts": 1,
     "native_timeout_seconds_per_attempt": 140,
     "reviewed_steps": 32,
     "provider_attempts_allowed": 0,
@@ -270,7 +270,7 @@
     "automatic_blind_retry": false,
     "sequential_only": true,
     "stop_on_success_new_refusal_or_scope_change": true,
-    "display_allocation_active": false,
+    "display_allocation_active": true,
     "attempts": [
       {
         "number": 1,
@@ -303,10 +303,27 @@
           5
         ],
         "failed_step": 6
+      },
+      {
+        "number": 2,
+        "status": "allocation_issued_dispatch_pending_conservatively_reserved",
+        "allocation_id": "lc-bounded-display-20261008-02",
+        "allocation_sha256": "91e6a0a6656c25f706126ba8d445f0e3b67503f97739bae06ccfd1313876067b",
+        "allocation_record": "docs/verification/lead/live-windows/approved-two-gates/bounded-retest-20261008/attempt-02-allocation.json",
+        "valid_from_utc": "2026-10-09T05:37:57Z",
+        "valid_until_utc": "2026-10-09T06:07:57Z",
+        "baseline": "39bb768c781b66272e80fe0b0c6433f9cad08bd1",
+        "candidate_sha256": "320ba2c1dee4b6eb769beec6fafd2b61b085684eeddc14b335fd28a6f41bbcbc",
+        "runner_sha256": "01f35325d8c10cfe0b66cdbfc2cf17486e8deb215d5bec033499df9aa4d42d15",
+        "wrapper_sha256": "8f7d7132ffe8d3edb1477d7716345fb52ba619f6ebc6edec59102e14389ec6bc",
+        "wrapper_invoked": null,
+        "display_released": false,
+        "evidence_path": "docs/verification/qa/p0-13-tts-52be105/execution-bounded-20261008-02",
+        "scratch": "/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-tts-output-6bd71cac570a42a18cedd16b28cf6d68"
       }
     ],
-    "next_owner_action": "Original QA completes the specifically approved local read/arithmetic/parse checks under normal tool review; Support reviews a3f12b3 independently. Lead integrates checked source before a fresh attempt02 allocation. One consumed/two remain.",
-    "continuation_status": "human_approved_scoped_checks_review_in_progress",
+    "next_owner_action": "Current QA gets attempt02 fresh allocation only; return actual outcome, exact-owned cleanup and explicit DISPLAY RELEASE. No self-issued attempt03; one further slot remains unreserved.",
+    "continuation_status": "attempt02_allocated_dispatch_pending",
     "new_refusal": {
       "reported_by": "qa",
       "evidence_commit": "b586e8a",
@@ -342,7 +359,11 @@
       "stop_record": "docs/verification/qa/p0-13-tts-52be105/repair-stopped-20261008/README.md",
       "confirmation_message": "handoff_d042d87da1586296d824ff4db25da2b5",
       "support_review_message": "handoff_28588f71f1df7ab0e8f0975af9fc3723",
-      "qa_check_coordination_message": "handoff_af95d9eaf8202a7edda645397db0ffff"
+      "qa_check_coordination_message": "handoff_af95d9eaf8202a7edda645397db0ffff",
+      "integrated_commit": "39bb768c781b66272e80fe0b0c6433f9cad08bd1",
+      "support_approval": "55582e0c11b4570be375326219c128a1d56eba9a",
+      "qa_actual_check_commit": "e1ce5965c32a89d1d76eb8094c4201e34bdfa59e",
+      "main_checks_passed": 102
     },
     "approved_denied_operations": {
       "authorization_nonce": "human-approve-read-arithmetic:1341e2b5d73b432eaefa988058e79172",

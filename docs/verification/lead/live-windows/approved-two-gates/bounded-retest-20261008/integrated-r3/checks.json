@@ -1,0 +1,44 @@
+{
+  "integrated_commit": "39bb768c781b66272e80fe0b0c6433f9cad08bd1",
+  "source_commit": "a3f12b30cd954099398018a742d3348cc7e62332",
+  "qa_check_commit": "e1ce5965c32a89d1d76eb8094c4201e34bdfa59e",
+  "support_approval": "55582e0c11b4570be375326219c128a1d56eba9a",
+  "generator": {
+    "passed": 48,
+    "failed": 0
+  },
+  "wrapper": {
+    "passed": 54,
+    "failed": 0
+  },
+  "stage_matching_files": 77,
+  "hashes": {
+    "docs/verification/qa/p0-13-tts-52be105/candidate-r3-20261008/candidate.json": "320ba2c1dee4b6eb769beec6fafd2b61b085684eeddc14b335fd28a6f41bbcbc",
+    "tests/e2e/windows/qa_run_tts_candidate.mjs": "8f7d7132ffe8d3edb1477d7716345fb52ba619f6ebc6edec59102e14389ec6bc",
+    "docs/verification/qa/p0-13-tts-52be105/candidate-r3-20261008/runner.ps1": "01f35325d8c10cfe0b66cdbfc2cf17486e8deb215d5bec033499df9aa4d42d15",
+    "docs/verification/qa/p0-13-tts-52be105/candidate-r3-20261008/steps.json": "b7c5cc0b7c04867c1ac95a9399d24e06809043eb2c84a9300ffe5cce4769edf5",
+    "docs/verification/qa/p0-13-tts-52be105/candidate-r3-20261008/surface.html": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2",
+    "tests/e2e/windows/qa_tts_output_candidate.mjs": "cb2f69fb90e25ff8c3ca32d7d4dc35845b6c6ba9c9cefe84fd722702d7bebb12",
+    "tests/e2e/windows/qa_tts_stage_check.py": "9e0a8257f740ee6d7e8924ac848de2fc7ddfd9b7621967e8a7f67c1c518b810f",
+    "tests/e2e/windows/qa_live_stage_check.py": "8bdd042b426c0784500375a41fe874e41b80186a6a8dddcc1d544213abd8c791",
+    "tests/e2e/windows/qa_visible_candidate.mjs": "9df43a98f64c67559029d31bc41573db4df4df94341ef48845687987b5460410",
+    "tests/e2e/windows/qa_edge_placement.ps1": "e527a59e63f6823adc9aaa1b5d9619661d8299769985ae1a0bf108749c2535bb",
+    "tests/e2e/windows/qa_display_admission.ps1": "b4f586b7c987f533f318eb72ebffe318482ed2c2aa7f7f720574147071747590",
+    "tests/e2e/windows/qa-electron-runner.ps1": "1a0dfc3f178a1d6f59233c2a7d6a836ce68b18887affd2f6431c2d4ef5c48218",
+    "tests/e2e/windows/signin_cleanup.mjs": "efa06295262ea27006769e0dea363051fbd6401f4c810d2049db5937ee939b2b",
+    "tests/e2e/windows/qa_visible_drag.mjs": "fa7491499aad6c289793fec195a11993b3d102415347a7251e82592362940d1e",
+    "tests/e2e/windows/surface.html": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2"
+  },
+  "source_bytes_match_qa": true,
+  "scratch_absent": true,
+  "qa_clean": true,
+  "windows_calls_by_lead": 0,
+  "provider_attempts": 0,
+  "new_native_display_attempts": 0,
+  "outputs": {
+    "qa-receipt-review.json": "0d51c9a72891ef71193e2e91bb8a77a7e372eb03a08cf8a7b675b0f762c5ac87",
+    "stage-check.json": "dade97eb3bff2ceb6b5b2665b8c4dbbcc305019a160869721b4092ece8c463b1",
+    "wrapper-checks.txt": "347332259e544fdb347a104ab11501a4b9aa999a0a917f7e4b3f888533bb178c",
+    "generator-checks.txt": "15ee141aa2a999b04b047cf94b32c1e0aba4643147830398e9ce6777229f011c"
+  }
+}

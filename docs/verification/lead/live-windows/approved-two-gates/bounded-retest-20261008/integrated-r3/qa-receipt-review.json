@@ -1,0 +1,15 @@
+{
+  "qa_receipt_commit": "e1ce596",
+  "reviewed_only": true,
+  "new_execution": false,
+  "points_match_three_steps": true,
+  "parser_zero_errors": true,
+  "client_local_removed": true,
+  "script_scope": "numeric evaluation and static parsing only",
+  "hashes": {
+    "arith-parse-check.ps1": "0ae7041223ed34b88dbcdea374584971c83dc90a267620b7de1c17e6144fbdb3",
+    "arith-parse-check.out.json": "6aca8bd622546960c28b3e92782a2fde054cf2bbee6a30c23e8ef68ef097f5f8",
+    "attempt1-read-summary.json": "8e1405dbf8c4ce96e0edbf1345d6050cba52ffe2142afa1651bc94be9739377e"
+  },
+  "limits": "Source/receipt review; no runtime step9/GUI evidence."
+}
