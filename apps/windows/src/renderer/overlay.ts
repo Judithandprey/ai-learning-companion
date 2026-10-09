@@ -47,7 +47,7 @@ type Api = {
   stopping(pendingFrames: Array<{ sample_seq: number; deferred_samples_not_retained: number[] }>): void;
   armCapture(): Promise<boolean>;
   /** With a test's source check on: the main process admits a frame's taking ('pre', a one-use ticket) and the frame taken ('post'). */
-  admitFrame(phase: 'pre' | 'post', sampleSeq: number, facts: { ticket: string; raw_sha256: string; width: number; height: number } | null): Promise<{ ok: boolean; ticket?: string }>;
+  admitFrame(phase: 'pre' | 'post', sampleSeq: number, facts: { holding: number[] } | { ticket: string; raw_sha256: string; width: number; height: number }): Promise<{ ok: boolean; ticket?: string }>;
   sample(s: DisplaySample): void;
   interactive(on: boolean): void;
   saveInk(doc: DesktopInk, images: Array<{ sha256: string; bytes: Uint8Array }>): Promise<({ ok: true } | { ok: false; reason: string; conflict?: true }) & { pictures_received: string[]; pictures_invalid: string[] }>;
@@ -467,6 +467,23 @@ let startsWaiting = 0;
 const frameShas = new Map<number, string>();
 let prevGrid: Uint8Array | null = null;
 let seq = 0;
+/**
+ * With a test's source check on: frames (by their own number) a picture is still being made from or handed over for
+ * (kept, first look, circle, follow-up), with how many: the main process keeps their admissions until they are done.
+ */
+const using = new Map<number, number>();
+/** Marks a frame as in use until the returned function is called (once). */
+function useFrame(frameSeq: number): () => void {
+  using.set(frameSeq, (using.get(frameSeq) ?? 0) + 1);
+  let done = false;
+  return () => {
+    if (done) return;
+    done = true;
+    const n = (using.get(frameSeq) ?? 1) - 1;
+    if (n > 0) using.set(frameSeq, n);
+    else using.delete(frameSeq);
+  };
+}
 /** The sample whose grab from the stream began last (with a test's source check, a sample's grab waits for its admission). */
 let grabbedSeq = 0;
 let ended = false;
@@ -580,7 +597,7 @@ async function takeSample(lateMs: number): Promise<void> {
   let presentedNow = presented; // the stream's progress when the image is taken, kept with the image
   let presentedAtNow = presentedAt;
   presentedSeen = presented;
-  const { state, gap_ms } = sampleState({ ended, newFrame, lateMs, periodMs: PERIOD_MS });
+  let { state, gap_ms } = sampleState({ ended, newFrame, lateMs, periodMs: PERIOD_MS });
   const mySeq = ++seq;
   // (a session started since the held picture was taken is owed one taken after its Start, even with no new frame
   // of the stream: the picture is taken again from the stream as it is now, and its time is this one)
@@ -590,7 +607,8 @@ async function takeSample(lateMs: number): Promise<void> {
     // own pixels' hash: else it is closed unused. A Stop during either wait takes or keeps nothing.
     let ticket: string | null = null;
     if (admission) {
-      const pre = await lc.admitFrame('pre', mySeq, null).catch(() => ({ ok: false, ticket: undefined }));
+      // (with it: the frames this window still holds or uses, so their admissions are kept until they are done with)
+      const pre = await lc.admitFrame('pre', mySeq, { holding: [...new Set([...using.keys(), ...(raw ? [raw.seq] : [])])] }).catch(() => ({ ok: false, ticket: undefined }));
       if (!pre.ok || typeof pre.ticket !== 'string' || ended) return;
       ticket = pre.ticket;
       // (the stream as it is now, when the image is taken: frames it presented during the wait are this image's)
@@ -598,6 +616,7 @@ async function takeSample(lateMs: number): Promise<void> {
       presentedNow = presented;
       presentedAtNow = presentedAt;
       presentedSeen = presented;
+      ({ state, gap_ms } = sampleState({ ended, newFrame, lateMs, periodMs: PERIOD_MS })); // (said of the frame taken now)
     }
     const liveSession = sessionNow(); // binds acquisition before awaiting: a later Start cannot make this picture its own
     const at = now(); // (when it is taken from the stream: never later than the picture itself)
@@ -1116,6 +1135,15 @@ function wholeFrame(): { canvas: OffscreenCanvas; facts: { frame_seq: number; fr
   };
 }
 async function finishAsk(points: ReadonlyArray<InkPoint>): Promise<void> {
+  // (with a test's source check on, the frame it is about stays in use until its picture is handed over)
+  const done = admission && raw && !ended ? useFrame(raw.seq) : null;
+  try {
+    await askAbout(points);
+  } finally {
+    done?.();
+  }
+}
+async function askAbout(points: ReadonlyArray<InkPoint>): Promise<void> {
   const epoch = mode.askEpoch;
   const during = sessionNow(); // (the circle is asked about only in the AI session it was made in)
   const region = regionOf(points);
@@ -1214,6 +1242,15 @@ function takeEarly(a: NonNullable<typeof asked>): NonNullable<typeof asked>['ear
 }
 /** The user pressed Send: the follow-up's words go to ChatGPT, once, with the whole display as it is now. */
 async function submitAsk(): Promise<void> {
+  // (with a test's source check on, the frame it is about stays in use until its picture is handed over)
+  const done = admission && raw && !ended ? useFrame(raw.seq) : null;
+  try {
+    await sendFollowUp();
+  } finally {
+    done?.();
+  }
+}
+async function sendFollowUp(): Promise<void> {
   const a = asked;
   if (ended || !a || !a.selection || a.request || a.submitting) return;
   interrupt(); // a new request: the response before is no longer read
@@ -1655,6 +1692,7 @@ function considerRetention(sample: DisplaySample, held: HeldFrame, heldGrid: Uin
   };
   retentionQueued += 1;
   retentionPending.set(sample.seq, coalesced);
+  const done = admission ? useFrame(held.seq) : null; // (its admission is kept until it is handed over)
   retention = retention.then(async () => {
     try {
       const rawCanvas = new OffscreenCanvas(held.bitmap.width, held.bitmap.height);
@@ -1679,6 +1717,7 @@ function considerRetention(sample: DisplaySample, held: HeldFrame, heldGrid: Uin
     } finally {
       retentionQueued -= 1;
       retentionPending.delete(sample.seq);
+      done?.();
     }
   });
   return true;
@@ -1704,6 +1743,7 @@ function offerLook(held: HeldFrame, kept: boolean, newFrame: boolean): void {
   const whole = wholeFrame();
   if (!whole) return;
   lookOut = true;
+  const done = admission ? useFrame(whole.facts.frame_seq) : null;
   const facts = { ...whole.facts, live_session_id: session, stream_new_frame: newFrame, stream_frame_age_ms: held.presented > 0 ? Math.max(0, Math.round(performance.now() - held.presentedAt)) : null };
   /** It could not be made or sent: the next sample offers again, a few times; then this session is offered none, and that is said. */
   const failed = (error: unknown): void => {
@@ -1717,7 +1757,10 @@ function offerLook(held: HeldFrame, kept: boolean, newFrame: boolean): void {
     .then((r) => {
       if (!r.retry) lookGiven = session; // taken, not needed, or refused for good (the main process says why); else the next sample offers again
     }, failed)
-    .finally(() => (lookOut = false));
+    .finally(() => {
+      lookOut = false;
+      done?.();
+    });
 }
 /** Adds samples to the current run of not-retained samples with this reason (reported when the run ends). */
 function addNotRetained(seqs: number[], reason: string): void {

@@ -15,7 +15,7 @@ import { overlayPage, until } from './overlay-page.ts';
 import { png as pngOf } from './png.ts';
 import { DEFAULT_RETENTION_POLICY } from '../src/shared/retention.ts';
 import { connectorConfig, fakeConnectors, removeConfigs, type FakeConnector } from './subscription-fakes.ts';
-import { admissionConfig, fakeCheckers, type FakeChecker, type Request } from './admission-fakes.ts';
+import { admissionConfig, echo, fakeCheckers, type FakeChecker, type Request } from './admission-fakes.ts';
 import type { Policy, Turn } from '../src/shared/live.ts';
 
 after(quitLinks);
@@ -246,7 +246,7 @@ test('[synthetic checker] an answer that is not the waiting request\'s, none in 
     const w = await app();
     assert.equal(await w.page.arm(), true);
     const by = { sender: w.s.overlay.webContents };
-    const t = plain(await w.h.handlers['lc:admit-frame']!(by, 'pre', 7, null)) as { ok: boolean; ticket: string };
+    const t = plain(await w.h.handlers['lc:admit-frame']!(by, 'pre', 7, { holding: [] })) as { ok: boolean; ticket: string };
     assert.equal(t.ok, true);
     const facts = { ticket: t.ticket, raw_sha256: 'b'.repeat(64), width: 1280, height: 800 };
     if (misuse === 'twice') assert.deepEqual(plain(await w.h.handlers['lc:admit-frame']!(by, 'post', 7, facts)), { ok: true });
@@ -575,7 +575,7 @@ test('[synthetic checker] the ticket: used once, consumed before its decision is
   const twice = await app({ configure: (x) => x.holdPhases.add('post_acquire') });
   assert.equal(await twice.page.arm(), true);
   const by = { sender: twice.s.overlay.webContents };
-  const t = plain(await twice.h.handlers['lc:admit-frame']!(by, 'pre', 7, null)) as { ticket: string };
+  const t = plain(await twice.h.handlers['lc:admit-frame']!(by, 'pre', 7, { holding: [] })) as { ticket: string };
   const facts = { ticket: t.ticket, raw_sha256: 'b'.repeat(64), width: 1280, height: 800 };
   const first = twice.h.handlers['lc:admit-frame']!(by, 'post', 7, facts) as Promise<unknown>;
   await until('asked', () => twice.c().of('post_acquire').length === 1);
@@ -588,7 +588,7 @@ test('[synthetic checker] the ticket: used once, consumed before its decision is
   const forged = await app();
   assert.equal(await forged.page.arm(), true);
   const from = { sender: forged.s.overlay.webContents };
-  assert.equal((plain(await forged.h.handlers['lc:admit-frame']!(from, 'pre', 7, null)) as { ok: boolean }).ok, true);
+  assert.equal((plain(await forged.h.handlers['lc:admit-frame']!(from, 'pre', 7, { holding: [] })) as { ok: boolean }).ok, true);
   assert.deepEqual(plain(await forged.h.handlers['lc:admit-frame']!(from, 'post', 7, { ticket: '0'.repeat(32), raw_sha256: 'b'.repeat(64), width: 1280, height: 800 })), { ok: false });
   await forged.ended();
   assert.equal(forged.c().of('post_acquire').length, 0);
@@ -596,7 +596,7 @@ test('[synthetic checker] the ticket: used once, consumed before its decision is
   const stop = await app({ configure: (x) => x.holdPhases.add('post_acquire') });
   assert.equal(await stop.page.arm(), true);
   const via = { sender: stop.s.overlay.webContents };
-  const tk = plain(await stop.h.handlers['lc:admit-frame']!(via, 'pre', 7, null)) as { ticket: string };
+  const tk = plain(await stop.h.handlers['lc:admit-frame']!(via, 'pre', 7, { holding: [] })) as { ticket: string };
   const post = stop.h.handlers['lc:admit-frame']!(via, 'post', 7, { ticket: tk.ticket, raw_sha256: 'b'.repeat(64), width: 1280, height: 800 }) as Promise<unknown>;
   await until('asked', () => stop.c().of('post_acquire').length === 1);
   stop.h.end('stopped by the test');
@@ -801,4 +801,84 @@ test('[synthetic checker] the overlay holds a frame only when the main process a
   await until('its end recorded', () => q.record().some((l) => l['kind'] === 'checker_end'));
   assert.deepEqual(q.record().map((l) => [l['kind'], l['phase'] ?? null]), [['decision', 'arm'], ['decision', 'pre_acquire'], ['decision', 'post_acquire'], ['decision', 'send'], ['violation', null], ['checker_end', null]]);
   assert.equal(q.c().of('pre_acquire').length, 1, 'never asked');
+});
+
+test('[synthetic checker] an "allow" whose checker already failed in the same read (its answer given again) allows nothing: no send reaches the connector and no frame is admitted; the decision and then the violation are recorded', async () => {
+  /** The waiting request's "allow", written twice in one piece of output. */
+  const allowTwice = (c: FakeChecker): void => {
+    const line = JSON.stringify({ ...echo(c.waiting()), verdict: 'allow', reason: null });
+    c.stdout.write(`${line}\n${line}\n`);
+  };
+  const send = await app({ configure: (x) => x.holdPhases.add('send') });
+  assert.equal(await send.page.arm(), true);
+  await send.change(90);
+  await until('asked before the send', () => send.c().of('send').length === 1);
+  allowTwice(send.c());
+  await send.ended();
+  assert.deepEqual([send.connector().count('companion/turn'), send.state().ended], [0, 'the test\'s source check ended the capture: the source check answered a request again']);
+  await until('its end recorded', () => send.record().some((l) => l['kind'] === 'checker_end'));
+  assert.deepEqual(send.record().slice(-3).map((l) => [l['kind'], l['phase'] ?? null, l['allowed'] ?? null]), [['decision', 'send', true], ['violation', null, null], ['checker_end', null, null]]);
+  const post = await app({ configure: (x) => x.holdPhases.add('post_acquire') });
+  assert.equal(await post.page.arm(), true);
+  post.page.scene.shade = 90;
+  const taking = post.page.review.sample();
+  await until('asked after the taking', () => post.c().of('post_acquire').length === 1);
+  allowTwice(post.c());
+  await taking;
+  await post.page.review.pending();
+  await post.ended();
+  assert.deepEqual([post.page.scene.lastGrab!.width, post.page.review.retention().retained, post.frames()], [0, 0, []]);
+});
+
+test('[synthetic checker] a frame the stream presented while the admission before a taking was out makes that sample fresh, not still; with none, it stays still', async () => {
+  for (const [what, presentMeanwhile, state] of [['a frame meanwhile', true, 'fresh'], ['none', false, 'no_new_frame']] as const) {
+    const w = await app({ configure: (x) => x.holdPhases.add('pre_acquire') });
+    assert.equal(await w.page.arm(), true);
+    w.page.scene.shade = 90;
+    const sampling = w.page.review.sameFrameLate(0); // (nothing held yet: a frame is taken, with no new frame before it)
+    await until('asked', () => w.c().of('pre_acquire').length === 1);
+    if (presentMeanwhile) w.page.review.present();
+    w.c().reply(w.c().waiting());
+    await sampling;
+    await w.page.review.pending();
+    await until('kept', () => w.jsonl('manifest.jsonl').some((l) => l['kind'] === 'retained'));
+    const kept = w.jsonl('manifest.jsonl').find((l) => l['kind'] === 'retained')!;
+    assert.deepEqual([kept['state'], kept['presented_frames']], [state, presentMeanwhile ? 1 : 0], what);
+  }
+});
+
+test('[synthetic checker] an admission is kept while the overlay still holds or uses its frame, however many frames are taken meanwhile (a slow picture of frame 1 after 70 more); one the overlay lets go is refused later; what it says it holds is checked', async () => {
+  const w = await app();
+  assert.equal(await w.page.arm(), true);
+  let release = (): void => undefined;
+  w.page.encoding.gate = new Promise<void>((r) => (release = r)); // (pictures are made slowly)
+  await w.change(90);
+  for (let i = 0; i < 70; i += 1) await w.change(100 + (i % 2) * 40);
+  assert.ok(w.c().of('post_acquire').length >= 71);
+  w.page.encoding.gate = null;
+  release();
+  await until('frame 1 kept', () => w.jsonl('manifest.jsonl').some((l) => l['kind'] === 'retained' && l['frame_seq'] === 1));
+  assert.equal(w.h.current() !== null, true, 'still running');
+  // An overlay that does not say it still uses frame 1: its later picture of frame 1 is refused, and the capture ends.
+  const lies = await app();
+  assert.equal(await lies.page.arm(), true);
+  const admitFrame = lies.h.handlers['lc:admit-frame']!;
+  lies.h.handlers['lc:admit-frame'] = (e: unknown, phase: unknown, seq: unknown, facts: unknown) => admitFrame(e, phase, seq, phase === 'pre' ? { holding: [] } : facts);
+  let let1 = (): void => undefined;
+  lies.page.encoding.gate = new Promise<void>((r) => (let1 = r));
+  await lies.change(90);
+  await lies.change(140);
+  lies.page.encoding.gate = null;
+  let1();
+  await lies.ended();
+  assert.match(lies.state().ended ?? '', /frame 1 was to be used without an admitted taking of its own/);
+  assert.equal(lies.jsonl('manifest.jsonl').some((l) => l['kind'] === 'retained' && l['frame_seq'] === 1), false);
+  // What the overlay says it holds: at most 16 earlier frames, each an earlier sample; else the capture ends.
+  for (const [what, facts] of [['missing', null], ['not a list', { holding: 3 }], ['a later frame', { holding: [7] }], ['too many', { holding: Array.from({ length: 17 }, (_, i) => i + 1) }], ['another member', { holding: [], more: 1 }]] as const) {
+    const x = await app();
+    assert.equal(await x.page.arm(), true);
+    assert.deepEqual(plain(await x.h.handlers['lc:admit-frame']!({ sender: x.s.overlay.webContents }, 'pre', 7, facts)), { ok: false }, what);
+    await x.ended();
+    assert.equal(x.c().of('pre_acquire').length, 0, what);
+  }
 });

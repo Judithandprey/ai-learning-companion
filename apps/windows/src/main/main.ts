@@ -114,7 +114,10 @@ type Admission = {
   readonly checker: SourceChecker;
   /** The one-use ticket of the frame being taken now: issued when its taking was admitted, consumed by its second check. */
   ticket: { sample_seq: number; ticket: string } | null;
-  /** Frames whose taking was admitted (by the overlay's frame seq; the newest ADMITTED_MAX), with their pixels' hash and size. */
+  /**
+   * Frames whose taking was admitted (by the overlay's frame seq), with their pixels' hash and size: kept while the
+   * overlay still holds or uses them (it says which, at each next admission) and the newest one.
+   */
   readonly admitted: Map<number, FrameSource>;
   /** Why the check stopped this capture, or null. */
   violation: string | null;
@@ -126,7 +129,8 @@ type Admission = {
   recorded: number;
   recordBytes: number;
 };
-const ADMITTED_MAX = 64;
+/** Frames the overlay may say it still holds or uses (its held frame and its pending pictures: a few). */
+const HOLDING_MAX = 16;
 /**
  * Where a frame came from, with the test's source check on: its own admitted taking from the stream of this capture.
  * `frame_seq` is the overlay's number of that frame (the sample it was taken in, `sample_seq`), never the number an
@@ -741,6 +745,7 @@ function recordAdmission(s: Session, line: Record<string, unknown>): boolean {
     return false;
   }
 }
+const sameMembers = (v: Record<string, unknown>, keys: string[]): boolean => Object.keys(v).sort().join() === [...keys].sort().join();
 const askOf = (phase: AdmissionAsk['phase'], o: Partial<Omit<AdmissionAsk, 'phase' | 'capture_id'>>): Omit<AdmissionAsk, 'capture_id'> =>
   ({ phase, display: null, overlay: null, sample_seq: null, frame_seq: null, raw_sha256: null, raw_size: null, request_id: null, image_sha256: null, ...o });
 /**
@@ -758,6 +763,9 @@ async function admit(s: Session, ask: Omit<AdmissionAsk, 'capture_id'>, still: (
   if (!d.ok && !d.written) return { ok: false, reason: d.reason, local: false };
   const written = recordAdmission(s, { kind: 'decision', phase: ask.phase, sample_seq: ask.sample_seq, frame_seq: ask.frame_seq, raw_sha256: ask.raw_sha256, raw_size: ask.raw_size, request_id: ask.request_id, image_sha256: ask.image_sha256, ...more, allowed: d.ok, denied: !d.ok && d.denied, reason: d.ok ? null : d.reason, ms: d.ms });
   if (!d.ok) return { ok: false, reason: d.reason, local: false };
+  // An "allow" whose checker has failed since (an answer given again in the same read, say) allows nothing: the
+  // failure is already known here, before anything is done on that allow. (Recorded as answered, then as a violation.)
+  if (a.checker.failure !== null) return { ok: false, reason: a.checker.failure, local: false };
   return written ? { ok: true } : { ok: false, reason: 'a decision of the source check could not be recorded on this device', local: false };
 }
 /** The test's source check refused or could not decide: latched and recorded, and the whole capture is ended (what it kept stays). */
@@ -786,6 +794,14 @@ async function admitFrame(s: Session, phase: unknown, sampleSeq: unknown, factsV
   }
   if (phase === 'pre') {
     a.ticket = null; // (an earlier ticket is void)
+    // With it, the overlay says which admitted frames it still holds or uses (its held frame, and pictures still being
+    // made or kept from earlier frames): every other admission is let go now. A frame it leaves out is refused later.
+    const holding = isObj(factsValue) && sameMembers(factsValue, ['holding']) ? factsValue['holding'] : undefined;
+    if (!Array.isArray(holding) || holding.length > HOLDING_MAX || !holding.every((x) => isSeq(x) && x < sampleSeq)) {
+      violate(s, 'the overlay asked for an admission that is malformed');
+      return { ok: false };
+    }
+    for (const k of a.admitted.keys()) if (!holding.includes(k)) a.admitted.delete(k);
     const d = await admit(s, askOf('pre_acquire', { sample_seq: sampleSeq }));
     if (current !== s || s.ending) return { ok: false };
     if (!d.ok) {
@@ -813,7 +829,6 @@ async function admitFrame(s: Session, phase: unknown, sampleSeq: unknown, factsV
     return { ok: false };
   }
   a.admitted.set(sampleSeq, taken);
-  for (const k of a.admitted.keys()) if (a.admitted.size > ADMITTED_MAX) a.admitted.delete(k);
   return { ok: true };
 }
 /**

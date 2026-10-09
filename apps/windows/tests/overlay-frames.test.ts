@@ -116,6 +116,7 @@ test('an ASK card keeps the uncertainty drawn into its picture, even if alignmen
     renderTalk() {},
     lc: { onAskResult() {}, onLive() {} },
     sessionNow: () => null,
+    admission: false, // (the product: no test's source check)
     TextEncoder,
     document: { querySelectorAll: () => [] },
     doc: { id: 'ink-1', ink: { revision: 1, visible: ['s1'], strokes: { s1: stroke } } },

@@ -264,6 +264,40 @@ Checks for this correction, focused as asked; the whole suite and the mutation r
   and one in time is accepted. A ready line after 1050 ms against 1000 ms is refused, and one in time is accepted.
   A ready line with a byte-order mark is refused.
 
+## Correction after Support's review of `9c3beab`
+
+Lead `handoff_09a84c59045de0dbcd52f6829e5b98a9` forwarded Support's HOLD (report and witnesses at Support commit
+`dbb42ab`, `docs/verification/support/windows-admission-9c3beab-review-20261009/README.md`). Three findings:
+
+- **C1: an "allow" after a known failure was acted on.** An answer and its replay in one piece of output: the first
+  resolved "allow", the second latched the failure at once, but its notice to main was deferred. Main admitted the
+  frame, or called the connector, before the capture ended. Now `admit` checks the checker's latched failure after
+  the answer and before anything is done. The decision is still recorded as answered, then the violation; the
+  capture ends with the replay as its reason. Normal allow and deny are unchanged.
+- **C2: a fresh frame was labelled still.** A frame presented while the admission before a taking was out made the
+  picture fresh, but the sample state stayed `no_new_frame`. The state is now worked out again from the facts at the
+  grab, with the same gap and ended precedence. Presented count, age and the first-look facts already followed.
+- **C3: admissions were dropped by count.** The 64-entry eviction could drop the admission of a frame whose picture
+  was still being made, which then ended the capture. There is no count eviction any more. With each new
+  `pre_acquire` the overlay says which admitted frames it still holds or uses (`holding`): its held frame, and frames
+  whose picture is still being made or handed over for keeping, a first look, a circle or a follow-up. Main keeps
+  exactly those and the newest, so the set is bounded (at most 16 plus one). The list must hold earlier frames only,
+  at most 16; else it is a violation. A frame the overlay leaves out and later uses is refused, and the capture ends.
+  The protocol to the checker is unchanged.
+
+Checks for this correction, focused as asked; the whole suite and the full mutation run were not repeated:
+
+- `tsc --noEmit` is clean and the build passes.
+- Every test file that loads the overlay: 198 tests, 193 pass, 0 fail, 5 skipped (the owned-host DB run). This
+  includes `tests/app-admission.test.ts` (20) and `tests/source-admission.test.ts` (11).
+- The new tests:
+  - an allow written twice in one piece, at the send and after a taking: no connector call, no frame kept;
+  - a frame presented during the admission is labelled `fresh`, and with none it stays `no_new_frame`;
+  - a slow picture of frame 1, kept after 70 more frames were taken;
+  - an overlay that leaves frame 1 out: refused, and the capture ends;
+  - malformed `holding` lists.
+- Six reverted-fix mutants (C1, C2, three for C3, and the `holding` validation) are each killed by them.
+
 ## Next
 
 1. **QA**: add the `overlay` member to the checker, then build candidate 03 against this commit. The lead
