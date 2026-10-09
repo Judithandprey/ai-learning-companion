@@ -9,6 +9,11 @@ QA requests or starts none.
 This candidate makes two candidate-only changes to the runner that ran as attempt 1 (`301b5053…`). Apart from its new
 work folder, the runner differs from attempt 1's in exactly two places: line 826 and lines 1025–1027.
 
+> **Update 2026-10-09.** The two refused actions were later approved by the human and run once without refusal
+> ([approved checks](../approved-checks-20261009/README.md)). Fix 1's site is confirmed by the run record; its cause
+> and the corrected arithmetic are confirmed by PowerShell itself. Fix 2 is confirmed only by the real parser, not
+> executed. Statements below that fix 1 is "not confirmed" describe the state before that update.
+
 ## Refused actions: what was and was not done
 
 - **No PowerShell was run** (the isolated check was refused). Nothing on Windows was used, apart from read-only

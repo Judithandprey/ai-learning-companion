@@ -1,0 +1,99 @@
+{
+    "powershell":  "5.1.26100.9444",
+    "edition":  "Desktop",
+    "ui_culture":  "zh-CN",
+    "old_line":  "System.Management.Automation.RuntimeException | 方法调用失败，因为 [System.Object[]] 不包含名为“op_Multiply”的方法。",
+    "old_line_card":  0,
+    "old_line_en":  "Method invocation failed because [System.Object[]] does not contain a method named \u0027op_Multiply\u0027.",
+    "old_parse":  {
+                      "errors":  0,
+                      "top":  "BinaryExpressionAst",
+                      "operator":  "Multiply",
+                      "left":  "BinaryExpressionAst",
+                      "left_text":  "(40 + $card % 4 * 210 + 95) * 2, (90 + [Math]::Floor($card / 4) * 170 + 75)",
+                      "right":  "ConstantExpressionAst",
+                      "right_text":  "2"
+                  },
+    "new_parse":  {
+                      "errors":  0,
+                      "top":  "ArrayLiteralAst",
+                      "elements":  [
+                                       "ParenExpressionAst",
+                                       "ParenExpressionAst"
+                                   ]
+                  },
+    "new_line":  "no error",
+    "new_count":  16,
+    "new_pair_lengths":  [
+                             2
+                         ],
+    "new_points":  [
+                       "270,330",
+                       "690,330",
+                       "1110,330",
+                       "1530,330",
+                       "270,670",
+                       "690,670",
+                       "1110,670",
+                       "1530,670",
+                       "270,1010",
+                       "690,1010",
+                       "1110,1010",
+                       "1530,1010",
+                       "20,20",
+                       "2540,20",
+                       "20,1580",
+                       "2540,1580"
+                   ],
+    "new_types":  [
+                      "Int32",
+                      "Decimal"
+                  ],
+    "files":  {
+                  "r2_attempt1":  {
+                                      "parse_errors":  0,
+                                      "array_arith_hits":  [
+                                                               {
+                                                                   "line":  826,
+                                                                   "operator":  "Multiply",
+                                                                   "text":  "(40 + $card % 4 * 210 + 95) * 2, (90 + [Math]::Floor($card / 4) * 170 + 75)"
+                                                               }
+                                                           ],
+                                      "product_placement_assigns":  [
+                                                                        "box",
+                                                                        "client",
+                                                                        "control",
+                                                                        "edge",
+                                                                        "last",
+                                                                        "overlay",
+                                                                        "point",
+                                                                        "socket"
+                                                                    ],
+                                      "functions_using_client":  [
+                                                                     "Get-Socket",
+                                                                     "Get-QaEdgeSocket",
+                                                                     "Assert-QaProductPlacement"
+                                                                 ]
+                                  },
+                  "r3":  {
+                             "parse_errors":  0,
+                             "array_arith_hits":  [
+
+                                                  ],
+                             "product_placement_assigns":  [
+                                                               "box",
+                                                               "clientArea",
+                                                               "control",
+                                                               "edge",
+                                                               "last",
+                                                               "overlay",
+                                                               "point",
+                                                               "socket"
+                                                           ],
+                             "functions_using_client":  [
+                                                            "Get-Socket",
+                                                            "Get-QaEdgeSocket"
+                                                        ]
+                         }
+              }
+}

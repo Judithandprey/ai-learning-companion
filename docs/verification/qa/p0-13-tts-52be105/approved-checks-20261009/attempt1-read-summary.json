@@ -1,0 +1,109 @@
+{
+  "source": "docs/verification/qa/p0-13-tts-52be105/execution-bounded-20261008-01/runner-results.json (sha256 610de7ea...)",
+  "authorization": "human-approve-read-arithmetic:1341e2b5d73b432eaefa988058e79172 (previously refused seq25524, Remote Shell Writes)",
+  "step6": {
+    "i": 6,
+    "ok": false,
+    "at": "2026-10-08T22:51:33.6008352Z",
+    "kind": "launchApp",
+    "error": "方法调用失败，因为 [System.Object[]] 不包含名为“op_Multiply”的方法。"
+  },
+  "errors": [
+    "step 6: 方法调用失败，因为 [System.Object[]] 不包含名为“op_Multiply”的方法。"
+  ],
+  "processes": {
+    "edge": {
+      "pid": 41212
+    }
+  },
+  "admission_entries": [
+    {
+      "key": "qa_display_admission_001",
+      "phase": "initialize",
+      "accepted": true,
+      "error": null,
+      "keys": [
+        "phase",
+        "at",
+        "accepted",
+        "native"
+      ]
+    },
+    {
+      "key": "qa_display_admission_002",
+      "phase": "before_browser_launch",
+      "accepted": true,
+      "error": null,
+      "keys": [
+        "phase",
+        "at",
+        "accepted",
+        "native"
+      ]
+    },
+    {
+      "key": "qa_display_admission_003",
+      "phase": "before_edge_raise",
+      "accepted": true,
+      "error": null,
+      "keys": [
+        "phase",
+        "at",
+        "accepted",
+        "native"
+      ]
+    },
+    {
+      "key": "qa_display_admission_004",
+      "phase": "before_edge_fullscreen",
+      "accepted": true,
+      "error": null,
+      "keys": [
+        "phase",
+        "at",
+        "accepted",
+        "native"
+      ]
+    },
+    {
+      "key": "qa_display_admission_005",
+      "phase": "after_edge_fullscreen",
+      "accepted": true,
+      "error": null,
+      "keys": [
+        "phase",
+        "at",
+        "accepted",
+        "native"
+      ]
+    },
+    {
+      "key": "qa_display_admission_006",
+      "phase": "after_edge_points",
+      "accepted": true,
+      "error": null,
+      "keys": [
+        "phase",
+        "at",
+        "accepted",
+        "native"
+      ]
+    },
+    {
+      "key": "qa_display_admission_007",
+      "phase": "before_product_launch",
+      "accepted": false,
+      "error": "方法调用失败，因为 [System.Object[]] 不包含名为“op_Multiply”的方法。",
+      "keys": [
+        "phase",
+        "at",
+        "accepted",
+        "native_before",
+        "browser",
+        "window",
+        "error"
+      ]
+    }
+  ],
+  "observed_equals_isolated_message": true
+}
