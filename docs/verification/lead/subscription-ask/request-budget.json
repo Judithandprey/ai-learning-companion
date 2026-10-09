@@ -147,6 +147,25 @@
           "exit_code": 1,
           "retried": false,
           "resource_lease": false
+        },
+        "next_candidate_preparation": {
+          "message_id": "handoff_1345f6e5e40879b62b1c1d0dbb85512c",
+          "accepted": true,
+          "execution_started_at_dispatch": false,
+          "source_baseline": "194986d",
+          "product_commit": "0ff325beadb7c689244610307b6aa16d638fd2e6",
+          "scope": "Same P0-13 candidate05/pins/INACTIVE template against staged81-file product; source/offline only, independent verdict pending",
+          "resource_lease": false,
+          "pure_fixture_retry_authorized": false
+        },
+        "support_activity_observed": {
+          "kind": "read_only_worktree_status",
+          "paths": [
+            "docs/verification/support/nonvoice-live-937788d-review-20261009/",
+            "tests/probes/support/nonvoice_live_937788d_boundaries.mjs",
+            "tests/probes/support/nonvoice_live_937788d_ledger.mjs"
+          ],
+          "state": "new untracked review/probe files present; final verdict not delivered"
         }
       },
       "support_verdict": {

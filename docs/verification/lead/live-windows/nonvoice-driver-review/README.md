@@ -618,3 +618,19 @@ No approval for a new command is presumed by this record.
 The fixture inputs are pinned as `e09a7a942a3ef22fe2644f0b6dfcd2eadc6b0f7dccf837037b762b583c16729f`
 (script) and `6a513c5bd0062b0a17d88038ef882abb62c765e521fbbfbd2f87098392607bc3`
 (JSON). All native overlay/affinity/stdin/timing behavior remains unverified.
+
+### Exact-build continuation dispatched
+
+After ordinary push of `194986d`, QA received the next existing-card preparation in
+`handoff_1345f6e5e40879b62b1c1d0dbb85512c` (accepted, initially unread and
+execution_started=false). It prepares candidate 05 and inactive pins against the
+81-file `0ff325b` stage, preserving candidates 01–04. Mechanical preparation may
+continue while Support finishes the unchanged driver review. No native runner,
+checker, fixture retry or allocation was assigned; only changed generator/hash
+consistency and inactive/mismatched-allocation refusal are in scope. Actual
+adoption and any later execution must have their own evidence.
+
+Read-only Support worktree status shows new `nonvoice-live-937788d-review-20261009`
+and two matching boundary/ledger probe files. This establishes preparation
+activity, not a completed review or passing result; unfinished files were not
+modified by Lead.

@@ -213,8 +213,10 @@ README-only `a46d497` are delivered. Support reviews those changed boundaries vi
 attempt `a58d583` was refused by Windows script policy before loading (zero cases,
 owned staging removed); no alternate command or policy change followed. The
 fixture stays NOT_RUN while independent review/package preparation continue.
-QA next repins to the exact new stage after Support's verdict; Lead reviews the
-resulting command and remaining native dependencies before any allocation.
+QA source-only candidate05 preparation is actually accepted in
+`handoff_1345f6e5e40879b62b1c1d0dbb85512c` against pushed194986d and the exact new
+stage (initially unread/execution_started=false); its template stays inactive.
+Support's final driver verdict and Lead's command review precede any allocation.
 Real0/4 unchanged, no active resource allocation; these source checks are not
 a native/live acceptance and do not repeat the completed diagnostic.
 Keep normal-band/foreground/16-point/display guards and exact-owned cleanup;
