@@ -1,0 +1,44 @@
+{
+  "source": "477890829c4afe880a151f3ce151b98b97405414",
+  "pending_consumer_regressions": 4,
+  "conditional_counterexamples": 1,
+  "rows": [
+    {
+      "consumer": "retention",
+      "admitted_frames_while_pending": 71,
+      "intake_frame": 1,
+      "reference_released": true,
+      "capture_ending": false
+    },
+    {
+      "consumer": "first-look",
+      "admitted_frames_while_pending": 71,
+      "intake_frame": 1,
+      "reference_released": true,
+      "capture_ending": false
+    },
+    {
+      "consumer": "circle",
+      "admitted_frames_while_pending": 71,
+      "intake_frame": 1,
+      "reference_released": true,
+      "capture_ending": false
+    },
+    {
+      "consumer": "follow-up",
+      "admitted_frames_while_pending": 71,
+      "intake_frame": 1,
+      "reference_released": true,
+      "capture_ending": false
+    },
+    {
+      "consumer": "17 concurrent circle encodings",
+      "kind": "conditional_counterexample",
+      "holding_count": 17,
+      "next_acquisition_allowed": false,
+      "capture_ending": true,
+      "reason": "the overlay asked for an admission that is malformed",
+      "limitation": "Actual consumer functions and reference count, synthetic delayed encodings; no real UI latency or native run."
+    }
+  ]
+}

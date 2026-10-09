@@ -1,0 +1,114 @@
+{
+  "source": "477890829c4afe880a151f3ce151b98b97405414",
+  "controls": 11,
+  "fixed_regressions": 2,
+  "counterexamples": 1,
+  "rows": [
+    {
+      "name": "stream arrival before pre-admission",
+      "kind": "control",
+      "state": "fresh",
+      "offered_stream_new_frame": true,
+      "presented_frames": 1,
+      "retention_input_state": "fresh",
+      "required_state": "fresh"
+    },
+    {
+      "name": "stream arrival during pre-admission",
+      "kind": "fixed_regression",
+      "state": "fresh",
+      "offered_stream_new_frame": true,
+      "presented_frames": 1,
+      "retention_input_state": "fresh",
+      "required_state": "fresh"
+    },
+    {
+      "name": "stream arrival none pre-admission",
+      "kind": "control",
+      "state": "no_new_frame",
+      "offered_stream_new_frame": false,
+      "presented_frames": 0,
+      "retention_input_state": "no_new_frame",
+      "required_state": "no_new_frame"
+    },
+    {
+      "name": "held frame 1 intake after 64 admissions",
+      "kind": "control",
+      "intake_allowed": true,
+      "capture_ending": false,
+      "retained_admissions": 2
+    },
+    {
+      "name": "held frame 1 intake after 65 admissions",
+      "kind": "fixed_regression",
+      "intake_allowed": true,
+      "capture_ending": false,
+      "retained_admissions": 2
+    },
+    {
+      "name": "explicitly retired frame cannot be used again",
+      "kind": "control",
+      "intake_allowed": false,
+      "capture_ending": true
+    },
+    {
+      "name": "missing list",
+      "kind": "control",
+      "pre_allowed": false,
+      "checker_requests": 0,
+      "capture_ending": true
+    },
+    {
+      "name": "non-list",
+      "kind": "control",
+      "pre_allowed": false,
+      "checker_requests": 0,
+      "capture_ending": true
+    },
+    {
+      "name": "future identity",
+      "kind": "control",
+      "pre_allowed": false,
+      "checker_requests": 0,
+      "capture_ending": true
+    },
+    {
+      "name": "current identity",
+      "kind": "control",
+      "pre_allowed": false,
+      "checker_requests": 0,
+      "capture_ending": true
+    },
+    {
+      "name": "extra member",
+      "kind": "control",
+      "pre_allowed": false,
+      "checker_requests": 0,
+      "capture_ending": true
+    },
+    {
+      "name": "invalid identity type",
+      "kind": "control",
+      "pre_allowed": false,
+      "checker_requests": 0,
+      "capture_ending": true
+    },
+    {
+      "name": "over 16 members",
+      "kind": "control",
+      "pre_allowed": false,
+      "checker_requests": 0,
+      "capture_ending": true
+    },
+    {
+      "name": "unadmitted earlier ID accepted in holding",
+      "kind": "counterexample",
+      "pre_allowed": true,
+      "checker_requests": 1,
+      "capture_ending_at_pre": false,
+      "admission_minted": false,
+      "unknown_intake_allowed": false,
+      "requirement": "Unknown holding identities should refuse before a checker request, not merely at subsequent use."
+    }
+  ]
+}

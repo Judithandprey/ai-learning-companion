@@ -1,0 +1,103 @@
+{
+  "commit": "477890829c4afe880a151f3ce151b98b97405414",
+  "parent": "9c3beab5d9bfae4ebd295af5a3db5baf99b4038c",
+  "apps_windows_tree": "7c20539ef16478d96f6719d8236078fea96daa09",
+  "support_parent": "dbb42ab61b444759e954f6af829fbe98a556dbc7",
+  "assignment": "handoff_71972c17fbe888d529689cf3aabd8aef",
+  "export": "/tmp/support-admission-4778908-uk9d_egb",
+  "files": [
+    {
+      "path": "apps/windows/src/main/main.ts",
+      "sha256": "078aa8067ffd5f54a83704158d86ba6de4597d6fd271d3ed090c38fb06ffeb84"
+    },
+    {
+      "path": "apps/windows/src/main/source-admission.ts",
+      "sha256": "e7ab238fa98b53116f4c0d6acaa2ed14a871be1299fc20c7cf018509d4c43602"
+    },
+    {
+      "path": "apps/windows/src/main/capture-host.ts",
+      "sha256": "6ffff62def7dbbdc7bb4c7155d71b2e7421abca9a792b88f3b04055ea7b546f2"
+    },
+    {
+      "path": "apps/windows/src/main/loopback-http.ts",
+      "sha256": "e473435598ad67cc801af8224f0ce954378be2130f689d60bab8057ef299ec76"
+    },
+    {
+      "path": "apps/windows/src/renderer/overlay.ts",
+      "sha256": "39001b3c5deb3c352173f49814b1fabbca0c91e4e044b389dd0a74da56ffb7cd"
+    },
+    {
+      "path": "apps/windows/src/shared/samples.ts",
+      "sha256": "a9851c58e68b09507649fd7b024c73ad304b80e9f237d53c69da153741605946"
+    },
+    {
+      "path": "docs/verification/web/windows-source-admission.md",
+      "sha256": "3569fd17a4935ef88d35a7a5b5cf7e2d0636878fadd8f0963831822f30b35dfd"
+    }
+  ],
+  "probes": [
+    {
+      "path": "tests/probes/support/windows_admission_4778908_latched_failure.mjs",
+      "sha256": "865564da588f7b2c58957e45318f083350117d0f3d68eec873a7e67232c4e4be",
+      "argv": [
+        "/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node",
+        "--disable-warning=ExperimentalWarning",
+        "--permission",
+        "--allow-fs-read=/tmp/support-admission-4778908-uk9d_egb",
+        "--allow-fs-read=/home/agentsdock/Projects/learning-companion/wt-support/tests/probes/support/windows_admission_4778908_latched_failure.mjs",
+        "/home/agentsdock/Projects/learning-companion/wt-support/tests/probes/support/windows_admission_4778908_latched_failure.mjs",
+        "/tmp/support-admission-4778908-uk9d_egb"
+      ],
+      "working_directory": "/home/agentsdock/Projects/learning-companion/wt-support",
+      "stdout": "docs/verification/support/windows-admission-4778908-retest-20261009/latched-failure.json",
+      "stderr": "docs/verification/support/windows-admission-4778908-retest-20261009/latched-failure.stderr",
+      "exit_code": 0,
+      "invocations": 1,
+      "scenario_rows": 4
+    },
+    {
+      "path": "tests/probes/support/windows_admission_4778908_frame_state.mjs",
+      "sha256": "895323d843e44d44bb72ac9ad396ff2158df968d5cecaa8f88247bd19bee45e1",
+      "argv": [
+        "/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node",
+        "--disable-warning=ExperimentalWarning",
+        "--permission",
+        "--allow-fs-read=/tmp/support-admission-4778908-uk9d_egb",
+        "--allow-fs-read=/home/agentsdock/Projects/learning-companion/wt-support/tests/probes/support/windows_admission_4778908_frame_state.mjs",
+        "/home/agentsdock/Projects/learning-companion/wt-support/tests/probes/support/windows_admission_4778908_frame_state.mjs",
+        "/tmp/support-admission-4778908-uk9d_egb"
+      ],
+      "working_directory": "/home/agentsdock/Projects/learning-companion/wt-support",
+      "stdout": "docs/verification/support/windows-admission-4778908-retest-20261009/frame-state.json",
+      "stderr": "docs/verification/support/windows-admission-4778908-retest-20261009/frame-state.stderr",
+      "exit_code": 0,
+      "invocations": 1,
+      "scenario_rows": 14
+    },
+    {
+      "path": "tests/probes/support/windows_admission_4778908_pending.mjs",
+      "sha256": "6d198bfa8f6405bdb934bdb73cb95597e45dd0d169b477985b332336c714536b",
+      "argv": [
+        "/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node",
+        "--disable-warning=ExperimentalWarning",
+        "--permission",
+        "--allow-fs-read=/tmp/support-admission-4778908-uk9d_egb",
+        "--allow-fs-read=/home/agentsdock/Projects/learning-companion/wt-support/tests/probes/support/windows_admission_4778908_pending.mjs",
+        "/home/agentsdock/Projects/learning-companion/wt-support/tests/probes/support/windows_admission_4778908_pending.mjs",
+        "/tmp/support-admission-4778908-uk9d_egb"
+      ],
+      "working_directory": "/home/agentsdock/Projects/learning-companion/wt-support",
+      "stdout": "docs/verification/support/windows-admission-4778908-retest-20261009/pending.json",
+      "stderr": "docs/verification/support/windows-admission-4778908-retest-20261009/pending.stderr",
+      "exit_code": 0,
+      "invocations": 1,
+      "scenario_rows": 5
+    }
+  ],
+  "adaptations": {
+    "latched_failure": "Prior witness copied: exact main hash, sameMembers extraction anchor, HOLDING_MAX binding; expect zero calls/no admission/ending before return for replay. Actual checker hash unchanged.",
+    "frame_state": "Prior sampler copied: exact main/overlay hashes, using map fake, expected fresh state during wait. Main probe supplies holding and checker.failure=null; held lifetime, retirement and malformed/unknown cases explicitly exercised.",
+    "pending": "One new exact-function lifetime probe covers retention/first look/circle/follow-up and a conditional 17-pending-circle producer-bound witness."
+  },
+  "limits": "In-memory boundary fakes; no child/native/display/provider/account/audio/network action or filesystem-write grant in Node. Shell writes only Support results."
+}
