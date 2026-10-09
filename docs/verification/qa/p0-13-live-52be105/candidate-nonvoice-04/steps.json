@@ -1,0 +1,855 @@
+[
+  {
+    "edgeStart": "file:///C:/Users/ROG/AppData/Local/Temp/lc-qa-live-nonvoice-e44fd6aaff6b452a91244c9ec5a1bcca/surface.html",
+    "profile": "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-live-nonvoice-e44fd6aaff6b452a91244c9ec5a1bcca\\edge-profile",
+    "as": "edge",
+    "fullscreen": true
+  },
+  {
+    "window": "edge",
+    "show": "raise"
+  },
+  {
+    "edgeFullscreen": true
+  },
+  {
+    "target": "edge",
+    "eval": "(() => { const t = JSON.parse(window.__qaSurfaceTruth()); if (!t.fits || !t.full_screen || t.viewport.dpr !== 2 || t.viewport.screen[0] !== 1280 || t.viewport.screen[1] !== 800) throw Error('generated surface geometry unavailable'); return JSON.stringify(t); })()",
+    "as": "surface_before"
+  },
+  {
+    "onTop": "edge",
+    "points": [
+      [
+        270,
+        330
+      ],
+      [
+        690,
+        330
+      ],
+      [
+        1110,
+        330
+      ],
+      [
+        1530,
+        330
+      ],
+      [
+        270,
+        670
+      ],
+      [
+        690,
+        670
+      ],
+      [
+        1110,
+        670
+      ],
+      [
+        1530,
+        670
+      ],
+      [
+        270,
+        1010
+      ],
+      [
+        690,
+        1010
+      ],
+      [
+        1110,
+        1010
+      ],
+      [
+        1530,
+        1010
+      ],
+      [
+        20,
+        20
+      ],
+      [
+        2540,
+        20
+      ],
+      [
+        20,
+        1580
+      ],
+      [
+        2540,
+        1580
+      ]
+    ]
+  },
+  {
+    "launchApp": true,
+    "as": "app",
+    "sub": "live",
+    "admission": "live"
+  },
+  {
+    "target": "control",
+    "waitEval": "document.querySelectorAll(\"#displays li[role=option]\").length === 1",
+    "timeoutMs": 15000
+  },
+  {
+    "target": "control",
+    "eval": "(async () => { const a = await lc.subState(), l = await lc.linkState(), s = await lc.sessionState();\n      if (a.mode !== 'managed') throw Error('the trusted connector configuration was not taken: ' + a.mode + (a.reason ? ' (' + a.reason + ')' : ''));\n      if (l.mode !== 'off') throw Error('the development capture link is on');\n      if (s.running) throw Error('a capture is already running');\n      return JSON.stringify({ mode: a.mode, state: a.state, login: a.login }); })()",
+    "as": "connector_configured"
+  },
+  {
+    "target": "control",
+    "eval": "(() => { const b = document.getElementById('subCheck'); if (b.hidden || b.disabled) throw Error('Check connection unavailable'); b.click(); return true; })()",
+    "as": "check_pressed"
+  },
+  {
+    "target": "control",
+    "waitEval": "(async () => { const a = await lc.subState(); return a.mode !== 'managed' || (a.state !== 'checking' && a.state !== 'not_checked'); })()",
+    "timeoutMs": 45000
+  },
+  {
+    "target": "control",
+    "eval": "(async () => { const a = await lc.subState();\n      if (a.mode !== 'managed' || a.state !== 'signed_in') throw Error('not signed in (' + (a.state ?? a.mode) + '): the run stops here; signing in is the user\\'s own step');\n      if (a.login !== 'none' || a.asking) throw Error('a sign-in or a request is pending');\n      const chosen = (a.models || []).find(m => m.id === a.model);\n      if (!chosen || !chosen.image_input) throw Error('the selected model does not take pictures');\n      // The applicable bucket as the connector selects it (52be105 chatgpt_rpc.py ask): the Codex limit for this model,\n      // or the one unnamed bucket; only its spend control or workspace limit stops the run, never another model's bucket.\n      const q = a.quota, windows = q ? q.windows || [] : [];\n      let applicable = windows.filter(b => b.limit_id === 'codex' && (b.normal_model_slug === null || b.normal_model_slug === a.model));\n      if (!applicable.length && windows.length === 1 && windows[0].limit_id === null) applicable = windows.filter(b => b.normal_model_slug === null || b.normal_model_slug === a.model);\n      const workspace = ['workspace_owner_credits_depleted', 'workspace_member_credits_depleted', 'workspace_owner_usage_limit_reached', 'workspace_member_usage_limit_reached'];\n      if (applicable.length === 1 && (applicable[0].spend_control_reached === true || workspace.includes(applicable[0].rate_limit_reached_type))) throw Error('the server states a spend or workspace limit for this model as reached: the run stops before Start');\n      if (document.getElementById('aiOn').disabled) throw Error('the AI session cannot be started from the control window');\n      return JSON.stringify({ state: a.state, model: a.model, image_input: true, quota_read: a.quota_read_at !== null, quota_available: q ? q.available : null,\n        included_usage_allowed: q ? q.ordinary_usage_allowed : null, included_reached: windows.some(b => !!b.rate_limit_reached_type),\n        credits_present: windows.some(b => !!b.credits && (b.credits.has_credits === true || b.credits.unlimited === true)), applicable_buckets: applicable.length, spend_control_reached: false }); })()",
+    "as": "account_ready"
+  },
+  {
+    "target": "control",
+    "eval": "(async () => { const d = await lc.listDisplays(); if (!Array.isArray(d) || d.length !== 1) throw Error('the product does not list exactly one display');\n      return JSON.stringify({ display_id: d[0].display_id, bounds: d[0].bounds, scale_factor: d[0].scale_factor, primary: d[0].primary }); })()",
+    "as": "display_choice"
+  },
+  {
+    "productPlacement": "control"
+  },
+  {
+    "window": "edge",
+    "show": "raise"
+  },
+  {
+    "target": "edge",
+    "eval": "(() => { const t = JSON.parse(window.__qaSurfaceTruth()); if (!t.fits || !t.full_screen || t.viewport.dpr !== 2 || t.viewport.screen[0] !== 1280 || t.viewport.screen[1] !== 800) throw Error('generated surface geometry unavailable'); return JSON.stringify(t); })()",
+    "as": "surface_at_start"
+  },
+  {
+    "onTop": "edge",
+    "points": [
+      [
+        270,
+        330
+      ],
+      [
+        690,
+        330
+      ],
+      [
+        1110,
+        330
+      ],
+      [
+        1530,
+        330
+      ],
+      [
+        270,
+        670
+      ],
+      [
+        690,
+        670
+      ],
+      [
+        1110,
+        670
+      ],
+      [
+        1530,
+        670
+      ],
+      [
+        270,
+        1010
+      ],
+      [
+        690,
+        1010
+      ],
+      [
+        1110,
+        1010
+      ],
+      [
+        1530,
+        1010
+      ],
+      [
+        20,
+        20
+      ],
+      [
+        2540,
+        20
+      ],
+      [
+        20,
+        1580
+      ],
+      [
+        2540,
+        1580
+      ]
+    ]
+  },
+  {
+    "captureStart": "(() => { const items = document.querySelectorAll('#displays li[role=option]'); if (items.length !== 1) throw Error('display selection is ambiguous'); items[0].click();\n      const box = document.getElementById('aiOn'); if (box.disabled) throw Error('the AI session cannot be started'); box.checked = true; box.dispatchEvent(new Event('change'));\n      for (const [id, v] of [['aiRequests', 4], ['aiMinutes', 1], ['aiInterval', 60]]) { const f = document.getElementById(id); f.value = String(v); f.dispatchEvent(new Event('input', { bubbles: true })); }\n      const start = document.getElementById('start'); if (start.disabled) throw Error('capture Start unavailable'); start.click();\n      return JSON.stringify({ requests: document.getElementById('aiRequests').value, minutes: document.getElementById('aiMinutes').value, seconds: document.getElementById('aiInterval').value, ai: box.checked }); })()",
+    "as": "capture_start"
+  },
+  {
+    "target": "control",
+    "waitEval": "(async () => { const s = await lc.sessionState(); return s.running && !s.starting && !!s.live && s.live.state !== 'starting'; })()",
+    "timeoutMs": 30000
+  },
+  {
+    "target": "control",
+    "eval": "(async () => { const l = (await lc.sessionState()).live;\n      if (!l || l.state !== 'on') throw Error('the AI session did not start: ' + (l ? l.state + (l.reason ? ' (' + l.reason + ')' : '') : 'none'));\n      const span = Date.parse(l.expires_at) - Date.parse(l.since);\n      if (l.max_submissions !== 4 || l.min_observation_interval_ms !== 60000 || Math.abs(span - 60000) > 2000) throw Error('the session policy is not 4 / 1 min / 60 s');\n      return JSON.stringify({ id: l.id, model: l.model, since: l.since, expires_at: l.expires_at, span_ms: span, max_submissions: l.max_submissions, reserve: l.reserve, min_observation_interval_ms: l.min_observation_interval_ms, used: l.used, out: l.out }); })()",
+    "as": "live_policy"
+  },
+  {
+    "target": "overlay",
+    "waitEval": "typeof __lcOverlay !== \"undefined\" && __lcOverlay.state().frame !== null",
+    "timeoutMs": 30000
+  },
+  {
+    "productPlacement": "overlay"
+  },
+  {
+    "target": "overlay",
+    "eval": "(() => { if (document.getElementById('talk').getAttribute('aria-pressed') === 'true') throw Error('Talk is on'); if (!document.getElementById('card').hidden) throw Error('a card is up before any circle'); return JSON.stringify({ talk: 'off', card_hidden: true }); })()",
+    "as": "overlay_ready"
+  },
+  {
+    "target": "control",
+    "waitEval": "(async () => { const l = (await lc.sessionState()).live; return !l || l.state !== 'on' || (l.out === 0 && (l.seen !== null || l.missed !== null)); })()",
+    "timeoutMs": 45000
+  },
+  {
+    "target": "control",
+    "eval": "(async () => { const l = (await lc.sessionState()).live;\n  if (!l || l.state !== 'on') throw Error('the AI session is no longer on (' + (l ? l.state + (l.ended ? ': ' + l.ended : '') : 'none') + '): the remaining actions stay NOT_RUN');\n  if (l.out !== 0) throw Error('a request is still out');\n  if (l.used !== 1) throw Error('the session counted ' + l.used + ' request(s), not 1: the run stops (no retry)');\n  if (l.seen === null) throw Error('no look was completed: ' + (l.missed ?? 'unknown'));\n  return JSON.stringify({ used: l.used, out: l.out, max_submissions: l.max_submissions, reserve: l.reserve, expires_at: l.expires_at, seen: l.seen, missed: l.missed, paused: l.paused, frames: l.frames, unwritten: l.unwritten, at: new Date().toISOString() }); })()",
+    "as": "action1"
+  },
+  {
+    "target": "overlay",
+    "eval": "(() => { if (!document.getElementById('card').hidden) throw Error('a card appeared without a circle or a question'); return JSON.stringify({ card_hidden: true, mode: __lcOverlay.state().mode }); })()",
+    "as": "action1_card"
+  },
+  {
+    "onTop": "edge",
+    "points": [
+      [
+        270,
+        330
+      ],
+      [
+        690,
+        330
+      ],
+      [
+        1110,
+        330
+      ],
+      [
+        1530,
+        330
+      ],
+      [
+        270,
+        670
+      ],
+      [
+        690,
+        670
+      ],
+      [
+        1110,
+        670
+      ],
+      [
+        1530,
+        670
+      ],
+      [
+        270,
+        1010
+      ],
+      [
+        690,
+        1010
+      ],
+      [
+        1110,
+        1010
+      ],
+      [
+        1530,
+        1010
+      ],
+      [
+        20,
+        20
+      ],
+      [
+        2540,
+        20
+      ],
+      [
+        20,
+        1580
+      ],
+      [
+        2540,
+        1580
+      ]
+    ]
+  },
+  {
+    "target": "overlay",
+    "eval": "document.querySelector('[data-mode=ASK]').click(), true"
+  },
+  {
+    "stroke": [
+      [
+        225,
+        165
+      ],
+      [
+        223.8919506535624,
+        175.168240227615
+      ],
+      [
+        220.59508646656383,
+        185.08610463437157
+      ],
+      [
+        215.1905871769531,
+        194.50938248307054
+      ],
+      [
+        207.81152949374527,
+        203.20604139901076
+      ],
+      [
+        198.63961030678928,
+        210.9619407771256
+      ],
+      [
+        187.90067270632258,
+        217.5861046343716
+      ],
+      [
+        175.8591449765592,
+        222.91542407224392
+      ],
+      [
+        162.81152949374527,
+        226.818673559185
+      ],
+      [
+        149.07910185362078,
+        229.19974213868397
+      ],
+      [
+        135,
+        230
+      ],
+      [
+        120.92089814637924,
+        229.19974213868397
+      ],
+      [
+        107.18847050625473,
+        226.818673559185
+      ],
+      [
+        94.14085502344079,
+        222.91542407224392
+      ],
+      [
+        82.09932729367742,
+        217.5861046343716
+      ],
+      [
+        71.36038969321072,
+        210.9619407771256
+      ],
+      [
+        62.188470506254745,
+        203.20604139901076
+      ],
+      [
+        54.8094128230469,
+        194.50938248307054
+      ],
+      [
+        49.404913533436186,
+        185.0861046343716
+      ],
+      [
+        46.10804934643761,
+        175.168240227615
+      ],
+      [
+        45,
+        165
+      ],
+      [
+        46.108049346437596,
+        154.831759772385
+      ],
+      [
+        49.40491353343616,
+        144.91389536562846
+      ],
+      [
+        54.809412823046884,
+        135.49061751692946
+      ],
+      [
+        62.18847050625473,
+        126.79395860098926
+      ],
+      [
+        71.3603896932107,
+        119.03805922287441
+      ],
+      [
+        82.0993272936774,
+        112.41389536562842
+      ],
+      [
+        94.14085502344078,
+        107.08457592775609
+      ],
+      [
+        107.18847050625472,
+        103.18132644081501
+      ],
+      [
+        120.9208981463792,
+        100.80025786131606
+      ],
+      [
+        134.99999999999997,
+        100
+      ],
+      [
+        149.07910185362076,
+        100.80025786131604
+      ],
+      [
+        162.81152949374524,
+        103.18132644081501
+      ],
+      [
+        175.8591449765592,
+        107.08457592775608
+      ],
+      [
+        187.90067270632255,
+        112.4138953656284
+      ],
+      [
+        198.63961030678925,
+        119.03805922287441
+      ],
+      [
+        207.81152949374524,
+        126.79395860098923
+      ],
+      [
+        215.1905871769531,
+        135.49061751692943
+      ],
+      [
+        220.59508646656383,
+        144.9138953656284
+      ],
+      [
+        223.8919506535624,
+        154.83175977238497
+      ],
+      [
+        225,
+        164.99999999999997
+      ]
+    ],
+    "pointerType": "pen"
+  },
+  {
+    "target": "control",
+    "waitEval": "(async () => { const l = (await lc.sessionState()).live; return !l || l.state !== 'on' || l.out > 0 || l.used >= 2; })()",
+    "timeoutMs": 20000
+  },
+  {
+    "target": "control",
+    "waitEval": "(async () => { const l = (await lc.sessionState()).live; return !l || l.state !== 'on' || l.out === 0; })()",
+    "timeoutMs": 45000
+  },
+  {
+    "target": "overlay",
+    "waitEval": "document.getElementById('askCancel').hidden && (!document.getElementById('answerBox').hidden || document.getElementById('askStatus').textContent.trim().length > 0)",
+    "timeoutMs": 10000
+  },
+  {
+    "target": "overlay",
+    "eval": "JSON.stringify({ card_hidden: document.getElementById('card').hidden, answer_hidden: document.getElementById('answerBox').hidden,\n  answer: document.getElementById('answer').textContent, status: document.getElementById('askStatus').textContent, cancel_hidden: document.getElementById('askCancel').hidden,\n  mode: __lcOverlay.state().mode, at: new Date().toISOString() })",
+    "as": "action2_card"
+  },
+  {
+    "target": "overlay",
+    "eval": "(() => { const a = document.getElementById('answer').textContent; if (document.getElementById('answerBox').hidden || !a.trim()) throw Error('no answer is shown on the card: the run stops (no retry)'); if (a === (window.__qaAnswerBefore ?? '')) throw Error('the card still shows the earlier answer: the request was not answered'); return true; })()"
+  },
+  {
+    "target": "control",
+    "eval": "(async () => { const l = (await lc.sessionState()).live;\n  if (!l || l.state !== 'on') throw Error('the AI session is no longer on (' + (l ? l.state + (l.ended ? ': ' + l.ended : '') : 'none') + '): the remaining actions stay NOT_RUN');\n  if (l.out !== 0) throw Error('a request is still out');\n  if (l.used !== 2) throw Error('the session counted ' + l.used + ' request(s), not 2: the run stops (no retry)');\n  \n  return JSON.stringify({ used: l.used, out: l.out, max_submissions: l.max_submissions, reserve: l.reserve, expires_at: l.expires_at, seen: l.seen, missed: l.missed, paused: l.paused, frames: l.frames, unwritten: l.unwritten, at: new Date().toISOString() }); })()",
+    "as": "action2"
+  },
+  {
+    "target": "overlay",
+    "eval": "(() => { window.__qaFrameBefore = (() => { const s = __lcOverlay.state(), r = [...s.samples].reverse().find(x => x.raw); return { frame: s.frame, sha: r ? r.raw.pixels_sha256 : null }; })(); return JSON.stringify(window.__qaFrameBefore); })()",
+    "as": "frame_before_change"
+  },
+  {
+    "target": "edge",
+    "eval": "window.__qaSurfaceChange()",
+    "as": "surface_change"
+  },
+  {
+    "target": "edge",
+    "eval": "(() => { const t = JSON.parse(window.__qaSurfaceTruth()); if (!t.fits || !t.full_screen || t.viewport.dpr !== 2 || t.viewport.screen[0] !== 1280 || t.viewport.screen[1] !== 800) throw Error('generated surface geometry unavailable'); return JSON.stringify(t); })()",
+    "as": "surface_changed"
+  },
+  {
+    "target": "overlay",
+    "waitEval": "(() => { const n = (() => { const s = __lcOverlay.state(), r = [...s.samples].reverse().find(x => x.raw); return { frame: s.frame, sha: r ? r.raw.pixels_sha256 : null }; })(); return n.sha !== null && n.sha !== window.__qaFrameBefore.sha && n.frame !== window.__qaFrameBefore.frame; })()",
+    "timeoutMs": 20000
+  },
+  {
+    "target": "overlay",
+    "eval": "JSON.stringify((() => { const s = __lcOverlay.state(), r = [...s.samples].reverse().find(x => x.raw); return { frame: s.frame, sha: r ? r.raw.pixels_sha256 : null }; })())",
+    "as": "frame_after_change"
+  },
+  {
+    "onTop": "edge",
+    "points": [
+      [
+        270,
+        330
+      ],
+      [
+        690,
+        330
+      ],
+      [
+        1110,
+        330
+      ],
+      [
+        1530,
+        330
+      ],
+      [
+        270,
+        670
+      ],
+      [
+        690,
+        670
+      ],
+      [
+        1110,
+        670
+      ],
+      [
+        1530,
+        670
+      ],
+      [
+        270,
+        1010
+      ],
+      [
+        690,
+        1010
+      ],
+      [
+        1110,
+        1010
+      ],
+      [
+        1530,
+        1010
+      ],
+      [
+        20,
+        20
+      ],
+      [
+        2540,
+        20
+      ],
+      [
+        20,
+        1580
+      ],
+      [
+        2540,
+        1580
+      ]
+    ]
+  },
+  {
+    "target": "overlay",
+    "eval": "(() => { const q = document.getElementById('question'), send = document.getElementById('askSubmit');\n  if (document.getElementById('card').hidden || !q || !send) throw Error('the card cannot take a typed request now');\n  const level = document.querySelector('input[name=assistance][value=explain]');\n  if (!level) throw Error('help level unavailable');\n  level.checked = true; level.dispatchEvent(new Event('change', { bubbles: true }));\n  q.value = \"Please read the four-digit numbers on the cards in the top row, from left to right.\"; q.dispatchEvent(new Event('input', { bubbles: true }));\n  if (send.disabled || send.hidden) throw Error('Send is unavailable');\n  window.__qaAnswerBefore = document.getElementById('answer').textContent;\n  send.click(); return JSON.stringify({ question_chars: q.value.length, level: 'explain', at: new Date().toISOString() }); })()",
+    "as": "action3_submit"
+  },
+  {
+    "target": "control",
+    "waitEval": "(async () => { const l = (await lc.sessionState()).live; return !l || l.state !== 'on' || l.out > 0 || l.used >= 3; })()",
+    "timeoutMs": 20000
+  },
+  {
+    "target": "control",
+    "waitEval": "(async () => { const l = (await lc.sessionState()).live; return !l || l.state !== 'on' || l.out === 0; })()",
+    "timeoutMs": 45000
+  },
+  {
+    "target": "overlay",
+    "waitEval": "document.getElementById('askCancel').hidden && (!document.getElementById('answerBox').hidden || document.getElementById('askStatus').textContent.trim().length > 0)",
+    "timeoutMs": 10000
+  },
+  {
+    "target": "overlay",
+    "eval": "JSON.stringify({ card_hidden: document.getElementById('card').hidden, answer_hidden: document.getElementById('answerBox').hidden,\n  answer: document.getElementById('answer').textContent, status: document.getElementById('askStatus').textContent, cancel_hidden: document.getElementById('askCancel').hidden,\n  mode: __lcOverlay.state().mode, at: new Date().toISOString() })",
+    "as": "action3_card"
+  },
+  {
+    "target": "overlay",
+    "eval": "(() => { const a = document.getElementById('answer').textContent; if (document.getElementById('answerBox').hidden || !a.trim()) throw Error('no answer is shown on the card: the run stops (no retry)'); if (a === (window.__qaAnswerBefore ?? '')) throw Error('the card still shows the earlier answer: the request was not answered'); return true; })()"
+  },
+  {
+    "target": "control",
+    "eval": "(async () => { const l = (await lc.sessionState()).live;\n  if (!l || l.state !== 'on') throw Error('the AI session is no longer on (' + (l ? l.state + (l.ended ? ': ' + l.ended : '') : 'none') + '): the remaining actions stay NOT_RUN');\n  if (l.out !== 0) throw Error('a request is still out');\n  if (l.used !== 3) throw Error('the session counted ' + l.used + ' request(s), not 3: the run stops (no retry)');\n  \n  return JSON.stringify({ used: l.used, out: l.out, max_submissions: l.max_submissions, reserve: l.reserve, expires_at: l.expires_at, seen: l.seen, missed: l.missed, paused: l.paused, frames: l.frames, unwritten: l.unwritten, at: new Date().toISOString() }); })()",
+    "as": "action3"
+  },
+  {
+    "onTop": "edge",
+    "points": [
+      [
+        270,
+        330
+      ],
+      [
+        690,
+        330
+      ],
+      [
+        1110,
+        330
+      ],
+      [
+        1530,
+        330
+      ],
+      [
+        270,
+        670
+      ],
+      [
+        690,
+        670
+      ],
+      [
+        1110,
+        670
+      ],
+      [
+        1530,
+        670
+      ],
+      [
+        270,
+        1010
+      ],
+      [
+        690,
+        1010
+      ],
+      [
+        1110,
+        1010
+      ],
+      [
+        1530,
+        1010
+      ],
+      [
+        20,
+        20
+      ],
+      [
+        2540,
+        20
+      ],
+      [
+        20,
+        1580
+      ],
+      [
+        2540,
+        1580
+      ]
+    ]
+  },
+  {
+    "target": "overlay",
+    "eval": "(() => { const q = document.getElementById('question'), send = document.getElementById('askSubmit');\n  if (document.getElementById('card').hidden || !q || !send) throw Error('the card cannot take a typed request now');\n  const level = document.querySelector('input[name=assistance][value=explain]');\n  if (!level) throw Error('help level unavailable');\n  level.checked = true; level.dispatchEvent(new Event('change', { bubbles: true }));\n  q.value = \"Please also read the four-digit numbers on the cards in the bottom row.\"; q.dispatchEvent(new Event('input', { bubbles: true }));\n  if (send.disabled || send.hidden) throw Error('Send is unavailable');\n  window.__qaAnswerBefore = document.getElementById('answer').textContent;\n  send.click(); return JSON.stringify({ question_chars: q.value.length, level: 'explain', at: new Date().toISOString() }); })()",
+    "as": "action4_submit"
+  },
+  {
+    "target": "control",
+    "waitEval": "(async () => { const l = (await lc.sessionState()).live; return !l || l.state !== 'on' || l.out > 0 || l.used >= 4; })()",
+    "timeoutMs": 20000
+  },
+  {
+    "target": "control",
+    "eval": "(async () => { const l = (await lc.sessionState()).live; const b = document.getElementById('liveStop'); if (b.hidden || b.disabled) throw Error('Stop the AI unavailable');\n      b.click(); return JSON.stringify({ out_at_stop: l ? l.out : null, used_at_stop: l ? l.used : null, state_at_stop: l ? l.state : null, at: new Date().toISOString() }); })()",
+    "as": "action4_stop"
+  },
+  {
+    "target": "control",
+    "waitEval": "(async () => { const l = (await lc.sessionState()).live; return !l || l.state === 'ended' || l.state === 'off'; })()",
+    "timeoutMs": 20000
+  },
+  {
+    "target": "control",
+    "waitEval": "(async () => { const l = (await lc.sessionState()).live; return !l || l.out === 0; })()",
+    "timeoutMs": 20000
+  },
+  {
+    "sleep": 5000
+  },
+  {
+    "target": "control",
+    "eval": "(async () => { const l = (await lc.sessionState()).live; if (l && l.state === 'on') throw Error('the AI session is still on after Stop');\n      if (l && l.out !== 0) throw Error('a request is still out after Stop'); if (l && l.used > 4) throw Error('more than four requests counted');\n      return JSON.stringify({ state: l && l.state, ended: l && l.ended, used: l && l.used, out: l && l.out, unwritten: l && l.unwritten, at: new Date().toISOString() }); })()",
+    "as": "action4_after"
+  },
+  {
+    "target": "overlay",
+    "eval": "JSON.stringify({ card_hidden: document.getElementById('card').hidden, answer_hidden: document.getElementById('answerBox').hidden,\n  answer: document.getElementById('answer').textContent, status: document.getElementById('askStatus').textContent, cancel_hidden: document.getElementById('askCancel').hidden,\n  mode: __lcOverlay.state().mode, at: new Date().toISOString() })",
+    "as": "action4_card"
+  },
+  {
+    "window": "edge",
+    "show": "raise",
+    "required": false
+  },
+  {
+    "target": "edge",
+    "eval": "(() => { const t = JSON.parse(window.__qaSurfaceTruth()); if (!t.fits || !t.full_screen || t.viewport.dpr !== 2 || t.viewport.screen[0] !== 1280 || t.viewport.screen[1] !== 800) throw Error('generated surface geometry unavailable'); return JSON.stringify(t); })()",
+    "as": "surface_after",
+    "required": false
+  },
+  {
+    "onTop": "edge",
+    "points": [
+      [
+        270,
+        330
+      ],
+      [
+        690,
+        330
+      ],
+      [
+        1110,
+        330
+      ],
+      [
+        1530,
+        330
+      ],
+      [
+        270,
+        670
+      ],
+      [
+        690,
+        670
+      ],
+      [
+        1110,
+        670
+      ],
+      [
+        1530,
+        670
+      ],
+      [
+        270,
+        1010
+      ],
+      [
+        690,
+        1010
+      ],
+      [
+        1110,
+        1010
+      ],
+      [
+        1530,
+        1010
+      ],
+      [
+        20,
+        20
+      ],
+      [
+        2540,
+        20
+      ],
+      [
+        20,
+        1580
+      ],
+      [
+        2540,
+        1580
+      ]
+    ],
+    "required": false
+  },
+  {
+    "target": "control",
+    "eval": "document.getElementById('stop').click(), true",
+    "as": "stop_pressed"
+  },
+  {
+    "target": "control",
+    "waitEval": "(async () => !(await lc.sessionState()).running)()",
+    "timeoutMs": 20000
+  },
+  {
+    "closeApp": true,
+    "via": "wm_close",
+    "waitMs": 8000,
+    "required": false
+  },
+  {
+    "edgeClose": true,
+    "required": false
+  }
+]

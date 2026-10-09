@@ -1,0 +1,171 @@
+# 9614947 sources (git archive 9614947) with the corrected test file and its fixture data; node v24.21.0 --permission (no child process, no write)
+✔ the candidate is offline-only, reproduces from the sources, and its scratch is unused (33.652868ms)
+✔ the runner is the reviewed r4 runner byte for byte, apart from the one work-folder name and the source-admission delta (3.128219ms)
+✔ the package pins are the accepted diagnostic's (52be105, its 77-file tree, Electron 44.5.1, Edge) (0.475672ms)
+✔ the connector configuration is the trusted real one: the exact private 52be105 copy, the pinned codex binary, the product's own state (0.324943ms)
+✔ the steps hold exactly the four released actions, the actual UI Start once, and nothing fake, restarted or signed in (0.737444ms)
+✔ every action is bracketed: assigned only while the session is on with the exact count, and a stop leaves the rest NOT_RUN (0.624487ms)
+✔ the typed requests carry no card value and do not say the cards changed; they select explain, the circle is left at the product's hint (0.373025ms)
+✔ the live surface changes its cards in place: new values never shown before, same page, same geometry, same truth format (11.064279ms)
+✔ ledger: all four actions counted once each, the whole picture at the provider boundary for each answered one, the Stop fenced (5.882379ms)
+✔ ledger: unknown and proven not_submitted outcomes count; failed triggers count but are named; a session that never started counts nothing (0.814662ms)
+✔ ledger: a session that ended before an action leaves it and every later one NOT_RUN; extra requests, restarts and a disagreeing app count are flagged (1.366801ms)
+✔ fence: needs Stop by the user with the request out and settling after it, nothing shown or sent later; otherwise unknown or not fenced (1.168ms)
+✔ transport: no receipt, another image, no text or image input, or a request not submitted is never the picture at the provider; tools are flagged (0.119218ms)
+✔ pixel rules: only values new after the change and absent from earlier AI text prove fresh pixels; formatted values are read; a question with a value is a leak (1.385327ms)
+✔ wrapper: nothing runs without --execute, a new evidence folder and an independently supplied allocation hash (1.269695ms)
+✔ wrapper: only an exact, active live allocation bound to the four-action bounds, no voice, no retry or restart, is accepted (0.875939ms)
+✔ wrapper: the connector side refuses a missing or inexact copy, anything running in it, or another codex binary, before any Windows call (0.517011ms)
+✔ wrapper: the mechanical result needs every term, the connector and its children gone, and keeps acceptance NOT_JUDGED (1.213667ms)
+✔ wrapper: the watch summary is released only with the whole lifecycle observed; anything less is unknown or left running (1.169869ms)
+✖ wrapper: with an exact allocation it still refuses at the connector checks before any Windows call, any folder or any process (0.680276ms)
+✔ L1: the actual account_ready step lets ordinary credits, an exhausted included window and an unknown quota through, and stops on a stated spend control (5.451463ms)
+✔ L2: a reached Start whose later records are missing counts the first look as used (unknown); a known pre-Start stop does not (0.785997ms)
+✔ D8: raw receipts are written outside the repository; only sanitized fields and an allowlist of generated files are for Git (0.611623ms)
+✔ F1: the spend/workspace veto reads only the bucket the connector applies to the selected model, as 52be105 chatgpt_rpc.py selects it (5.427096ms)
+✔ F4: Support's receipt witness cases fail the mechanics; collection, records, tools, digest and provider turns are judged for every action (7.677191ms)
+✔ F5: the watch must record its own clean start before anything can launch; not ready, it is stopped, a refusal is written and nothing runs (2.167526ms)
+✔ receipt reader: only this run's new launches, real folders and files, the connector format and this request id, checked before any byte is kept (1.844838ms)
+✖ F3 checker: the reviewed admission with exactly four overlay substitutions, the one shared predicate, read-only natives, and the Lead protocol (1.412518ms)
+✖ F3 configuration and runner delta: the frozen checker and Lead timings; LC_SOURCE_ADMISSION only for the product launch; the context after the launch is recorded; the one predicate in the runner point checks (0.77179ms)
+✖ F3 ledger: every possibly sent request needs an admitted send for its exact PNG naming an acquisition admitted before and after; a deny, a gap or an unrecorded send fails (4.362208ms)
+✖ F3 overlay predicate: the pure functions are cut unchanged into the prepared fixture check; every refusal has a negative fixture; read-only native type (not executed) (0.288162ms)
+✖ R1-R3 (Support 5083814): its two controls pass; an unclassified request, unexplained or inconsistent turns, and an ignored or missing phase all fail (1.547668ms)
+✖ R4-R5 (Support 5083814): an exited watcher is not ready; the lifecycle must be ordered; receipt values must be of the writer's bounded types before copy, and only typed values are published (0.454251ms)
+ℹ tests 33
+ℹ suites 0
+ℹ pass 26
+ℹ fail 7
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 108.723421
+
+✖ failing tests:
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:429:1
+✖ wrapper: with an exact allocation it still refuses at the connector checks before any Windows call, any folder or any process (0.680276ms)
+  Error: ENOENT: no such file or directory, open '/tmp/qa-before-9614947/docs/verification/qa/p0-13-live-52be105/candidate-nonvoice-04/candidate.json'
+      at Object.openSync (node:fs:621:18)
+      at Module.readFileSync (node:fs:487:35)
+      at TestContext.<anonymous> (file:///tmp/qa-before-9614947/tests/e2e/windows/test_qa_live_candidate.mjs:431:35)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    errno: -2,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: '/tmp/qa-before-9614947/docs/verification/qa/p0-13-live-52be105/candidate-nonvoice-04/candidate.json'
+  }
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:665:1
+✖ F3 checker: the reviewed admission with exactly four overlay substitutions, the one shared predicate, read-only natives, and the Lead protocol (1.412518ms)
+  TypeError: checkerAdmission is not a function
+      at TestContext.<anonymous> (file:///tmp/qa-before-9614947/tests/e2e/windows/test_qa_live_candidate.mjs:666:103)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:734:1
+✖ F3 configuration and runner delta: the frozen checker and Lead timings; LC_SOURCE_ADMISSION only for the product launch; the context after the launch is recorded; the one predicate in the runner point checks (0.77179ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///tmp/qa-before-9614947/tests/e2e/windows/test_qa_live_candidate.mjs:749:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:775:1
+✖ F3 ledger: every possibly sent request needs an admitted send for its exact PNG naming an acquisition admitted before and after; a deny, a gap or an unrecorded send fails (4.362208ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(src.includes("regularRead(join(candidate.work, 'out', 'admission-checker.jsonl'))") && src.includes("report.source_admission = sourceAdmission(report.ledger, checkerLines, read('display_choice'), mainAdmission);"))
+  
+      at TestContext.<anonymous> (file:///tmp/qa-before-9614947/tests/e2e/windows/test_qa_live_candidate.mjs:800:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:820:1
+✖ F3 overlay predicate: the pure functions are cut unchanged into the prepared fixture check; every refusal has a negative fixture; read-only native type (not executed) (0.288162ms)
+  TypeError: overlayPredicate is not a function
+      at TestContext.<anonymous> (file:///tmp/qa-before-9614947/tests/e2e/windows/test_qa_live_candidate.mjs:821:21)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:896:1
+✖ R1-R3 (Support 5083814): its two controls pass; an unclassified request, unexplained or inconsistent turns, and an ignored or missing phase all fail (1.547668ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    [
+  +   true,
+  +   [],
+  +   4
+  -   false,
+  -   [
+  -     'extra-without-trigger'
+  -   ],
+  -   5
+    ]
+  
+      at TestContext.<anonymous> (file:///tmp/qa-before-9614947/tests/e2e/windows/test_qa_live_candidate.mjs:903:43)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [Array],
+    expected: [Array],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:952:1
+✖ R4-R5 (Support 5083814): an exited watcher is not ready; the lifecycle must be ordered; receipt values must be of the writer's bounded types before copy, and only typed values are published (0.454251ms)
+  AssertionError [ERR_ASSERTION]: exited=true
+  
+  true !== false
+  
+      at TestContext.<anonymous> (file:///tmp/qa-before-9614947/tests/e2e/windows/test_qa_live_candidate.mjs:957:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: true,
+    expected: false,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+exit=1

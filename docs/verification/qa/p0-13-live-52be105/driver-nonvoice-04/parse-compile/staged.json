@@ -1,0 +1,64 @@
+{
+ "folder": "/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-parse-dc0ef8ffa5b848f39e5a1b480423b11a",
+ "staged": {
+  "runner.ps1": {
+   "from": "docs/verification/qa/p0-13-live-52be105/candidate-nonvoice-04/runner.ps1",
+   "sha256": "3adea4670487f84215608865be9eb569b80ad7070feec5a8fb7a166ab7abfc99"
+  },
+  "admission-checker.ps1": {
+   "from": "docs/verification/qa/p0-13-live-52be105/candidate-nonvoice-04/admission-checker.ps1",
+   "sha256": "9b4b3537ec84d2beb54347c5132860c8a9755c6f28b69ab07dccc160f2d6e6e1"
+  },
+  "overlay-fixture-check.ps1": {
+   "from": "/tmp/qa-parse-prep/overlay-fixture-check.ps1",
+   "sha256": "e09a7a942a3ef22fe2644f0b6dfcd2eadc6b0f7dccf837037b762b583c16729f"
+  },
+  "cs-00-QaAdmissionMonitor.cs": {
+   "sha256_of_literal": "caee186fa0835a02330c9877eb41b86b1455f98126a736054742819bddeb750e",
+   "first_class": "QaAdmissionMonitor",
+   "in": [
+    "runner.ps1",
+    "admission-checker.ps1"
+   ]
+  },
+  "cs-01-QaArgv.cs": {
+   "sha256_of_literal": "61e10ba7bd7d49b9e360ead7a7120bfe1fb7de9c092fdb07a4f9acfb11fd9a20",
+   "first_class": "QaArgv",
+   "in": [
+    "runner.ps1"
+   ]
+  },
+  "cs-02-QaEdgeScan.cs": {
+   "sha256_of_literal": "bccf532ebb7afa449916d956995d610d492558ee017071f6747acf55a22db382",
+   "first_class": "QaEdgeScan",
+   "in": [
+    "runner.ps1",
+    "admission-checker.ps1"
+   ]
+  },
+  "cs-03-QaOverlayFacts.cs": {
+   "sha256_of_literal": "0d8b4d28382c3c7507243dc1fa26421942f2cf8230f452f5d49f4109f7e5cad7",
+   "first_class": "QaOverlayFacts",
+   "in": [
+    "runner.ps1",
+    "admission-checker.ps1"
+   ]
+  },
+  "cs-04-QaPlacementMetadata.cs": {
+   "sha256_of_literal": "d5f69ab1e91089fe2da9fbd3299311ba51242ddc32b05e5b71d40dd14792e21e",
+   "first_class": "QaPlacementMetadata",
+   "in": [
+    "runner.ps1",
+    "admission-checker.ps1"
+   ]
+  },
+  "cs-05-QaWin.cs": {
+   "sha256_of_literal": "300879c63d5d78ca9c6df64a2dd9d314fdfb50faf9c97145cf28dc6b6c8caea7",
+   "first_class": "QaWin",
+   "in": [
+    "runner.ps1",
+    "admission-checker.ps1"
+   ]
+  }
+ }
+}

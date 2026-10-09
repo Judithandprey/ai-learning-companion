@@ -68,7 +68,8 @@ export const CIRCLE_ASSISTANCE = 'hint (the product\'s own cap for a circle with
 export const NATIVE_BOUND_MS = 600000;
 const sourceNames = ['qa_live_candidate.mjs', 'qa_tts_output_candidate.mjs', 'qa_visible_candidate.mjs', 'qa_edge_placement.ps1', 'qa_display_admission.ps1',
   'qa-electron-runner.ps1', 'qa_tts_stage_check.py', 'qa_live_stage_check.py', 'surface_live.html', 'sub_copy.mjs', 'qa_sub_copy_check.py', 'qa_live_copy_check.py',
-  'signin_cleanup.mjs', 'qa_live_ledger.mjs', 'qa_run_tts_candidate.mjs', 'qa_sub_watch.py', 'qa_admission_checker.ps1'];
+  'signin_cleanup.mjs', 'qa_live_ledger.mjs', 'qa_run_tts_candidate.mjs', 'qa_sub_watch.py', 'qa_admission_checker.ps1', 'qa_overlay_predicate.ps1',
+  'qa_overlay_fixtures.json', 'qa_overlay_fixture_check.ps1'];
 export const names = ['runner.ps1', 'steps.json', 'surface.html', 'sub-live.json', 'admission-checker.ps1', 'admission-live.json'];
 // The payloads the product reads through the link folder (named for that one app process); the others sit in the scratch.
 export const linkNames = ['sub-live.json', 'admission-live.json'];
@@ -162,6 +163,10 @@ export function liveSteps({ surfaceUrl, profile }) {
       return JSON.stringify({ state: a.state, model: a.model, image_input: true, quota_read: a.quota_read_at !== null, quota_available: q ? q.available : null,
         included_usage_allowed: q ? q.ordinary_usage_allowed : null, included_reached: windows.some(b => !!b.rate_limit_reached_type),
         credits_present: windows.some(b => !!b.credits && (b.credits.has_credits === true || b.credits.unlimited === true)), applicable_buckets: applicable.length, spend_control_reached: false }); })()`, 'account_ready'),
+    // The one display as the product lists it (its display_id, bounds and scale), recorded before Start: the checker's
+    // arm must name this same display (ledger sourceAdmission).
+    ctl(`(async () => { const d = await lc.listDisplays(); if (!Array.isArray(d) || d.length !== 1) throw Error('the product does not list exactly one display');
+      return JSON.stringify({ display_id: d[0].display_id, bounds: d[0].bounds, scale_factor: d[0].scale_factor, primary: d[0].primary }); })()`, 'display_choice'),
     { productPlacement: 'control' },
     raise, truth('surface_at_start'), onTop,
     // The Start: the three policy fields set through DevTools (value + input event, not OS typing), the AI box ticked,
@@ -255,8 +260,35 @@ const CHECKER_TYPES = ['QaWin', 'QaEdgeSurface', 'QaDisplayAdmissionNative', 'Qa
 // physical coordinates of the 2560x1600 display); without it the checker would test virtualized logical coordinates.
 const CHECKER_FOLLOWING = { QaWin: '[void][QaWin]::SetProcessDPIAware()\n' };
 const CHECKER_FUNCTIONS = ['Receive-Message', 'Invoke-Cdp', 'Target-Url', 'Get-Socket', 'Eval', 'ConvertTo-QaUrlKey', 'Get-QaEdgeSocket', 'Assert-QaEdgeSurfacePage',
-  'Get-QaOwnedEdgeIds', 'Find-QaEdgeSurface', 'Get-QaEdgeSurfaceWindow', 'Window-Handle', 'New-QaAdmissionEvidence', 'Read-QaDisplaySnapshot', 'Assert-QaDisplayBaseline', 'Assert-QaSurfaceAdmission'];
-const CHECKER_MARKER = '# @@QA_REVIEWED_ADMISSION_DEFINITIONS@@';
+  'Get-QaOwnedEdgeIds', 'Find-QaEdgeSurface', 'Get-QaEdgeSurfaceWindow', 'Window-Handle', 'New-QaAdmissionEvidence', 'Read-QaDisplaySnapshot', 'Assert-QaDisplayBaseline'];
+// The checker's admission is the reviewed Assert-QaSurfaceAdmission with exactly these substitutions (Lead decision
+// handoff_1698eb17, handoff_e893ca27): during the capture, at a point ONLY the overlay bound at the admitted arm may be
+// drawn above the admitted Edge (also while click-through), and the foreground may be that overlay with Edge at the
+// top of the normal band (qa_overlay_predicate.ps1 Test-QaPointAdmitted / Test-QaOverlayForeground); with no binding
+// (before arm) the point rule is the reviewed one exactly. Everything else is the reviewed text.
+export const CHECKER_ADMISSION_SUBSTITUTIONS = [
+  ['function Assert-QaSurfaceAdmission([string]$phase) {', 'function Assert-QaCheckerAdmission([string]$phase) {'],
+  ["    if (-not $state.Foreground -or ($state.Bounds -join ',') -ne '0,0,2560,1600') { throw 'owned foreground window does not cover the admitted display' }",
+   "    if (-not ($state.Foreground -or (Test-QaOverlayForeground $window $script:qaOverlayBinding $entry)) -or ($state.Bounds -join ',') -ne '0,0,2560,1600') { throw 'owned foreground window does not cover the admitted display' }"],
+  ["      if ([QaWin]::RootAt([int]$point[0], [int]$point[1]) -ne $window) { throw 'owned surface lost at a required card or corner point' }",
+   "      $root = [QaWin]::RootAt([int]$point[0], [int]$point[1])\n      if (-not (Test-QaPointAdmitted $root $window ([int]$point[0]) ([int]$point[1]) $script:qaOverlayBinding $entry)) { throw 'owned surface lost at a required card or corner point' }"],
+  ["    if ($lastWindow.Owner -ne $state.Owner -or -not $lastWindow.Foreground -or ($lastWindow.Bounds -join ',') -ne '0,0,2560,1600') {",
+   "    if ($lastWindow.Owner -ne $state.Owner -or -not ($lastWindow.Foreground -or (Test-QaOverlayForeground $window $script:qaOverlayBinding $entry)) -or ($lastWindow.Bounds -join ',') -ne '0,0,2560,1600') {"],
+];
+/** The checker's admission function, derived from the reviewed one by exactly CHECKER_ADMISSION_SUBSTITUTIONS. */
+export function checkerAdmission(runner) {
+  const at = runner.indexOf('function Assert-QaSurfaceAdmission([string]$phase) {');
+  if (at < 0 || runner.indexOf('function Assert-QaSurfaceAdmission(', at + 1) >= 0) throw Error('reviewed admission not found once');
+  let f = runner.slice(at, runner.indexOf('\n}\n', at) + 3);
+  for (const [a, b] of CHECKER_ADMISSION_SUBSTITUTIONS) {
+    if (f.split(a).length !== 2) throw Error('reviewed admission text changed; checker derivation refused');
+    f = f.replace(a, () => b);
+  }
+  return f;
+}
+const CHECKER_MARKER = '# @@QA_REVIEWED_ADMISSION_DEFINITIONS@@', PREDICATE_MARKER = '# @@QA_OVERLAY_PREDICATE@@';
+/** The ONE exact-overlay predicate, inserted unchanged into the checker and the runner. */
+export function overlayPredicate() { return readFileSync(join(here, 'qa_overlay_predicate.ps1'), 'utf8').replace(/\n+$/, '\n'); }
 /** The reviewed definitions the checker needs, each cut whole and unchanged from the runner (or a refusal). */
 export function checkerDefinitions(runner) {
   const blocks = [], starts = [...runner.matchAll(/^Add-Type @'\n/gm)].map(m => m.index);
@@ -274,13 +306,32 @@ export function checkerDefinitions(runner) {
     const end = first.trimEnd().endsWith('}') && (first.match(/\{/g) ?? []).length === (first.match(/\}/g) ?? []).length ? lineEnd : runner.indexOf('\n}\n', heads[0]) + 2;
     blocks.push(runner.slice(heads[0], end) + '\n');
   }
+  blocks.push(checkerAdmission(runner));
   return blocks.join('\n');
 }
 /** The frozen checker script: the protocol loop with the reviewed admission definitions inserted at its marker. */
 export function admissionChecker(runner) {
   const template = readFileSync(join(here, 'qa_admission_checker.ps1'), 'utf8');
-  if (template.split(CHECKER_MARKER).length !== 2) throw Error('checker template marker missing or repeated');
-  return template.replace(CHECKER_MARKER, () => '# ---- reviewed runner definitions, unchanged (qa_live_candidate.mjs checkerDefinitions) ----\n' + checkerDefinitions(runner) + '# ---- end of reviewed definitions ----');
+  if (template.split(CHECKER_MARKER).length !== 2 || template.split(PREDICATE_MARKER).length !== 2) throw Error('checker template markers missing or repeated');
+  return template.replace(CHECKER_MARKER, () => '# ---- reviewed runner definitions, unchanged (qa_live_candidate.mjs checkerDefinitions) ----\n' + checkerDefinitions(runner) + '# ---- end of reviewed definitions ----')
+    .replace(PREDICATE_MARKER, () => overlayPredicate());
+}
+/**
+ * The prepared (not executed) fixture check of the overlay predicate: its four pure functions (OVERLAY_PURE), cut
+ * unchanged from qa_overlay_predicate.ps1, inserted into qa_overlay_fixture_check.ps1. No native call; it runs only when
+ * the Lead allows it.
+ */
+export const OVERLAY_PURE = ['Get-QaOverlayBindingFault', 'Get-QaOverlayFault', 'Get-QaStackFault', 'Get-QaNormalTopFault'];
+export function overlayFixtureCheck() {
+  const template = overlayPredicate(), runner = readFileSync(join(here, 'qa_overlay_fixture_check.ps1'), 'utf8');
+  const cut = name => {
+    const at = template.indexOf(`function ${name}(`);
+    if (at < 0 || template.indexOf(`function ${name}(`, at + 1) >= 0) throw Error(`pure function ${name} not found once`);
+    return template.slice(at, template.indexOf('\n}\n', at) + 3);
+  };
+  const marker = '# @@QA_OVERLAY_PURE_FUNCTIONS@@';
+  if (runner.split(marker).length !== 2) throw Error('fixture check marker missing or repeated');
+  return runner.replace(marker, () => OVERLAY_PURE.map(cut).join('\n'));
 }
 const POWERSHELL = String.raw`C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`;
 export const ADMISSION_TIMING = { ready_ms: 10000, decision_ms: 5000 };   // the Lead's initial fixed values (4f7d9fa)
@@ -298,41 +349,68 @@ const ADMISSION_CONTEXT_FUNCTION = `function Write-QaAdmissionContext([string]$p
   if ($null -eq $script:qaEdgeIdentity -or $null -eq $script:qaDisplayBaseline) { throw 'source admission context is not established' }
   $p = $started['edge']
   if (-not $p -or $p.HasExited -or [uint32]$p.Id -ne $script:qaEdgeIdentity.pid -or $p.StartTime -ne $script:qaEdgeIdentity.start) { throw 'owned Edge changed before the source admission context' }
-  $context = [ordered]@{ format = 'lc-qa-admission-context/1'; edge_pid = [int]$p.Id; edge_start_ticks = $p.StartTime.Ticks.ToString(); token = [string]$script:qaEdgeIdentity.token
-    handle = $script:qaEdgeIdentity.handle.ToInt64().ToString(); surface_url = [string]$script:qaEdgeSurfaceUrl; edge_port = [int]$script:edgePort; display_signature = [string]$script:qaDisplayBaselineSignature }
+  if (-not $script:app -or $script:app.HasExited) { throw 'the launched product is unavailable for the source admission context' }
+  $context = [ordered]@{ format = 'lc-qa-admission-context/2'; edge_pid = [int]$p.Id; edge_start_ticks = $p.StartTime.Ticks.ToString(); token = [string]$script:qaEdgeIdentity.token
+    handle = $script:qaEdgeIdentity.handle.ToInt64().ToString(); surface_url = [string]$script:qaEdgeSurfaceUrl; edge_port = [int]$script:edgePort; display_signature = [string]$script:qaDisplayBaselineSignature
+    app_pid = [int]$script:app.Id; app_start_ticks = $script:app.StartTime.Ticks.ToString() }
   $bytes = (New-Object System.Text.UTF8Encoding($false)).GetBytes(($context | ConvertTo-Json -Compress) + "\`n")
   $stream = New-Object System.IO.FileStream($path, [System.IO.FileMode]::CreateNew, [System.IO.FileAccess]::Write, [System.IO.FileShare]::None)
   try { $stream.Write($bytes, 0, $bytes.Length); $stream.Flush($true) } finally { $stream.Dispose() }
 }
 `;
-const RUNNER_ADMISSION_DELTA = [
+function runnerAdmissionDelta() { return [
   ["foreach ($k in @('LC_SUBSCRIPTION_CONNECTOR', 'LC_DEV_CAPTURE_HOST', 'ELECTRON_RUN_AS_NODE')) {", "foreach ($k in @('LC_SUBSCRIPTION_CONNECTOR', 'LC_DEV_CAPTURE_HOST', 'LC_SOURCE_ADMISSION', 'ELECTRON_RUN_AS_NODE')) {"],
   ["function Start-App([string]$key, [string]$link = '', [string]$sub = '') {\n  $linkFile = $null\n  $subFile = $null\n",
    "function Start-App([string]$key, [string]$link = '', [string]$sub = '', [string]$admission = '') {\n  $linkFile = $null\n  $subFile = $null\n  $admissionFile = $null\n" +
    "  if ($admission) {\n    # The QA source-admission checker's pinned configuration, for this app process only (F3).\n    if ($admission -notmatch '^[a-z0-9-]+$' -or -not $LinkDir) { throw \"bad source admission config name $admission\" }\n" +
    "    $admissionFile = Join-Path $LinkDir \"admission-$admission.json\"\n    if (-not (Test-Path -LiteralPath $admissionFile -PathType Leaf)) { throw \"no source admission config $admission\" }\n  }\n"],
   ["  if ($subFile) { $env:LC_SUBSCRIPTION_CONNECTOR = $subFile }\n  try { Assert-QaSurfaceAdmission 'before_product_launch'; $script:app = Start-Process",
-   "  if ($subFile) { $env:LC_SUBSCRIPTION_CONNECTOR = $subFile }\n  Remove-Item Env:\\LC_SOURCE_ADMISSION -ErrorAction SilentlyContinue\n  try { Assert-QaSurfaceAdmission 'before_product_launch'; if ($admissionFile) { Write-QaAdmissionContext (Join-Path $LinkDir 'admission-context.json'); $env:LC_SOURCE_ADMISSION = $admissionFile }; $script:app = Start-Process"],
+   "  if ($subFile) { $env:LC_SUBSCRIPTION_CONNECTOR = $subFile }\n  Remove-Item Env:\\LC_SOURCE_ADMISSION -ErrorAction SilentlyContinue\n  try { Assert-QaSurfaceAdmission 'before_product_launch'; if ($admissionFile) { $env:LC_SOURCE_ADMISSION = $admissionFile }; $script:app = Start-Process"],
+  // The frozen context, naming the launched product, once the app is recorded (PID file included): a failed write then
+  // fails the step with the app already owned and recorded for the normal cleanup.
+  ["  try { Add-Content -Encoding ASCII -Path (Join-Path $OutDir 'app-pids.txt') -Value \"$key $($script:app.Id) $($script:app.StartTime.ToUniversalTime().ToString('o'))\" } catch { }\n}\n",
+   "  try { Add-Content -Encoding ASCII -Path (Join-Path $OutDir 'app-pids.txt') -Value \"$key $($script:app.Id) $($script:app.StartTime.ToUniversalTime().ToString('o'))\" } catch { }\n" +
+   "  if ($admissionFile) { Write-QaAdmissionContext (Join-Path $LinkDir 'admission-context.json'); $results.processes[$key].admission_context_sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath (Join-Path $LinkDir 'admission-context.json')).Hash.ToLower() }\n}\n"],
+  // The one exact-overlay predicate for the runner's own point consumers (Assert-QaEdgePoints and onTop's PID check).
+  ["      $record.owned = ($root -eq $window)\n", "      $record.owned = (Test-QaPointAdmitted $root $window ([int]$point[0]) ([int]$point[1]) $script:qaRunnerOverlayBinding $record)\n"],
+  ["        $entry.points = @($step.points).Count\n        Assert-QaEdgePoints $entry $h @($step.points)\n",
+   "        $entry.points = @($step.points).Count\n        $script:qaRunnerOverlayBinding = $null\n        if ($script:app -and -not $script:app.HasExited) { $script:qaRunnerOverlayBinding = Get-QaRunnerOverlayBinding }\n        Assert-QaEdgePoints $entry $h @($step.points)\n"],
+  ["          if ($at -ne $owner) { $other += ", "          if ($at -ne $owner -and -not ($null -ne $script:qaRunnerOverlayBinding -and (Test-QaPointAdmitted ([QaWin]::RootAt([int]$pt[0], [int]$pt[1])) $h ([int]$pt[0]) ([int]$pt[1]) $script:qaRunnerOverlayBinding $entry))) { $other += "],
   ["Remove-Item Env:\\LC_SUBSCRIPTION_CONNECTOR -ErrorAction SilentlyContinue; $env:TMP = $saved.TMP;", "Remove-Item Env:\\LC_SUBSCRIPTION_CONNECTOR -ErrorAction SilentlyContinue; Remove-Item Env:\\LC_SOURCE_ADMISSION -ErrorAction SilentlyContinue; $env:TMP = $saved.TMP;"],
   ["  if ($subFile) { $results.processes[$key].sub_config_sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $subFile).Hash.ToLower() }\n",
    "  if ($subFile) { $results.processes[$key].sub_config_sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $subFile).Hash.ToLower() }\n  $results.processes[$key].admission = $admission\n  if ($admissionFile) { $results.processes[$key].admission_config_sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $admissionFile).Hash.ToLower() }\n"],
   ["        Start-App ([string]$step.as) ([string]$step.link) ([string]$step.sub)\n", "        Start-App ([string]$step.as) ([string]$step.link) ([string]$step.sub) ([string]$step.admission)\n"],
-  ["function Assert-QaSurfaceAdmission([string]$phase) {", ADMISSION_CONTEXT_FUNCTION + "function Assert-QaSurfaceAdmission([string]$phase) {"],
-];
+  ["function Assert-QaSurfaceAdmission([string]$phase) {", ADMISSION_CONTEXT_FUNCTION + overlayPredicate() + RUNNER_BINDING_FUNCTION + "function Assert-QaSurfaceAdmission([string]$phase) {"],
+]; }
+// The current capture's overlay binding for the runner's own point checks: main's test-only session state
+// (source_admission {capture_id, overlay {pid, hwnd}, active}, Lead handoff_e893ca27) must agree with the arm QA's
+// checker admitted (its log) and name the launched product; then the one predicate binds it to the launched product's
+// native identity. None while no capture is armed: the strict rule applies.
+const RUNNER_BINDING_FUNCTION = `$script:qaRunnerOverlayBinding = $null
+function Get-QaRunnerOverlayBinding {
+  $state = (Eval 'control' "(async () => { const s = await lc.sessionState(); return JSON.stringify(s && s.source_admission ? s.source_admission : null); })()") | ConvertFrom-Json
+  if ($null -eq $state -or $state.active -ne $true) { return $null }
+  $arms = @(Get-Content -LiteralPath (Join-Path $OutDir 'admission-checker.jsonl') -Encoding UTF8 | ForEach-Object { try { $_ | ConvertFrom-Json } catch { $null } } | Where-Object { $null -ne $_ -and $_.event -ceq 'decision' -and $_.phase -ceq 'arm' -and $_.verdict -ceq 'allow' })
+  if ($arms.Count -ne 1) { throw 'the source-admission checker has no single admitted arm' }
+  $arm = $arms[0]
+  if ($null -eq $arm.overlay -or $null -eq $state.overlay -or [string]$arm.capture_id -cne [string]$state.capture_id -or [string]$arm.overlay.hwnd -cne [string]$state.overlay.hwnd -or [string]$arm.overlay.pid -cne [string]$state.overlay.pid) { throw 'the current overlay binding differs from the arm the checker admitted' }
+  return New-QaOverlayBinding $state.overlay ([uint32]$script:app.Id) $script:app.StartTime.Ticks $script:app (New-QaOverlayExpect ([uint32]$script:app.Id) $script:qaDisplayBaseline.monitor_bounds)
+}
+`;
 /** The live candidate's one runner delta (above), applied to the reviewed bytes; each site must be found exactly once. */
 export function applyAdmissionDelta(runner) {
-  for (const [from, to] of RUNNER_ADMISSION_DELTA) {
+  for (const [from, to] of runnerAdmissionDelta()) {
     if (runner.split(from).length !== 2 || runner.includes(to)) throw Error('runner changed; source admission delta refused');
     runner = runner.replace(from, () => to);
   }
   return runner;
 }
 export function revertAdmissionDelta(runner) {
-  for (const [from, to] of [...RUNNER_ADMISSION_DELTA].reverse()) {
+  for (const [from, to] of [...runnerAdmissionDelta()].reverse()) {
     if (runner.split(to).length !== 2) throw Error('source admission delta missing or changed');
     runner = runner.replace(to, () => from);
   }
-  if (/LC_SOURCE_ADMISSION|Write-QaAdmissionContext|admissionFile/.test(runner)) throw Error('source admission delta left traces');
+  if (/LC_SOURCE_ADMISSION|Write-QaAdmissionContext|admissionFile|QaOverlay|qaRunnerOverlayBinding/.test(runner)) throw Error('source admission delta left traces');
   return runner;
 }
 export function connectorConfig() {
@@ -366,7 +444,7 @@ function manifestFor(work) {
     native_worst_case_ms: worstCaseMs(liveSteps(ctx)),
     raw_receipts: 'Kept outside the repository (~/.local/state/lc-qa-live/<run>/receipts, 0700); only an allowlisted, sanitized set of generated evidence is for Git (Lead D8).',
     script_permission: 'A separate, exact, process-only RemoteSigned permission is required for this runner with real subscription use AND for the checker the product starts per capture (Windows PowerShell -NoProfile -NonInteractive -ExecutionPolicy RemoteSigned -File admission-checker.ps1, from admission-live.json); the AI-disabled approvals do not carry over.',
-    source_admission: 'F3 (Lead interface 4f7d9fa): the product\'s main process starts admission-checker.ps1 once per capture from admission-live.json (LC_SOURCE_ADMISSION, this process only) and asks it at arm, before and after each frame acquisition and before each send; every decision is a fresh full native admission (the reviewed Assert-QaSurfaceAdmission, with the normal-band predicate read on the admitted window just before and after) against the context the runner froze right before the launch, logged before it is answered; about 3 s per decision by the accepted diagnostic\'s admission timings (not measured with the checker), within decision_ms 5000. Logical ordering only: an OS change between two native observations remains possible. The app side is Web\'s (apps/windows); 52be105 does not start the checker, and the wrapper refuses every allocation until a reviewed interlock build is named.',
+    source_admission: 'F3 (Lead interface 4f7d9fa; decisions handoff_1698eb17, handoff_e893ca27): the product\'s main process starts admission-checker.ps1 once per capture from admission-live.json (LC_SOURCE_ADMISSION, this process only) and asks it at arm, before and after each frame acquisition and before each send; every decision is a fresh full native admission (the reviewed Assert-QaSurfaceAdmission with exactly four substitutions for the exact-overlay passage, and the normal band read on the admitted window with its process revalidated) against the context the runner froze after the launch (Edge, display, launched product), logged before it is answered. The overlay that main names at arm (UNRELEASED protocol field overlay {pid, hwnd}, to be coordinated with Web) is bound to the launched product for the capture; the same predicate (qa_overlay_predicate.ps1) serves the runner onTop point checks via main\'s source_admission session state. UNVERIFIED: no PowerShell ran it natively; about 3 s per decision is inferred from the accepted diagnostic, not measured. Logical ordering only: an OS change between two native observations remains possible. 52be105 does not start the checker; the wrapper refuses every allocation until a reviewed interlock build is named.',
     proposed_native_invocation: { executable: String.raw`C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`, arguments: ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'RemoteSigned', ...fileArgs], status: 'NOT_ALLOCATED_NOT_EXECUTED', persistent_policy_changes: false },
     capture_prerequisite_mode: 'REAL_SUBSCRIPTION_NONVOICE_GENERATED_SURFACE',
     provider_attempts: 0, native_script_executed: false, display_account_audio_lease: 'NONE',

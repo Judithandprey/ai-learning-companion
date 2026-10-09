@@ -12,7 +12,7 @@ import * as candidateModule from './qa_live_candidate.mjs';
 import * as ledgerModule from './qa_live_ledger.mjs';
 
 const { ACTIONS, ADMISSION_TIMING, ASSISTANCE, CONNECTOR, POLICY, POLICY_MS, QUESTIONS, REVIEWED_RUNNER, admissionChecker, applyAdmissionDelta, assertReviewedRunner, checkLiveCandidate,
-  checkerDefinitions, connectorConfig, linkNames, names, prepareLiveCandidate, revertAdmissionDelta, worstCaseMs } = candidateModule;
+  checkerDefinitions, connectorConfig, linkNames, names, prepareLiveCandidate, revertAdmissionDelta, worstCaseMs, CHECKER_ADMISSION_SUBSTITUTIONS, checkerAdmission, overlayFixtureCheck, overlayPredicate, OVERLAY_PURE } = candidateModule;
 const { buildLedger, evidence, fenceVerdict, leaks, parseJsonl, pixelEvidence, sourceAdmission, transport } = ledgerModule;
 
 const identity = JSON.parse(readFileSync(new URL('../../../docs/verification/qa/p0-13-tts-52be105/stage-identity.json', import.meta.url)));
@@ -172,6 +172,14 @@ test('the live surface changes its cards in place: new values never shown before
 });
 
 // ---- the ledger ----
+// The display as the product listed it before Start (display_choice) and as main names it at arm (decimal string id).
+const choice = { display_id: '3071609112', bounds: { x: 0, y: 0, width: 1280, height: 800 }, scale_factor: 2, primary: true };
+const armDisplay = { id: '3071609112', bounds: { x: 0, y: 0, width: 1280, height: 800 }, scale_factor: 2 };
+// Main's own record (Web 48c20c4 admission.jsonl) as main writes it for the decisions in a checker log.
+const mainFrom = lines => lines.filter(d => d.event === 'decision').map(d => ({ kind: 'decision', phase: d.phase, sample_seq: d.sample_seq ?? null, frame_seq: d.frame_seq ?? null, raw_sha256: d.raw_sha256 ?? null,
+  raw_size: d.raw_size ?? null, request_id: d.request_id ?? null, image_sha256: d.image_sha256 ?? null, allowed: d.verdict === 'allow', denied: d.verdict !== 'allow', reason: d.reason ?? null, ms: 3000 }))
+  .concat([{ kind: 'checker_end', spawned: true, exit_seen: true, code: 0, signal: null, killed: false }]);
+const admitted = (l, lines, c = choice, m = mainFrom(lines)) => sourceAdmission(l, lines, c, m);
 // QA's checker log for a ledger as the checker writes it when every request went out admitted: ready, arm, then for each
 // request that may have been sent one acquisition (pre, post) and its send, each with an accepted fresh admission.
 function checkerLog(ledger, { skip = [] } = {}) {
@@ -179,7 +187,7 @@ function checkerLog(ledger, { skip = [] } = {}) {
   const admitted = phase => ({ phase: 'checker_' + phase, at: `2026-10-09T06:00:${String(10 + seq).padStart(2, '0')}.000Z`, accepted: true, error: null, owned_points: 16 });
   const decision = (phase, extra) => { seq += 1; return { event: 'decision', seq, id: seq.toString(16).padStart(32, '0'), phase, capture_id: '0123456789abcdef', sample_seq: null, frame_seq: null, raw_sha256: null, raw_size: null,
     request_id: null, image_sha256: null, verdict: 'allow', reason: null, admission: admitted(phase), ...extra }; };
-  const lines = [{ event: 'ready' }, decision('arm', {})];
+  const lines = [{ event: 'ready' }, decision('arm', { display: structuredClone(armDisplay) })];
   for (const s of ledger.slots.filter(x => x.counted && x.request_id && x.submission !== 'not_submitted' && !skip.includes(x.request_id))) {
     sample += 1;
     const frame = { sample_seq: sample, frame_seq: 100 + sample, raw_sha256: sample.toString(16).padStart(64, 'e'), raw_size: { width: 2560, height: 1600 } };
@@ -189,16 +197,16 @@ function checkerLog(ledger, { skip = [] } = {}) {
 }
 const stepIndex = as => idx(s => s.as === as) + 1, strokeAt = idx(s => Array.isArray(s.stroke)) + 1;
 const ranTo = (n, values = {}) => ({ steps: steps.slice(0, n).map((_, k) => ({ i: k + 1, ok: true })), values });
-const look = (rid, sha256) => [{ kind: 'started', session_id: 'live-1' }, { kind: 'look', request_id: rid, image: { file: `frames/${sha256}.png`, sha256 } }, { kind: 'looked', request_id: rid, text: 'Cards 4821 and 5532 are visible.' }];
+const look = (rid, sha256) => [{ kind: 'started', session_id: 'live-1' }, { kind: 'look', session_id: 'live-1', request_id: rid, image: { file: `frames/${sha256}.png`, sha256 } }, { kind: 'looked', session_id: 'live-1', request_id: rid, text: 'Cards 4821 and 5532 are visible.' }];
 // App records use the product's vocabulary (submitted / not_submitted / unknown); receipts use the connector's.
-const entry = (rid, trigger, extra = {}) => ({ request_id: rid, trigger, question: trigger === 'focus' ? null : QUESTIONS.followup, assistance: 'hint', asked_as: 'silent',
+const entry = (rid, trigger, extra = {}) => ({ request_id: rid, trigger, live_session_id: 'live-1', question: trigger === 'focus' ? null : QUESTIONS.followup, assistance: 'hint', asked_as: 'silent',
   frame: { image: { sha256: 'f' + rid.length }, focus: 'on_this_frame', captured_at: '2026-10-09T06:00:20.000Z' }, submitted_at: `2026-10-09T06:00:${10 + Number(rid.slice(-1))}.000Z`,
   submission: 'submitted', outcome: { status: 'answered' }, shown: true, presentation: 'shown', ...extra });
 const receipt = (rid, sha256, extra = {}) => ({ request_id: rid, input_types: ['text', 'image'], image_sha256: sha256, submission: 'acknowledged', outcome: 'completed', produced_item_types: ['userMessage', 'reasoning', 'agentMessage'], codex_sha256: CONNECTOR.codex_sha256, explicit_bin_override: true, ...extra });
 const values = { action1: JSON.stringify({ used: 1, unwritten: 0 }), action2: JSON.stringify({ used: 2 }), action3: JSON.stringify({ used: 3 }), action4_after: JSON.stringify({ used: 3, unwritten: 0 }),
   action3_card: JSON.stringify({ answer: 'A3' }), action4_stop: JSON.stringify({ out_at_stop: 1, used_at_stop: 3 }), action4_card: JSON.stringify({ answer_hidden: true, answer: '' }) };
 function happy() {
-  const liveLines = [...look('live-1.look.1', 'a1'), { kind: 'ended', reason: 'stopped by you', used: 3 }, { kind: 'settled', request_id: 'sel.3', submission: 'not_submitted', used: 3 }];
+  const liveLines = [...look('live-1.look.1', 'a1'), { kind: 'ended', session_id: 'live-1', reason: 'stopped by you', used: 3 }, { kind: 'settled', session_id: 'live-1', request_id: 'sel.3', submission: 'not_submitted', used: 3 }];
   const asks = [{ requests: [entry('sel.1', 'focus'), entry('sel.2', 'text_followup'), entry('sel.3', 'text_followup', { question: QUESTIONS.fence, outcome: { status: 'cancelled', uncertain: false }, shown: false, presentation: undefined, submission: 'not_submitted' })] }];
   // One connector launch: its turn/start count is cumulative (1, 2, 3; the unsent fourth adds none).
   const receipts = { 'live-1.look.1': receipt('live-1.look.1', 'a1', { turn_start_count: 1 }), 'sel.1': receipt('sel.1', 'f5', { turn_start_count: 2 }), 'sel.2': receipt('sel.2', 'f5', { turn_start_count: 3 }),
@@ -377,7 +385,7 @@ test('wrapper: the connector side refuses a missing or inexact copy, anything ru
 test('wrapper: the mechanical result needs every term, the connector and its children gone, and keeps acceptance NOT_JUDGED', () => {
   const h = happy(), ledger = ledgerOf(h);
   const report = { launcher: { status: 0 }, aborted: null, steps_ok: true, collect_errors: [], owned_launch_cleanup_confirmed: true, connector_left_running: [], connector_watch: { state: 'released', descendants: 1 },
-    ledger, fence: fenceVerdict(ledger, h.liveLines, h.results.values), evidence: { leaks_in_questions: [] }, source_admission: sourceAdmission(ledger, checkerLog(ledger)) };
+    ledger, fence: fenceVerdict(ledger, h.liveLines, h.results.values), evidence: { leaks_in_questions: [] }, source_admission: admitted(ledger, checkerLog(ledger)) };
   const ok = wrapper.judgeMechanics(report);
   assert.equal(ok.mechanics_passed, true); assert.match(ok.acceptance, /^NOT_JUDGED/);
   for (const [k, v] of [['launcher', { status: 1 }], ['aborted', 'x'], ['steps_ok', false], ['collect_failed', 'x'], ['collect_errors', ['receipts: x']], ['collect_errors', undefined], ['owned_launch_cleanup_confirmed', false], ['connector_left_running', [123]],
@@ -420,7 +428,7 @@ test('wrapper: the watch summary is released only with the whole lifecycle obser
 });
 test('wrapper: with an exact allocation it still refuses at the connector checks before any Windows call, any folder or any process', async () => {
   const realFs = await import('node:fs');
-  const saved = JSON.parse(realFs.readFileSync(new URL('../../../docs/verification/qa/p0-13-live-52be105/candidate-nonvoice-03/candidate.json', import.meta.url)));
+  const saved = JSON.parse(realFs.readFileSync(new URL('../../../docs/verification/qa/p0-13-live-52be105/candidate-nonvoice-04/candidate.json', import.meta.url)));
   const wrapperHash = sha(realFs.readFileSync(new URL('qa_run_live_candidate.mjs', import.meta.url)));
   const record = { ...goodAllocation(), wrapper_sha256: wrapperHash, native_bound_ms: saved.native_bound_ms,
     native_invocation: { executable: saved.proposed_native_invocation.executable, arguments: saved.proposed_native_invocation.arguments },
@@ -535,7 +543,7 @@ test('F1: the spend/workspace veto reads only the bucket the connector applies t
 
 const reportOf = (h, over = {}) => { const ledger = ledgerOf(h); return { launcher: { status: 0 }, aborted: null, steps_ok: true, collect_errors: [], owned_launch_cleanup_confirmed: true,
   connector_left_running: [], connector_watch: { state: 'released', descendants: 1 }, ledger, fence: fenceVerdict(ledger, h.liveLines, h.results.values), evidence: { leaks_in_questions: [] },
-  source_admission: sourceAdmission(ledger, checkerLog(ledger)), ...over }; };
+  source_admission: admitted(ledger, checkerLog(ledger)), ...over }; };
 test('F4: Support\'s receipt witness cases fail the mechanics; collection, records, tools, digest and provider turns are judged for every action', () => {
   const control = wrapper.judgeMechanics(reportOf(happy()));
   assert.equal(control.mechanics_passed, true, JSON.stringify(control.mechanics));
@@ -654,51 +662,66 @@ test('receipt reader: only this run\'s new launches, real folders and files, the
 });
 
 // ---- F3 (Lead interface 4f7d9fa): QA's source-admission checker, its configuration, the runner delta and the binding ----
-test('F3 checker: the reviewed admission definitions are inserted unchanged; the checker only reads, runs no command, and follows the Lead protocol', () => {
-  const checker = base.payload['admission-checker.ps1'], defs = checkerDefinitions(runner);
+test('F3 checker: the reviewed admission with exactly four overlay substitutions, the one shared predicate, read-only natives, and the Lead protocol', () => {
+  const checker = base.payload['admission-checker.ps1'], defs = checkerDefinitions(runner), derived = checkerAdmission(runner), predicate = overlayPredicate();
   assert.equal(checker, admissionChecker(runner)); assert.ok(checker.includes(defs));
-  for (const block of defs.split(/\n(?=function |Add-Type @')/)) assert.ok(runner.includes(block.trimEnd()), block.slice(0, 60));     // byte for byte from the runner
-  assert.equal(checker.includes('@@QA_REVIEWED_ADMISSION_DEFINITIONS@@'), false);
+  for (const block of defs.replace(derived, '').split(/\n(?=function |Add-Type @')/)) assert.ok(runner.includes(block.trimEnd()), block.slice(0, 60));   // byte for byte from the runner
+  assert.equal(/@@QA_(REVIEWED_ADMISSION_DEFINITIONS|OVERLAY_PREDICATE)@@/.test(checker), false);
+  // The checker's admission = the reviewed one with exactly the four substitutions (Lead handoff_1698eb17/e893ca27).
   const at = runner.indexOf('function Assert-QaSurfaceAdmission('), admission = runner.slice(at, runner.indexOf('\n}\n', at) + 3);
-  assert.ok(checker.includes(admission));
-  for (const k of ['-not $state.Foreground', '-not $lastWindow.Foreground', "'0,0,2560,1600'", '$entry.owned_points++', 'Assert-QaDisplayBaseline $entry.native_final', 'fresh owned browser geometry changed']) assert.ok(admission.includes(k), k);   // no guard weakened
+  assert.ok(checker.includes(derived)); assert.equal(CHECKER_ADMISSION_SUBSTITUTIONS.length, 4);
+  let reverted = derived;
+  for (const [a, b] of [...CHECKER_ADMISSION_SUBSTITUTIONS].reverse()) { assert.equal(reverted.split(b).length, 2, a.slice(0, 50)); reverted = reverted.replace(b, () => a); }
+  assert.equal(reverted, admission);
+  assert.equal((checker.match(/^function Assert-QaSurfaceAdmission\(/gm) ?? []).length, 0);
+  for (const k of ["'0,0,2560,1600'", '$entry.owned_points++', 'Assert-QaDisplayBaseline $entry.native_final', 'fresh owned browser geometry changed', "throw 'owned surface lost at a required card or corner point'"]) assert.ok(derived.includes(k), k);
+  assert.ok(derived.includes("if (-not (Test-QaPointAdmitted $root $window ([int]$point[0]) ([int]$point[1]) $script:qaOverlayBinding $entry)) { throw 'owned surface lost"));
+  assert.equal((derived.match(/\((\$state|\$lastWindow)\.Foreground -or \(Test-QaOverlayForeground \$window \$script:qaOverlayBinding \$entry\)\)/g) ?? []).length, 2);
+  // ONE predicate: the same bytes in the checker and in the runner.
+  assert.ok(checker.includes(predicate) && runner.includes(predicate)); assert.equal(checker.split(predicate).length, 2); assert.equal(runner.split(predicate).length, 2);
   const uncommented = text => text.split('\n').filter(l => !l.trimStart().startsWith('#')).join('\n');
-  const code = uncommented(checker.replace(/Add-Type @'[\s\S]*?\n'@\n/g, ''));                                       // the PowerShell only, without comment lines
+  const code = uncommented(checker.replace(/Add-Type @'[\s\S]*?\n'@\n/g, ''));
   const defined = new Set([...code.matchAll(/^function ([A-Za-z-]+)/gm)].map(m => m[1]));
-  for (const name of new Set([...code.matchAll(/\b([A-Z][a-z]+-Qa[A-Za-z]+)\b/g)].map(m => m[1]).concat(['Invoke-Cdp', 'Receive-Message', 'Window-Handle', 'Target-Url', 'Get-Socket', 'Eval']))) {
-    if (name !== 'Write-QaAdmissionContext') assert.ok(defined.has(name), `${name} is defined in the checker`);
-  }
+  for (const name of new Set([...code.matchAll(/\b([A-Z][a-z]+-Qa[A-Za-z]+)\b/g)].map(m => m[1]).concat(['Invoke-Cdp', 'Receive-Message', 'Window-Handle', 'Target-Url', 'Get-Socket', 'Eval']))) assert.ok(defined.has(name), `${name} is defined in the checker`);
   assert.deepEqual([...new Set([...code.matchAll(/\[(Qa\w+)\]::(\w+)/g)].map(m => `${m[1]}.${m[2]}`))].sort(),
-    ['QaDisplayAdmissionNative.ReadDisplays', 'QaDisplayAdmissionNative.ReadWindow', 'QaEdgeSurface.Find', 'QaPlacementNative.Read', 'QaWin.Find', 'QaWin.RootAt', 'QaWin.SetProcessDPIAware']);   // reads only: no raise, input or move
-  // Physical coordinates as in the runner (its statement right after the QaWin type), before any decision.
+    ['QaDisplayAdmissionNative.ReadDisplays', 'QaDisplayAdmissionNative.ReadWindow', 'QaEdgeSurface.Find', 'QaOverlayNative.AboveInNormalBand', 'QaOverlayNative.Read', 'QaOverlayNative.StackAbove',
+      'QaPlacementNative.Read', 'QaWin.Find', 'QaWin.GetForegroundWindow', 'QaWin.RootAt', 'QaWin.SetProcessDPIAware']);   // reads only: no raise, input or move
+  for (const bad of [/Start-Process/, /Stop-Process/, /Invoke-Expression|\biex\b/i, /EncodedCommand/i, /\.Kill\(/, /Invoke-Item/, /Set-ExecutionPolicy/, /Add-Content|Set-Content|Out-File/, /Remove-Item/, /Send-Cdp/, /dispatch(Mouse|Key|Touch)Event/]) assert.equal(bad.test(code), false, String(bad));
   assert.ok(runner.includes("'@\n[void][QaWin]::SetProcessDPIAware()\n") && checker.includes("'@\n[void][QaWin]::SetProcessDPIAware()\n"));
   assert.ok(checker.indexOf('[void][QaWin]::SetProcessDPIAware()') < checker.indexOf('# ---- start:'));
-  for (const bad of [/Start-Process/, /Stop-Process/, /Invoke-Expression|\biex\b/i, /EncodedCommand/i, /\.Kill\(/, /Invoke-Item/, /Set-ExecutionPolicy/, /Add-Content|Set-Content|Out-File/, /Remove-Item/, /Send-Cdp/, /dispatch(Mouse|Key|Touch)Event/]) {
-    assert.equal(bad.test(code), false, String(bad));
-  }
   const template = readFileSync(new URL('qa_admission_checker.ps1', import.meta.url), 'utf8'), loop = template.slice(template.indexOf('# ---- start:'));
-  assert.equal(/\b(Eval|Invoke-Cdp|Get-Socket)\b/.test(loop), false);                                                   // no request text reaches the page
+  assert.equal(/\b(Eval|Invoke-Cdp|Get-Socket)\b/.test(loop), false);
   assert.ok(loop.includes(`$qaProtocolOut.WriteLine('{"format":"lc-source-admission/1","ready":true}')`));
-  assert.ok(template.includes("$qaReqNames = 'capture_id,display,format,frame_seq,id,image_sha256,phase,raw_sha256,raw_size,request_id,sample_seq,sent_at,seq'"));
+  assert.ok(template.includes("$qaReqNames = 'capture_id,display,format,frame_seq,id,image_sha256,overlay,phase,raw_sha256,raw_size,request_id,sample_seq,sent_at,seq'"));
   const replyText = loop.slice(loop.indexOf('$reply = [ordered]@{'), loop.indexOf('$out = $reply'));
   const replyKeys = [...replyText.matchAll(/(\w+) = /g)].map(m => m[1]).filter(k => k !== 'reply');
-  assert.deepEqual(replyKeys, ['format', 'id', 'seq', 'phase', 'capture_id', 'display', 'sample_seq', 'frame_seq', 'raw_sha256', 'raw_size', 'request_id', 'image_sha256', 'verdict', 'reason']);
-  for (const k of replyKeys.slice(0, 12)) assert.ok(replyText.includes(`${k} = $r.${k}`), `${k} echoed`);
-  assert.ok(loop.indexOf("event = 'decision'") < loop.indexOf('$qaProtocolOut.WriteLine($out)'));                    // logged before answered
-  assert.equal((template.match(/\$qaProtocolOut\.WriteLine\(/g) ?? []).length, 2);                                   // the protocol carries only ready and the logged replies
+  assert.deepEqual(replyKeys, ['format', 'id', 'seq', 'phase', 'capture_id', 'display', 'overlay', 'sample_seq', 'frame_seq', 'raw_sha256', 'raw_size', 'request_id', 'image_sha256', 'verdict', 'reason']);
+  for (const k of replyKeys.slice(0, 13)) assert.ok(replyText.includes(`${k} = $r.${k}`), `${k} echoed`);
+  assert.ok(loop.indexOf("event = 'decision'") < loop.indexOf('$qaProtocolOut.WriteLine($out)'));
+  assert.equal((template.match(/\$qaProtocolOut\.WriteLine\(/g) ?? []).length, 2);
   for (const k of ['AddSeconds(1800)', '$qaState.count -gt 4096', 'GetByteCount($line) -gt 4096', 'exit 2', 'exit 0', "if ($null -ne $qaState.denied) { $reason = 'an earlier decision denied this capture' }"]) assert.ok(loop.includes(k), k);
-  assert.equal((loop.match(/Assert-QaSurfaceAdmission/g) ?? []).length, 1); assert.ok(loop.includes('$results.values = [ordered]@{}'));   // one fresh admission per decision
-  // One decision: the normal band on the admitted window, the reviewed admission (its own two identity resolutions, the
-  // measured bulk), the normal band again; no further window resolution (the accepted diagnostic's timing, F3 latency).
-  const decide = loop.slice(loop.indexOf('$before = [QaPlacementNative]::Read($script:qaEdgeIdentity.handle)'), loop.indexOf("} catch { $reason = 'source admission refused"));
-  const steps3 = ['$before = [QaPlacementNative]::Read($script:qaEdgeIdentity.handle)', 'if ($before.Topmost -or $before.Minimized) { throw', "$null = Assert-QaSurfaceAdmission ('checker_' + $r.phase)",
-    '$after = [QaPlacementNative]::Read($script:qaEdgeIdentity.handle)', 'if ($after.Topmost -or $after.Minimized) { throw'].map(k => decide.indexOf(k));
-  assert.ok(steps3.every(i => i >= 0) && steps3.every((i, k) => k === 0 || i > steps3[k - 1]), String(steps3));
-  assert.equal(/Window-Handle|Get-QaEdgeSurfaceWindow|Assert-QaNormalEdge/.test(uncommented(loop)), false);
+  assert.equal((loop.match(/Assert-QaCheckerAdmission/g) ?? []).length, 1); assert.ok(loop.includes('$results.values = [ordered]@{}'));
+  // One decision: (arm only) bind the named overlay, the band, the admission, the band, the bound overlay revalidated.
+  const decide = loop.slice(loop.indexOf("if ($r.phase -ceq 'arm') { $script:qaOverlayBinding = New-QaOverlayBinding"), loop.indexOf("} catch { $reason = 'source admission refused"));
+  const order = ["if ($r.phase -ceq 'arm') { $script:qaOverlayBinding = New-QaOverlayBinding $r.overlay $script:qaApp.pid $script:qaApp.start_ticks $script:qaApp.process $script:qaOverlayExpect }",
+    '        Assert-QaCheckerBand\n', "$null = Assert-QaCheckerAdmission ('checker_' + $r.phase)", '        Assert-QaCheckerBand\n        # During the capture the bound overlay', 'Get-QaOverlayStateFault $script:qaOverlayBinding'];
+  const pos = order.map((k, i) => (i === 3 ? decide.indexOf(k, decide.indexOf(order[2])) : decide.indexOf(k)));
+  assert.ok(pos.every(i => i >= 0) && pos.every((i, k) => k === 0 || i > pos[k - 1]), String(pos));
+  assert.ok(decide.includes("$held.overlay_handle -cne $script:qaOverlayBinding.hwnd_text)) { throw 'an unbound overlay was accepted' }"));
+  assert.ok(decide.includes("if ($null -ne $script:qaOverlayBinding) {\n          $fault = Get-QaOverlayStateFault $script:qaOverlayBinding\n          if ($null -ne $fault) { throw ('the bound overlay changed during the check: ' + $fault) }"));   // every decision during the capture
+  // The lineage, order and replay refusals stay (the interface's admitted lineage).
+  for (const k of ["'send names no admitted acquisition'", "'post_acquire names no admitted pre_acquire'", "'this request was already admitted for sending'", "'request identity replayed'", "'request sequence did not increase'",
+    "'arm display is not the admitted display'", "'arm must be the first and only arm request'", "'another capture'", "'sample sequence did not increase'", "'no admitted arm for this capture'"]) assert.ok(template.includes(k), k);
+  assert.equal(/Window-Handle|Get-QaEdgeSurfaceWindow|Assert-QaNormalEdge|OwnedWindows/.test(uncommented(loop)), false);   // no further identity resolution, no title search
+  assert.ok(template.includes("if ($r.phase -ceq 'arm') { $script:qaOverlayBinding = $null }"));                       // a denied arm binds nothing
+  assert.ok(template.includes("if ($null -ne $r.display -or $null -ne $r.overlay) { return 'only arm carries a display or an overlay' }"));
+  assert.ok(template.includes("if (-not (Test-QaCheckerObject $o) -or (Get-QaCheckerNames $o) -cne 'hwnd,pid') { return 'arm overlay is malformed' }"));
+  const band = template.slice(template.indexOf('function Assert-QaCheckerBand {'), template.indexOf('\n}\n', template.indexOf('function Assert-QaCheckerBand {')));
+  for (const k of ['$p.HasExited -or $p.StartTime -ne $script:qaEdgeIdentity.start', '$g.Owner -ne $script:qaEdgeIdentity.pid', 'if ($m.Topmost -or $m.Minimized)']) assert.ok(band.includes(k), k);
   const ne = runner.slice(runner.indexOf('function Assert-QaNormalEdge('), runner.indexOf('\n}\n', runner.indexOf('function Assert-QaNormalEdge(')));
-  assert.ok(ne.includes('if ($snapshot.topmost -or $snapshot.minimized)'));                                              // the same band predicate as the reviewed one
-  // No line continues a condition with a leading binary operator (Windows PowerShell has no such continuation: a parse
-  // error that would keep the checker from ever starting); a leading -not must follow an operator ending the line before.
+  assert.ok(ne.includes('if ($snapshot.topmost -or $snapshot.minimized)'));
+  for (const k of ["'app_pid,app_start_ticks,display_signature,edge_pid,edge_port,edge_start_ticks,format,handle,surface_url,token'", '$appProcess.StartTime.Ticks -ne [long]$qaContext.app_start_ticks',
+    'Get-CimInstance Win32_Process -Filter "ProcessId=$PID"', '[int]$parent[0].ParentProcessId -ne [int]$qaContext.app_pid', '$script:qaOverlayExpect = New-QaOverlayExpect ([uint32]$qaContext.app_pid) $script:qaDisplayBaseline.monitor_bounds']) assert.ok(template.includes(k), k);
   for (const [label, text] of [['checker', checker], ['runner delta', runner.slice(runner.indexOf('function Write-QaAdmissionContext('), runner.indexOf('function Assert-QaSurfaceAdmission('))]]) {
     const lines = text.split('\n');
     lines.forEach((l, i) => {
@@ -706,11 +729,9 @@ test('F3 checker: the reviewed admission definitions are inserted unchanged; the
       if (/^\s+-not\b/.test(l)) assert.match(lines[i - 1].trimEnd(), /(-or|-and|\()$/, `${label} line ${i + 1}`);
     });
   }
-  // The main-owned display id is a decimal string in the product (display_id); a number is accepted too, echoed unchanged.
   assert.ok(template.includes("$idOk = ($d.id -is [string] -and $d.id -cmatch '^[0-9]{1,20}\\z') -or (Test-QaCheckerCount $d.id 0)"));
-  for (const k of ["'send names no admitted acquisition'", "'post_acquire names no admitted pre_acquire'", "'this request was already admitted for sending'", "'request identity replayed'", "'arm display is not the admitted display'"]) assert.ok(template.includes(k), k);
 });
-test('F3 configuration and runner delta: Windows PowerShell with the frozen checker and the Lead timings; LC_SOURCE_ADMISSION only for the product launch, after its admission and the frozen context', () => {
+test('F3 configuration and runner delta: the frozen checker and Lead timings; LC_SOURCE_ADMISSION only for the product launch; the context after the launch is recorded; the one predicate in the runner point checks', () => {
   const c = JSON.parse(base.payload['admission-live.json']);
   assert.deepEqual(Object.keys(c), ['format', 'checker', 'ready_ms', 'decision_ms']); assert.deepEqual(Object.keys(c.checker), ['command', 'args']);
   assert.deepEqual([c.format, c.ready_ms, c.decision_ms], ['lc-windows-source-admission-config/v1', 10000, 5000]); assert.deepEqual(ADMISSION_TIMING, { ready_ms: 10000, decision_ms: 5000 });
@@ -721,25 +742,42 @@ test('F3 configuration and runner delta: Windows PowerShell with the frozen chec
   assert.deepEqual(linkNames, ['sub-live.json', 'admission-live.json']);
   const launches = steps.filter(s => s.launchApp);
   assert.equal(launches.length, 1); assert.deepEqual([launches[0].sub, launches[0].admission], ['live', 'live']);
-  const s0 = runner.indexOf('function Start-App('), start = runner.slice(s0, runner.indexOf('\n}\n', s0));
-  const tryLine = start.split('\n').find(l => l.startsWith('  try { Assert-QaSurfaceAdmission')), order = ["Assert-QaSurfaceAdmission 'before_product_launch'", 'Write-QaAdmissionContext', '$env:LC_SOURCE_ADMISSION = $admissionFile', 'Start-Process'].map(k => tryLine.indexOf(k));
+  const s0 = runner.indexOf('function Start-App('), start = runner.slice(s0, runner.indexOf('\n}\n', s0) + 2);
+  const tryLine = start.split('\n').find(l => l.startsWith('  try { Assert-QaSurfaceAdmission'));
+  const order = ["Assert-QaSurfaceAdmission 'before_product_launch'", '$env:LC_SOURCE_ADMISSION = $admissionFile', 'Start-Process'].map(k => tryLine.indexOf(k));
   assert.ok(order.every(i => i > 0) && order.every((i, k) => k === 0 || i > order[k - 1]), String(order));
+  assert.equal(tryLine.includes('Write-QaAdmissionContext'), false);
   assert.ok(start.split('\n').find(l => l.startsWith('  finally {')).includes('Remove-Item Env:\\LC_SOURCE_ADMISSION'));
+  // The context (naming the launched product) once the app is recorded, so a failed write leaves it owned and recorded.
+  const pids = start.indexOf("app-pids.txt"), ctx = start.indexOf("if ($admissionFile) { Write-QaAdmissionContext (Join-Path $LinkDir 'admission-context.json')");
+  assert.ok(pids > 0 && ctx > pids && start.indexOf('$results.processes[$key] = ') < ctx);
   assert.ok(runner.includes("foreach ($k in @('LC_SUBSCRIPTION_CONNECTOR', 'LC_DEV_CAPTURE_HOST', 'LC_SOURCE_ADMISSION', 'ELECTRON_RUN_AS_NODE'))"));
   assert.equal((runner.match(/\$env:LC_SOURCE_ADMISSION = /g) ?? []).length, 1);
   const c0 = runner.indexOf('function Write-QaAdmissionContext('), contextFn = runner.slice(c0, runner.indexOf('\n}\n', c0));
-  assert.ok(contextFn.includes('[System.IO.FileMode]::CreateNew'));
-  for (const k of ['edge_pid', 'edge_start_ticks', 'token', 'handle', 'surface_url', 'edge_port', 'display_signature']) assert.ok(contextFn.includes(`${k} = `), k);
-  assert.ok(base.payload['admission-checker.ps1'].includes("'display_signature,edge_pid,edge_port,edge_start_ticks,format,handle,surface_url,token'"));
+  assert.ok(contextFn.includes('[System.IO.FileMode]::CreateNew') && contextFn.includes("format = 'lc-qa-admission-context/2'"));
+  for (const k of ['edge_pid', 'edge_start_ticks', 'token', 'handle', 'surface_url', 'edge_port', 'display_signature', 'app_pid', 'app_start_ticks']) assert.ok(contextFn.includes(`${k} = `), k);
+  assert.ok(contextFn.includes('app_start_ticks = $script:app.StartTime.Ticks.ToString()') && contextFn.includes("if (-not $script:app -or $script:app.HasExited) { throw"));   // native creation ticks, not a JS time
+  // The runner's own point consumers apply the one predicate with the binding main and the checker agree on.
+  assert.ok(runner.includes('      $record.owned = (Test-QaPointAdmitted $root $window ([int]$point[0]) ([int]$point[1]) $script:qaRunnerOverlayBinding $record)\n'));
+  assert.ok(runner.includes('          if ($at -ne $owner -and -not ($null -ne $script:qaRunnerOverlayBinding -and (Test-QaPointAdmitted ([QaWin]::RootAt([int]$pt[0], [int]$pt[1])) $h ([int]$pt[0]) ([int]$pt[1]) $script:qaRunnerOverlayBinding $entry))) { $other += '));
+  assert.ok(runner.includes('        $script:qaRunnerOverlayBinding = $null\n        if ($script:app -and -not $script:app.HasExited) { $script:qaRunnerOverlayBinding = Get-QaRunnerOverlayBinding }\n        Assert-QaEdgePoints $entry $h @($step.points)\n'));
+  const g0 = runner.indexOf('function Get-QaRunnerOverlayBinding {'), bind = runner.slice(g0, runner.indexOf('\n}\n', g0));
+  for (const k of ['s && s.source_admission ? s.source_admission : null', "if ($null -eq $state -or $state.active -ne $true) { return $null }", "Join-Path $OutDir 'admission-checker.jsonl'",
+    "$_.phase -ceq 'arm' -and $_.verdict -ceq 'allow'", 'if ($arms.Count -ne 1) { throw', '[string]$arm.capture_id -cne [string]$state.capture_id', '[string]$arm.overlay.hwnd -cne [string]$state.overlay.hwnd',
+    'New-QaOverlayBinding $state.overlay ([uint32]$script:app.Id) $script:app.StartTime.Ticks $script:app']) assert.ok(bind.includes(k), k);
+  assert.equal(/Find\(|title -c?eq|OwnedWindows/.test(bind), false);                                                   // no title search: main's binding, the checker's arm
+  // The display the product listed, recorded before Start (the ledger compares the checker's arm with it).
+  const choiceAt = idx(s => s.as === 'display_choice'); assert.ok(choiceAt > 0 && choiceAt < idx(s => 'captureStart' in s)); assert.match(evalOf(steps[choiceAt]), /lc\.listDisplays\(\)/);
+  assert.equal(/thumbnail/.test(evalOf(steps[choiceAt])), false);
   assert.throws(() => applyAdmissionDelta(runner), /delta refused/);
-  assert.deepEqual(names.filter(n => base.manifest.files[n]).length, names.length);                                   // every payload pinned
+  assert.deepEqual(names.filter(n => base.manifest.files[n]).length, names.length);
 });
 test('F3 ledger: every possibly sent request needs an admitted send for its exact PNG naming an acquisition admitted before and after; a deny, a gap or an unrecorded send fails', () => {
   const h = happy(), l = ledgerOf(h);
-  const good = sourceAdmission(l, checkerLog(l));
+  const good = admitted(l, checkerLog(l));
   assert.equal(good.all_bound, true, JSON.stringify(good.requests)); assert.deepEqual(good.requests.map(r => r.bound), [true, true, true, null]);
   const log = () => structuredClone(checkerLog(l));
-  const fails = (lines, why) => { const r = sourceAdmission(l, lines); assert.equal(r.all_bound, false, String(why)); if (why) assert.match(JSON.stringify(r), why); };
+  const fails = (lines, why) => { const r = admitted(l, lines); assert.equal(r.all_bound, false, String(why)); if (why) assert.match(JSON.stringify(r), why); };
   fails(log().slice(1), null);                                                                                          // no ready record
   { const x = log(); Object.assign(x[1], { verdict: 'deny', reason: 'x' }); fails(x, null); }                          // arm denied
   fails(checkerLog(l, { skip: ['sel.2'] }), /no checker send decision/);
@@ -755,9 +793,207 @@ test('F3 ledger: every possibly sent request needs an admitted send for its exac
     fails(x, null); }
   const f = happy(); f.asks[0].requests[2].submission = 'submitted'; f.liveLines.at(-1).submission = 'submitted'; f.receipts['sel.3'].submission = 'acknowledged';
   const lf = ledgerOf(f);
-  assert.equal(sourceAdmission(lf, checkerLog(l)).all_bound, false); assert.equal(sourceAdmission(lf, checkerLog(lf)).all_bound, true);
+  assert.equal(admitted(lf, checkerLog(l)).all_bound, false); assert.equal(admitted(lf, checkerLog(lf)).all_bound, true);
   const noRequest = buildLedger({ steps, results: ranTo(stepIndex('action3_submit')), liveLines: look('live-1.look.1', 'a1'), asks: [{ requests: [entry('sel.1', 'focus')] }], receipts: {} });
-  assert.equal(sourceAdmission(noRequest, checkerLog(noRequest)).all_bound, false);
+  assert.equal(admitted(noRequest, checkerLog(noRequest)).all_bound, false);
   const src = readFileSync(new URL('qa_run_live_candidate.mjs', import.meta.url), 'utf8');
-  assert.ok(src.includes("regularRead(join(candidate.work, 'out', 'admission-checker.jsonl'))") && src.includes('report.source_admission = sourceAdmission(report.ledger, checkerLines)'));
+  assert.ok(src.includes("regularRead(join(candidate.work, 'out', 'admission-checker.jsonl'))") && src.includes("report.source_admission = sourceAdmission(report.ledger, checkerLines, read('display_choice'), mainAdmission);"));
+  // Main's own admission record must tell the same decisions (Web 48c20c4): its allows are QA allows, QA's allowed sends are its allows, no violation.
+  const good2 = log();
+  assert.equal(admitted(l, good2).main_record_agrees, true);
+  assert.equal(admitted(l, good2, choice, null).all_bound, false);                                                    // no main record: unknown
+  assert.equal(admitted(l, good2, choice, []).all_bound, false);
+  { const m = mainFrom(good2); m.push({ kind: 'violation', reason: 'a late answer' }); assert.equal(admitted(l, good2, choice, m).all_bound, false); }
+  { const m = mainFrom(good2); m.push({ ...m.find(d => d.phase === 'send'), request_id: 'sel.never', image_sha256: 'e'.repeat(64) }); assert.equal(admitted(l, good2, choice, m).all_bound, false); }   // main allowed what QA never did
+  { const m = mainFrom(good2).filter(d => !(d.phase === 'send' && d.request_id === 'sel.2')); assert.equal(admitted(l, good2, choice, m).all_bound, false); }   // a QA send main did not record
+  { const m = mainFrom(good2); m.push({ kind: 'note' }); assert.equal(admitted(l, good2, choice, m).all_bound, false); }   // an unknown record kind
+  assert.ok(src.includes("^captures\\/[0-9a-f]+\\/(live\\.jsonl|admission\\.jsonl|asks"));
+  // The arm names the display the product listed before Start: the decimal string, or the same safe integer; nothing else.
+  assert.equal(admitted(l, checkerLog(l)).display_matches, true);
+  for (const [d, ok] of [[{ ...armDisplay, id: 3071609112 }, true], [{ ...armDisplay, id: '3071609113' }, false], [{ ...armDisplay, id: 3071609112.5 }, false], [{ ...armDisplay, id: null }, false],
+    [{ ...armDisplay, id: 2 ** 53 }, false], [{ ...armDisplay, scale_factor: 1.5 }, false], [{ ...armDisplay, bounds: { ...armDisplay.bounds, width: 1279 } }, false]]) {
+    const x = log(); x[1].display = d; assert.equal(admitted(l, x).all_bound, ok, JSON.stringify(d));
+  }
+  assert.equal(admitted(l, checkerLog(l), null).all_bound, false);                                                     // no recorded display choice
+});
+
+test('F3 overlay predicate: the pure functions are cut unchanged into the prepared fixture check; every refusal has a negative fixture; read-only native type (not executed)', () => {
+  const predicate = overlayPredicate(), fixtures = JSON.parse(readFileSync(new URL('qa_overlay_fixtures.json', import.meta.url), 'utf8'));
+  const check = overlayFixtureCheck();
+  const cut = name => { const at = predicate.indexOf(`function ${name}(`); return predicate.slice(at, predicate.indexOf('\n}\n', at) + 3); };
+  for (const name of OVERLAY_PURE) assert.ok(check.includes(cut(name)), name);
+  const code = check.split('\n').filter(l => !l.trimStart().startsWith('#')).join('\n');
+  assert.equal(/Add-Type|\[Qa\w+\]::|Get-CimInstance|Get-Process|Start-Process/.test(code), false);
+  assert.ok(check.includes('if ($failed -gt 0) { exit 1 }'));                                                          // a failing case fails the check
+  const reasons = fn => [...cut(fn).matchAll(/return \(?'([^']+)'/g)].map(m => m[1]);
+  const cases = { 'Get-QaOverlayBindingFault': fixtures.binding_cases, 'Get-QaOverlayFault': fixtures.overlay_cases, 'Get-QaStackFault': fixtures.stack_cases, 'Get-QaNormalTopFault': fixtures.normal_top_cases };
+  for (const [fn, list] of Object.entries(cases)) {
+    for (const r of reasons(fn)) assert.ok(list.some(c => typeof c.fault === 'string' && c.fault.startsWith(r)), `${fn}: a negative fixture for '${r}'`);
+    assert.ok(list.some(c => c.fault === null), `${fn}: a passing fixture`);
+    for (const c of list) assert.ok(c.fault === null || reasons(fn).some(r => c.fault.startsWith(r)), `${fn}: ${c.name}`);
+  }
+  assert.deepEqual(fixtures.expect, { owner: 126156, class: 'Chrome_WidgetWin_1', title: 'Learning Companion overlay', bounds: '0,0,2560,1600' });   // the diagnostic's recorded overlay facts
+  assert.match(fixtures.status, /NOT EXECUTED/);
+  // The pure rules themselves (each fact the Lead named is checked).
+  const fault = cut('Get-QaOverlayFault');
+  for (const k of ['$f.Owner -ne $expect.owner', '$f.Class -cne $expect.class -or $f.Title -cne $expect.title', '-not $f.Visible -or $f.Minimized', '-not $f.Topmost', "(@($f.Bounds) -join ',') -cne $expect.bounds", '$f.Affinity -ne 17', '$f.Cloaked -ne 0']) assert.ok(fault.includes(k), k);
+  const binding = cut('Get-QaOverlayBindingFault');
+  for (const k of ["$named.hwnd -cmatch '^[1-9][0-9]{0,19}\\z'", '$named.pid -ne $appPid', '$facts.Owner -ne $appPid', '$facts.Class -cne $expect.class -or $facts.Title -cne $expect.title']) assert.ok(binding.includes(k), k);
+  // The native type: read-only entry points, the owner read first and last, error-checked z-order steps, bounded walks.
+  const type = predicate.slice(predicate.indexOf('public static class QaOverlayNative {'), predicate.indexOf("'@"));
+  assert.deepEqual([...type.matchAll(/extern \w+ (\w+)\(/g)].map(m => m[1]).sort(),
+    ['DwmGetWindowAttribute', 'GetClassName', 'GetTopWindow', 'GetWindow', 'GetWindowDisplayAffinity', 'GetWindowLongPtr', 'GetWindowRect', 'GetWindowText', 'GetWindowTextLength', 'GetWindowThreadProcessId', 'IsIconic', 'IsWindowVisible', 'SetLastError', 'SetThreadDpiAwarenessContext']);
+  for (const k of ['IntPtr h = GetTopWindow(IntPtr.Zero);', 'if (h == target) return found.ToArray();', "throw new InvalidOperationException(\"the admitted window is not in the z-order\")", 'i < 4096', 'EntryPoint = "GetClassNameW"', 'EntryPoint = "GetWindowTextW"', 'EntryPoint = "GetWindowTextLengthW"', 'EntryPoint = "GetWindowLongPtrW"', '[DllImport("dwmapi.dll")]',
+    'if (pid != owner) return f;', 'again != pid) throw', 'h = Step(h, 2);', 'h = Step(h, 3);', 'if (next == IntPtr.Zero && Marshal.GetLastWin32Error() != 0) throw', 'DwmGetWindowAttribute(h, 14, out value, 4) != 0) throw',
+    '(ex.ToInt64() & 8) != 0', 'if (!GetWindowDisplayAffinity(h, out affinity)) throw', 'if (h == IntPtr.Zero || TopmostOf(h)) return', 'i < 1024']) assert.ok(type.includes(k), k);
+  // The binding is frozen: passage and foreground take only the bound HWND, never a found one.
+  for (const k of ['if ($null -eq $binding) { return ($root -eq $edge) }', "if ($root -ne $edge -and $root -ne $binding.hwnd) { $fault = 'a window other than the bound overlay covers the surface' }",
+    'if ($null -eq $fault) { $fault = Get-QaOverlayStateFault $binding }', '[QaOverlayNative]::StackAbove($edge, $x, $y)', 'if ($fg -ne $binding.hwnd) { return $false }', '[QaOverlayNative]::AboveInNormalBand($edge)']) assert.ok(predicate.includes(k), k);
+  // The composition: the stack fault decides a point, exactly the bound overlay, and the normal-band top decides the foreground.
+  const point = cut('Test-QaPointAdmitted');
+  assert.ok(point.includes('      $fault = Get-QaStackFault ([string[]]@($stack | ForEach-Object { $_.Window.ToInt64().ToString() })) $binding.hwnd_text'));
+  assert.ok(cut('Get-QaStackFault').includes("if (-not $overlay -or @($above).Count -ne 1 -or $above[0] -cne $overlay) {"));
+  assert.ok(cut('Test-QaOverlayForeground').includes('      $fault = Get-QaNormalTopFault $above.Window.ToInt64().ToString()'));
+  assert.ok(point.indexOf("if ($null -ne $fault) { $entry.overlay_refused = Get-QaOverlayReason $fault; return $false }") > point.indexOf('$fault = Get-QaStackFault'));
+  // The frozen launch identity is checked at binding and at every use (native creation ticks, the exact process).
+  assert.ok(cut('New-QaOverlayBinding').includes('$appProcess.HasExited -or $appProcess.StartTime.Ticks -ne $appStartTicks -or [uint32]$appProcess.Id -ne $appPid'));
+  assert.ok(cut('Get-QaOverlayStateFault').includes('$binding.process.HasExited -or $binding.process.StartTime.Ticks -ne $binding.start_ticks'));
+  assert.ok(cut('Get-QaOverlayStateFault').includes('[QaOverlayNative]::Read($binding.hwnd, [uint32]$binding.pid)'));
+  assert.equal(/EnumWindows|OwnedWindows|Find\(|Beneath/.test(predicate.slice(predicate.indexOf("'@\n"))), false);
+});
+
+// ---- Support review 5083814 (R1-R5): its exact controls and negative witnesses, with session identities and the display ----
+function supportFixture() {
+  const H = 'a'.repeat(64), A = 'a'.repeat(32), json = JSON.stringify;
+  const stepsF = [{ as: 'live_policy' }, { stroke: [] }, { as: 'action3_submit' }, { as: 'action4_submit' }];
+  const results = { steps: stepsF.map((_, i) => ({ i: i + 1, ok: true })), values: {
+    action1: json({ used: 1, unwritten: 0 }), action2: json({ used: 2, unwritten: 0 }), action3: json({ used: 3, unwritten: 0 }),
+    action4_after: json({ used: 3, unwritten: 0 }), action4_stop: json({ out_at_stop: 1 }), action3_card: json({ answer: 'prior answer' }), action4_card: json({ answer_hidden: true, answer: '' }) } };
+  const liveLines = [{ kind: 'started', session_id: 'live-1', used: 0 }, { kind: 'look', session_id: 'live-1', request_id: 'look', image: { sha256: H } },
+    { kind: 'looked', session_id: 'live-1', request_id: 'look', text: 'description', used: 1 }, { kind: 'ended', session_id: 'live-1', reason: 'stopped by you', used: 3 },
+    { kind: 'settled', session_id: 'live-1', request_id: 'q3', submission: 'not_submitted', used: 3 }];
+  const requests = [1, 2, 3].map(n => ({ request_id: `q${n}`, trigger: n === 1 ? 'focus' : 'text_followup', live_session_id: 'live-1', submitted_at: `2026-10-09T00:00:0${n}Z`,
+    question: 'Explain the cards', assistance: 'hint', asked_as: 'silent', frame: { image: { sha256: H } }, submission: n === 3 ? 'not_submitted' : 'submitted',
+    outcome: { status: n === 3 ? 'cancelled' : 'answered' }, shown: n !== 3, presentation: n === 3 ? undefined : 'shown' }));
+  const receipts = Object.fromEntries(['look', 'q1', 'q2', 'q3'].map((request_id, i) => [request_id, { request_id, input_types: ['text', 'image'], text_bytes: 17, text_sha256: H, image_bytes: 100, image_sha256: H,
+    submission: i === 3 ? 'not_submitted' : 'acknowledged', terminal_status: i === 3 ? null : 'completed', outcome: i === 3 ? 'not_submitted' : 'completed', produced_item_types: i === 3 ? [] : ['userMessage', 'agentMessage'],
+    thread_start_count: Math.min(i + 1, 3), turn_start_count: Math.min(i + 1, 3), actual_model: 'fixture-model', thread_id: null, turn_id: null, format: 'lc-subscription-ask-receipt/1',
+    codex_executable: '/fixture/codex', codex_version: '0.158.0', codex_sha256: CONNECTOR.codex_sha256, explicit_bin_override: true, __launch: A }]));
+  const checker = [{ event: 'ready' }];
+  const decision = fields => ({ event: 'decision', seq: checker.length, verdict: 'allow', reason: null, admission: { accepted: true, at: '2026-10-09T00:00:00Z' }, ...fields });
+  checker.push(decision({ phase: 'arm', display: structuredClone(armDisplay) }));
+  for (const [i, request_id] of ['look', 'q1', 'q2'].entries()) {
+    const frame = { sample_seq: i + 1, frame_seq: i + 1, raw_sha256: H, raw_size: { width: 10, height: 10 } };
+    checker.push(decision({ phase: 'pre_acquire', sample_seq: i + 1 }));
+    checker.push(decision({ phase: 'post_acquire', ...frame }));
+    checker.push(decision({ phase: 'send', ...frame, request_id, image_sha256: H }));
+  }
+  return { steps: stepsF, results, liveLines, asks: [{ requests }], receipts, codexSha256: CONNECTOR.codex_sha256, checker };
+}
+const supportReport = f => { const ledger = buildLedger(f), fence = fenceVerdict(ledger, f.liveLines, f.results.values);
+  return { launcher: { status: 0 }, steps_ok: true, collect_errors: [], owned_launch_cleanup_confirmed: true, connector_left_running: [], connector_watch: { state: 'released', descendants: 1 },
+    ledger, fence, source_admission: sourceAdmission(ledger, f.checker, choice, mainFrom(f.checker)), evidence: { leaks_in_questions: [] } }; };
+test('R1-R3 (Support 5083814): its two controls pass; an unclassified request, unexplained or inconsistent turns, and an ignored or missing phase all fail', () => {
+  const judged = f => wrapper.judgeMechanics(supportReport(f));
+  assert.equal(judged(supportFixture()).passed, true, JSON.stringify(judged(supportFixture()).mechanics));                                  // control: one launch, cumulative 1,2,3,3
+  const two = supportFixture(); for (const [rid, n] of [['q1', 1], ['q2', 2], ['q3', 2]]) Object.assign(two.receipts[rid], { __launch: 'b'.repeat(32), turn_start_count: n });
+  assert.equal(judged(two).passed, true); assert.equal(supportReport(two).ledger.provider_turns, 3);                                      // control: two launches 1 + 2
+  // R1: an extra request without a known trigger is an extra action and the records are incomplete.
+  const extra = supportFixture(); extra.asks[0].requests.push({ request_id: 'extra-without-trigger', submission: 'unknown', outcome: { status: 'uncertain' } });
+  const er = supportReport(extra); assert.deepEqual([er.ledger.records_complete, er.ledger.extra_requests, er.ledger.attempts_used], [false, ['extra-without-trigger'], 5]); assert.equal(judged(extra).passed, false);
+  const orphan = supportFixture(); orphan.liveLines.push({ kind: 'settled', session_id: 'live-1', request_id: 'never-asked', submission: 'unknown' });
+  assert.deepEqual(supportReport(orphan).ledger.extra_requests, ['never-asked']); assert.equal(judged(orphan).passed, false);
+  const kind = supportFixture(); kind.liveLines.push({ kind: 'looked_twice', session_id: 'live-1' });
+  assert.equal(supportReport(kind).ledger.records_complete, false); assert.equal(judged(kind).passed, false);
+  const noTrigger = supportFixture(); noTrigger.asks[0].requests.push({ submission: 'unknown' });                                         // not even an id: still an extra action
+  assert.deepEqual(supportReport(noTrigger).ledger.extra_requests, ['unidentified-request-1']);
+  // R2: a fourth published turn cannot hide in a request proven unsent; a launch history must explain itself.
+  const hidden = supportFixture(); hidden.receipts.q2.turn_start_count = 4; hidden.receipts.q3.turn_start_count = 4;
+  assert.equal(supportReport(hidden).ledger.turns_consistent, false); assert.equal(judged(hidden).passed, false);
+  const mixed = supportFixture(); mixed.receipts.q2.turn_start_count = 2; Object.assign(mixed.receipts.q3, { __launch: 'b'.repeat(32), turn_start_count: 1 });
+  const mr = supportReport(mixed).ledger; assert.deepEqual(mr.launch_histories.map(h => h.consistent), [false, false]); assert.equal(judged(mixed).passed, false);
+  const repeated = supportFixture(); repeated.receipts.look.turn_start_count = 3; repeated.receipts.q1.turn_start_count = 3;                // three sent with one count: not three turns
+  assert.equal(supportReport(repeated).ledger.launch_histories[0].consistent, false); assert.equal(judged(repeated).passed, false);
+  const zero = supportFixture(); zero.receipts.look.turn_start_count = 0;                                                              // a published turn counts at least one
+  assert.equal(supportReport(zero).ledger.launch_histories[0].consistent, false);
+  // Turns: never above four, and never above the actions that may have been sent (a receipt cannot explain a request the
+  // app records as proven unsent).
+  const five = supportFixture(); five.asks[0].requests.push({ ...five.asks[0].requests[1], request_id: 'q9', submitted_at: '2026-10-09T00:00:09Z' });
+  five.receipts.q3 = { ...five.receipts.q3, submission: 'acknowledged', outcome: 'completed', turn_start_count: 4 }; five.receipts.q9 = { ...five.receipts.q2, request_id: 'q9', turn_start_count: 5 };
+  five.asks[0].requests[2].submission = 'submitted'; five.liveLines.at(-1).submission = 'submitted';
+  const fl = supportReport(five).ledger; assert.deepEqual([fl.launch_histories[0].consistent, fl.provider_turns, fl.turns_consistent], [true, 5, false]);
+  const sentButUnsent = supportFixture(); Object.assign(sentButUnsent.receipts.q3, { submission: 'acknowledged', outcome: 'completed', turn_start_count: 4 });   // the app and settlement say unsent
+  const sl = supportReport(sentButUnsent).ledger; assert.deepEqual([sl.launch_histories[0].consistent, sl.possibly_sent, sl.turns_consistent], [true, 3, false]);
+  const uncertainOk = supportFixture(); Object.assign(uncertainOk.receipts.q3, { submission: 'uncertain', outcome: 'uncertain', turn_start_count: 4 }); uncertainOk.asks[0].requests[2].submission = 'unknown'; uncertainOk.liveLines.at(-1).submission = 'unknown';
+  assert.equal(supportReport(uncertainOk).ledger.turns_consistent, true);                                                               // an uncertain publish may explain a turn
+  // R3: every settlement counts, and a missing phase is unknown.
+  const conflict = supportFixture(); conflict.liveLines.push({ ...conflict.liveLines.at(-1), submission: 'submitted' });
+  assert.equal(supportReport(conflict).fence.verdict, 'unknown'); assert.equal(judged(conflict).passed, false);
+  const missing = supportFixture(); delete missing.receipts.q3; delete missing.liveLines.at(-1).submission;
+  const mf = supportReport(missing).fence; assert.deepEqual([mf.phase, mf.verdict], ['unknown', 'fenced_submission_unknown']); assert.equal(judged(missing).passed, false);
+  const otherSession = supportFixture(); otherSession.liveLines.at(-1).session_id = 'live-2';
+  assert.equal(supportReport(otherSession).fence.verdict, 'unknown'); assert.equal(judged(otherSession).passed, false);
+  const otherEnd = supportFixture(); otherEnd.liveLines.find(x => x.kind === 'ended').session_id = 'live-2';                            // the session's end of another session
+  assert.equal(supportReport(otherEnd).fence.verdict, 'unknown');
+  const noSession = supportFixture(); delete noSession.asks[0].requests[2].live_session_id;
+  assert.equal(supportReport(noSession).fence.phase, 'unknown');
+  // A request-bearing live line without a usable request id makes the records incomplete (it cannot vanish).
+  for (const line of [{ kind: 'settled', session_id: 'live-1', status: 'uncertain', submission: 'unknown', used: 3, out: 0 }, { kind: 'settled', session_id: 'live-1', request_id: 5, submission: 'unknown' },
+    { kind: 'not_looked', session_id: 'live-1', frame_seq: 2, status: 'uncertain', submission: 'unknown' }, { kind: 'looked', session_id: 'live-1', text: 'x' }]) {
+    const f = supportFixture(); f.liveLines.push(line);
+    assert.equal(supportReport(f).ledger.records_complete, false, JSON.stringify(line)); assert.equal(judged(f).passed, false);
+  }
+  const unsentNoReceipt = supportFixture(); delete unsentNoReceipt.receipts.q3;                                                        // genuinely unsent, every app record affirms it
+  assert.deepEqual([supportReport(unsentNoReceipt).fence.verdict, judged(unsentNoReceipt).passed], ['fenced_before_submission', true]);
+  // Support's coupling case stays refused.
+  const coupling = supportFixture(); coupling.asks[0].requests[0].submission = 'not_submitted'; coupling.checker = coupling.checker.filter(d => !(d.phase === 'send' && d.request_id === 'q1'));
+  assert.equal(judged(coupling).passed, false);
+});
+test('R4-R5 (Support 5083814): an exited watcher is not ready; the lifecycle must be ordered; receipt values must be of the writer\'s bounded types before copy, and only typed values are published', async () => {
+  const startRecord = { event: 'watch_start', root_exists: true, already_there: [], at: '2026-10-09T00:00:00Z' };
+  for (const exited of [false, true]) {
+    const child = { on(event, callback) { if (exited && event === 'exit') callback(1); } };
+    const w = await wrapper.startWatch({ readFileSync: () => JSON.stringify(startRecord) + '\n', writeFileSync: () => {}, existsSync: () => false }, () => child, async () => {}, '/synthetic/output');
+    assert.equal(w.ready.ready, !exited, `exited=${exited}`); if (exited) assert.match(w.ready.reason, /exited before the launch/);
+  }
+  // Right before the launch the watch is read anew: an exit during the synchronous work since readiness is seen.
+  const state = { exited: false, error: null }, watch = { state };
+  await wrapper.assertWatchRunning(watch);
+  setTimeout(() => { state.exited = true; }, 0); for (let t = Date.now(); Date.now() - t < 20;);                       // the exit arrives while synchronous work runs
+  await assert.rejects(wrapper.assertWatchRunning(watch), /no longer running/);
+  await assert.rejects(wrapper.assertWatchRunning({ state: { exited: false, error: 'spawn python3 ENOENT' } }), /no longer running/);
+  const proc = text => ({ readFileSync: p => { if (p !== '/proc/4321/stat') throw Error('unexpected read ' + p); if (text === null) throw Error('ENOENT'); return text; } });
+  await wrapper.assertWatchRunning({ state: { exited: false, error: null, pid: 4321 } }, proc('4321 (python3) S 1 2 3'));               // running
+  await assert.rejects(wrapper.assertWatchRunning({ state: { exited: false, error: null, pid: 4321 } }, proc('4321 (python3) Z 1 2 3')), /no longer running/);   // a zombie
+  await assert.rejects(wrapper.assertWatchRunning({ state: { exited: false, error: null, pid: 4321 } }, proc(null)), /no longer running/);                       // gone
+  const src = readFileSync(new URL('qa_run_live_candidate.mjs', import.meta.url), 'utf8'), body = src.slice(src.indexOf('export async function runLiveCandidate('), src.indexOf('export async function startWatch('));
+  const at = body.indexOf('await assertWatchRunning(watch, io);'); assert.ok(at > 0 && at < body.indexOf('report.native_attempts = 1;') && body.indexOf('run(psBin, invocation.arguments') > at);
+  const io = events => ({ readFileSync: () => events.map(e => JSON.stringify(e)).join('\n') });
+  const a = { event: 'appear', pid: 7, start_ticks: 70, role: 'in_root' }, d = { event: 'appear', pid: 8, start_ticks: 80, role: 'descendant' }, x = e => ({ event: 'exit', pid: e.pid, start_ticks: e.start_ticks });
+  const end = { event: 'watch_end', remaining: [] };
+  assert.equal(wrapper.watchSummary(io([startRecord, a, d, x(d), x(a), end]), 'w', true).state, 'released');                            // control
+  for (const [events, why] of [[[startRecord, x(a), a, end], /exit without an earlier appearance/], [[startRecord, a, a, x(a), end], /repeated/], [[startRecord, a, x(a), x(a), end], /exit without/],
+    [[startRecord, a, x(a), end, d], /after the end/], [[a, startRecord, x(a), end], /recorded no start first/], [[startRecord, { ...a, start_ticks: null }, x(a), end], /usable identity/], [[startRecord, { ...a, role: 'other' }, x(a), end], /unknown appearance/]]) {
+    const r = wrapper.watchSummary(io(events), 'w', true); assert.equal(r.state, 'unknown', String(why)); assert.match(r.note, why);
+  }
+  // R5: a receipt is read only if every value has the connector writer's bounded type; the projection stays typed.
+  const rid = 'synthetic-request', launch = 'a'.repeat(32);
+  const good = { request_id: rid, input_types: ['text', 'image'], text_bytes: 10, text_sha256: 'b'.repeat(64), image_bytes: 20, image_sha256: 'c'.repeat(64), submission: 'acknowledged', terminal_status: 'completed',
+    outcome: 'completed', produced_item_types: ['userMessage', 'agentMessage'], thread_start_count: 1, turn_start_count: 1, actual_model: 'review-model', thread_id: 'SYNTHETIC_THREAD', turn_id: 'SYNTHETIC_TURN',
+    format: 'lc-subscription-ask-receipt/1', codex_executable: '/synthetic/codex', codex_version: '0.158.0', codex_sha256: CONNECTOR.codex_sha256, explicit_bin_override: true };
+  const read = value => { const bytes = Buffer.from(JSON.stringify(value));
+    return wrapper.readOwnReceipts({ existsSync: () => true, lstatSync: () => ({ isDirectory: () => true, isSymbolicLink: () => false }), realpathSync: p => p, readdirSync: () => [launch], openSync: () => 9,
+      fstatSync: () => ({ isFile: () => true, nlink: 1, size: bytes.length }), readFileSync: () => bytes, closeSync: () => {} }, [], [rid], '/synthetic/receipts'); };
+  const ok = read(good); assert.deepEqual([ok.errors, ok.raw.length], [[], 1]);
+  const clean = wrapper.sanitizeReceipts(ok.receipts)[rid]; assert.equal('thread_id' in clean || 'turn_id' in clean || 'codex_executable' in clean, false);
+  for (const [field, value] of [['actual_model', { thread_id: 'SYNTHETIC_NESTED_THREAD', turn_id: 'SYNTHETIC_NESTED_TURN' }], ['input_types', ['text', 'text']], ['input_types', ['video']], ['produced_item_types', [{ a: 1 }]],
+    ['text_bytes', -1], ['image_bytes', 8 * 1024 * 1024 + 1], ['text_sha256', 'B'.repeat(64)], ['turn_start_count', 4097], ['turn_start_count', 1.5], ['thread_start_count', true], ['submission', 'sent'],
+    ['terminal_status', 'done'], ['outcome', null], ['actual_model', '-bad'], ['thread_id', { id: 1 }], ['turn_id', 'x\u0007'], ['codex_executable', 'relative/codex'], ['codex_version', 'v0.158'], ['explicit_bin_override', 'true']]) {
+    const r = read({ ...good, [field]: value });
+    assert.deepEqual([r.raw.length, Object.keys(r.receipts).length], [0, 0], `${field}=${JSON.stringify(value)}`); assert.match(r.errors.join(' | '), new RegExp(`receipt's ${field} is not`), field);
+  }
+  const nullable = read({ ...good, text_bytes: null, text_sha256: null, terminal_status: null, actual_model: null, thread_id: null, turn_id: null }); assert.deepEqual(nullable.errors, []);
+  assert.equal(read({ ...good, text_bytes: null, text_sha256: 'b'.repeat(64) }).raw.length, 0);                                          // a digest without its length
+  const projected = wrapper.sanitizeReceipts({ [rid]: { ...good, actual_model: { thread_id: 'X' }, produced_item_types: ['a', { b: 1 }] } })[rid];   // defensive projection
+  assert.equal('actual_model' in projected || 'produced_item_types' in projected, false);
 });

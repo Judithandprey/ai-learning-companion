@@ -3,10 +3,11 @@
 # runner names in LC_SOURCE_ADMISSION, and talks JSONL on stdin/stdout (lc-source-admission/1, at most 4096 bytes a line).
 #
 # Every request gets a FRESH full native admission: the reviewed runner's Assert-QaSurfaceAdmission (fresh browser
-# geometry, exact display and Edge bounds, foreground, 16 owned points, the owned Edge identity resolved twice), with
-# the normal-band predicate read on the admitted window just before and after it, all with the runner's definitions
-# inserted byte for byte below, against the frozen context the runner wrote just before the product launch (the owned
-# Edge process, its surface page and window, the DevTools port, the admitted display). Nothing is cached as an allow.
+# geometry, exact display and Edge bounds, foreground, 16 owned points, the owned Edge identity resolved twice) with one
+# narrow change, the exact product overlay passage below; the normal band is read on the admitted window before and
+# after. The runner's definitions are inserted byte for byte below (the admission with exactly four substitutions, see
+# qa_live_candidate.mjs), against the context the runner froze at the product launch (the owned Edge process, its
+# surface page and window, the DevTools port, the admitted display, the launched product). Nothing is cached as allow.
 # Besides its facts, a request carries no instruction: the checker runs no command, reads no pixels and never changes a
 # window. A request whose facts do not follow the admitted lineage (arm, then pre/post acquisition, then send of an
 # admitted frame) is denied; after one deny every later request is denied (main ends the whole capture). A malformed
@@ -31,6 +32,17 @@ $qaProtocolIn = New-Object System.IO.StreamReader([Console]::OpenStandardInput()
 [Console]::SetOut([Console]::Error)
 
 # @@QA_REVIEWED_ADMISSION_DEFINITIONS@@
+
+# @@QA_OVERLAY_PREDICATE@@
+
+function Assert-QaCheckerBand {
+  $p = $started['edge']
+  if ($p.HasExited -or $p.StartTime -ne $script:qaEdgeIdentity.start) { throw 'owned Edge ended or changed' }
+  $g = [QaDisplayAdmissionNative]::ReadWindow($script:qaEdgeIdentity.handle)
+  if ($g.Owner -ne $script:qaEdgeIdentity.pid) { throw 'owned Edge window changed owner' }
+  $m = [QaPlacementNative]::Read($script:qaEdgeIdentity.handle)
+  if ($m.Topmost -or $m.Minimized) { throw 'owned Edge must remain visible in the normal window band' }
+}
 
 # The state the reviewed helpers read (as the runner holds it), rebuilt from the frozen context only.
 $client = New-Object System.Net.WebClient
@@ -62,8 +74,10 @@ function Get-QaCheckerReason([string]$text) {
 
 function Read-QaCheckerContext([string]$path) {
   $c = [System.IO.File]::ReadAllText($path, $qaStrict) | ConvertFrom-Json
-  if (-not (Test-QaCheckerObject $c) -or (Get-QaCheckerNames $c) -cne 'display_signature,edge_pid,edge_port,edge_start_ticks,format,handle,surface_url,token') { throw 'admission context fields differ' }
-  if ($c.format -cne 'lc-qa-admission-context/1') { throw 'admission context format differs' }
+  if (-not (Test-QaCheckerObject $c) -or (Get-QaCheckerNames $c) -cne 'app_pid,app_start_ticks,display_signature,edge_pid,edge_port,edge_start_ticks,format,handle,surface_url,token') { throw 'admission context fields differ' }
+  if ($c.format -cne 'lc-qa-admission-context/2') { throw 'admission context format differs' }
+  if (-not (Test-QaCheckerCount $c.app_pid 1) -or $c.app_pid -gt [uint32]::MaxValue) { throw 'admission context product process is malformed' }
+  if (-not ($c.app_start_ticks -is [string] -and $c.app_start_ticks -cmatch '^[1-9][0-9]{0,18}\z')) { throw 'admission context product start is malformed' }
   if (-not (Test-QaCheckerCount $c.edge_pid 1) -or $c.edge_pid -gt [uint32]::MaxValue) { throw 'admission context Edge process is malformed' }
   if (-not ($c.edge_start_ticks -is [string] -and $c.edge_start_ticks -cmatch '^[1-9][0-9]{0,18}\z')) { throw 'admission context Edge start is malformed' }
   if (-not ($c.token -is [string] -and $c.token -cmatch '^lcqa[g-v]{32}\z')) { throw 'admission context surface token is malformed' }
@@ -79,12 +93,15 @@ function Write-QaCheckerLog($record) {
   $qaLogWriter.WriteLine(($record | ConvertTo-Json -Compress -Depth 6))
 }
 
-$qaReqNames = 'capture_id,display,format,frame_seq,id,image_sha256,phase,raw_sha256,raw_size,request_id,sample_seq,sent_at,seq'
+$qaReqNames = 'capture_id,display,format,frame_seq,id,image_sha256,overlay,phase,raw_sha256,raw_size,request_id,sample_seq,sent_at,seq'
 # The facts of one well-formed request against the lineage admitted so far: $null when they follow it, else the reason.
 function Get-QaCheckerLineageFault($r, $state) {
   if ($r.phase -ceq 'arm') {
     if ($state.armed -or $state.count -ne 1) { return 'arm must be the first and only arm request' }
-    if (Test-QaCheckerAnySet $r @('sample_seq', 'frame_seq', 'raw_sha256', 'raw_size', 'request_id', 'image_sha256')) { return 'arm carries only display and capture facts' }
+    if (Test-QaCheckerAnySet $r @('sample_seq', 'frame_seq', 'raw_sha256', 'raw_size', 'request_id', 'image_sha256')) { return 'arm carries only display, overlay and capture facts' }
+    # The overlay main names for this capture: exactly {hwnd: positive decimal string, pid: the launched product}.
+    $o = $r.overlay
+    if (-not (Test-QaCheckerObject $o) -or (Get-QaCheckerNames $o) -cne 'hwnd,pid') { return 'arm overlay is malformed' }
     $d = $r.display
     # The main-owned display id: a decimal string, as the product keeps it (52be105 display_id, the capture source's
     # display_id string), or the same number; echoed unchanged either way.
@@ -102,7 +119,7 @@ function Get-QaCheckerLineageFault($r, $state) {
   }
   if (-not $state.armed) { return 'no admitted arm for this capture' }
   if ($r.capture_id -cne $state.capture) { return 'another capture' }
-  if ($null -ne $r.display) { return 'only arm carries a display' }
+  if ($null -ne $r.display -or $null -ne $r.overlay) { return 'only arm carries a display or an overlay' }
   if (-not (Test-QaCheckerCount $r.sample_seq 1)) { return 'sample sequence is malformed' }
   if ($r.phase -ceq 'pre_acquire') {
     if (Test-QaCheckerAnySet $r @('frame_seq', 'raw_sha256', 'raw_size', 'request_id', 'image_sha256')) { return 'pre_acquire carries no acquired frame or request' }
@@ -138,6 +155,16 @@ try {
   $script:qaDisplayBaselineSignature = [string]$qaContext.display_signature
   $script:qaDisplayBaseline = $script:qaDisplayBaselineSignature | ConvertFrom-Json
   if ($null -eq $script:qaDisplayBaseline -or $script:qaDisplayBaseline.dpi -isnot [int] -or @($script:qaDisplayBaseline.monitor_bounds).Count -ne 4) { throw 'admission context display is malformed' }
+  # The launched product, as the runner froze it at launch; this checker must be its child (main starts it per capture).
+  $appProcess = [System.Diagnostics.Process]::GetProcessById([int]$qaContext.app_pid)
+  if ($appProcess.HasExited -or $appProcess.StartTime.Ticks -ne [long]$qaContext.app_start_ticks) { throw 'the launched product identity changed' }
+  $parent = @(Get-CimInstance Win32_Process -Filter "ProcessId=$PID")
+  if ($parent.Count -ne 1 -or [int]$parent[0].ParentProcessId -ne [int]$qaContext.app_pid) { throw 'the checker was not started by the launched product' }
+  $script:qaApp = @{ pid = [uint32]$qaContext.app_pid; start_ticks = [long]$qaContext.app_start_ticks; process = $appProcess }
+  # What the product's overlay must be (the accepted diagnostic recorded this class, title, full bounds and topmost).
+  $script:qaOverlayExpect = New-QaOverlayExpect ([uint32]$qaContext.app_pid) $script:qaDisplayBaseline.monitor_bounds
+  # The current capture's overlay: bound once, at the admitted arm, for this checker's whole life; never rebound.
+  $script:qaOverlayBinding = $null
   $qaLogStream = New-Object System.IO.FileStream($Log, [System.IO.FileMode]::CreateNew, [System.IO.FileAccess]::Write, [System.IO.FileShare]::Read)
   $qaLogWriter = New-Object System.IO.StreamWriter($qaLogStream, (New-Object System.Text.UTF8Encoding($false)))
   $qaLogWriter.AutoFlush = $true
@@ -154,7 +181,7 @@ try {
 
 # ---- the finite loop: one request at a time until EOF, the lifetime bound or the request bound ----
 $qaDeadline = [DateTime]::UtcNow.AddSeconds(1800)
-$qaState = @{ armed = $false; capture = $null; count = 0; last_seq = 0; last_sample = 0; denied = $null
+$qaState = @{ armed = $false; capture = $null; overlay = $null; count = 0; last_seq = 0; last_sample = 0; denied = $null
   pending = New-Object 'System.Collections.Generic.HashSet[string]'; admitted = New-Object 'System.Collections.Generic.HashSet[string]'
   ids = New-Object 'System.Collections.Generic.HashSet[string]'; sent = New-Object 'System.Collections.Generic.HashSet[string]' }
 while ($true) {
@@ -190,16 +217,23 @@ while ($true) {
     $reason = Get-QaCheckerLineageFault $r $qaState
     if ($null -eq $reason) {
       $results.values = [ordered]@{}
-      # The reviewed admission resolves and re-resolves the owned Edge window itself (two full identity resolutions, the
-      # measured bulk of a decision: about 1.5 s each in the accepted diagnostic). The normal window band (not topmost,
-      # not minimized; Assert-QaNormalEdge's predicate) is read on that same frozen window just before and just after it,
-      # with the reviewed native read and no further resolution.
+      # The admission (the reviewed one plus the exact-overlay passage) resolves and re-resolves the owned Edge window
+      # itself: two full identity resolutions, the bulk of a decision (about 1.5 s each in the accepted diagnostic). The
+      # normal band, with the Edge process and window owner revalidated, is read on the frozen window before and after.
       try {
-        $before = [QaPlacementNative]::Read($script:qaEdgeIdentity.handle)
-        if ($before.Topmost -or $before.Minimized) { throw 'owned Edge must remain visible in the normal window band' }
-        $null = Assert-QaSurfaceAdmission ('checker_' + $r.phase)
-        $after = [QaPlacementNative]::Read($script:qaEdgeIdentity.handle)
-        if ($after.Topmost -or $after.Minimized) { throw 'owned Edge must remain visible in the normal window band' }
+        # At arm: bind the overlay main names to the launched product's frozen identity (before the arm's own admission).
+        if ($r.phase -ceq 'arm') { $script:qaOverlayBinding = New-QaOverlayBinding $r.overlay $script:qaApp.pid $script:qaApp.start_ticks $script:qaApp.process $script:qaOverlayExpect }
+        Assert-QaCheckerBand
+        $null = Assert-QaCheckerAdmission ('checker_' + $r.phase)
+        Assert-QaCheckerBand
+        # During the capture the bound overlay is revalidated as still exactly itself at the end of every decision (it is
+        # in front of Edge, click-through or not); nothing else may have been accepted as an overlay.
+        $held = @($results.values.Values) | Select-Object -First 1
+        if ($null -ne $held -and $held.overlay_handle -and ($null -eq $script:qaOverlayBinding -or $held.overlay_handle -cne $script:qaOverlayBinding.hwnd_text)) { throw 'an unbound overlay was accepted' }
+        if ($null -ne $script:qaOverlayBinding) {
+          $fault = Get-QaOverlayStateFault $script:qaOverlayBinding
+          if ($null -ne $fault) { throw ('the bound overlay changed during the check: ' + $fault) }
+        }
       } catch { $reason = 'source admission refused: ' + $_.Exception.Message }
       $admission = @($results.values.Values) | Select-Object -First 1
       if ($null -eq $reason -and -not ($null -ne $admission -and $admission.accepted -eq $true)) { $reason = 'source admission did not complete' }
@@ -209,7 +243,7 @@ while ($true) {
   if ($null -eq $reason) {
     $verdict = 'allow'
     switch -CaseSensitive ($r.phase) {
-      'arm' { $qaState.armed = $true; $qaState.capture = [string]$r.capture_id }
+      'arm' { $qaState.armed = $true; $qaState.capture = [string]$r.capture_id; $qaState.overlay = $script:qaOverlayBinding.hwnd_text }
       'pre_acquire' { $qaState.last_sample = $r.sample_seq; $null = $qaState.pending.Add([string]$r.sample_seq) }
       'post_acquire' { $null = $qaState.pending.Remove([string]$r.sample_seq); $null = $qaState.admitted.Add(('{0}|{1}|{2}|{3}x{4}' -f $r.sample_seq, $r.frame_seq, $r.raw_sha256, $r.raw_size.width, $r.raw_size.height)) }
       'send' { $null = $qaState.sent.Add([string]$r.request_id) }
@@ -217,16 +251,19 @@ while ($true) {
   } else {
     $reason = Get-QaCheckerReason $reason
     if ($null -eq $qaState.denied) { $qaState.denied = $reason }
+    if ($r.phase -ceq 'arm') { $script:qaOverlayBinding = $null }
   }
   # Logged before it is answered: an unlogged decision is never an allow.
   try {
     Write-QaCheckerLog ([ordered]@{ event = 'decision'; seq = $r.seq; id = $r.id; phase = $r.phase; capture_id = $r.capture_id; sample_seq = $r.sample_seq; frame_seq = $r.frame_seq
       raw_sha256 = $r.raw_sha256; raw_size = $r.raw_size; request_id = $r.request_id; image_sha256 = $r.image_sha256; sent_at = $r.sent_at; received_at = $received; verdict = $verdict; reason = $reason
-      admission = $(if ($null -ne $admission) { [ordered]@{ phase = $admission.phase; at = $admission.at; accepted = $admission.accepted; error = $admission.error; owned_points = $admission.owned_points; window = $admission.window } } else { $null }) })
+      display = $r.display; overlay = $r.overlay
+      admission = $(if ($null -ne $admission) { [ordered]@{ phase = $admission.phase; at = $admission.at; accepted = $admission.accepted; error = $admission.error; owned_points = $admission.owned_points; window = $admission.window
+        overlay_handle = $admission.overlay_handle; overlay_points = $admission.overlay_points; overlay_hit_points = $admission.overlay_hit_points; overlay_foreground = $admission.overlay_foreground; overlay_refused = $admission.overlay_refused } } else { $null }) })
   } catch {
     if ($verdict -ceq 'allow') { $verdict = 'deny'; $reason = 'the checker evidence log is unavailable'; $qaState.denied = $reason }
   }
-  $reply = [ordered]@{ format = $r.format; id = $r.id; seq = $r.seq; phase = $r.phase; capture_id = $r.capture_id; display = $r.display; sample_seq = $r.sample_seq; frame_seq = $r.frame_seq
+  $reply = [ordered]@{ format = $r.format; id = $r.id; seq = $r.seq; phase = $r.phase; capture_id = $r.capture_id; display = $r.display; overlay = $r.overlay; sample_seq = $r.sample_seq; frame_seq = $r.frame_seq
     raw_sha256 = $r.raw_sha256; raw_size = $r.raw_size; request_id = $r.request_id; image_sha256 = $r.image_sha256; verdict = $verdict; reason = $reason }
   $out = $reply | ConvertTo-Json -Compress -Depth 5
   if ($qaStrict.GetByteCount($out) -gt 4096) { try { Write-QaCheckerLog ([ordered]@{ event = 'reply_too_long'; seq = $r.seq }) } catch { }; exit 2 }

@@ -1,0 +1,52 @@
+{
+  "kind": "qa-live-nonvoice-driver/correction-04",
+  "status": "PREPARED_ONLY_NOT_REVIEWED_NOT_AUTHORIZED; INTERIM (pins 52be105, which does not start the checker; the wrapper refuses every allocation)",
+  "amends": "9614947fa2a3cfae3dd5e3d154011b3c6dbaa82b",
+  "support_reviews": "5083814 (R1-R5, F3 overlay premises)",
+  "lead_decisions": "handoff_1698eb17, handoff_e893ca27, handoff_0326d79a (Web 48c20c4 consumer)",
+  "web_protocol_consumed": "48c20c410dc49c7805fa775013501222116cd2b3 (docs/verification/web/windows-source-admission.md): arm overlay {pid, hwnd}, session source_admission {capture_id, overlay, active}, captures/<capture>/admission.jsonl",
+  "real_actions": "0/4 (unchanged)",
+  "diagnostic": "3/3 consumed and closed (unchanged)",
+  "candidate_sha256": "4cb6032ef8eccea7306cdd624cf2e7846e04c07ca801145dba5490eb232c7410",
+  "payload_sha256": {
+    "runner.ps1": "3adea4670487f84215608865be9eb569b80ad7070feec5a8fb7a166ab7abfc99",
+    "steps.json": "4049577415ad805c11b23e3cf1009b4e071956cfe24669e807574aeb354e423c",
+    "surface.html": "be82967ae45d36bece4ac4858d6f45d0e90e58d088203b71323b74e6ae5e1067",
+    "sub-live.json": "4729ca1a25ec09a64349c68c5ccb0eb41b4e9f83e161fb9c4a29b0ce26b948d4",
+    "admission-checker.ps1": "9b4b3537ec84d2beb54347c5132860c8a9755c6f28b69ab07dccc160f2d6e6e1",
+    "admission-live.json": "a28429bc0be901d878c5240181f94e351d74f6abbf1619a1c73b49d9b1fa818e"
+  },
+  "wrapper_sha256": "3a537fa1df6b1b74311e3146ba7f3ec021d7b64291313d6b2d3504564a68487b",
+  "native_bound_ms": 600000,
+  "native_worst_case_ms": 589000,
+  "work": "/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-live-nonvoice-e44fd6aaff6b452a91244c9ec5a1bcca",
+  "admission_timing_ms": {
+    "ready_ms": 10000,
+    "decision_ms": 5000
+  },
+  "source_files_pinned_by_candidate": {
+    "qa_live_candidate.mjs": "9e74d6ff7b5dc64bc2a6bb210e489ae320d1ec43a252f462f586908ef11eee8f",
+    "qa_tts_output_candidate.mjs": "02fd39d06c29eb89d60ed113bb13e97726cc503a2e9678da713a3422b3f6cf83",
+    "qa_visible_candidate.mjs": "9df43a98f64c67559029d31bc41573db4df4df94341ef48845687987b5460410",
+    "qa_edge_placement.ps1": "e527a59e63f6823adc9aaa1b5d9619661d8299769985ae1a0bf108749c2535bb",
+    "qa_display_admission.ps1": "b4f586b7c987f533f318eb72ebffe318482ed2c2aa7f7f720574147071747590",
+    "qa-electron-runner.ps1": "1a0dfc3f178a1d6f59233c2a7d6a836ce68b18887affd2f6431c2d4ef5c48218",
+    "qa_tts_stage_check.py": "9e0a8257f740ee6d7e8924ac848de2fc7ddfd9b7621967e8a7f67c1c518b810f",
+    "qa_live_stage_check.py": "8bdd042b426c0784500375a41fe874e41b80186a6a8dddcc1d544213abd8c791",
+    "surface_live.html": "be82967ae45d36bece4ac4858d6f45d0e90e58d088203b71323b74e6ae5e1067",
+    "sub_copy.mjs": "d9df3fe96a1c3c99b161552cd6c547c9a7c64dad4e23f05f57eed922013a85f5",
+    "qa_sub_copy_check.py": "73b765943887cab143f530deb3deb7ac415cabce13bc2bd9f7498c1c56320d10",
+    "qa_live_copy_check.py": "1784a01195500bda2fe84971e837978043cc74d3ad4e1a119dd5452863b92425",
+    "signin_cleanup.mjs": "efa06295262ea27006769e0dea363051fbd6401f4c810d2049db5937ee939b2b",
+    "qa_live_ledger.mjs": "3558b9bb0da7c7b8e1d39bfb98b440f6a9e631cb2275e02200c02b831b5a12de",
+    "qa_run_tts_candidate.mjs": "153db051aa92a39a5f59859c1d85b107867a6fc6fa1c30eb033692f83ebdbda3",
+    "qa_sub_watch.py": "42be06a3b2d07d2feb16b306bfefe9d2c44bfdd8d88554853eb9a7ea6112d1b8",
+    "qa_admission_checker.ps1": "525ee17fb86eeb980cabc93d71413ea00badcea433b1f65c24757730823aaa26",
+    "qa_overlay_predicate.ps1": "42c95a91a9121a047e2ce2185461002d2a53620cf30e0e2f3c95a64369a3cbf8",
+    "qa_overlay_fixtures.json": "6a513c5bd0062b0a17d88038ef882abb62c765e521fbbfbd2f87098392607bc3",
+    "qa_overlay_fixture_check.ps1": "5b72cd41a87fac2f23ed4924f5653c43d966afb42b47e8dde4831891f0c24dcb"
+  },
+  "test_file_sha256": "92ee0bae77e46171e190897e06eec59be13e2d1f168a0f15486e1d31f441ca79",
+  "mutant_script_sha256": "ac4004249b24a9ae3c096d9047acd2725b2b8e16dbf826dba50c0a446293e74f",
+  "overlay_fixture_check_sha256": "e09a7a942a3ef22fe2644f0b6dfcd2eadc6b0f7dccf837037b762b583c16729f"
+}

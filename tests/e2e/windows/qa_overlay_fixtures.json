@@ -1,0 +1,320 @@
+{
+  "format": "qa-overlay-passage-fixtures/3",
+  "status": "PREPARED, NOT EXECUTED: the pure functions of qa_overlay_predicate.ps1 against synthetic window facts (no native call). Lead decisions handoff_1698eb17 and handoff_e893ca27; Support review 5083814.",
+  "app_pid": 126156,
+  "expect": {
+    "owner": 126156,
+    "class": "Chrome_WidgetWin_1",
+    "title": "Learning Companion overlay",
+    "bounds": "0,0,2560,1600"
+  },
+  "overlay": {
+    "Owner": 126156,
+    "Class": "Chrome_WidgetWin_1",
+    "Title": "Learning Companion overlay",
+    "Bounds": [
+      0,
+      0,
+      2560,
+      1600
+    ],
+    "Visible": true,
+    "Minimized": false,
+    "Topmost": true,
+    "Affinity": 17,
+    "Cloaked": 0
+  },
+  "binding_cases": [
+    {
+      "name": "main names the launched product's overlay",
+      "named": {
+        "pid": 126156,
+        "hwnd": "6034738"
+      },
+      "change": {},
+      "fault": null
+    },
+    {
+      "name": "arm names no overlay",
+      "named": null,
+      "change": {},
+      "fault": "main named no overlay at arm"
+    },
+    {
+      "name": "a numeric handle",
+      "named": {
+        "pid": 126156,
+        "hwnd": 6034738
+      },
+      "change": {},
+      "fault": "the named overlay handle is malformed"
+    },
+    {
+      "name": "a zero handle",
+      "named": {
+        "pid": 126156,
+        "hwnd": "0"
+      },
+      "change": {},
+      "fault": "the named overlay handle is malformed"
+    },
+    {
+      "name": "a handle with a sign",
+      "named": {
+        "pid": 126156,
+        "hwnd": "+6034738"
+      },
+      "change": {},
+      "fault": "the named overlay handle is malformed"
+    },
+    {
+      "name": "another process id",
+      "named": {
+        "pid": 4242,
+        "hwnd": "6034738"
+      },
+      "change": {},
+      "fault": "the named overlay is not of the launched product"
+    },
+    {
+      "name": "a process id as a string",
+      "named": {
+        "pid": "126156",
+        "hwnd": "6034738"
+      },
+      "change": {},
+      "fault": "the named overlay is not of the launched product"
+    },
+    {
+      "name": "the named window could not be read",
+      "named": {
+        "pid": 126156,
+        "hwnd": "6034738"
+      },
+      "facts": null,
+      "fault": "the named overlay could not be read"
+    },
+    {
+      "name": "the named window is another process's",
+      "named": {
+        "pid": 126156,
+        "hwnd": "6034738"
+      },
+      "change": {
+        "Owner": 4242
+      },
+      "fault": "the named overlay window belongs to another process"
+    },
+    {
+      "name": "the named window is the control window",
+      "named": {
+        "pid": 126156,
+        "hwnd": "7012706"
+      },
+      "change": {
+        "Title": "Learning Companion"
+      },
+      "fault": "the named window is not the product overlay"
+    },
+    {
+      "name": "the named window has another class",
+      "named": {
+        "pid": 126156,
+        "hwnd": "6034738"
+      },
+      "change": {
+        "Class": "Chrome_RenderWidgetHostHWND"
+      },
+      "fault": "the named window is not the product overlay"
+    }
+  ],
+  "overlay_cases": [
+    {
+      "name": "the exact bound overlay",
+      "change": {},
+      "fault": null
+    },
+    {
+      "name": "unreadable window",
+      "facts": null,
+      "fault": "the covering window could not be read"
+    },
+    {
+      "name": "another process (same title and class)",
+      "change": {
+        "Owner": 4242
+      },
+      "fault": "a window of another process covers the surface"
+    },
+    {
+      "name": "the product's control window",
+      "change": {
+        "Title": "Learning Companion",
+        "Topmost": false,
+        "Bounds": [
+          820,
+          32,
+          1740,
+          1472
+        ]
+      },
+      "fault": "a product window other than the overlay covers the surface"
+    },
+    {
+      "name": "another product window class",
+      "change": {
+        "Class": "Chrome_RenderWidgetHostHWND"
+      },
+      "fault": "a product window other than the overlay covers the surface"
+    },
+    {
+      "name": "title with a trailing space",
+      "change": {
+        "Title": "Learning Companion overlay "
+      },
+      "fault": "a product window other than the overlay covers the surface"
+    },
+    {
+      "name": "hidden",
+      "change": {
+        "Visible": false
+      },
+      "fault": "the overlay is not shown"
+    },
+    {
+      "name": "minimized",
+      "change": {
+        "Minimized": true
+      },
+      "fault": "the overlay is not shown"
+    },
+    {
+      "name": "not topmost",
+      "change": {
+        "Topmost": false
+      },
+      "fault": "the overlay is not topmost"
+    },
+    {
+      "name": "one pixel short",
+      "change": {
+        "Bounds": [
+          0,
+          0,
+          2560,
+          1599
+        ]
+      },
+      "fault": "the overlay does not cover exactly the admitted display"
+    },
+    {
+      "name": "larger than the display",
+      "change": {
+        "Bounds": [
+          -8,
+          -8,
+          2568,
+          1608
+        ]
+      },
+      "fault": "the overlay does not cover exactly the admitted display"
+    },
+    {
+      "name": "not excluded from capture (WDA_NONE)",
+      "change": {
+        "Affinity": 0
+      },
+      "fault": "the overlay is not excluded from capture (WDA_EXCLUDEFROMCAPTURE)"
+    },
+    {
+      "name": "black in capture only (WDA_MONITOR)",
+      "change": {
+        "Affinity": 1
+      },
+      "fault": "the overlay is not excluded from capture (WDA_EXCLUDEFROMCAPTURE)"
+    },
+    {
+      "name": "cloaked",
+      "change": {
+        "Cloaked": 2
+      },
+      "fault": "the overlay is cloaked"
+    }
+  ],
+  "normal_top_cases": [
+    {
+      "name": "Edge is the top of the normal band",
+      "above": "0",
+      "what": "",
+      "fault": null
+    },
+    {
+      "name": "no window above Edge (empty)",
+      "above": "",
+      "what": "",
+      "fault": null
+    },
+    {
+      "name": "a foreign window above Edge",
+      "above": "9001",
+      "what": "class Notepad, owner 4242",
+      "fault": "the owned Edge is not the top of the normal band (class Notepad, owner 4242)"
+    }
+  ],
+  "stack_cases": [
+    {
+      "name": "exactly the bound overlay above Edge",
+      "above": [
+        "6034738"
+      ],
+      "overlay": "6034738",
+      "what": "",
+      "fault": null
+    },
+    {
+      "name": "nothing above Edge during the capture",
+      "above": [],
+      "overlay": "6034738",
+      "what": "",
+      "fault": "the windows above the owned Edge are not exactly the bound overlay"
+    },
+    {
+      "name": "the product control window too",
+      "above": [
+        "6034738",
+        "7012706"
+      ],
+      "overlay": "6034738",
+      "what": "class Chrome_WidgetWin_1, owner 126156",
+      "fault": "the windows above the owned Edge are not exactly the bound overlay (class Chrome_WidgetWin_1, owner 126156)"
+    },
+    {
+      "name": "another app's click-through window above the overlay",
+      "above": [
+        "9001",
+        "6034738"
+      ],
+      "overlay": "6034738",
+      "what": "class CEF-OSC-WIDGET, owner 4242",
+      "fault": "the windows above the owned Edge are not exactly the bound overlay (class CEF-OSC-WIDGET, owner 4242)"
+    },
+    {
+      "name": "another window instead of the overlay",
+      "above": [
+        "9001"
+      ],
+      "overlay": "6034738",
+      "what": "class Notepad, owner 4242",
+      "fault": "the windows above the owned Edge are not exactly the bound overlay (class Notepad, owner 4242)"
+    },
+    {
+      "name": "no bound overlay",
+      "above": [
+        "6034738"
+      ],
+      "overlay": "",
+      "what": "",
+      "fault": "the windows above the owned Edge are not exactly the bound overlay"
+    }
+  ]
+}

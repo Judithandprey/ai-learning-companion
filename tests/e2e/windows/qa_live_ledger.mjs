@@ -18,6 +18,10 @@ import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
+// The production record vocabulary (52be105 main.ts appendLive and AskEntry.trigger): anything else is unknown.
+const LIVE_KINDS = new Set(['started', 'not_started', 'first_picture', 'look', 'looked', 'not_looked', 'settled', 'ended', 'gap', 'looks_stopped']);
+const ASK_TRIGGERS = new Set(['focus', 'text_followup']);
+const REQUEST_KINDS = new Set(['look', 'looked', 'not_looked', 'settled']);   // each names its request (a string request_id)
 export const SLOT_PURPOSES = ['unattended whole-screen observation', 'automatic focus response', 'typed follow-up after controlled screen change', 'Stop/fence attempt'];
 
 export const parseJsonl = text => String(text).split(/\r?\n/).filter(l => l.trim()).map(l => { try { const v = JSON.parse(l); return v && typeof v === 'object' && !Array.isArray(v) ? v : { kind: 'unreadable_line' }; } catch { return { kind: 'unreadable_line' }; } });
@@ -84,9 +88,15 @@ export function buildLedger({ steps, results, liveLines = [], asks = [], receipt
   const entriesAll = asks.filter(a => Array.isArray(a?.requests)).flatMap(a => a.requests.filter(q => q && typeof q === 'object').map(q => ({ ...q })))
     .sort((a, b) => String(a.submitted_at ?? '').localeCompare(String(b.submitted_at ?? '')));
   const focus = entriesAll.filter(q => q.trigger === 'focus'), typed = entriesAll.filter(q => q.trigger === 'text_followup');
+  // Every observed request is classified or kept as an unknown extra action (never dropped): an ask without a known
+  // trigger, and a request id on a live line that no look or ask holds.
+  const unclassified = entriesAll.filter(q => !ASK_TRIGGERS.has(q.trigger));
+  const knownIds = new Set([...looks.map(l => l.request_id), ...focus.map(q => q.request_id), ...typed.map(q => q.request_id)]);
+  const orphanIds = [...new Set(liveLines.filter(l => typeof l.request_id === 'string' && !knownIds.has(l.request_id) && !unclassified.some(q => q.request_id === l.request_id)).map(l => l.request_id))];
   const byRequest = id => liveLines.filter(l => l.request_id === id);
   const slotRequests = [looks.slice(0, 1), focus.slice(0, 1), typed.slice(0, 1), typed.slice(1, 2)];
-  const extra = [...looks.slice(1).map(l => l.request_id), ...focus.slice(1).map(q => q.request_id), ...typed.slice(2).map(q => q.request_id)];
+  const extra = [...looks.slice(1).map(l => l.request_id), ...focus.slice(1).map(q => q.request_id), ...typed.slice(2).map(q => q.request_id),
+    ...unclassified.map((q, k) => (typeof q.request_id === 'string' ? q.request_id : `unidentified-request-${k + 1}`)), ...orphanIds];
   const slots = SLOT_PURPOSES.map((purpose, k) => {
     const reqs = slotRequests[k];
     if (!assigned[k] && reqs.length === 0) return { slot: k + 1, purpose, state: k === 0 && refusedStarts.length ? 'NOT_RUN_session_not_started' : k === 0 && startNeverRan ? 'NOT_RUN_start_not_evaluated' : 'NOT_RUN', counted: false };
@@ -106,20 +116,34 @@ export function buildLedger({ steps, results, liveLines = [], asks = [], receipt
     return { slot: k + 1, purpose, state: request.outcome?.status ?? 'outcome_not_recorded', counted: true, request_id: request.request_id, trigger: request.trigger,
       question: request.question, assistance: request.assistance, asked_as: request.asked_as, spoken: request.spoken ?? null, focus: request.frame?.focus,
       frame_captured_at: request.frame?.captured_at ?? null, image_sha256: request.frame?.image?.sha256,
-      submission: request.submission ?? request.outcome?.submission ?? null, shown: request.shown, presentation: request.presentation ?? null,
+      submission: request.submission ?? request.outcome?.submission ?? null, outcome_submission: request.outcome?.submission ?? null, live_session_id: request.live_session_id ?? null,
+      shown: request.shown, presentation: request.presentation ?? null,
       transport: transport(receipts[request.request_id], request.frame?.image?.sha256, { codexSha256 }) };
   });
   const used = slots.filter(s => s.counted).length + extra.length;
-  // Provider turns: each receipt carries its connector client's CUMULATIVE turn/start count, so a launch's total is its
-  // largest count (never a sum of repeated counts); launches add up. It must fit the actions and cover the sent ones.
-  const launches = new Map();
-  for (const r of Object.values(receipts)) if (r && typeof r === 'object') launches.set(r.__launch ?? 'unknown', Math.max(launches.get(r.__launch ?? 'unknown') ?? 0, Number.isInteger(r.turn_start_count) ? r.turn_start_count : Infinity));
-  const providerTurns = [...launches.values()].reduce((a, b) => a + b, 0);
-  const sentReceipts = Object.values(receipts).filter(r => r && (r.submission === 'acknowledged' || r.submission === 'written')).length;
-  const turnsConsistent = Number.isFinite(providerTurns) && providerTurns <= used && providerTurns <= 4 && providerTurns >= sentReceipts;
+  // Provider turns (chatgpt_rpc.py: the client counts turn/start once the bytes are written; requests run one at a time).
+  // Each launch's history first: a receipt carries the CUMULATIVE count at its last record, so a launch's total is its
+  // largest count (never a sum); each request it definitely published (written/acknowledged) holds its own distinct
+  // count; the total is at least those and at most those plus the uncertain ones (a request proven unsent publishes
+  // nothing). Then launches add up, within the four actions and the actions that may have been sent.
+  const byLaunch = new Map();
+  for (const r of Object.values(receipts)) if (r && typeof r === 'object') { const k = r.__launch ?? 'unknown'; if (!byLaunch.has(k)) byLaunch.set(k, []); byLaunch.get(k).push(r); }
+  const launchHistories = [...byLaunch.values()].map((list, i) => {
+    const counts = list.map(r => r.turn_start_count), valid = counts.every(c => Number.isInteger(c) && c >= 0);
+    const sent = list.filter(r => r.submission === 'acknowledged' || r.submission === 'written'), sentCounts = sent.map(r => r.turn_start_count);
+    const uncertain = list.filter(r => r.submission === 'uncertain').length, max = valid ? Math.max(...counts) : null;
+    const consistent = valid && sentCounts.every(c => c >= 1) && new Set(sentCounts).size === sentCounts.length && max >= sent.length && max <= sent.length + uncertain;
+    return { launch: i + 1, receipts: list.length, sent: sent.length, uncertain, not_submitted: list.filter(r => r.submission === 'not_submitted').length, max_turns: max, consistent };
+  });
+  const providerTurns = launchHistories.every(h => h.max_turns !== null) ? launchHistories.reduce((a, h) => a + h.max_turns, 0) : Infinity;
+  const sentReceipts = launchHistories.reduce((a, h) => a + h.sent, 0);
+  const possiblySent = slots.filter(s => s.counted && s.submission !== 'not_submitted').length + extra.length;
+  const turnsConsistent = launchHistories.every(h => h.consistent) && Number.isFinite(providerTurns) && providerTurns <= 4 && providerTurns <= possiblySent && providerTurns <= used;
   // Incomplete evidence stays incomplete: an unreadable live line, an ask record without requests or a request without an id.
-  const unreadable = liveLines.filter(l => l.kind === 'unreadable_line').length + asks.filter(a => !a || !Array.isArray(a.requests)).length
-    + asks.filter(a => Array.isArray(a?.requests)).flatMap(a => a.requests).filter(q => !q || typeof q !== 'object' || typeof q.request_id !== 'string').length;
+  const unreadable = liveLines.filter(l => l.kind === 'unreadable_line' || !LIVE_KINDS.has(l.kind) || (REQUEST_KINDS.has(l.kind) && typeof l.request_id !== 'string')).length
+    + asks.filter(a => !a || !Array.isArray(a.requests)).length
+    + asks.filter(a => Array.isArray(a?.requests)).flatMap(a => a.requests).filter(q => !q || typeof q !== 'object' || typeof q.request_id !== 'string').length
+    + unclassified.length + orphanIds.length;
   // The app's own count (submitted + unknown), from its records and the guards' reads: it must agree with the ledger.
   const values = results?.values ?? {}, read = k => { try { return JSON.parse(values[k]); } catch { return null; } };
   const appUsed = Math.max(-1, ...liveLines.filter(l => typeof l.used === 'number').map(l => l.used), ...['action1', 'action2', 'action3', 'action4_after'].map(k => read(k)?.used).filter(n => typeof n === 'number'));
@@ -127,7 +151,8 @@ export function buildLedger({ steps, results, liveLines = [], asks = [], receipt
   const unwritten = Math.max(0, ...['action1', 'action2', 'action3', 'action4_after'].map(k => read(k)?.unwritten).filter(n => typeof n === 'number'));
   return { kind: 'qa-live-nonvoice-ledger/1', slots, extra_requests: extra, attempts_used: used, attempts_remaining: Math.max(0, 4 - used),
     ceiling_ok: used <= 4 && unwritten === 0 && (appUsed < 0 || appUsed <= submittedSlots + extra.length) && turnsConsistent, app_counted: appUsed < 0 ? null : appUsed, submitted_slots: submittedSlots, live_lines_unwritten: unwritten,
-    provider_turns: Number.isFinite(providerTurns) ? providerTurns : null, receipt_launches: launches.size, sent_receipts: sentReceipts, turns_consistent: turnsConsistent,
+    provider_turns: Number.isFinite(providerTurns) ? providerTurns : null, receipt_launches: launchHistories.length, launch_histories: launchHistories, sent_receipts: sentReceipts,
+    possibly_sent: possiblySent, turns_consistent: turnsConsistent, unclassified_requests: unclassified.length + orphanIds.length,
     records_complete: unreadable === 0, unreadable_records: unreadable,
     sessions_started: starts, start_attempts: starts + refusedStarts.length, restarted: starts + refusedStarts.length > 1, retried: extra.length > 0,
     all_silent: slots.every(s => !s.asked_as || (s.asked_as === 'silent' && !s.spoken)),
@@ -142,13 +167,18 @@ export function buildLedger({ steps, results, liveLines = [], asks = [], receipt
  * after a deny. Requests proven not submitted need no send. An allowed send the app's records do not hold is flagged:
  * the records would be incomplete. Logical ordering only; an OS change between two native observations remains possible.
  */
-export function sourceAdmission(ledger, checkerLines) {
+export function sourceAdmission(ledger, checkerLines, displayChoice, mainLines) {
   const lines = (checkerLines ?? []).filter(l => l && typeof l === 'object');
   const decisions = lines.filter(l => l.event === 'decision');
   const ok = d => d.verdict === 'allow' && d.reason === null && d.admission?.accepted === true;
   const firstDeny = decisions.findIndex(d => d.verdict !== 'allow');
   const ordered = decisions.every((d, i) => Number.isSafeInteger(d.seq) && (i === 0 || d.seq > decisions[i - 1].seq));
   const arm = decisions[0]?.phase === 'arm' && ok(decisions[0]) ? decisions[0] : null;
+  // The arm names the display the product listed before Start (display_choice): the decimal display_id string, or the
+  // same value as a safe non-negative integer (lossless), with the same bounds and scale.
+  const choice = displayChoice && typeof displayChoice === 'object' && typeof displayChoice.display_id === 'string' ? displayChoice : null, d = arm?.display;
+  const idMatches = !!d && !!choice && (typeof d.id === 'string' ? d.id === choice.display_id : Number.isSafeInteger(d.id) && d.id >= 0 && String(d.id) === choice.display_id);
+  const displayMatches = idMatches && ['x', 'y', 'width', 'height'].every(k => d.bounds?.[k] === choice.bounds?.[k]) && d.scale_factor === choice.scale_factor;
   const same = (d, e) => d.sample_seq === e.sample_seq && d.frame_seq === e.frame_seq && d.raw_sha256 === e.raw_sha256 && d.raw_size?.width === e.raw_size?.width && d.raw_size?.height === e.raw_size?.height;
   const bind = (rid, image) => {
     const k = decisions.findIndex(d => d.phase === 'send' && d.request_id === rid);
@@ -168,10 +198,21 @@ export function sourceAdmission(ledger, checkerLines) {
     : r.submission === 'not_submitted' ? { ...r, bound: null, reason: 'proven not submitted: no send needed' } : { ...r, ...bind(r.request_id, r.image_sha256) });
   const known = new Set(requests.map(r => r.request_id));
   const unrecorded = decisions.filter(d => d.phase === 'send' && d.verdict === 'allow' && !known.has(d.request_id)).map(d => d.seq);
-  const all = lines[0]?.event === 'ready' && !!arm && ordered && unrecorded.length === 0
+  // Main's own record (Web 48c20c4, captures/<capture>/admission.jsonl) must tell the same decisions: every decision it
+  // records as allowed is an allow in QA's log with the same phase and facts, every allowed send in QA's log is one
+  // main records as allowed, and main records no violation.
+  const facts = d => JSON.stringify([d.phase, d.sample_seq ?? null, d.frame_seq ?? null, d.raw_sha256 ?? null, d.raw_size?.width ?? null, d.raw_size?.height ?? null, d.request_id ?? null, d.image_sha256 ?? null]);
+  const main = Array.isArray(mainLines) ? mainLines.filter(l => l && typeof l === 'object') : null;
+  const mainAllowed = main ? main.filter(l => l.kind === 'decision' && l.allowed === true).map(facts) : [];
+  const qaAllowed = new Set(decisions.filter(ok).map(facts));
+  const mainAgrees = !!main && main.length > 0 && main.every(l => ['decision', 'violation', 'checker_end'].includes(l.kind)) && !main.some(l => l.kind === 'violation')
+    && mainAllowed.every(f => qaAllowed.has(f)) && decisions.filter(d => d.phase === 'send' && ok(d)).every(d => mainAllowed.includes(facts(d)));
+  const all = lines[0]?.event === 'ready' && !!arm && displayMatches && mainAgrees && ordered && unrecorded.length === 0
     && (firstDeny < 0 || decisions.slice(firstDeny + 1).every(d => d.verdict !== 'allow'))
     && checked.every(r => r.bound !== false);
-  return { all_bound: all, checker_ready: lines[0]?.event === 'ready', armed: !!arm, decisions: decisions.length, ordered, denied: firstDeny >= 0 ? { seq: decisions[firstDeny].seq, phase: decisions[firstDeny].phase, reason: decisions[firstDeny].reason } : null,
+  return { all_bound: all, checker_ready: lines[0]?.event === 'ready', armed: !!arm, display_matches: displayMatches, main_record_agrees: mainAgrees,
+    main_record: main ? { lines: main.length, allowed: mainAllowed.length, violations: main.filter(l => l.kind === 'violation').map(l => String(l.reason ?? '').slice(0, 200)), checker_end: main.find(l => l.kind === 'checker_end') ?? null } : null,
+    decisions: decisions.length, ordered, denied: firstDeny >= 0 ? { seq: decisions[firstDeny].seq, phase: decisions[firstDeny].phase, reason: decisions[firstDeny].reason } : null,
     requests: checked, unrecorded_admitted_sends: unrecorded,
     residual: 'Logical ordering of fresh full native admissions around acquisition and send; an OS change between two native observations is not excluded.' };
 }
@@ -193,12 +234,17 @@ export function fenceVerdict(ledger, liveLines, values = {}) {
   const notShown = slot.shown !== true && slot.presentation !== 'shown' && cardClean;
   const facts = { stop_scope: 'the AI session (#liveStop); the capture kept running until the wind-down capture Stop', stopped_by_user: stopped, request_recorded: recorded, out_at_stop: stop?.out_at_stop ?? null, settled_after_stop: settledAfterStop, request_outcome: slot.state,
     submission: slot.submission ?? null, shown: slot.shown ?? null, presentation: slot.presentation ?? null, card_after_stop_clean: cardClean, no_later_request: noLater, end_reason: ended?.reason ?? null };
-  // The phase from every record that has one: the ask entry, the settled line, the receipt. They must agree (F6).
-  const settledLine = afterEnd.find(l => l.kind === 'settled' && l.request_id === slot.request_id);
-  const phases = [slot.submission, settledLine?.submission, slot.transport?.receipt ? slot.transport.phase : undefined].filter(p => p !== undefined && p !== null)
-    .map(p => (p === 'unknown' || p === 'uncertain' ? 'unknown' : p));
-  const phase = phases.length && phases.every(p => p === phases[0]) ? phases[0] : 'conflicting';
-  Object.assign(facts, { phases_seen: phases, phase, receipt: !!slot.transport?.receipt });
+  // The phase from EVERY record of this request (F6, Support R3): the ask entry, its outcome, each settled line wherever
+  // it is, and the receipt; a record without its phase is unknown, never left out. They must agree, and the settled
+  // lines and the session's end must carry the ask's session identity.
+  const settledLines = liveLines.filter(l => l.kind === 'settled' && l.request_id === slot.request_id);
+  const norm = p => (p === 'submitted' || p === 'not_submitted' ? p : 'unknown');
+  const phases = [slot.submission, ...(slot.outcome_submission ? [slot.outcome_submission] : []), ...settledLines.map(l => l.submission), ...(slot.transport?.receipt ? [slot.transport.phase] : [])].map(norm);
+  const session = slot.live_session_id;
+  const identity = typeof session !== 'string' ? 'unknown' : settledLines.every(l => l.session_id === session) && ended?.session_id === session ? 'same' : 'different';
+  const definite = new Set(phases.filter(p => p !== 'unknown'));
+  const phase = definite.size > 1 || identity === 'different' ? 'conflicting' : phases.includes('unknown') || identity === 'unknown' ? 'unknown' : [...definite][0] ?? 'unknown';
+  Object.assign(facts, { phases_seen: phases, settled_records: settledLines.length, session_identity: identity, phase, receipt: !!slot.transport?.receipt });
   if (!stopped || !recorded || !outAtStop || !settledAfterStop || phase === 'conflicting') return { verdict: 'unknown', ...facts };
   if (!notShown || !noLater) return { verdict: 'not_fenced', ...facts };
   return { verdict: phase === 'not_submitted' ? 'fenced_before_submission' : phase === 'submitted' ? 'fenced_in_flight' : 'fenced_submission_unknown', ...facts };

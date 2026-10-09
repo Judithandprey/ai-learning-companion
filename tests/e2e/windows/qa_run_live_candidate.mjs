@@ -21,10 +21,10 @@ import { lookCommand, readLook, releaseOwned, windowsCalls } from './signin_clea
 import { askPathCheck, compareCopy } from './sub_copy.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url)), repo = resolve(here, '../../..');
-export const candidateDir = join(repo, 'docs/verification/qa/p0-13-live-52be105/candidate-nonvoice-03');
-export const candidateHash = 'db83ff5c52bbbdef4d4fb361522c4a2d2b8168fab7face4805efb4ba30bd3df6';
-export const pins = { 'runner.ps1': '4f3fe4d3a09d4b1dd1f530d659a2974b4e0142686ca027612756fff6c9f0473f', 'steps.json': 'a513585ed4e1e63b588c0770b08661bd211f065735f63392c2a6916a377e8d6c', 'surface.html': 'be82967ae45d36bece4ac4858d6f45d0e90e58d088203b71323b74e6ae5e1067', 'sub-live.json': '4729ca1a25ec09a64349c68c5ccb0eb41b4e9f83e161fb9c4a29b0ce26b948d4',
-  'admission-checker.ps1': '920255cf6b610abbbe43a5f90cc5c637f5548cfff36c3ccf302746fd05e5d447', 'admission-live.json': '51b05f5afb5aa96f0294fc4ca0c39ae9a8c9a282d61fe5cdd0a2c26653f97d11' };
+export const candidateDir = join(repo, 'docs/verification/qa/p0-13-live-52be105/candidate-nonvoice-04');
+export const candidateHash = '4cb6032ef8eccea7306cdd624cf2e7846e04c07ca801145dba5490eb232c7410';
+export const pins = { 'runner.ps1': '3adea4670487f84215608865be9eb569b80ad7070feec5a8fb7a166ab7abfc99', 'steps.json': '4049577415ad805c11b23e3cf1009b4e071956cfe24669e807574aeb354e423c', 'surface.html': 'be82967ae45d36bece4ac4858d6f45d0e90e58d088203b71323b74e6ae5e1067', 'sub-live.json': '4729ca1a25ec09a64349c68c5ccb0eb41b4e9f83e161fb9c4a29b0ce26b948d4',
+  'admission-checker.ps1': '9b4b3537ec84d2beb54347c5132860c8a9755c6f28b69ab07dccc160f2d6e6e1', 'admission-live.json': 'a28429bc0be901d878c5240181f94e351d74f6abbf1619a1c73b49d9b1fa818e' };
 const psBin = '/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe';
 const managedState = '/home/agentsdock/.local/share/LearningCompanion/managed-chatgpt';   // state_dir null: the product's own
 // Raw provider receipts (thread/turn ids) stay outside the repository and Git: one 0700 folder per run (Lead D8).
@@ -170,6 +170,8 @@ export async function runLiveCandidate(options, injected = {}) {
     else {
       stillActive();
       if (now() + record.native_bound_ms > deadline) throw Error('allocation has too little time for the bounded native attempt');
+      // The mandatory watch must still be running right before the launch (a point-in-time check; else nothing launches).
+      await assertWatchRunning(watch, io);
       report.native_attempts = 1;
       const invocation = candidate.proposed_native_invocation;
       const result = run(psBin, invocation.arguments, { cwd: '/mnt/c', timeout: record.native_bound_ms, maxBuffer: 4 * 1024 * 1024 });
@@ -215,7 +217,7 @@ export async function runLiveCandidate(options, injected = {}) {
 export async function startWatch(io, start, sleep, out) {
   const file = join(out, 'connector-watch.jsonl'), stopFile = join(out, 'connector-watch.stop');
   const watcher = start('python3', [join(here, 'qa_sub_watch.py'), '--root', CONNECTOR.copy, '--out', file, '--stop', stopFile], { cwd: '/tmp', stdio: 'ignore' });
-  const state = { error: null, exited: false };
+  const state = { error: null, exited: false, pid: Number.isInteger(watcher.pid) ? watcher.pid : null };
   const exited = new Promise(r => { watcher.on?.('exit', () => { state.exited = true; r(); }); });
   watcher.on?.('error', error => { state.error = msg(error); });
   const stop = async () => {
@@ -225,6 +227,8 @@ export async function startWatch(io, start, sleep, out) {
     clearTimeout(t);
   };
   const ready = await watchReady(io, file, sleep);
+  // Ready means running: a watcher that already exited or failed to start covers nothing (Support R4).
+  if (ready.ready && (state.exited || state.error)) Object.assign(ready, { ready: false, reason: state.error ? 'the watch failed: ' + state.error : 'the watch exited before the launch' });
   let launchesBefore = null;
   try { if (ready.ready) launchesBefore = receiptLaunches(io); } catch (error) { Object.assign(ready, { ready: false, reason: msg(error) }); }
   if (!ready.ready) {
@@ -232,6 +236,19 @@ export async function startWatch(io, start, sleep, out) {
     io.writeFileSync(join(out, 'watch-refusal.json'), JSON.stringify({ ready, watch_error: state.error, native_attempts: 0, scratch_consumed: false }, null, 2) + '\n', { mode: 0o600, flag: 'wx' });
   }
   return { file, ready, launchesBefore, state, stop };
+}
+/**
+ * Whether the watch still runs, read right now (Support R4): a short wait lets the event loop deliver an exit or error
+ * of the watcher that happened during the synchronous work before the launch, and the watcher's own /proc entry is read
+ * (present, not a zombie). Read-only; nothing is signalled. Throws when it is not running.
+ */
+export async function assertWatchRunning(watch, io = fs) {
+  await new Promise(r => setTimeout(r, 50));
+  let alive = !watch.state.exited && !watch.state.error;
+  if (alive && Number.isInteger(watch.state.pid)) {
+    try { alive = !/^\d+ \(.*\) Z /.test(io.readFileSync(`/proc/${watch.state.pid}/stat`, 'utf8')); } catch { alive = false; }
+  }
+  if (!alive) throw Error('the connector watch is no longer running; nothing launched');
 }
 /** The watch's own start record, awaited (bounded) before anything can start a connector. */
 export async function watchReady(io, file, sleep, limitMs = 5000) {
@@ -253,15 +270,34 @@ export function watchSummary(io, file, expected) {
   if (!expected) return { state: 'not_started' };
   let events;
   try { events = parseJsonl(io.readFileSync(file, 'utf8')); } catch { return { state: 'unknown', note: 'the watch log could not be read' }; }
-  const start = events.find(e => e.event === 'watch_start'), end = events.findLast(e => e.event === 'watch_end');
-  const key = e => `${e.pid}/${e.start_ticks ?? '?'}`;
-  const appeared = events.filter(e => e.event === 'appear'), exited = new Set(events.filter(e => e.event === 'exit').map(key));
-  const facts = { appeared: appeared.length, connector_seen: appeared.some(e => e.role === 'in_root'), descendants: appeared.filter(e => e.role === 'descendant').length,
-    not_seen_exiting: appeared.filter(e => !exited.has(key(e))).map(e => e.pid), unreadable_lines: events.filter(e => e.kind === 'unreadable_line').length };
+  const start = events[0]?.event === 'watch_start' ? events[0] : null, end = events.findLast(e => e.event === 'watch_end');
+  // One ordered lifecycle (Support R4): the start first, the end last, and between them each process (pid and start
+  // ticks, a known role) appears once and then exits once; an exit before its appearance, a repeat, or a record after
+  // the end is out of order.
+  const key = e => `${e.pid}/${e.start_ticks}`, life = new Map();
+  let disorder = null;
+  events.forEach((e, i) => {
+    if (disorder) return;
+    if (e.event === 'watch_start') { if (i !== 0) disorder = 'a second start record'; return; }
+    if (e.event === 'watch_end') { if (i !== events.length - 1) disorder = 'records after the end'; return; }
+    if (e.event !== 'appear' && e.event !== 'exit') { disorder = 'an unknown record'; return; }
+    if (!Number.isSafeInteger(e.pid) || e.pid <= 0 || !Number.isSafeInteger(e.start_ticks) || e.start_ticks < 0) { disorder = 'a process without a usable identity'; return; }
+    if (e.event === 'appear') {
+      if (life.has(key(e)) || (e.role !== 'in_root' && e.role !== 'descendant')) { disorder = 'a repeated or unknown appearance'; return; }
+      life.set(key(e), { role: e.role, pid: e.pid, exited: false });
+    } else {
+      const p = life.get(key(e));
+      if (!p || p.exited) { disorder = 'an exit without an earlier appearance'; return; }
+      p.exited = true;
+    }
+  });
+  const procs = [...life.values()];
+  const facts = { appeared: procs.length, connector_seen: procs.some(p => p.role === 'in_root'), descendants: procs.filter(p => p.role === 'descendant').length,
+    not_seen_exiting: procs.filter(p => !p.exited).map(p => p.pid), unreadable_lines: events.filter(e => e.kind === 'unreadable_line').length, disorder };
   if (end && Array.isArray(end.remaining) && end.remaining.length) return { state: 'left_running', remaining: end.remaining, ...facts };
-  const missing = !start ? 'the watch recorded no start' : start.root_exists !== true || !Array.isArray(start.already_there) || start.already_there.length ? 'the watch did not start clean'
-    : !end || !Array.isArray(end.remaining) ? 'the watch recorded no end' : !facts.connector_seen ? 'the connector was never seen'
-    : facts.not_seen_exiting.length ? 'a process was not seen exiting' : facts.unreadable_lines ? 'the watch log has unreadable lines' : null;
+  const missing = !start ? 'the watch recorded no start first' : start.root_exists !== true || !Array.isArray(start.already_there) || start.already_there.length ? 'the watch did not start clean'
+    : !end || !Array.isArray(end.remaining) ? 'the watch recorded no end' : facts.unreadable_lines ? 'the watch log has unreadable lines' : disorder ? 'the watch lifecycle is out of order: ' + disorder
+    : !facts.connector_seen ? 'the connector was never seen' : facts.not_seen_exiting.length ? 'a process was not seen exiting' : null;
   return missing ? { state: 'unknown', note: missing, ...facts } : { state: 'released', remaining: [], ...facts };
 }
 /**
@@ -298,9 +334,40 @@ export function judgeMechanics(report) {
 }
 
 const RECEIPT_FIELDS = ['request_id', 'input_types', 'text_bytes', 'image_bytes', 'image_sha256', 'submission', 'terminal_status', 'outcome', 'produced_item_types', 'thread_start_count', 'turn_start_count', 'actual_model', 'codex_version', 'codex_sha256', 'explicit_bin_override'];
-/** Only the receipt fields the review needs: never thread_id, turn_id, the executable path or anything else. */
+/**
+ * Only the receipt fields the review needs, as typed values (a scalar, or a list of strings): never thread_id, turn_id,
+ * the executable path, an object or anything else (a value of another shape is left out).
+ */
 export function sanitizeReceipts(receipts) {
-  return Object.fromEntries(Object.entries(receipts).map(([rid, r]) => [rid, Object.fromEntries(RECEIPT_FIELDS.filter(k => k in (r ?? {})).map(k => [k, r[k]]))]));
+  const typed = v => v === null || ['string', 'number', 'boolean'].includes(typeof v) || (Array.isArray(v) && v.every(x => typeof x === 'string'));
+  return Object.fromEntries(Object.entries(receipts).map(([rid, r]) => [rid, Object.fromEntries(RECEIPT_FIELDS.filter(k => k in (r ?? {}) && typed(r[k])).map(k => [k, Array.isArray(r[k]) ? [...r[k]] : r[k]]))]));
+}
+// The connector writer's own bounded schema (52be105 chatgpt_receipts.py _metadata and its identity), checked before a
+// receipt is admitted or copied (Support R5). Returns the first fault, or null.
+const text = (v, max) => typeof v === 'string' && v.length > 0 && v.length <= max && !/[\p{Cc}\p{Cs}]/u.test(v);
+const count = (v, max) => Number.isInteger(v) && v >= 0 && v <= max;
+const digest = v => v === null || (typeof v === 'string' && /^[0-9a-f]{64}$/.test(v));
+export function receiptFault(r) {
+  if (!text(r.request_id, 128)) return 'request_id';
+  if (!Array.isArray(r.input_types) || r.input_types.length > 2 || new Set(r.input_types).size !== r.input_types.length || !r.input_types.every(x => x === 'text' || x === 'image')) return 'input_types';
+  if (!Array.isArray(r.produced_item_types) || r.produced_item_types.length > 64 || !r.produced_item_types.every(x => typeof x === 'string' && /^[A-Za-z][A-Za-z0-9_]{0,63}$/.test(x))) return 'produced_item_types';
+  for (const [p, max] of [['text', 4 * 65536], ['image', 8 * 1024 * 1024]]) {
+    if ((r[`${p}_bytes`] === null && r[`${p}_sha256`] !== null) || (r[`${p}_bytes`] !== null && !count(r[`${p}_bytes`], max))) return `${p}_bytes`;
+    if (!digest(r[`${p}_sha256`])) return `${p}_sha256`;
+  }
+  if (!count(r.thread_start_count, 4096)) return 'thread_start_count';
+  if (!count(r.turn_start_count, 4096)) return 'turn_start_count';
+  if (!['not_submitted', 'written', 'acknowledged', 'uncertain'].includes(r.submission)) return 'submission';
+  if (r.terminal_status !== null && !['inProgress', 'completed', 'interrupted', 'failed'].includes(r.terminal_status)) return 'terminal_status';
+  if (!['pending', 'completed', 'cancelled', 'failed', 'not_submitted', 'uncertain'].includes(r.outcome)) return 'outcome';
+  if (r.actual_model !== null && !(typeof r.actual_model === 'string' && /^[A-Za-z0-9][A-Za-z0-9_.:/-]{0,127}$/.test(r.actual_model))) return 'actual_model';
+  for (const k of ['thread_id', 'turn_id']) if (r[k] !== null && !text(r[k], 128)) return k;
+  if (r.format !== 'lc-subscription-ask-receipt/1') return 'format';
+  if (!text(r.codex_executable, 4096) || !/^\//.test(r.codex_executable)) return 'codex_executable';
+  if (!(typeof r.codex_version === 'string' && /^(?:codex-cli )?[0-9][A-Za-z0-9._+-]{0,63}$/.test(r.codex_version))) return 'codex_version';
+  if (!(typeof r.codex_sha256 === 'string' && /^[0-9a-f]{64}$/.test(r.codex_sha256))) return 'codex_sha256';
+  if (typeof r.explicit_bin_override !== 'boolean') return 'explicit_bin_override';
+  return null;
 }
 /**
  * The files of this run's evidence folder that may go to Git after review: generated, sanitized records only. Raw receipts
@@ -309,7 +376,7 @@ export function sanitizeReceipts(receipts) {
 export function publishAllowlist(io, out) {
   const allowed = [], walk = (dir, rel) => { for (const name of io.readdirSync(dir)) { const full = join(dir, name), r = rel ? `${rel}/${name}` : name;
     if (io.statSync(full).isDirectory()) walk(full, r);
-    else if (/^(run|ledger|receipts-sanitized|runner-results|connector-watch|admission-checker)\.json(l)?$|^runner\.(stdout|stderr)\.bin$|^captures\/[0-9a-f]+\/(live\.jsonl|asks\/[A-Za-z0-9._-]+\.json)$/.test(r)) allowed.push(r); } };
+    else if (/^(run|ledger|receipts-sanitized|runner-results|connector-watch|admission-checker)\.json(l)?$|^runner\.(stdout|stderr)\.bin$|^captures\/[0-9a-f]+\/(live\.jsonl|admission\.jsonl|asks\/[A-Za-z0-9._-]+\.json)$/.test(r)) allowed.push(r); } };
   walk(out, '');
   return { kind: 'qa-live-publish-allowlist/1', files: allowed.sort(), excluded_by_default: 'everything else; raw receipts are outside the repository', review: 'QA and the Lead read each listed file before commit' };
 }
@@ -350,6 +417,8 @@ export function readOwnReceipts(io, before, requestIds, root = join(managedState
         if (!st.isFile() || st.nlink !== 1 || st.size > 16384) throw Error('not a regular single-link file of at most 16 KiB');
         const bytes = io.readFileSync(fd), r = JSON.parse(bytes.toString('utf8'));
         if (!r || typeof r !== 'object' || Array.isArray(r) || r.format !== 'lc-subscription-ask-receipt/1' || r.request_id !== rid || !equal(Object.keys(r).sort(), RECEIPT_KEYS)) throw Error('not this request\'s receipt in the connector\'s format');
+        const fault = receiptFault(r);
+        if (fault) throw Error(`the receipt's ${fault} is not of the connector's bounded type`);
         if (rid in receipts) throw Error('the request has receipts in two launches');
         receipts[rid] = { ...r, __launch: launch };
         raw.push({ launch, name, bytes });
@@ -372,7 +441,7 @@ function collect(io, regularRead, candidate, out, report, launchesBefore) {
   } catch { report.aborted ??= 'native result unreadable; scratch and raw evidence retained'; }
   const steps = JSON.parse(regularRead(join(candidateDir, 'steps.json')));
   report.steps_ok = !!results && results.steps.length === steps.length && results.steps.every(s => s.ok === true);
-  const liveLines = [], asks = [], requestIds = [];
+  const liveLines = [], asks = [], requestIds = [], mainAdmission = [];
   const captures = join(candidate.work, 'userdata', 'captures');
   // Every record file on its own: one unreadable file is an error (the evidence incomplete), never a skipped success.
   try {
@@ -386,6 +455,15 @@ function collect(io, regularRead, candidate, out, report, launchesBefore) {
           liveLines.push(...parseJsonl(text));
         }
       } catch (error) { errors.push(`records ${cap.slice(0, 40)}/live.jsonl: ${msg(error)}`); }
+      const admissionFile = join(captures, cap, 'admission.jsonl');
+      try {
+        if (io.existsSync(admissionFile)) {
+          const text = regularRead(admissionFile);
+          io.mkdirSync(join(out, 'captures', cap), { recursive: true, mode: 0o700 });
+          io.writeFileSync(join(out, 'captures', cap, 'admission.jsonl'), text);
+          mainAdmission.push(...parseJsonl(text));
+        }
+      } catch (error) { errors.push(`records ${cap.slice(0, 40)}/admission.jsonl: ${msg(error)}`); }
       const askDir = join(captures, cap, 'asks');
       try {
         if (io.existsSync(askDir)) for (const name of io.readdirSync(askDir).filter(n => n.endsWith('.json'))) {
@@ -426,7 +504,8 @@ function collect(io, regularRead, candidate, out, report, launchesBefore) {
     checkerLines = parseJsonl(bytes.toString('utf8'));
     if (checkerLines.some(l => l.kind === 'unreadable_line')) errors.push('admission checker log: unreadable lines');
   } catch (error) { errors.push('admission checker log: ' + msg(error)); }
-  report.source_admission = sourceAdmission(report.ledger, checkerLines);
+  if (mainAdmission.some(l => l.kind === 'unreadable_line')) errors.push('main admission record: unreadable lines');
+  report.source_admission = sourceAdmission(report.ledger, checkerLines, read('display_choice'), mainAdmission);
   report.evidence = evidence({ ledger: report.ledger, liveLines, cards: { action2: read('action2_card'), action3: read('action3_card') }, truthBefore: read('surface_before'), truthAfter: read('surface_changed') });
   report.collect_errors = errors;
   io.writeFileSync(join(out, 'ledger.json'), JSON.stringify(report.ledger, null, 2) + '\n');
