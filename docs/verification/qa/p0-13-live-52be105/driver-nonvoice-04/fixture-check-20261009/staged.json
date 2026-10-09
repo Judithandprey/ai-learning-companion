@@ -1,0 +1,8 @@
+{
+ "folder": "/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-fixture-a5b39145884144dcaad65ef45ad16b44",
+ "win_folder": "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-fixture-a5b39145884144dcaad65ef45ad16b44",
+ "staged": {
+  "overlay-fixture-check.ps1": "e09a7a942a3ef22fe2644f0b6dfcd2eadc6b0f7dccf837037b762b583c16729f",
+  "qa_overlay_fixtures.json": "6a513c5bd0062b0a17d88038ef882abb62c765e521fbbfbd2f87098392607bc3"
+ }
+}

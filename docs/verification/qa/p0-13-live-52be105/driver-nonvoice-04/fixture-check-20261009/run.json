@@ -1,0 +1,33 @@
+{
+  "assignment": "Lead handoff_709b36d599e63812ff2ac13dfcde75c1 (execute the pure data fixture check once, documented invocation, no Bypass or policy change; if refused, preserve the denial and stop)",
+  "inputs": {
+    "overlay-fixture-check.ps1": {
+      "source": "937788d:docs/verification/qa/p0-13-live-52be105/driver-nonvoice-04/overlay-fixture-check.ps1",
+      "sha256": "e09a7a942a3ef22fe2644f0b6dfcd2eadc6b0f7dccf837037b762b583c16729f"
+    },
+    "qa_overlay_fixtures.json": {
+      "source": "937788d:tests/e2e/windows/qa_overlay_fixtures.json",
+      "sha256": "6a513c5bd0062b0a17d88038ef882abb62c765e521fbbfbd2f87098392607bc3"
+    }
+  },
+  "staged_copies_sha256": {
+    "overlay-fixture-check.ps1": "e09a7a942a3ef22fe2644f0b6dfcd2eadc6b0f7dccf837037b762b583c16729f",
+    "qa_overlay_fixtures.json": "6a513c5bd0062b0a17d88038ef882abb62c765e521fbbfbd2f87098392607bc3"
+  },
+  "staging_folder": "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-fixture-a5b39145884144dcaad65ef45ad16b44",
+  "command": [
+    "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "-NoProfile",
+    "-NonInteractive",
+    "-File",
+    "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-fixture-a5b39145884144dcaad65ef45ad16b44\\overlay-fixture-check.ps1",
+    "-Fixtures",
+    "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-fixture-a5b39145884144dcaad65ef45ad16b44\\qa_overlay_fixtures.json"
+  ],
+  "started_utc": "2026-10-09T10:17:13Z",
+  "ended_utc": "2026-10-09T10:17:13Z",
+  "exit_code": 1,
+  "stdout_bytes": 0,
+  "result": "REFUSED by the Windows execution policy before the script loaded: SecurityError / UnauthorizedAccess, \"running scripts is disabled on this system\". No fixture case ran; nothing executed.",
+  "attempts": 1
+}

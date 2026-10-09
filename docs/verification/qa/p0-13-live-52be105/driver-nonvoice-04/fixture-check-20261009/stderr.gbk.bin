@@ -1,0 +1,5 @@
+无法加载文件 C:\Users\ROG\AppData\Local\Temp\lc-qa-fixture-a5b39145884144dcaad65ef45ad16b44\overlay-fixture-check.ps1，
+因为在此系统上禁止运行脚本。有关详细信息，请参阅 https:/go.microsoft.com/fwlink/?LinkID=135170 中的 about_Execution_Poli
+cies。
+    + CategoryInfo          : SecurityError: (:) []，ParentContainsErrorRecordException
+    + FullyQualifiedErrorId : UnauthorizedAccess
