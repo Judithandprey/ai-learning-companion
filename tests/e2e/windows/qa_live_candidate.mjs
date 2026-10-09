@@ -1,9 +1,10 @@
 #!/usr/bin/env node
-// The four-action NONVOICE live acceptance driver for product 52be105: offline assembly and checks only. No process,
+// The four-action NONVOICE live acceptance driver for product 0ff325b (the reviewed source-admission interlock, staged by
+// the Lead at 194986d): offline assembly and checks only. No process,
 // native, GUI, account, model or audio calls happen here (prepare-connector runs only a local copy and an import check).
 //   prepare <new QA folder>                 a new candidate (runner, steps, live surface, connector configuration)
 //   check <candidate.json> <stage receipt>  the saved candidate reproduces from the current sources; its scratch is unused
-//   prepare-connector                       the private exact-source 52be105 Backend copy the real connector runs from
+//   prepare-connector                       the private exact-source Backend copy the real connector runs from
 //
 // Reuse, not a new framework: the runner is byte for byte the reviewed r4 diagnostic runner (Support 184f712; attempt 3
 // passed 32/32) with its new work folder and one delta (F3: the frozen admission context and LC_SOURCE_ADMISSION for the
@@ -25,12 +26,14 @@ import { buildVisibleCandidate } from './qa_visible_candidate.mjs';
 import { applyAdmissionPoints, applyEdgeIdentity, applyPlacementClient, applyPlacementGeometry, applyScopedAdmission } from './qa_tts_output_candidate.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url)), repo = resolve(here, '../../..');
-// The exact package (the same pins as the accepted diagnostic, qa_tts_output_candidate.mjs; a test compares them).
-const source = '52be105a148a28e677f83cc4b7077665f2ff372c';
-const release = 'ad7bd72a8e902b366fbbb71d90f530c18043a251';
-const stage = '/mnt/c/Users/ROG/AppData/Local/Temp/lc-windows-tts-52be105';
-const tree = '531943a83d3572ca9c686c7d8cd62bd88da5b0401b84050487722b8e87a02669';
-const entry = '9969b8afa2b3f3df82d3733c5d6e8adec5c34393af49d2d10c88704d68982128';
+// The exact package: product 0ff325b as the Lead staged it (stage-0ff325b.json at 194986d; a test compares them): 81
+// files, its tree and entry point; the native helper and the cached Electron 44.5.1 unchanged from the diagnostic's.
+const source = '0ff325beadb7c689244610307b6aa16d638fd2e6';
+const release = '194986dea3e120a3b8806a9e7bb2c06bfefb5cf7';
+const stage = '/mnt/c/Users/ROG/AppData/Local/Temp/lc-windows-admission-0ff325b';
+const tree = '081a130c1f492c98d78fec8d67463a36c80126ea1ca72eede99d043ca616a46a';
+const stageFiles = 81;
+const entry = '8c4aa46544d4f6f665fdbee0dcc18384af0154c02d9dcdd2643897e60077afa1';
 const helper = '21c7bed3fedcdefdccc2f45b799bfebb417df7a56f44f656523d303e7b349e10';
 const runtime = '49b61a030a520fc36a4b8fa5cce53fb4e935a7bdbbe4b80e9222f598e49cc7fa';
 const electron = String.raw`C:\Users\ROG\AppData\Local\Temp\lc-electron-44.5.1-win32-x64\electron.exe`;
@@ -39,7 +42,8 @@ const edge = String.raw`C:\Program Files (x86)\Microsoft\Edge\Application\msedge
 export const REVIEWED_RUNNER = { file: 'docs/verification/qa/p0-13-tts-52be105/candidate-r4-20261009/runner.ps1',
   sha256: 'd6640e6c8f24b51dc87feb12f8ce83832c7a6c28c380de8f0b02d1eb644b28c2', folder: 'lc-qa-tts-output-27f0531f6f574cf2b67b1f650525e89d' };
 // The real connector, as one trusted configuration for this one app process (LC_SUBSCRIPTION_CONNECTOR): the exact-source
-// 52be105 Backend copy, the repository's Python, the pinned codex binary (the default launcher resolves to 0.160, which
+// Backend copy (services/ and packages/ are identical at 52be105 and 0ff325b; the copy made for 52be105 is compared file
+// for file with this commit at every run), the repository's Python, the pinned codex binary (the default launcher resolves to 0.160, which
 // the released gate refuses), and the product's own managed state (state_dir null: where the user signs in; QA never
 // opens it). The connector admits codex only by its sha256; the wrapper checks it again before the launch.
 export const CONNECTOR = {
@@ -69,7 +73,7 @@ export const NATIVE_BOUND_MS = 600000;
 const sourceNames = ['qa_live_candidate.mjs', 'qa_tts_output_candidate.mjs', 'qa_visible_candidate.mjs', 'qa_edge_placement.ps1', 'qa_display_admission.ps1',
   'qa-electron-runner.ps1', 'qa_tts_stage_check.py', 'qa_live_stage_check.py', 'surface_live.html', 'sub_copy.mjs', 'qa_sub_copy_check.py', 'qa_live_copy_check.py',
   'signin_cleanup.mjs', 'qa_live_ledger.mjs', 'qa_run_tts_candidate.mjs', 'qa_sub_watch.py', 'qa_admission_checker.ps1', 'qa_overlay_predicate.ps1',
-  'qa_overlay_fixtures.json', 'qa_overlay_fixture_check.ps1'];
+  'qa_overlay_fixtures.json', 'qa_overlay_fixture_check.ps1', 'qa_admission_stage_check.py'];
 export const names = ['runner.ps1', 'steps.json', 'surface.html', 'sub-live.json', 'admission-checker.ps1', 'admission-live.json'];
 // The payloads the product reads through the link folder (named for that one app process); the others sit in the scratch.
 export const linkNames = ['sub-live.json', 'admission-live.json'];
@@ -152,7 +156,7 @@ export function liveSteps({ surfaceUrl, profile }) {
       if (a.login !== 'none' || a.asking) throw Error('a sign-in or a request is pending');
       const chosen = (a.models || []).find(m => m.id === a.model);
       if (!chosen || !chosen.image_input) throw Error('the selected model does not take pictures');
-      // The applicable bucket as the connector selects it (52be105 chatgpt_rpc.py ask): the Codex limit for this model,
+      // The applicable bucket as the connector selects it (chatgpt_rpc.py ask): the Codex limit for this model,
       // or the one unnamed bucket; only its spend control or workspace limit stops the run, never another model's bucket.
       const q = a.quota, windows = q ? q.windows || [] : [];
       let applicable = windows.filter(b => b.limit_id === 'codex' && (b.normal_model_slug === null || b.normal_model_slug === a.model));
@@ -375,7 +379,12 @@ function runnerAdmissionDelta() { return [
   ["      $record.owned = ($root -eq $window)\n", "      $record.owned = (Test-QaPointAdmitted $root $window ([int]$point[0]) ([int]$point[1]) $script:qaRunnerOverlayBinding $record)\n"],
   ["        $entry.points = @($step.points).Count\n        Assert-QaEdgePoints $entry $h @($step.points)\n",
    "        $entry.points = @($step.points).Count\n        $script:qaRunnerOverlayBinding = $null\n        if ($script:app -and -not $script:app.HasExited) { $script:qaRunnerOverlayBinding = Get-QaRunnerOverlayBinding }\n        Assert-QaEdgePoints $entry $h @($step.points)\n"],
-  ["          if ($at -ne $owner) { $other += ", "          if ($at -ne $owner -and -not ($null -ne $script:qaRunnerOverlayBinding -and (Test-QaPointAdmitted ([QaWin]::RootAt([int]$pt[0], [int]$pt[1])) $h ([int]$pt[0]) ([int]$pt[1]) $script:qaRunnerOverlayBinding $entry))) { $other += "],
+  // Every final point: bound, the one predicate at each point (also when the PID at the point is Edge's, in NAV);
+  // unbound, the reviewed PID rule exactly (Support F3-B).
+  ["          if ($at -ne $owner) { $other += ", "          if ($(if ($null -ne $script:qaRunnerOverlayBinding) { -not (Test-QaPointAdmitted ([QaWin]::RootAt([int]$pt[0], [int]$pt[1])) $h ([int]$pt[0]) ([int]$pt[1]) $script:qaRunnerOverlayBinding $entry) } else { $at -ne $owner })) { $other += "],
+  // After the final Edge re-resolution of the point checks, the bound overlay is revalidated (Support F3-B).
+  ["  if ($last.owner -ne $entry.native_window.owner) { throw 'owned Edge process changed during point checks' }\n",
+   "  if ($last.owner -ne $entry.native_window.owner) { throw 'owned Edge process changed during point checks' }\n  if ($null -ne $script:qaRunnerOverlayBinding) { $overlayFault = Get-QaOverlayStateFault $script:qaRunnerOverlayBinding; if ($null -ne $overlayFault) { throw ('the bound overlay changed during the point checks: ' + $overlayFault) } }\n"],
   ["Remove-Item Env:\\LC_SUBSCRIPTION_CONNECTOR -ErrorAction SilentlyContinue; $env:TMP = $saved.TMP;", "Remove-Item Env:\\LC_SUBSCRIPTION_CONNECTOR -ErrorAction SilentlyContinue; Remove-Item Env:\\LC_SOURCE_ADMISSION -ErrorAction SilentlyContinue; $env:TMP = $saved.TMP;"],
   ["  if ($subFile) { $results.processes[$key].sub_config_sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $subFile).Hash.ToLower() }\n",
    "  if ($subFile) { $results.processes[$key].sub_config_sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $subFile).Hash.ToLower() }\n  $results.processes[$key].admission = $admission\n  if ($admissionFile) { $results.processes[$key].admission_config_sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $admissionFile).Hash.ToLower() }\n"],
@@ -430,7 +439,7 @@ function manifestFor(work) {
   const manifest = {
     kind: 'qa-live-nonvoice-offline-candidate/v1', prepared_only: true, execution_authorized: false,
     production_commit: source, release_commit: release, reviewed_runner: REVIEWED_RUNNER,
-    work, stage, stage_payload_files: 77, stage_tree_sha256: tree, ...ctx, electron, edge,
+    work, stage, stage_payload_files: stageFiles, stage_tree_sha256: tree, ...ctx, electron, edge,
     files: Object.fromEntries(Object.entries(payload).map(([n, bytes]) => [n, sha(bytes)])),
     source_files: Object.fromEntries(sourceNames.map(n => [n, sha(readFileSync(join(here, n)))])),
     app_entry: { executable: electron, app_arguments: [win(stage)], package_main: 'dist/apps/windows/src/main/main.js', main_sha256: entry, native_helper_sha256: helper, electron_sha256: runtime },
@@ -444,15 +453,15 @@ function manifestFor(work) {
     native_worst_case_ms: worstCaseMs(liveSteps(ctx)),
     raw_receipts: 'Kept outside the repository (~/.local/state/lc-qa-live/<run>/receipts, 0700); only an allowlisted, sanitized set of generated evidence is for Git (Lead D8).',
     script_permission: 'A separate, exact, process-only RemoteSigned permission is required for this runner with real subscription use AND for the checker the product starts per capture (Windows PowerShell -NoProfile -NonInteractive -ExecutionPolicy RemoteSigned -File admission-checker.ps1, from admission-live.json); the AI-disabled approvals do not carry over.',
-    source_admission: 'F3 (Lead interface 4f7d9fa; decisions handoff_1698eb17, handoff_e893ca27): the product\'s main process starts admission-checker.ps1 once per capture from admission-live.json (LC_SOURCE_ADMISSION, this process only) and asks it at arm, before and after each frame acquisition and before each send; every decision is a fresh full native admission (the reviewed Assert-QaSurfaceAdmission with exactly four substitutions for the exact-overlay passage, and the normal band read on the admitted window with its process revalidated) against the context the runner froze after the launch (Edge, display, launched product), logged before it is answered. The overlay that main names at arm (UNRELEASED protocol field overlay {pid, hwnd}, to be coordinated with Web) is bound to the launched product for the capture; the same predicate (qa_overlay_predicate.ps1) serves the runner onTop point checks via main\'s source_admission session state. UNVERIFIED: no PowerShell ran it natively; about 3 s per decision is inferred from the accepted diagnostic, not measured. Logical ordering only: an OS change between two native observations remains possible. 52be105 does not start the checker; the wrapper refuses every allocation until a reviewed interlock build is named.',
+    source_admission: 'F3 (Lead interface 4f7d9fa; decisions handoff_1698eb17, handoff_e893ca27; Support 5083814, c2ee58ae): product 0ff325b\'s main process starts admission-checker.ps1 once per capture from admission-live.json (LC_SOURCE_ADMISSION, this process only) and asks it at arm, before and after each frame acquisition and before each send; every decision is a fresh full native admission (the reviewed Assert-QaSurfaceAdmission with exactly four substitutions for the exact-overlay passage, and the normal band read on the admitted window with its process revalidated) against the context the runner froze after the launch (Edge, display, launched product), logged before it is answered. The overlay main names at arm (overlay {pid, hwnd}) is bound to the launched product for the capture; the same predicate (qa_overlay_predicate.ps1) serves every runner point check via main\'s source_admission session state. The ledger needs main\'s complete admission record of this one capture and a clean checker end. UNVERIFIED: no checker or predicate ran natively (the pure overlay fixture check was refused by the Windows execution policy, NOT_RUN); about 3 s per decision is inferred from the accepted diagnostic, not measured. Logical ordering only: an OS change between two native observations remains possible.',
     proposed_native_invocation: { executable: String.raw`C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe`, arguments: ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'RemoteSigned', ...fileArgs], status: 'NOT_ALLOCATED_NOT_EXECUTED', persistent_policy_changes: false },
     capture_prerequisite_mode: 'REAL_SUBSCRIPTION_NONVOICE_GENERATED_SURFACE',
     provider_attempts: 0, native_script_executed: false, display_account_audio_lease: 'NONE',
-    execution_block: 'Prepared only. Interim: production 52be105 predates the Lead-assigned app interlock for F3 (frame admission before automatic retention/submission); the live candidate must be regenerated for that reviewed production commit and stage, never run as 52be105. Lead reviews the exact package, the current prerequisites and the decisions it names, then issues a separate exclusive display/account allocation for qa_run_live_candidate.mjs.',
+    execution_block: 'Prepared only. Pins the reviewed product 0ff325b as the Lead staged it (194986d). The Lead reviews this exact package, the driver review results and the decisions it names, the exact command and the script permission (runner and product-started checker), then issues a separate exclusive display/account allocation for qa_run_live_candidate.mjs.',
   };
   return { manifest, payload };
 }
-export function prepareLiveCandidate(work = stage.replace(/lc-windows-tts-52be105$/, 'lc-qa-live-nonvoice-' + randomUUID().replaceAll('-', ''))) {
+export function prepareLiveCandidate(work = stage.replace(/[^/]+$/, 'lc-qa-live-nonvoice-' + randomUUID().replaceAll('-', ''))) {
   if (!workPattern.test(work) || existsSync(work)) throw Error('new uncreated live scratch required');
   return manifestFor(work);
 }
@@ -466,8 +475,8 @@ export function checkLiveCandidate(manifest, payload, identity, { scratchExists 
   if (JSON.stringify(manifest) !== JSON.stringify(expected.manifest)) throw Error('candidate metadata or source pins changed');
   if (Object.keys(payload).sort().join() !== names.slice().sort().join()) throw Error('exact four candidate payloads required');
   for (const name of names) if (sha(payload[name]) !== manifest.files[name] || sha(payload[name]) !== sha(expected.payload[name])) throw Error('candidate payload changed');
-  if (identity?.kind !== 'qa-tts-static-file-identity/v1' || identity.passed !== true || identity.source_commit !== source || identity.release_commit !== release
-      || identity.stage !== stage || identity.tree_sha256 !== tree || identity.matching_payload_files !== 77 || identity.actual_payload_files !== 77
+  if (identity?.kind !== 'qa-admission-static-file-identity/v1' || identity.passed !== true || identity.source_commit !== source || identity.release_commit !== release
+      || identity.stage !== stage || identity.tree_sha256 !== tree || identity.matching_payload_files !== stageFiles || identity.actual_payload_files !== stageFiles
       || identity.entrypoint?.sha256 !== entry || identity.native_executable_sha256 !== helper || identity.electron_runtime?.file_sha256?.['electron.exe'] !== runtime
       || identity.app_or_helper_launched !== false || identity.windows_process_invoked !== false || identity.provider_requests !== 0
       || identity.stage_or_runtime_modified !== false

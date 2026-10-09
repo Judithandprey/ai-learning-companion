@@ -167,13 +167,16 @@ export function buildLedger({ steps, results, liveLines = [], asks = [], receipt
  * after a deny. Requests proven not submitted need no send. An allowed send the app's records do not hold is flagged:
  * the records would be incomplete. Logical ordering only; an OS change between two native observations remains possible.
  */
-export function sourceAdmission(ledger, checkerLines, displayChoice, mainLines) {
+export function sourceAdmission(ledger, checkerLines, displayChoice, mainByCapture) {
   const lines = (checkerLines ?? []).filter(l => l && typeof l === 'object');
   const decisions = lines.filter(l => l.event === 'decision');
   const ok = d => d.verdict === 'allow' && d.reason === null && d.admission?.accepted === true;
   const firstDeny = decisions.findIndex(d => d.verdict !== 'allow');
   const ordered = decisions.every((d, i) => Number.isSafeInteger(d.seq) && (i === 0 || d.seq > decisions[i - 1].seq));
   const arm = decisions[0]?.phase === 'arm' && ok(decisions[0]) ? decisions[0] : null;
+  // One capture (Support F3-C): every decision after the arm names the arm's capture; nothing is joined across captures.
+  const capture = typeof arm?.capture_id === 'string' && /^[0-9a-f]{16}$/.test(arm.capture_id) ? arm.capture_id : null;
+  const oneCapture = !!capture && decisions.every(d => d.capture_id === capture);
   // The arm names the display the product listed before Start (display_choice): the decimal display_id string, or the
   // same value as a safe non-negative integer (lossless), with the same bounds and scale.
   const choice = displayChoice && typeof displayChoice === 'object' && typeof displayChoice.display_id === 'string' ? displayChoice : null, d = arm?.display;
@@ -198,20 +201,33 @@ export function sourceAdmission(ledger, checkerLines, displayChoice, mainLines) 
     : r.submission === 'not_submitted' ? { ...r, bound: null, reason: 'proven not submitted: no send needed' } : { ...r, ...bind(r.request_id, r.image_sha256) });
   const known = new Set(requests.map(r => r.request_id));
   const unrecorded = decisions.filter(d => d.phase === 'send' && d.verdict === 'allow' && !known.has(d.request_id)).map(d => d.seq);
-  // Main's own record (Web 48c20c4, captures/<capture>/admission.jsonl) must tell the same decisions: every decision it
-  // records as allowed is an allow in QA's log with the same phase and facts, every allowed send in QA's log is one
-  // main records as allowed, and main records no violation.
-  const facts = d => JSON.stringify([d.phase, d.sample_seq ?? null, d.frame_seq ?? null, d.raw_sha256 ?? null, d.raw_size?.width ?? null, d.raw_size?.height ?? null, d.request_id ?? null, d.image_sha256 ?? null]);
-  const main = Array.isArray(mainLines) ? mainLines.filter(l => l && typeof l === 'object') : null;
-  const mainAllowed = main ? main.filter(l => l.kind === 'decision' && l.allowed === true).map(facts) : [];
-  const qaAllowed = new Set(decisions.filter(ok).map(facts));
-  const mainAgrees = !!main && main.length > 0 && main.every(l => ['decision', 'violation', 'checker_end'].includes(l.kind)) && !main.some(l => l.kind === 'violation')
-    && mainAllowed.every(f => qaAllowed.has(f)) && decisions.filter(d => d.phase === 'send' && ok(d)).every(d => mainAllowed.includes(facts(d)));
-  const all = lines[0]?.event === 'ready' && !!arm && displayMatches && mainAgrees && ordered && unrecorded.length === 0
+  // Main's own record of this capture (Web: captures/<capture>/admission.jsonl, its folder named by the capture id) must
+  // tell the same complete trace (Lead coverage decision): every decision of every phase, in the same order and number,
+  // with the same recorded facts and verdict; main's verdict fields consistent (an allow is denied false with no reason,
+  // Support F3-D); no violation; and no other capture's record. Missing, duplicated or contradictory records fail.
+  const facts = d => [d.phase, d.sample_seq ?? null, d.frame_seq ?? null, d.raw_sha256 ?? null, d.raw_size?.width ?? null, d.raw_size?.height ?? null, d.request_id ?? null, d.image_sha256 ?? null];
+  const folders = mainByCapture && typeof mainByCapture === 'object' && !Array.isArray(mainByCapture) ? Object.keys(mainByCapture).filter(k => Array.isArray(mainByCapture[k]) && mainByCapture[k].length) : [];
+  const main = capture && Array.isArray(mainByCapture?.[capture]) ? mainByCapture[capture].filter(l => l && typeof l === 'object') : null;
+  const otherCaptures = folders.filter(k => k !== capture);
+  const mainDecisions = main ? main.filter(l => l.kind === 'decision') : [];
+  const verdictsConsistent = mainDecisions.every(l => (l.allowed === true && l.denied === false && l.reason === null)
+    || (l.allowed === false && typeof l.denied === 'boolean' && (l.reason === null || typeof l.reason === 'string')));
+  const sameTrace = JSON.stringify(mainDecisions.map(l => [...facts(l), l.allowed === true])) === JSON.stringify(decisions.map(d => [...facts(d), ok(d)]));
+  const mainAgrees = !!main && main.length > 0 && otherCaptures.length === 0 && main.every(l => ['decision', 'violation', 'checker_end'].includes(l.kind))
+    && !main.some(l => l.kind === 'violation') && verdictsConsistent && sameTrace;
+  // The checker's lifecycle: main saw this capture's checker start and exit by itself, cleanly (code 0, no signal, not
+  // killed), and QA's own log ends with its end of input after every decision. Missing or unknown cleanup is not released.
+  const ends = main ? main.filter(l => l.kind === 'checker_end') : [];
+  const lastQa = lines.at(-1);
+  const checkerReleased = ends.length === 1 && ends[0].spawned === true && ends[0].exit_seen === true && ends[0].killed === false && ends[0].code === 0 && ends[0].signal === null
+    && lastQa?.event === 'eof' && lastQa.requests === decisions.length;
+  const all = lines[0]?.event === 'ready' && !!arm && oneCapture && displayMatches && mainAgrees && ordered && unrecorded.length === 0
     && (firstDeny < 0 || decisions.slice(firstDeny + 1).every(d => d.verdict !== 'allow'))
     && checked.every(r => r.bound !== false);
-  return { all_bound: all, checker_ready: lines[0]?.event === 'ready', armed: !!arm, display_matches: displayMatches, main_record_agrees: mainAgrees,
-    main_record: main ? { lines: main.length, allowed: mainAllowed.length, violations: main.filter(l => l.kind === 'violation').map(l => String(l.reason ?? '').slice(0, 200)), checker_end: main.find(l => l.kind === 'checker_end') ?? null } : null,
+  return { all_bound: all, checker_ready: lines[0]?.event === 'ready', armed: !!arm, capture_id: capture, one_capture: oneCapture, display_matches: displayMatches, main_record_agrees: mainAgrees,
+    checker_released: checkerReleased,
+    main_record: main ? { lines: main.length, decisions: mainDecisions.length, same_trace: sameTrace, verdicts_consistent: verdictsConsistent, other_captures: otherCaptures.length,
+      violations: main.filter(l => l.kind === 'violation').map(l => String(l.reason ?? '').slice(0, 200)), checker_end: ends[0] ?? null } : { other_captures: otherCaptures.length },
     decisions: decisions.length, ordered, denied: firstDeny >= 0 ? { seq: decisions[firstDeny].seq, phase: decisions[firstDeny].phase, reason: decisions[firstDeny].reason } : null,
     requests: checked, unrecorded_admitted_sends: unrecorded,
     residual: 'Logical ordering of fresh full native admissions around acquisition and send; an OS change between two native observations is not excluded.' };
@@ -245,7 +261,9 @@ export function fenceVerdict(ledger, liveLines, values = {}) {
   const definite = new Set(phases.filter(p => p !== 'unknown'));
   const phase = definite.size > 1 || identity === 'different' ? 'conflicting' : phases.includes('unknown') || identity === 'unknown' ? 'unknown' : [...definite][0] ?? 'unknown';
   Object.assign(facts, { phases_seen: phases, settled_records: settledLines.length, session_identity: identity, phase, receipt: !!slot.transport?.receipt });
-  if (!stopped || !recorded || !outAtStop || !settledAfterStop || phase === 'conflicting') return { verdict: 'unknown', ...facts };
+  // A fence is judged only with the known same-session linkage (Support R3-A); an unknown provider submission may stay
+  // an honestly fenced unknown when that linkage is complete.
+  if (!stopped || !recorded || !outAtStop || !settledAfterStop || phase === 'conflicting' || identity !== 'same') return { verdict: 'unknown', ...facts };
   if (!notShown || !noLater) return { verdict: 'not_fenced', ...facts };
   return { verdict: phase === 'not_submitted' ? 'fenced_before_submission' : phase === 'submitted' ? 'fenced_in_flight' : 'fenced_submission_unknown', ...facts };
 }

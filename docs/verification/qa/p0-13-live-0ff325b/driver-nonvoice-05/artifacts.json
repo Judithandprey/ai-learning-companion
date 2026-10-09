@@ -1,0 +1,62 @@
+{
+  "kind": "qa-live-nonvoice-driver/correction-05",
+  "status": "PREPARED_ONLY_NOT_REVIEWED_NOT_AUTHORIZED",
+  "amends": "937788ded4e2bff1db8b94dce175a7152e01609d (+ README a46d497, refusal evidence a58d583)",
+  "support_review": "c2ee58ae (937788d HOLD: F3-A..D, R3-A, coverage)",
+  "lead_assignments": "handoff_1345f6e5 (candidate 05 on 0ff325b), handoff_fd7cc02d (Support corrections)",
+  "production": {
+    "commit": "0ff325beadb7c689244610307b6aa16d638fd2e6",
+    "release": "194986dea3e120a3b8806a9e7bb2c06bfefb5cf7",
+    "stage": "/mnt/c/Users/ROG/AppData/Local/Temp/lc-windows-admission-0ff325b",
+    "files": 81,
+    "tree": "081a130c1f492c98d78fec8d67463a36c80126ea1ca72eede99d043ca616a46a",
+    "entry": "8c4aa46544d4f6f665fdbee0dcc18384af0154c02d9dcdd2643897e60077afa1"
+  },
+  "stage_manifest_copy_sha256": "33db2d2e85d74b77866b70d5bca6c589125a22977cd0400e03fcfa107c788311",
+  "stage_identity_sha256": "0477bbd3ca1df0934003515811f366f5f03eea4e094567dc5c4fce46fa4b7875",
+  "interlock_production": "0ff325beadb7c689244610307b6aa16d638fd2e6",
+  "real_actions": "0/4 (unchanged)",
+  "diagnostic": "3/3 consumed and closed (unchanged)",
+  "candidate_sha256": "5e7fdcd513c355d0f63a4c36e778d0fdc457e550ca781da29c6f8b7901d2aebb",
+  "payload_sha256": {
+    "runner.ps1": "2fbb5eb3c5e734719f6b26fc8066b55626078d3ffdb075d5dc65936326ca2cdb",
+    "steps.json": "70e89d51c0489a8c9472bf25a8438b08ff493f5be2c59148bc92baf10778874f",
+    "surface.html": "be82967ae45d36bece4ac4858d6f45d0e90e58d088203b71323b74e6ae5e1067",
+    "sub-live.json": "4729ca1a25ec09a64349c68c5ccb0eb41b4e9f83e161fb9c4a29b0ce26b948d4",
+    "admission-checker.ps1": "9637db613373ef5ba63bc10753033aedaab90bf749aeaa982fed9b65c91eccf1",
+    "admission-live.json": "6e86df7d74f52ce54b879d1c14d6d71b7548c69127d0f787a0a1be2fb46d7cc3"
+  },
+  "wrapper_sha256": "58a0a9923f55631fcdd36426f567ed81469ded230146af04c933f412fc4e79f4",
+  "inactive_template_refused_with": "separate exact Lead-reviewed live allocation required",
+  "native_bound_ms": 600000,
+  "native_worst_case_ms": 589000,
+  "work": "/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-live-nonvoice-e72ea0f932d148c0a48d4c101c69d328",
+  "admission_timing_ms": {
+    "ready_ms": 10000,
+    "decision_ms": 5000
+  },
+  "source_files_pinned_by_candidate": {
+    "qa_live_candidate.mjs": "03382f1bead2ebaf53cd5a8397b134eaa572d7003870c58e60f7ed7c7ccf36ab",
+    "qa_tts_output_candidate.mjs": "02fd39d06c29eb89d60ed113bb13e97726cc503a2e9678da713a3422b3f6cf83",
+    "qa_visible_candidate.mjs": "9df43a98f64c67559029d31bc41573db4df4df94341ef48845687987b5460410",
+    "qa_edge_placement.ps1": "e527a59e63f6823adc9aaa1b5d9619661d8299769985ae1a0bf108749c2535bb",
+    "qa_display_admission.ps1": "b4f586b7c987f533f318eb72ebffe318482ed2c2aa7f7f720574147071747590",
+    "qa-electron-runner.ps1": "1a0dfc3f178a1d6f59233c2a7d6a836ce68b18887affd2f6431c2d4ef5c48218",
+    "qa_tts_stage_check.py": "9e0a8257f740ee6d7e8924ac848de2fc7ddfd9b7621967e8a7f67c1c518b810f",
+    "qa_live_stage_check.py": "8bdd042b426c0784500375a41fe874e41b80186a6a8dddcc1d544213abd8c791",
+    "surface_live.html": "be82967ae45d36bece4ac4858d6f45d0e90e58d088203b71323b74e6ae5e1067",
+    "sub_copy.mjs": "d9df3fe96a1c3c99b161552cd6c547c9a7c64dad4e23f05f57eed922013a85f5",
+    "qa_sub_copy_check.py": "73b765943887cab143f530deb3deb7ac415cabce13bc2bd9f7498c1c56320d10",
+    "qa_live_copy_check.py": "1784a01195500bda2fe84971e837978043cc74d3ad4e1a119dd5452863b92425",
+    "signin_cleanup.mjs": "efa06295262ea27006769e0dea363051fbd6401f4c810d2049db5937ee939b2b",
+    "qa_live_ledger.mjs": "057f788b157bf84c6b8912cd5c46ea6a4e5ebe5ecc3a48ff16884ea8fbbacf90",
+    "qa_run_tts_candidate.mjs": "153db051aa92a39a5f59859c1d85b107867a6fc6fa1c30eb033692f83ebdbda3",
+    "qa_sub_watch.py": "42be06a3b2d07d2feb16b306bfefe9d2c44bfdd8d88554853eb9a7ea6112d1b8",
+    "qa_admission_checker.ps1": "525ee17fb86eeb980cabc93d71413ea00badcea433b1f65c24757730823aaa26",
+    "qa_overlay_predicate.ps1": "679d5c6c680cfabc1b615bb5a6fa7512f1049f4a66c75d72241de90f04a1ad45",
+    "qa_overlay_fixtures.json": "474ec1506ccf3023d861ea4418b5d8dc9ee34e869b8d875a47d3ba14b19bbde6",
+    "qa_overlay_fixture_check.ps1": "5b72cd41a87fac2f23ed4924f5653c43d966afb42b47e8dde4831891f0c24dcb",
+    "qa_admission_stage_check.py": "beff095d64b1a770a4482555f440fd1ba954f5f7d06fb5c772ae60bd313fcbc5"
+  },
+  "test_file_sha256": "dcf621d9a5e75a5c8ddae215e2c1cb6f3c11f870ca29deced15a8df81a326c40"
+}

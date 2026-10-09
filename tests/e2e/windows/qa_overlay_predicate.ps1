@@ -122,7 +122,7 @@ public static class QaOverlayNative {
           if (!GetWindowRect(h, out r)) throw new InvalidOperationException("a window above the admitted one could not be read");
           if (x >= r.L && x < r.R && y >= r.T && y < r.B && CloakOf(h) == 0) {
             uint pid;
-            GetWindowThreadProcessId(h, out pid);
+            if (GetWindowThreadProcessId(h, out pid) == 0 || pid == 0) throw new InvalidOperationException("the owner of a window above the admitted one is unavailable");
             found.Add(new QaStackWindow { Window = h, Owner = pid, Class = ClassOf(h) });
           }
         }
@@ -142,7 +142,7 @@ public static class QaOverlayNative {
         if (h == IntPtr.Zero || TopmostOf(h)) return new QaStackWindow { Window = IntPtr.Zero };
         if (!IsWindowVisible(h) || IsIconic(h) || CloakOf(h) != 0) continue;
         uint pid;
-        GetWindowThreadProcessId(h, out pid);
+        if (GetWindowThreadProcessId(h, out pid) == 0 || pid == 0) throw new InvalidOperationException("the owner of a window above the admitted one is unavailable");
         return new QaStackWindow { Window = h, Owner = pid, Class = ClassOf(h) };
       }
       throw new InvalidOperationException("window z-order walk exceeded its bound");
@@ -174,11 +174,13 @@ function Get-QaOverlayFault($f, $expect) {
   if ($f.Cloaked -ne 0) { return 'the overlay is cloaked' }
   return $null
 }
-# Pure: during the capture, the windows drawn above the admitted Edge at a point must be exactly the bound overlay.
+# Pure: during the capture, the windows drawn above the admitted Edge at a point must be exactly the bound overlay:
+# one observed entry "handle/owner/class" equal to the binding's "handle/pid/class" (the handle alone is not enough).
 function Get-QaStackFault([string[]]$above, [string]$overlay, [string]$what) {
   if (-not $overlay -or @($above).Count -ne 1 -or $above[0] -cne $overlay) { return ('the windows above the owned Edge are not exactly the bound overlay' + $(if ($what) { ' (' + $what + ')' } else { '' })) }
   return $null
 }
+function Get-QaStackEntry($window) { return ('{0}/{1}/{2}' -f $window.Window.ToInt64(), $window.Owner, $window.Class) }
 # Pure: with the overlay as foreground, nothing drawn may stand above Edge in the normal band.
 function Get-QaNormalTopFault([string]$above, [string]$what) {
   if ($above -and $above -cne '0') { return ('the owned Edge is not the top of the normal band' + $(if ($what) { ' (' + $what + ')' } else { '' })) }
@@ -218,8 +220,9 @@ function Test-QaPointAdmitted([IntPtr]$root, [IntPtr]$edge, [int]$x, [int]$y, $b
     if ($null -eq $fault) { $fault = Get-QaOverlayStateFault $binding }
     if ($null -eq $fault) {
       $stack = @([QaOverlayNative]::StackAbove($edge, $x, $y))
-      $other = @($stack | Where-Object { $_.Window -ne $binding.hwnd }) | Select-Object -First 1
-      $fault = Get-QaStackFault ([string[]]@($stack | ForEach-Object { $_.Window.ToInt64().ToString() })) $binding.hwnd_text $(if ($null -ne $other) { 'class ' + $other.Class + ', owner ' + $other.Owner } else { '' })
+      $expected = '{0}/{1}/{2}' -f $binding.hwnd_text, $binding.pid, $binding.expect.class
+      $other = @($stack | Where-Object { (Get-QaStackEntry $_) -cne $expected }) | Select-Object -First 1
+      $fault = Get-QaStackFault ([string[]]@($stack | ForEach-Object { Get-QaStackEntry $_ })) $expected $(if ($null -ne $other) { 'class ' + $other.Class + ', owner ' + $other.Owner } else { '' })
     }
     if ($null -ne $fault) { $entry.overlay_refused = Get-QaOverlayReason $fault; return $false }
     $entry.overlay_handle = $binding.hwnd_text

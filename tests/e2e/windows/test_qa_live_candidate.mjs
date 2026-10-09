@@ -7,6 +7,7 @@ import { createHash, webcrypto } from 'node:crypto';
 import { constants as fsConstants, readFileSync } from 'node:fs';
 import test from 'node:test';
 import vm from 'node:vm';
+
 // Namespace imports: run against an older source (the failures-before check), a missing export fails only its own tests.
 import * as candidateModule from './qa_live_candidate.mjs';
 import * as ledgerModule from './qa_live_ledger.mjs';
@@ -15,7 +16,7 @@ const { ACTIONS, ADMISSION_TIMING, ASSISTANCE, CONNECTOR, POLICY, POLICY_MS, QUE
   checkerDefinitions, connectorConfig, linkNames, names, prepareLiveCandidate, revertAdmissionDelta, worstCaseMs, CHECKER_ADMISSION_SUBSTITUTIONS, checkerAdmission, overlayFixtureCheck, overlayPredicate, OVERLAY_PURE } = candidateModule;
 const { buildLedger, evidence, fenceVerdict, leaks, parseJsonl, pixelEvidence, sourceAdmission, transport } = ledgerModule;
 
-const identity = JSON.parse(readFileSync(new URL('../../../docs/verification/qa/p0-13-tts-52be105/stage-identity.json', import.meta.url)));
+const identity = JSON.parse(readFileSync(new URL('../../../docs/verification/qa/p0-13-live-0ff325b/stage-identity.json', import.meta.url)));
 const base = prepareLiveCandidate();
 const steps = JSON.parse(base.payload['steps.json']);
 const runner = base.payload['runner.ps1'];
@@ -53,10 +54,16 @@ test('the runner is the reviewed r4 runner byte for byte, apart from the one wor
   assert.throws(() => assertReviewedRunner(runner.replace("throw 'owned generated surface window changed'", "throw 'x'"), base.manifest.work), /differs/);
   assert.equal(runner.includes('-LinkDir') || /\[string\]\$LinkDir/.test(runner), true);                         // the shared runner already takes it
 });
-test('the package pins are the accepted diagnostic\'s (52be105, its 77-file tree, Electron 44.5.1, Edge)', () => {
+test('the package pins are the Lead\'s staged 0ff325b build (81 files, its tree and entry; native helper, Electron 44.5.1 and Edge as in the accepted diagnostic)', () => {
   const r4 = JSON.parse(readFileSync(new URL('../../../docs/verification/qa/p0-13-tts-52be105/candidate-r4-20261009/candidate.json', import.meta.url)));
-  for (const k of ['production_commit', 'release_commit', 'stage', 'stage_tree_sha256', 'electron', 'edge', 'appPort', 'edgePort']) assert.equal(base.manifest[k], r4[k], k);
-  assert.deepEqual(base.manifest.app_entry, r4.app_entry);
+  // The Lead's stage manifest, byte for byte as committed at 194986d (its SHA-256 is recorded with the evidence).
+  const staged = JSON.parse(readFileSync(new URL('../../../docs/verification/qa/p0-13-live-0ff325b/stage-0ff325b.json', import.meta.url), 'utf8'));
+  assert.deepEqual([base.manifest.production_commit, base.manifest.release_commit, base.manifest.stage_tree_sha256, base.manifest.stage_payload_files], [staged.source_commit, '194986dea3e120a3b8806a9e7bb2c06bfefb5cf7', staged.tree_sha256, staged.file_count]);
+  assert.equal(base.manifest.stage.split('/').at(-1), staged.name); assert.equal(base.manifest.app_entry.main_sha256, staged.files[staged.entrypoint]);
+  assert.equal(base.manifest.app_entry.native_helper_sha256, staged.files['dist/apps/windows/native/NativeSpeech.exe']); assert.equal(base.manifest.app_entry.electron_sha256, staged.runtime_executable_sha256);
+  for (const k of ['electron', 'edge', 'appPort', 'edgePort']) assert.equal(base.manifest[k], r4[k], k);
+  assert.deepEqual([base.manifest.app_entry.native_helper_sha256, base.manifest.app_entry.electron_sha256, base.manifest.app_entry.package_main], [r4.app_entry.native_helper_sha256, r4.app_entry.electron_sha256, r4.app_entry.package_main]);
+  assert.deepEqual([identity.source_commit, identity.tree_sha256, identity.matching_payload_files, identity.entrypoint.sha256, identity.passed], [staged.source_commit, staged.tree_sha256, 81, staged.files[staged.entrypoint], true]);
   assert.deepEqual(base.manifest.edgeArgs.slice(1, -1), r4.edgeArgs.slice(1, -1));
   const args = base.manifest.proposed_native_invocation.arguments;
   assert.deepEqual(args.slice(0, 4), ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'RemoteSigned']);
@@ -176,9 +183,11 @@ test('the live surface changes its cards in place: new values never shown before
 const choice = { display_id: '3071609112', bounds: { x: 0, y: 0, width: 1280, height: 800 }, scale_factor: 2, primary: true };
 const armDisplay = { id: '3071609112', bounds: { x: 0, y: 0, width: 1280, height: 800 }, scale_factor: 2 };
 // Main's own record (Web 48c20c4 admission.jsonl) as main writes it for the decisions in a checker log.
-const mainFrom = lines => lines.filter(d => d.event === 'decision').map(d => ({ kind: 'decision', phase: d.phase, sample_seq: d.sample_seq ?? null, frame_seq: d.frame_seq ?? null, raw_sha256: d.raw_sha256 ?? null,
-  raw_size: d.raw_size ?? null, request_id: d.request_id ?? null, image_sha256: d.image_sha256 ?? null, allowed: d.verdict === 'allow', denied: d.verdict !== 'allow', reason: d.reason ?? null, ms: 3000 }))
+const mainLines = lines => lines.filter(d => d.event === 'decision').map(d => ({ kind: 'decision', phase: d.phase, sample_seq: d.sample_seq ?? null, frame_seq: d.frame_seq ?? null, raw_sha256: d.raw_sha256 ?? null,
+  raw_size: d.raw_size ?? null, request_id: d.request_id ?? null, image_sha256: d.image_sha256 ?? null, allowed: d.verdict === 'allow', denied: d.verdict !== 'allow', reason: d.verdict === 'allow' ? null : (d.reason ?? null), ms: 3000 }))
   .concat([{ kind: 'checker_end', spawned: true, exit_seen: true, code: 0, signal: null, killed: false }]);
+// Keyed by the capture folder it was read from (the arm's capture id), as the wrapper collects it.
+const mainFrom = lines => ({ [lines.find(d => d.phase === 'arm')?.capture_id ?? '0123456789abcdef']: mainLines(lines) });
 const admitted = (l, lines, c = choice, m = mainFrom(lines)) => sourceAdmission(l, lines, c, m);
 // QA's checker log for a ledger as the checker writes it when every request went out admitted: ready, arm, then for each
 // request that may have been sent one acquisition (pre, post) and its send, each with an accepted fresh admission.
@@ -193,6 +202,7 @@ function checkerLog(ledger, { skip = [] } = {}) {
     const frame = { sample_seq: sample, frame_seq: 100 + sample, raw_sha256: sample.toString(16).padStart(64, 'e'), raw_size: { width: 2560, height: 1600 } };
     lines.push(decision('pre_acquire', { sample_seq: sample }), decision('post_acquire', frame), decision('send', { ...frame, request_id: s.request_id, image_sha256: s.image_sha256 }));
   }
+  lines.push({ event: 'eof', requests: seq });
   return lines;
 }
 const stepIndex = as => idx(s => s.as === as) + 1, strokeAt = idx(s => Array.isArray(s.stroke)) + 1;
@@ -346,12 +356,14 @@ const goodAllocation = () => ({ schema: 'qa-live-nonvoice-allocation/1', state: 
   launch_identity: { source: base.manifest.production_commit, stage: base.manifest.stage, tree: base.manifest.stage_tree_sha256, work: base.manifest.work, electron: base.manifest.electron, edge: base.manifest.edge, appPort: base.manifest.appPort, edgePort: base.manifest.edgePort },
   valid_from_utc: '2026-10-09T06:00:00Z', valid_until_utc: '2026-10-09T06:30:00Z' });
 test('wrapper: only an exact, active live allocation bound to the four-action bounds, no voice, no retry or restart, is accepted', () => {
-  const at = Date.parse('2026-10-09T06:10:00Z'), reviewed = base.manifest.production_commit;   // as if this build were the reviewed interlock build
-  // F3 gate: no reviewed interlock build is named yet, so every allocation is refused (52be105 never starts the checker).
-  assert.equal(wrapper.interlockProduction, null);
-  assert.throws(() => wrapper.validateLiveAllocation(goodAllocation(), base.manifest, 'w'.repeat(64), at), /starts the source-admission checker/);
+  const at = Date.parse('2026-10-09T06:10:00Z'), reviewed = base.manifest.production_commit;
+  // F3 gate: the reviewed interlock build is 0ff325b (the Lead's integration and stage); a candidate of another build, or
+  // another named build, is refused (52be105 never starts the checker).
+  assert.equal(wrapper.interlockProduction, '0ff325beadb7c689244610307b6aa16d638fd2e6'); assert.equal(reviewed, wrapper.interlockProduction);
+  assert.equal(wrapper.validateLiveAllocation(goodAllocation(), base.manifest, 'w'.repeat(64), at), Date.parse('2026-10-09T06:30:00Z'));
+  assert.throws(() => wrapper.validateLiveAllocation(goodAllocation(), { ...base.manifest, production_commit: '52be105a148a28e677f83cc4b7077665f2ff372c' }, 'w'.repeat(64), at), /starts the source-admission checker/);
   assert.throws(() => wrapper.validateLiveAllocation(goodAllocation(), base.manifest, 'w'.repeat(64), at, 'a'.repeat(40)), /starts the source-admission checker/);
-  assert.equal(wrapper.validateLiveAllocation(goodAllocation(), base.manifest, 'w'.repeat(64), at, reviewed), Date.parse('2026-10-09T06:30:00Z'));
+  assert.throws(() => wrapper.validateLiveAllocation({ ...goodAllocation(), state: 'TEMPLATE_NOT_ACTIVE (the wrapper refuses anything but active)' }, base.manifest, 'w'.repeat(64), at), /separate exact Lead-reviewed live allocation required/);   // the inactive template
   for (const [k, v] of [['schema', 'qa-tts-display-allocation/1'], ['mode', 'AI_DISABLED_GENERATED_SURFACE_ONLY'], ['account_access', true], ['voice', true], ['microphone_access', true],
     ['retry', true], ['restart', true], ['max_native_attempts', 2], ['max_real_actions', 5], ['real_actions_already_used', 1], ['native_bound_ms', 1200000], ['native_bound_ms', 300000], ['native_bound_ms', 900000],
     ['exclusive_display', false], ['audio_access', true], ['cleanup_only_after_expiry', false], ['payload_sha256', { ...wrapper.pins, 'steps.json': '0'.repeat(64) }],
@@ -373,7 +385,7 @@ test('wrapper: the connector side refuses a missing or inexact copy, anything ru
   const io = (over = {}) => ({ existsSync: p => p === CONNECTOR.copy, readdirSync: () => ['1', '2', 'self'], readlinkSync: p => (p === '/proc/2/cwd' ? '/home/agentsdock' : '/'), readFileSync: () => codex, ...over });
   const ok = { compareCopy: () => ({ equal: true, files: 280 }), askPathCheck: () => ({ ok: true }), liveImportCheck: () => ({ ok: true }) };
   assert.throws(() => wrapper.connectorAdmission(io({ existsSync: () => false }), ok), /copy is missing/);
-  assert.throws(() => wrapper.connectorAdmission(io(), { ...ok, compareCopy: () => ({ equal: false }) }), /not exactly 52be105/);
+  assert.throws(() => wrapper.connectorAdmission(io(), { ...ok, compareCopy: () => ({ equal: false }) }), /not exactly 0ff325b/);
   assert.throws(() => wrapper.connectorAdmission(io({ readlinkSync: () => CONNECTOR.copy + '/services' }), ok), /already runs/);
   assert.throws(() => wrapper.connectorAdmission(io(), { ...ok, liveImportCheck: () => ({ ok: false }) }), /cannot prepare/);
   assert.throws(() => wrapper.connectorAdmission(io(), { ...ok, askPathCheck: () => ({ ok: false }) }), /cannot prepare/);
@@ -428,13 +440,13 @@ test('wrapper: the watch summary is released only with the whole lifecycle obser
 });
 test('wrapper: with an exact allocation it still refuses at the connector checks before any Windows call, any folder or any process', async () => {
   const realFs = await import('node:fs');
-  const saved = JSON.parse(realFs.readFileSync(new URL('../../../docs/verification/qa/p0-13-live-52be105/candidate-nonvoice-04/candidate.json', import.meta.url)));
+  const saved = JSON.parse(realFs.readFileSync(new URL('../../../docs/verification/qa/p0-13-live-0ff325b/candidate-nonvoice-05/candidate.json', import.meta.url)));
   const wrapperHash = sha(realFs.readFileSync(new URL('qa_run_live_candidate.mjs', import.meta.url)));
   const record = { ...goodAllocation(), wrapper_sha256: wrapperHash, native_bound_ms: saved.native_bound_ms,
     native_invocation: { executable: saved.proposed_native_invocation.executable, arguments: saved.proposed_native_invocation.arguments },
     launch_identity: { source: saved.production_commit, stage: saved.stage, tree: saved.stage_tree_sha256, work: saved.work, electron: saved.electron, edge: saved.edge, appPort: saved.appPort, edgePort: saved.edgePort } };
   const allocationPath = '/tmp/qa-live-test-allocation.json', bytes = Buffer.from(JSON.stringify(record));
-  for (const [checks, codex, why] of [[{ compareCopy: () => ({ equal: false }) }, null, /not exactly 52be105/], [{ compareCopy: () => ({ equal: true, files: 280 }), askPathCheck: () => ({ ok: true }), liveImportCheck: () => ({ ok: true }) }, Buffer.from('not codex'), /codex binary digest/]]) {
+  for (const [checks, codex, why] of [[{ compareCopy: () => ({ equal: false }) }, null, /not exactly 0ff325b/], [{ compareCopy: () => ({ equal: true, files: 280 }), askPathCheck: () => ({ ok: true }), liveImportCheck: () => ({ ok: true }) }, Buffer.from('not codex'), /codex binary digest/]]) {
     const calls = [];
     const fs = { ...realFs, existsSync: p => { calls.push(['exists', p]); return p === CONNECTOR.copy || (!p.startsWith('/tmp/') && !p.startsWith('/mnt/c/') && realFs.existsSync(p)); },
       lstatSync: p => (p === allocationPath ? { isFile: () => true, isSymbolicLink: () => false } : realFs.lstatSync(p)),
@@ -443,11 +455,10 @@ test('wrapper: with an exact allocation it still refuses at the connector checks
       mkdirSync: p => { calls.push(['mkdir', p]); }, writeFileSync: p => { calls.push(['write', p]); } };
     const exec = (file, args) => { calls.push(['exec', file]); if (file === 'python3') return JSON.stringify(identity); throw Error('no Windows in this test'); };
     const injected = { fs, execFileSync: exec, spawnSync: () => { calls.push(['spawnSync']); throw Error('no'); }, spawn: () => { calls.push(['spawn']); throw Error('no'); }, now: () => Date.parse('2026-10-09T06:10:00Z'), checks };
-    // Without a reviewed interlock build the exact allocation is refused before the Linux stage check or anything else.
-    await assert.rejects(wrapper.runLiveCandidate({ execute: true, out: '/tmp/qa-live-test-out', allocation: allocationPath, allocationSha256: sha(bytes) }, injected), /starts the source-admission checker/);
+    // Another named build: the exact allocation is refused before the Linux stage check or anything else.
+    await assert.rejects(wrapper.runLiveCandidate({ execute: true, out: '/tmp/qa-live-test-out', allocation: allocationPath, allocationSha256: sha(bytes) }, { ...injected, interlock: 'b'.repeat(40) }), /starts the source-admission checker/);
     assert.deepEqual(calls.filter(c => c[0] !== 'exists'), []);
-    await assert.rejects(wrapper.runLiveCandidate({ execute: true, out: '/tmp/qa-live-test-out', allocation: allocationPath, allocationSha256: sha(bytes) },
-      { ...injected, interlock: saved.production_commit }), why);
+    await assert.rejects(wrapper.runLiveCandidate({ execute: true, out: '/tmp/qa-live-test-out', allocation: allocationPath, allocationSha256: sha(bytes) }, injected), why);
     assert.deepEqual(calls.filter(c => c[0] === 'exec').map(c => c[1]), ['python3']);                                  // the Linux stage check only
     assert.deepEqual(calls.filter(c => ['mkdir', 'write', 'spawn', 'spawnSync'].includes(c[0])), []);
   }
@@ -759,7 +770,9 @@ test('F3 configuration and runner delta: the frozen checker and Lead timings; LC
   assert.ok(contextFn.includes('app_start_ticks = $script:app.StartTime.Ticks.ToString()') && contextFn.includes("if (-not $script:app -or $script:app.HasExited) { throw"));   // native creation ticks, not a JS time
   // The runner's own point consumers apply the one predicate with the binding main and the checker agree on.
   assert.ok(runner.includes('      $record.owned = (Test-QaPointAdmitted $root $window ([int]$point[0]) ([int]$point[1]) $script:qaRunnerOverlayBinding $record)\n'));
-  assert.ok(runner.includes('          if ($at -ne $owner -and -not ($null -ne $script:qaRunnerOverlayBinding -and (Test-QaPointAdmitted ([QaWin]::RootAt([int]$pt[0], [int]$pt[1])) $h ([int]$pt[0]) ([int]$pt[1]) $script:qaRunnerOverlayBinding $entry))) { $other += '));
+  assert.ok(runner.includes('          if ($(if ($null -ne $script:qaRunnerOverlayBinding) { -not (Test-QaPointAdmitted ([QaWin]::RootAt([int]$pt[0], [int]$pt[1])) $h ([int]$pt[0]) ([int]$pt[1]) $script:qaRunnerOverlayBinding $entry) } else { $at -ne $owner })) { $other += '));   // every final point when bound (F3-B)
+  const ep = runner.slice(runner.indexOf('function Assert-QaEdgePoints('), runner.indexOf('\n}\n', runner.indexOf('function Assert-QaEdgePoints(')));
+  assert.ok(ep.indexOf("$overlayFault = Get-QaOverlayStateFault $script:qaRunnerOverlayBinding") > ep.indexOf('$last = Assert-QaNormalEdge $window'));   // after the final Edge re-resolution
   assert.ok(runner.includes('        $script:qaRunnerOverlayBinding = $null\n        if ($script:app -and -not $script:app.HasExited) { $script:qaRunnerOverlayBinding = Get-QaRunnerOverlayBinding }\n        Assert-QaEdgePoints $entry $h @($step.points)\n'));
   const g0 = runner.indexOf('function Get-QaRunnerOverlayBinding {'), bind = runner.slice(g0, runner.indexOf('\n}\n', g0));
   for (const k of ['s && s.source_admission ? s.source_admission : null', "if ($null -eq $state -or $state.active -ne $true) { return $null }", "Join-Path $OutDir 'admission-checker.jsonl'",
@@ -786,7 +799,7 @@ test('F3 ledger: every possibly sent request needs an admitted send for its exac
   { const x = log(); const k = x.findIndex(d => d.request_id === 'sel.1'); x.splice(k - 2, 1); fails(x, /no admitted check before/); }
   { const x = log(); x.find(d => d.request_id === 'sel.2').admission.accepted = false; fails(x, /not admitted/); }
   { const x = log(); const k = x.findIndex(d => d.request_id === 'sel.1'); [x[k - 1], x[k]] = [x[k], x[k - 1]]; fails(x, /no admitted acquisition/); }
-  { const x = log(); x.push({ ...x.at(-1), seq: 99, request_id: 'sel.unknown' }); fails(x, /"unrecorded_admitted_sends":\[99\]/); }
+  { const x = log(); x.splice(x.length - 1, 0, { ...x.at(-2), seq: 99, request_id: 'sel.unknown' }); fails(x, /"unrecorded_admitted_sends":\[99\]/); }   // (before QA's end of input)
   { const x = log(); x.splice(3, 0, { ...x[2], seq: 2.5 }); fails(x, null); }                                        // sequence not whole/increasing
   { const x = log(); Object.assign(x[3], { verdict: 'deny', reason: 'source admission refused: owned surface lost' }); fails(x, null); }
   { const x = log(); x.splice(2, 0, { ...x[2], seq: 1.5, sample_seq: 99, verdict: 'deny', reason: 'x' }); x.forEach((d, i) => { if (d.event === 'decision') d.seq = i; });   // a deny no binding needs, allows after it
@@ -799,14 +812,30 @@ test('F3 ledger: every possibly sent request needs an admitted send for its exac
   const src = readFileSync(new URL('qa_run_live_candidate.mjs', import.meta.url), 'utf8');
   assert.ok(src.includes("regularRead(join(candidate.work, 'out', 'admission-checker.jsonl'))") && src.includes("report.source_admission = sourceAdmission(report.ledger, checkerLines, read('display_choice'), mainAdmission);"));
   // Main's own admission record must tell the same decisions (Web 48c20c4): its allows are QA allows, QA's allowed sends are its allows, no violation.
-  const good2 = log();
-  assert.equal(admitted(l, good2).main_record_agrees, true);
+  const good2 = log(), cap = '0123456789abcdef', mainOf = (lines, edit) => { const m = mainLines(lines); edit(m); return { [cap]: m }; };
+  assert.deepEqual([admitted(l, good2).main_record_agrees, admitted(l, good2).checker_released], [true, true]);
   assert.equal(admitted(l, good2, choice, null).all_bound, false);                                                    // no main record: unknown
-  assert.equal(admitted(l, good2, choice, []).all_bound, false);
-  { const m = mainFrom(good2); m.push({ kind: 'violation', reason: 'a late answer' }); assert.equal(admitted(l, good2, choice, m).all_bound, false); }
-  { const m = mainFrom(good2); m.push({ ...m.find(d => d.phase === 'send'), request_id: 'sel.never', image_sha256: 'e'.repeat(64) }); assert.equal(admitted(l, good2, choice, m).all_bound, false); }   // main allowed what QA never did
-  { const m = mainFrom(good2).filter(d => !(d.phase === 'send' && d.request_id === 'sel.2')); assert.equal(admitted(l, good2, choice, m).all_bound, false); }   // a QA send main did not record
-  { const m = mainFrom(good2); m.push({ kind: 'note' }); assert.equal(admitted(l, good2, choice, m).all_bound, false); }   // an unknown record kind
+  assert.equal(admitted(l, good2, choice, {}).all_bound, false);
+  assert.equal(admitted(l, good2, choice, { fedcba9876543210: mainLines(good2) }).all_bound, false);                   // another capture's folder only
+  assert.equal(admitted(l, good2, choice, { ...mainFrom(good2), fedcba9876543210: mainLines(good2) }).all_bound, false);   // and a second capture's record
+  assert.equal(admitted(l, good2, choice, mainOf(good2, m => m.push({ kind: 'violation', reason: 'a late answer' }))).all_bound, false);
+  assert.equal(admitted(l, good2, choice, mainOf(good2, m => m.splice(m.findIndex(d => d.phase === 'send'), 0, { ...m.find(d => d.phase === 'send'), request_id: 'sel.never', image_sha256: 'e'.repeat(64) }))).all_bound, false);   // main allowed what QA never did
+  assert.equal(admitted(l, good2, choice, mainOf(good2, m => m.splice(m.findIndex(d => d.phase === 'send' && d.request_id === 'sel.2'), 1))).all_bound, false);   // a QA send main did not record
+  assert.equal(admitted(l, good2, choice, mainOf(good2, m => m.push({ kind: 'note' }))).all_bound, false);           // an unknown record kind
+  // The complete trace, in both directions (Lead coverage decision): every phase, in order and number.
+  assert.equal(admitted(l, good2, choice, mainOf(good2, m => m.splice(0, m.length - 1, ...m.filter(d => d.phase === 'send')))).all_bound, false);   // main sends only
+  assert.equal(admitted(l, good2, choice, mainOf(good2, m => m.splice(1, 1))).all_bound, false);                       // a pre_acquire missing in main
+  assert.equal(admitted(l, good2, choice, mainOf(good2, m => m.splice(1, 0, { ...m[1] }))).all_bound, false);          // a duplicated record
+  assert.equal(admitted(l, good2, choice, mainOf(good2, m => { [m[1], m[2]] = [m[2], m[1]]; })).all_bound, false);      // out of order
+  assert.equal(admitted(l, good2, choice, mainOf(good2, m => Object.assign(m.find(d => d.phase === 'send'), { denied: true, reason: 'synthetic refusal' }))).all_bound, false);   // Support F3-D
+  assert.equal(admitted(l, good2, choice, mainOf(good2, m => Object.assign(m.find(d => d.phase === 'post_acquire'), { allowed: false, denied: true, reason: 'x' }))).all_bound, false);
+  // F3-C: one capture throughout; no cross-capture joining.
+  { const x = log(); x.find(d => d.phase === 'post_acquire').capture_id = 'fedcba9876543210'; assert.equal(admitted(l, x, choice, mainFrom(log())).all_bound, false); assert.equal(admitted(l, x).one_capture, false); }
+  // The checker's lifecycle: one clean, self-observed exit and QA's log ending after every decision.
+  for (const edit of [m => m.pop(), m => Object.assign(m.at(-1), { exit_seen: false }), m => Object.assign(m.at(-1), { killed: true }), m => Object.assign(m.at(-1), { code: 1 }),
+    m => Object.assign(m.at(-1), { signal: 'SIGTERM' }), m => m.push({ ...m.at(-1) })]) assert.equal(admitted(l, good2, choice, mainOf(good2, edit)).checker_released, false);
+  assert.equal(admitted(l, good2.slice(0, -1)).checker_released, false);                                                // no end of input in QA's log
+  assert.equal(admitted(l, [...good2.slice(0, -1), { event: 'eof', requests: 1 }]).checker_released, false);
   assert.ok(src.includes("^captures\\/[0-9a-f]+\\/(live\\.jsonl|admission\\.jsonl|asks"));
   // The arm names the display the product listed before Start: the decimal string, or the same safe integer; nothing else.
   assert.equal(admitted(l, checkerLog(l)).display_matches, true);
@@ -851,7 +880,9 @@ test('F3 overlay predicate: the pure functions are cut unchanged into the prepar
     'if ($null -eq $fault) { $fault = Get-QaOverlayStateFault $binding }', '[QaOverlayNative]::StackAbove($edge, $x, $y)', 'if ($fg -ne $binding.hwnd) { return $false }', '[QaOverlayNative]::AboveInNormalBand($edge)']) assert.ok(predicate.includes(k), k);
   // The composition: the stack fault decides a point, exactly the bound overlay, and the normal-band top decides the foreground.
   const point = cut('Test-QaPointAdmitted');
-  assert.ok(point.includes('      $fault = Get-QaStackFault ([string[]]@($stack | ForEach-Object { $_.Window.ToInt64().ToString() })) $binding.hwnd_text'));
+  assert.ok(point.includes("      $expected = '{0}/{1}/{2}' -f $binding.hwnd_text, $binding.pid, $binding.expect.class"));
+  assert.ok(point.includes('      $fault = Get-QaStackFault ([string[]]@($stack | ForEach-Object { Get-QaStackEntry $_ })) $expected'));   // handle, owner and class, not the handle alone (F3-A)
+  assert.equal((predicate.match(/if \(GetWindowThreadProcessId\(h, out pid\) == 0 \|\| pid == 0\) throw/g) ?? []).length, 2);   // a failed or zero owner read refuses in both walks
   assert.ok(cut('Get-QaStackFault').includes("if (-not $overlay -or @($above).Count -ne 1 -or $above[0] -cne $overlay) {"));
   assert.ok(cut('Test-QaOverlayForeground').includes('      $fault = Get-QaNormalTopFault $above.Window.ToInt64().ToString()'));
   assert.ok(point.indexOf("if ($null -ne $fault) { $entry.overlay_refused = Get-QaOverlayReason $fault; return $false }") > point.indexOf('$fault = Get-QaStackFault'));
@@ -880,7 +911,7 @@ function supportFixture() {
     thread_start_count: Math.min(i + 1, 3), turn_start_count: Math.min(i + 1, 3), actual_model: 'fixture-model', thread_id: null, turn_id: null, format: 'lc-subscription-ask-receipt/1',
     codex_executable: '/fixture/codex', codex_version: '0.158.0', codex_sha256: CONNECTOR.codex_sha256, explicit_bin_override: true, __launch: A }]));
   const checker = [{ event: 'ready' }];
-  const decision = fields => ({ event: 'decision', seq: checker.length, verdict: 'allow', reason: null, admission: { accepted: true, at: '2026-10-09T00:00:00Z' }, ...fields });
+  const decision = fields => ({ event: 'decision', capture_id: '0123456789abcdef', seq: checker.length, verdict: 'allow', reason: null, admission: { accepted: true, at: '2026-10-09T00:00:00Z' }, ...fields });
   checker.push(decision({ phase: 'arm', display: structuredClone(armDisplay) }));
   for (const [i, request_id] of ['look', 'q1', 'q2'].entries()) {
     const frame = { sample_seq: i + 1, frame_seq: i + 1, raw_sha256: H, raw_size: { width: 10, height: 10 } };
@@ -888,6 +919,7 @@ function supportFixture() {
     checker.push(decision({ phase: 'post_acquire', ...frame }));
     checker.push(decision({ phase: 'send', ...frame, request_id, image_sha256: H }));
   }
+  checker.push({ event: 'eof', requests: checker.length - 1 });
   return { steps: stepsF, results, liveLines, asks: [{ requests }], receipts, codexSha256: CONNECTOR.codex_sha256, checker };
 }
 const supportReport = f => { const ledger = buildLedger(f), fence = fenceVerdict(ledger, f.liveLines, f.results.values);
@@ -996,4 +1028,34 @@ test('R4-R5 (Support 5083814): an exited watcher is not ready; the lifecycle mus
   assert.equal(read({ ...good, text_bytes: null, text_sha256: 'b'.repeat(64) }).raw.length, 0);                                          // a digest without its length
   const projected = wrapper.sanitizeReceipts({ [rid]: { ...good, actual_model: { thread_id: 'X' }, produced_item_types: ['a', { b: 1 }] } })[rid];   // defensive projection
   assert.equal('actual_model' in projected || 'produced_item_types' in projected, false);
+});
+test('Support c2ee58ae (937788d HOLD): its controls pass; a missing Stop-session link, a foreign capture, a contradictory main verdict and a sends-only main record all fail', () => {
+  const judged = f => wrapper.judgeMechanics(supportReport(f));
+  const control = supportFixture(); assert.equal(judged(control).passed, true, JSON.stringify(judged(control).mechanics));
+  assert.deepEqual([supportReport(control).source_admission.checker_released, supportReport(control).source_admission.one_capture], [true, true]);
+  // R3-A: the fourth ask's session link missing (its receipt valid): no successful fence.
+  const noLink = supportFixture(); delete noLink.asks[0].requests[2].live_session_id;
+  assert.deepEqual([supportReport(noLink).fence.session_identity, supportReport(noLink).fence.verdict, judged(noLink).passed], ['unknown', 'unknown', false]);
+  // An unknown provider submission stays an honestly fenced unknown when the session linkage is complete.
+  const unknownPhase = supportFixture(); Object.assign(unknownPhase.receipts.q3, { submission: 'uncertain', outcome: 'uncertain' }); unknownPhase.asks[0].requests[2].submission = 'unknown'; unknownPhase.liveLines.at(-1).submission = 'unknown';
+  assert.deepEqual([supportReport(unknownPhase).fence.session_identity, supportReport(unknownPhase).fence.verdict], ['same', 'fenced_submission_unknown']);
+  // F3-C: a decision of another capture is never joined.
+  const foreign = supportFixture(); foreign.checker.find(d => d.phase === 'post_acquire').capture_id = 'fedcba9876543210';
+  const fr = supportReport(foreign); fr.source_admission = sourceAdmission(fr.ledger, foreign.checker, choice, mainFrom(supportFixture().checker));
+  assert.deepEqual([fr.source_admission.one_capture, fr.source_admission.all_bound, wrapper.judgeMechanics(fr).passed], [false, false, false]);
+  // F3-D: main's allow with a denial and a reason is contradictory.
+  const contra = supportFixture(), cr = supportReport(contra), m = mainFrom(contra.checker);
+  Object.assign(m['0123456789abcdef'].find(d => d.phase === 'send'), { denied: true, reason: 'synthetic refusal' });
+  cr.source_admission = sourceAdmission(cr.ledger, contra.checker, choice, m);
+  assert.deepEqual([cr.source_admission.main_record_agrees, wrapper.judgeMechanics(cr).passed], [false, false]);
+  // Lead coverage decision: a main record of the sends only is not the complete trace.
+  const sends = supportFixture(), sr = supportReport(sends), ms = mainFrom(sends.checker);
+  ms['0123456789abcdef'] = ms['0123456789abcdef'].filter(d => d.phase === 'send' || d.kind === 'checker_end');
+  sr.source_admission = sourceAdmission(sr.ledger, sends.checker, choice, ms);
+  assert.deepEqual([sr.source_admission.main_record_agrees, wrapper.judgeMechanics(sr).passed], [false, false]);
+  // The checker's lifecycle is a mechanical term: an unseen exit is not released.
+  const unseen = supportFixture(), ur = supportReport(unseen), mu = mainFrom(unseen.checker);
+  Object.assign(mu['0123456789abcdef'].at(-1), { exit_seen: false, code: null, killed: true });
+  ur.source_admission = sourceAdmission(ur.ledger, unseen.checker, choice, mu);
+  const uj = wrapper.judgeMechanics(ur); assert.deepEqual([uj.mechanics.checker_lifecycle_released, uj.passed], [false, false]);
 });

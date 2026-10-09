@@ -21,10 +21,10 @@ import { lookCommand, readLook, releaseOwned, windowsCalls } from './signin_clea
 import { askPathCheck, compareCopy } from './sub_copy.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url)), repo = resolve(here, '../../..');
-export const candidateDir = join(repo, 'docs/verification/qa/p0-13-live-52be105/candidate-nonvoice-04');
-export const candidateHash = '4cb6032ef8eccea7306cdd624cf2e7846e04c07ca801145dba5490eb232c7410';
-export const pins = { 'runner.ps1': '3adea4670487f84215608865be9eb569b80ad7070feec5a8fb7a166ab7abfc99', 'steps.json': '4049577415ad805c11b23e3cf1009b4e071956cfe24669e807574aeb354e423c', 'surface.html': 'be82967ae45d36bece4ac4858d6f45d0e90e58d088203b71323b74e6ae5e1067', 'sub-live.json': '4729ca1a25ec09a64349c68c5ccb0eb41b4e9f83e161fb9c4a29b0ce26b948d4',
-  'admission-checker.ps1': '9b4b3537ec84d2beb54347c5132860c8a9755c6f28b69ab07dccc160f2d6e6e1', 'admission-live.json': 'a28429bc0be901d878c5240181f94e351d74f6abbf1619a1c73b49d9b1fa818e' };
+export const candidateDir = join(repo, 'docs/verification/qa/p0-13-live-0ff325b/candidate-nonvoice-05');
+export const candidateHash = '5e7fdcd513c355d0f63a4c36e778d0fdc457e550ca781da29c6f8b7901d2aebb';
+export const pins = { 'runner.ps1': '2fbb5eb3c5e734719f6b26fc8066b55626078d3ffdb075d5dc65936326ca2cdb', 'steps.json': '70e89d51c0489a8c9472bf25a8438b08ff493f5be2c59148bc92baf10778874f', 'surface.html': 'be82967ae45d36bece4ac4858d6f45d0e90e58d088203b71323b74e6ae5e1067', 'sub-live.json': '4729ca1a25ec09a64349c68c5ccb0eb41b4e9f83e161fb9c4a29b0ce26b948d4',
+  'admission-checker.ps1': '9637db613373ef5ba63bc10753033aedaab90bf749aeaa982fed9b65c91eccf1', 'admission-live.json': '6e86df7d74f52ce54b879d1c14d6d71b7548c69127d0f787a0a1be2fb46d7cc3' };
 const psBin = '/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe';
 const managedState = '/home/agentsdock/.local/share/LearningCompanion/managed-chatgpt';   // state_dir null: the product's own
 // Raw provider receipts (thread/turn ids) stay outside the repository and Git: one 0700 folder per run (Lead D8).
@@ -44,10 +44,10 @@ export function processesIn(dir, io = fs) {
   return io.readdirSync('/proc').filter(n => /^\d+$/.test(n)).filter(n => { try { const cwd = io.readlinkSync(`/proc/${n}/cwd`); return cwd === dir || cwd.startsWith(`${dir}/`); } catch { return false; } }).map(Number);
 }
 
-// F3: the reviewed production build whose main process starts QA's source-admission checker (Web's interlock). Unset
-// until that build is reviewed and the candidate regenerated for it: until then every allocation is refused, whatever
-// else it states. 52be105 never starts the checker, so a run of it would send real requests without source admission.
-export const interlockProduction = null;
+// F3: the reviewed production build whose main process starts QA's source-admission checker (Web's interlock), as the
+// Lead integrated and staged it (0ff325b, 194986d). An allocation for a candidate of any other build is refused (52be105
+// never starts the checker). Naming it here is not an execution allocation.
+export const interlockProduction = '0ff325beadb7c689244610307b6aa16d638fd2e6';
 export function validateLiveAllocation(record, candidate, wrapperHash, now, interlock = interlockProduction) {
   if (typeof interlock !== 'string' || !/^[0-9a-f]{40}$/.test(interlock) || candidate?.production_commit !== interlock) {
     throw Error('the candidate does not pin a reviewed production build that starts the source-admission checker; no allocation is accepted');
@@ -77,9 +77,9 @@ export function validateLiveAllocation(record, candidate, wrapperHash, now, inte
 export function connectorAdmission(io = fs, checks = { compareCopy, askPathCheck, liveImportCheck }, home = homedir()) {
   // The product's managed state and the raw-receipt root are this user's: the connector runs as this same WSL user.
   if (home !== `/home/${CONNECTOR.user}` || !managedState.startsWith(home + '/') || !rawReceiptsRoot.startsWith(home + '/')) throw Error('the connector user\'s home is not the one the receipt folders assume');
-  if (!io.existsSync(CONNECTOR.copy)) throw Error('the private 52be105 Backend copy is missing (qa_live_candidate.mjs prepare-connector)');
+  if (!io.existsSync(CONNECTOR.copy)) throw Error('the private Backend copy is missing (qa_live_candidate.mjs prepare-connector)');
   const same = checks.compareCopy(CONNECTOR.commit, CONNECTOR.copy);
-  if (!same.equal) throw Error('the private Backend copy is not exactly 52be105 services/ and packages/');
+  if (!same.equal) throw Error(`the private Backend copy is not exactly ${CONNECTOR.commit.slice(0, 7)} services/ and packages/`);
   if (processesIn(CONNECTOR.copy, io).length) throw Error('something already runs in the private Backend copy');
   const ask = checks.askPathCheck(CONNECTOR.python, CONNECTOR.copy), livePath = checks.liveImportCheck(CONNECTOR.python, CONNECTOR.copy);
   if (!ask.ok || !livePath.ok) throw Error('the connector cannot prepare a request in the private copy');
@@ -109,14 +109,14 @@ export async function runLiveCandidate(options, injected = {}) {
     if (sha(bytes) !== pins[name]) throw Error('saved payload bytes changed');
     return [name, bytes];
   }));
-  checkLiveCandidate(candidate, payload, JSON.parse(regularRead(join(repo, 'docs/verification/qa/p0-13-tts-52be105/stage-identity.json'))), { scratchExists: p => io.existsSync(p) });
+  checkLiveCandidate(candidate, payload, JSON.parse(regularRead(join(repo, 'docs/verification/qa/p0-13-live-0ff325b/stage-identity.json'))), { scratchExists: p => io.existsSync(p) });
   const allocationBytes = regularRead(allocationPath);
   if (sha(allocationBytes) !== options.allocationSha256) throw Error('allocation differs from independently reviewed hash');
   const record = JSON.parse(allocationBytes), wrapperHash = sha(regularRead(fileURLToPath(import.meta.url)));
   const deadline = validateLiveAllocation(record, candidate, wrapperHash, now(), injected.interlock ?? interlockProduction);
   const stillActive = () => { if (now() >= deadline) throw Error('allocation expired before admission/launch; no retry'); };
   // Linux file inspection only, after the allocation gate and before any Windows call.
-  const identity = JSON.parse(runFile('python3', ['-B', join(here, 'qa_tts_stage_check.py')], { encoding: 'utf8', timeout: 30000 }));
+  const identity = JSON.parse(runFile('python3', ['-B', join(here, 'qa_admission_stage_check.py')], { encoding: 'utf8', timeout: 30000 }));
   checkLiveCandidate(candidate, payload, identity, { scratchExists: p => io.existsSync(p) });
   if (io.existsSync(candidate.work)) throw Error('candidate scratch already consumed; no retry');
   const connector = connectorAdmission(io, checks);
@@ -327,6 +327,8 @@ export function judgeMechanics(report) {
     fenced: typeof report.fence?.verdict === 'string' && report.fence.verdict.startsWith('fenced'),
     // F3: every request that may have reached the provider went out only with an admitted source (QA's checker log).
     source_admission_bound: report.source_admission?.all_bound === true,
+    // The capture's checker exited by itself, cleanly, as main recorded it, after QA's last decision.
+    checker_lifecycle_released: report.source_admission?.checker_released === true,
     no_value_in_questions: (report.evidence?.leaks_in_questions ?? ['?']).length === 0,
   };
   return { mechanics: terms, mechanics_passed: Object.values(terms).every(Boolean), passed: Object.values(terms).every(Boolean),
@@ -441,7 +443,7 @@ function collect(io, regularRead, candidate, out, report, launchesBefore) {
   } catch { report.aborted ??= 'native result unreadable; scratch and raw evidence retained'; }
   const steps = JSON.parse(regularRead(join(candidateDir, 'steps.json')));
   report.steps_ok = !!results && results.steps.length === steps.length && results.steps.every(s => s.ok === true);
-  const liveLines = [], asks = [], requestIds = [], mainAdmission = [];
+  const liveLines = [], asks = [], requestIds = [], mainAdmission = {};
   const captures = join(candidate.work, 'userdata', 'captures');
   // Every record file on its own: one unreadable file is an error (the evidence incomplete), never a skipped success.
   try {
@@ -461,7 +463,7 @@ function collect(io, regularRead, candidate, out, report, launchesBefore) {
           const text = regularRead(admissionFile);
           io.mkdirSync(join(out, 'captures', cap), { recursive: true, mode: 0o700 });
           io.writeFileSync(join(out, 'captures', cap, 'admission.jsonl'), text);
-          mainAdmission.push(...parseJsonl(text));
+          mainAdmission[cap] = parseJsonl(text);                                   // kept per capture folder (provenance)
         }
       } catch (error) { errors.push(`records ${cap.slice(0, 40)}/admission.jsonl: ${msg(error)}`); }
       const askDir = join(captures, cap, 'asks');
@@ -504,7 +506,7 @@ function collect(io, regularRead, candidate, out, report, launchesBefore) {
     checkerLines = parseJsonl(bytes.toString('utf8'));
     if (checkerLines.some(l => l.kind === 'unreadable_line')) errors.push('admission checker log: unreadable lines');
   } catch (error) { errors.push('admission checker log: ' + msg(error)); }
-  if (mainAdmission.some(l => l.kind === 'unreadable_line')) errors.push('main admission record: unreadable lines');
+  if (Object.values(mainAdmission).some(lines => lines.some(l => l.kind === 'unreadable_line'))) errors.push('main admission record: unreadable lines');
   report.source_admission = sourceAdmission(report.ledger, checkerLines, read('display_choice'), mainAdmission);
   report.evidence = evidence({ ledger: report.ledger, liveLines, cards: { action2: read('action2_card'), action3: read('action3_card') }, truthBefore: read('surface_before'), truthAfter: read('surface_changed') });
   report.collect_errors = errors;

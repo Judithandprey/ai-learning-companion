@@ -1,5 +1,5 @@
 {
-  "format": "qa-overlay-passage-fixtures/3",
+  "format": "qa-overlay-passage-fixtures/4",
   "status": "PREPARED, NOT EXECUTED: the pure functions of qa_overlay_predicate.ps1 against synthetic window facts (no native call). Lead decisions handoff_1698eb17 and handoff_e893ca27; Support review 5083814.",
   "app_pid": 126156,
   "expect": {
@@ -265,52 +265,70 @@
     {
       "name": "exactly the bound overlay above Edge",
       "above": [
-        "6034738"
+        "6034738/126156/Chrome_WidgetWin_1"
       ],
-      "overlay": "6034738",
+      "overlay": "6034738/126156/Chrome_WidgetWin_1",
       "what": "",
       "fault": null
     },
     {
       "name": "nothing above Edge during the capture",
       "above": [],
-      "overlay": "6034738",
+      "overlay": "6034738/126156/Chrome_WidgetWin_1",
       "what": "",
       "fault": "the windows above the owned Edge are not exactly the bound overlay"
     },
     {
+      "name": "the bound handle with another owner",
+      "above": [
+        "6034738/4242/Chrome_WidgetWin_1"
+      ],
+      "overlay": "6034738/126156/Chrome_WidgetWin_1",
+      "what": "class Chrome_WidgetWin_1, owner 4242",
+      "fault": "the windows above the owned Edge are not exactly the bound overlay (class Chrome_WidgetWin_1, owner 4242)"
+    },
+    {
+      "name": "the bound handle with another class",
+      "above": [
+        "6034738/126156/Chrome_RenderWidgetHostHWND"
+      ],
+      "overlay": "6034738/126156/Chrome_WidgetWin_1",
+      "what": "class Chrome_RenderWidgetHostHWND, owner 126156",
+      "fault": "the windows above the owned Edge are not exactly the bound overlay (class Chrome_RenderWidgetHostHWND, owner 126156)"
+    },
+    {
       "name": "the product control window too",
       "above": [
-        "6034738",
-        "7012706"
+        "6034738/126156/Chrome_WidgetWin_1",
+        "7012706/126156/Chrome_WidgetWin_1"
       ],
-      "overlay": "6034738",
+      "overlay": "6034738/126156/Chrome_WidgetWin_1",
       "what": "class Chrome_WidgetWin_1, owner 126156",
       "fault": "the windows above the owned Edge are not exactly the bound overlay (class Chrome_WidgetWin_1, owner 126156)"
     },
     {
       "name": "another app's click-through window above the overlay",
       "above": [
-        "9001",
-        "6034738"
+        "9001/4242/CEF-OSC-WIDGET",
+        "6034738/126156/Chrome_WidgetWin_1"
       ],
-      "overlay": "6034738",
+      "overlay": "6034738/126156/Chrome_WidgetWin_1",
       "what": "class CEF-OSC-WIDGET, owner 4242",
       "fault": "the windows above the owned Edge are not exactly the bound overlay (class CEF-OSC-WIDGET, owner 4242)"
     },
     {
       "name": "another window instead of the overlay",
       "above": [
-        "9001"
+        "9001/4242/Notepad"
       ],
-      "overlay": "6034738",
+      "overlay": "6034738/126156/Chrome_WidgetWin_1",
       "what": "class Notepad, owner 4242",
       "fault": "the windows above the owned Edge are not exactly the bound overlay (class Notepad, owner 4242)"
     },
     {
       "name": "no bound overlay",
       "above": [
-        "6034738"
+        "6034738/126156/Chrome_WidgetWin_1"
       ],
       "overlay": "",
       "what": "",
