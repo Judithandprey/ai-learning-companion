@@ -1,0 +1,448 @@
+{
+  "source": "937788ded4e2bff1db8b94dce175a7152e01609d",
+  "scope": "Independent prior Support fixture, extended only with current required session/display/main-record fields; synthetic objects only. No native/provider call; no allocation override.",
+  "rows": 13,
+  "controls": 2,
+  "fixed": 7,
+  "counterexamples": 3,
+  "coverage_observations": 1,
+  "interlockProduction": null,
+  "observations": [
+    {
+      "name": "one launch cumulative 1,2,3,3",
+      "expectation": "control",
+      "mechanical_pass": true,
+      "records_complete": true,
+      "attempts": 4,
+      "extras": [],
+      "provider_turns": 3,
+      "launches": [
+        {
+          "launch": 1,
+          "receipts": 4,
+          "sent": 3,
+          "uncertain": 0,
+          "not_submitted": 1,
+          "max_turns": 3,
+          "consistent": true
+        }
+      ],
+      "fence": "fenced_before_submission",
+      "session_identity": "same",
+      "phases": [
+        "not_submitted",
+        "not_submitted",
+        "not_submitted"
+      ],
+      "source_bound": true,
+      "main_agrees": true,
+      "failed_terms": []
+    },
+    {
+      "name": "two launches maxima 1+2",
+      "expectation": "control",
+      "mechanical_pass": true,
+      "records_complete": true,
+      "attempts": 4,
+      "extras": [],
+      "provider_turns": 3,
+      "launches": [
+        {
+          "launch": 1,
+          "receipts": 1,
+          "sent": 1,
+          "uncertain": 0,
+          "not_submitted": 0,
+          "max_turns": 1,
+          "consistent": true
+        },
+        {
+          "launch": 2,
+          "receipts": 3,
+          "sent": 2,
+          "uncertain": 0,
+          "not_submitted": 1,
+          "max_turns": 2,
+          "consistent": true
+        }
+      ],
+      "fence": "fenced_before_submission",
+      "session_identity": "same",
+      "phases": [
+        "not_submitted",
+        "not_submitted",
+        "not_submitted"
+      ],
+      "source_bound": true,
+      "main_agrees": true,
+      "failed_terms": []
+    },
+    {
+      "name": "R1 extra without trigger",
+      "expectation": "fixed",
+      "mechanical_pass": false,
+      "records_complete": false,
+      "attempts": 5,
+      "extras": [
+        "extra-without-trigger"
+      ],
+      "provider_turns": 3,
+      "launches": [
+        {
+          "launch": 1,
+          "receipts": 4,
+          "sent": 3,
+          "uncertain": 0,
+          "not_submitted": 1,
+          "max_turns": 3,
+          "consistent": true
+        }
+      ],
+      "fence": "not_fenced",
+      "session_identity": "same",
+      "phases": [
+        "not_submitted",
+        "not_submitted",
+        "not_submitted"
+      ],
+      "source_bound": false,
+      "main_agrees": true,
+      "failed_terms": [
+        "records_complete",
+        "ceiling_ok",
+        "no_retry_or_restart",
+        "fenced",
+        "source_admission_bound"
+      ]
+    },
+    {
+      "name": "R1 orphan settlement",
+      "expectation": "fixed",
+      "mechanical_pass": false,
+      "records_complete": false,
+      "attempts": 5,
+      "extras": [
+        "orphan"
+      ],
+      "provider_turns": 3,
+      "launches": [
+        {
+          "launch": 1,
+          "receipts": 4,
+          "sent": 3,
+          "uncertain": 0,
+          "not_submitted": 1,
+          "max_turns": 3,
+          "consistent": true
+        }
+      ],
+      "fence": "not_fenced",
+      "session_identity": "same",
+      "phases": [
+        "not_submitted",
+        "not_submitted",
+        "not_submitted"
+      ],
+      "source_bound": false,
+      "main_agrees": true,
+      "failed_terms": [
+        "records_complete",
+        "ceiling_ok",
+        "no_retry_or_restart",
+        "fenced",
+        "source_admission_bound"
+      ]
+    },
+    {
+      "name": "R2 extra turn cannot use proven-unsent slot",
+      "expectation": "fixed",
+      "mechanical_pass": false,
+      "records_complete": true,
+      "attempts": 4,
+      "extras": [],
+      "provider_turns": 4,
+      "launches": [
+        {
+          "launch": 1,
+          "receipts": 4,
+          "sent": 3,
+          "uncertain": 0,
+          "not_submitted": 1,
+          "max_turns": 4,
+          "consistent": false
+        }
+      ],
+      "fence": "fenced_before_submission",
+      "session_identity": "same",
+      "phases": [
+        "not_submitted",
+        "not_submitted",
+        "not_submitted"
+      ],
+      "source_bound": true,
+      "main_agrees": true,
+      "failed_terms": [
+        "ceiling_ok",
+        "provider_turns_reconciled"
+      ]
+    },
+    {
+      "name": "R2 inconsistent separate launches",
+      "expectation": "fixed",
+      "mechanical_pass": false,
+      "records_complete": true,
+      "attempts": 4,
+      "extras": [],
+      "provider_turns": 3,
+      "launches": [
+        {
+          "launch": 1,
+          "receipts": 3,
+          "sent": 3,
+          "uncertain": 0,
+          "not_submitted": 0,
+          "max_turns": 2,
+          "consistent": false
+        },
+        {
+          "launch": 2,
+          "receipts": 1,
+          "sent": 0,
+          "uncertain": 0,
+          "not_submitted": 1,
+          "max_turns": 1,
+          "consistent": false
+        }
+      ],
+      "fence": "fenced_before_submission",
+      "session_identity": "same",
+      "phases": [
+        "not_submitted",
+        "not_submitted",
+        "not_submitted"
+      ],
+      "source_bound": true,
+      "main_agrees": true,
+      "failed_terms": [
+        "ceiling_ok",
+        "provider_turns_reconciled"
+      ]
+    },
+    {
+      "name": "R3 later conflicting settlement",
+      "expectation": "fixed",
+      "mechanical_pass": false,
+      "records_complete": true,
+      "attempts": 4,
+      "extras": [],
+      "provider_turns": 3,
+      "launches": [
+        {
+          "launch": 1,
+          "receipts": 4,
+          "sent": 3,
+          "uncertain": 0,
+          "not_submitted": 1,
+          "max_turns": 3,
+          "consistent": true
+        }
+      ],
+      "fence": "unknown",
+      "session_identity": "same",
+      "phases": [
+        "not_submitted",
+        "not_submitted",
+        "submitted",
+        "not_submitted"
+      ],
+      "source_bound": true,
+      "main_agrees": true,
+      "failed_terms": [
+        "fenced"
+      ]
+    },
+    {
+      "name": "R3 missing settlement phase without receipt",
+      "expectation": "fixed",
+      "mechanical_pass": false,
+      "records_complete": true,
+      "attempts": 4,
+      "extras": [],
+      "provider_turns": 3,
+      "launches": [
+        {
+          "launch": 1,
+          "receipts": 3,
+          "sent": 3,
+          "uncertain": 0,
+          "not_submitted": 0,
+          "max_turns": 3,
+          "consistent": true
+        }
+      ],
+      "fence": "fenced_submission_unknown",
+      "session_identity": "same",
+      "phases": [
+        "not_submitted",
+        "unknown"
+      ],
+      "source_bound": true,
+      "main_agrees": true,
+      "failed_terms": [
+        "stop_attempt_facts_ok"
+      ]
+    },
+    {
+      "name": "R3 different settlement session",
+      "expectation": "fixed",
+      "mechanical_pass": false,
+      "records_complete": true,
+      "attempts": 4,
+      "extras": [],
+      "provider_turns": 3,
+      "launches": [
+        {
+          "launch": 1,
+          "receipts": 4,
+          "sent": 3,
+          "uncertain": 0,
+          "not_submitted": 1,
+          "max_turns": 3,
+          "consistent": true
+        }
+      ],
+      "fence": "unknown",
+      "session_identity": "different",
+      "phases": [
+        "not_submitted",
+        "not_submitted",
+        "not_submitted"
+      ],
+      "source_bound": true,
+      "main_agrees": true,
+      "failed_terms": [
+        "fenced"
+      ]
+    },
+    {
+      "name": "R3 missing ask session with otherwise valid receipt",
+      "expectation": "counterexample",
+      "mechanical_pass": true,
+      "records_complete": true,
+      "attempts": 4,
+      "extras": [],
+      "provider_turns": 3,
+      "launches": [
+        {
+          "launch": 1,
+          "receipts": 4,
+          "sent": 3,
+          "uncertain": 0,
+          "not_submitted": 1,
+          "max_turns": 3,
+          "consistent": true
+        }
+      ],
+      "fence": "fenced_submission_unknown",
+      "session_identity": "unknown",
+      "phases": [
+        "not_submitted",
+        "not_submitted",
+        "not_submitted"
+      ],
+      "source_bound": true,
+      "main_agrees": true,
+      "failed_terms": []
+    },
+    {
+      "name": "F3 foreign capture on acquisition",
+      "expectation": "counterexample",
+      "mechanical_pass": true,
+      "records_complete": true,
+      "attempts": 4,
+      "extras": [],
+      "provider_turns": 3,
+      "launches": [
+        {
+          "launch": 1,
+          "receipts": 4,
+          "sent": 3,
+          "uncertain": 0,
+          "not_submitted": 1,
+          "max_turns": 3,
+          "consistent": true
+        }
+      ],
+      "fence": "fenced_before_submission",
+      "session_identity": "same",
+      "phases": [
+        "not_submitted",
+        "not_submitted",
+        "not_submitted"
+      ],
+      "source_bound": true,
+      "main_agrees": true,
+      "failed_terms": []
+    },
+    {
+      "name": "F3 explicit contradictory main send verdict",
+      "expectation": "counterexample",
+      "mechanical_pass": true,
+      "records_complete": true,
+      "attempts": 4,
+      "extras": [],
+      "provider_turns": 3,
+      "launches": [
+        {
+          "launch": 1,
+          "receipts": 4,
+          "sent": 3,
+          "uncertain": 0,
+          "not_submitted": 1,
+          "max_turns": 3,
+          "consistent": true
+        }
+      ],
+      "fence": "fenced_before_submission",
+      "session_identity": "same",
+      "phases": [
+        "not_submitted",
+        "not_submitted",
+        "not_submitted"
+      ],
+      "source_bound": true,
+      "main_agrees": true,
+      "failed_terms": []
+    },
+    {
+      "name": "F3 main sends only (coverage observation)",
+      "expectation": "coverage_observation",
+      "mechanical_pass": true,
+      "records_complete": true,
+      "attempts": 4,
+      "extras": [],
+      "provider_turns": 3,
+      "launches": [
+        {
+          "launch": 1,
+          "receipts": 4,
+          "sent": 3,
+          "uncertain": 0,
+          "not_submitted": 1,
+          "max_turns": 3,
+          "consistent": true
+        }
+      ],
+      "fence": "fenced_before_submission",
+      "session_identity": "same",
+      "phases": [
+        "not_submitted",
+        "not_submitted",
+        "not_submitted"
+      ],
+      "source_bound": true,
+      "main_agrees": true,
+      "failed_terms": []
+    }
+  ]
+}

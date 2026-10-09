@@ -1,0 +1,86 @@
+{
+  "source": "937788ded4e2bff1db8b94dce175a7152e01609d",
+  "scope": "Synthetic objects only, no native/private-state/provider operation; wrapper execution gate never bypassed.",
+  "assertions": 14,
+  "controls": 6,
+  "fixed": 8,
+  "observations": [
+    {
+      "name": "interim execution gate",
+      "kind": "control",
+      "refused": true
+    },
+    {
+      "name": "live watcher readiness",
+      "kind": "control",
+      "ready": true
+    },
+    {
+      "name": "exited watcher refused",
+      "kind": "fixed",
+      "ready": false
+    },
+    {
+      "name": "live own watcher",
+      "kind": "control",
+      "refused": false
+    },
+    {
+      "name": "exit delivered before prelaunch",
+      "kind": "fixed",
+      "refused": true
+    },
+    {
+      "name": "zombie before exit callback",
+      "kind": "fixed",
+      "refused": true
+    },
+    {
+      "name": "missing own proc entry",
+      "kind": "fixed",
+      "refused": true
+    },
+    {
+      "name": "ordered lifecycle",
+      "kind": "control",
+      "state": "released",
+      "disorder": null
+    },
+    {
+      "name": "exit before appearance",
+      "kind": "fixed",
+      "state": "unknown",
+      "disorder": "an exit without an earlier appearance"
+    },
+    {
+      "name": "watch lost before end",
+      "kind": "fixed",
+      "state": "unknown",
+      "disorder": null
+    },
+    {
+      "name": "record after end",
+      "kind": "fixed",
+      "state": "unknown",
+      "disorder": "records after the end"
+    },
+    {
+      "name": "well-formed receipt projection",
+      "kind": "control",
+      "admitted": true,
+      "top_level_private_fields_omitted": true
+    },
+    {
+      "name": "wrong request identity",
+      "kind": "control",
+      "admitted": false
+    },
+    {
+      "name": "malformed nested field rejected before copy and omitted from projection",
+      "kind": "fixed",
+      "reader_errors": 1,
+      "copied_receipts": 0,
+      "nested_value_omitted": true
+    }
+  ]
+}

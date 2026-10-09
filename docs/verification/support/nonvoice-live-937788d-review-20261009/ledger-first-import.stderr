@@ -1,0 +1,18 @@
+node:fs:621
+  return binding.open(
+                 ^
+
+Error: ENOENT: no such file or directory, open '/tmp/support-live-937788d-38tag4s1/docs/verification/qa/p0-13-live-1755153/edge-placement-offline/candidate/candidate.json'
+    at Object.openSync (node:fs:621:18)
+    at readFileSync (node:fs:487:35)
+    at file:///tmp/support-live-937788d-38tag4s1/tests/e2e/windows/qa_tts_output_candidate.mjs:22:29
+    at ModuleJob.run (node:internal/modules/esm/module_job:561:25)
+    at async node:internal/modules/esm/loader:647:26
+    at async file:///home/agentsdock/Projects/learning-companion/wt-support/tests/probes/support/nonvoice_live_937788d_ledger.mjs:11:49 {
+  errno: -2,
+  code: 'ENOENT',
+  syscall: 'open',
+  path: '/tmp/support-live-937788d-38tag4s1/docs/verification/qa/p0-13-live-1755153/edge-placement-offline/candidate/candidate.json'
+}
+
+Node.js v24.21.0

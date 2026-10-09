@@ -1,0 +1,534 @@
+{
+  "source_commit": "937788ded4e2bff1db8b94dce175a7152e01609d",
+  "files": [
+    {
+      "path": "docs/verification/qa/p0-13-live-52be105/candidate-nonvoice-04/admission-checker.ps1",
+      "sha256": "9b4b3537ec84d2beb54347c5132860c8a9755c6f28b69ab07dccc160f2d6e6e1"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-52be105/candidate-nonvoice-04/admission-live.json",
+      "sha256": "a28429bc0be901d878c5240181f94e351d74f6abbf1619a1c73b49d9b1fa818e"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-52be105/candidate-nonvoice-04/candidate.json",
+      "sha256": "4cb6032ef8eccea7306cdd624cf2e7846e04c07ca801145dba5490eb232c7410"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-52be105/candidate-nonvoice-04/runner.ps1",
+      "sha256": "3adea4670487f84215608865be9eb569b80ad7070feec5a8fb7a166ab7abfc99"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-52be105/candidate-nonvoice-04/steps.json",
+      "sha256": "4049577415ad805c11b23e3cf1009b4e071956cfe24669e807574aeb354e423c"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-52be105/candidate-nonvoice-04/sub-live.json",
+      "sha256": "4729ca1a25ec09a64349c68c5ccb0eb41b4e9f83e161fb9c4a29b0ce26b948d4"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-52be105/candidate-nonvoice-04/surface.html",
+      "sha256": "be82967ae45d36bece4ac4858d6f45d0e90e58d088203b71323b74e6ae5e1067"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-52be105/driver-nonvoice-04/README.md",
+      "sha256": "e63986ed150780934c1735ff59c9014f0542217a4aa101b3f9d0e8d71f9c3b1e"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-52be105/driver-nonvoice-04/allocation.template.json",
+      "sha256": "71c1f31847d8bfc507f539ebbb6b4d62170d16a2ef50595f4366affe9fadee0d"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-52be105/driver-nonvoice-04/artifacts.json",
+      "sha256": "f8d8d44dab7b1d80027e35ad6afc6caf4d4c5ff3013508f8dd1f46efc63aad1c"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-52be105/driver-nonvoice-04/candidate-check.json",
+      "sha256": "7ecfbdcd1d147e5f45ee33e9d56e399831d194e0f57e16803a2da68580e62326"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-52be105/driver-nonvoice-04/driver-mutants.py",
+      "sha256": "ac4004249b24a9ae3c096d9047acd2725b2b8e16dbf826dba50c0a446293e74f"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-52be105/driver-nonvoice-04/driver-mutants.txt",
+      "sha256": "71f22e6ec5c7a39827146365733c63e902a049dfa1e5d16cb2de84da0c6eb04b"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-52be105/driver-nonvoice-04/failures-before-9614947.txt",
+      "sha256": "25325647d19816a9874d978f483855a21404cc13abf7e439c7a1346f9c9b732f"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-52be105/driver-nonvoice-04/overlay-fixture-check.ps1",
+      "sha256": "e09a7a942a3ef22fe2644f0b6dfcd2eadc6b0f7dccf837037b762b583c16729f"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-52be105/driver-nonvoice-04/parse-compile/check.ps1",
+      "sha256": "f9fdb00d2c655a69378eb2057d8bc34134626295397be30046414f31b89dbed2"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-52be105/driver-nonvoice-04/parse-compile/check.ps1.tmpl",
+      "sha256": "4fb9c1a550a5025b673f06d2b4ced4f02c8eb72b6d62c530b837b4a1688debb1"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-52be105/driver-nonvoice-04/parse-compile/dlls.sha256",
+      "sha256": "8e8c03ed2d6e5ab22fb7e86985f1841c625d22aa0b1c8ff9ec3098cd9bbcc333"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-52be105/driver-nonvoice-04/parse-compile/result.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-52be105/driver-nonvoice-04/parse-compile/result.stdout.json",
+      "sha256": "9f12f60118d56b601d6b6136fcfc07b06ca62faa136fdcd27d5687617256b8e0"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-52be105/driver-nonvoice-04/parse-compile/stage.py",
+      "sha256": "e17684905a84db988dd6d2e8174af8708f75e264c8aea9d8d29a7d5c4ae1e6c4"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-52be105/driver-nonvoice-04/parse-compile/staged.json",
+      "sha256": "d01636da75f1016db6bd3a07be25a10683f535e54019fe755bdaac9ae9ded49e"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-52be105/driver-nonvoice-04/passes-after.txt",
+      "sha256": "d14cc7da187ff743204370d2e8a57e0382eed9daba5d1003f4b493f8f73a8ac4"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-tts-52be105/stage-identity.json",
+      "sha256": "dade97eb3bff2ceb6b5b2665b8c4dbbcc305019a160869721b4092ece8c463b1"
+    },
+    {
+      "path": "tests/e2e/windows/analyze.py",
+      "sha256": "3bd0e0eeebba00865c1c35fab0be6c5ebb41a7d1e3a8e56bfd2805572b25cbe7"
+    },
+    {
+      "path": "tests/e2e/windows/analyze_fix.py",
+      "sha256": "17d8598082b34db2c504cec310ac5ca2922bb4e78c4ecf91e4ed7cb69761c641"
+    },
+    {
+      "path": "tests/e2e/windows/analyze_ink.py",
+      "sha256": "f497dd24f101d61fca273128060d8cd39d4c8f0bbf94b08a5b81e8a4f450d4c1"
+    },
+    {
+      "path": "tests/e2e/windows/analyze_parent.py",
+      "sha256": "28a4ad8eafa1e18f2fecfddb4ab0f4acca1553e757dc4570a51f74c140ff87ac"
+    },
+    {
+      "path": "tests/e2e/windows/analyze_sub.py",
+      "sha256": "46312d04880accc086b1cf8710ab98b07ed536d74da6ed0e2c085136a3dd822d"
+    },
+    {
+      "path": "tests/e2e/windows/analyze_win05.py",
+      "sha256": "f7e66ef176c169b28707696efb2bef894f98b65d263dd4ce3470fd664c6a7e59"
+    },
+    {
+      "path": "tests/e2e/windows/course.html",
+      "sha256": "2cecf763803f33e64c283dfb7f0f133bc2b9b0412f08873bb5cb1caf831c03ab"
+    },
+    {
+      "path": "tests/e2e/windows/judge_surface_answer.py",
+      "sha256": "b02442b0abec289df3816a43ad461df50a0c039e61d58b2f7478e02a0df4b083"
+    },
+    {
+      "path": "tests/e2e/windows/notes.txt",
+      "sha256": "ca986c9c569bcdd36100d87df9ce28eeabd3025fc7d5a43f171c4a957f55b53c"
+    },
+    {
+      "path": "tests/e2e/windows/qa-electron-runner.ps1",
+      "sha256": "1a0dfc3f178a1d6f59233c2a7d6a836ce68b18887affd2f6431c2d4ef5c48218"
+    },
+    {
+      "path": "tests/e2e/windows/qa-png-to-bmp.ps1",
+      "sha256": "6f887944f49430065891d294ddba78d88e235ad88344890deaa304ac91f4a675"
+    },
+    {
+      "path": "tests/e2e/windows/qa_admission_checker.ps1",
+      "sha256": "525ee17fb86eeb980cabc93d71413ea00badcea433b1f65c24757730823aaa26"
+    },
+    {
+      "path": "tests/e2e/windows/qa_binary_admission.py",
+      "sha256": "e1354db627bc792c4e47d9fed419079fe9dd8611b4d2f0442e419311100a849c"
+    },
+    {
+      "path": "tests/e2e/windows/qa_connector_relay.py",
+      "sha256": "edb9279453772757ca8c277f0701a3a67ff56a9ee75d83524960ae0622f5611c"
+    },
+    {
+      "path": "tests/e2e/windows/qa_display_admission.ps1",
+      "sha256": "b4f586b7c987f533f318eb72ebffe318482ed2c2aa7f7f720574147071747590"
+    },
+    {
+      "path": "tests/e2e/windows/qa_edge_placement.ps1",
+      "sha256": "e527a59e63f6823adc9aaa1b5d9619661d8299769985ae1a0bf108749c2535bb"
+    },
+    {
+      "path": "tests/e2e/windows/qa_fake_bridge.py",
+      "sha256": "5e971c06a940b71609f5be5d548ccde8bffbda90ab6c18212d74722ee2c4b5f4"
+    },
+    {
+      "path": "tests/e2e/windows/qa_live_candidate.mjs",
+      "sha256": "9e74d6ff7b5dc64bc2a6bb210e489ae320d1ec43a252f462f586908ef11eee8f"
+    },
+    {
+      "path": "tests/e2e/windows/qa_live_copy_check.py",
+      "sha256": "1784a01195500bda2fe84971e837978043cc74d3ad4e1a119dd5452863b92425"
+    },
+    {
+      "path": "tests/e2e/windows/qa_live_ledger.mjs",
+      "sha256": "3558b9bb0da7c7b8e1d39bfb98b440f6a9e631cb2275e02200c02b831b5a12de"
+    },
+    {
+      "path": "tests/e2e/windows/qa_live_preflight.ps1",
+      "sha256": "894f0b197fa5297c5e5d4519a6bbe7f1927ed3dfe1443ca5b76ea28197050bc2"
+    },
+    {
+      "path": "tests/e2e/windows/qa_live_rehearsal.cjs",
+      "sha256": "2c79946b51496cf94ed4af7bdfabab67dd694b1d6db2ee61d17b6f930a8acc16"
+    },
+    {
+      "path": "tests/e2e/windows/qa_live_rehearsal.py",
+      "sha256": "4c50f8554ddc3a57008c9a1a6ac94f60feaa682908a0160fdfa99b96764e5e2e"
+    },
+    {
+      "path": "tests/e2e/windows/qa_live_stage_check.py",
+      "sha256": "8bdd042b426c0784500375a41fe874e41b80186a6a8dddcc1d544213abd8c791"
+    },
+    {
+      "path": "tests/e2e/windows/qa_overlay_fixture_check.ps1",
+      "sha256": "5b72cd41a87fac2f23ed4924f5653c43d966afb42b47e8dde4831891f0c24dcb"
+    },
+    {
+      "path": "tests/e2e/windows/qa_overlay_fixtures.json",
+      "sha256": "6a513c5bd0062b0a17d88038ef882abb62c765e521fbbfbd2f87098392607bc3"
+    },
+    {
+      "path": "tests/e2e/windows/qa_overlay_predicate.ps1",
+      "sha256": "42c95a91a9121a047e2ce2185461002d2a53620cf30e0e2f3c95a64369a3cbf8"
+    },
+    {
+      "path": "tests/e2e/windows/qa_parent_db.py",
+      "sha256": "17bc8dea331c14c0559246a884e7787f3d880db7f2f62652fd45eaa350cd9cd7"
+    },
+    {
+      "path": "tests/e2e/windows/qa_prepare_visible.mjs",
+      "sha256": "bec19863f3b03309fb866b9e656e5dd0260620a591f27ab73ecf90aee01a64aa"
+    },
+    {
+      "path": "tests/e2e/windows/qa_run_live_candidate.mjs",
+      "sha256": "3a537fa1df6b1b74311e3146ba7f3ec021d7b64291313d6b2d3504564a68487b"
+    },
+    {
+      "path": "tests/e2e/windows/qa_run_tts_candidate.mjs",
+      "sha256": "153db051aa92a39a5f59859c1d85b107867a6fc6fa1c30eb033692f83ebdbda3"
+    },
+    {
+      "path": "tests/e2e/windows/qa_sub_copy_check.py",
+      "sha256": "73b765943887cab143f530deb3deb7ac415cabce13bc2bd9f7498c1c56320d10"
+    },
+    {
+      "path": "tests/e2e/windows/qa_sub_watch.py",
+      "sha256": "42be06a3b2d07d2feb16b306bfefe9d2c44bfdd8d88554853eb9a7ea6112d1b8"
+    },
+    {
+      "path": "tests/e2e/windows/qa_tts_output_candidate.mjs",
+      "sha256": "02fd39d06c29eb89d60ed113bb13e97726cc503a2e9678da713a3422b3f6cf83"
+    },
+    {
+      "path": "tests/e2e/windows/qa_tts_stage_check.py",
+      "sha256": "9e0a8257f740ee6d7e8924ac848de2fc7ddfd9b7621967e8a7f67c1c518b810f"
+    },
+    {
+      "path": "tests/e2e/windows/qa_visible_candidate.mjs",
+      "sha256": "9df43a98f64c67559029d31bc41573db4df4df94341ef48845687987b5460410"
+    },
+    {
+      "path": "tests/e2e/windows/qa_visible_drag.mjs",
+      "sha256": "fa7491499aad6c289793fec195a11993b3d102415347a7251e82592362940d1e"
+    },
+    {
+      "path": "tests/e2e/windows/replay_analyze_fix.py",
+      "sha256": "305f546996c5e9768bc4d252cd8ed3b57b48b3ae6797dcf925d3b480a0f82728"
+    },
+    {
+      "path": "tests/e2e/windows/run.mjs",
+      "sha256": "1e4f8d0ab1a48f01803ac68aab6bbaa36ea411079b7032f501deaf6fbbc605b2"
+    },
+    {
+      "path": "tests/e2e/windows/scenarios.mjs",
+      "sha256": "dec4fb7216c38b0a1ddd7aabed16966db6febfd5237e12ce8342887b56f69c1e"
+    },
+    {
+      "path": "tests/e2e/windows/signin_cleanup.mjs",
+      "sha256": "efa06295262ea27006769e0dea363051fbd6401f4c810d2049db5937ee939b2b"
+    },
+    {
+      "path": "tests/e2e/windows/signin_cleanup.test.mjs",
+      "sha256": "717c10778f5592e1a22a3c79c5999d128b8a6e2ba4d1d55473ab4c7db1004b88"
+    },
+    {
+      "path": "tests/e2e/windows/signin_launcher.mjs",
+      "sha256": "87eee2eb13fef9d37598331af8cf4f4732b51266d9ac97f37155dc2d9a9681d8"
+    },
+    {
+      "path": "tests/e2e/windows/signin_launcher.test.mjs",
+      "sha256": "cd1abd9d449f4c8b7ce671f38d1d0f1f5971b46cf3c22a740d7f1a274bf485b4"
+    },
+    {
+      "path": "tests/e2e/windows/signin_played_windows.mjs",
+      "sha256": "8ecac2d91b300635c1525aa0bcd8106883b65bec564fd063b8c8e884f24d9edb"
+    },
+    {
+      "path": "tests/e2e/windows/signin_signal_check.mjs",
+      "sha256": "f52fd506fdfb7664ec5a89cb97b91cd6f623a40692432f3522ad624f6ac1c930"
+    },
+    {
+      "path": "tests/e2e/windows/sub_changed_app.test.mjs",
+      "sha256": "58c47eb2e4e5cebf32e4d8e08c722deb251d29a9304c03d33292e41585747af6"
+    },
+    {
+      "path": "tests/e2e/windows/sub_changed_backend.test.mjs",
+      "sha256": "6b70c34814f3a90ae49ae11994bf077d9de34dd2620b177203a59edad2ab473a"
+    },
+    {
+      "path": "tests/e2e/windows/sub_changed_bridge.test.mjs",
+      "sha256": "bcf16fcbec6865442e28628518cbfa86069a4b8fce77ba48083a0c637215303d"
+    },
+    {
+      "path": "tests/e2e/windows/sub_copy.mjs",
+      "sha256": "d9df3fe96a1c3c99b161552cd6c547c9a7c64dad4e23f05f57eed922013a85f5"
+    },
+    {
+      "path": "tests/e2e/windows/sub_tree.mjs",
+      "sha256": "86749fbab763e670ac3956c1bad90bdf4bcfa81907643aea25bfcc5721b57f27"
+    },
+    {
+      "path": "tests/e2e/windows/surface.html",
+      "sha256": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2"
+    },
+    {
+      "path": "tests/e2e/windows/surface_live.html",
+      "sha256": "be82967ae45d36bece4ac4858d6f45d0e90e58d088203b71323b74e6ae5e1067"
+    },
+    {
+      "path": "tests/e2e/windows/test_qa_edge_placement.mjs",
+      "sha256": "2863f0ad3fbfc32652c203787c393a5b08b22c5db9df58222df07ec486665bcf"
+    },
+    {
+      "path": "tests/e2e/windows/test_qa_live_candidate.mjs",
+      "sha256": "92ee0bae77e46171e190897e06eec59be13e2d1f168a0f15486e1d31f441ca79"
+    },
+    {
+      "path": "tests/e2e/windows/test_qa_run_tts_candidate.mjs",
+      "sha256": "ba4e4b9fe7b68b1fce7bc2bc3d07587a8f8e5181987c7e62fc8ddf52628128ec"
+    },
+    {
+      "path": "tests/e2e/windows/test_qa_tts_output_candidate.mjs",
+      "sha256": "802e61239beea45d9958798fa282c5e3f33ada2cfc328f99867d69d872f734a2"
+    },
+    {
+      "path": "tests/e2e/windows/test_qa_visible_pre01.mjs",
+      "sha256": "bf72ce03c97544eb26be295e69a62441734817a65d072b2bc8b23c7208c69d29"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/edge-placement-offline/candidate/candidate.json",
+      "sha256": "78b784e562958d597d8a3eff461017e598b18a899f8e55d13662826bb8195f21"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/edge-placement-offline/candidate/runner.ps1",
+      "sha256": "2558ecee93191506b890472a80b5306f055bf22abe64ce24615d03e35b86fe84"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/edge-placement-offline/candidate/steps.json",
+      "sha256": "b1576400458635eba3e630f707edb5c0b818306980cbec471f08c821ae9f922c"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-1755153/edge-placement-offline/candidate/surface.html",
+      "sha256": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-tts-52be105/candidate-r4-20261009/candidate.json",
+      "sha256": "f2104545cdc393522de46ab108fa928bfe475e1cab400cf9af3fbfb6ce8c1503"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-tts-52be105/candidate-r4-20261009/runner.ps1",
+      "sha256": "d6640e6c8f24b51dc87feb12f8ce83832c7a6c28c380de8f0b02d1eb644b28c2"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-tts-52be105/candidate-r4-20261009/steps.json",
+      "sha256": "9af8002cbadc799bab4dbf7882b35043b0ac50e3ca620c95f0e76c81684a145b"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-tts-52be105/candidate-r4-20261009/surface.html",
+      "sha256": "69e38e1bdacf8f4764a9227ebf58177f9959e83f3a03aa428c1b3e8b998be2d2"
+    }
+  ],
+  "export_root": "/tmp/support-live-937788d-38tag4s1",
+  "support_start_commit": "fa786982f4b0b5624a5c30d21aafc5cb0dd9cb6d",
+  "author_pin_comparisons": [
+    {
+      "path": "docs/verification/qa/p0-13-live-52be105/candidate-nonvoice-04/candidate.json",
+      "expected": "4cb6032ef8eccea7306cdd624cf2e7846e04c07ca801145dba5490eb232c7410",
+      "actual": "4cb6032ef8eccea7306cdd624cf2e7846e04c07ca801145dba5490eb232c7410"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-52be105/candidate-nonvoice-04/runner.ps1",
+      "expected": "3adea4670487f84215608865be9eb569b80ad7070feec5a8fb7a166ab7abfc99",
+      "actual": "3adea4670487f84215608865be9eb569b80ad7070feec5a8fb7a166ab7abfc99"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-52be105/candidate-nonvoice-04/steps.json",
+      "expected": "4049577415ad805c11b23e3cf1009b4e071956cfe24669e807574aeb354e423c",
+      "actual": "4049577415ad805c11b23e3cf1009b4e071956cfe24669e807574aeb354e423c"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-52be105/candidate-nonvoice-04/surface.html",
+      "expected": "be82967ae45d36bece4ac4858d6f45d0e90e58d088203b71323b74e6ae5e1067",
+      "actual": "be82967ae45d36bece4ac4858d6f45d0e90e58d088203b71323b74e6ae5e1067"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-52be105/candidate-nonvoice-04/sub-live.json",
+      "expected": "4729ca1a25ec09a64349c68c5ccb0eb41b4e9f83e161fb9c4a29b0ce26b948d4",
+      "actual": "4729ca1a25ec09a64349c68c5ccb0eb41b4e9f83e161fb9c4a29b0ce26b948d4"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-52be105/candidate-nonvoice-04/admission-checker.ps1",
+      "expected": "9b4b3537ec84d2beb54347c5132860c8a9755c6f28b69ab07dccc160f2d6e6e1",
+      "actual": "9b4b3537ec84d2beb54347c5132860c8a9755c6f28b69ab07dccc160f2d6e6e1"
+    },
+    {
+      "path": "docs/verification/qa/p0-13-live-52be105/candidate-nonvoice-04/admission-live.json",
+      "expected": "a28429bc0be901d878c5240181f94e351d74f6abbf1619a1c73b49d9b1fa818e",
+      "actual": "a28429bc0be901d878c5240181f94e351d74f6abbf1619a1c73b49d9b1fa818e"
+    },
+    {
+      "path": "tests/e2e/windows/qa_live_candidate.mjs",
+      "expected": "9e74d6ff7b5dc64bc2a6bb210e489ae320d1ec43a252f462f586908ef11eee8f",
+      "actual": "9e74d6ff7b5dc64bc2a6bb210e489ae320d1ec43a252f462f586908ef11eee8f"
+    },
+    {
+      "path": "tests/e2e/windows/qa_tts_output_candidate.mjs",
+      "expected": "02fd39d06c29eb89d60ed113bb13e97726cc503a2e9678da713a3422b3f6cf83",
+      "actual": "02fd39d06c29eb89d60ed113bb13e97726cc503a2e9678da713a3422b3f6cf83"
+    },
+    {
+      "path": "tests/e2e/windows/qa_visible_candidate.mjs",
+      "expected": "9df43a98f64c67559029d31bc41573db4df4df94341ef48845687987b5460410",
+      "actual": "9df43a98f64c67559029d31bc41573db4df4df94341ef48845687987b5460410"
+    },
+    {
+      "path": "tests/e2e/windows/qa_edge_placement.ps1",
+      "expected": "e527a59e63f6823adc9aaa1b5d9619661d8299769985ae1a0bf108749c2535bb",
+      "actual": "e527a59e63f6823adc9aaa1b5d9619661d8299769985ae1a0bf108749c2535bb"
+    },
+    {
+      "path": "tests/e2e/windows/qa_display_admission.ps1",
+      "expected": "b4f586b7c987f533f318eb72ebffe318482ed2c2aa7f7f720574147071747590",
+      "actual": "b4f586b7c987f533f318eb72ebffe318482ed2c2aa7f7f720574147071747590"
+    },
+    {
+      "path": "tests/e2e/windows/qa-electron-runner.ps1",
+      "expected": "1a0dfc3f178a1d6f59233c2a7d6a836ce68b18887affd2f6431c2d4ef5c48218",
+      "actual": "1a0dfc3f178a1d6f59233c2a7d6a836ce68b18887affd2f6431c2d4ef5c48218"
+    },
+    {
+      "path": "tests/e2e/windows/qa_tts_stage_check.py",
+      "expected": "9e0a8257f740ee6d7e8924ac848de2fc7ddfd9b7621967e8a7f67c1c518b810f",
+      "actual": "9e0a8257f740ee6d7e8924ac848de2fc7ddfd9b7621967e8a7f67c1c518b810f"
+    },
+    {
+      "path": "tests/e2e/windows/qa_live_stage_check.py",
+      "expected": "8bdd042b426c0784500375a41fe874e41b80186a6a8dddcc1d544213abd8c791",
+      "actual": "8bdd042b426c0784500375a41fe874e41b80186a6a8dddcc1d544213abd8c791"
+    },
+    {
+      "path": "tests/e2e/windows/surface_live.html",
+      "expected": "be82967ae45d36bece4ac4858d6f45d0e90e58d088203b71323b74e6ae5e1067",
+      "actual": "be82967ae45d36bece4ac4858d6f45d0e90e58d088203b71323b74e6ae5e1067"
+    },
+    {
+      "path": "tests/e2e/windows/sub_copy.mjs",
+      "expected": "d9df3fe96a1c3c99b161552cd6c547c9a7c64dad4e23f05f57eed922013a85f5",
+      "actual": "d9df3fe96a1c3c99b161552cd6c547c9a7c64dad4e23f05f57eed922013a85f5"
+    },
+    {
+      "path": "tests/e2e/windows/qa_sub_copy_check.py",
+      "expected": "73b765943887cab143f530deb3deb7ac415cabce13bc2bd9f7498c1c56320d10",
+      "actual": "73b765943887cab143f530deb3deb7ac415cabce13bc2bd9f7498c1c56320d10"
+    },
+    {
+      "path": "tests/e2e/windows/qa_live_copy_check.py",
+      "expected": "1784a01195500bda2fe84971e837978043cc74d3ad4e1a119dd5452863b92425",
+      "actual": "1784a01195500bda2fe84971e837978043cc74d3ad4e1a119dd5452863b92425"
+    },
+    {
+      "path": "tests/e2e/windows/signin_cleanup.mjs",
+      "expected": "efa06295262ea27006769e0dea363051fbd6401f4c810d2049db5937ee939b2b",
+      "actual": "efa06295262ea27006769e0dea363051fbd6401f4c810d2049db5937ee939b2b"
+    },
+    {
+      "path": "tests/e2e/windows/qa_live_ledger.mjs",
+      "expected": "3558b9bb0da7c7b8e1d39bfb98b440f6a9e631cb2275e02200c02b831b5a12de",
+      "actual": "3558b9bb0da7c7b8e1d39bfb98b440f6a9e631cb2275e02200c02b831b5a12de"
+    },
+    {
+      "path": "tests/e2e/windows/qa_run_tts_candidate.mjs",
+      "expected": "153db051aa92a39a5f59859c1d85b107867a6fc6fa1c30eb033692f83ebdbda3",
+      "actual": "153db051aa92a39a5f59859c1d85b107867a6fc6fa1c30eb033692f83ebdbda3"
+    },
+    {
+      "path": "tests/e2e/windows/qa_sub_watch.py",
+      "expected": "42be06a3b2d07d2feb16b306bfefe9d2c44bfdd8d88554853eb9a7ea6112d1b8",
+      "actual": "42be06a3b2d07d2feb16b306bfefe9d2c44bfdd8d88554853eb9a7ea6112d1b8"
+    },
+    {
+      "path": "tests/e2e/windows/qa_admission_checker.ps1",
+      "expected": "525ee17fb86eeb980cabc93d71413ea00badcea433b1f65c24757730823aaa26",
+      "actual": "525ee17fb86eeb980cabc93d71413ea00badcea433b1f65c24757730823aaa26"
+    },
+    {
+      "path": "tests/e2e/windows/qa_overlay_predicate.ps1",
+      "expected": "42c95a91a9121a047e2ce2185461002d2a53620cf30e0e2f3c95a64369a3cbf8",
+      "actual": "42c95a91a9121a047e2ce2185461002d2a53620cf30e0e2f3c95a64369a3cbf8"
+    },
+    {
+      "path": "tests/e2e/windows/qa_overlay_fixtures.json",
+      "expected": "6a513c5bd0062b0a17d88038ef882abb62c765e521fbbfbd2f87098392607bc3",
+      "actual": "6a513c5bd0062b0a17d88038ef882abb62c765e521fbbfbd2f87098392607bc3"
+    },
+    {
+      "path": "tests/e2e/windows/qa_overlay_fixture_check.ps1",
+      "expected": "5b72cd41a87fac2f23ed4924f5653c43d966afb42b47e8dde4831891f0c24dcb",
+      "actual": "5b72cd41a87fac2f23ed4924f5653c43d966afb42b47e8dde4831891f0c24dcb"
+    },
+    {
+      "path": "tests/e2e/windows/qa_run_live_candidate.mjs",
+      "expected": "3a537fa1df6b1b74311e3146ba7f3ec021d7b64291313d6b2d3504564a68487b",
+      "actual": "3a537fa1df6b1b74311e3146ba7f3ec021d7b64291313d6b2d3504564a68487b"
+    }
+  ],
+  "commands": [
+    {
+      "name": "ledger",
+      "command": "/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node --permission --allow-fs-read=/tmp/support-live-937788d-38tag4s1 --allow-fs-read=/home/agentsdock/Projects/learning-companion/wt-support/tests/probes/support/nonvoice_live_937788d_ledger.mjs /home/agentsdock/Projects/learning-companion/wt-support/tests/probes/support/nonvoice_live_937788d_ledger.mjs /tmp/support-live-937788d-38tag4s1 > docs/verification/support/nonvoice-live-937788d-review-20261009/ledger.json 2> docs/verification/support/nonvoice-live-937788d-review-20261009/ledger.stderr",
+      "first_attempt_exit": 1,
+      "first_attempt_result": "ENOENT at module import: historical candidate metadata dependency omitted from export; no scenario ran",
+      "final_exit": 0,
+      "final_stderr_bytes": 0,
+      "script_sha256": "3af07a7139d797396f5b3a6f95549b60a1577a6d4483c30964c0b7b09c471b4f"
+    },
+    {
+      "name": "boundaries",
+      "command": "/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node --permission --allow-fs-read=/tmp/support-live-937788d-38tag4s1 --allow-fs-read=/home/agentsdock/Projects/learning-companion/wt-support/tests/probes/support/nonvoice_live_937788d_boundaries.mjs /home/agentsdock/Projects/learning-companion/wt-support/tests/probes/support/nonvoice_live_937788d_boundaries.mjs /tmp/support-live-937788d-38tag4s1 > docs/verification/support/nonvoice-live-937788d-review-20261009/boundaries.json 2> docs/verification/support/nonvoice-live-937788d-review-20261009/boundaries.stderr",
+      "first_attempt_exit": 1,
+      "first_attempt_result": "ENOENT at module import: historical candidate metadata dependency omitted from export; no scenario ran",
+      "final_exit": 0,
+      "final_stderr_bytes": 0,
+      "script_sha256": "36893d594ef43100cb68e8137e1d00e1462d377665ea0afb30c884036525445a"
+    }
+  ],
+  "permissions": "Node read-only exact exported source tree and own probe; no child process or file-write grants; shell redirects synthetic evidence only",
+  "native_execution": false,
+  "allocation": "none; interlockProduction remains null",
+  "real_actions": "0/4 unchanged",
+  "diagnostic": "3/3 consumed/closed unchanged"
+}
