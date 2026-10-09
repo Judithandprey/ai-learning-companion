@@ -15,8 +15,8 @@ at main `4f7d9fa`. Requirements read at main `93697b4`: §7.1 (Start, Stop and f
 R36 and R59 in `docs/requirements.en.md`.
 
 **Status: source and Linux offline checks only.** Nothing was run on Windows, on a display, with an account or
-model, with a microphone or with sound. No package was built or launched. QA's checker does not exist yet; every
-check here uses a stand-in checker.
+model, with a microphone or with sound. No package was built or launched. QA's first checker (`9614947`) was read,
+not run; its revision with the `overlay` member is pending. Every check here uses a stand-in checker.
 
 ## What it is, and what it is not
 
@@ -166,7 +166,10 @@ Further rules for the answer:
 - Echoed objects are compared by value: their members may come in any order.
 - An answer line must be valid UTF-8; nothing is replaced. A line ending in `\r\n` is read as one line.
 - The configuration file and the ready line must not begin with a byte-order mark. JSON allows a parser to refuse
-  one, and the ready line must be exactly as above.
+  one, and the ready line must be exactly as above. A line that begins with one is refused.
+- Late is judged at receipt. An answer read more than `decision_ms` after its request was written, or a ready line
+  read more than `ready_ms` after the child was started, is refused. This holds even when the event loop was held up
+  so the timer had not run yet. Both are measured on a monotonic clock.
 
 **Compatibility with QA's checker.** QA's first checker (`9614947`, `tests/e2e/windows/qa_admission_checker.ps1`) was
 read, not run. Its request member list, phase nulls, string `display.id` and the echo of every member but `sent_at`
@@ -212,7 +215,7 @@ checkout at `73488f5` was used for the tests that run the released Python bridge
 | Types | `tsc -p tsconfig.json --noEmit` | clean |
 | Build | `npm run build` | passes (the new module is in `dist`) |
 | Whole suite | `node --test tests/*.test.ts` | **491 tests: 486 pass, 0 fail, 5 skipped** ([output](evidence/windows-source-admission/linux-full.txt)) |
-| Interlock | `tests/source-admission.test.ts`, `tests/app-admission.test.ts` | 10 + 18, all pass (in the suite) |
+| Interlock | `tests/source-admission.test.ts`, `tests/app-admission.test.ts` | 10 + 17 at `48c20c4`, all pass (in the suite) |
 | Mutation | [`mutants.py`](evidence/windows-source-admission/mutants.py) in a scratch copy | **53 mutants: 51 killed, 2 left** ([results](evidence/windows-source-admission/mutation.txt)) |
 
 The run before that final one had one failure (485 pass). It was the real-pipe released-bridge test
@@ -237,6 +240,29 @@ The two mutants left change nothing that can be reached:
 (`tests/admission-fakes.ts`) speaking the protocol over in-process streams. A real spawn is used only for a command
 that does not exist. There is no Windows, no PowerShell, no native check, no display, no Edge, no account, no model
 and no sound.
+
+## Correction after the lead's review of `48c20c4`
+
+Lead `handoff_6d04d5f2fce4ecf54550d070b1dd7b1b` reproduced two defects with in-process streams (its probe:
+`docs/verification/lead/live-windows/nonvoice-driver-review/web-client-probe.mjs`):
+
+- **Late answers accepted.** A reply that arrived after `decision_ms` was accepted if the event loop had been held up
+  so its timer callback had not run yet; the ready line likewise after `ready_ms`. Both deadlines are now checked
+  at receipt on a monotonic clock (`performance.now()`). They still run from the write and from the start, with
+  queue and Stop unchanged.
+- **Byte-order mark accepted.** The strict decoder dropped a byte-order mark before the ready line. It is now kept
+  (`ignoreBOM: true`), and a line that begins with one is refused.
+
+The status line is corrected: QA's first checker exists (`9614947`). The interlock test counts above are corrected
+too: 10 + 17, not 10 + 18.
+
+Checks for this correction, focused as asked; the whole suite and the mutation run were not repeated:
+
+- `tsc --noEmit` is clean.
+- `tests/source-admission.test.ts` (11) and `tests/app-admission.test.ts` (17) all pass, run twice.
+- The new test holds the event loop with `Atomics.wait`. A reply after 150 ms against a 100 ms bound is refused,
+  and one in time is accepted. A ready line after 1050 ms against 1000 ms is refused, and one in time is accepted.
+  A ready line with a byte-order mark is refused.
 
 ## Next
 

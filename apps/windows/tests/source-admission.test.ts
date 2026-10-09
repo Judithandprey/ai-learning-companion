@@ -351,3 +351,34 @@ test('a failure followed at once by this app ending the checker is not told as a
   await closing;
   assert.deepEqual(told, []);
 });
+
+test('late is late at its receipt: an answer after its bound, or a ready line after its bound, is refused even when the event loop was held up so its timer had not run yet; in time is still accepted; a byte-order mark before the ready line is refused', async () => {
+  /** Holds up this thread (and so the event loop) for `ms`. */
+  const hold = (ms: number): void => void Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, ms);
+  for (const [what, held, ok] of [['in time', 0, true], ['after its bound, before its timer ran', 150, false]] as const) {
+    const { checker, c, told } = await ready({ decision_ms: 100 }, (x) => void (x.mode = 'hold'));
+    const d = checker.decide(ASK);
+    await settle();
+    const r = c.waiting();
+    if (held) hold(held); // (the answer is read before the timer that would have refused it)
+    c.reply(r);
+    const got = await d;
+    assert.deepEqual([got.ok, !got.ok && got.reason], ok ? [true, false] : [false, 'the source check did not answer within 100 ms'], what);
+    await settle();
+    assert.equal(told.length, ok ? 0 : 1, what);
+    await checker.close();
+  }
+  for (const [what, held, line, expect] of [
+    ['in time', 0, '{"format":"lc-source-admission/1","ready":true}', null],
+    ['after its bound, before its timer ran', 1050, '{"format":"lc-source-admission/1","ready":true}', 'the source check was not ready within 1000 ms'],
+    ['with a byte-order mark', 0, '﻿{"format":"lc-source-admission/1","ready":true}', 'the source check wrote a byte-order mark'],
+  ] as const) {
+    const f = fakeCheckers((x) => void (x.autoReady = false));
+    const checker = new SourceChecker({ config: { ...CONFIG, ready_ms: 1000 }, spawn: f.spawn, endMs: 50 });
+    const opening = checker.open();
+    if (held) hold(held);
+    f.last().write(line);
+    assert.equal(await opening, expect, what);
+    await checker.close();
+  }
+});

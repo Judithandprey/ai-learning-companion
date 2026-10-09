@@ -127,6 +127,8 @@ export class SourceChecker {
   /** Why no further decision can be allowed (latched), or null. */
   private failedWith: string | null = null;
   private readied: ((problem: string | null) => void) | null = null;
+  /** When the child was started (monotonic ms): its ready line counts only within ready_ms of this. */
+  private startedAt = 0;
   private waiting: { request: Record<string, unknown>; settle: (d: AdmissionDecision) => void; timer: ReturnType<typeof setTimeout>; at: number } | null = null;
   /** Ids of requests already answered (an answer given again is a replay). */
   private readonly answered = new Set<string>();
@@ -214,8 +216,9 @@ export class SourceChecker {
       this.fail('the source check could not be given its pipes');
       return Promise.resolve(this.failedWith);
     }
-    // Bytes are split into lines first; each line must be valid UTF-8 (nothing is replaced or guessed).
-    const utf8 = new TextDecoder('utf-8', { fatal: true });
+    // Bytes are split into lines first; each line must be valid UTF-8 (nothing is replaced or guessed), and a
+    // byte-order mark is kept as a character (then refused), never silently dropped.
+    const utf8 = new TextDecoder('utf-8', { fatal: true, ignoreBOM: true });
     let buffered = Buffer.alloc(0);
     proc.stdout.on('data', (chunk: Buffer | string) => {
       if (this.failedWith !== null) return; // nothing more of it is read
@@ -236,6 +239,7 @@ export class SourceChecker {
       if (buffered.length > ADMISSION_LINE_MAX) this.fail('the source check wrote a line that is too long');
     });
     proc.stdout.once('end', () => this.fail('the source check closed its output'));
+    this.startedAt = performance.now();
     return new Promise((ready) => {
       const timer = setTimeout(() => this.fail(`the source check was not ready within ${ready_ms} ms`), ready_ms);
       this.readied = (problem) => {
@@ -248,6 +252,7 @@ export class SourceChecker {
   }
 
   private line(text: string): void {
+    if (text.startsWith('\uFEFF')) return this.fail('the source check wrote a byte-order mark');
     let v: unknown;
     try {
       v = JSON.parse(text);
@@ -256,12 +261,17 @@ export class SourceChecker {
     }
     if (this.readied) {
       if (!isObj(v) || !sameKeys(v, ['format', 'ready']) || v['format'] !== ADMISSION_FORMAT || v['ready'] !== true) return this.fail('the source check did not begin with its ready line');
+      // (late is late, whether or not its timer has run yet: measured at its receipt)
+      if (performance.now() - this.startedAt > this.o.config.ready_ms) return this.fail(`the source check was not ready within ${this.o.config.ready_ms} ms`);
       return this.readied(null);
     }
     if (!isObj(v)) return this.fail('the source check wrote an answer that is not an object');
     const w = this.waiting;
     if (typeof v['id'] === 'string' && this.answered.has(v['id'])) return this.fail('the source check answered a request again');
     if (!w) return this.fail('the source check answered when no request was waiting');
+    // An answer after the request's bound is not read, whether or not its timer has run yet: measured at its receipt
+    // from its write, on a monotonic clock.
+    if (performance.now() - w.at > this.o.config.decision_ms) return this.fail(`the source check did not answer within ${this.o.config.decision_ms} ms`);
     if (!sameKeys(v, REPLY_KEYS)) return this.fail('the source check\'s answer does not have exactly its members');
     for (const k of ECHOED) if (canonical(v[k]) !== canonical(w.request[k])) return this.fail(`the source check's answer is not to the request that is waiting (${k})`);
     const reason = v['reason'];
@@ -270,7 +280,7 @@ export class SourceChecker {
     this.answered.add(w.request['id'] as string);
     clearTimeout(w.timer);
     this.waiting = null;
-    const ms = Date.now() - w.at;
+    const ms = Math.round(performance.now() - w.at);
     if (v['verdict'] === 'allow') return w.settle({ ok: true, ms });
     this.failedWith = `the source check refused ${REFUSED[w.request['phase'] as AdmissionPhase]}${reason ? ` (${reason})` : ''}`;
     w.settle({ ok: false, reason: this.failedWith, denied: true, written: true, withdrawn: false, ms });
@@ -301,7 +311,7 @@ export class SourceChecker {
     const line = JSON.stringify(request);
     if (Buffer.byteLength(line) > ADMISSION_LINE_MAX) return Promise.resolve(this.refuseNow('a source-check request would be too long'));
     return new Promise((settle) => {
-      const at = Date.now();
+      const at = performance.now(); // (monotonic: its bound is measured from its write)
       const timer = setTimeout(() => this.fail(`the source check did not answer within ${this.o.config.decision_ms} ms`), this.o.config.decision_ms);
       this.waiting = { request, settle, timer, at };
       try {
@@ -329,7 +339,7 @@ export class SourceChecker {
     this.waiting = null;
     if (w) {
       clearTimeout(w.timer);
-      w.settle({ ok: false, reason: this.failedWith!, denied: false, written: true, withdrawn: false, ms: Date.now() - w.at });
+      w.settle({ ok: false, reason: this.failedWith!, denied: false, written: true, withdrawn: false, ms: Math.round(performance.now() - w.at) });
     }
     this.end();
     if (first && !closing) this.tell();
