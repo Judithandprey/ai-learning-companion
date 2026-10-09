@@ -125,8 +125,10 @@ Lead decisions as applied:
 ## Independent reviews before delivery
 
 Two more internal reviews ran, each finding checked by a skeptical verifier:
-- `wf_1792a674-4a3` covered the first overlay version;
-- `wf_7f052652-f40` covered this version.
+- `wf_1792a674-4a3` covered the first overlay version: 14 findings, 13 confirmed, 1 refuted;
+- `wf_7f052652-f40` covered this version: 13 findings, 10 confirmed, 3 refuted.
+
+That is 23 confirmed (several are the same issue seen by two lenses; about 17 distinct), all fixed, and 4 refuted.
 
 **Confirmed and fixed:**
 - The overlay was identified by title within one decision only. It is now bound at arm and frozen for the capture,
@@ -143,6 +145,7 @@ Two more internal reviews ran, each finding checked by a skeptical verifier:
 - Missing test coverage of lineage, composition and the R2/R3 sub-rules.
 
 **Refuted:**
+- that the overlay handle was held only for one decision (in the first version that was a design limit, now replaced by the arm binding);
 - that the onTop passage used another read;
 - that Support's probes reproduce only as adapted copies;
 - that the fixture uses an Edge value the caller never passes.
