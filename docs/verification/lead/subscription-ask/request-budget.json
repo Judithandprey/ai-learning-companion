@@ -550,10 +550,14 @@
       "max_native_attempts": 1,
       "real_actions_used": 0,
       "max_real_actions": 4,
-      "status": "manual_phase_allocated_not_dispatched",
+      "status": "dispatched_waiting_for_actual_QA_result",
       "resource_acquisition_observed": false,
       "resource_release_confirmed": false,
-      "manual_phase_record": "docs/verification/lead/live-windows/nonvoice-driver-review/manual-20261014/manual-phase.json"
+      "manual_phase_record": "docs/verification/lead/live-windows/nonvoice-driver-review/manual-20261014/manual-phase.json",
+      "dispatch_message_id": "handoff_601c457a1f50f9619ca24f0439c7057b",
+      "dispatch_accepted": true,
+      "execution_started_at_dispatch": false,
+      "release_baseline": "e2e9fccc87a3e17c260155af00f6b131483e8046"
     },
     "execution_history": [
       {

@@ -1,0 +1,10 @@
+{
+  "release_baseline": "e2e9fccc87a3e17c260155af00f6b131483e8046",
+  "route_id": "route_6fd5946d12ac46e98ef15d2140c7261f",
+  "message_id": "handoff_601c457a1f50f9619ca24f0439c7057b",
+  "accepted": true,
+  "duplicate": false,
+  "state": "unread",
+  "execution_started": false,
+  "scope": "Same original QA Candidate06 under human-owned interactive approval"
+}
