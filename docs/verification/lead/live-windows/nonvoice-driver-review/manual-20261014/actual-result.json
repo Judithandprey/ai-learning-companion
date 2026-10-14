@@ -1,0 +1,40 @@
+{
+  "schema": "qa-manual-phase-result/1",
+  "authorization_id": "human-manual-qa-20261014:d8d9d05f4cc84e66abd1e1b6cc4de9ff",
+  "allocation_id": "manual-live-20261014-c959a4bfcdfd4699baa8283a9ccc5934",
+  "qa_session": "sess_06a4c3cc6e214e96",
+  "actual_handoff": "handoff_22c51753a5f634046671830260b451c9",
+  "handoff_at_utc": "2026-10-14T07:14:32Z",
+  "read_at_utc": "2026-10-14T07:15:03Z",
+  "qa_source": "8aadd9027974c851e24f6c5ce6dfea6dd5126cb3",
+  "outcome": "NOT_INVOKED_insufficient_remaining_allocation_time_after_human_approval_wait",
+  "wrapper_commands_issued": 0,
+  "native_attempts": 0,
+  "real_actions": 0,
+  "max_real_actions": 4,
+  "qa_reported_observations": [
+    "Read handoff at06:29:39Z; first human-approved Bash setup call ran at07:05:11Z.",
+    "At07:13:22Z allocation export/hash and local wrapper/candidate pins matched; output execution-manual-20261014-01 absent.",
+    "At07:13:31Z source lines140-180 were read. No wrapper invocation followed.",
+    "Only /tmp allocation copy created. No Windows, scratch, display, account or provider operation.",
+    "No pending approval, active execution or phase queue at handoff. Subsequent source repair dispatch is tracked separately."
+  ],
+  "proof_limit": "Actual QA peer report and previously reviewed source. Lead did not substitute another tool to read previously refused status paths.",
+  "display_release": "QA explicitly reported DISPLAY RELEASE; never acquired",
+  "account_release": "QA explicitly reported ACCOUNT RELEASE; never acquired",
+  "cleanup": "No launched owned process to clean; allocation copy retained as evidence",
+  "allocation_retired": true,
+  "manual_phase_complete": false,
+  "reason_incomplete": "Nonvoice acceptance has not run. Same-owner source ordering correction remains before a fresh allocation.",
+  "defect": {
+    "owner": "QA",
+    "path": "tests/e2e/windows/qa_run_live_candidate.mjs",
+    "severity": "P2 harness",
+    "fact": "Scratch mkdir precedes native-bound time-sufficiency check; insufficient time can consume scratch without native execution.",
+    "native_reproduction": "NOT_RUN; identified from source and approval timing"
+  },
+  "next_task_handoff": "handoff_f4a4b4aa5414452aa1bdc8f002713e04",
+  "next_task_accepted": true,
+  "next_task_execution_started_at_dispatch": false,
+  "restoration": "Keep QA default; manual work remains. No auto restoration authorized yet under phase conditions."
+}

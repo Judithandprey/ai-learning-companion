@@ -1,5 +1,22 @@
 # Candidate06 manual approval phase — 2026-10-14
 
+**Current: allocation retired without invocation.** Actual QA
+`handoff_22c51753a5f634046671830260b451c9` reports zero wrapper calls, zero native
+attempts and real **0/4**, with explicit DISPLAY and ACCOUNT RELEASE. No account,
+display, Windows process or provider was used. [Actual result](actual-result.json).
+Human-approved setup calls waited about35 and8 minutes; by07:13:31Z there was
+insufficient reliable margin before the latest native start07:16:29Z. This is
+neither a new tool refusal nor a product failure.
+
+QA identified a source ordering defect: the wrapper consumes the one-use scratch
+before checking whether600s remain. Same-task correction
+`handoff_f4a4b4aa5414452aa1bdc8f002713e04` is accepted: check time with a modest
+preparation margin before output/watch/scratch, recheck before scratch and launch,
+preserve cleanup, and prove late-entry behavior with injected-clock checks.
+Support reviews the exact delivery next; Lead then supplies a fresh allocation
+with enough time for the observed human approval latency. No new native run is
+dispatched. The manual phase remains incomplete and QA stays `default`.
+
 Human decision `human-manual-qa-20261014:d8d9d05f4cc84e66abd1e1b6cc4de9ff` retains the reviewed600s native /60s session /4-action
 nonvoice scope and explicitly changes only original QA to interactive `default`
 permission mode. The operator's supported session PATCH/GET and runtime readback
@@ -14,7 +31,7 @@ relevant process/port conflict was found. Other-owner Edge processes were untouc
 No product/account/display/audio action ran in those checks. QA still performs
 current admission before its approved command, including unused scratch/profile.
 
-## Fresh allocation
+## Retired allocation — do not execute
 
 - ID `manual-live-20261014-c959a4bfcdfd4699baa8283a9ccc5934`
 - Valid from `2026-10-14T06:26:29.497403Z` until `2026-10-14T07:26:29.497403Z`
@@ -23,7 +40,7 @@ current admission before its approved command, including unused scratch/profile.
 - One invocation only; four actions maximum; no retry, mic, sound, TTS, private
   screen, new billing, account/model change or global policy change.
 - New output `docs/verification/qa/p0-13-live-0ff325b/execution-manual-20261014-01`.
-- The60-minute reservation permits human approval latency; it does not lengthen
+- The60-minute reservation was intended to permit human approval latency; it did not lengthen
   the600-second native bound or60-second learning session. Waiting is not execution.
 - Use normal Bash approval; no agent/operator may click accept. If the window
   becomes insufficient before launch, stop. A future fresh allocation requires
@@ -31,7 +48,7 @@ current admission before its approved command, including unused scratch/profile.
 
 ## Restoration condition
 
-[Structured phase state](manual-phase.json) starts incomplete. Restore only this
+[Structured phase state](manual-phase.json) remains incomplete. Restore only this
 QA session to `auto` after actual result/accounting and owned cleanup/release
 are received, Lead confirms no remaining manual step, and supported session state
 shows no pending approval, active execution, queued phase task or active lease.

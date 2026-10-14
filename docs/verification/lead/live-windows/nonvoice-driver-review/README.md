@@ -1,6 +1,6 @@
 # Current-package nonvoice driver review — 2026-10-09
 
-**Candidate06 enters the human-approved interactive QA phase. Previous refused allocation is retired; fresh allocation and actual result are tracked separately.**
+**Interactive QA preparation completed, but Candidate06 was not invoked because approval waiting left insufficient time. Its allocation is retired, real0/4 and resources released. QA owns the focused time-check ordering correction before independent review and a fresh allocation.**
 Web's reviewed source through `ebbd1ed` integrates as `0ff325b`; its Windows tree
 matches exactly. Lead's final holding-membership case passes, and TypeScript plus
 static packaging pass. The distinct 81-file `%TEMP%\lc-windows-admission-0ff325b`
