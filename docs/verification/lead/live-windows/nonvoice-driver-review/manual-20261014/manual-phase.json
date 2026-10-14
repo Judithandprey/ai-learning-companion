@@ -1,0 +1,20 @@
+{
+  "schema": "qa-manual-phase-restoration/1",
+  "authorization_id": "human-manual-qa-20261014:d8d9d05f4cc84e66abd1e1b6cc4de9ff",
+  "session_id": "sess_06a4c3cc6e214e96",
+  "mode_during_phase": "default",
+  "operator_mode_readback_at": "2026-10-14T06:22:24.115395+00:00",
+  "state": "manual_phase_allocated_not_executed",
+  "phase_result_collected": false,
+  "request_accounting_collected": false,
+  "cleanup_and_release_collected": false,
+  "no_remaining_manual_steps_confirmed": false,
+  "no_pending_approval_verified": false,
+  "no_active_execution_verified": false,
+  "no_phase_queue_verified": false,
+  "no_active_lease": false,
+  "restore_authorized_when_all_conditions_hold": true,
+  "restored_at": null,
+  "lead_has_supported_config_interface": false,
+  "next_restoration_owner": "configuration operator via supported session GET/PATCH/GET, after all conditions confirmed; do not change files or other sessions"
+}

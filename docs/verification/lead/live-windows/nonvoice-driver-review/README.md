@@ -1,6 +1,6 @@
 # Current-package nonvoice driver review — 2026-10-09
 
-**Candidate06 reviewed/integrated and human-approved; original QA tool refused execution on2026-10-14. Run NOT_RUN, resources explicitly released.**
+**Candidate06 enters the human-approved interactive QA phase. Previous refused allocation is retired; fresh allocation and actual result are tracked separately.**
 Web's reviewed source through `ebbd1ed` integrates as `0ff325b`; its Windows tree
 matches exactly. Lead's final holding-membership case passes, and TypeScript plus
 static packaging pass. The distinct 81-file `%TEMP%\lc-windows-admission-0ff325b`
@@ -12,9 +12,10 @@ then fixes its final duplicate-EOF gap and stale connector template pin, integra
 as `5ba6f50` with the preceding reviewed QA chain. Lead's independent three-case
 EOF probe, actual pure template validator and exact candidate reproduction pass.
 All six native payloads are unchanged from candidate05. See the final review below.
-The [actual refusal and release](resume-20261014/README.md) follow the resolved
-script-scope approval. This new tool refusal is distinct from the historical hold
-below. No retry or alternate executor is authorized.
+The [previous refusal and release](resume-20261014/README.md) remain preserved.
+The human authorized original QA interactive approvals in the [current manual
+phase](manual-20261014/README.md); a fresh allocation follows that explicit decision.
+Only the human accepts cards; no alternate executor or automatic retry.
 The actual candidate05 parse check has zero errors for both scripts and its one
 changed C# literal compiles; these are static results only. Candidate05's template
 is inactive. Historical candidate04 retains `interlockProduction=null`. QA's separately assigned pure-data
