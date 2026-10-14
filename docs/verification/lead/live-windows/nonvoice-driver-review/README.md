@@ -1,6 +1,6 @@
 # Current-package nonvoice driver review — 2026-10-09
 
-**Candidate06 reviewed/integrated; exact live scope human-approved on2026-10-14. Fresh single-run allocation issued; actual outcome pending.**
+**Candidate06 reviewed/integrated and human-approved; original QA tool refused execution on2026-10-14. Run NOT_RUN, resources explicitly released.**
 Web's reviewed source through `ebbd1ed` integrates as `0ff325b`; its Windows tree
 matches exactly. Lead's final holding-membership case passes, and TypeScript plus
 static packaging pass. The distinct 81-file `%TEMP%\lc-windows-admission-0ff325b`
@@ -12,15 +12,18 @@ then fixes its final duplicate-EOF gap and stale connector template pin, integra
 as `5ba6f50` with the preceding reviewed QA chain. Lead's independent three-case
 EOF probe, actual pure template validator and exact candidate reproduction pass.
 All six native payloads are unchanged from candidate05. See the final review below.
-The [current approved allocation](resume-20261014/README.md) supersedes the historical
-script-scope hold below. Source checks do not establish native acceptance.
+The [actual refusal and release](resume-20261014/README.md) follow the resolved
+script-scope approval. This new tool refusal is distinct from the historical hold
+below. No retry or alternate executor is authorized.
 The actual candidate05 parse check has zero errors for both scripts and its one
 changed C# literal compiles; these are static results only. Candidate05's template
 is inactive. Historical candidate04 retains `interlockProduction=null`. QA's separately assigned pure-data
 PowerShell fixture check was refused before loading by Windows execution policy;
 no cases ran and no alternate invocation was attempted. Details below.
 
-Real actions **0/4**, old AI-disabled diagnostic **3/3 closed**, no resource lease.
+Current real actions **0/4**; old AI-disabled diagnostic **3/3 closed**. The fresh
+2026-10-14 reservation was retired after the actual refusal and explicit QA release.
+Earlier no-lease statements below retain their historical timestamps and baselines.
 This is source/build preparation, not live vision, voice or full-product acceptance.
 The chronological findings below retain their original baselines and are superseded
 only by the specific later correction/integration records.

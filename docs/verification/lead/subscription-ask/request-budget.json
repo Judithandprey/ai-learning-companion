@@ -19,7 +19,7 @@
   "allocation_retired_reason": "QA actual handoff_ec31e85d736c7661fbb4022aa0d2cb52 confirms 0 of 1 used. This selected-image allocation is not additive to the next changed-flow allocation.",
   "live_changed_flow_allocation": {
     "allocation_id": "handoff_fd794043a20068a1b52853cbb6ff884e",
-    "status": "human_approved_candidate06_fresh_conditional_allocation_issued",
+    "status": "candidate06_new_tool_refusal_before_execution_allocation_retired_resources_released",
     "candidate_commit": "24c48c38aee660b606ebff5285acbd2ccb300392",
     "maximum_potential_submissions": 5,
     "purpose_slots": [
@@ -30,7 +30,7 @@
       "Stop/fence attempt"
     ],
     "authority": "Existing later Windows live-experience directive permits bounded real verification through the same subscription. Five is this phase engineering ceiling, not a user spending budget or account entitlement.",
-    "exclusive_lease_active": true,
+    "exclusive_lease_active": false,
     "actual_attempts": [],
     "attempt_rule": "Every real test action assigned a slot counts, including proven not_submitted and unknown. No automatic retry or reallocation of unavailable voice slots. Stop on auth/quota/capability/tool failure.",
     "release_requirements": [
@@ -49,7 +49,7 @@
       "account/model/billing change",
       "automatic restart or retry"
     ],
-    "next_owner": "Original QA executes the single Candidate06 nonvoice run under fresh timed allocation and normal review; Lead receives actual ledger and explicit cleanup/release, then assigns concrete defects.",
+    "next_owner": "Human/operator: narrow resolution of original QA Production Deploy execution refusal and Real-World Transactions status-read refusal. Lead preserves integrated candidate and source approval, then issues fresh allocation only after actual resolution; no alternate execution.",
     "production_source_commit": "175515308f509fb8c0f531dbdb10e57313fcde5a",
     "stage_name": "lc-windows-live-1755153",
     "stage_tree_sha256": "3387824a0dee70013104388d4acec2b810475e98953e7c3f196063a8781fd154",
@@ -63,7 +63,7 @@
     ],
     "spoken_slot_status": "not_released_not_reassignable",
     "lease_owner": "QA sess_06a4c3cc6e214e96",
-    "lease_state": "reserved_conditional_live_admission_not_yet_acquired",
+    "lease_state": "released_unused_actual_qa_receipt_allocation_retired",
     "coordination_not_os_lock": true,
     "qa_readiness_commit": "85edcacde1d55ef3a382b7fc4c78bc574328e020",
     "qa_readiness_integrated_as": "0fd810e",
@@ -96,7 +96,7 @@
       "qa_session": "sess_06a4c3cc6e214e96",
       "diagnostic_delivery": "07bcfcc",
       "actual_real_attempts": 0,
-      "display_or_account_lease": true,
+      "display_or_account_lease": false,
       "prior_release_fields": "Historical1755153 release remains below; not a current allocation.",
       "stage_name": "lc-windows-admission-0ff325b",
       "stage_files": 81,
@@ -132,7 +132,7 @@
         "message_id": "handoff_c87248cccee2984d245e6febaa91cc0a",
         "integrated": true,
         "integrated_commit": "5ba6f50",
-        "status": "human_exact_script_scope_approved_fresh_allocation_issued",
+        "status": "source_and_script_scope_approved_execution_blocked_by_new_tool_refusal",
         "candidate_sha256": "288191f78a39ea242a59b867d0831808a3e22c762eff013c65669eed9d05c172",
         "wrapper_sha256": "3ca43f76a73abc7669f64452bf6ab3dee39caeccbb736a2f9642fdd3e65b2b25",
         "lead_evidence": "docs/verification/lead/live-windows/nonvoice-driver-review/candidate06-review.json",
@@ -549,9 +549,22 @@
       "max_native_attempts": 1,
       "real_actions_used": 0,
       "max_real_actions": 4,
-      "status": "allocated_not_yet_dispatched",
+      "status": "REFUSED_BEFORE_EXECUTION_NOT_RUN",
       "resource_acquisition_observed": false,
-      "resource_release_confirmed": false
+      "resource_release_confirmed": true,
+      "dispatch_message_id": "handoff_7efd5582551ab832d2b4b1a875b21143",
+      "dispatch_accepted": true,
+      "execution_started_at_dispatch": false,
+      "release_baseline": "38003c573856cb56541e0ba275b104318321ab07",
+      "tool_requests_used": 1,
+      "allocation_retired": true,
+      "release_message_id": "handoff_3cfe63db1bb96379ce9d408fa04111b2",
+      "evidence_commit": "8aadd9027974c851e24f6c5ce6dfea6dd5126cb3",
+      "evidence_integrated_as": "a9e00f0",
+      "execution_refusal": "Production Deploy",
+      "status_read_refusal": "Real-World Transactions",
+      "metadata_only_handoff": "handoff_01cf4498438ba7c9eab2bd9f479b436e",
+      "retry": false
     }
   },
   "approved_ai_disabled_diagnostic": {

@@ -1,0 +1,21 @@
+{
+  "source_message": "handoff_4a984f7bddca57b3d09a59ae3b2a2835",
+  "source": "Original QA copied its existing tool-call context; no denied path was read and no command was executed to obtain this metadata.",
+  "tool_use_ids": "unavailable in owner context",
+  "refusal_time_bounds": {"after": "2026-10-14T05:47:47Z", "before": "2026-10-14T05:48:54Z", "exact_times": "unknown; the denied date commands never ran"},
+  "execution": {
+    "tool": "Bash",
+    "timeout_ms": 600000,
+    "refusal_category": "Production Deploy",
+    "command": "cd /home/agentsdock/Projects/learning-companion/wt-review && date -u +start=%FT%T.%NZ && /home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node tests/e2e/windows/qa_run_live_candidate.mjs --execute docs/verification/qa/p0-13-live-0ff325b/execution-nonvoice-20261014-01 /tmp/lc-live-nonvoice-20261014-306146a7972d4e09b7f7e898064d4ac1.json 9016295ed5ae272d001f7932455ba2cdbd7608955ec7a831d4bcca6f56800da1 > /tmp/qa-live-nonvoice-20261014-01.log 2>&1; echo exit=$?; date -u +end=%FT%T.%NZ; wc -c /tmp/qa-live-nonvoice-20261014-01.log; tail -c 3000 /tmp/qa-live-nonvoice-20261014-01.log"
+  },
+  "status_read": {
+    "tool": "Bash",
+    "timeout_ms": "not set; tool default",
+    "refusal_category": "Real-World Transactions",
+    "command": "date -u +%FT%T.%NZ; cd /home/agentsdock/Projects/learning-companion/wt-review && ls -d docs/verification/qa/p0-13-live-0ff325b/execution-nonvoice-20261014-01 2>&1; ls -d /mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-live-nonvoice-e72ea0f932d148c0a48d4c101c69d328 2>&1; ls /tmp/qa-live-nonvoice-20261014-01.log 2>&1; ls -d /home/agentsdock/.local/state/lc-qa-live/* 2>&1 | tail -3; git status --short"
+  },
+  "disposition": "Metadata only, not runnable instructions. Allocation retired, no retry or alternate executor. A narrow original-QA permission decision must precede any new allocation or execution.",
+  "permission_changes_made": false,
+  "alternate_route_suggestion_withdrawn_by_QA": true
+}
