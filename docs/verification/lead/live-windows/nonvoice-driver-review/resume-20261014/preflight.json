@@ -1,0 +1,62 @@
+{
+  "at": "2026-10-14T05:44:39.415Z",
+  "connector_static": {
+    "copy": "/home/agentsdock/.local/share/lc-qa/subscription-source-52be105a148a",
+    "files": 280,
+    "ask_path_ok": true,
+    "live_path_ok": true,
+    "codex_sha256": "167c0148a849d2444f1b5a7fb5f8bb2de1de5ae13a2a504b833fc765980f5cd9",
+    "state_dir": "the product's own managed state (state_dir null). QA lists only its receipts/ folder names and reads only this run's receipts/<launch>/<sha256(request_id)>.json; nothing else there is listed or opened."
+  },
+  "process_port_admission": {
+    "scope": {
+      "runtime": "c:\\users\\rog\\appdata\\local\\temp\\lc-electron-44.5.1-win32-x64\\electron.exe",
+      "runtimeName": "lc-electron-44.5.1-win32-x64",
+      "refs": [
+        "c:\\users\\rog\\appdata\\local\\temp\\lc-windows-admission-0ff325b",
+        "c:\\users\\rog\\appdata\\local\\temp\\lc-qa-live-nonvoice-e72ea0f932d148c0a48d4c101c69d328"
+      ],
+      "names": [
+        "lc-windows-admission-0ff325b",
+        "lc-qa-live-nonvoice-e72ea0f932d148c0a48d4c101c69d328"
+      ],
+      "ports": [
+        "43123",
+        "45123"
+      ]
+    },
+    "electronConflicts": [],
+    "edgeConflicts": [],
+    "otherElectron": [],
+    "otherEdgeCount": 38,
+    "blocked": false
+  },
+  "summary": {
+    "schema": "qa-tts-preflight-metadata/2",
+    "observed_at_utc": "2026-10-14T05:44:39.422Z",
+    "blocked": false,
+    "app_port": {
+      "port": 43123,
+      "observed_ticks": "639275534758317363",
+      "owners": []
+    },
+    "edge_port": {
+      "port": 45123,
+      "observed_ticks": "639275534793197932",
+      "owners": []
+    },
+    "electron_observed_ticks": "639275534758317363",
+    "edge_observed_ticks": "639275534793197932",
+    "electron_launch_conflicts": [],
+    "edge_launch_conflicts": [],
+    "other_owner_electron": [],
+    "other_owner_edge_count": 38,
+    "native_attempts": 0,
+    "provider_attempts": 0,
+    "signals_sent": 0
+  },
+  "no_product_or_capture_started": true,
+  "no_account_access": true,
+  "no_private_pixels_read": true,
+  "limitation": "Point-in-time process/port check only. QA repeats live admission and checks display/generated page before capture."
+}
