@@ -7,24 +7,36 @@ lifecycle cases, four read controls and three template cases. Changed-runner
 PowerShell parse evidence has zero errors. These are source/offline results,
 not native or product acceptance.
 
-**Current execution readiness:** Support `5c97ffb` recovered all originals from
+**Completed pre-execution recovery:** Support `5c97ffb` recovered all originals from
 existing local outputs/cache. Lead installed only the missing files and verified
 154/154 product/runtime files, the fixed product tree and native build receipt,
-and the 280-file connector/import/digest check. No app or helper ran. A current
+and the 280-file connector/import/digest check. No app or helper ran during recovery. A pre-execution
 read-only Windows process/port check found no relevant conflict; other apps were
 untouched. [Restoration receipts](candidate08-recovery/installed.json).
 
-A fresh Candidate08 allocation is prepared for original QA only, valid
-`2026-10-20T12:24:29.852516Z` through `2026-10-20T14:24:29.852516Z`.
-[Exact command, hash and limits](candidate08-execution-review-20261020.json).
-The two-hour window permits human approval waiting; it does not increase the
-600s foreground ceiling, 360s native sub-budget, 60s session, one attempt or four
-actions. QA stays `default`; only the human handles its concrete Bash approval.
-Current source/display/account admission is checked again before operation.
-Real actions remain **0/4**, actual execution/release is pending, and auto restoration
-is not allowed while this phase remains incomplete. The original missing-artifact
-observation remains in [integration evidence](candidate08-integration-20261020.json);
-its cause is still unknown, with no files fabricated or old state erased.
+**Actual execution:** QA `82ee0ac` → `cd57dc9` ran the exact command once after
+human approval. Overall time was 54.4s; the work timeout did not fire. One generated
+whole-screen image/text observation reached the provider, whose turn completed,
+but the live connector classified it failed and the app ended the session. No
+answer appeared. Focus, typed follow-up and Stop are NOT_RUN. **1/4 real actions**
+and the **one native attempt** are consumed; unused action slots grant no retry.
+
+Exact-owned runner/app/Edge cleanup and connector/watcher shutdown are confirmed.
+**DISPLAY RELEASE and ACCOUNT RELEASE** are collected; allocation `0dd413a4` is
+retired. Its original hash/bytes remain history, never a reusable grant.
+[QA evidence](../../../../qa/p0-13-live-0ff325b/execution-manual-20261020-candidate08-01/README.md),
+[Lead result and consistency checks](actual-result-candidate08-20261020.json).
+
+The connector reason/item-view/phase was not retained, so the failure's exact
+branch is unknown. Backend owns the bounded offline correction already dispatched;
+no real account or native replay is assigned. Lead confirms this run phase has no
+remaining manual steps. QA reports no pending card or active execution; operator
+must verify current runtime/card/queue absence, then restore only QA to auto through
+supported GET/PATCH/GET. **Not yet restored**; no settings or permissions changed by
+Lead. [Structured restoration handoff](manual-phase.json).
+
+Earlier artifact loss/restoration remains preserved in
+[integration evidence](candidate08-integration-20261020.json), with unknown cause.
 
 **Prior ordering and budget findings (historical):** QA `58338a2` and Support
 `7723f82` integrate as `05fbc0c` / `574df91`; 41 owner-shaped, 11 independent wrapper

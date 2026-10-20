@@ -43,7 +43,7 @@
   "retry": false,
   "audio_microphone_tts": false,
   "current_admission_required_again_by_wrapper": true,
-  "dispatch_status": "prepared_not_sent",
+  "dispatch_status": "accepted and executed exactly once; actual result collected",
   "output": "docs/verification/qa/p0-13-live-0ff325b/execution-manual-20261020-candidate08-01",
   "release_required": [
     "exact Windows runner",
@@ -52,5 +52,16 @@
     "DISPLAY",
     "ACCOUNT"
   ],
-  "restore_auto": "Not before actual result/accounting/cleanup/release and no manual steps/cards/execution/phase queue/active lease. Lead lacks supported configuration tool; operator must verify and restore only then."
+  "restore_auto": "Not before actual result/accounting/cleanup/release and no manual steps/cards/execution/phase queue/active lease. Lead lacks supported configuration tool; operator must verify and restore only then.",
+  "release_baseline": "a6406b4753c9218bdcf87f60673fdb834cfb8777",
+  "push_status": "pushed origin/main",
+  "dispatch_message_id": "handoff_57b4cf20d09a3a0d5181f9cf70fa031a",
+  "dispatch_accepted": true,
+  "execution_started_at_dispatch": false,
+  "actual_result": "actual-result-candidate08-20261020.json",
+  "native_attempts_used": 1,
+  "real_actions_used": 1,
+  "resource_release_confirmed": true,
+  "allocation_retired": true,
+  "result_delivery": "handoff_37063eae10839f18dca91a1c2b74c30e"
 }

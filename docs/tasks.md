@@ -24,7 +24,7 @@ changing visibility or force-pushing. See `verification/lead/github-visibility-m
 | P0-10 | Learning | 65-case delivery; versioned reconciliation received, review pending | fb445ed adds 28 to 37 preserved cases. Backend 30dc33d reviewed 65/65 (32 reject, 33 conditionally retain); QA 25c63b6 independently reviewed original 37, finding additional issues and disagreement. 7da2298 preserves original cases and adds versioned reconciliation, 32 old-rule probes and 16 unexecuted INTENT scenarios; review pending. 53300c8 plus 45ce567 adds the reciprocal 13-entry design review and existing-schedule links, with the section locator fixed; no runtime execution. Audio design 3bb5e297 → ec370e7 and normalization 2b2859e → 31b224a are integrated: 24 unchanged planned cases, four acoustic pairs/eight conditions, no human references or measured winner. Actual 7fadd15 read confirmed. Structural probe success is not semantic acceptance; all product execution remains zero. |
 | P0-11 | Native (macOS; `ios` alias) | Desktop capture/input next; mobile acceptance deferred | ea39a3d → 690ef9c, e221793 → bdfdd58, 7ba5a15 → c77ba3c. Both main checker profiles pass (72/48 rows; 23/28 rejected mutations); 60 P0-03 / 49 P0-11 device cases remain not_tested. The transient-only storage wording is corrected: durable source keyframes, editable originals and pre-stop queues remain. EnvProbe unsigned compile is separate; ink device/simulator targets compiled at `833a2a6`; Simulator run `36532369377` independently passed 25 checks. Physical-device/provider acceptance remains open. [Current split](#ipad-delivery-split). [Review and actual repair](verification/lead/p0-09-capture-integration.md). |
 | P0-12 | Web / Windows | Reviewed live test interlock integrated; distinct package prepared | Current bounded F3 repair: [source/admission decision](verification/lead/live-windows/nonvoice-driver-review/README.md#f3-decision-await-admission-in-the-actual-capturesend-consumers). Web owns apps/windows, QA owns native checker; no execution lease. Historical evidence: 7ee1217 → 1da1bc9, 8d67aaa → 93674f1, db7400f → fa5c03a. Independent Astra review reproduced core QA races and before/after contrasts; main 87 named tests/TS/build pass. Only test models/owned fixture behavior: exact intent-ID ACK/remote causal basis, actual export reconciliation and EO-7 attribution remain unresolved; stream control 0.2.1 is not presentation permission. Role-QA retest follows its existing output-repair job. [Evidence](verification/lead/p0-recovered-deliveries.md). |
-| P0-13 | QA | Candidate08 integrated and restored; fresh allocation prepared for original QA human approval, 0/4 | [Current correction/review](verification/lead/live-windows/nonvoice-driver-review/README.md); real0/4, diagnostic3/3 closed. Earlier evidence retained: Native evidence `02a47f7` plus helper correction `239e780` integrate as `5c357d6`/`4e3b245`. Final Backend source `00f4f0b` is pushed and accepted for ONE narrow retest by `handoff_8ce7c067616782573b6e850f42dcf106`; actual QA merge `aa96c12` contains the released candidate. Final `87bcc07` / `handoff_373f380b623dd74c4c542cdd72354698` integrates as `d1b82da`; 91 main checks pass with no xfails, closing QA-FINDING-NATIVE-01. No repeated campaign is assigned. [Current review](verification/lead/native-qa-delivery-review.md). bd79ca4 → debbbec retains capture/context findings. eaef498 → 5d304f4 confirms QA-L05-01; QA-L05-02/03 repair 13298e6 → 3e0be6b has 77 main publication/QA passes. Web retest `2f83761` → `af4c47f` retains EO-1 shadow activation, revision reset and organize gaps (2 passed / 3 strict xfailed). Actual preview recovery `c0036bc` → `1185997` at `9eb6bd5`: 30 PASS / 0 FAIL, QA-P07-01 is closed for the tested Edge mouse path by `aa63f52` → `fee30bd` (23 PASS / 0 FAIL); CI harness anchor `ac6b3fe` → `0a9139d` has 16 main targeted passes. Native QA `ca705b9` → `29e5409`: 25 PASS / 0 FAIL / 3 device-only NOT_RUN. Actual local DB and Simulator evidence do not claim physical-device/provider or G6/G7/P1 acceptance. [Evidence](verification/lead/p0-recovered-deliveries.md). |
+| P0-13 | QA | Candidate08 executed once; first observation failed, 1/4, resources released; Backend correction next | [Actual result](verification/qa/p0-13-live-0ff325b/execution-manual-20261020-candidate08-01/README.md); real1/4, one native attempt consumed, diagnostic3/3 closed. Earlier evidence retained: Native evidence `02a47f7` plus helper correction `239e780` integrate as `5c357d6`/`4e3b245`. Final Backend source `00f4f0b` is pushed and accepted for ONE narrow retest by `handoff_8ce7c067616782573b6e850f42dcf106`; actual QA merge `aa96c12` contains the released candidate. Final `87bcc07` / `handoff_373f380b623dd74c4c542cdd72354698` integrates as `d1b82da`; 91 main checks pass with no xfails, closing QA-FINDING-NATIVE-01. No repeated campaign is assigned. [Current review](verification/lead/native-qa-delivery-review.md). bd79ca4 → debbbec retains capture/context findings. eaef498 → 5d304f4 confirms QA-L05-01; QA-L05-02/03 repair 13298e6 → 3e0be6b has 77 main publication/QA passes. Web retest `2f83761` → `af4c47f` retains EO-1 shadow activation, revision reset and organize gaps (2 passed / 3 strict xfailed). Actual preview recovery `c0036bc` → `1185997` at `9eb6bd5`: 30 PASS / 0 FAIL, QA-P07-01 is closed for the tested Edge mouse path by `aa63f52` → `fee30bd` (23 PASS / 0 FAIL); CI harness anchor `ac6b3fe` → `0a9139d` has 16 main targeted passes. Native QA `ca705b9` → `29e5409`: 25 PASS / 0 FAIL / 3 device-only NOT_RUN. Actual local DB and Simulator evidence do not claim physical-device/provider or G6/G7/P1 acceptance. [Evidence](verification/lead/p0-recovered-deliveries.md). |
 
 ## Current executable continuation — complete Windows and macOS product first (2026-09-30 UTC)
 
@@ -307,25 +307,39 @@ is not a review verdict. Actual Support `af0d8a1` /
 H1–H3 are closed for ordinary reachable paths, without native timing claims.
 Candidate08 integrates as `9df52fa`, review as `cae1d87`. Resulting main has 54/54
 focused passes, five independent lifecycle cases, four read controls and three
-validator cases. Execution is held by an actual preallocation artifact difference:
+validator cases. The earlier preallocation hold found an actual artifact difference:
 all 81 fixed product payloads and two cached runtime files (`version`,
 `resources/default_app.asar`) are missing; the Electron binary still matches its
 pin. Cause unknown. Original Support recovery preparation is accepted as
 `handoff_e4834c5a05772dd32fd5836ee04dd53d`, using existing trusted local sources only;
-Lead verifies recovery before issuing a fresh QA allocation.
+Lead then verified recovery before issuing the allocation below.
 [Integration and actual drift](verification/lead/live-windows/nonvoice-driver-review/manual-20261014/candidate08-integration-20261020.json).
 Recovery is now delivered as Support `5c97ffb` / `handoff_4046e7c96305f60a2c90f9e2058d0f46`.
 Lead restored only missing files from the verified local preparation: 81 product
 and 71 runtime files, preserving two matching runtime files. All 154 read back
 correctly; fixed-stage and 280-file offline connector checks pass. Read-only
 Windows metadata at 12:22:32Z found no relevant process/port conflict; other apps
-were untouched. A fresh, separately hashed two-hour allocation is prepared for
+were untouched. A fresh, separately hashed two-hour allocation was prepared for
 original QA, preserving the one-attempt/four-action/60s scope and 600s foreground
-ceiling (360s native sub-budget). Actual current admission and the human-owned
-Bash card are still required. [Command and allocation](verification/lead/live-windows/nonvoice-driver-review/manual-20261014/candidate08-execution-review-20261020.json).
-No real action has run. Preparation, restoration and reservation are not native acceptance.
-Human owns approval cards; no agent accepts them. Original refusal stays historical. Native/live acceptance
-is NOT_RUN until actual results. Restore QA `auto` only after collected result,
+ceiling (360s native sub-budget). Current admission and the human-owned
+Bash card were required and then satisfied as recorded below. [Command and allocation](verification/lead/live-windows/nonvoice-driver-review/manual-20261014/candidate08-execution-review-20261020.json).
+Exact pushed baseline `a6406b4` and fresh allocation were sent to original QA as
+`handoff_57b4cf20d09a3a0d5181f9cf70fa031a` (accepted, execution not started at dispatch).
+Actual QA `82ee0ac` → `cd57dc9` now records one human-approved execution, 54.4s overall.
+The generated whole-screen observation reached the provider (one acknowledged image/text
+turn, terminal completed), but the live path classified it failed and ended the session.
+Real actions **1/4**; focus, typed follow-up and Stop **NOT_RUN**; no answer was shown.
+The one native attempt is consumed. Exact-owned cleanup, DISPLAY and ACCOUNT RELEASE
+are evidenced; the allocation is retired, not reusable despite three unused action slots.
+[Result and bounded evidence checks](verification/lead/live-windows/nonvoice-driver-review/manual-20261014/actual-result-candidate08-20261020.json).
+Backend received `handoff_1b30e7435f58d00e50548e029b00f1e5` for the existing P0-09
+connector reason/item-completion correction with focused offline checks, no provider
+replay. Actual failure branch is unknown; terminal completion does not prove a usable
+answer or pixel understanding. Lead reviews the delivery; QA independently reviews
+changed source. This run phase has no remaining manual steps; operator must verify
+runtime absence before restoring only QA to auto via supported GET/PATCH/GET.
+Human owns approval cards; no agent accepts them. Original refusal stays historical. Native execution failed; live-flow acceptance
+remains incomplete. Restore QA `auto` only after collected result,
 accounting/cleanup/release and verified absence of remaining manual steps, pending
 card, active execution, queued phase task or active lease.
 Keep normal-band/foreground/16-point/display guards and exact-owned cleanup;

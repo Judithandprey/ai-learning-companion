@@ -1,6 +1,16 @@
 # Current-package nonvoice driver review — 2026-10-09
 
-**Current: the preparation-ordering fix is independently reviewed and integrated (`05fbc0c` / `574df91`); 41 focused and 13 independent main checks pass. QA is correcting the same foreground call to reserve cleanup/report time inside 600 seconds before any fresh allocation. No native invocation; real0/4; QA remains in human-owned `default` mode.**
+**Current (2026-10-20): Candidate08 executed exactly once. First generated
+whole-screen request reached the provider, whose turn completed, but the live path
+classified it failed and ended the session. No answer appeared; focus/follow-up/Stop
+NOT_RUN. Real1/4, native1/1 consumed; DISPLAY/ACCOUNT released, allocation retired.
+[Actual evidence](../../../qa/p0-13-live-0ff325b/execution-manual-20261020-candidate08-01/README.md).
+Backend owns a bounded offline connector correction; no repeat native test is
+assigned. The manual phase is complete, pending operator runtime checks and supported
+QA-only auto restoration. Full live/audio acceptance remains open.**
+
+The following preparation snapshots are historical; current execution supersedes
+their NOT_RUN and0/4 descriptions.
 Web's reviewed source through `ebbd1ed` integrates as `0ff325b`; its Windows tree
 matches exactly. Lead's final holding-membership case passes, and TypeScript plus
 static packaging pass. The distinct 81-file `%TEMP%\lc-windows-admission-0ff325b`
@@ -22,7 +32,7 @@ is inactive. Historical candidate04 retains `interlockProduction=null`. QA's sep
 PowerShell fixture check was refused before loading by Windows execution policy;
 no cases ran and no alternate invocation was attempted. Details below.
 
-Current real actions **0/4**; old AI-disabled diagnostic **3/3 closed**. The fresh
+Historical pre-execution real actions **0/4**; old AI-disabled diagnostic **3/3 closed**. The fresh
 2026-10-14 reservation was retired after the actual refusal and explicit QA release.
 Earlier no-lease statements below retain their historical timestamps and baselines.
 This is source/build preparation, not live vision, voice or full-product acceptance.
