@@ -1,0 +1,51 @@
+# working tree (team/qa 8aadd90 + this correction); node v24.21.0 --permission (read-only: this worktree and the unused scratch path; no child process, no write)
+✔ the candidate is offline-only, reproduces from the sources, and its scratch is unused (43.658801ms)
+✔ the runner is the reviewed r4 runner byte for byte, apart from the one work-folder name and the source-admission delta (6.481414ms)
+✔ the package pins are the Lead's staged 0ff325b build (81 files, its tree and entry; native helper, Electron 44.5.1 and Edge as in the accepted diagnostic) (1.535633ms)
+✔ the connector configuration is the trusted real one: the exact private 52be105 copy, the pinned codex binary, the product's own state (0.378617ms)
+✔ the steps hold exactly the four released actions, the actual UI Start once, and nothing fake, restarted or signed in (0.693701ms)
+✔ every action is bracketed: assigned only while the session is on with the exact count, and a stop leaves the rest NOT_RUN (0.82889ms)
+✔ the typed requests carry no card value and do not say the cards changed; they select explain, the circle is left at the product's hint (0.386021ms)
+✔ the live surface changes its cards in place: new values never shown before, same page, same geometry, same truth format (27.050765ms)
+✔ ledger: all four actions counted once each, the whole picture at the provider boundary for each answered one, the Stop fenced (17.597343ms)
+✔ ledger: unknown and proven not_submitted outcomes count; failed triggers count but are named; a session that never started counts nothing (1.594369ms)
+✔ ledger: a session that ended before an action leaves it and every later one NOT_RUN; extra requests, restarts and a disagreeing app count are flagged (1.787178ms)
+✔ fence: needs Stop by the user with the request out and settling after it, nothing shown or sent later; otherwise unknown or not fenced (1.916525ms)
+✔ transport: no receipt, another image, no text or image input, or a request not submitted is never the picture at the provider; tools are flagged (0.225012ms)
+✔ pixel rules: only values new after the change and absent from earlier AI text prove fresh pixels; formatted values are read; a question with a value is a leak (3.893739ms)
+✔ wrapper: nothing runs without --execute, a new evidence folder and an independently supplied allocation hash (1.168201ms)
+✔ wrapper: only an exact, active live allocation bound to the four-action bounds, no voice, no retry or restart, is accepted (2.393363ms)
+✔ wrapper: the connector side refuses a missing or inexact copy, anything running in it, or another codex binary, before any Windows call (0.540918ms)
+✔ wrapper: the mechanical result needs every term, the connector and its children gone, and keeps acceptance NOT_JUDGED (2.273221ms)
+✔ wrapper: the watch summary is released only with the whole lifecycle observed; anything less is unknown or left running (0.854329ms)
+✔ wrapper: with an exact allocation it still refuses at the connector checks before any Windows call, any folder or any process (44.150927ms)
+✔ time: late entry by one millisecond, or an expired allocation, has no effect at all (not even the Linux stage check) (12.727352ms)
+✔ time: exactly enough on a constant clock passes every check at equality; the one launch comes after the scratch (65.214582ms)
+✔ time: time lost in the prechecks refuses right before the watch and the output folder (11.791961ms)
+✔ time: time lost during the read-only looks refuses before a preflight record, even with a conflict present (20.515308ms)
+✔ time: time lost while the watch starts stops the watch; the scratch stays unused and nothing launches (10.025081ms)
+✔ time: after the scratch, the unchanged final check refuses at end - bound + 1 ms and launches at equality (74.74273ms)
+✔ L1: the actual account_ready step lets ordinary credits, an exhausted included window and an unknown quota through, and stops on a stated spend control (6.012233ms)
+✔ L2: a reached Start whose later records are missing counts the first look as used (unknown); a known pre-Start stop does not (0.962537ms)
+✔ D8: raw receipts are written outside the repository; only sanitized fields and an allowlist of generated files are for Git (0.697267ms)
+✔ F1: the spend/workspace veto reads only the bucket the connector applies to the selected model, as 52be105 chatgpt_rpc.py selects it (8.100349ms)
+✔ F4: Support's receipt witness cases fail the mechanics; collection, records, tools, digest and provider turns are judged for every action (2.545784ms)
+✔ F5: the watch must record its own clean start before anything can launch; not ready, it is stopped, a refusal is written and nothing runs (2.806371ms)
+✔ receipt reader: only this run's new launches, real folders and files, the connector format and this request id, checked before any byte is kept (2.249857ms)
+✔ F3 checker: the reviewed admission with exactly four overlay substitutions, the one shared predicate, read-only natives, and the Lead protocol (4.519339ms)
+✔ F3 configuration and runner delta: the frozen checker and Lead timings; LC_SOURCE_ADMISSION only for the product launch; the context after the launch is recorded; the one predicate in the runner point checks (0.684633ms)
+✔ F3 ledger: every possibly sent request needs an admitted send for its exact PNG naming an acquisition admitted before and after; a deny, a gap or an unrecorded send fails (3.928306ms)
+✔ F3 overlay predicate: the pure functions are cut unchanged into the prepared fixture check; every refusal has a negative fixture; read-only native type (not executed) (2.69494ms)
+✔ R1-R3 (Support 5083814): its two controls pass; an unclassified request, unexplained or inconsistent turns, and an ignored or missing phase all fail (4.210437ms)
+✔ R4-R5 (Support 5083814): an exited watcher is not ready; the lifecycle must be ordered; receipt values must be of the writer's bounded types before copy, and only typed values are published (325.295479ms)
+✔ Support c2ee58ae (937788d HOLD): its controls pass; a missing Stop-session link, a foreign capture, a contradictory main verdict and a sends-only main record all fail (2.883972ms)
+✔ Support b93fc60 (df536b8 HOLD P2): QA's checker log holds exactly one end of input, as its last line; an earlier or a second end is not one observed lifecycle (0.806958ms)
+ℹ tests 41
+ℹ suites 0
+ℹ pass 41
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 733.337565
+exit=0

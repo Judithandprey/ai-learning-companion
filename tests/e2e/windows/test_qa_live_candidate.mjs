@@ -463,6 +463,81 @@ test('wrapper: with an exact allocation it still refuses at the connector checks
     assert.deepEqual(calls.filter(c => ['mkdir', 'write', 'spawn', 'spawnSync'].includes(c[0])), []);
   }
 });
+// The wrapper driven end to end on an injected clock (Lead handoff_f4a4b4aa), every process, Windows call and folder
+// mocked: which effects come before each time refusal. Entry, before a preflight record, before the watch and before the scratch need
+// now + PRELAUNCH_MARGIN_MS + native_bound_ms <= the allocation's end; right before the launch now + native_bound_ms <= the
+// end (unchanged). Equality passes; one millisecond more refuses. clock.on(event) may move clock.t at an event.
+async function timedRun(clock) {
+  const realFs = await import('node:fs');
+  const saved = JSON.parse(realFs.readFileSync(new URL('../../../docs/verification/qa/p0-13-live-0ff325b/candidate-nonvoice-06/candidate.json', import.meta.url)));
+  const record = { ...goodAllocation(), wrapper_sha256: sha(realFs.readFileSync(new URL('qa_run_live_candidate.mjs', import.meta.url))), native_bound_ms: saved.native_bound_ms,
+    native_invocation: { executable: saved.proposed_native_invocation.executable, arguments: saved.proposed_native_invocation.arguments },
+    launch_identity: { source: saved.production_commit, stage: saved.stage, tree: saved.stage_tree_sha256, work: saved.work, electron: saved.electron, edge: saved.edge, appPort: saved.appPort, edgePort: saved.edgePort } };
+  const allocationPath = '/tmp/qa-live-test-allocation.json', bytes = Buffer.from(JSON.stringify(record)), out = '/tmp/qa-live-test-out';
+  const calls = [], exits = [], written = new Map();
+  const at = event => { calls.push(event); clock.on?.(event); };
+  const look = Buffer.from(JSON.stringify({ now: '1', processes: [], listen: clock.conflict ? [999] : [] })).toString('base64');   // a conflict: a port owner
+  const fs = { ...realFs,
+    existsSync: p => !p.startsWith('/tmp/') && !p.startsWith('/mnt/c/') && !p.startsWith('/home/agentsdock/.local/') && realFs.existsSync(p),
+    lstatSync: p => (p === allocationPath || p.startsWith(saved.work) ? { isFile: () => true, isSymbolicLink: () => false } : realFs.lstatSync(p)),
+    readFileSync: (p, o) => {
+      if (p === allocationPath) return bytes;
+      if (p === `${out}/connector-watch.jsonl`) return '{"event":"watch_start","root_exists":true,"already_there":[]}\n';
+      if (p === '/proc/4321/stat') return '4321 (python3) S 1 2 3';
+      if (p.startsWith(saved.work) || p.startsWith(out)) { if (!written.has(p)) throw Error('ENOENT ' + p); return written.get(p); }
+      return realFs.readFileSync(p, o);
+    },
+    readdirSync: p => (p === '/proc' ? [] : realFs.readdirSync(p)), readlinkSync: () => '/',
+    mkdirSync: p => at(`mkdir ${p}`),
+    writeFileSync: (p, data) => { at(`write ${p}`); written.set(p, Buffer.from(data)); if (p.endsWith('connector-watch.stop')) exits.splice(0).forEach(f => f()); } };
+  const exec = (file, args) => {
+    if (file === 'python3') { at('exec stage-check'); return JSON.stringify(identity); }
+    const code = file === '/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe' ? Buffer.from(args.at(-1), 'base64').toString('utf16le') : '';
+    if (code.includes('Win32_Process')) { at('ps look'); return look; }
+    if (code.includes('Test-Path')) { at('ps edge-path'); return 'True'; }
+    if (code.includes('ParseFile')) { at('ps parse'); return '{"ok":true,"errors":[]}'; }
+    throw Error('unexpected command in this test');
+  };
+  const injected = { fs, execFileSync: exec, now: () => clock.t, sleep: async ms => { clock.t += ms; },
+    connectorAdmission: () => { at('connector checks'); return { copy: CONNECTOR.copy, files: 280 }; },
+    spawn: (file, args) => { at(`spawn ${file} ${args[0].split('/').at(-1)}`); return { pid: 4321, on: (event, f) => { if (event === 'exit') exits.push(f); } }; },
+    spawnSync: () => { at('native'); return { status: 0, signal: null, stdout: Buffer.alloc(0), stderr: Buffer.alloc(0) }; } };
+  let result = null, error = null;
+  try { result = await wrapper.runLiveCandidate({ execute: true, out, allocation: allocationPath, allocationSha256: sha(bytes) }, injected); } catch (e) { error = e; }
+  return { calls, result, error, out, scratch: saved.work };
+}
+const timeEnd = Date.parse('2026-10-09T06:30:00Z'), timeBound = 600000, timeMargin = wrapper.PRELAUNCH_MARGIN_MS ?? 60000, timeLatest = timeEnd - timeBound - timeMargin;
+const timeEffects = calls => calls.filter(c => /^(mkdir|write|spawn|native)/.test(c));
+const tooLittle = /too little time for the bounded native attempt and its pre-launch margin; nothing launched, scratch unused/;
+test('time: late entry by one millisecond, or an expired allocation, has no effect at all (not even the Linux stage check)', async () => {
+  assert.equal(wrapper.PRELAUNCH_MARGIN_MS, 60000);
+  { const r = await timedRun({ t: timeLatest + 1 }); assert.match(String(r.error), tooLittle); assert.deepEqual(r.calls, []); }
+  { const r = await timedRun({ t: timeEnd }); assert.match(String(r.error), /not currently active/); assert.deepEqual(r.calls, []); }
+});
+test('time: exactly enough on a constant clock passes every check at equality; the one launch comes after the scratch', async () => {
+  const r = await timedRun({ t: timeLatest }); assert.equal(r.error, null, String(r.error)); assert.equal(r.result.native_attempts, 1);
+  assert.deepEqual(timeEffects(r.calls).slice(0, 3), [`mkdir ${r.out}`, 'spawn python3 qa_sub_watch.py', `mkdir ${r.scratch}`]); assert.equal(r.calls.filter(c => c === 'native').length, 1);
+});
+test('time: time lost in the prechecks refuses right before the watch and the output folder', async () => {
+  const r = await timedRun({ t: timeLatest - 5000, on(e) { if (e === 'ps edge-path') this.t += 5001; } });
+  assert.match(String(r.error), tooLittle); assert.equal(r.calls.at(-1), 'ps edge-path'); assert.deepEqual(timeEffects(r.calls), []);
+});
+test('time: time lost during the read-only looks refuses before a preflight record, even with a conflict present', async () => {
+  const r = await timedRun({ t: timeLatest, conflict: true, on(e) { if (e === 'ps look') this.t += 1; } });
+  assert.match(String(r.error), tooLittle); assert.deepEqual(timeEffects(r.calls), []);
+  const ok = await timedRun({ t: timeLatest, conflict: true });                                                          // control: with time, the conflict is recorded
+  assert.match(String(ok.error), /a launch or debugging-port owner/); assert.deepEqual(timeEffects(ok.calls), [`mkdir ${ok.out}`, `write ${ok.out}/preflight-refusal.json`]);
+});
+test('time: time lost while the watch starts stops the watch; the scratch stays unused and nothing launches', async () => {
+  const r = await timedRun({ t: timeLatest, on(e) { if (e.startsWith('spawn ')) this.t += 1; } });
+  assert.match(String(r.error), tooLittle); assert.deepEqual(timeEffects(r.calls), [`mkdir ${r.out}`, 'spawn python3 qa_sub_watch.py', `write ${r.out}/connector-watch.stop`]);
+});
+test('time: after the scratch, the unchanged final check refuses at end - bound + 1 ms and launches at equality', async () => {
+  { const r = await timedRun({ t: timeLatest, on(e) { if (e === 'ps parse') this.t = timeEnd - timeBound + 1; } });
+    assert.equal(r.error, null); assert.equal(r.result.aborted, 'allocation has too little time for the bounded native attempt'); assert.equal(r.result.native_attempts, 0); assert.equal(r.calls.includes('native'), false); }
+  { const r = await timedRun({ t: timeLatest, on(e) { if (e === 'ps parse') this.t = timeEnd - timeBound; } });
+    assert.equal(r.error, null); assert.equal(r.result.native_attempts, 1); assert.equal(r.calls.filter(c => c === 'native').length, 1); }
+});
 
 // ---- Lead HOLD b63ecdc: L1 (credits beside an exhausted included window) and L2 (a reached Start with missing records) ----
 test('L1: the actual account_ready step lets ordinary credits, an exhausted included window and an unknown quota through, and stops on a stated spend control', async () => {

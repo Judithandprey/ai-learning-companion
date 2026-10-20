@@ -48,6 +48,9 @@ export function processesIn(dir, io = fs) {
 // Lead integrated and staged it (0ff325b, 194986d). An allocation for a candidate of any other build is refused (52be105
 // never starts the checker). Naming it here is not an execution allocation.
 export const interlockProduction = '0ff325beadb7c689244610307b6aa16d638fd2e6';
+// The preparation before the native launch (the stage and connector checks, the read-only looks, the watch, the payload
+// copy and the parse) gets this explicit margin on top of the fixed native bound. Not a lease, never an extension.
+export const PRELAUNCH_MARGIN_MS = 60000;
 export function validateLiveAllocation(record, candidate, wrapperHash, now, interlock = interlockProduction) {
   if (typeof interlock !== 'string' || !/^[0-9a-f]{40}$/.test(interlock) || candidate?.production_commit !== interlock) {
     throw Error('the candidate does not pin a reviewed production build that starts the source-admission checker; no allocation is accepted');
@@ -115,11 +118,18 @@ export async function runLiveCandidate(options, injected = {}) {
   const record = JSON.parse(allocationBytes), wrapperHash = sha(regularRead(fileURLToPath(import.meta.url)));
   const deadline = validateLiveAllocation(record, candidate, wrapperHash, now(), injected.interlock ?? interlockProduction);
   const stillActive = () => { if (now() >= deadline) throw Error('allocation expired before admission/launch; no retry'); };
+  // The allocation must still hold the margin and the whole native bound: on entry, before a preflight record, before
+  // the watch and the output folder, and before the scratch is consumed. Exactly enough passes; a millisecond less
+  // refuses. The final check right before the launch (the bound alone) is unchanged.
+  const enoughTimeToPrepare = () => {
+    if (now() + PRELAUNCH_MARGIN_MS + record.native_bound_ms > deadline) throw Error('allocation has too little time for the bounded native attempt and its pre-launch margin; nothing launched, scratch unused; no retry');
+  };
+  enoughTimeToPrepare();
   // Linux file inspection only, after the allocation gate and before any Windows call.
   const identity = JSON.parse(runFile('python3', ['-B', join(here, 'qa_admission_stage_check.py')], { encoding: 'utf8', timeout: 30000 }));
   checkLiveCandidate(candidate, payload, identity, { scratchExists: p => io.existsSync(p) });
   if (io.existsSync(candidate.work)) throw Error('candidate scratch already consumed; no retry');
-  const connector = connectorAdmission(io, checks);
+  const connector = (injected.connectorAdmission ?? connectorAdmission)(io, checks);
   stillActive();
   const ps = code => runFile(psBin, ['-NoProfile', '-NonInteractive', '-EncodedCommand',
     Buffer.from("$ProgressPreference='SilentlyContinue'; " + code, 'utf16le').toString('base64')],
@@ -129,6 +139,7 @@ export async function runLiveCandidate(options, injected = {}) {
   const beforeApp = await appCalls.look();
   stillActive();
   const beforeEdge = await edgeCalls.look();
+  enoughTimeToPrepare();
   if (ttsAdmission(candidate, beforeApp, beforeEdge).blocked) {
     const refusal = summarizeTtsPreflight(candidate, beforeApp, beforeEdge, now());
     try {
@@ -142,7 +153,7 @@ export async function runLiveCandidate(options, injected = {}) {
   const expectedApp = { exe: candidate.electron, app: [win(candidate.stage), `--remote-debugging-port=${candidate.appPort}`, '--remote-debugging-address=127.0.0.1'],
     checker: ['unlaunched-qa-checker'], markers: [`--remote-debugging-port=${candidate.appPort}`], notBefore: beforeApp.now };
   const expectedEdge = { exe: candidate.edge, app: candidate.edgeArgs, checker: ['unlaunched-qa-checker'], markers: [`--remote-debugging-port=${candidate.edgePort}`], notBefore: beforeEdge.now };
-  stillActive();
+  enoughTimeToPrepare();
   io.mkdirSync(out, { recursive: true, mode: 0o700 });
   // The read-only watch starts first and must be ready before anything can start a connector (F5). Not ready: nothing is
   // launched and the scratch stays unused.
@@ -150,8 +161,8 @@ export async function runLiveCandidate(options, injected = {}) {
   if (!watch.ready.ready) throw Error(`the connector watch is not ready (${watch.ready.reason}); nothing launched, scratch unused`);
   const launchesBefore = watch.launchesBefore;
   // mkdir without recursive refuses an occupied scratch; it permanently consumes this candidate's one attempt. A refusal
-  // here stops the watch (nothing was launched).
-  try { stillActive(); io.mkdirSync(candidate.work, { recursive: false }); } catch (error) { await watch.stop(); throw error; }
+  // here (too little time left after the watch's start, or an occupied scratch) stops the watch; nothing was launched.
+  try { enoughTimeToPrepare(); io.mkdirSync(candidate.work, { recursive: false }); } catch (error) { await watch.stop(); throw error; }
   const report = { kind: 'four-action nonvoice live run (real subscription, generated surface)', passed: false, identity, connector,
     wrapper_sha256: wrapperHash, candidate_sha256: candidateHash, allocation_sha256: options.allocationSha256, allocation_id: record.allocation_id,
     scratch: candidate.work, scratch_preserved: true, native_attempts: 0, watch_ready: watch.ready, receipt_launches_before: launchesBefore.length, microphone_access: false, audio_access: false, voice: false, cleanup: {},

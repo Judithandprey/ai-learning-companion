@@ -1,0 +1,33 @@
+{
+  "kind": "qa-live-nonvoice-driver/time-sufficiency-correction",
+  "status": "PREPARED_ONLY_NOT_REVIEWED_NOT_AUTHORIZED",
+  "amends": "8aadd9027974c851e24f6c5ce6dfea6dd5126cb3 (driver 5bdbc1d, integrated 5ba6f50)",
+  "lead_assignment": "handoff_f4a4b4aa5414452aa1bdc8f002713e04; resumed once by handoff_bc87bc62c67cf9e75e06c841d0735446",
+  "production_commit": "0ff325beadb7c689244610307b6aa16d638fd2e6",
+  "prelaunch_margin_ms": 60000,
+  "native_bound_ms": 600000,
+  "wrapper_sha256": "ed58fe5d9fe3f1a4cd786303ab105a1f58bf42162c6f6d1ac145aaaf936c775b",
+  "previous_wrapper_sha256": "3ca43f76a73abc7669f64452bf6ab3dee39caeccbb736a2f9642fdd3e65b2b25",
+  "test_file_sha256": "4695a0b64fb73fa88e59d42f73463ac1b1f9dd3b9bbcf10bb78bfa6520ab880d",
+  "allocation_template_sha256": "dc017d0f8bcd94aa5a17e5b3ab60374d4d713777008080515194fe2dd35f6d7f",
+  "allocation_template_differs_from_driver_06_only_in": [
+    "wrapper_sha256"
+  ],
+  "candidate_sha256_unchanged": "288191f78a39ea242a59b867d0831808a3e22c762eff013c65669eed9d05c172",
+  "payload_sha256_unchanged": {
+    "runner.ps1": "2fbb5eb3c5e734719f6b26fc8066b55626078d3ffdb075d5dc65936326ca2cdb",
+    "steps.json": "70e89d51c0489a8c9472bf25a8438b08ff493f5be2c59148bc92baf10778874f",
+    "surface.html": "be82967ae45d36bece4ac4858d6f45d0e90e58d088203b71323b74e6ae5e1067",
+    "sub-live.json": "4729ca1a25ec09a64349c68c5ccb0eb41b4e9f83e161fb9c4a29b0ce26b948d4",
+    "admission-checker.ps1": "9637db613373ef5ba63bc10753033aedaab90bf749aeaa982fed9b65c91eccf1",
+    "admission-live.json": "6e86df7d74f52ce54b879d1c14d6d71b7548c69127d0f787a0a1be2fb46d7cc3"
+  },
+  "work_unchanged_never_created": "/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-live-nonvoice-e72ea0f932d148c0a48d4c101c69d328",
+  "results": {
+    "passes_after": "41/41",
+    "fix_reverted": "37/41 (the 4 new-boundary time tests fail; the 2 unchanged-behaviour time tests pass)"
+  },
+  "real_actions": "0/4 (last confirmed)",
+  "diagnostic": "3/3 consumed and closed",
+  "native_or_account_action": false
+}
