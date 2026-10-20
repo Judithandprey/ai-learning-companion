@@ -1,0 +1,35 @@
+{
+  "source_commit": "58338a2fe8467125f00f0231abf5cfa194e71915",
+  "parent": "8aadd9027974c851e24f6c5ce6dfea6dd5126cb3",
+  "qa_delivery": "handoff_484857e56a97c01fa87339e6a69c0221",
+  "lead_source_and_pin_review": "Ten file pins match exact commit; inactive template differs only in wrapper hash. Four added time guards and test injection are the only wrapper behavior delta. Original final gate and native/cleanup code unchanged.",
+  "pin_checks": {
+    "tests/e2e/windows/qa_run_live_candidate.mjs": true,
+    "tests/e2e/windows/test_qa_live_candidate.mjs": true,
+    "docs/verification/qa/p0-13-live-0ff325b/driver-nonvoice-06-time/allocation.template.json": true,
+    "docs/verification/qa/p0-13-live-0ff325b/candidate-nonvoice-06/candidate.json": true,
+    "docs/verification/qa/p0-13-live-0ff325b/candidate-nonvoice-06/runner.ps1": true,
+    "docs/verification/qa/p0-13-live-0ff325b/candidate-nonvoice-06/steps.json": true,
+    "docs/verification/qa/p0-13-live-0ff325b/candidate-nonvoice-06/surface.html": true,
+    "docs/verification/qa/p0-13-live-0ff325b/candidate-nonvoice-06/sub-live.json": true,
+    "docs/verification/qa/p0-13-live-0ff325b/candidate-nonvoice-06/admission-checker.ps1": true,
+    "docs/verification/qa/p0-13-live-0ff325b/candidate-nonvoice-06/admission-live.json": true
+  },
+  "template_changed_keys": [
+    "wrapper_sha256"
+  ],
+  "owner_tests": {
+    "after": "41/41",
+    "guards_reverted": "37/41",
+    "status": "Owner evidence, not independent or native acceptance"
+  },
+  "support_review_handoff": "handoff_a37671510175f1d2dbd18cdc4d63068e",
+  "support_review_accepted": true,
+  "support_review_execution_started_at_dispatch": false,
+  "remaining_executable_review": "Foreground600s tool cap versus preparation+native+cleanup; Support assesses in this same bounded review. No background or alternate executor.",
+  "new_allocation": false,
+  "native_attempts": 0,
+  "real_actions": 0,
+  "permission_mode": "QA default; manual phase incomplete",
+  "verdict": "source_delta_reviewed_awaiting_independent_review_before_integration"
+}

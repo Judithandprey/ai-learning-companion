@@ -1,5 +1,13 @@
 # Candidate06 manual approval phase — 2026-10-14
 
+**Current delivery:** QA `58338a2` completes the time-order correction with41/41
+focused owner checks (37/41 with guards reverted). Lead inspected the delta and
+verified ten exact file pins; no native action. [Review record](time-correction-review.json).
+Original Support has accepted the exact independent review as
+`handoff_a37671510175f1d2dbd18cdc4d63068e`, including the concrete600s foreground
+timeout versus preparation/native/cleanup residual. Source delivery is not yet
+integrated or allocated for execution. Historical restart and refusal facts follow.
+
 **2026-10-20 continuation:** the human explicitly resumed the same correction
 after Windows Update interrupted QA. Both dirty source/test files are preserved at
 QA `8aadd902`; the historical36/36 local result predates an unfinished review

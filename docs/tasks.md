@@ -264,6 +264,12 @@ The saved36/36 result precedes that correction and is not final validation.
 [Recovery record](verification/lead/live-windows/nonvoice-driver-review/manual-20261014/restart-continuation-20261020.json).
 No replay of the old Bash request, fresh lease or new native attempt is authorized
 by the dispatch itself; Support review and Lead integration precede allocation.
+Actual QA `58338a2` / `handoff_484857e56a97c01fa87339e6a69c0221` now delivers
+the completed time-order repair: owner41/41, four expected failures when reverted,
+inactive template updated. Lead reviewed the source delta and verified ten pins.
+Original Support review `handoff_a37671510175f1d2dbd18cdc4d63068e` is accepted,
+including the600s foreground-cap versus native-plus-cleanup residual. No new
+allocation or native run; integration follows the exact independent review.
 Human owns approval cards; no agent accepts them. Original refusal stays historical. Native/live acceptance
 is NOT_RUN until actual results. Restore QA `auto` only after collected result,
 accounting/cleanup/release and verified absence of remaining manual steps, pending

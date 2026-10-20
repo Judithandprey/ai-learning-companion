@@ -19,7 +19,7 @@
   "allocation_retired_reason": "QA actual handoff_ec31e85d736c7661fbb4022aa0d2cb52 confirms 0 of 1 used. This selected-image allocation is not additive to the next changed-flow allocation.",
   "live_changed_flow_allocation": {
     "allocation_id": "handoff_fd794043a20068a1b52853cbb6ff884e",
-    "status": "QA_recovery_read_confirmed_remaining_source_correction_pending",
+    "status": "QA_time_order_source_delivered_independent_review_pending",
     "candidate_commit": "24c48c38aee660b606ebff5285acbd2ccb300392",
     "maximum_potential_submissions": 5,
     "purpose_slots": [
@@ -49,7 +49,7 @@
       "account/model/billing change",
       "automatic restart or retry"
     ],
-    "next_owner": "Original QA preserves dirty time-order repair, recovers unexecuted review correction, validates and delivers. Support reviews exact delivery; Lead integrates before a fresh allocation. Manual approval mode remains default.",
+    "next_owner": "Support independently reviews58338a2 and foreground-runtime feasibility; Lead integrates reviewed delta before fresh allocation. QA manual phase remains incomplete.",
     "production_source_commit": "175515308f509fb8c0f531dbdb10e57313fcde5a",
     "stage_name": "lc-windows-live-1755153",
     "stage_tree_sha256": "3387824a0dee70013104388d4acec2b810475e98953e7c3f196063a8781fd154",
@@ -602,6 +602,12 @@
       "record": "docs/verification/lead/live-windows/nonvoice-driver-review/manual-20261014/restart-continuation-20261020.json",
       "new_native_attempt": false,
       "actual_owner_recovery_message": "handoff_02025a10f728b7b4e9af5ea2e600f7f0"
+    },
+    "time_order_review": {
+      "qa_commit": "58338a2fe8467125f00f0231abf5cfa194e71915",
+      "delivery_message": "handoff_484857e56a97c01fa87339e6a69c0221",
+      "support_message": "handoff_a37671510175f1d2dbd18cdc4d63068e",
+      "new_native_attempt": false
     }
   },
   "approved_ai_disabled_diagnostic": {
