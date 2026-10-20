@@ -21,6 +21,7 @@ import json, os, sys, time
 mode = os.environ['SCENARIO']
 log = os.environ['LOG']
 skill_reads = 0
+deferred_initialized = None
 def send(value):
     print(json.dumps(value), flush=True)
 def event(method, **params):
@@ -31,6 +32,10 @@ def completed(status='completed', items=None, **extra):
         {'id':'answer-1','type':'agentMessage','phase':'final_answer','text':'Completed answer.'}],**extra})
 for line in sys.stdin:
     request=json.loads(line)
+    if mode=='defer_initialized_log' and request.get('method')=='initialized':
+        # Model a child whose notification log is not ready when start returns.
+        deferred_initialized=request
+        continue
     with open(log,'a') as out: out.write(json.dumps(request)+'\n')
     if 'method' not in request: continue
     method=request['method']
@@ -189,6 +194,8 @@ for line in sys.stdin:
     if method=='turn/interrupt':
         if mode=='late_complete': completed()
         else: completed('interrupted',items=[])
+if deferred_initialized is not None:
+    with open(log,'a') as out: out.write(json.dumps(deferred_initialized)+'\n')
 '''
 
 
@@ -510,14 +517,23 @@ def test_non_managed_auth_stays_unsigned(tmp_path, mode, expected):
     asyncio.run(run())
 
 
-def test_default_isolation_gate_prevents_inference(tmp_path):
+@pytest.mark.parametrize("mode", ["success", "defer_initialized_log"])
+def test_default_isolation_gate_prevents_inference(tmp_path, mode):
     async def run():
-        c = client(tmp_path)
+        c = client(tmp_path, mode)
         try:
             await c.start()
             with pytest.raises(RPCError) as error:
                 await invoke(c)
             assert error.value.code == "isolation_unverified"
+            if mode == "defer_initialized_log":
+                assert [row["method"] for row in requests(c)] == ["initialize"]
+            # initialized is a notification: draining the parent pipe does not
+            # acknowledge the child's log. EOF lets this fake consume all sent
+            # requests and flush its log before the exact isolation assertion.
+            # close() would terminate the child before it necessarily does so.
+            c._process.stdin.close()
+            await asyncio.wait_for(c._process.wait(), 1)
             assert [row["method"] for row in requests(c)] == ["initialize", "initialized"]
         finally:
             await c.close()

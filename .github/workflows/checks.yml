@@ -9,9 +9,11 @@ on:
 permissions:
   contents: read
 
+# Every main push needs a complete result; only superseded PR runs are cancelled.
+# A unique push group also avoids replacing an older pending main run.
 concurrency:
-  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
-  cancel-in-progress: true
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   contracts:
