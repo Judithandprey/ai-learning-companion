@@ -1,0 +1,31 @@
+{
+  "python": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+  "rows": [
+    {
+      "version": "parent-4e840a4",
+      "stdin_buffered_bytes": 4128768,
+      "first_close": "returned",
+      "first_close_seconds": 0.052525159961078316,
+      "returncode_at_first_close": -9,
+      "process_wait_calls_at_first_close": 2,
+      "second_close_after_harness_reap": "returned",
+      "loop_callback_errors": [],
+      "harness_final_returncode": -9,
+      "harness_final_transport_closing": true
+    },
+    {
+      "version": "candidate-4c5e071",
+      "stdin_buffered_bytes": 4128768,
+      "first_close": "CancelledError",
+      "first_close_seconds": 0.050612427003216,
+      "returncode_at_first_close": null,
+      "process_wait_calls_at_first_close": 0,
+      "second_close_after_harness_reap": "CancelledError",
+      "loop_callback_errors": [
+        "InvalidStateError"
+      ],
+      "harness_final_returncode": -9,
+      "harness_final_transport_closing": true
+    }
+  ]
+}

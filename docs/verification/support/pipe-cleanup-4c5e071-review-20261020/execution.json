@@ -1,0 +1,49 @@
+{
+  "verdict": "HOLD",
+  "finding": "S1: timeout cancels the shared stdin close waiter and breaks kill/reap",
+  "incoming_message_id": "handoff_efced72b704d037870c153100d3c1867",
+  "read_request_id": "support-mail-20261020-1134",
+  "target_commit": "4c5e071e42b6bf49818c36b07278c228bb3667b8",
+  "parent_commit": "4e840a4b82896ded93d7844966bac60beaa47f22",
+  "support_baseline": "5c97ffb467bf1dbdb86e754e16732fecc1fd83eb",
+  "exact_export": "/tmp/support-pipe-close-4c5e071-4v4u5pu2",
+  "source_sha256": {
+    "services/worker/connectors/chatgpt_rpc.py": "1408456395c346d353ec88c75bbc8907e32666afa90504297176853e5efd8231",
+    "services/worker/connectors/chatgpt_local.py": "ce99a50f372453b6d7f27bfdf3e2e87d138864a5d028931ca4ccf2439957105d",
+    "services/worker/connectors/chatgpt_launch.py": "b4c89171f025056062a091dab47ac6c3b3f372843da428a72b35f7d8eab49090",
+    "services/worker/connectors/tests/test_chatgpt_rpc.py": "49ec6bf4561202098c080a561c8262a23bb535bf609ba966561f7afd1111c7d1"
+  },
+  "parent_rpc_sha256": "b5576536a8a630de031ae3fe9af5b2307760d954db7131a8517f811c56faf2b7",
+  "stdlib_sha256": {
+    "/usr/lib/python3.14/asyncio/streams.py": "d1753bc21667afe914390623be181ebb31776845d7c7f2f50805cae972f0189b",
+    "/usr/lib/python3.14/asyncio/subprocess.py": "7b70605716334f63cc482123b2aaa3b7c5bb7138eeab63a037bd8068d43307c1"
+  },
+  "probe_sha256": "9d26049cdce02dc41e9e0fa6f8b43aca10afebb30dbe2334dfe8fe071625111e",
+  "reproduction": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 /home/agentsdock/Projects/learning-companion/repo/.venv/bin/python tests/probes/support/pipe_close_timeout_4c5e071.py /tmp/support-pipe-close-4c5e071-4v4u5pu2 /tmp/support-pipe-close-4c5e071-4v4u5pu2/parent_chatgpt_rpc.py",
+    "cwd": "/home/agentsdock/Projects/learning-companion/wt-support",
+    "exit_code": 0,
+    "tool_wall_time_seconds": 0.1478,
+    "meaning": "Assertions confirm parent control and candidate defect witness, not product acceptance."
+  },
+  "focused_checks": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 /home/agentsdock/Projects/learning-companion/repo/.venv/bin/python -m pytest -q -p no:cacheprovider --basetemp=/tmp/support-pipe-close-4c5e071-4v4u5pu2/pytest-tmp services/worker/connectors/tests/test_chatgpt_rpc.py::test_receive_line_limit_still_applies_before_ignored_delta_filtering services/worker/connectors/tests/test_chatgpt_rpc.py::test_stdout_pipe_failure_does_not_skip_owned_child_reaping services/worker/connectors/tests/test_chatgpt_rpc.py::test_buffered_reader_yields_for_deadlines_and_close_even_without_an_ask services/worker/connectors/tests/test_chatgpt_rpc.py::test_terminal_signal_is_immediate_unusability_not_a_reaping_receipt services/worker/connectors/tests/test_chatgpt_rpc.py::test_close_during_ask_reaps_child_and_suppresses_answer services/worker/connectors/tests/test_chatgpt_rpc.py::test_default_isolation_gate_prevents_inference -W error::pytest.PytestUnraisableExceptionWarning --tb=short",
+    "cwd": "/tmp/support-pipe-close-4c5e071-4v4u5pu2",
+    "exit_code": 0,
+    "tool_wall_time_seconds": 0.3895,
+    "result": "12 passed in 0.29s"
+  },
+  "evidence_sha256": {
+    "timeout-probe.stdout.json": "f39efb421c56d4be5e57dea16dc07c63d528131c12e5db7c65e6f0a318d09ad9",
+    "timeout-probe.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "focused.stdout.txt": "47b7315acda5ca0143a1c738211adfb382a8ea5e9474bfc9e8365f44b3ffd58e",
+    "focused.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "production_edits": false,
+  "installed_codex_or_account_or_provider_or_network": false,
+  "windows_display_or_audio_operations": false,
+  "python312_installed_or_tested": false,
+  "original_ci_allocating_test_proven": false,
+  "candidate08_fixed_or_retried": false,
+  "live_lease_issued": false
+}
