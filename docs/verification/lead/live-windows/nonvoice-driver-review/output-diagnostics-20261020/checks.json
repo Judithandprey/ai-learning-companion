@@ -1,0 +1,44 @@
+{
+  "source_commit": "7b81981251652825a501dd7aadd5cd4af5c5d381",
+  "backend_delivery": "4e840a4b82896ded93d7844966bac60beaa47f22",
+  "qa_delivery": "21668dd67b658893959ad469d636e1ffeec765d4",
+  "python": {
+    "exit_code": 0,
+    "passed": 107,
+    "elapsed_seconds": 3.98,
+    "modules": [
+      "test_chatgpt_output_diagnostics.py",
+      "test_chatgpt_receipts.py",
+      "test_chatgpt_failure_outcomes.py"
+    ]
+  },
+  "node": {
+    "exit_code": 0,
+    "passed": 55,
+    "failed": 0,
+    "skipped": 0,
+    "elapsed_ms": 2141.117767,
+    "version": "24.21.0",
+    "child_process_permission": false,
+    "write_permission": false,
+    "test_isolation": "none"
+  },
+  "source_blobs_match_deliveries": {
+    "services/worker/connectors/chatgpt_rpc.py": true,
+    "services/worker/connectors/chatgpt_receipts.py": true,
+    "services/worker/connectors/chatgpt_local.py": true,
+    "services/worker/connectors/chatgpt_live.py": true,
+    "tests/e2e/windows/qa_run_live_candidate.mjs": true,
+    "tests/e2e/windows/test_qa_live_candidate.mjs": true
+  },
+  "fixture_bytes_match": {
+    "receipt-legacy.json": true,
+    "receipt-commentary-only.json": true
+  },
+  "private_state_read": false,
+  "native_runs": 0,
+  "real_provider_calls": 0,
+  "full_diff_check": "two whitespace-only lines in preserved raw QA failure log; source/test/Markdown/JSON pass",
+  "python.txt_sha256": "1e17c26797a1ce7a7deda35853880d21cf803f166a1c436c90b6898f64432d00",
+  "node.txt_sha256": "7d5f4a2d178ccc99ceb70ba8d482c4883a37c2792b9f63399cd36bb614001ef5"
+}

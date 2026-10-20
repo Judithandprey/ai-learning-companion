@@ -5,7 +5,10 @@ whole-screen request reached the provider, whose turn completed, but the live pa
 classified it failed and ended the session. No answer appeared; focus/follow-up/Stop
 NOT_RUN. Real1/4, native1/1 consumed; DISPLAY/ACCOUNT released, allocation retired.
 [Actual evidence](../../../qa/p0-13-live-0ff325b/execution-manual-20261020-candidate08-01/README.md).
-Backend owns a bounded offline connector correction; no repeat native test is
+Backend's bounded output diagnostics and QA's compatible receipt reader are now
+integrated with 107 Python and 55 Node checks passing; this repairs missing
+diagnostic facts, not the unknown actual failure branch.
+[Integrated review](output-diagnostics-20261020/README.md). No repeat native test is
 assigned. The manual phase is complete, pending operator runtime checks and supported
 QA-only auto restoration. Full live/audio acceptance remains open.**
 
