@@ -170,10 +170,61 @@ def test_actual_rpc_begin_and_finish_write_unknown_facts_without_starting_child(
         "format": "lc-subscription-ask-receipt/1", "codex_executable": EXECUTABLE,
         "codex_version": "codex-cli 0.158.0", "codex_sha256": DIGEST,
         "explicit_bin_override": False,
+        "failure_code": None, "terminal_items_view": None, "terminal_error_present": None,
+        "completed_message_count": 0, "completed_final_answer_count": 0,
+        "completed_commentary_count": 0, "completed_unphased_count": 0,
+        "answer_selection": None, "answer_text_state": None,
     }
     client.finish_request("not_submitted")
     assert json.loads(target.read_text())["outcome"] == "not_submitted"
     assert client._process is None
+
+
+@pytest.mark.parametrize("field,value", [
+    ("failure_code", "SYNTHETIC PRIVATE PROVIDER ERROR"),
+    ("failure_code", {"code": "incomplete_turn"}),
+    ("terminal_items_view", "SYNTHETIC PRIVATE VIEW"),
+    ("terminal_error_present", "SYNTHETIC PRIVATE ERROR"),
+    ("terminal_error_present", 1),
+    ("completed_message_count", True),
+    ("completed_message_count", 4096 ** 2 + 1),
+    ("completed_commentary_count", -1),
+    ("completed_final_answer_count", 1),  # Must equal total with other phases.
+    ("completed_unphased_count", "SYNTHETIC PRIVATE CONTENT"),
+    ("answer_selection", "reasoning"),
+    ("answer_text_state", "SYNTHETIC PRIVATE ANSWER"),
+    ("reasoning", "SYNTHETIC PRIVATE REASONING"),
+])
+def test_output_diagnostics_reject_content_and_unbounded_counts(state, field, value):
+    output = writer(state)
+    client = ChatGPTAppServer([EXECUTABLE], cwd=str(state), env={}, on_receipt=output)
+    client.begin_request("diagnostic-validation")
+    target = destination(output, client._receipt)
+    before = target.read_bytes()
+    with pytest.raises(receipts.ReceiptError):
+        output({**client._receipt, field: value})
+    assert target.read_bytes() == before
+
+
+def test_private_diagnostics_require_complete_shape_and_allow_only_safe_failure(state):
+    output = writer(state)
+    client = ChatGPTAppServer([EXECUTABLE], cwd=str(state), env={}, on_receipt=output)
+    client.begin_request("safe-finalizer")
+    before = destination(output, client._receipt).read_bytes()
+    incomplete = {key: value for key, value in client._receipt.items() if key != "answer_selection"}
+    with pytest.raises(receipts.ReceiptError):
+        output(incomplete)
+    assert destination(output, client._receipt).read_bytes() == before
+    client.finish_request("failed", failure_code="SYNTHETIC PRIVATE PROVIDER ERROR")
+    saved = json.loads(destination(output, client._receipt).read_text())
+    assert saved["failure_code"] == "unavailable"
+    assert "PRIVATE" not in json.dumps(saved)
+    # Bridge cleanup must not replace a more precise earlier RPC failure.
+    client.begin_request("first-failure")
+    client.finish_request("failed", failure_code="incomplete_turn")
+    client.finish_request("uncertain", failure_code="cancelled")
+    saved = json.loads(destination(output, client._receipt).read_text())
+    assert saved["failure_code"] == "incomplete_turn" and saved["outcome"] == "uncertain"
 
 
 @pytest.mark.parametrize("prefix", ["text", "image"])

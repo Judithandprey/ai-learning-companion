@@ -59,7 +59,7 @@ class Client:
         self.submission = "not_submitted"
         self.receipts.append({"request_id": request_id, "outcome": "pending"})
 
-    def finish_request(self, outcome):
+    def finish_request(self, outcome, *, failure_code=None):
         self.receipts[-1]["outcome"] = outcome
 
     def request_submission(self):

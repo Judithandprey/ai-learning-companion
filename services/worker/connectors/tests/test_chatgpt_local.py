@@ -207,7 +207,7 @@ def test_receipt_binding_records_eof_before_reserved_ask_coroutine_runs(ask_requ
         c = await fixture_bridge()
         receipts = []
         c.client.begin_request = lambda request_id: receipts.append(("begin", request_id))
-        c.client.finish_request = lambda outcome: receipts.append(("finish", outcome))
+        c.client.finish_request = lambda outcome, *, failure_code=None: receipts.append(("finish", outcome))
         await c.bridge.handle(message("ask/start", {"request": ask_request, "model": MODEL}))
         await c.bridge.close()
         assert receipts == [("begin", ask_request["request_id"]), ("finish", "cancelled")]
@@ -806,7 +806,7 @@ def test_terminal_grace_expiry_preserves_unknown_receipt_without_forging_cancel(
     async def run():
         client, learning, incoming, emitted, outcomes = FakeClient(), LearningSpy(), asyncio.Queue(), [], []
         client.allow_send.set()
-        client.finish_request = outcomes.append
+        client.finish_request = lambda outcome, *, failure_code=None: outcomes.append(outcome)
         task = asyncio.create_task(chatgpt_local.run_stream(incoming.get, emitted.append, client,
                                       prepare=learning.prepare, bind=learning.bind))
         try:
@@ -854,7 +854,7 @@ def test_terminal_wins_answer_publication_and_receipt_finalization(ask_request, 
         c = await fixture_bridge()
         outcomes = []
 
-        def finish(outcome):
+        def finish(outcome, *, failure_code=None):
             outcomes.append(outcome)
             if when == "during_finish" and outcome == "completed":
                 c.client.terminal.set()
@@ -885,7 +885,7 @@ def test_terminal_close_before_reserved_coroutine_runs_is_not_user_cancel(ask_re
     async def run():
         c = await fixture_bridge()
         outcomes = []
-        c.client.finish_request = outcomes.append
+        c.client.finish_request = lambda outcome, *, failure_code=None: outcomes.append(outcome)
         await c.bridge.handle(message("ask/start", {"request": ask_request, "model": MODEL}))
         active = c.bridge.active
         c.client.terminal.set()

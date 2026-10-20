@@ -49,6 +49,103 @@ def assert_private_failure(stream, outcome, terminal, submission="submitted"):
 
 
 @pytest.mark.parametrize("version", [local.VERSION, local.LIVE_VERSION])
+@pytest.mark.parametrize("mode", ["commentary", "empty", "summary_only"])
+def test_completed_without_usable_answer_keeps_private_reason_and_public_failure(
+        tmp_path, ask_request, version, mode):
+    async def run():
+        async with rpc_stream(tmp_path, mode) as stream:
+            if version == local.LIVE_VERSION:
+                stream.send(envelope(version, "start", "companion/start", start_params()))
+                assert "result" in await response(stream, "start")
+                turn = live_turn(ask_request)
+                turn.update(trigger="observation", allowed_assistance="none", presentation="none", focus=None)
+                stream.send(envelope(version, "ask", "companion/turn", turn))
+            else:
+                await submit(stream, version, ask_request)
+            reply = await response(stream, "ask")
+            assert reply["error"]["code"] == "failed" and "result" not in reply
+            if version == local.LIVE_VERSION:
+                assert reply["error"]["submission"] == "submitted"
+            await finalized(stream)
+            assert_private_failure(stream, "failed", "completed")
+            receipt = stream.receipts[-1]
+            assert receipt["failure_code"] == "incomplete_turn"
+            assert receipt["terminal_items_view"] == ("summary" if mode == "summary_only" else "full")
+            assert receipt["completed_commentary_count"] == int(mode == "commentary")
+            assert receipt["answer_selection"] == "none"
+            assert "Not final." not in json.dumps(stream.emitted + stream.receipts)
+            assert sum(row.get("method") == "turn/start" for row in requests(stream.client)) == 1
+            if version == local.LIVE_VERSION:
+                turn["request_id"] = "explicit-after-failure"
+                stream.send(envelope(version, "late", "companion/turn", turn))
+                assert (await response(stream, "late"))["error"] == {
+                    "code": "session_stopped", "submission": "not_submitted"}
+                assert sum(row.get("method") == "turn/start" for row in requests(stream.client)) == 1
+    asyncio.run(run())
+
+
+def test_live_binding_failure_is_diagnosed_after_completed_nonempty_answer(
+        tmp_path, ask_request, monkeypatch):
+    from services.learning import live_session
+
+    def invalid_binding(*args, **kwargs):
+        raise ValueError("SYNTHETIC PRIVATE BINDING CONTENT")
+
+    monkeypatch.setattr(live_session, "bind_live_session_response", invalid_binding)
+
+    async def run():
+        async with rpc_stream(tmp_path) as stream:
+            await submit(stream, local.LIVE_VERSION, ask_request)
+            assert (await response(stream, "ask"))["error"] == {
+                "code": "stale_context", "submission": "submitted"}
+            await finalized(stream)
+            receipt = stream.receipts[-1]
+            assert receipt["outcome"] == "failed" and receipt["terminal_status"] == "completed"
+            assert receipt["failure_code"] == "stale_context"
+            assert receipt["completed_final_answer_count"] == 1
+            assert receipt["answer_selection"] == "final_answer" and receipt["answer_text_state"] == "nonempty"
+            assert not any("result" in row for row in ask_replies(stream))
+            assert "PRIVATE" not in json.dumps(stream.emitted + stream.receipts)
+            assert sum(row.get("method") == "turn/start" for row in requests(stream.client)) == 1
+    asyncio.run(run())
+
+
+def test_internal_live_shutdown_does_not_invent_cancellation_cause():
+    from services.worker.connectors.tests.test_chatgpt_live import bridge, turn
+
+    async def run():
+        async with bridge() as c:
+            recorded = []
+            c.client.finish_request = lambda outcome, *, failure_code=None: recorded.append((outcome, failure_code))
+            c.client.release.clear()
+            await c.send("companion/turn", turn())
+            await asyncio.wait_for(c.client.sent.wait(), 2)
+            c.client.terminal.set()
+            await c.bridge.close(terminal_failure=True)
+            assert recorded == [("uncertain", None)]
+    asyncio.run(run())
+
+
+def test_internal_legacy_retirement_does_not_invent_cancellation_cause(ask_request):
+    from services.worker.connectors.tests.test_chatgpt_local import fixture_bridge, message, MODEL
+
+    async def run():
+        c = await fixture_bridge()
+        recorded = []
+        c.client.finish_request = lambda outcome, *, failure_code=None: recorded.append((outcome, failure_code))
+        try:
+            c.client.allow_send.set()
+            await c.bridge.handle(message("ask/start", {"request": ask_request, "model": MODEL}))
+            await asyncio.wait_for(c.client.sent.wait(), 2)
+            c.bridge._retire()
+            await c.bridge.close(terminal_failure=True)
+            assert recorded == [("uncertain", None)]
+        finally:
+            await c.bridge.close()
+    asyncio.run(run())
+
+
+@pytest.mark.parametrize("version", [local.VERSION, local.LIVE_VERSION])
 @pytest.mark.parametrize("mode,terminal,code,outcome", [
     ("hang", "interrupted", "failed", "uncertain"),
     ("ignore_interrupt", None, "failed", "uncertain"),

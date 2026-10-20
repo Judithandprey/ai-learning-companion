@@ -1454,7 +1454,11 @@ def test_private_receipt_binds_exact_inputs_terminal_and_cumulative_writes_witho
                     "image_bytes": len(PNG), "image_sha256": sha256(PNG).hexdigest(),
                     "submission": "acknowledged", "terminal_status": "completed", "outcome": "completed",
                     "produced_item_types": ["agentMessage"], "thread_start_count": number,
-                    "turn_start_count": number, "actual_model": MODEL, "thread_id": "thread-1", "turn_id": "turn-1"}
+                    "turn_start_count": number, "actual_model": MODEL, "thread_id": "thread-1", "turn_id": "turn-1",
+                    "failure_code": None, "terminal_items_view": "full", "terminal_error_present": False,
+                    "completed_message_count": 1, "completed_final_answer_count": 1,
+                    "completed_commentary_count": 0, "completed_unphased_count": 0,
+                    "answer_selection": "final_answer", "answer_text_state": "nonempty"}
                 assert any(row["request_id"] == f"request-{number}" and row["submission"] == "written" for row in receipts)
             encoded = json.dumps(receipts)
             for private in ("An explicit ASK.", "Completed answer.", base64.b64encode(PNG).decode(), "TOKEN-secret", "https://"):

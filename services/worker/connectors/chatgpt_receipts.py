@@ -16,6 +16,8 @@ from threading import Lock
 import unicodedata
 from uuid import uuid4
 
+from .chatgpt_rpc import FAILURE_CODES, MAX_TURN_EVENTS
+
 
 MAX_RECEIPT_BYTES = 16 * 1024
 MAX_RECORDS = 4096
@@ -24,6 +26,12 @@ _FIELDS = frozenset((
     "image_sha256", "submission", "terminal_status", "outcome",
     "produced_item_types", "thread_start_count", "turn_start_count",
     "actual_model", "thread_id", "turn_id",
+))
+_OUTPUT_FIELDS = frozenset((
+    "failure_code", "terminal_items_view", "terminal_error_present",
+    "completed_message_count", "completed_final_answer_count",
+    "completed_commentary_count", "completed_unphased_count",
+    "answer_selection", "answer_text_state",
 ))
 _HASH = re.compile(r"[0-9a-f]{64}\Z")
 _TYPE = re.compile(r"[A-Za-z][A-Za-z0-9_]{0,63}\Z")
@@ -66,8 +74,28 @@ def _private_directory(path):
 
 
 def _metadata(value):
-    if type(value) is not dict or value.keys() != _FIELDS:
+    # Additive private diagnostics; older callers remain valid. Partial
+    # diagnostics and arbitrary extra fields cannot smuggle provider content.
+    if type(value) is not dict or value.keys() not in (_FIELDS, _FIELDS | _OUTPUT_FIELDS):
         raise ReceiptError()
+    if "failure_code" in value:
+        for name, allowed in (
+            ("failure_code", FAILURE_CODES),
+            ("terminal_items_view", ("full", "summary", "notLoaded", "invalid")),
+            ("answer_selection", ("final_answer", "unphased", "none")),
+            ("answer_text_state", ("empty", "whitespace", "nonempty")),
+        ):
+            item = value[name]
+            if item is not None and (type(item) is not str or item not in allowed):
+                raise ReceiptError()
+        if value["terminal_error_present"] is not None and type(value["terminal_error_present"]) is not bool:
+            raise ReceiptError()
+        counts = [value[name] for name in ("completed_message_count", "completed_final_answer_count",
+                                           "completed_commentary_count", "completed_unphased_count")]
+        # One lifecycle event can carry up to MAX_TURN_EVENTS terminal items.
+        # Diagnostics must not impose a stricter limit than the existing parser.
+        if not all(_integer(count, MAX_TURN_EVENTS ** 2) for count in counts) or counts[0] != sum(counts[1:]):
+            raise ReceiptError()
     if not _text(value["request_id"], 128):
         raise ReceiptError()
     inputs, produced = value["input_types"], value["produced_item_types"]

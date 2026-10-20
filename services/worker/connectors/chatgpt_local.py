@@ -280,6 +280,7 @@ class SubscriptionBridge:
     async def _ask(self, active, request, model):
         started = time.monotonic()
         outcome = "not_submitted"
+        failure_code = None
         try:
             if self._cancelled(active):
                 raise LocalError("cancelled")
@@ -315,10 +316,15 @@ class SubscriptionBridge:
             outcome = "completed"
             self.emit({"id": active.rpc_id, "result": result})
         except asyncio.CancelledError:
+            failure = getattr(self.client, "request_failure", lambda: None)()
+            failure_code = getattr(failure, "code", None) or (
+                "cancelled" if not active.retired and (
+                    active.cancelled.is_set() or active.session_id in self.stopped_sessions) else None)
             outcome = self._unfinished_outcome(active) if self.client.terminal.is_set() or active.retired else "cancelled"
             if not self.closed and not self.client.terminal.is_set() and not active.retired:
                 self.error(active.rpc_id, "cancelled")
         except Exception as exc:
+            failure_code = getattr(exc, "code", "unavailable")
             if not active.retired and (active.cancelled.is_set() or active.session_id in self.stopped_sessions):
                 outcome = "cancelled"
             elif active.retired or self.client.terminal.is_set():
@@ -339,7 +345,7 @@ class SubscriptionBridge:
             finish = getattr(self.client, "finish_request", None)
             if finish is not None and outcome != "completed":
                 try:
-                    finish(outcome)
+                    finish(outcome, failure_code=failure_code)
                 except Exception:
                     # Failure receipts cannot expose private data or grant an
                     # answer. The failing writer also fences future submissions.

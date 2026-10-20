@@ -1,0 +1,38 @@
+{
+  "request_id": "synthetic-output-diagnostic",
+  "input_types": [
+    "text",
+    "image"
+  ],
+  "text_bytes": 16,
+  "text_sha256": "0ee6a7c24a0b20f75f4a53b5e8c0fcac996ed17fb6b308cbaf1a2bcfc01d7e63",
+  "image_bytes": 17,
+  "image_sha256": "1f967b6f87c062d157d8b26611c162f0f4031415aeb5a03356f7323f60ca3ee7",
+  "submission": "acknowledged",
+  "terminal_status": "completed",
+  "outcome": "failed",
+  "produced_item_types": [
+    "userMessage",
+    "reasoning",
+    "agentMessage"
+  ],
+  "thread_start_count": 1,
+  "turn_start_count": 1,
+  "actual_model": "synthetic-model",
+  "thread_id": "synthetic-thread",
+  "turn_id": "synthetic-turn",
+  "failure_code": "incomplete_turn",
+  "terminal_items_view": "full",
+  "terminal_error_present": false,
+  "completed_message_count": 1,
+  "completed_final_answer_count": 0,
+  "completed_commentary_count": 1,
+  "completed_unphased_count": 0,
+  "answer_selection": "none",
+  "answer_text_state": "empty",
+  "format": "lc-subscription-ask-receipt/1",
+  "codex_executable": "/synthetic/codex",
+  "codex_version": "0.158.0",
+  "codex_sha256": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+  "explicit_bin_override": false
+}

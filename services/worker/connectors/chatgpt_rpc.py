@@ -70,6 +70,7 @@ _MESSAGES = {
     "login_failed": "Managed login could not be started.",
     "closed": "The managed connection is closed.",
 }
+FAILURE_CODES = frozenset(_MESSAGES)
 
 
 class RPCError(Exception):
@@ -240,7 +241,11 @@ class ChatGPTAppServer:
             "text_sha256": None, "image_bytes": None, "image_sha256": None,
             "submission": "not_submitted", "terminal_status": None, "outcome": "pending",
             "produced_item_types": [], "thread_start_count": self._thread_start_count,
-            "turn_start_count": self._turn_start_count, "actual_model": None, "thread_id": None, "turn_id": None}
+            "turn_start_count": self._turn_start_count, "actual_model": None, "thread_id": None, "turn_id": None,
+            "failure_code": None, "terminal_items_view": None, "terminal_error_present": None,
+            "completed_message_count": 0, "completed_final_answer_count": 0,
+            "completed_commentary_count": 0, "completed_unphased_count": 0,
+            "answer_selection": None, "answer_text_state": None}
         self._record(self._receipt)
 
     def request_submission(self):
@@ -251,10 +256,13 @@ class ChatGPTAppServer:
         """Retain sanitized failure facts across bounded owned-child reaping."""
         return self._request_failure
 
-    def finish_request(self, outcome):
+    def finish_request(self, outcome, *, failure_code=None):
         if outcome not in ("completed", "cancelled", "failed", "not_submitted", "uncertain"):
             raise RPCError("invalid_request")
-        self._record(self._receipt, outcome=outcome)
+        facts = {"outcome": outcome}
+        if failure_code is not None and self._receipt is not None and self._receipt["failure_code"] is None:
+            facts["failure_code"] = failure_code if type(failure_code) is str and failure_code in FAILURE_CODES else "unavailable"
+        self._record(self._receipt, **facts)
 
     def _record(self, receipt, **facts):
         if receipt is None or receipt is not self._receipt:
@@ -482,11 +490,13 @@ class ChatGPTAppServer:
             if method == "turn/completed":
                 if turn.get("status") not in ("completed", "failed", "interrupted"):
                     raise RPCError("protocol_error")
-                self._record(active["receipt"], terminal_status=turn["status"])
+                view = turn.get("itemsView", "full")
+                self._record(active["receipt"], terminal_status=turn["status"],
+                    terminal_items_view=view if view in ("full", "summary", "notLoaded") else "invalid",
+                    terminal_error_present=turn.get("error") is not None)
                 items = turn.get("items")
                 if type(items) is not list or len(items) > MAX_TURN_EVENTS:
                     raise RPCError("protocol_error")
-                view = turn.get("itemsView", "full")
                 if view not in ("full", "summary", "notLoaded"):
                     raise RPCError("protocol_error")
                 for item in items:
@@ -522,6 +532,13 @@ class ChatGPTAppServer:
             active["messages"][item_id] = value
             if sum(len(row[1]) for row in active["messages"].values()) > MAX_TEXT_CHARS:
                 raise RPCError("protocol_error")
+            # Count validated completed messages, not started items, deltas or
+            # duplicate copies in the terminal full view. Never retain content.
+            phases = [row[0] for row in active["messages"].values()]
+            self._record(active["receipt"], completed_message_count=len(phases),
+                completed_final_answer_count=phases.count("final_answer"),
+                completed_commentary_count=phases.count("commentary"),
+                completed_unphased_count=phases.count(None))
 
     def _record_item_type(self, active, kind):
         receipt = active["receipt"]
@@ -865,9 +882,13 @@ class ChatGPTAppServer:
                 raise RPCError(_turn_error_code(turn.get("error")))
             messages = list(active["messages"].values())
             final = [value for phase, value in messages if phase == "final_answer"]
+            selection = "final_answer" if final else "none"
             if not final:
                 final = [value for phase, value in messages if phase is None]
+                selection = "unphased" if final else "none"
             answer = "\n".join(final)
+            self._record(active["receipt"], answer_selection=selection,
+                answer_text_state="empty" if not answer else "whitespace" if not answer.strip() else "nonempty")
             if not answer.strip() or len(answer) > MAX_TEXT_CHARS:
                 raise RPCError("incomplete_turn")
             self._check_cancelled(active)
@@ -888,6 +909,12 @@ class ChatGPTAppServer:
             # (which would retain the original prompt/image and active frame).
             self._request_failure = RPCError(error.code, submission=error.submission)
             self._request_failure.outcome = error.outcome
+            try:
+                self._record(active["receipt"], failure_code=error.code)
+            except RPCError:
+                # Receipt failure already fences the child. Preserve the
+                # original safe cause and always run bounded cleanup.
+                pass
             if active["submitted"] and not active["done"].done():
                 await self._interrupt_request(active)
             error.submission = self.request_submission()

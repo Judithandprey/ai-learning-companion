@@ -342,6 +342,7 @@ class LiveSubscriptionBridge(SubscriptionBridge):
 
     async def _run(self, job):
         started, outcome = self.clock(), "not_submitted"
+        failure_code = None
         try:
             self._guard(job)
             prepared = job.prepared
@@ -374,12 +375,14 @@ class LiveSubscriptionBridge(SubscriptionBridge):
             self.emit({"id": job.rpc_id, "result": result}, submission=self._submission(job))
         except asyncio.CancelledError:
             failure = getattr(self.client, "request_failure", lambda: None)()
+            failure_code = job.reason or getattr(failure, "code", None) or ("cancelled" if job.user_cancelled else None)
             outcome = ("cancelled" if job.user_cancelled else "not_submitted" if self._submission(job) == "not_submitted"
                        else "uncertain" if self.exhausted.is_set() else getattr(failure, "outcome", None) or "uncertain")
             if not self.closed:
                 self.error(job.rpc_id, job.reason or getattr(failure, "code", "unavailable"), self._submission(job))
         except Exception as exc:
-            failure = _code(getattr(exc, "code", "unavailable"))
+            failure_code = getattr(exc, "code", "unavailable")
+            failure = _code(failure_code)
             code = job.reason or failure
             submission = self._submission(job)
             outcome = ("cancelled" if job.user_cancelled else "not_submitted" if submission == "not_submitted"
@@ -393,7 +396,7 @@ class LiveSubscriptionBridge(SubscriptionBridge):
         finally:
             if job.receipt_started and outcome != "completed":
                 try:
-                    self.client.finish_request(outcome)
+                    self.client.finish_request(outcome, failure_code=failure_code)
                 except Exception:
                     self._stop_session(job.session, "unavailable")
             if self.active is job:
