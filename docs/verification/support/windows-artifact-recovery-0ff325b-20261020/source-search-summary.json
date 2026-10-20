@@ -1,0 +1,41 @@
+{
+  "raw_inventory": "/tmp/support-artifact-recovery-0ff325b-riehg1x0/original-candidate-inventory.json",
+  "raw_inventory_sha256": "0d70922b98406699afca92b3e7bf703da4252b5a465cc9e7cb3db927e0cc6d64",
+  "candidates": [
+    {
+      "root": "/home/agentsdock/Projects/learning-companion/repo/apps/windows",
+      "match": 81,
+      "different": 0,
+      "missing": 0,
+      "symlink-not-followed": 0
+    },
+    {
+      "root": "/home/agentsdock/Projects/learning-companion/wt-web/apps/windows",
+      "match": 78,
+      "different": 0,
+      "missing": 3,
+      "symlink-not-followed": 0
+    },
+    {
+      "root": "/home/agentsdock/Projects/learning-companion/wt-review/apps/windows",
+      "match": 42,
+      "different": 19,
+      "missing": 20,
+      "symlink-not-followed": 0
+    },
+    {
+      "root": "/mnt/c/Users/ROG/AppData/Local/Temp/lc-windows-tts-52be105",
+      "match": 0,
+      "different": 0,
+      "missing": 81,
+      "symlink-not-followed": 0
+    },
+    {
+      "root": "/mnt/c/Users/ROG/AppData/Local/Temp/lc-windows-live-1755153",
+      "match": 0,
+      "different": 0,
+      "missing": 81,
+      "symlink-not-followed": 0
+    }
+  ]
+}

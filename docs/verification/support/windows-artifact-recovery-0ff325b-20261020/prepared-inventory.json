@@ -1,0 +1,1106 @@
+{
+  "status": "PREPARED_NOT_INSTALLED_OR_RUN",
+  "product_commit": "0ff325beadb7c689244610307b6aa16d638fd2e6",
+  "manifest_ref": "194986dea3e120a3b8806a9e7bb2c06bfefb5cf7:docs/verification/lead/live-windows/nonvoice-driver-review/stage-0ff325b.json",
+  "manifest_sha256": "33db2d2e85d74b77866b70d5bca6c589125a22977cd0400e03fcfa107c788311",
+  "compile_receipt_ref": "ad7bd72a8e902b366fbbb71d90f530c18043a251:docs/verification/lead/live-windows/approved-two-gates/tts-integration/compile.json",
+  "compile_receipt_sha256": "feffa19d564031d9a0cf112ec61140ca01946465b1bd91ff0f83b337d190c407",
+  "stage": "/tmp/support-artifact-recovery-0ff325b-riehg1x0/prepared/lc-windows-admission-0ff325b",
+  "stage_file_count": 81,
+  "stage_tree_sha256": "081a130c1f492c98d78fec8d67463a36c80126ea1ca72eede99d043ca616a46a",
+  "stage_files": [
+    {
+      "path": "dist/apps/safari-extension/src/ink.js",
+      "bytes": 13338,
+      "sha256": "081e838aa457d3020ca699e1feec28494c51b88ae56ba6e2b349a01789a8d7ee",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/safari-extension/src/ink.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/safari-extension/src/mode.js",
+      "bytes": 1952,
+      "sha256": "28f40e4c9d6750c40cd31ac70d458d039f34b0f995d3810cbb859dd49121037b",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/safari-extension/src/mode.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/native/NativeSpeech.cs",
+      "bytes": 9566,
+      "sha256": "c4c1f127a85ff1c871ce98895d51584af7936bbf23f3a35c7418002f201cbbfd",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/native/NativeSpeech.cs",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/native/NativeSpeech.exe",
+      "bytes": 12288,
+      "sha256": "21c7bed3fedcdefdccc2f45b799bfebb417df7a56f44f656523d303e7b349e10",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/native/NativeSpeech.exe",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/native/build.json",
+      "bytes": 1061,
+      "sha256": "feffa19d564031d9a0cf112ec61140ca01946465b1bd91ff0f83b337d190c407",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/native/build.json",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/scripts/ingress-fixtures.js",
+      "bytes": 7735,
+      "sha256": "3ca6ee305a8d8632827c9ec5c370945bf8e9da8da274987fa60657a96c616395",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/scripts/ingress-fixtures.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/scripts/ingress-harness-capture.js",
+      "bytes": 2178,
+      "sha256": "9cf9374f0aaec537d61c37a50369a4dd7e954fb99760d9cf293004fa3937f6cf",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/scripts/ingress-harness-capture.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/scripts/ingress-harness-ink-capture.js",
+      "bytes": 2811,
+      "sha256": "ffd3babd1904da9ff32dd8053d8a3f523307956a7934900fb3c258f49b237cc8",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/scripts/ingress-harness-ink-capture.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/src/main/capture-host.js",
+      "bytes": 13428,
+      "sha256": "e8fc099e66e30511474421eec1372930a2b9d578f4210222a54bd29b098ce9f1",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/src/main/capture-host.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/src/main/capture-link.js",
+      "bytes": 55267,
+      "sha256": "03b0435413747804cfea17ae1e536efae1d8b79557ca39c85db59b6e9bd7e684",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/src/main/capture-link.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/src/main/loopback-http.js",
+      "bytes": 2131,
+      "sha256": "96c4000e0f3b041730711eab16fcab1f229b662b3c7ddb57c5f77a711f345103",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/src/main/loopback-http.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/src/main/main.js",
+      "bytes": 152930,
+      "sha256": "8c4aa46544d4f6f665fdbee0dcc18384af0154c02d9dcdd2643897e60077afa1",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/src/main/main.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/src/main/native-speech.js",
+      "bytes": 5566,
+      "sha256": "ed021ad92fdd7be1401359e9bdf238e84281bb7eaa758fbfb18109c83618a0f7",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/src/main/native-speech.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/src/main/native-voice.mjs",
+      "bytes": 5681,
+      "sha256": "e3f80d60a03d8dd054723c7514ebd1b29de9a9189c7285bf9c964871985ec587",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/src/main/native-voice.mjs",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/src/main/self-test-course.js",
+      "bytes": 5334,
+      "sha256": "a02a8bf6832c23ef6434ceb47227517b4505ddd585979c861166b4d972034d68",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/src/main/self-test-course.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/src/main/self-test.js",
+      "bytes": 59235,
+      "sha256": "81d3adab338aebfaa0d60c04ab71914c37ffe92bd6a06e668f26bbf1c9599f7c",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/src/main/self-test.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/src/main/source-admission.js",
+      "bytes": 18478,
+      "sha256": "931700572689228e1724dca5bf35af1999d5c8764e103633116f4e7ac63f535b",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/src/main/source-admission.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/src/main/subscription.js",
+      "bytes": 41832,
+      "sha256": "8280f2bb7511223d9d54c9dcf474e9e091d6106e43253a08793b88be07ad720b",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/src/main/subscription.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/src/main/uploader.js",
+      "bytes": 28496,
+      "sha256": "9dfa70ddd00ca6c66460320a954e06847dfa2b2e38ece614df5a316f5feb2497",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/src/main/uploader.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/src/preload/control.cjs",
+      "bytes": 2146,
+      "sha256": "0519e586992d2fafa3c904414e326f9400a8df9e2773d41ecaca290259ec609b",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/src/preload/control.cjs",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/src/preload/overlay.cjs",
+      "bytes": 4141,
+      "sha256": "7222c8b7b834e92cd3b98e018c1eec0010747099dee7cbde9577f888358bbcdf",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/src/preload/overlay.cjs",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/src/renderer/control.css",
+      "bytes": 2173,
+      "sha256": "07f2c63a29e5dcc2efeba9b7aa443c58eda9405b2d8b5f3646d61cffa9164aad",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/src/renderer/control.css",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/src/renderer/control.html",
+      "bytes": 4820,
+      "sha256": "6a9591ccb67c1bcf8536cb761920740a574053d3d0ab62142732ebe317cf7a88",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/src/renderer/control.html",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/src/renderer/control.js",
+      "bytes": 30085,
+      "sha256": "a0fe8f1737779a51129fd2f09cda22f405fb0d4e5f158d41d7bd9c8e882a395d",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/src/renderer/control.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/src/renderer/overlay.css",
+      "bytes": 4729,
+      "sha256": "3767d3a02032588556cffdf1681010071661ff5dcdf898032a32296e2ba5a733",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/src/renderer/overlay.css",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/src/renderer/overlay.html",
+      "bytes": 3994,
+      "sha256": "d7b84d4dbd06615f4a598e2b8072a34b92e9c6d0b39d8576fb53ceb421c8516e",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/src/renderer/overlay.html",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/src/renderer/overlay.js",
+      "bytes": 98713,
+      "sha256": "4af7152fe8c68d83d51aece86d16b0ba506d7445fac753495b43dfe3c02c8c23",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/src/renderer/overlay.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/src/renderer/probe.css",
+      "bytes": 347,
+      "sha256": "d91de633b9677107cfcee8008ac20694988871781ef04c786a252861c088fb5f",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/src/renderer/probe.css",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/src/renderer/probe.html",
+      "bytes": 364,
+      "sha256": "e6cbdd4b53b386fc49a8ed67d16fe8585b615121b2f5544fac733e5153ead515",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/src/renderer/probe.html",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/src/renderer/probe.js",
+      "bytes": 333,
+      "sha256": "a47f669467b32d4d2baed8a9b17afd219a4407eac5d1d87640e803995b94c08d",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/src/renderer/probe.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/src/shared/capture-plan.js",
+      "bytes": 4837,
+      "sha256": "51315a5d197ce0821fb3340f2e4352166f4d7fd0d98cdcd1c69bd789e91ae7f6",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/src/shared/capture-plan.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/src/shared/desktop-ink.js",
+      "bytes": 7798,
+      "sha256": "ab621526d1ced3b5afcfa791688af5fb2b6b17af5e9895061e3df04a7ab4036d",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/src/shared/desktop-ink.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/src/shared/frame-ingress.js",
+      "bytes": 31611,
+      "sha256": "de5ad9520238dc92c5d4d8cdd5b4d1cb12db9162768a0f274f0ee4b7be7a70c9",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/src/shared/frame-ingress.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/src/shared/live.js",
+      "bytes": 23497,
+      "sha256": "69dfa29b5c8b62b94f8154a4ea9655d41b2b527b199783e57f8cca3dd7206aac",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/src/shared/live.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/src/shared/placement.js",
+      "bytes": 7782,
+      "sha256": "969db8a18b9c2320a6afb16e136efdc80bad698a559992daf2559dbf00164f4e",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/src/shared/placement.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/src/shared/retention.js",
+      "bytes": 3112,
+      "sha256": "1a5bc8c1c0efe9b3c25817dc7208b5eb3b8795ec952412aaef0e47027cf39d82",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/src/shared/retention.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/src/shared/samples.js",
+      "bytes": 5617,
+      "sha256": "58436143034e76b17de2b186769815ad77af64846bdaba49d67254a09f3ae256",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/src/shared/samples.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/src/shared/voice.js",
+      "bytes": 4876,
+      "sha256": "cb492bdd4325b21f343edc6344d318c87eb8f8f3104a13ae5c7b1402d002f0e8",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/src/shared/voice.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/admission-fakes.js",
+      "bytes": 4696,
+      "sha256": "e5f1c489311adbbb71884a27ed9884e02ac5f87b17d0fa4322903616060cedcb",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/admission-fakes.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/app-admission.test.js",
+      "bytes": 59105,
+      "sha256": "4e9841cfd97cfd6669a6d205480b990ff5fc70cfe36dd3d4b29450b593bcbea6",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/app-admission.test.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/app-ask.test.js",
+      "bytes": 128342,
+      "sha256": "8a5047f35b1097fcbfcd71f2a5475b37ccf84b30e906b2c0eae887ee50ee6d62",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/app-ask.test.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/app-link.test.js",
+      "bytes": 29508,
+      "sha256": "ece49d79d8e1047c2b85106dd2d9787665f68bb46cc1cd25d69ff828b7e17b7b",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/app-link.test.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/app-live.test.js",
+      "bytes": 80510,
+      "sha256": "0975250923412f41c0ce7cd62f96390ba208053f94d764e93e0bd315b01c941e",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/app-live.test.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/capture-host.test.js",
+      "bytes": 12570,
+      "sha256": "fe89d26c84d0e95869b66b804c66f6a9ad9cd40f95ded7ebc676e9847111b950",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/capture-host.test.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/capture-link-record.test.js",
+      "bytes": 31084,
+      "sha256": "83240f0f022e3b4067cf39952720e119550bff7a1ea05b00f11b968e5346109b",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/capture-link-record.test.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/capture-link-rules.test.js",
+      "bytes": 23906,
+      "sha256": "fe9a76548ef3c03d1c0b191386ab50ee580e6c4b3f7e2d99c7554d5cdc9d137f",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/capture-link-rules.test.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/capture-link.test.js",
+      "bytes": 15207,
+      "sha256": "acd423f91c9ffdfa1826dc199fdb3c03bc140d0042bdd546d7f171bea94ad907",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/capture-link.test.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/capture-plan.test.js",
+      "bytes": 7109,
+      "sha256": "07edc042980bce152852b04ba572b873de31c2fb735412dc7eca5f424c8bafae",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/capture-plan.test.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/context-pictures.test.js",
+      "bytes": 7630,
+      "sha256": "a459bdafc202406f0ff010736da6320bc98f56f1786ff34cf11dc9e59174ea40",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/context-pictures.test.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/control-link.test.js",
+      "bytes": 8500,
+      "sha256": "f9147c80e6d44939ef672f89583047be0de46a1351cf49c9bddb8b00cd847433",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/control-link.test.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/control-live.test.js",
+      "bytes": 18904,
+      "sha256": "4978f32998a1ee3054bcacd1c11f07b3c31e1937a0287d31409e64041521777d",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/control-live.test.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/control-page.js",
+      "bytes": 1575,
+      "sha256": "f01ceee0626eee886ed54950fe42e88130fb6d53c6e90f9b2b8dc474dbdc4512",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/control-page.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/frame-ingress.test.js",
+      "bytes": 28643,
+      "sha256": "ae6d5161ef6200fa2618543050c9b8ad3a3c723ee2817e282a2192339edc457f",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/frame-ingress.test.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/host-fixture.js",
+      "bytes": 3206,
+      "sha256": "fae4c6a61661846c199a432be8a2875e548b9abfce7d5ddd5fc2713a382d4b84",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/host-fixture.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/ink-original.test.js",
+      "bytes": 20135,
+      "sha256": "ba623a79daaac5d72f663e0ea3010f29a17622da3ba2186cea3c2f338ae5e720",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/ink-original.test.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/link-fakes.js",
+      "bytes": 6896,
+      "sha256": "23454a67ad8027831c6c3cb95aed8b25f9147dc71066893ca0e1dd5a60e784c5",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/link-fakes.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/link-world.js",
+      "bytes": 6867,
+      "sha256": "673074f9a53fbbaabf21cd6ff0a303f28c883d06a878c57b842d43990be3a4d8",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/link-world.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/live-bridge.test.js",
+      "bytes": 14368,
+      "sha256": "a7b1f607ba5d8117bb34f43190a73ac6a71bfb2f448acb4efd3e1c878ec3cf7c",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/live-bridge.test.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/live.test.js",
+      "bytes": 38927,
+      "sha256": "d004e964e1337be9a249a11260f2ed477696bd8ee49c793dd9a952c5c6e2e15b",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/live.test.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/main-harness.js",
+      "bytes": 13956,
+      "sha256": "00adc7bad4be6c00191a294e00db7f754694814bab2fe1eb3b3b2fc310008fc9",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/main-harness.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/main-lifecycle.test.js",
+      "bytes": 16362,
+      "sha256": "5c059850b1134a2dcbf23204d84a458aa5f4173a5e8187ab19c4d58f5a9ab619",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/main-lifecycle.test.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/native-speech.test.js",
+      "bytes": 10195,
+      "sha256": "c3d1012e4fb36a937e948ca2ab82b9a23f05f1b4e57633485a4d626b5fb29489",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/native-speech.test.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/native-voice.test.js",
+      "bytes": 17208,
+      "sha256": "fa8ffe40502ac9777cf4daa1a49e1e2129f8b80ecb012d17c230e3b0e943662a",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/native-voice.test.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/overlay-alignment.test.js",
+      "bytes": 10065,
+      "sha256": "95b455341fc9f9559d248cc6034d4cf7225c6070f4b6c654f6c94e5169d1131f",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/overlay-alignment.test.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/overlay-capture.test.js",
+      "bytes": 4081,
+      "sha256": "cdc2ef9a12c89fcbe104d932bd479519e1124ff3718e53f96ee5aec7eb6979a8",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/overlay-capture.test.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/overlay-frames.test.js",
+      "bytes": 8854,
+      "sha256": "becf25b78eb1431b4342216d1fb4ff7f11be3b76e471eccbb6eb6ff369237361",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/overlay-frames.test.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/overlay-page.js",
+      "bytes": 23696,
+      "sha256": "5df3346180afaf73dc38c7880d0f14932b2ea116d6333f499ac57a4780dc8a01",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/overlay-page.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/overlay-stop.test.js",
+      "bytes": 6732,
+      "sha256": "7f26c3376dcbc835659e77d9e572c9c54aa2e074decbb34a80ed430f4e779cfe",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/overlay-stop.test.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/overlay-surfaces.test.js",
+      "bytes": 105368,
+      "sha256": "81bd55222cfe2ce0c846795cf83feccd3a0347c50183253f6acdda147e86d430",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/overlay-surfaces.test.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/owned-host-flow.test.js",
+      "bytes": 13415,
+      "sha256": "c8f9f3789b728780c0dd741c20ec8693731997ae6a9b59fa3ea8d935e6f6d0db",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/owned-host-flow.test.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/placement.test.js",
+      "bytes": 21213,
+      "sha256": "a17b6f90230fdfa699d5a5006780069fca8b1497054df06c718a2879b9b6f386",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/placement.test.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/png.js",
+      "bytes": 1063,
+      "sha256": "8f72448cefabd850931cb74a92d3e4c14c1c24885961351a90309d3fbbbde08e",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/png.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/retention-correction.test.js",
+      "bytes": 16528,
+      "sha256": "72dffec79a5ec00f6c0484e53de2dccbde79d5661e127f864797f93a8394a663",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/retention-correction.test.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/retention.test.js",
+      "bytes": 8228,
+      "sha256": "2df279503af67e39f54f69dfb2ba76dcd001e6676e571b3303bc8f3e0f513dcc",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/retention.test.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/shared.test.js",
+      "bytes": 19332,
+      "sha256": "ee51870b784a7c7b340c18736c63612036b876b9c7ca74ade52a7c7b03a71dc0",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/shared.test.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/source-admission.test.js",
+      "bytes": 24721,
+      "sha256": "62593cbd31082e7530b4893c2f2de1f7449ed0d65f9ecf05665f92f379882574",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/source-admission.test.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/source.js",
+      "bytes": 960,
+      "sha256": "a3b346a33f1f7ef4e727bfc92a0bba5921e86048a8e8f2c6607a4391823aeec4",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/source.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/subscription-fakes.js",
+      "bytes": 9463,
+      "sha256": "bc90395aac91154598de2cda8eac968a656c5772c556f42e07a89ddffc2fe6de",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/subscription-fakes.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/subscription.test.js",
+      "bytes": 140227,
+      "sha256": "c487913c03a3ee4bc9452a67b70039085777ce7ee95aa8881f74e440fee36e95",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/subscription.test.js",
+      "readback_match": true
+    },
+    {
+      "path": "dist/apps/windows/tests/uploader.test.js",
+      "bytes": 75154,
+      "sha256": "fd1d2e98473f7dd336756286b420809eb6c64e3324f0aab8f834df21a78526b4",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/dist/apps/windows/tests/uploader.test.js",
+      "readback_match": true
+    },
+    {
+      "path": "package.json",
+      "bytes": 604,
+      "sha256": "ca62c237282a825cc36aceab1ed44e2673061369ef05694f25689dc3b574db49",
+      "source": "/home/agentsdock/Projects/learning-companion/repo/apps/windows/package.json",
+      "readback_match": true
+    }
+  ],
+  "runtime": "/tmp/support-artifact-recovery-0ff325b-riehg1x0/prepared/lc-electron-44.5.1-win32-x64",
+  "runtime_archive_source": "/home/agentsdock/.cache/electron/773aa4e04f5abf2d0c5fef6d69bfaa8ef10f8e9615d6ee8300fd1f572dfbc32b/electron-v44.5.1-win32-x64.zip",
+  "runtime_archive_bytes": 157998329,
+  "runtime_archive_sha256": "9b382492dcfee91f8f9e92c91f7972550a1b95d2299cac72279dab33a600d7db",
+  "runtime_archive_entries": 73,
+  "runtime_file_count": 73,
+  "runtime_tree_sha256": "42b423eafa7ed252eb8a06a0168c27a9b64f8d934810d20c6415d83564348504",
+  "runtime_files": [
+    {
+      "path": "locales/es-419.pak",
+      "bytes": 707627,
+      "sha256": "2766fd52da83ff679346313e66440f013a7d478b9be946df4ab197505912450b",
+      "zip_crc32": "0e86b24b",
+      "readback_match": true
+    },
+    {
+      "path": "locales/ru.pak",
+      "bytes": 1200985,
+      "sha256": "a9e76536472c45b39e7ae2af5f3ae1bc0e50a11646efdb6fb3ca373b5f2e2c70",
+      "zip_crc32": "67e77f3d",
+      "readback_match": true
+    },
+    {
+      "path": "locales/el.pak",
+      "bytes": 1295538,
+      "sha256": "37d2e1ef69fea9bdb1e0902cbc61a458baa9009fc3761029bd1c1882a7a0c9b2",
+      "zip_crc32": "80e1478f",
+      "readback_match": true
+    },
+    {
+      "path": "locales/ar.pak",
+      "bytes": 1130919,
+      "sha256": "4c47004abd0969cb1174d06eb7429c024872207960986afbf3cae37e339a8d01",
+      "zip_crc32": "c23e3623",
+      "readback_match": true
+    },
+    {
+      "path": "locales/pt-BR.pak",
+      "bytes": 697019,
+      "sha256": "5546559a56f9ac3191062c3fd42defd190a68e78ac988eb57fa5a6fd2dc5f874",
+      "zip_crc32": "a36a0ee7",
+      "readback_match": true
+    },
+    {
+      "path": "chrome_100_percent.pak",
+      "bytes": 719654,
+      "sha256": "ab7c4b7b6cb8832a31d44b95ec50ce52294f49422a3bdde4e21968eca2930cbe",
+      "zip_crc32": "a932acdd",
+      "readback_match": true
+    },
+    {
+      "path": "locales/ms.pak",
+      "bytes": 668356,
+      "sha256": "af7021a00befa586aa067ae3ccb339079e6f13ee0cab1621836f6abb608b6f2a",
+      "zip_crc32": "6cef3389",
+      "readback_match": true
+    },
+    {
+      "path": "dxcompiler.dll",
+      "bytes": 25745408,
+      "sha256": "0c7a5fab6466c211fe39d90d845b7d6a64ac73e8c809d4fa0c09907bb45c1f3d",
+      "zip_crc32": "bf956f03",
+      "readback_match": true
+    },
+    {
+      "path": "resources.pak",
+      "bytes": 12435875,
+      "sha256": "ee5707e9409e76742e1dacdae0ebbb3c567b8772ce5bbcb9785aa215f5784c22",
+      "zip_crc32": "e6c6e62e",
+      "readback_match": true
+    },
+    {
+      "path": "locales/de.pak",
+      "bytes": 717862,
+      "sha256": "58165025c4252ba8b2ce8203b59362b9968938cb0fef9d7da04941be22f41bb3",
+      "zip_crc32": "d44ddced",
+      "readback_match": true
+    },
+    {
+      "path": "locales/zh-CN.pak",
+      "bytes": 592081,
+      "sha256": "7887bd3d01e12306e32a11d9a20566ca0e93688a0375e6ff59da04cf782b1681",
+      "zip_crc32": "00529916",
+      "readback_match": true
+    },
+    {
+      "path": "locales/bn.pak",
+      "bytes": 1513545,
+      "sha256": "415621a5c0b1546e6e447d43b76414425a8703cc7681d637ec1f283ad0c787e7",
+      "zip_crc32": "1c6e9458",
+      "readback_match": true
+    },
+    {
+      "path": "locales/cs.pak",
+      "bytes": 743351,
+      "sha256": "799a789ce531991cb975425730db310f9a8fe74091eee568f3e65fcc7ef0cd57",
+      "zip_crc32": "572a1854",
+      "readback_match": true
+    },
+    {
+      "path": "locales/gu.pak",
+      "bytes": 1495625,
+      "sha256": "e86e8c240d4b6283abb03c49df9e8899607ef9def6d4933c7a541d63b5835271",
+      "zip_crc32": "191ce020",
+      "readback_match": true
+    },
+    {
+      "path": "locales/ur.pak",
+      "bytes": 1047994,
+      "sha256": "c218e21744df2ff0669a87d497d65d76333073577360d4c662c592de146bf82a",
+      "zip_crc32": "2a045ba6",
+      "readback_match": true
+    },
+    {
+      "path": "locales/ca.pak",
+      "bytes": 716908,
+      "sha256": "6f28297c1ccb628f534d65dade167ae559f83eace359acf47e48ff890b9409d5",
+      "zip_crc32": "7f64a5d8",
+      "readback_match": true
+    },
+    {
+      "path": "locales/fil.pak",
+      "bytes": 741385,
+      "sha256": "02e2c70d3d85b0deb677a9ae576ae3cf89e80774532cb3315c14f1e8ce64b310",
+      "zip_crc32": "8ba92e3f",
+      "readback_match": true
+    },
+    {
+      "path": "locales/hr.pak",
+      "bytes": 715279,
+      "sha256": "d46c64ae8af3562e37eb80438aa2bee228fafda251d58ba4d0991291f1c72aab",
+      "zip_crc32": "51951050",
+      "readback_match": true
+    },
+    {
+      "path": "dxil.dll",
+      "bytes": 1509760,
+      "sha256": "77e039c905030a641e53658a008b74e90635a5ea9b6b79eabd0f2003bdfca59a",
+      "zip_crc32": "6cd2b41a",
+      "readback_match": true
+    },
+    {
+      "path": "locales/et.pak",
+      "bytes": 642216,
+      "sha256": "dd1205eae606f12510e24ce39f301439c98b3293d766ca5839dc292a14d7973c",
+      "zip_crc32": "0c4a2281",
+      "readback_match": true
+    },
+    {
+      "path": "locales/ml.pak",
+      "bytes": 1767850,
+      "sha256": "b5606265910e45098a88e989202a550531f6d00333c6b112ed4c5cbc07b2ff6a",
+      "zip_crc32": "c4e31aba",
+      "readback_match": true
+    },
+    {
+      "path": "locales/ja.pak",
+      "bytes": 842053,
+      "sha256": "f6e0d8eda3bc8f1112494bda96b230f3c44f054c47cced50c94c5ee9199f04c6",
+      "zip_crc32": "e49da7d8",
+      "readback_match": true
+    },
+    {
+      "path": "locales/ko.pak",
+      "bytes": 718705,
+      "sha256": "55a3a8db9c84b1fe9e50b56d68fb069ad7546117cf1f6cb89f36f49cc044ad5e",
+      "zip_crc32": "41f73feb",
+      "readback_match": true
+    },
+    {
+      "path": "locales/en-GB.pak",
+      "bytes": 580030,
+      "sha256": "01d9200a5daee1770f7147b166d25baa6a8dd72c138c3c526421e656dec789f5",
+      "zip_crc32": "8689b535",
+      "readback_match": true
+    },
+    {
+      "path": "icudtl.dat",
+      "bytes": 10876560,
+      "sha256": "9f48c7f9c7c94d516a14870707e910ab94d75ae640ff6842c4af53276cd26ebe",
+      "zip_crc32": "10383cef",
+      "readback_match": true
+    },
+    {
+      "path": "locales/fi.pak",
+      "bytes": 655113,
+      "sha256": "1f3123d7fb5c22a95b5250ea17450b665c3c6cd6a6dfd28bbdde15e1bf684a0e",
+      "zip_crc32": "d2958332",
+      "readback_match": true
+    },
+    {
+      "path": "d3dcompiler_47.dll",
+      "bytes": 4741488,
+      "sha256": "a05f99734f7c4822fefc12b367af21fd0976ed6608752fb1e1e80b6ece7ecbbb",
+      "zip_crc32": "80d20879",
+      "readback_match": true
+    },
+    {
+      "path": "locales/lv.pak",
+      "bytes": 774733,
+      "sha256": "4455ab7c06172c2c80796a99558e41f452cc3b33be76654d70440cf4ac7a2d34",
+      "zip_crc32": "f1726e45",
+      "readback_match": true
+    },
+    {
+      "path": "LICENSE",
+      "bytes": 1096,
+      "sha256": "5154e165bd6c2cc0cfbcd8916498c7abab0497923bafcd5cb07673fe8480087d",
+      "zip_crc32": "3958efaa",
+      "readback_match": true
+    },
+    {
+      "path": "locales/kn.pak",
+      "bytes": 1720240,
+      "sha256": "af5fed2130102ecc0c878059c88faed9d6db2e8b147fb5ae9e15e3fe69706c8a",
+      "zip_crc32": "dd9a780e",
+      "readback_match": true
+    },
+    {
+      "path": "locales/lt.pak",
+      "bytes": 777281,
+      "sha256": "af969f4407c190dd01a426fa1244cb1ec7cdf2909d1c3ba5b87ff662ba567303",
+      "zip_crc32": "b18fbdca",
+      "readback_match": true
+    },
+    {
+      "path": "locales/am.pak",
+      "bytes": 1029450,
+      "sha256": "67b938d162bc75db067120bb8366b5bafd9a75fa99a0ca9ad4f46b47d1d37634",
+      "zip_crc32": "e3ba0ac1",
+      "readback_match": true
+    },
+    {
+      "path": "locales/it.pak",
+      "bytes": 693991,
+      "sha256": "aeb1d99a2a09476d9ee0fd133df2d4d987c731b9f91a248ac4e60377ddda1ca5",
+      "zip_crc32": "5bae451f",
+      "readback_match": true
+    },
+    {
+      "path": "locales/en-US.pak",
+      "bytes": 586582,
+      "sha256": "23b271e8009bfa14783700cd0712b4ecaa5b8f2ea28a4d81ae1d7e05bc0c96b1",
+      "zip_crc32": "84d77208",
+      "readback_match": true
+    },
+    {
+      "path": "locales/sv.pak",
+      "bytes": 646543,
+      "sha256": "7b0399a206bfbebe77d1a4fc598c8a6636a1bd940d3ab56519cf4af0134b6edb",
+      "zip_crc32": "5bf1788a",
+      "readback_match": true
+    },
+    {
+      "path": "locales/ta.pak",
+      "bytes": 1758067,
+      "sha256": "91fb1460711df108d8d435a378c8be1d1e80b0886c0158d8c6ae92f35812681b",
+      "zip_crc32": "7cb7c8f3",
+      "readback_match": true
+    },
+    {
+      "path": "locales/id.pak",
+      "bytes": 635080,
+      "sha256": "f567569c42a25bb2dfc5c33e13aac558c0e2a1d5d4b969592bbd0841b36438db",
+      "zip_crc32": "0d0dd44d",
+      "readback_match": true
+    },
+    {
+      "path": "locales/nb.pak",
+      "bytes": 638121,
+      "sha256": "d97a2b0cbe6adc99add2ed3ce0d15d0bb124b778086c466c126634d60ea72608",
+      "zip_crc32": "d9ca7a3a",
+      "readback_match": true
+    },
+    {
+      "path": "locales/he.pak",
+      "bytes": 928748,
+      "sha256": "ddc1f304ab1f4489d19ae2b31e7f8e3ffb47dae439520159e8975422c65e4115",
+      "zip_crc32": "b828604b",
+      "readback_match": true
+    },
+    {
+      "path": "locales/pl.pak",
+      "bytes": 742064,
+      "sha256": "8a0969fc743d3e2f5111387d53c0d79e8c1d9f68256ad6553b87fca2bcaa7e6e",
+      "zip_crc32": "a195ebed",
+      "readback_match": true
+    },
+    {
+      "path": "locales/th.pak",
+      "bytes": 1368866,
+      "sha256": "c1f4235c31bc05153230b0e55b7aabc9020d7460d5b0a025c386885e1e4bda3c",
+      "zip_crc32": "b6a24f61",
+      "readback_match": true
+    },
+    {
+      "path": "snapshot_blob.bin",
+      "bytes": 368768,
+      "sha256": "0b18f38d50c8f96c9fa2b8205c66c25b3ae45c985e8f2e7b6ecfab9f4d4d19d0",
+      "zip_crc32": "4a03b31a",
+      "readback_match": true
+    },
+    {
+      "path": "locales/sw.pak",
+      "bytes": 685127,
+      "sha256": "bd41ea707a0d90d683ec8d5d0f0c79f3e925747bc4ea1982562dfb75080199b9",
+      "zip_crc32": "70ec465b",
+      "readback_match": true
+    },
+    {
+      "path": "locales/zh-TW.pak",
+      "bytes": 583887,
+      "sha256": "7cb5f76e54a548d4e52aa8cdf226a4339bdadc304897abca690f407e95e42f4d",
+      "zip_crc32": "411510b4",
+      "readback_match": true
+    },
+    {
+      "path": "locales/bg.pak",
+      "bytes": 1178203,
+      "sha256": "2eb9c74c67e4b13b45a73061fa978738e335bc245da71bab0ea9b205fe91074e",
+      "zip_crc32": "61791dd3",
+      "readback_match": true
+    },
+    {
+      "path": "ffmpeg.dll",
+      "bytes": 3113472,
+      "sha256": "7728490eb079c19b17baeff2b6590c976f6a928b3c17923aeb4fcf1f1f31d299",
+      "zip_crc32": "6b66b4e9",
+      "readback_match": true
+    },
+    {
+      "path": "locales/te.pak",
+      "bytes": 1629379,
+      "sha256": "fc8c2706c5dfd36e7af8e380a240e0f697cc5fe969b512092a2185896512c4af",
+      "zip_crc32": "eab2a84b",
+      "readback_match": true
+    },
+    {
+      "path": "locales/fa.pak",
+      "bytes": 1063069,
+      "sha256": "ba33624ccad6d0e4a4339589c56be557b28968bf9422bd12a8f26e2a3d581577",
+      "zip_crc32": "889d1df3",
+      "readback_match": true
+    },
+    {
+      "path": "v8_context_snapshot.bin",
+      "bytes": 742200,
+      "sha256": "6d747f11d721655b780a47f6010eeef8428266e7521280e1e094d27c6f34311d",
+      "zip_crc32": "ba084e06",
+      "readback_match": true
+    },
+    {
+      "path": "electron.exe",
+      "bytes": 245726208,
+      "sha256": "49b61a030a520fc36a4b8fa5cce53fb4e935a7bdbbe4b80e9222f598e49cc7fa",
+      "zip_crc32": "b76fd059",
+      "readback_match": true
+    },
+    {
+      "path": "locales/sl.pak",
+      "bytes": 722720,
+      "sha256": "e1371c8df577b979e3a515af34b0aaa3d07153c7a5c55d39a9b49a7ffe62d3d2",
+      "zip_crc32": "43a71a06",
+      "readback_match": true
+    },
+    {
+      "path": "locales/mr.pak",
+      "bytes": 1467313,
+      "sha256": "8465d4077ed5414cbcb7d9bdb00d85e515a1a069703cdc1d4d67c9d6e5623fb0",
+      "zip_crc32": "42261a0f",
+      "readback_match": true
+    },
+    {
+      "path": "locales/tr.pak",
+      "bytes": 697394,
+      "sha256": "d5648d7eaf1826211fb244fcf8419dabdc16c228d92139bc8b0b73c7a6b7e700",
+      "zip_crc32": "db229176",
+      "readback_match": true
+    },
+    {
+      "path": "LICENSES.chromium.html",
+      "bytes": 20472830,
+      "sha256": "7b328b8c7463ac9bfc7dc648c751533517c8441a0b5b21047d6c0b2620e60d70",
+      "zip_crc32": "4eab28f9",
+      "readback_match": true
+    },
+    {
+      "path": "locales/nl.pak",
+      "bytes": 664759,
+      "sha256": "b642c8ab5ce11438e9a8fd4639244fa8f1d55cfd70269565490bc55ee907b048",
+      "zip_crc32": "3dded83d",
+      "readback_match": true
+    },
+    {
+      "path": "locales/da.pak",
+      "bytes": 666471,
+      "sha256": "530fd95daee21d793b99492ca7d0bf9979daffe42944e24414d4b08a3d23b9fe",
+      "zip_crc32": "9b3df53b",
+      "readback_match": true
+    },
+    {
+      "path": "locales/af.pak",
+      "bytes": 636155,
+      "sha256": "3017b141bd16e24190d810f0748612f0fd4352ca8553002b9a63a7f77f7154f8",
+      "zip_crc32": "97386ae5",
+      "readback_match": true
+    },
+    {
+      "path": "locales/sr.pak",
+      "bytes": 1112909,
+      "sha256": "c42a674e3f43aa70cef005931915c8b7ceb34b29566fba3309f8da931dc7861f",
+      "zip_crc32": "53ef17c8",
+      "readback_match": true
+    },
+    {
+      "path": "vulkan-1.dll",
+      "bytes": 939520,
+      "sha256": "5549afe706236d5c7ad5df4607c51639c790dfd118770eb27af8f2c5c076c3c7",
+      "zip_crc32": "bacc5b9d",
+      "readback_match": true
+    },
+    {
+      "path": "locales/ro.pak",
+      "bytes": 728144,
+      "sha256": "1e6b5b0dac63a9e951daf523de310f6bd9e5c53e281f37706d41bd35d2a08bb5",
+      "zip_crc32": "d01b5574",
+      "readback_match": true
+    },
+    {
+      "path": "vk_swiftshader.dll",
+      "bytes": 5520384,
+      "sha256": "3d8555de997bca1e58a72c6a8bc13a8267dca2c882ee0a783803470b289d1d23",
+      "zip_crc32": "7a15a57a",
+      "readback_match": true
+    },
+    {
+      "path": "resources/default_app.asar",
+      "bytes": 110862,
+      "sha256": "0eb2491b0a9ac94790389d39c09dd5005c6c1f0665842943829bbd0193f6cc4f",
+      "zip_crc32": "ea56dc82",
+      "readback_match": true
+    },
+    {
+      "path": "version",
+      "bytes": 6,
+      "sha256": "d6a753840246d37b3b1450cce3259a0d1a1954d8d196276e11fdf094a6a04652",
+      "zip_crc32": "421c0c3e",
+      "readback_match": true
+    },
+    {
+      "path": "locales/hi.pak",
+      "bytes": 1586602,
+      "sha256": "015b3856dc05e8635a48e749e6970fe43f5d620b8dbd04e5abff586178213f6e",
+      "zip_crc32": "60ff7143",
+      "readback_match": true
+    },
+    {
+      "path": "locales/es.pak",
+      "bytes": 703941,
+      "sha256": "fe6fff51ef19db1f4fe0fc602e0bd4bd7fabcfb1ca5d6896d1ce0efcf37e49c4",
+      "zip_crc32": "fe056952",
+      "readback_match": true
+    },
+    {
+      "path": "locales/hu.pak",
+      "bytes": 765640,
+      "sha256": "0a46fc8d50f74effd1cfe1979e677df3de6fc47e6b551267303d93d57bd83f50",
+      "zip_crc32": "b61bef73",
+      "readback_match": true
+    },
+    {
+      "path": "chrome_200_percent.pak",
+      "bytes": 1269017,
+      "sha256": "30fa4a6e27c9ff2fb0f939f01158477e621a67d86e9ecb84cf11b3947db8eb9d",
+      "zip_crc32": "9a2bd516",
+      "readback_match": true
+    },
+    {
+      "path": "locales/sk.pak",
+      "bytes": 755481,
+      "sha256": "3cdc8bca8696c90a572fb15c865caa5c286df45344c72194c3eea97201cc816a",
+      "zip_crc32": "7903656a",
+      "readback_match": true
+    },
+    {
+      "path": "locales/pt-PT.pak",
+      "bytes": 701056,
+      "sha256": "bdfa7264dddf70f936f1785737969559a577b51d1952c820a468c611d18b17ca",
+      "zip_crc32": "aa5a2a9a",
+      "readback_match": true
+    },
+    {
+      "path": "vk_swiftshader_icd.json",
+      "bytes": 106,
+      "sha256": "32d83ff113fef532a9f97e0d2831f8656628ab1c99e9060f0332b1532839afd9",
+      "zip_crc32": "596b3d49",
+      "readback_match": true
+    },
+    {
+      "path": "locales/uk.pak",
+      "bytes": 1211563,
+      "sha256": "ec5d0b426e289c064e8f2d63636ae2a544ff30fc1e99dde04fe1920971e4d060",
+      "zip_crc32": "335db9f8",
+      "readback_match": true
+    },
+    {
+      "path": "locales/fr.pak",
+      "bytes": 763461,
+      "sha256": "8bad7fd88072ac66649dd9307da9163962f8ab00313e627bf1c5ca4450a48b4a",
+      "zip_crc32": "1b8a625e",
+      "readback_match": true
+    },
+    {
+      "path": "locales/vi.pak",
+      "bytes": 830014,
+      "sha256": "76a32f8ad5d08a6f9899e12e4aa9b3d9a9023931e2ca0f73e5ced541c922dcfb",
+      "zip_crc32": "027905ca",
+      "readback_match": true
+    }
+  ],
+  "recompiled": false,
+  "downloaded": false,
+  "existing_windows_paths_modified": false,
+  "application_or_native_helper_executed": false,
+  "account_provider_display_audio_access": false,
+  "resource_allocation_issued": false
+}

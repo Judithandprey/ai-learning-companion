@@ -1,0 +1,15 @@
+{
+  "incoming_message_id": "handoff_e4834c5a05772dd32fd5836ee04dd53d",
+  "read_request_id": "support-mail-20261020-1120",
+  "support_baseline": "af0d8a1f5cb11765f688f1744cc031f037968303",
+  "command": "python3 tests/probes/support/prepare_fixed_windows_artifacts.py /tmp/support-artifact-recovery-0ff325b-riehg1x0/prepared > /tmp/support-artifact-recovery-0ff325b-riehg1x0/preparation.stdout.json 2> /tmp/support-artifact-recovery-0ff325b-riehg1x0/preparation.stderr.txt",
+  "cwd": "/home/agentsdock/Projects/learning-companion/wt-support",
+  "python": "3.14.4",
+  "exit_code": 0,
+  "tool_wall_time_seconds": 2.0824,
+  "probe_sha256": "e0ebbc2583c55e0394548cc1a2236830ba28b423c7693c0b3ce35c74a83ac336",
+  "prepared_inventory_sha256": "b4615e963df0217e2344609cd64688d680762425ce2b92705db6bd4460fc5d16",
+  "stdout_sha256": "5d72d72102c46468698ec924bd71c80fd13776382158c383ee19e366add5307b",
+  "stderr_bytes": 0,
+  "scope": "Copy existing matching payloads and unpack existing cached runtime into fresh /tmp only; no installation or execution."
+}
