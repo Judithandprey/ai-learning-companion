@@ -1,0 +1,28 @@
+✖ tests/e2e/windows/test_qa_live_candidate.mjs (0.47975ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 24.539436
+
+✖ failing tests:
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:1:1
+✖ tests/e2e/windows/test_qa_live_candidate.mjs (0.47975ms)
+  Error: ENOENT: no such file or directory, open '/tmp/support-candidate09-76606ba-52mcoxge/docs/verification/qa/p0-13-live-1755153/edge-placement-offline/candidate/candidate.json'
+      at Object.openSync (node:fs:621:18)
+      at readFileSync (node:fs:487:35)
+      at file:///tmp/support-candidate09-76606ba-52mcoxge/tests/e2e/windows/qa_tts_output_candidate.mjs:22:29
+      at ModuleJob.run (node:internal/modules/esm/module_job:561:25)
+      at async node:internal/modules/esm/loader:647:26
+      at async node:internal/test_runner/runner:1091:15
+      at async runFiles (node:internal/test_runner/runner:1057:9)
+      at async runChain (node:internal/test_runner/runner:1135:5) {
+    errno: -2,
+    code: 'ENOENT',
+    syscall: 'open',
+    path: '/tmp/support-candidate09-76606ba-52mcoxge/docs/verification/qa/p0-13-live-1755153/edge-placement-offline/candidate/candidate.json'
+  }

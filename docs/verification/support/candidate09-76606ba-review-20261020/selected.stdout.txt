@@ -1,0 +1,10 @@
+✔ candidate 09 differs from the consumed candidate 08 only in its new scratch, its new connector copy and commit, and the generator (Lead handoff_6d184e39) (3.699727ms)
+✔ the connector configuration is the trusted real one: the exact private copy of the released baseline 260884e in a new folder, the pinned codex binary, the product's own state (0.489679ms)
+ℹ tests 2
+ℹ suites 0
+ℹ pass 2
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 47.999066

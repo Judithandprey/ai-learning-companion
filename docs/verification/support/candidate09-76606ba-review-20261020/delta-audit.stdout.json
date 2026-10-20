@@ -1,0 +1,70 @@
+{
+  "verdict": "OFFLINE_DELTA_MATCH",
+  "qa_commit": "76606babfacabf3558ee3ee3aa0cb7d1ceedec63",
+  "connector_commit": "260884e670c25da7ab8d0360cc8355f90c3697b6",
+  "product_commit": "0ff325beadb7c689244610307b6aa16d638fd2e6",
+  "candidate_sha256": "9dad7058fa43becf5c76f76f816e85646a014af8a6398e377d33f62c2e73c5cf",
+  "wrapper_sha256": "7023257e0739787744a3a60a36cf5cc038e1f10ebdeb91b0e9dedda9c9ef3594",
+  "source_pins_verified": 21,
+  "payloads": {
+    "runner.ps1": {
+      "sha256": "45063b37328c65771f1c5d431af291a5586e560b57658e4ef9778115e498e36f",
+      "unchanged": false,
+      "only_scratch_or_copy_substitution": true
+    },
+    "steps.json": {
+      "sha256": "8e3e7357ef4902adeccd6fb9148f61dc6bfd8f2c6afe82f976ccd89e71edc19a",
+      "unchanged": false,
+      "only_scratch_or_copy_substitution": true
+    },
+    "surface.html": {
+      "sha256": "be82967ae45d36bece4ac4858d6f45d0e90e58d088203b71323b74e6ae5e1067",
+      "unchanged": true,
+      "only_scratch_or_copy_substitution": true
+    },
+    "sub-live.json": {
+      "sha256": "c38aaae0e38070c805972f71ebed085610427ddc8a2883ee52f1ee5ceec47478",
+      "unchanged": false,
+      "only_scratch_or_copy_substitution": true
+    },
+    "admission-checker.ps1": {
+      "sha256": "9637db613373ef5ba63bc10753033aedaab90bf749aeaa982fed9b65c91eccf1",
+      "unchanged": true,
+      "only_scratch_or_copy_substitution": true
+    },
+    "admission-live.json": {
+      "sha256": "f2c209e94c3b5cecb7f5c2f7e709b27d799c9007c7fc3e763376a9a364763964",
+      "unchanged": false,
+      "only_scratch_or_copy_substitution": true
+    }
+  },
+  "wrapper_only_lines_24_27_changed": true,
+  "manifest_only_documented_changes": true,
+  "packages_tree": "4a0edf80e6d029e344b6775b0dd196062ea746bd",
+  "connector_changed_paths": [
+    "services/worker/connectors/chatgpt_live.py",
+    "services/worker/connectors/chatgpt_local.py",
+    "services/worker/connectors/chatgpt_receipts.py",
+    "services/worker/connectors/chatgpt_rpc.py",
+    "services/worker/connectors/tests/test_chatgpt_close_deadlines.py",
+    "services/worker/connectors/tests/test_chatgpt_failure_outcomes.py",
+    "services/worker/connectors/tests/test_chatgpt_live.py",
+    "services/worker/connectors/tests/test_chatgpt_local.py",
+    "services/worker/connectors/tests/test_chatgpt_output_diagnostics.py",
+    "services/worker/connectors/tests/test_chatgpt_receipts.py",
+    "services/worker/connectors/tests/test_chatgpt_rpc.py"
+  ],
+  "template_and_command_pins_match": true,
+  "template_active": false,
+  "unused_paths": {
+    "scratch": {
+      "path": "/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-live-nonvoice-a4a1c3351f934979ac83776c01e9decc",
+      "exists_or_symlink": false
+    },
+    "connector_copy": {
+      "path": "/home/agentsdock/.local/share/lc-qa/subscription-source-260884e670c2-nonvoice-09",
+      "exists_or_symlink": false
+    }
+  },
+  "runtime_preparation_or_execution": false
+}

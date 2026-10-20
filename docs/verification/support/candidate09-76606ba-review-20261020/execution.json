@@ -1,0 +1,69 @@
+{
+  "verdict": "READY_FOR_OFFLINE_DELTA_REVIEW_ONLY",
+  "incoming_message_id": "handoff_c8970b75ded7832da300e51c843029ab",
+  "read_request_id": "support-mail-20261020-1142",
+  "assignment_idempotency_key": "lead-candidate09-review-76606ba-20261020",
+  "qa_commit": "76606babfacabf3558ee3ee3aa0cb7d1ceedec63",
+  "qa_parent": "21668dd67b658893959ad469d636e1ffeec765d4",
+  "connector_baseline": "260884e670c25da7ab8d0360cc8355f90c3697b6",
+  "support_baseline": "a90f51bb2161256b42885ce5dc30613740f5a2e3",
+  "exact_export": "/tmp/support-candidate09-76606ba-52mcoxge",
+  "source_export_files_verified": 188,
+  "probe_sha256": "3af87b5cf2c87743848aef843794b32eedea111ad93bd06072bd0e8f44b1b385",
+  "commands": {
+    "delta_audit": {
+      "command": "python3 tests/probes/support/candidate09_delta_audit.py /tmp/support-candidate09-76606ba-52mcoxge",
+      "cwd": "/home/agentsdock/Projects/learning-companion/wt-support",
+      "exit_code": 0
+    },
+    "selected_tests": {
+      "command": "/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node --permission --allow-fs-read=/tmp/support-candidate09-76606ba-52mcoxge '--allow-fs-read=/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-live-nonvoice-*' --test-isolation=none --test-name-pattern='candidate 09 differs|connector configuration is the trusted real one' --test tests/e2e/windows/test_qa_live_candidate.mjs",
+      "cwd": "/tmp/support-candidate09-76606ba-52mcoxge",
+      "initial_exit_code": 1,
+      "final_exit_code": 0,
+      "final_test_count": 2
+    },
+    "template": {
+      "command": "/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node --permission --allow-fs-read=/tmp/support-candidate09-76606ba-52mcoxge docs/verification/qa/p0-13-live-0ff325b/candidate-nonvoice-09/driver/template-check.mjs",
+      "cwd": "/tmp/support-candidate09-76606ba-52mcoxge",
+      "initial_exit_code": 1,
+      "final_exit_code": 0,
+      "cases": 3,
+      "allocation_issued": false
+    },
+    "regeneration": {
+      "command": "/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node --permission --allow-fs-read=/tmp/support-candidate09-76606ba-52mcoxge '--allow-fs-read=/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-live-nonvoice-*' --input-type=module",
+      "cwd": "/tmp/support-candidate09-76606ba-52mcoxge",
+      "initial_exit_code": 1,
+      "final_exit_code": 0,
+      "stdin": "import { readFileSync } from 'node:fs';\nimport { checkLiveCandidate, names } from './tests/e2e/windows/qa_live_candidate.mjs';\nconst base = './docs/verification/qa/p0-13-live-0ff325b/';\nconst candidate = base + 'candidate-nonvoice-09/';\nconst manifest = JSON.parse(readFileSync(candidate + 'candidate.json'));\nconst result = checkLiveCandidate(manifest, Object.fromEntries(names.map(n => [n, readFileSync(candidate+n)])), JSON.parse(readFileSync(base+'stage-identity.json')));\nif (!result.scratch_unused || result.execution_admitted || result.native_executed || result.provider_attempts !== 0) throw Error('expected unused offline-only candidate');\nconsole.log(JSON.stringify({saved_candidate_regenerated:true, static_identity:'historical committed receipt only; installed stage not inspected', result},null,2));\n"
+    }
+  },
+  "initial_failure": "Node module loading failed because the narrow export omitted docs/verification/qa/p0-13-live-1755153/edge-placement-offline/candidate/candidate.json. No selected test or validator ran. Added exact QA Git object only, then reran the three affected invocations; source unchanged.",
+  "added_fixture_sha256": "78b784e562958d597d8a3eff461017e598b18a899f8e55d13662826bb8195f21",
+  "evidence_sha256": {
+    "delta-audit.stdout.json": "6015bc590e25702b140eb4647a058e15f87034945d5a39926aca52c000605c81",
+    "delta-audit.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "selected.stdout.txt": "1c72374a54bc601cacb2996161f0a86bb332875ce3705bd03f045a7d62d1594b",
+    "selected.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "template.stdout.json": "2363aaae466b06c438ac86459e7af0f9869a7e2f9301deda1e3f0d58d2f49110",
+    "template.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "regeneration.stdout.json": "68dfc308b18d30e6a5ab19779e8efb066d0d8e30aadb61717a50e6e228d9ffc2",
+    "regeneration.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "unused-paths.json": "4bdcb58c8677a8243573f30f1df7ef15644242aed3c27b40d8bba6ce4f8feb52",
+    "initial-selected.stdout.txt": "af623a5a0f3684347bd8b9161e31688d62b1f4140586efd5a12a80cd2a85839c",
+    "initial-selected.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "initial-template.stdout.json": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "initial-template.stderr.txt": "b7f9801dd7d6694b201cf7fa476a3657401445fe909e69320ae65fd4b0cf2a33",
+    "initial-regeneration.stdout.json": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "initial-regeneration.stderr.txt": "12f64a5dad9f87057058edc1cb5aca37a9bb9658b0d04eced36e6a02366c36c8"
+  },
+  "candidate08_retired_usage": {
+    "native_attempts": "1/1",
+    "real_actions": "1/4"
+  },
+  "connector_preparation_or_staging_or_powershell": false,
+  "installed_codex_account_provider_native_display_audio_private_state": false,
+  "production_or_qa_edits": false,
+  "new_lease_or_attempt": false
+}
