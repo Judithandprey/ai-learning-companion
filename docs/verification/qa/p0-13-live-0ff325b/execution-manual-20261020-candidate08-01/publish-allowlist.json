@@ -1,0 +1,18 @@
+{
+  "kind": "qa-live-publish-allowlist/1",
+  "files": [
+    "admission-checker.jsonl",
+    "captures/ff218cbde80a84cf/admission.jsonl",
+    "captures/ff218cbde80a84cf/live.jsonl",
+    "connector-watch.jsonl",
+    "ledger.json",
+    "receipts-sanitized.json",
+    "run-status.json",
+    "run.json",
+    "runner-results.json",
+    "runner.stderr.bin",
+    "runner.stdout.bin"
+  ],
+  "excluded_by_default": "everything else; raw receipts are outside the repository",
+  "review": "QA and the Lead read each listed file before commit"
+}

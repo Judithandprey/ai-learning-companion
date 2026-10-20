@@ -1,0 +1,2155 @@
+﻿{
+    "steps":  [
+                  {
+                      "i":  1,
+                      "ok":  true,
+                      "at":  "2026-10-20T12:27:24.7992768Z",
+                      "kind":  "edgeStart",
+                      "surface_identity":  {
+                                               "owner":  62208,
+                                               "matching_windows":  1,
+                                               "unknown_windows":  0,
+                                               "page":  [
+                                                            1280,
+                                                            800,
+                                                            2
+                                                        ],
+                                               "owned_windows":  [
+                                                                     {
+                                                                         "handle":  "463946",
+                                                                         "status":  "owned",
+                                                                         "bounds":  [
+                                                                                        670,
+                                                                                        88,
+                                                                                        1888,
+                                                                                        202
+                                                                                    ],
+                                                                         "class":  "Chrome_WidgetWin_1",
+                                                                         "topmost":  true,
+                                                                         "minimized":  false,
+                                                                         "foreground":  false,
+                                                                         "caption":  "empty"
+                                                                     },
+                                                                     {
+                                                                         "handle":  "10617248",
+                                                                         "status":  "owned",
+                                                                         "bounds":  [
+                                                                                        0,
+                                                                                        0,
+                                                                                        2560,
+                                                                                        1600
+                                                                                    ],
+                                                                         "class":  "Chrome_WidgetWin_1",
+                                                                         "topmost":  false,
+                                                                         "minimized":  false,
+                                                                         "foreground":  false,
+                                                                         "caption":  "token"
+                                                                     }
+                                                                 ],
+                                               "client":  [
+                                                              2560,
+                                                              1600,
+                                                              192
+                                                          ],
+                                               "handle":  "10617248"
+                                           }
+                  },
+                  {
+                      "i":  2,
+                      "ok":  true,
+                      "at":  "2026-10-20T12:27:26.7849697Z",
+                      "kind":  "window",
+                      "window":  "edge",
+                      "show":  "raise",
+                      "before_window":  {
+                                            "handle":  "10617248",
+                                            "owner":  62208,
+                                            "bounds":  [
+                                                           0,
+                                                           0,
+                                                           2560,
+                                                           1600
+                                                       ],
+                                            "visible":  true,
+                                            "foreground":  false,
+                                            "class":  "Chrome_WidgetWin_1",
+                                            "topmost":  false,
+                                            "minimized":  false,
+                                            "above_edge":  false
+                                        },
+                      "after_window":  {
+                                           "handle":  "10617248",
+                                           "owner":  62208,
+                                           "bounds":  [
+                                                          0,
+                                                          0,
+                                                          2560,
+                                                          1600
+                                                      ],
+                                           "visible":  true,
+                                           "foreground":  true,
+                                           "class":  "Chrome_WidgetWin_1",
+                                           "topmost":  false,
+                                           "minimized":  false,
+                                           "above_edge":  false
+                                       },
+                      "foreground":  true,
+                      "is_foreground":  true
+                  },
+                  {
+                      "i":  3,
+                      "ok":  true,
+                      "at":  "2026-10-20T12:27:28.6364392Z",
+                      "kind":  "edgeFullscreen",
+                      "before_window":  {
+                                            "handle":  "10617248",
+                                            "owner":  62208,
+                                            "bounds":  [
+                                                           0,
+                                                           0,
+                                                           2560,
+                                                           1600
+                                                       ],
+                                            "visible":  true,
+                                            "foreground":  true,
+                                            "class":  "Chrome_WidgetWin_1",
+                                            "topmost":  false,
+                                            "minimized":  false,
+                                            "above_edge":  false
+                                        },
+                      "before":  "fullscreen",
+                      "before_bounds":  {
+                                            "left":  0,
+                                            "top":  0,
+                                            "width":  1280,
+                                            "height":  800,
+                                            "windowState":  "fullscreen"
+                                        },
+                      "normal":  {
+                                     "windowId":  2086572431,
+                                     "bounds":  {
+                                                    "left":  10,
+                                                    "top":  10,
+                                                    "width":  1050,
+                                                    "height":  732,
+                                                    "windowState":  "normal"
+                                                }
+                                 },
+                      "normal_window":  {
+                                            "handle":  "10617248",
+                                            "owner":  62208,
+                                            "bounds":  [
+                                                           20,
+                                                           20,
+                                                           2120,
+                                                           1484
+                                                       ],
+                                            "visible":  true,
+                                            "foreground":  true,
+                                            "class":  "Chrome_WidgetWin_1",
+                                            "topmost":  false,
+                                            "minimized":  false,
+                                            "above_edge":  false
+                                        },
+                      "fullscreen":  {
+                                         "windowId":  2086572431,
+                                         "bounds":  {
+                                                        "left":  0,
+                                                        "top":  0,
+                                                        "width":  1280,
+                                                        "height":  800,
+                                                        "windowState":  "fullscreen"
+                                                    }
+                                     },
+                      "fullscreen_window":  {
+                                                "handle":  "10617248",
+                                                "owner":  62208,
+                                                "bounds":  [
+                                                               0,
+                                                               0,
+                                                               2560,
+                                                               1600
+                                                           ],
+                                                "visible":  true,
+                                                "foreground":  true,
+                                                "class":  "Chrome_WidgetWin_1",
+                                                "topmost":  false,
+                                                "minimized":  false,
+                                                "above_edge":  false
+                                            },
+                      "after":  "fullscreen",
+                      "after_window":  {
+                                           "handle":  "10617248",
+                                           "owner":  62208,
+                                           "bounds":  [
+                                                          0,
+                                                          0,
+                                                          2560,
+                                                          1600
+                                                      ],
+                                           "visible":  true,
+                                           "foreground":  true,
+                                           "class":  "Chrome_WidgetWin_1",
+                                           "topmost":  false,
+                                           "minimized":  false,
+                                           "above_edge":  false
+                                       },
+                      "browser_geometry":  {
+                                               "x":  0,
+                                               "y":  0,
+                                               "outer_width":  1280,
+                                               "outer_height":  800,
+                                               "inner_width":  1280,
+                                               "inner_height":  800,
+                                               "dpr":  2
+                                           }
+                  },
+                  {
+                      "i":  4,
+                      "ok":  true,
+                      "at":  "2026-10-20T12:27:32.9919675Z",
+                      "kind":  "eval",
+                      "target":  "edge",
+                      "as":  "surface_before"
+                  },
+                  {
+                      "i":  5,
+                      "ok":  true,
+                      "at":  "2026-10-20T12:27:33.0046483Z",
+                      "kind":  "onTop",
+                      "window":  "edge",
+                      "points":  16,
+                      "point_windows":  [
+                                            {
+                                                "point":  [
+                                                              270,
+                                                              330
+                                                          ],
+                                                "owned":  true,
+                                                "window":  {
+                                                               "handle":  "10617248",
+                                                               "owner":  62208,
+                                                               "bounds":  [
+                                                                              0,
+                                                                              0,
+                                                                              2560,
+                                                                              1600
+                                                                          ],
+                                                               "visible":  true,
+                                                               "foreground":  true,
+                                                               "class":  "Chrome_WidgetWin_1",
+                                                               "topmost":  false,
+                                                               "minimized":  false,
+                                                               "above_edge":  false
+                                                           },
+                                                "process":  "msedge"
+                                            },
+                                            {
+                                                "point":  [
+                                                              690,
+                                                              330
+                                                          ],
+                                                "owned":  true,
+                                                "window":  {
+                                                               "handle":  "10617248",
+                                                               "owner":  62208,
+                                                               "bounds":  [
+                                                                              0,
+                                                                              0,
+                                                                              2560,
+                                                                              1600
+                                                                          ],
+                                                               "visible":  true,
+                                                               "foreground":  true,
+                                                               "class":  "Chrome_WidgetWin_1",
+                                                               "topmost":  false,
+                                                               "minimized":  false,
+                                                               "above_edge":  false
+                                                           },
+                                                "process":  "msedge"
+                                            },
+                                            {
+                                                "point":  [
+                                                              1110,
+                                                              330
+                                                          ],
+                                                "owned":  true,
+                                                "window":  {
+                                                               "handle":  "10617248",
+                                                               "owner":  62208,
+                                                               "bounds":  [
+                                                                              0,
+                                                                              0,
+                                                                              2560,
+                                                                              1600
+                                                                          ],
+                                                               "visible":  true,
+                                                               "foreground":  true,
+                                                               "class":  "Chrome_WidgetWin_1",
+                                                               "topmost":  false,
+                                                               "minimized":  false,
+                                                               "above_edge":  false
+                                                           },
+                                                "process":  "msedge"
+                                            },
+                                            {
+                                                "point":  [
+                                                              1530,
+                                                              330
+                                                          ],
+                                                "owned":  true,
+                                                "window":  {
+                                                               "handle":  "10617248",
+                                                               "owner":  62208,
+                                                               "bounds":  [
+                                                                              0,
+                                                                              0,
+                                                                              2560,
+                                                                              1600
+                                                                          ],
+                                                               "visible":  true,
+                                                               "foreground":  true,
+                                                               "class":  "Chrome_WidgetWin_1",
+                                                               "topmost":  false,
+                                                               "minimized":  false,
+                                                               "above_edge":  false
+                                                           },
+                                                "process":  "msedge"
+                                            },
+                                            {
+                                                "point":  [
+                                                              270,
+                                                              670
+                                                          ],
+                                                "owned":  true,
+                                                "window":  {
+                                                               "handle":  "10617248",
+                                                               "owner":  62208,
+                                                               "bounds":  [
+                                                                              0,
+                                                                              0,
+                                                                              2560,
+                                                                              1600
+                                                                          ],
+                                                               "visible":  true,
+                                                               "foreground":  true,
+                                                               "class":  "Chrome_WidgetWin_1",
+                                                               "topmost":  false,
+                                                               "minimized":  false,
+                                                               "above_edge":  false
+                                                           },
+                                                "process":  "msedge"
+                                            },
+                                            {
+                                                "point":  [
+                                                              690,
+                                                              670
+                                                          ],
+                                                "owned":  true,
+                                                "window":  {
+                                                               "handle":  "10617248",
+                                                               "owner":  62208,
+                                                               "bounds":  [
+                                                                              0,
+                                                                              0,
+                                                                              2560,
+                                                                              1600
+                                                                          ],
+                                                               "visible":  true,
+                                                               "foreground":  true,
+                                                               "class":  "Chrome_WidgetWin_1",
+                                                               "topmost":  false,
+                                                               "minimized":  false,
+                                                               "above_edge":  false
+                                                           },
+                                                "process":  "msedge"
+                                            },
+                                            {
+                                                "point":  [
+                                                              1110,
+                                                              670
+                                                          ],
+                                                "owned":  true,
+                                                "window":  {
+                                                               "handle":  "10617248",
+                                                               "owner":  62208,
+                                                               "bounds":  [
+                                                                              0,
+                                                                              0,
+                                                                              2560,
+                                                                              1600
+                                                                          ],
+                                                               "visible":  true,
+                                                               "foreground":  true,
+                                                               "class":  "Chrome_WidgetWin_1",
+                                                               "topmost":  false,
+                                                               "minimized":  false,
+                                                               "above_edge":  false
+                                                           },
+                                                "process":  "msedge"
+                                            },
+                                            {
+                                                "point":  [
+                                                              1530,
+                                                              670
+                                                          ],
+                                                "owned":  true,
+                                                "window":  {
+                                                               "handle":  "10617248",
+                                                               "owner":  62208,
+                                                               "bounds":  [
+                                                                              0,
+                                                                              0,
+                                                                              2560,
+                                                                              1600
+                                                                          ],
+                                                               "visible":  true,
+                                                               "foreground":  true,
+                                                               "class":  "Chrome_WidgetWin_1",
+                                                               "topmost":  false,
+                                                               "minimized":  false,
+                                                               "above_edge":  false
+                                                           },
+                                                "process":  "msedge"
+                                            },
+                                            {
+                                                "point":  [
+                                                              270,
+                                                              1010
+                                                          ],
+                                                "owned":  true,
+                                                "window":  {
+                                                               "handle":  "10617248",
+                                                               "owner":  62208,
+                                                               "bounds":  [
+                                                                              0,
+                                                                              0,
+                                                                              2560,
+                                                                              1600
+                                                                          ],
+                                                               "visible":  true,
+                                                               "foreground":  true,
+                                                               "class":  "Chrome_WidgetWin_1",
+                                                               "topmost":  false,
+                                                               "minimized":  false,
+                                                               "above_edge":  false
+                                                           },
+                                                "process":  "msedge"
+                                            },
+                                            {
+                                                "point":  [
+                                                              690,
+                                                              1010
+                                                          ],
+                                                "owned":  true,
+                                                "window":  {
+                                                               "handle":  "10617248",
+                                                               "owner":  62208,
+                                                               "bounds":  [
+                                                                              0,
+                                                                              0,
+                                                                              2560,
+                                                                              1600
+                                                                          ],
+                                                               "visible":  true,
+                                                               "foreground":  true,
+                                                               "class":  "Chrome_WidgetWin_1",
+                                                               "topmost":  false,
+                                                               "minimized":  false,
+                                                               "above_edge":  false
+                                                           },
+                                                "process":  "msedge"
+                                            },
+                                            {
+                                                "point":  [
+                                                              1110,
+                                                              1010
+                                                          ],
+                                                "owned":  true,
+                                                "window":  {
+                                                               "handle":  "10617248",
+                                                               "owner":  62208,
+                                                               "bounds":  [
+                                                                              0,
+                                                                              0,
+                                                                              2560,
+                                                                              1600
+                                                                          ],
+                                                               "visible":  true,
+                                                               "foreground":  true,
+                                                               "class":  "Chrome_WidgetWin_1",
+                                                               "topmost":  false,
+                                                               "minimized":  false,
+                                                               "above_edge":  false
+                                                           },
+                                                "process":  "msedge"
+                                            },
+                                            {
+                                                "point":  [
+                                                              1530,
+                                                              1010
+                                                          ],
+                                                "owned":  true,
+                                                "window":  {
+                                                               "handle":  "10617248",
+                                                               "owner":  62208,
+                                                               "bounds":  [
+                                                                              0,
+                                                                              0,
+                                                                              2560,
+                                                                              1600
+                                                                          ],
+                                                               "visible":  true,
+                                                               "foreground":  true,
+                                                               "class":  "Chrome_WidgetWin_1",
+                                                               "topmost":  false,
+                                                               "minimized":  false,
+                                                               "above_edge":  false
+                                                           },
+                                                "process":  "msedge"
+                                            },
+                                            {
+                                                "point":  [
+                                                              20,
+                                                              20
+                                                          ],
+                                                "owned":  true,
+                                                "window":  {
+                                                               "handle":  "10617248",
+                                                               "owner":  62208,
+                                                               "bounds":  [
+                                                                              0,
+                                                                              0,
+                                                                              2560,
+                                                                              1600
+                                                                          ],
+                                                               "visible":  true,
+                                                               "foreground":  true,
+                                                               "class":  "Chrome_WidgetWin_1",
+                                                               "topmost":  false,
+                                                               "minimized":  false,
+                                                               "above_edge":  false
+                                                           },
+                                                "process":  "msedge"
+                                            },
+                                            {
+                                                "point":  [
+                                                              2540,
+                                                              20
+                                                          ],
+                                                "owned":  true,
+                                                "window":  {
+                                                               "handle":  "10617248",
+                                                               "owner":  62208,
+                                                               "bounds":  [
+                                                                              0,
+                                                                              0,
+                                                                              2560,
+                                                                              1600
+                                                                          ],
+                                                               "visible":  true,
+                                                               "foreground":  true,
+                                                               "class":  "Chrome_WidgetWin_1",
+                                                               "topmost":  false,
+                                                               "minimized":  false,
+                                                               "above_edge":  false
+                                                           },
+                                                "process":  "msedge"
+                                            },
+                                            {
+                                                "point":  [
+                                                              20,
+                                                              1580
+                                                          ],
+                                                "owned":  true,
+                                                "window":  {
+                                                               "handle":  "10617248",
+                                                               "owner":  62208,
+                                                               "bounds":  [
+                                                                              0,
+                                                                              0,
+                                                                              2560,
+                                                                              1600
+                                                                          ],
+                                                               "visible":  true,
+                                                               "foreground":  true,
+                                                               "class":  "Chrome_WidgetWin_1",
+                                                               "topmost":  false,
+                                                               "minimized":  false,
+                                                               "above_edge":  false
+                                                           },
+                                                "process":  "msedge"
+                                            },
+                                            {
+                                                "point":  [
+                                                              2540,
+                                                              1580
+                                                          ],
+                                                "owned":  true,
+                                                "window":  {
+                                                               "handle":  "10617248",
+                                                               "owner":  62208,
+                                                               "bounds":  [
+                                                                              0,
+                                                                              0,
+                                                                              2560,
+                                                                              1600
+                                                                          ],
+                                                               "visible":  true,
+                                                               "foreground":  true,
+                                                               "class":  "Chrome_WidgetWin_1",
+                                                               "topmost":  false,
+                                                               "minimized":  false,
+                                                               "above_edge":  false
+                                                           },
+                                                "process":  "msedge"
+                                            }
+                                        ],
+                      "owned_points":  16,
+                      "native_window":  {
+                                            "handle":  "10617248",
+                                            "owner":  62208,
+                                            "bounds":  [
+                                                           0,
+                                                           0,
+                                                           2560,
+                                                           1600
+                                                       ],
+                                            "visible":  true,
+                                            "foreground":  true,
+                                            "class":  "Chrome_WidgetWin_1",
+                                            "topmost":  false,
+                                            "minimized":  false,
+                                            "above_edge":  false
+                                        },
+                      "covered":  [
+
+                                  ]
+                  },
+                  {
+                      "i":  6,
+                      "ok":  true,
+                      "at":  "2026-10-20T12:27:34.5862231Z",
+                      "kind":  "launchApp",
+                      "pid":  64712
+                  },
+                  {
+                      "i":  7,
+                      "ok":  true,
+                      "at":  "2026-10-20T12:27:37.2158762Z",
+                      "kind":  "waitEval",
+                      "target":  "control",
+                      "as":  null
+                  },
+                  {
+                      "i":  8,
+                      "ok":  true,
+                      "at":  "2026-10-20T12:27:37.7741023Z",
+                      "kind":  "eval",
+                      "target":  "control",
+                      "as":  "connector_configured"
+                  },
+                  {
+                      "i":  9,
+                      "ok":  true,
+                      "at":  "2026-10-20T12:27:37.7981023Z",
+                      "kind":  "eval",
+                      "target":  "control",
+                      "as":  "check_pressed"
+                  },
+                  {
+                      "i":  10,
+                      "ok":  true,
+                      "at":  "2026-10-20T12:27:37.8115598Z",
+                      "kind":  "waitEval",
+                      "target":  "control",
+                      "as":  null
+                  },
+                  {
+                      "i":  11,
+                      "ok":  true,
+                      "at":  "2026-10-20T12:27:40.2405833Z",
+                      "kind":  "eval",
+                      "target":  "control",
+                      "as":  "account_ready"
+                  },
+                  {
+                      "i":  12,
+                      "ok":  true,
+                      "at":  "2026-10-20T12:27:40.2450401Z",
+                      "kind":  "eval",
+                      "target":  "control",
+                      "as":  "display_choice"
+                  },
+                  {
+                      "i":  13,
+                      "ok":  true,
+                      "at":  "2026-10-20T12:27:40.3937811Z",
+                      "kind":  "productPlacement",
+                      "phase":  "control",
+                      "edge":  {
+                                   "handle":  "10617248",
+                                   "owner":  62208,
+                                   "bounds":  [
+                                                  0,
+                                                  0,
+                                                  2560,
+                                                  1600
+                                              ],
+                                   "visible":  true,
+                                   "foreground":  true,
+                                   "class":  "Chrome_WidgetWin_1",
+                                   "topmost":  false,
+                                   "minimized":  false,
+                                   "above_edge":  false
+                               },
+                      "control_before":  {
+                                             "handle":  "70868",
+                                             "owner":  64712,
+                                             "bounds":  [
+                                                            820,
+                                                            32,
+                                                            1740,
+                                                            1472
+                                                        ],
+                                             "visible":  true,
+                                             "foreground":  false,
+                                             "class":  "Chrome_WidgetWin_1",
+                                             "topmost":  false,
+                                             "minimized":  false,
+                                             "above_edge":  false
+                                         },
+                      "control_raised":  true,
+                      "control":  {
+                                      "handle":  "70868",
+                                      "owner":  64712,
+                                      "bounds":  [
+                                                     820,
+                                                     32,
+                                                     1740,
+                                                     1472
+                                                 ],
+                                      "visible":  true,
+                                      "foreground":  true,
+                                      "class":  "Chrome_WidgetWin_1",
+                                      "topmost":  false,
+                                      "minimized":  false,
+                                      "above_edge":  true
+                                  },
+                      "control_client":  [
+                                             833,
+                                             90,
+                                             1727,
+                                             1459,
+                                             192
+                                         ],
+                      "control_box":  {
+                                          "viewport":  [
+                                                           447,
+                                                           685
+                                                       ],
+                                          "dpr":  2,
+                                          "x":  216,
+                                          "y":  245.28125,
+                                          "width":  400,
+                                          "height":  93,
+                                          "shown":  true
+                                      },
+                      "control_point":  [
+                                            1265,
+                                            581
+                                        ],
+                      "point_window":  {
+                                           "handle":  "70868",
+                                           "owner":  64712,
+                                           "bounds":  [
+                                                          820,
+                                                          32,
+                                                          1740,
+                                                          1472
+                                                      ],
+                                           "visible":  true,
+                                           "foreground":  true,
+                                           "class":  "Chrome_WidgetWin_1",
+                                           "topmost":  false,
+                                           "minimized":  false,
+                                           "above_edge":  true
+                                       }
+                  },
+                  {
+                      "i":  14,
+                      "ok":  true,
+                      "at":  "2026-10-20T12:27:42.0251688Z",
+                      "kind":  "window",
+                      "window":  "edge",
+                      "show":  "raise",
+                      "before_window":  {
+                                            "handle":  "10617248",
+                                            "owner":  62208,
+                                            "bounds":  [
+                                                           0,
+                                                           0,
+                                                           2560,
+                                                           1599
+                                                       ],
+                                            "visible":  true,
+                                            "foreground":  false,
+                                            "class":  "Chrome_WidgetWin_1",
+                                            "topmost":  false,
+                                            "minimized":  false,
+                                            "above_edge":  false
+                                        },
+                      "after_window":  {
+                                           "handle":  "10617248",
+                                           "owner":  62208,
+                                           "bounds":  [
+                                                          0,
+                                                          0,
+                                                          2560,
+                                                          1600
+                                                      ],
+                                           "visible":  true,
+                                           "foreground":  true,
+                                           "class":  "Chrome_WidgetWin_1",
+                                           "topmost":  false,
+                                           "minimized":  false,
+                                           "above_edge":  false
+                                       },
+                      "foreground":  true,
+                      "is_foreground":  true
+                  },
+                  {
+                      "i":  15,
+                      "ok":  true,
+                      "at":  "2026-10-20T12:27:43.7479790Z",
+                      "kind":  "eval",
+                      "target":  "edge",
+                      "as":  "surface_at_start"
+                  },
+                  {
+                      "i":  16,
+                      "ok":  true,
+                      "at":  "2026-10-20T12:27:43.7539814Z",
+                      "kind":  "onTop",
+                      "window":  "edge",
+                      "points":  16,
+                      "point_windows":  [
+                                            {
+                                                "point":  [
+                                                              270,
+                                                              330
+                                                          ],
+                                                "owned":  true,
+                                                "window":  {
+                                                               "handle":  "10617248",
+                                                               "owner":  62208,
+                                                               "bounds":  [
+                                                                              0,
+                                                                              0,
+                                                                              2560,
+                                                                              1600
+                                                                          ],
+                                                               "visible":  true,
+                                                               "foreground":  true,
+                                                               "class":  "Chrome_WidgetWin_1",
+                                                               "topmost":  false,
+                                                               "minimized":  false,
+                                                               "above_edge":  false
+                                                           },
+                                                "process":  "msedge"
+                                            },
+                                            {
+                                                "point":  [
+                                                              690,
+                                                              330
+                                                          ],
+                                                "owned":  true,
+                                                "window":  {
+                                                               "handle":  "10617248",
+                                                               "owner":  62208,
+                                                               "bounds":  [
+                                                                              0,
+                                                                              0,
+                                                                              2560,
+                                                                              1600
+                                                                          ],
+                                                               "visible":  true,
+                                                               "foreground":  true,
+                                                               "class":  "Chrome_WidgetWin_1",
+                                                               "topmost":  false,
+                                                               "minimized":  false,
+                                                               "above_edge":  false
+                                                           },
+                                                "process":  "msedge"
+                                            },
+                                            {
+                                                "point":  [
+                                                              1110,
+                                                              330
+                                                          ],
+                                                "owned":  true,
+                                                "window":  {
+                                                               "handle":  "10617248",
+                                                               "owner":  62208,
+                                                               "bounds":  [
+                                                                              0,
+                                                                              0,
+                                                                              2560,
+                                                                              1600
+                                                                          ],
+                                                               "visible":  true,
+                                                               "foreground":  true,
+                                                               "class":  "Chrome_WidgetWin_1",
+                                                               "topmost":  false,
+                                                               "minimized":  false,
+                                                               "above_edge":  false
+                                                           },
+                                                "process":  "msedge"
+                                            },
+                                            {
+                                                "point":  [
+                                                              1530,
+                                                              330
+                                                          ],
+                                                "owned":  true,
+                                                "window":  {
+                                                               "handle":  "10617248",
+                                                               "owner":  62208,
+                                                               "bounds":  [
+                                                                              0,
+                                                                              0,
+                                                                              2560,
+                                                                              1600
+                                                                          ],
+                                                               "visible":  true,
+                                                               "foreground":  true,
+                                                               "class":  "Chrome_WidgetWin_1",
+                                                               "topmost":  false,
+                                                               "minimized":  false,
+                                                               "above_edge":  false
+                                                           },
+                                                "process":  "msedge"
+                                            },
+                                            {
+                                                "point":  [
+                                                              270,
+                                                              670
+                                                          ],
+                                                "owned":  true,
+                                                "window":  {
+                                                               "handle":  "10617248",
+                                                               "owner":  62208,
+                                                               "bounds":  [
+                                                                              0,
+                                                                              0,
+                                                                              2560,
+                                                                              1600
+                                                                          ],
+                                                               "visible":  true,
+                                                               "foreground":  true,
+                                                               "class":  "Chrome_WidgetWin_1",
+                                                               "topmost":  false,
+                                                               "minimized":  false,
+                                                               "above_edge":  false
+                                                           },
+                                                "process":  "msedge"
+                                            },
+                                            {
+                                                "point":  [
+                                                              690,
+                                                              670
+                                                          ],
+                                                "owned":  true,
+                                                "window":  {
+                                                               "handle":  "10617248",
+                                                               "owner":  62208,
+                                                               "bounds":  [
+                                                                              0,
+                                                                              0,
+                                                                              2560,
+                                                                              1600
+                                                                          ],
+                                                               "visible":  true,
+                                                               "foreground":  true,
+                                                               "class":  "Chrome_WidgetWin_1",
+                                                               "topmost":  false,
+                                                               "minimized":  false,
+                                                               "above_edge":  false
+                                                           },
+                                                "process":  "msedge"
+                                            },
+                                            {
+                                                "point":  [
+                                                              1110,
+                                                              670
+                                                          ],
+                                                "owned":  true,
+                                                "window":  {
+                                                               "handle":  "10617248",
+                                                               "owner":  62208,
+                                                               "bounds":  [
+                                                                              0,
+                                                                              0,
+                                                                              2560,
+                                                                              1600
+                                                                          ],
+                                                               "visible":  true,
+                                                               "foreground":  true,
+                                                               "class":  "Chrome_WidgetWin_1",
+                                                               "topmost":  false,
+                                                               "minimized":  false,
+                                                               "above_edge":  false
+                                                           },
+                                                "process":  "msedge"
+                                            },
+                                            {
+                                                "point":  [
+                                                              1530,
+                                                              670
+                                                          ],
+                                                "owned":  true,
+                                                "window":  {
+                                                               "handle":  "10617248",
+                                                               "owner":  62208,
+                                                               "bounds":  [
+                                                                              0,
+                                                                              0,
+                                                                              2560,
+                                                                              1600
+                                                                          ],
+                                                               "visible":  true,
+                                                               "foreground":  true,
+                                                               "class":  "Chrome_WidgetWin_1",
+                                                               "topmost":  false,
+                                                               "minimized":  false,
+                                                               "above_edge":  false
+                                                           },
+                                                "process":  "msedge"
+                                            },
+                                            {
+                                                "point":  [
+                                                              270,
+                                                              1010
+                                                          ],
+                                                "owned":  true,
+                                                "window":  {
+                                                               "handle":  "10617248",
+                                                               "owner":  62208,
+                                                               "bounds":  [
+                                                                              0,
+                                                                              0,
+                                                                              2560,
+                                                                              1600
+                                                                          ],
+                                                               "visible":  true,
+                                                               "foreground":  true,
+                                                               "class":  "Chrome_WidgetWin_1",
+                                                               "topmost":  false,
+                                                               "minimized":  false,
+                                                               "above_edge":  false
+                                                           },
+                                                "process":  "msedge"
+                                            },
+                                            {
+                                                "point":  [
+                                                              690,
+                                                              1010
+                                                          ],
+                                                "owned":  true,
+                                                "window":  {
+                                                               "handle":  "10617248",
+                                                               "owner":  62208,
+                                                               "bounds":  [
+                                                                              0,
+                                                                              0,
+                                                                              2560,
+                                                                              1600
+                                                                          ],
+                                                               "visible":  true,
+                                                               "foreground":  true,
+                                                               "class":  "Chrome_WidgetWin_1",
+                                                               "topmost":  false,
+                                                               "minimized":  false,
+                                                               "above_edge":  false
+                                                           },
+                                                "process":  "msedge"
+                                            },
+                                            {
+                                                "point":  [
+                                                              1110,
+                                                              1010
+                                                          ],
+                                                "owned":  true,
+                                                "window":  {
+                                                               "handle":  "10617248",
+                                                               "owner":  62208,
+                                                               "bounds":  [
+                                                                              0,
+                                                                              0,
+                                                                              2560,
+                                                                              1600
+                                                                          ],
+                                                               "visible":  true,
+                                                               "foreground":  true,
+                                                               "class":  "Chrome_WidgetWin_1",
+                                                               "topmost":  false,
+                                                               "minimized":  false,
+                                                               "above_edge":  false
+                                                           },
+                                                "process":  "msedge"
+                                            },
+                                            {
+                                                "point":  [
+                                                              1530,
+                                                              1010
+                                                          ],
+                                                "owned":  true,
+                                                "window":  {
+                                                               "handle":  "10617248",
+                                                               "owner":  62208,
+                                                               "bounds":  [
+                                                                              0,
+                                                                              0,
+                                                                              2560,
+                                                                              1600
+                                                                          ],
+                                                               "visible":  true,
+                                                               "foreground":  true,
+                                                               "class":  "Chrome_WidgetWin_1",
+                                                               "topmost":  false,
+                                                               "minimized":  false,
+                                                               "above_edge":  false
+                                                           },
+                                                "process":  "msedge"
+                                            },
+                                            {
+                                                "point":  [
+                                                              20,
+                                                              20
+                                                          ],
+                                                "owned":  true,
+                                                "window":  {
+                                                               "handle":  "10617248",
+                                                               "owner":  62208,
+                                                               "bounds":  [
+                                                                              0,
+                                                                              0,
+                                                                              2560,
+                                                                              1600
+                                                                          ],
+                                                               "visible":  true,
+                                                               "foreground":  true,
+                                                               "class":  "Chrome_WidgetWin_1",
+                                                               "topmost":  false,
+                                                               "minimized":  false,
+                                                               "above_edge":  false
+                                                           },
+                                                "process":  "msedge"
+                                            },
+                                            {
+                                                "point":  [
+                                                              2540,
+                                                              20
+                                                          ],
+                                                "owned":  true,
+                                                "window":  {
+                                                               "handle":  "10617248",
+                                                               "owner":  62208,
+                                                               "bounds":  [
+                                                                              0,
+                                                                              0,
+                                                                              2560,
+                                                                              1600
+                                                                          ],
+                                                               "visible":  true,
+                                                               "foreground":  true,
+                                                               "class":  "Chrome_WidgetWin_1",
+                                                               "topmost":  false,
+                                                               "minimized":  false,
+                                                               "above_edge":  false
+                                                           },
+                                                "process":  "msedge"
+                                            },
+                                            {
+                                                "point":  [
+                                                              20,
+                                                              1580
+                                                          ],
+                                                "owned":  true,
+                                                "window":  {
+                                                               "handle":  "10617248",
+                                                               "owner":  62208,
+                                                               "bounds":  [
+                                                                              0,
+                                                                              0,
+                                                                              2560,
+                                                                              1600
+                                                                          ],
+                                                               "visible":  true,
+                                                               "foreground":  true,
+                                                               "class":  "Chrome_WidgetWin_1",
+                                                               "topmost":  false,
+                                                               "minimized":  false,
+                                                               "above_edge":  false
+                                                           },
+                                                "process":  "msedge"
+                                            },
+                                            {
+                                                "point":  [
+                                                              2540,
+                                                              1580
+                                                          ],
+                                                "owned":  true,
+                                                "window":  {
+                                                               "handle":  "10617248",
+                                                               "owner":  62208,
+                                                               "bounds":  [
+                                                                              0,
+                                                                              0,
+                                                                              2560,
+                                                                              1600
+                                                                          ],
+                                                               "visible":  true,
+                                                               "foreground":  true,
+                                                               "class":  "Chrome_WidgetWin_1",
+                                                               "topmost":  false,
+                                                               "minimized":  false,
+                                                               "above_edge":  false
+                                                           },
+                                                "process":  "msedge"
+                                            }
+                                        ],
+                      "owned_points":  16,
+                      "native_window":  {
+                                            "handle":  "10617248",
+                                            "owner":  62208,
+                                            "bounds":  [
+                                                           0,
+                                                           0,
+                                                           2560,
+                                                           1600
+                                                       ],
+                                            "visible":  true,
+                                            "foreground":  true,
+                                            "class":  "Chrome_WidgetWin_1",
+                                            "topmost":  false,
+                                            "minimized":  false,
+                                            "above_edge":  false
+                                        },
+                      "covered":  [
+
+                                  ]
+                  },
+                  {
+                      "i":  17,
+                      "ok":  true,
+                      "at":  "2026-10-20T12:27:45.3326232Z",
+                      "kind":  "captureStart",
+                      "as":  "capture_start"
+                  },
+                  {
+                      "i":  18,
+                      "ok":  true,
+                      "at":  "2026-10-20T12:27:46.3047512Z",
+                      "kind":  "waitEval",
+                      "target":  "control",
+                      "as":  null
+                  },
+                  {
+                      "i":  19,
+                      "ok":  true,
+                      "at":  "2026-10-20T12:27:47.0821441Z",
+                      "kind":  "eval",
+                      "target":  "control",
+                      "as":  "live_policy"
+                  },
+                  {
+                      "i":  20,
+                      "ok":  true,
+                      "at":  "2026-10-20T12:27:47.0984719Z",
+                      "kind":  "waitEval",
+                      "target":  "overlay",
+                      "as":  null
+                  },
+                  {
+                      "i":  21,
+                      "ok":  true,
+                      "at":  "2026-10-20T12:27:52.6116639Z",
+                      "kind":  "productPlacement",
+                      "phase":  "overlay",
+                      "edge":  {
+                                   "handle":  "10617248",
+                                   "owner":  62208,
+                                   "bounds":  [
+                                                  0,
+                                                  0,
+                                                  2560,
+                                                  1600
+                                              ],
+                                   "visible":  true,
+                                   "foreground":  true,
+                                   "class":  "Chrome_WidgetWin_1",
+                                   "topmost":  false,
+                                   "minimized":  false,
+                                   "above_edge":  false
+                               },
+                      "overlay":  {
+                                      "handle":  "202018",
+                                      "owner":  64712,
+                                      "bounds":  [
+                                                     0,
+                                                     0,
+                                                     2560,
+                                                     1600
+                                                 ],
+                                      "visible":  true,
+                                      "foreground":  false,
+                                      "class":  "Chrome_WidgetWin_1",
+                                      "topmost":  true,
+                                      "minimized":  false,
+                                      "above_edge":  true
+                                  }
+                  },
+                  {
+                      "i":  22,
+                      "ok":  true,
+                      "at":  "2026-10-20T12:27:53.4992366Z",
+                      "kind":  "eval",
+                      "target":  "overlay",
+                      "as":  "overlay_ready"
+                  },
+                  {
+                      "i":  23,
+                      "ok":  true,
+                      "at":  "2026-10-20T12:27:53.5042357Z",
+                      "kind":  "waitEval",
+                      "target":  "control",
+                      "as":  null
+                  },
+                  {
+                      "i":  24,
+                      "ok":  false,
+                      "at":  "2026-10-20T12:27:58.8077985Z",
+                      "kind":  "eval",
+                      "target":  "control",
+                      "as":  "action1",
+                      "error":  "eval exception: {\"exceptionId\":1,\"text\":\"Uncaught (in promise) Error: the AI session is no longer on (ended: the request failed; nothing more is sent by itself): the remaining actions stay NOT_RUN\",\"lineNumber\":0,\"columnNumber\":0,\"exception\":{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"Error\",\"description\":\"Error: the AI session is no longer on (ended: the request failed; nothing more is sent by itself): the remaining actions stay NOT_RUN\\n    at \\u003canonymous\\u003e:2:37\",\"objectId\":\"8400914981020266701.1.1\"}}"
+                  }
+              ],
+    "values":  {
+                   "qa_display_admission_001":  {
+                                                    "phase":  "initialize",
+                                                    "at":  "2026-10-20T12:27:24.7452657Z",
+                                                    "accepted":  true,
+                                                    "native":  {
+                                                                   "count":  1,
+                                                                   "device":  "\\\\.\\DISPLAY1",
+                                                                   "monitor_handle":  "65537",
+                                                                   "primary":  true,
+                                                                   "monitor_bounds":  [
+                                                                                          0,
+                                                                                          0,
+                                                                                          2560,
+                                                                                          1600
+                                                                                      ],
+                                                                   "work_bounds":  [
+                                                                                       0,
+                                                                                       0,
+                                                                                       2560,
+                                                                                       1504
+                                                                                   ],
+                                                                   "dpi":  192
+                                                               }
+                                                },
+                   "qa_display_admission_002":  {
+                                                    "phase":  "before_browser_launch",
+                                                    "at":  "2026-10-20T12:27:24.8178009Z",
+                                                    "accepted":  true,
+                                                    "native":  {
+                                                                   "count":  1,
+                                                                   "device":  "\\\\.\\DISPLAY1",
+                                                                   "monitor_handle":  "65537",
+                                                                   "primary":  true,
+                                                                   "monitor_bounds":  [
+                                                                                          0,
+                                                                                          0,
+                                                                                          2560,
+                                                                                          1600
+                                                                                      ],
+                                                                   "work_bounds":  [
+                                                                                       0,
+                                                                                       0,
+                                                                                       2560,
+                                                                                       1504
+                                                                                   ],
+                                                                   "dpi":  192
+                                                               }
+                                                },
+                   "qa_display_admission_003":  {
+                                                    "phase":  "before_edge_raise",
+                                                    "at":  "2026-10-20T12:27:27.2222025Z",
+                                                    "accepted":  true,
+                                                    "native":  {
+                                                                   "count":  1,
+                                                                   "device":  "\\\\.\\DISPLAY1",
+                                                                   "monitor_handle":  "65537",
+                                                                   "primary":  true,
+                                                                   "monitor_bounds":  [
+                                                                                          0,
+                                                                                          0,
+                                                                                          2560,
+                                                                                          1600
+                                                                                      ],
+                                                                   "work_bounds":  [
+                                                                                       0,
+                                                                                       0,
+                                                                                       2560,
+                                                                                       1504
+                                                                                   ],
+                                                                   "dpi":  192
+                                                               }
+                                                },
+                   "qa_display_admission_004":  {
+                                                    "phase":  "before_edge_fullscreen",
+                                                    "at":  "2026-10-20T12:27:29.0738826Z",
+                                                    "accepted":  true,
+                                                    "native":  {
+                                                                   "count":  1,
+                                                                   "device":  "\\\\.\\DISPLAY1",
+                                                                   "monitor_handle":  "65537",
+                                                                   "primary":  true,
+                                                                   "monitor_bounds":  [
+                                                                                          0,
+                                                                                          0,
+                                                                                          2560,
+                                                                                          1600
+                                                                                      ],
+                                                                   "work_bounds":  [
+                                                                                       0,
+                                                                                       0,
+                                                                                       2560,
+                                                                                       1504
+                                                                                   ],
+                                                                   "dpi":  192
+                                                               }
+                                                },
+                   "qa_display_admission_005":  {
+                                                    "phase":  "after_edge_fullscreen",
+                                                    "at":  "2026-10-20T12:27:32.9886465Z",
+                                                    "accepted":  true,
+                                                    "native":  {
+                                                                   "count":  1,
+                                                                   "device":  "\\\\.\\DISPLAY1",
+                                                                   "monitor_handle":  "65537",
+                                                                   "primary":  true,
+                                                                   "monitor_bounds":  [
+                                                                                          0,
+                                                                                          0,
+                                                                                          2560,
+                                                                                          1600
+                                                                                      ],
+                                                                   "work_bounds":  [
+                                                                                       0,
+                                                                                       0,
+                                                                                       2560,
+                                                                                       1504
+                                                                                   ],
+                                                                   "dpi":  192
+                                                               }
+                                                },
+                   "surface_before":  "{\"format\":\"qa-subscription-surface/2\",\"generated_at\":\"2026-10-20T12:27:25.317Z\",\"changes\":0,\"read_at\":\"2026-10-20T12:27:33.000Z\",\"grid\":{\"x\":40,\"y\":90,\"cols\":4,\"rows\":3,\"w\":190,\"h\":150,\"gap\":20},\"cards\":[{\"index\":0,\"number\":4842,\"shape\":\"diamond\",\"color\":\"green\",\"rect_dip\":{\"x\":40,\"y\":90,\"width\":190,\"height\":150}},{\"index\":1,\"number\":3764,\"shape\":\"heart\",\"color\":\"green\",\"rect_dip\":{\"x\":250,\"y\":90,\"width\":190,\"height\":150}},{\"index\":2,\"number\":2579,\"shape\":\"triangle\",\"color\":\"blue\",\"rect_dip\":{\"x\":460,\"y\":90,\"width\":190,\"height\":150}},{\"index\":3,\"number\":8197,\"shape\":\"triangle\",\"color\":\"green\",\"rect_dip\":{\"x\":670,\"y\":90,\"width\":190,\"height\":150}},{\"index\":4,\"number\":7820,\"shape\":\"heart\",\"color\":\"green\",\"rect_dip\":{\"x\":40,\"y\":260,\"width\":190,\"height\":150}},{\"index\":5,\"number\":2065,\"shape\":\"heart\",\"color\":\"red\",\"rect_dip\":{\"x\":250,\"y\":260,\"width\":190,\"height\":150}},{\"index\":6,\"number\":5386,\"shape\":\"square\",\"color\":\"green\",\"rect_dip\":{\"x\":460,\"y\":260,\"width\":190,\"height\":150}},{\"index\":7,\"number\":3692,\"shape\":\"star\",\"color\":\"red\",\"rect_dip\":{\"x\":670,\"y\":260,\"width\":190,\"height\":150}},{\"index\":8,\"number\":8665,\"shape\":\"triangle\",\"color\":\"green\",\"rect_dip\":{\"x\":40,\"y\":430,\"width\":190,\"height\":150}},{\"index\":9,\"number\":6211,\"shape\":\"diamond\",\"color\":\"blue\",\"rect_dip\":{\"x\":250,\"y\":430,\"width\":190,\"height\":150}},{\"index\":10,\"number\":8242,\"shape\":\"diamond\",\"color\":\"green\",\"rect_dip\":{\"x\":460,\"y\":430,\"width\":190,\"height\":150}},{\"index\":11,\"number\":8563,\"shape\":\"square\",\"color\":\"blue\",\"rect_dip\":{\"x\":670,\"y\":430,\"width\":190,\"height\":150}}],\"viewport_offset_dip\":{\"x\":0,\"y\":0},\"viewport\":{\"width\":1280,\"height\":800,\"dpr\":2,\"screen\":[1280,800]},\"fits\":true,\"full_screen\":true,\"dom_text\":\"\",\"title\":\"QA test surface lcqajvljghktqqiqkhuhqpupjhkmushovsmp\",\"url_has_query\":false}",
+                   "qa_display_admission_006":  {
+                                                    "phase":  "after_edge_points",
+                                                    "at":  "2026-10-20T12:27:34.5832225Z",
+                                                    "accepted":  true,
+                                                    "native":  {
+                                                                   "count":  1,
+                                                                   "device":  "\\\\.\\DISPLAY1",
+                                                                   "monitor_handle":  "65537",
+                                                                   "primary":  true,
+                                                                   "monitor_bounds":  [
+                                                                                          0,
+                                                                                          0,
+                                                                                          2560,
+                                                                                          1600
+                                                                                      ],
+                                                                   "work_bounds":  [
+                                                                                       0,
+                                                                                       0,
+                                                                                       2560,
+                                                                                       1504
+                                                                                   ],
+                                                                   "dpi":  192
+                                                               }
+                                                },
+                   "qa_display_admission_007":  {
+                                                    "phase":  "before_product_launch",
+                                                    "at":  "2026-10-20T12:27:36.1368854Z",
+                                                    "accepted":  true,
+                                                    "native_before":  {
+                                                                          "count":  1,
+                                                                          "device":  "\\\\.\\DISPLAY1",
+                                                                          "monitor_handle":  "65537",
+                                                                          "primary":  true,
+                                                                          "monitor_bounds":  [
+                                                                                                 0,
+                                                                                                 0,
+                                                                                                 2560,
+                                                                                                 1600
+                                                                                             ],
+                                                                          "work_bounds":  [
+                                                                                              0,
+                                                                                              0,
+                                                                                              2560,
+                                                                                              1504
+                                                                                          ],
+                                                                          "dpi":  192
+                                                                      },
+                                                    "browser":  {
+                                                                    "geometry":  {
+                                                                                     "x":  0,
+                                                                                     "y":  0,
+                                                                                     "outer_width":  1280,
+                                                                                     "outer_height":  800,
+                                                                                     "inner_width":  1280,
+                                                                                     "inner_height":  800,
+                                                                                     "screen_width":  1280,
+                                                                                     "screen_height":  800,
+                                                                                     "dpr":  2
+                                                                                 },
+                                                                    "truth":  {
+                                                                                  "format":  "qa-subscription-surface/2",
+                                                                                  "generated_at":  "2026-10-20T12:27:25.317Z",
+                                                                                  "changes":  0,
+                                                                                  "read_at":  "2026-10-20T12:27:36.570Z",
+                                                                                  "grid":  {
+                                                                                               "x":  40,
+                                                                                               "y":  90,
+                                                                                               "cols":  4,
+                                                                                               "rows":  3,
+                                                                                               "w":  190,
+                                                                                               "h":  150,
+                                                                                               "gap":  20
+                                                                                           },
+                                                                                  "cards":  [
+                                                                                                {
+                                                                                                    "index":  0,
+                                                                                                    "number":  4842,
+                                                                                                    "shape":  "diamond",
+                                                                                                    "color":  "green",
+                                                                                                    "rect_dip":  {
+                                                                                                                     "x":  40,
+                                                                                                                     "y":  90,
+                                                                                                                     "width":  190,
+                                                                                                                     "height":  150
+                                                                                                                 }
+                                                                                                },
+                                                                                                {
+                                                                                                    "index":  1,
+                                                                                                    "number":  3764,
+                                                                                                    "shape":  "heart",
+                                                                                                    "color":  "green",
+                                                                                                    "rect_dip":  {
+                                                                                                                     "x":  250,
+                                                                                                                     "y":  90,
+                                                                                                                     "width":  190,
+                                                                                                                     "height":  150
+                                                                                                                 }
+                                                                                                },
+                                                                                                {
+                                                                                                    "index":  2,
+                                                                                                    "number":  2579,
+                                                                                                    "shape":  "triangle",
+                                                                                                    "color":  "blue",
+                                                                                                    "rect_dip":  {
+                                                                                                                     "x":  460,
+                                                                                                                     "y":  90,
+                                                                                                                     "width":  190,
+                                                                                                                     "height":  150
+                                                                                                                 }
+                                                                                                },
+                                                                                                {
+                                                                                                    "index":  3,
+                                                                                                    "number":  8197,
+                                                                                                    "shape":  "triangle",
+                                                                                                    "color":  "green",
+                                                                                                    "rect_dip":  {
+                                                                                                                     "x":  670,
+                                                                                                                     "y":  90,
+                                                                                                                     "width":  190,
+                                                                                                                     "height":  150
+                                                                                                                 }
+                                                                                                },
+                                                                                                {
+                                                                                                    "index":  4,
+                                                                                                    "number":  7820,
+                                                                                                    "shape":  "heart",
+                                                                                                    "color":  "green",
+                                                                                                    "rect_dip":  {
+                                                                                                                     "x":  40,
+                                                                                                                     "y":  260,
+                                                                                                                     "width":  190,
+                                                                                                                     "height":  150
+                                                                                                                 }
+                                                                                                },
+                                                                                                {
+                                                                                                    "index":  5,
+                                                                                                    "number":  2065,
+                                                                                                    "shape":  "heart",
+                                                                                                    "color":  "red",
+                                                                                                    "rect_dip":  {
+                                                                                                                     "x":  250,
+                                                                                                                     "y":  260,
+                                                                                                                     "width":  190,
+                                                                                                                     "height":  150
+                                                                                                                 }
+                                                                                                },
+                                                                                                {
+                                                                                                    "index":  6,
+                                                                                                    "number":  5386,
+                                                                                                    "shape":  "square",
+                                                                                                    "color":  "green",
+                                                                                                    "rect_dip":  {
+                                                                                                                     "x":  460,
+                                                                                                                     "y":  260,
+                                                                                                                     "width":  190,
+                                                                                                                     "height":  150
+                                                                                                                 }
+                                                                                                },
+                                                                                                {
+                                                                                                    "index":  7,
+                                                                                                    "number":  3692,
+                                                                                                    "shape":  "star",
+                                                                                                    "color":  "red",
+                                                                                                    "rect_dip":  {
+                                                                                                                     "x":  670,
+                                                                                                                     "y":  260,
+                                                                                                                     "width":  190,
+                                                                                                                     "height":  150
+                                                                                                                 }
+                                                                                                },
+                                                                                                {
+                                                                                                    "index":  8,
+                                                                                                    "number":  8665,
+                                                                                                    "shape":  "triangle",
+                                                                                                    "color":  "green",
+                                                                                                    "rect_dip":  {
+                                                                                                                     "x":  40,
+                                                                                                                     "y":  430,
+                                                                                                                     "width":  190,
+                                                                                                                     "height":  150
+                                                                                                                 }
+                                                                                                },
+                                                                                                {
+                                                                                                    "index":  9,
+                                                                                                    "number":  6211,
+                                                                                                    "shape":  "diamond",
+                                                                                                    "color":  "blue",
+                                                                                                    "rect_dip":  {
+                                                                                                                     "x":  250,
+                                                                                                                     "y":  430,
+                                                                                                                     "width":  190,
+                                                                                                                     "height":  150
+                                                                                                                 }
+                                                                                                },
+                                                                                                {
+                                                                                                    "index":  10,
+                                                                                                    "number":  8242,
+                                                                                                    "shape":  "diamond",
+                                                                                                    "color":  "green",
+                                                                                                    "rect_dip":  {
+                                                                                                                     "x":  460,
+                                                                                                                     "y":  430,
+                                                                                                                     "width":  190,
+                                                                                                                     "height":  150
+                                                                                                                 }
+                                                                                                },
+                                                                                                {
+                                                                                                    "index":  11,
+                                                                                                    "number":  8563,
+                                                                                                    "shape":  "square",
+                                                                                                    "color":  "blue",
+                                                                                                    "rect_dip":  {
+                                                                                                                     "x":  670,
+                                                                                                                     "y":  430,
+                                                                                                                     "width":  190,
+                                                                                                                     "height":  150
+                                                                                                                 }
+                                                                                                }
+                                                                                            ],
+                                                                                  "viewport_offset_dip":  {
+                                                                                                              "x":  0,
+                                                                                                              "y":  0
+                                                                                                          },
+                                                                                  "viewport":  {
+                                                                                                   "width":  1280,
+                                                                                                   "height":  800,
+                                                                                                   "dpr":  2,
+                                                                                                   "screen":  [
+                                                                                                                  1280,
+                                                                                                                  800
+                                                                                                              ]
+                                                                                               },
+                                                                                  "fits":  true,
+                                                                                  "full_screen":  true,
+                                                                                  "dom_text":  "",
+                                                                                  "title":  "QA test surface lcqajvljghktqqiqkhuhqpupjhkmushovsmp",
+                                                                                  "url_has_query":  false
+                                                                              }
+                                                                },
+                                                    "window":  {
+                                                                   "handle":  "10617248",
+                                                                   "owner":  62208,
+                                                                   "bounds":  [
+                                                                                  0,
+                                                                                  0,
+                                                                                  2560,
+                                                                                  1600
+                                                                              ],
+                                                                   "foreground":  true
+                                                               },
+                                                    "owned_points":  16,
+                                                    "native_final":  {
+                                                                         "count":  1,
+                                                                         "device":  "\\\\.\\DISPLAY1",
+                                                                         "monitor_handle":  "65537",
+                                                                         "primary":  true,
+                                                                         "monitor_bounds":  [
+                                                                                                0,
+                                                                                                0,
+                                                                                                2560,
+                                                                                                1600
+                                                                                            ],
+                                                                         "work_bounds":  [
+                                                                                             0,
+                                                                                             0,
+                                                                                             2560,
+                                                                                             1504
+                                                                                         ],
+                                                                         "dpi":  192
+                                                                     }
+                                                },
+                   "connector_configured":  "{\"mode\":\"managed\",\"state\":\"not_checked\",\"login\":\"none\"}",
+                   "check_pressed":  true,
+                   "account_ready":  "{\"state\":\"signed_in\",\"model\":\"gpt-6-astra\",\"image_input\":true,\"quota_read\":true,\"quota_available\":true,\"included_usage_allowed\":true,\"included_reached\":false,\"credits_present\":false,\"applicable_buckets\":1,\"spend_control_reached\":false}",
+                   "display_choice":  "{\"display_id\":\"2226568524\",\"bounds\":{\"x\":0,\"y\":0,\"width\":1280,\"height\":800},\"scale_factor\":2,\"primary\":true}",
+                   "qa_display_admission_008":  {
+                                                    "phase":  "after_product_placement",
+                                                    "at":  "2026-10-20T12:27:42.0241632Z",
+                                                    "accepted":  true,
+                                                    "native":  {
+                                                                   "count":  1,
+                                                                   "device":  "\\\\.\\DISPLAY1",
+                                                                   "monitor_handle":  "65537",
+                                                                   "primary":  true,
+                                                                   "monitor_bounds":  [
+                                                                                          0,
+                                                                                          0,
+                                                                                          2560,
+                                                                                          1600
+                                                                                      ],
+                                                                   "work_bounds":  [
+                                                                                       0,
+                                                                                       0,
+                                                                                       2560,
+                                                                                       1504
+                                                                                   ],
+                                                                   "dpi":  192
+                                                               }
+                                                },
+                   "qa_display_admission_009":  {
+                                                    "phase":  "before_edge_raise",
+                                                    "at":  "2026-10-20T12:27:42.4267859Z",
+                                                    "accepted":  true,
+                                                    "native":  {
+                                                                   "count":  1,
+                                                                   "device":  "\\\\.\\DISPLAY1",
+                                                                   "monitor_handle":  "65537",
+                                                                   "primary":  true,
+                                                                   "monitor_bounds":  [
+                                                                                          0,
+                                                                                          0,
+                                                                                          2560,
+                                                                                          1600
+                                                                                      ],
+                                                                   "work_bounds":  [
+                                                                                       0,
+                                                                                       0,
+                                                                                       2560,
+                                                                                       1504
+                                                                                   ],
+                                                                   "dpi":  192
+                                                               }
+                                                },
+                   "surface_at_start":  "{\"format\":\"qa-subscription-surface/2\",\"generated_at\":\"2026-10-20T12:27:25.317Z\",\"changes\":0,\"read_at\":\"2026-10-20T12:27:43.752Z\",\"grid\":{\"x\":40,\"y\":90,\"cols\":4,\"rows\":3,\"w\":190,\"h\":150,\"gap\":20},\"cards\":[{\"index\":0,\"number\":4842,\"shape\":\"diamond\",\"color\":\"green\",\"rect_dip\":{\"x\":40,\"y\":90,\"width\":190,\"height\":150}},{\"index\":1,\"number\":3764,\"shape\":\"heart\",\"color\":\"green\",\"rect_dip\":{\"x\":250,\"y\":90,\"width\":190,\"height\":150}},{\"index\":2,\"number\":2579,\"shape\":\"triangle\",\"color\":\"blue\",\"rect_dip\":{\"x\":460,\"y\":90,\"width\":190,\"height\":150}},{\"index\":3,\"number\":8197,\"shape\":\"triangle\",\"color\":\"green\",\"rect_dip\":{\"x\":670,\"y\":90,\"width\":190,\"height\":150}},{\"index\":4,\"number\":7820,\"shape\":\"heart\",\"color\":\"green\",\"rect_dip\":{\"x\":40,\"y\":260,\"width\":190,\"height\":150}},{\"index\":5,\"number\":2065,\"shape\":\"heart\",\"color\":\"red\",\"rect_dip\":{\"x\":250,\"y\":260,\"width\":190,\"height\":150}},{\"index\":6,\"number\":5386,\"shape\":\"square\",\"color\":\"green\",\"rect_dip\":{\"x\":460,\"y\":260,\"width\":190,\"height\":150}},{\"index\":7,\"number\":3692,\"shape\":\"star\",\"color\":\"red\",\"rect_dip\":{\"x\":670,\"y\":260,\"width\":190,\"height\":150}},{\"index\":8,\"number\":8665,\"shape\":\"triangle\",\"color\":\"green\",\"rect_dip\":{\"x\":40,\"y\":430,\"width\":190,\"height\":150}},{\"index\":9,\"number\":6211,\"shape\":\"diamond\",\"color\":\"blue\",\"rect_dip\":{\"x\":250,\"y\":430,\"width\":190,\"height\":150}},{\"index\":10,\"number\":8242,\"shape\":\"diamond\",\"color\":\"green\",\"rect_dip\":{\"x\":460,\"y\":430,\"width\":190,\"height\":150}},{\"index\":11,\"number\":8563,\"shape\":\"square\",\"color\":\"blue\",\"rect_dip\":{\"x\":670,\"y\":430,\"width\":190,\"height\":150}}],\"viewport_offset_dip\":{\"x\":0,\"y\":0},\"viewport\":{\"width\":1280,\"height\":800,\"dpr\":2,\"screen\":[1280,800]},\"fits\":true,\"full_screen\":true,\"dom_text\":\"\",\"title\":\"QA test surface lcqajvljghktqqiqkhuhqpupjhkmushovsmp\",\"url_has_query\":false}",
+                   "qa_display_admission_010":  {
+                                                    "phase":  "after_edge_points",
+                                                    "at":  "2026-10-20T12:27:45.3316295Z",
+                                                    "accepted":  true,
+                                                    "native":  {
+                                                                   "count":  1,
+                                                                   "device":  "\\\\.\\DISPLAY1",
+                                                                   "monitor_handle":  "65537",
+                                                                   "primary":  true,
+                                                                   "monitor_bounds":  [
+                                                                                          0,
+                                                                                          0,
+                                                                                          2560,
+                                                                                          1600
+                                                                                      ],
+                                                                   "work_bounds":  [
+                                                                                       0,
+                                                                                       0,
+                                                                                       2560,
+                                                                                       1504
+                                                                                   ],
+                                                                   "dpi":  192
+                                                               }
+                                                },
+                   "qa_display_admission_011":  {
+                                                    "phase":  "before_capture_start",
+                                                    "at":  "2026-10-20T12:27:45.3361358Z",
+                                                    "accepted":  true,
+                                                    "native_before":  {
+                                                                          "count":  1,
+                                                                          "device":  "\\\\.\\DISPLAY1",
+                                                                          "monitor_handle":  "65537",
+                                                                          "primary":  true,
+                                                                          "monitor_bounds":  [
+                                                                                                 0,
+                                                                                                 0,
+                                                                                                 2560,
+                                                                                                 1600
+                                                                                             ],
+                                                                          "work_bounds":  [
+                                                                                              0,
+                                                                                              0,
+                                                                                              2560,
+                                                                                              1504
+                                                                                          ],
+                                                                          "dpi":  192
+                                                                      },
+                                                    "browser":  {
+                                                                    "geometry":  {
+                                                                                     "x":  0,
+                                                                                     "y":  0,
+                                                                                     "outer_width":  1280,
+                                                                                     "outer_height":  800,
+                                                                                     "inner_width":  1280,
+                                                                                     "inner_height":  800,
+                                                                                     "screen_width":  1280,
+                                                                                     "screen_height":  800,
+                                                                                     "dpr":  2
+                                                                                 },
+                                                                    "truth":  {
+                                                                                  "format":  "qa-subscription-surface/2",
+                                                                                  "generated_at":  "2026-10-20T12:27:25.317Z",
+                                                                                  "changes":  0,
+                                                                                  "read_at":  "2026-10-20T12:27:45.763Z",
+                                                                                  "grid":  {
+                                                                                               "x":  40,
+                                                                                               "y":  90,
+                                                                                               "cols":  4,
+                                                                                               "rows":  3,
+                                                                                               "w":  190,
+                                                                                               "h":  150,
+                                                                                               "gap":  20
+                                                                                           },
+                                                                                  "cards":  [
+                                                                                                {
+                                                                                                    "index":  0,
+                                                                                                    "number":  4842,
+                                                                                                    "shape":  "diamond",
+                                                                                                    "color":  "green",
+                                                                                                    "rect_dip":  {
+                                                                                                                     "x":  40,
+                                                                                                                     "y":  90,
+                                                                                                                     "width":  190,
+                                                                                                                     "height":  150
+                                                                                                                 }
+                                                                                                },
+                                                                                                {
+                                                                                                    "index":  1,
+                                                                                                    "number":  3764,
+                                                                                                    "shape":  "heart",
+                                                                                                    "color":  "green",
+                                                                                                    "rect_dip":  {
+                                                                                                                     "x":  250,
+                                                                                                                     "y":  90,
+                                                                                                                     "width":  190,
+                                                                                                                     "height":  150
+                                                                                                                 }
+                                                                                                },
+                                                                                                {
+                                                                                                    "index":  2,
+                                                                                                    "number":  2579,
+                                                                                                    "shape":  "triangle",
+                                                                                                    "color":  "blue",
+                                                                                                    "rect_dip":  {
+                                                                                                                     "x":  460,
+                                                                                                                     "y":  90,
+                                                                                                                     "width":  190,
+                                                                                                                     "height":  150
+                                                                                                                 }
+                                                                                                },
+                                                                                                {
+                                                                                                    "index":  3,
+                                                                                                    "number":  8197,
+                                                                                                    "shape":  "triangle",
+                                                                                                    "color":  "green",
+                                                                                                    "rect_dip":  {
+                                                                                                                     "x":  670,
+                                                                                                                     "y":  90,
+                                                                                                                     "width":  190,
+                                                                                                                     "height":  150
+                                                                                                                 }
+                                                                                                },
+                                                                                                {
+                                                                                                    "index":  4,
+                                                                                                    "number":  7820,
+                                                                                                    "shape":  "heart",
+                                                                                                    "color":  "green",
+                                                                                                    "rect_dip":  {
+                                                                                                                     "x":  40,
+                                                                                                                     "y":  260,
+                                                                                                                     "width":  190,
+                                                                                                                     "height":  150
+                                                                                                                 }
+                                                                                                },
+                                                                                                {
+                                                                                                    "index":  5,
+                                                                                                    "number":  2065,
+                                                                                                    "shape":  "heart",
+                                                                                                    "color":  "red",
+                                                                                                    "rect_dip":  {
+                                                                                                                     "x":  250,
+                                                                                                                     "y":  260,
+                                                                                                                     "width":  190,
+                                                                                                                     "height":  150
+                                                                                                                 }
+                                                                                                },
+                                                                                                {
+                                                                                                    "index":  6,
+                                                                                                    "number":  5386,
+                                                                                                    "shape":  "square",
+                                                                                                    "color":  "green",
+                                                                                                    "rect_dip":  {
+                                                                                                                     "x":  460,
+                                                                                                                     "y":  260,
+                                                                                                                     "width":  190,
+                                                                                                                     "height":  150
+                                                                                                                 }
+                                                                                                },
+                                                                                                {
+                                                                                                    "index":  7,
+                                                                                                    "number":  3692,
+                                                                                                    "shape":  "star",
+                                                                                                    "color":  "red",
+                                                                                                    "rect_dip":  {
+                                                                                                                     "x":  670,
+                                                                                                                     "y":  260,
+                                                                                                                     "width":  190,
+                                                                                                                     "height":  150
+                                                                                                                 }
+                                                                                                },
+                                                                                                {
+                                                                                                    "index":  8,
+                                                                                                    "number":  8665,
+                                                                                                    "shape":  "triangle",
+                                                                                                    "color":  "green",
+                                                                                                    "rect_dip":  {
+                                                                                                                     "x":  40,
+                                                                                                                     "y":  430,
+                                                                                                                     "width":  190,
+                                                                                                                     "height":  150
+                                                                                                                 }
+                                                                                                },
+                                                                                                {
+                                                                                                    "index":  9,
+                                                                                                    "number":  6211,
+                                                                                                    "shape":  "diamond",
+                                                                                                    "color":  "blue",
+                                                                                                    "rect_dip":  {
+                                                                                                                     "x":  250,
+                                                                                                                     "y":  430,
+                                                                                                                     "width":  190,
+                                                                                                                     "height":  150
+                                                                                                                 }
+                                                                                                },
+                                                                                                {
+                                                                                                    "index":  10,
+                                                                                                    "number":  8242,
+                                                                                                    "shape":  "diamond",
+                                                                                                    "color":  "green",
+                                                                                                    "rect_dip":  {
+                                                                                                                     "x":  460,
+                                                                                                                     "y":  430,
+                                                                                                                     "width":  190,
+                                                                                                                     "height":  150
+                                                                                                                 }
+                                                                                                },
+                                                                                                {
+                                                                                                    "index":  11,
+                                                                                                    "number":  8563,
+                                                                                                    "shape":  "square",
+                                                                                                    "color":  "blue",
+                                                                                                    "rect_dip":  {
+                                                                                                                     "x":  670,
+                                                                                                                     "y":  430,
+                                                                                                                     "width":  190,
+                                                                                                                     "height":  150
+                                                                                                                 }
+                                                                                                }
+                                                                                            ],
+                                                                                  "viewport_offset_dip":  {
+                                                                                                              "x":  0,
+                                                                                                              "y":  0
+                                                                                                          },
+                                                                                  "viewport":  {
+                                                                                                   "width":  1280,
+                                                                                                   "height":  800,
+                                                                                                   "dpr":  2,
+                                                                                                   "screen":  [
+                                                                                                                  1280,
+                                                                                                                  800
+                                                                                                              ]
+                                                                                               },
+                                                                                  "fits":  true,
+                                                                                  "full_screen":  true,
+                                                                                  "dom_text":  "",
+                                                                                  "title":  "QA test surface lcqajvljghktqqiqkhuhqpupjhkmushovsmp",
+                                                                                  "url_has_query":  false
+                                                                              }
+                                                                },
+                                                    "window":  {
+                                                                   "handle":  "10617248",
+                                                                   "owner":  62208,
+                                                                   "bounds":  [
+                                                                                  0,
+                                                                                  0,
+                                                                                  2560,
+                                                                                  1600
+                                                                              ],
+                                                                   "foreground":  true
+                                                               },
+                                                    "owned_points":  16,
+                                                    "native_final":  {
+                                                                         "count":  1,
+                                                                         "device":  "\\\\.\\DISPLAY1",
+                                                                         "monitor_handle":  "65537",
+                                                                         "primary":  true,
+                                                                         "monitor_bounds":  [
+                                                                                                0,
+                                                                                                0,
+                                                                                                2560,
+                                                                                                1600
+                                                                                            ],
+                                                                         "work_bounds":  [
+                                                                                             0,
+                                                                                             0,
+                                                                                             2560,
+                                                                                             1504
+                                                                                         ],
+                                                                         "dpi":  192
+                                                                     }
+                                                },
+                   "capture_start":  "{\"requests\":\"4\",\"minutes\":\"1\",\"seconds\":\"60\",\"ai\":true}",
+                   "live_policy":  "{\"id\":\"live-bda4d3ee63a13401\",\"model\":\"gpt-6-astra\",\"since\":\"2026-10-20T12:27:46.593Z\",\"expires_at\":\"2026-10-20T12:28:46.595Z\",\"span_ms\":60002,\"max_submissions\":4,\"reserve\":1,\"min_observation_interval_ms\":60000,\"used\":0,\"out\":0}",
+                   "qa_display_admission_012":  {
+                                                    "phase":  "after_overlay_placement",
+                                                    "at":  "2026-10-20T12:27:53.4982365Z",
+                                                    "accepted":  true,
+                                                    "native":  {
+                                                                   "count":  1,
+                                                                   "device":  "\\\\.\\DISPLAY1",
+                                                                   "monitor_handle":  "65537",
+                                                                   "primary":  true,
+                                                                   "monitor_bounds":  [
+                                                                                          0,
+                                                                                          0,
+                                                                                          2560,
+                                                                                          1600
+                                                                                      ],
+                                                                   "work_bounds":  [
+                                                                                       0,
+                                                                                       0,
+                                                                                       2560,
+                                                                                       1504
+                                                                                   ],
+                                                                   "dpi":  192
+                                                               }
+                                                },
+                   "overlay_ready":  "{\"talk\":\"off\",\"card_hidden\":true}"
+               },
+    "errors":  [
+                   "step 24: eval exception: {\"exceptionId\":1,\"text\":\"Uncaught (in promise) Error: the AI session is no longer on (ended: the request failed; nothing more is sent by itself): the remaining actions stay NOT_RUN\",\"lineNumber\":0,\"columnNumber\":0,\"exception\":{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"Error\",\"description\":\"Error: the AI session is no longer on (ended: the request failed; nothing more is sent by itself): the remaining actions stay NOT_RUN\\n    at \\u003canonymous\\u003e:2:37\",\"objectId\":\"8400914981020266701.1.1\"}}"
+               ],
+    "processes":  {
+                      "edge":  {
+                                   "pid":  62208
+                               },
+                      "app":  {
+                                  "pid":  64712,
+                                  "devtools":  "127.0.0.1:43123",
+                                  "started_at":  "2026-10-20T12:27:37.1221324Z",
+                                  "link":  "",
+                                  "sub":  "live",
+                                  "sub_config_sha256":  "4729ca1a25ec09a64349c68c5ccb0eb41b4e9f83e161fb9c4a29b0ce26b948d4",
+                                  "admission":  "live",
+                                  "admission_config_sha256":  "6e86df7d74f52ce54b879d1c14d6d71b7548c69127d0f787a0a1be2fb46d7cc3",
+                                  "admission_context_sha256":  "85a192e4254c12a8a1f8c5be8e08b3c2a8360aa49d5ed0d5030c49e940476359",
+                                  "closed_in_finally":  true,
+                                  "exit_code":  0
+                              }
+                  },
+    "foreign":  {
+                    "start":  {
+                                  "relevant":  [
+
+                                               ],
+                                  "other_owner":  [
+
+                                                  ],
+                                  "this_run":  0
+                              },
+                    "end":  {
+                                "relevant":  [
+
+                                             ],
+                                "other_owner":  [
+
+                                                ],
+                                "this_run":  0
+                            }
+                },
+    "cursor":  {
+                   "start":  [
+                                 1461,
+                                 1007
+                             ],
+                   "end":  [
+                               1461,
+                               1007
+                           ]
+               },
+    "admission":  {
+                      "relevant_electron":  [
+
+                                            ],
+                      "other_owner_electron":  0,
+                      "port_owners":  [
+
+                                      ],
+                      "rechecked":  false
+                  },
+    "aborted":  "eval exception: {\"exceptionId\":1,\"text\":\"Uncaught (in promise) Error: the AI session is no longer on (ended: the request failed; nothing more is sent by itself): the remaining actions stay NOT_RUN\",\"lineNumber\":0,\"columnNumber\":0,\"exception\":{\"type\":\"object\",\"subtype\":\"error\",\"className\":\"Error\",\"description\":\"Error: the AI session is no longer on (ended: the request failed; nothing more is sent by itself): the remaining actions stay NOT_RUN\\n    at \\u003canonymous\\u003e:2:37\",\"objectId\":\"8400914981020266701.1.1\"}}",
+    "work_deadline":  {
+                          "work_ms":  320000,
+                          "close_ms":  15000,
+                          "startup_ms":  1107,
+                          "finally_at_ms":  38251
+                      },
+    "wsl_seen":  [
+
+                 ]
+}

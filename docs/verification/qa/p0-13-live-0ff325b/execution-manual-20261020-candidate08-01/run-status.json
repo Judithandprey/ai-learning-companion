@@ -1,0 +1,38 @@
+{
+  "kind": "qa-live-run-status/1",
+  "native_attempts": 1,
+  "aborted": null,
+  "launcher": {
+    "status": 0,
+    "signal": null,
+    "timeout": false,
+    "exit_seen": true,
+    "signalled": [],
+    "error": null,
+    "output_complete": true
+  },
+  "cleanup": {
+    "runner": "confirmed",
+    "electron": "confirmed",
+    "edge": "confirmed"
+  },
+  "watch_exited": true,
+  "release_blockers": [],
+  "budget": {
+    "ceilings_ms": {
+      "preparation": 60000,
+      "native": 360000,
+      "cleanup": 150000,
+      "evidence": 20000,
+      "headroom": 10000
+    },
+    "phase_started_after_ms": {
+      "preparation": 0,
+      "native": 8110,
+      "cleanup": 47205,
+      "evidence": 54361
+    },
+    "status_after_ms": 54361
+  },
+  "evidence_kept_in_place": "/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-live-nonvoice-e72ea0f932d148c0a48d4c101c69d328"
+}

@@ -1,0 +1,8 @@
+{"event": "watch_start", "root_exists": true, "already_there": [], "at": "2026-10-20T12:27:19.926293+00:00"}
+{"event": "appear", "pid": 476576, "ppid": 476574, "start_ticks": 51081262, "name": "python", "role": "in_root", "at": "2026-10-20T12:27:37.898778+00:00"}
+{"event": "appear", "pid": 476579, "ppid": 476576, "start_ticks": 51081288, "name": "codex", "role": "descendant", "at": "2026-10-20T12:27:38.205234+00:00"}
+{"event": "appear", "pid": 476639, "ppid": 476579, "start_ticks": 51081331, "name": "bwrap", "role": "descendant", "at": "2026-10-20T12:27:38.614514+00:00"}
+{"event": "exit", "pid": 476639, "start_ticks": 51081331, "name": "bwrap", "role": "descendant", "at": "2026-10-20T12:27:38.716934+00:00"}
+{"event": "exit", "pid": 476576, "start_ticks": 51081262, "name": "python", "role": "in_root", "at": "2026-10-20T12:27:58.946332+00:00"}
+{"event": "exit", "pid": 476579, "start_ticks": 51081288, "name": "codex", "role": "descendant", "at": "2026-10-20T12:27:58.946413+00:00"}
+{"event": "watch_end", "remaining": [], "at": "2026-10-20T12:28:06.809605+00:00"}

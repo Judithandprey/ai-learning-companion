@@ -1,0 +1,89 @@
+{
+  "kind": "qa-live-nonvoice-ledger/1",
+  "slots": [
+    {
+      "slot": 1,
+      "purpose": "unattended whole-screen observation",
+      "state": "not_looked",
+      "counted": true,
+      "request_id": "live-bda4d3ee63a13401.look.1",
+      "image_sha256": "3a2c6981e4d386dfc8e37207898049fe865edcc5229c2e86fd00bd57e8eb4946",
+      "submission": "submitted",
+      "transport": {
+        "receipt": true,
+        "input_types": [
+          "text",
+          "image"
+        ],
+        "image_sha256_matches_app_record": true,
+        "submission": "acknowledged",
+        "outcome": "failed",
+        "terminal_status": "completed",
+        "actual_model": "gpt-6-astra",
+        "produced_item_types": [
+          "userMessage",
+          "reasoning",
+          "agentMessage"
+        ],
+        "non_plain_items": [],
+        "thread_start_count": 1,
+        "turn_start_count": 1,
+        "codex_sha256_matches": true,
+        "explicit_bin_override": true,
+        "phase": "submitted",
+        "identity_ok": true,
+        "verdict": "whole picture at the provider boundary"
+      }
+    },
+    {
+      "slot": 2,
+      "purpose": "automatic focus response",
+      "state": "NOT_RUN",
+      "counted": false
+    },
+    {
+      "slot": 3,
+      "purpose": "typed follow-up after controlled screen change",
+      "state": "NOT_RUN",
+      "counted": false
+    },
+    {
+      "slot": 4,
+      "purpose": "Stop/fence attempt",
+      "state": "NOT_RUN",
+      "counted": false
+    }
+  ],
+  "extra_requests": [],
+  "attempts_used": 1,
+  "attempts_remaining": 3,
+  "ceiling_ok": true,
+  "app_counted": 1,
+  "submitted_slots": 1,
+  "live_lines_unwritten": 0,
+  "provider_turns": 1,
+  "receipt_launches": 1,
+  "launch_histories": [
+    {
+      "launch": 1,
+      "receipts": 1,
+      "sent": 1,
+      "uncertain": 0,
+      "not_submitted": 0,
+      "max_turns": 1,
+      "consistent": true
+    }
+  ],
+  "sent_receipts": 1,
+  "possibly_sent": 1,
+  "turns_consistent": true,
+  "unclassified_requests": 0,
+  "records_complete": true,
+  "unreadable_records": 0,
+  "sessions_started": 1,
+  "start_attempts": 1,
+  "restarted": false,
+  "retried": false,
+  "all_silent": true,
+  "rule": "Every assigned action counts once, submitted, unknown or not_submitted; not Ask presses. No retry, no restart."
+}
