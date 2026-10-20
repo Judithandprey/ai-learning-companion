@@ -1,0 +1,19 @@
+{
+  "python": "3.14.4 (main, Aug 20 2026, 10:41:58) [GCC 15.2.0]",
+  "support_commit": "89bb04878f9f5f79ac00223511acaa833c660dc9",
+  "probe_sha256": "9d26049cdce02dc41e9e0fa6f8b43aca10afebb30dbe2334dfe8fe071625111e",
+  "connector_sha256": "5793fa18b10ba6d1eb946cd2f27234e7bc2b6a7c8727ca871b3c050a75df6e4b",
+  "scope": "Unchanged Support scenario against working connector; synthetic Python child only",
+  "row": {
+    "version": "working-correction-after-4c5e071",
+    "stdin_buffered_bytes": 4128768,
+    "first_close": "returned",
+    "first_close_seconds": 0.052029904967639595,
+    "returncode_at_first_close": -9,
+    "process_wait_calls_at_first_close": 2,
+    "second_close_after_harness_reap": "returned",
+    "loop_callback_errors": [],
+    "harness_final_returncode": -9,
+    "harness_final_transport_closing": true
+  }
+}

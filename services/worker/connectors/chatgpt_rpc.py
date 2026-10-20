@@ -983,12 +983,14 @@ class ChatGPTAppServer:
                                 pass
                         except (BrokenPipeError, ConnectionResetError):
                             pass  # A failed pipe must not prevent child reaping.
-                    if process.stdin is not None:
-                        try:
-                            await process.stdin.wait_closed()
-                        except (BrokenPipeError, ConnectionResetError):
-                            pass  # The terminated child already closed stdin.
+                    # stdin.close() and owned-child exit close the write pipe.
+                    # Do not await its shared wait_closed() future here:
+                    # cancellation of this deadline would poison later closes.
                     await process.wait()
+                    if process.stdin is not None and process.stdin.transport.get_write_buffer_size():
+                        # The child has exited; never leave a pending write
+                        # holding our pipe open. close() was already requested.
+                        process.stdin.transport.abort()
                     # An already observed returncode makes wait() synchronous;
                     # finish its queued pipe/process-exited callbacks too.
                     await asyncio.sleep(0)

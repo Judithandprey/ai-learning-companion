@@ -3,6 +3,12 @@
 Backend follow-up `handoff_43ccd426e23914ad237d9dc3319def79`, after receipt
 diagnostics delivery `4e840a4b82896ded93d7844966bac60beaa47f22`.
 
+**Review hold:** the delivered `4c5e071` was not integrated. Support's
+`89bb048` exposed a cancellation regression in its stdin `wait_closed()`
+wait, which the checks below missed. The [follow-up correction](subscription-stdin-close/README.md)
+supersedes that wait and records the failure and recovery evidence. The original
+results below are retained as history, not acceptance of `4c5e071`.
+
 **Fixed a reproduced cleanup gap:** a protocol-refused synthetic child could be
 reaped while its paused stdout pipe remained open. The reader now stops before
 bounded discard/drain, stdin closure, process reaping and completion of queued
