@@ -1,0 +1,1396 @@
+{
+  "source": "8bb900b7a773c9ec7790d0854d863a157285f777",
+  "scope": "Exact wrapper, injected clocks/process functions/memory I/O only. Hypothetical Windows survival is an input, not an observed interop result.",
+  "rows": [
+    {
+      "name": "inactive template refuses without effects",
+      "events": [],
+      "error": "separate exact Lead-reviewed live allocation required",
+      "report_written": false,
+      "scratch_consumed": false,
+      "elapsed_ms": 0,
+      "hypothetical_windows_runner_alive": false,
+      "mock_watcher_alive": false,
+      "report": null
+    },
+    {
+      "name": "normal attached launcher and complete output",
+      "events": [
+        {
+          "kind": "stage",
+          "at_ms": 0,
+          "timeout": 30000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "connector",
+          "at_ms": 0,
+          "timeout": 60000
+        },
+        {
+          "kind": "preflight-look",
+          "at_ms": 0,
+          "timeout": 8000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "preflight-look",
+          "at_ms": 0,
+          "timeout": 8000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "edge-path",
+          "at_ms": 0,
+          "timeout": 8000
+        },
+        {
+          "kind": "output",
+          "at_ms": 0
+        },
+        {
+          "kind": "watch-start",
+          "at_ms": 0
+        },
+        {
+          "kind": "scratch",
+          "at_ms": 0
+        },
+        {
+          "kind": "scratch-child",
+          "at_ms": 0
+        },
+        {
+          "kind": "scratch-child",
+          "at_ms": 0
+        },
+        {
+          "kind": "scratch-child",
+          "at_ms": 0
+        },
+        {
+          "kind": "parse",
+          "at_ms": 0,
+          "timeout": 8000
+        },
+        {
+          "kind": "native-start",
+          "at_ms": 0
+        },
+        {
+          "kind": "launcher-exit",
+          "at_ms": 250,
+          "code": 0,
+          "signal": null
+        },
+        {
+          "kind": "cleanup-look-1",
+          "at_ms": 250,
+          "timeout": 8000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "cleanup-look-2",
+          "at_ms": 250,
+          "timeout": 8000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "watch-stop",
+          "at_ms": 250
+        },
+        {
+          "kind": "results-read",
+          "at_ms": 250
+        },
+        {
+          "kind": "report-write",
+          "at_ms": 250
+        }
+      ],
+      "error": null,
+      "report_written": true,
+      "scratch_consumed": true,
+      "elapsed_ms": 250,
+      "hypothetical_windows_runner_alive": false,
+      "mock_watcher_alive": false,
+      "report": {
+        "native_attempts": 1,
+        "launcher": {
+          "status": 0,
+          "signal": null,
+          "timeout": false,
+          "exit_seen": true,
+          "signalled": [],
+          "error": null,
+          "output_complete": true
+        },
+        "aborted": "native result unreadable; scratch and raw evidence retained",
+        "cleanup": {
+          "electron": "confirmed",
+          "edge": "confirmed"
+        },
+        "watch_exited": true,
+        "connector_watch": "released",
+        "release_blockers": [],
+        "budget": {
+          "ceilings_ms": {
+            "preparation": 60000,
+            "native": 360000,
+            "cleanup": 150000,
+            "evidence": 20000,
+            "headroom": 10000
+          },
+          "phase_started_after_ms": {
+            "preparation": 0,
+            "native": 0,
+            "cleanup": 250,
+            "evidence": 250
+          },
+          "report_after_ms": 250
+        },
+        "mechanics_passed": false,
+        "attempts_used": 4,
+        "slot_states": [
+          "start_reached_outcome_unknown",
+          "assigned_no_request_recorded",
+          "assigned_no_request_recorded",
+          "assigned_no_request_recorded"
+        ],
+        "collect_errors": [
+          "admission checker log: unexpected stat /mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-live-nonvoice-e72ea0f932d148c0a48d4c101c69d328/out/admission-c"
+        ]
+      }
+    },
+    {
+      "name": "timeout term-exit remains blocked",
+      "events": [
+        {
+          "kind": "stage",
+          "at_ms": 0,
+          "timeout": 30000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "connector",
+          "at_ms": 0,
+          "timeout": 60000
+        },
+        {
+          "kind": "preflight-look",
+          "at_ms": 0,
+          "timeout": 8000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "preflight-look",
+          "at_ms": 0,
+          "timeout": 8000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "edge-path",
+          "at_ms": 0,
+          "timeout": 8000
+        },
+        {
+          "kind": "output",
+          "at_ms": 0
+        },
+        {
+          "kind": "watch-start",
+          "at_ms": 0
+        },
+        {
+          "kind": "scratch",
+          "at_ms": 0
+        },
+        {
+          "kind": "scratch-child",
+          "at_ms": 0
+        },
+        {
+          "kind": "scratch-child",
+          "at_ms": 0
+        },
+        {
+          "kind": "scratch-child",
+          "at_ms": 0
+        },
+        {
+          "kind": "parse",
+          "at_ms": 0,
+          "timeout": 8000
+        },
+        {
+          "kind": "native-start",
+          "at_ms": 0
+        },
+        {
+          "kind": "launcher-signal",
+          "at_ms": 348000,
+          "signal": "SIGTERM"
+        },
+        {
+          "kind": "launcher-exit",
+          "at_ms": 348000,
+          "code": null,
+          "signal": "SIGTERM"
+        },
+        {
+          "kind": "cleanup-look-1",
+          "at_ms": 348000,
+          "timeout": 8000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "cleanup-look-2",
+          "at_ms": 348000,
+          "timeout": 8000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "watch-stop",
+          "at_ms": 348000
+        },
+        {
+          "kind": "results-read",
+          "at_ms": 348000
+        },
+        {
+          "kind": "report-write",
+          "at_ms": 348000
+        }
+      ],
+      "error": null,
+      "report_written": true,
+      "scratch_consumed": true,
+      "elapsed_ms": 348000,
+      "hypothetical_windows_runner_alive": true,
+      "mock_watcher_alive": false,
+      "report": {
+        "native_attempts": 1,
+        "launcher": {
+          "status": null,
+          "signal": "SIGTERM",
+          "timeout": true,
+          "exit_seen": true,
+          "signalled": [
+            "SIGTERM"
+          ],
+          "error": null,
+          "output_complete": true
+        },
+        "aborted": "the native runner reached its 360000 ms ceiling and was signalled (SIGTERM); its WSL launcher process then exited (the Windows runner's own end is not observed); no retry",
+        "cleanup": {
+          "electron": "confirmed",
+          "edge": "confirmed"
+        },
+        "watch_exited": true,
+        "connector_watch": "released",
+        "release_blockers": [
+          "the native runner did not end by itself within its ceiling"
+        ],
+        "budget": {
+          "ceilings_ms": {
+            "preparation": 60000,
+            "native": 360000,
+            "cleanup": 150000,
+            "evidence": 20000,
+            "headroom": 10000
+          },
+          "phase_started_after_ms": {
+            "preparation": 0,
+            "native": 0,
+            "cleanup": 348000,
+            "evidence": 348000
+          },
+          "report_after_ms": 348000
+        },
+        "mechanics_passed": false,
+        "attempts_used": 4,
+        "slot_states": [
+          "start_reached_outcome_unknown",
+          "assigned_no_request_recorded",
+          "assigned_no_request_recorded",
+          "assigned_no_request_recorded"
+        ],
+        "collect_errors": [
+          "admission checker log: unexpected stat /mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-live-nonvoice-e72ea0f932d148c0a48d4c101c69d328/out/admission-c"
+        ]
+      }
+    },
+    {
+      "name": "timeout kill-exit remains blocked",
+      "events": [
+        {
+          "kind": "stage",
+          "at_ms": 0,
+          "timeout": 30000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "connector",
+          "at_ms": 0,
+          "timeout": 60000
+        },
+        {
+          "kind": "preflight-look",
+          "at_ms": 0,
+          "timeout": 8000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "preflight-look",
+          "at_ms": 0,
+          "timeout": 8000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "edge-path",
+          "at_ms": 0,
+          "timeout": 8000
+        },
+        {
+          "kind": "output",
+          "at_ms": 0
+        },
+        {
+          "kind": "watch-start",
+          "at_ms": 0
+        },
+        {
+          "kind": "scratch",
+          "at_ms": 0
+        },
+        {
+          "kind": "scratch-child",
+          "at_ms": 0
+        },
+        {
+          "kind": "scratch-child",
+          "at_ms": 0
+        },
+        {
+          "kind": "scratch-child",
+          "at_ms": 0
+        },
+        {
+          "kind": "parse",
+          "at_ms": 0,
+          "timeout": 8000
+        },
+        {
+          "kind": "native-start",
+          "at_ms": 0
+        },
+        {
+          "kind": "launcher-signal",
+          "at_ms": 348000,
+          "signal": "SIGTERM"
+        },
+        {
+          "kind": "launcher-signal",
+          "at_ms": 353000,
+          "signal": "SIGKILL"
+        },
+        {
+          "kind": "launcher-exit",
+          "at_ms": 353000,
+          "code": null,
+          "signal": "SIGKILL"
+        },
+        {
+          "kind": "cleanup-look-1",
+          "at_ms": 353000,
+          "timeout": 8000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "cleanup-look-2",
+          "at_ms": 353000,
+          "timeout": 8000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "watch-stop",
+          "at_ms": 353000
+        },
+        {
+          "kind": "results-read",
+          "at_ms": 353000
+        },
+        {
+          "kind": "report-write",
+          "at_ms": 353000
+        }
+      ],
+      "error": null,
+      "report_written": true,
+      "scratch_consumed": true,
+      "elapsed_ms": 353000,
+      "hypothetical_windows_runner_alive": true,
+      "mock_watcher_alive": false,
+      "report": {
+        "native_attempts": 1,
+        "launcher": {
+          "status": null,
+          "signal": "SIGKILL",
+          "timeout": true,
+          "exit_seen": true,
+          "signalled": [
+            "SIGTERM",
+            "SIGKILL"
+          ],
+          "error": null,
+          "output_complete": true
+        },
+        "aborted": "the native runner reached its 360000 ms ceiling and was signalled (SIGTERM, SIGKILL); its WSL launcher process then exited (the Windows runner's own end is not observed); no retry",
+        "cleanup": {
+          "electron": "confirmed",
+          "edge": "confirmed"
+        },
+        "watch_exited": true,
+        "connector_watch": "released",
+        "release_blockers": [
+          "the native runner did not end by itself within its ceiling"
+        ],
+        "budget": {
+          "ceilings_ms": {
+            "preparation": 60000,
+            "native": 360000,
+            "cleanup": 150000,
+            "evidence": 20000,
+            "headroom": 10000
+          },
+          "phase_started_after_ms": {
+            "preparation": 0,
+            "native": 0,
+            "cleanup": 353000,
+            "evidence": 353000
+          },
+          "report_after_ms": 353000
+        },
+        "mechanics_passed": false,
+        "attempts_used": 4,
+        "slot_states": [
+          "start_reached_outcome_unknown",
+          "assigned_no_request_recorded",
+          "assigned_no_request_recorded",
+          "assigned_no_request_recorded"
+        ],
+        "collect_errors": [
+          "admission checker log: unexpected stat /mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-live-nonvoice-e72ea0f932d148c0a48d4c101c69d328/out/admission-c"
+        ]
+      }
+    },
+    {
+      "name": "timeout never-exit remains blocked",
+      "events": [
+        {
+          "kind": "stage",
+          "at_ms": 0,
+          "timeout": 30000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "connector",
+          "at_ms": 0,
+          "timeout": 60000
+        },
+        {
+          "kind": "preflight-look",
+          "at_ms": 0,
+          "timeout": 8000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "preflight-look",
+          "at_ms": 0,
+          "timeout": 8000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "edge-path",
+          "at_ms": 0,
+          "timeout": 8000
+        },
+        {
+          "kind": "output",
+          "at_ms": 0
+        },
+        {
+          "kind": "watch-start",
+          "at_ms": 0
+        },
+        {
+          "kind": "scratch",
+          "at_ms": 0
+        },
+        {
+          "kind": "scratch-child",
+          "at_ms": 0
+        },
+        {
+          "kind": "scratch-child",
+          "at_ms": 0
+        },
+        {
+          "kind": "scratch-child",
+          "at_ms": 0
+        },
+        {
+          "kind": "parse",
+          "at_ms": 0,
+          "timeout": 8000
+        },
+        {
+          "kind": "native-start",
+          "at_ms": 0
+        },
+        {
+          "kind": "launcher-signal",
+          "at_ms": 348000,
+          "signal": "SIGTERM"
+        },
+        {
+          "kind": "launcher-signal",
+          "at_ms": 353000,
+          "signal": "SIGKILL"
+        },
+        {
+          "kind": "cleanup-look-1",
+          "at_ms": 358000,
+          "timeout": 8000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "cleanup-look-2",
+          "at_ms": 358000,
+          "timeout": 8000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "watch-stop",
+          "at_ms": 358000
+        },
+        {
+          "kind": "results-read",
+          "at_ms": 358000
+        },
+        {
+          "kind": "report-write",
+          "at_ms": 358000
+        }
+      ],
+      "error": null,
+      "report_written": true,
+      "scratch_consumed": true,
+      "elapsed_ms": 358000,
+      "hypothetical_windows_runner_alive": true,
+      "mock_watcher_alive": false,
+      "report": {
+        "native_attempts": 1,
+        "launcher": {
+          "status": null,
+          "signal": null,
+          "timeout": true,
+          "exit_seen": false,
+          "signalled": [
+            "SIGTERM",
+            "SIGKILL"
+          ],
+          "error": null,
+          "output_complete": false
+        },
+        "aborted": "the native runner reached its 360000 ms ceiling and was signalled (SIGTERM, SIGKILL); its exit was not seen; no retry",
+        "cleanup": {
+          "electron": "confirmed",
+          "edge": "confirmed"
+        },
+        "watch_exited": true,
+        "connector_watch": "released",
+        "release_blockers": [
+          "the native runner did not end by itself within its ceiling"
+        ],
+        "budget": {
+          "ceilings_ms": {
+            "preparation": 60000,
+            "native": 360000,
+            "cleanup": 150000,
+            "evidence": 20000,
+            "headroom": 10000
+          },
+          "phase_started_after_ms": {
+            "preparation": 0,
+            "native": 0,
+            "cleanup": 358000,
+            "evidence": 358000
+          },
+          "report_after_ms": 358000
+        },
+        "mechanics_passed": false,
+        "attempts_used": 4,
+        "slot_states": [
+          "start_reached_outcome_unknown",
+          "assigned_no_request_recorded",
+          "assigned_no_request_recorded",
+          "assigned_no_request_recorded"
+        ],
+        "collect_errors": [
+          "admission checker log: unexpected stat /mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-live-nonvoice-e72ea0f932d148c0a48d4c101c69d328/out/admission-c"
+        ]
+      }
+    },
+    {
+      "name": "counterexample: early SIGKILL has no runner release blocker",
+      "events": [
+        {
+          "kind": "stage",
+          "at_ms": 0,
+          "timeout": 30000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "connector",
+          "at_ms": 0,
+          "timeout": 60000
+        },
+        {
+          "kind": "preflight-look",
+          "at_ms": 0,
+          "timeout": 8000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "preflight-look",
+          "at_ms": 0,
+          "timeout": 8000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "edge-path",
+          "at_ms": 0,
+          "timeout": 8000
+        },
+        {
+          "kind": "output",
+          "at_ms": 0
+        },
+        {
+          "kind": "watch-start",
+          "at_ms": 0
+        },
+        {
+          "kind": "scratch",
+          "at_ms": 0
+        },
+        {
+          "kind": "scratch-child",
+          "at_ms": 0
+        },
+        {
+          "kind": "scratch-child",
+          "at_ms": 0
+        },
+        {
+          "kind": "scratch-child",
+          "at_ms": 0
+        },
+        {
+          "kind": "parse",
+          "at_ms": 0,
+          "timeout": 8000
+        },
+        {
+          "kind": "native-start",
+          "at_ms": 0
+        },
+        {
+          "kind": "launcher-exit",
+          "at_ms": 250,
+          "code": null,
+          "signal": "SIGKILL"
+        },
+        {
+          "kind": "cleanup-look-1",
+          "at_ms": 250,
+          "timeout": 8000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "cleanup-look-2",
+          "at_ms": 250,
+          "timeout": 8000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "watch-stop",
+          "at_ms": 250
+        },
+        {
+          "kind": "results-read",
+          "at_ms": 250
+        },
+        {
+          "kind": "report-write",
+          "at_ms": 250
+        }
+      ],
+      "error": null,
+      "report_written": true,
+      "scratch_consumed": true,
+      "elapsed_ms": 250,
+      "hypothetical_windows_runner_alive": true,
+      "mock_watcher_alive": false,
+      "report": {
+        "native_attempts": 1,
+        "launcher": {
+          "status": null,
+          "signal": "SIGKILL",
+          "timeout": false,
+          "exit_seen": true,
+          "signalled": [],
+          "error": null,
+          "output_complete": true
+        },
+        "aborted": "native launcher failed; preserved diagnostics, no retry",
+        "cleanup": {
+          "electron": "confirmed",
+          "edge": "confirmed"
+        },
+        "watch_exited": true,
+        "connector_watch": "released",
+        "release_blockers": [],
+        "budget": {
+          "ceilings_ms": {
+            "preparation": 60000,
+            "native": 360000,
+            "cleanup": 150000,
+            "evidence": 20000,
+            "headroom": 10000
+          },
+          "phase_started_after_ms": {
+            "preparation": 0,
+            "native": 0,
+            "cleanup": 250,
+            "evidence": 250
+          },
+          "report_after_ms": 250
+        },
+        "mechanics_passed": false,
+        "attempts_used": 4,
+        "slot_states": [
+          "start_reached_outcome_unknown",
+          "assigned_no_request_recorded",
+          "assigned_no_request_recorded",
+          "assigned_no_request_recorded"
+        ],
+        "collect_errors": [
+          "admission checker log: unexpected stat /mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-live-nonvoice-e72ea0f932d148c0a48d4c101c69d328/out/admission-c"
+        ]
+      }
+    },
+    {
+      "name": "exit without output close fails launcher completeness",
+      "events": [
+        {
+          "kind": "stage",
+          "at_ms": 0,
+          "timeout": 30000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "connector",
+          "at_ms": 0,
+          "timeout": 60000
+        },
+        {
+          "kind": "preflight-look",
+          "at_ms": 0,
+          "timeout": 8000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "preflight-look",
+          "at_ms": 0,
+          "timeout": 8000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "edge-path",
+          "at_ms": 0,
+          "timeout": 8000
+        },
+        {
+          "kind": "output",
+          "at_ms": 0
+        },
+        {
+          "kind": "watch-start",
+          "at_ms": 0
+        },
+        {
+          "kind": "scratch",
+          "at_ms": 0
+        },
+        {
+          "kind": "scratch-child",
+          "at_ms": 0
+        },
+        {
+          "kind": "scratch-child",
+          "at_ms": 0
+        },
+        {
+          "kind": "scratch-child",
+          "at_ms": 0
+        },
+        {
+          "kind": "parse",
+          "at_ms": 0,
+          "timeout": 8000
+        },
+        {
+          "kind": "native-start",
+          "at_ms": 0
+        },
+        {
+          "kind": "launcher-exit",
+          "at_ms": 250,
+          "code": 0,
+          "signal": null
+        },
+        {
+          "kind": "cleanup-look-1",
+          "at_ms": 2250,
+          "timeout": 8000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "cleanup-look-2",
+          "at_ms": 2250,
+          "timeout": 8000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "watch-stop",
+          "at_ms": 2250
+        },
+        {
+          "kind": "results-read",
+          "at_ms": 2250
+        },
+        {
+          "kind": "report-write",
+          "at_ms": 2250
+        }
+      ],
+      "error": null,
+      "report_written": true,
+      "scratch_consumed": true,
+      "elapsed_ms": 2250,
+      "hypothetical_windows_runner_alive": false,
+      "mock_watcher_alive": false,
+      "report": {
+        "native_attempts": 1,
+        "launcher": {
+          "status": 0,
+          "signal": null,
+          "timeout": false,
+          "exit_seen": true,
+          "signalled": [],
+          "error": null,
+          "output_complete": false
+        },
+        "aborted": "native result unreadable; scratch and raw evidence retained",
+        "cleanup": {
+          "electron": "confirmed",
+          "edge": "confirmed"
+        },
+        "watch_exited": true,
+        "connector_watch": "released",
+        "release_blockers": [],
+        "budget": {
+          "ceilings_ms": {
+            "preparation": 60000,
+            "native": 360000,
+            "cleanup": 150000,
+            "evidence": 20000,
+            "headroom": 10000
+          },
+          "phase_started_after_ms": {
+            "preparation": 0,
+            "native": 0,
+            "cleanup": 2250,
+            "evidence": 2250
+          },
+          "report_after_ms": 2250
+        },
+        "mechanics_passed": false,
+        "attempts_used": 4,
+        "slot_states": [
+          "start_reached_outcome_unknown",
+          "assigned_no_request_recorded",
+          "assigned_no_request_recorded",
+          "assigned_no_request_recorded"
+        ],
+        "collect_errors": [
+          "admission checker log: unexpected stat /mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-live-nonvoice-e72ea0f932d148c0a48d4c101c69d328/out/admission-c"
+        ]
+      }
+    },
+    {
+      "name": "shared preparation phase clamps calls then refuses",
+      "events": [
+        {
+          "kind": "stage",
+          "at_ms": 0,
+          "timeout": 30000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "connector",
+          "at_ms": 25000,
+          "timeout": 35000
+        },
+        {
+          "kind": "preflight-look",
+          "at_ms": 53000,
+          "timeout": 7000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "preflight-look",
+          "at_ms": 53000,
+          "timeout": 7000,
+          "killSignal": "SIGKILL"
+        }
+      ],
+      "error": "the preparation budget is spent; nothing launched, scratch unused; no retry",
+      "report_written": false,
+      "scratch_consumed": false,
+      "elapsed_ms": 53000,
+      "hypothetical_windows_runner_alive": false,
+      "mock_watcher_alive": false,
+      "report": null
+    },
+    {
+      "name": "post-scratch preparation expiry never launches or counts slots",
+      "events": [
+        {
+          "kind": "stage",
+          "at_ms": 0,
+          "timeout": 30000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "connector",
+          "at_ms": 0,
+          "timeout": 60000
+        },
+        {
+          "kind": "preflight-look",
+          "at_ms": 0,
+          "timeout": 8000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "preflight-look",
+          "at_ms": 0,
+          "timeout": 8000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "edge-path",
+          "at_ms": 0,
+          "timeout": 8000
+        },
+        {
+          "kind": "output",
+          "at_ms": 0
+        },
+        {
+          "kind": "watch-start",
+          "at_ms": 0
+        },
+        {
+          "kind": "scratch",
+          "at_ms": 0
+        },
+        {
+          "kind": "scratch-child",
+          "at_ms": 0
+        },
+        {
+          "kind": "scratch-child",
+          "at_ms": 0
+        },
+        {
+          "kind": "scratch-child",
+          "at_ms": 0
+        },
+        {
+          "kind": "parse",
+          "at_ms": 0,
+          "timeout": 8000
+        },
+        {
+          "kind": "watch-stop",
+          "at_ms": 60001
+        },
+        {
+          "kind": "results-read",
+          "at_ms": 60001
+        },
+        {
+          "kind": "report-write",
+          "at_ms": 60001
+        }
+      ],
+      "error": null,
+      "report_written": true,
+      "scratch_consumed": true,
+      "elapsed_ms": 60001,
+      "hypothetical_windows_runner_alive": false,
+      "mock_watcher_alive": false,
+      "report": {
+        "native_attempts": 0,
+        "aborted": "the preparation budget is spent before the launch; nothing launched",
+        "cleanup": {
+          "electron": "not_started",
+          "edge": "not_started"
+        },
+        "watch_exited": true,
+        "connector_watch": "not_started",
+        "release_blockers": [],
+        "budget": {
+          "ceilings_ms": {
+            "preparation": 60000,
+            "native": 360000,
+            "cleanup": 150000,
+            "evidence": 20000,
+            "headroom": 10000
+          },
+          "phase_started_after_ms": {
+            "preparation": 0,
+            "cleanup": 60001,
+            "evidence": 60001
+          },
+          "report_after_ms": 60001
+        },
+        "mechanics_passed": false,
+        "attempts_used": 0,
+        "slot_states": [
+          "NOT_RUN",
+          "NOT_RUN",
+          "NOT_RUN",
+          "NOT_RUN"
+        ],
+        "collect_errors": [
+          "admission checker log: unexpected stat /mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-live-nonvoice-e72ea0f932d148c0a48d4c101c69d328/out/admission-c"
+        ]
+      }
+    },
+    {
+      "name": "unended watch remains alive and is honestly blocked",
+      "events": [
+        {
+          "kind": "stage",
+          "at_ms": 0,
+          "timeout": 30000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "connector",
+          "at_ms": 0,
+          "timeout": 60000
+        },
+        {
+          "kind": "preflight-look",
+          "at_ms": 0,
+          "timeout": 8000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "preflight-look",
+          "at_ms": 0,
+          "timeout": 8000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "edge-path",
+          "at_ms": 0,
+          "timeout": 8000
+        },
+        {
+          "kind": "output",
+          "at_ms": 0
+        },
+        {
+          "kind": "watch-start",
+          "at_ms": 0
+        },
+        {
+          "kind": "scratch",
+          "at_ms": 0
+        },
+        {
+          "kind": "scratch-child",
+          "at_ms": 0
+        },
+        {
+          "kind": "scratch-child",
+          "at_ms": 0
+        },
+        {
+          "kind": "scratch-child",
+          "at_ms": 0
+        },
+        {
+          "kind": "parse",
+          "at_ms": 0,
+          "timeout": 8000
+        },
+        {
+          "kind": "native-start",
+          "at_ms": 0
+        },
+        {
+          "kind": "launcher-exit",
+          "at_ms": 250,
+          "code": 0,
+          "signal": null
+        },
+        {
+          "kind": "cleanup-look-1",
+          "at_ms": 250,
+          "timeout": 8000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "watch-stop",
+          "at_ms": 570250
+        },
+        {
+          "kind": "results-read",
+          "at_ms": 570250
+        },
+        {
+          "kind": "report-write",
+          "at_ms": 570250
+        }
+      ],
+      "error": null,
+      "report_written": true,
+      "scratch_consumed": true,
+      "elapsed_ms": 570250,
+      "hypothetical_windows_runner_alive": false,
+      "mock_watcher_alive": true,
+      "report": {
+        "native_attempts": 1,
+        "launcher": {
+          "status": 0,
+          "signal": null,
+          "timeout": false,
+          "exit_seen": true,
+          "signalled": [],
+          "error": null,
+          "output_complete": true
+        },
+        "aborted": "native result unreadable; scratch and raw evidence retained",
+        "cleanup": {
+          "electron": "confirmed",
+          "edge": "unknown"
+        },
+        "watch_exited": false,
+        "connector_watch": "unknown",
+        "release_blockers": [
+          "the owned app and Edge are not confirmed gone",
+          "the connector is not seen released",
+          "the read-only watch was not seen ending"
+        ],
+        "budget": {
+          "ceilings_ms": {
+            "preparation": 60000,
+            "native": 360000,
+            "cleanup": 150000,
+            "evidence": 20000,
+            "headroom": 10000
+          },
+          "phase_started_after_ms": {
+            "preparation": 0,
+            "native": 0,
+            "cleanup": 250,
+            "evidence": 570250
+          },
+          "report_after_ms": 570250
+        },
+        "mechanics_passed": false,
+        "attempts_used": 4,
+        "slot_states": [
+          "start_reached_outcome_unknown",
+          "assigned_no_request_recorded",
+          "assigned_no_request_recorded",
+          "assigned_no_request_recorded"
+        ],
+        "collect_errors": [
+          "admission checker log: unexpected stat /mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-live-nonvoice-e72ea0f932d148c0a48d4c101c69d328/out/admission-c"
+        ]
+      }
+    },
+    {
+      "name": "counterexample: unbounded results read crosses whole-call cap",
+      "events": [
+        {
+          "kind": "stage",
+          "at_ms": 0,
+          "timeout": 30000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "connector",
+          "at_ms": 0,
+          "timeout": 60000
+        },
+        {
+          "kind": "preflight-look",
+          "at_ms": 0,
+          "timeout": 8000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "preflight-look",
+          "at_ms": 0,
+          "timeout": 8000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "edge-path",
+          "at_ms": 0,
+          "timeout": 8000
+        },
+        {
+          "kind": "output",
+          "at_ms": 0
+        },
+        {
+          "kind": "watch-start",
+          "at_ms": 0
+        },
+        {
+          "kind": "scratch",
+          "at_ms": 0
+        },
+        {
+          "kind": "scratch-child",
+          "at_ms": 0
+        },
+        {
+          "kind": "scratch-child",
+          "at_ms": 0
+        },
+        {
+          "kind": "scratch-child",
+          "at_ms": 0
+        },
+        {
+          "kind": "parse",
+          "at_ms": 0,
+          "timeout": 8000
+        },
+        {
+          "kind": "native-start",
+          "at_ms": 0
+        },
+        {
+          "kind": "launcher-exit",
+          "at_ms": 250,
+          "code": 0,
+          "signal": null
+        },
+        {
+          "kind": "cleanup-look-1",
+          "at_ms": 250,
+          "timeout": 8000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "cleanup-look-2",
+          "at_ms": 569000,
+          "timeout": 1000,
+          "killSignal": "SIGKILL"
+        },
+        {
+          "kind": "watch-stop",
+          "at_ms": 569000
+        },
+        {
+          "kind": "results-read",
+          "at_ms": 569000
+        },
+        {
+          "kind": "report-write",
+          "at_ms": 609000
+        }
+      ],
+      "error": null,
+      "report_written": true,
+      "scratch_consumed": true,
+      "elapsed_ms": 609000,
+      "hypothetical_windows_runner_alive": false,
+      "mock_watcher_alive": false,
+      "report": {
+        "native_attempts": 1,
+        "launcher": {
+          "status": 0,
+          "signal": null,
+          "timeout": false,
+          "exit_seen": true,
+          "signalled": [],
+          "error": null,
+          "output_complete": true
+        },
+        "aborted": null,
+        "cleanup": {
+          "electron": "confirmed",
+          "edge": "confirmed"
+        },
+        "watch_exited": true,
+        "connector_watch": "released",
+        "release_blockers": [],
+        "budget": {
+          "ceilings_ms": {
+            "preparation": 60000,
+            "native": 360000,
+            "cleanup": 150000,
+            "evidence": 20000,
+            "headroom": 10000
+          },
+          "phase_started_after_ms": {
+            "preparation": 0,
+            "native": 0,
+            "cleanup": 250,
+            "evidence": 569000
+          },
+          "report_after_ms": 609000
+        },
+        "mechanics_passed": false,
+        "attempts_used": 0,
+        "slot_states": [
+          "NOT_RUN",
+          "NOT_RUN",
+          "NOT_RUN",
+          "NOT_RUN"
+        ],
+        "collect_errors": [
+          "the evidence budget is spent: the receipts are not read",
+          "the evidence budget is spent: the checker log is not read"
+        ]
+      }
+    }
+  ],
+  "cases": 11,
+  "actual_native_or_account_operations": 0,
+  "real_allocation_created": false
+}
