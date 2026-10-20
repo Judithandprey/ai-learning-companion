@@ -19,7 +19,7 @@
   "allocation_retired_reason": "QA actual handoff_ec31e85d736c7661fbb4022aa0d2cb52 confirms 0 of 1 used. This selected-image allocation is not additive to the next changed-flow allocation.",
   "live_changed_flow_allocation": {
     "allocation_id": "handoff_fd794043a20068a1b52853cbb6ff884e",
-    "status": "ordering_integrated_foreground_budget_correction_assigned",
+    "status": "candidate08_integrated_stage_recovery_pending_no_allocation",
     "candidate_commit": "24c48c38aee660b606ebff5285acbd2ccb300392",
     "maximum_potential_submissions": 5,
     "purpose_slots": [
@@ -49,7 +49,7 @@
       "account/model/billing change",
       "automatic restart or retry"
     ],
-    "next_owner": "Original QA fixes the same foreground call budget with cleanup/report reserve; Support reviews exact new source, then Lead integrates before fresh allocation. QA stays default; real0/4 and no active lease.",
+    "next_owner": "Original Support prepares missing exact stage/runtime artifacts from trusted local sources; Lead verifies recovery before a fresh allocation to original QA. Source review is READY, QA default, real 0/4, no active lease.",
     "production_source_commit": "175515308f509fb8c0f531dbdb10e57313fcde5a",
     "stage_name": "lc-windows-live-1755153",
     "stage_tree_sha256": "3387824a0dee70013104388d4acec2b810475e98953e7c3f196063a8781fd154",
@@ -617,6 +617,106 @@
       "main_focused_checks": 41,
       "main_independent_checks": 13,
       "next_correction_message": "handoff_b9b8ebe1097c10d063957708ce103660"
+    },
+    "foreground_budget_review": {
+      "source_commit": "8bb900b7a773c9ec7790d0854d863a157285f777",
+      "delivery_message": "handoff_90b6338be8bf4a2694895b3b206465fe",
+      "review_message": "handoff_11effc4772f441b4a1bcef679f191f4b",
+      "parse_message": "handoff_044dbcb0c3e3b4c43aeb32f4711ad953",
+      "lead_record": "docs/verification/lead/live-windows/nonvoice-driver-review/manual-20261014/foreground-budget-review.json",
+      "new_native_attempt": false,
+      "parse_evidence_commit": "c6afeb6c4303d8395afb97639dcb6d34926d84c2",
+      "parse_errors": 0,
+      "support_verdict": "HOLD H1-H3",
+      "support_commit": "d3ca9cad3dbf21e0ffa236a11192285b531c995c",
+      "support_delivery": "handoff_31748b324ad448ebc83aeeef2629a991",
+      "correction_dispatch": "handoff_0164c146dbbc3600006519636a4c2224",
+      "candidate08_correction": {
+        "source_commit": "4acf80c1b32e282520bffe19a641e2f4626a919e",
+        "parent": "c6afeb6c4303d8395afb97639dcb6d34926d84c2",
+        "qa_delivery": "handoff_ae940bc191223949b1bf27dbaa3c8f04",
+        "report": "docs/verification/qa/p0-13-live-0ff325b/driver-nonvoice-08/README.md",
+        "candidate": "08",
+        "pins": {
+          "candidate_sha256": "0847eeb6070c365661add6561118e8d5414e8dffc6d434dfad38864e28722b7e",
+          "runner_sha256": "4655ec118a01c25839d94c2c004d963cc0f19893a1064dec9e3dea853340ae69",
+          "wrapper_sha256": "efa634ca881b9aaf71f424879f1e0836981a4d83925dbc6ab9a753c7605fcef5",
+          "watcher_sha256": "d5ccfa485f8e99731e105164d2819f66ce67df90346f2f9a129d5297093d9a56",
+          "inactive_template_sha256": "942b3c3687a7ec6ccbd30889b242aac67ddfcbd174663464439fb480270e2c52",
+          "tests_sha256": "b8a54528eab6cce5c8e01ffb1dcf8424dcf10e32dfc323cf03b677e1f2fa7e7c"
+        },
+        "lead_pin_checks": {
+          "matched": 6,
+          "unchanged_candidate06_payloads": [
+            "steps.json",
+            "surface.html",
+            "sub-live.json",
+            "admission-checker.ps1",
+            "admission-live.json"
+          ]
+        },
+        "owner_checks": {
+          "passed": 54,
+          "total": 54,
+          "independently_rerun_by_lead": false,
+          "native_acceptance": false
+        },
+        "parser_evidence": {
+          "source_commit": "4acf80c1b32e282520bffe19a641e2f4626a919e",
+          "executed_at_utc": "2026-10-20T11:53:31Z",
+          "powershell": "5.1.26100.9711",
+          "parse_errors": 0,
+          "exit_code": 0,
+          "stderr_bytes": 0,
+          "lead_checked": "check script hash, runner pin, run.json and actual stdout agree; no runner execution"
+        },
+        "support_review": {
+          "message_id": "handoff_50daaa70336c4619c722b2f7bcda58eb",
+          "accepted": true,
+          "execution_started_at_dispatch": false,
+          "scope": "same H1-H3 changed-path independent review; no repeat owner suite or unchanged parser",
+          "verdict": "READY for Lead decision",
+          "delivery": "handoff_9d4b43bcc4d0b7421da918520e0cc3b2",
+          "evidence_commit": "af0d8a1f5cb11765f688f1744cc031f037968303",
+          "integrated_as": "cae1d87d72c003a163d59bfe42960bed5f36f727",
+          "lifecycle_cases": 5,
+          "read_controls": 4
+        },
+        "integration_status": "integrated_source_9df52fa_support_cae1d87; execution awaits exact missing-stage recovery",
+        "reported_limits": [
+          "WSL signal delivery and exact Windows command form remain unmeasured; mismatches must block release",
+          "Uncancellable OS queries and synchronous filesystem stalls are not measured deadline guarantees",
+          "No real runner, checker, app, account, display or audio acceptance"
+        ],
+        "allocation_issued": false,
+        "native_attempts": 0,
+        "real_actions": 0,
+        "qa_mode": "default; manual phase incomplete",
+        "main_integration_record": "docs/verification/lead/live-windows/nonvoice-driver-review/manual-20261014/candidate08-integration-20261020.json",
+        "stage_drift": {
+          "check": "qa_admission_stage_check.py",
+          "outcome": "failed before allocation",
+          "expected_product_files": 81,
+          "matching_product_files": 0,
+          "missing_product_files": 81,
+          "differing_product_files": 0,
+          "runtime_electron_sha256": "49b61a030a520fc36a4b8fa5cce53fb4e935a7bdbbe4b80e9222f598e49cc7fa",
+          "runtime_missing": [
+            "version",
+            "resources/default_app.asar"
+          ],
+          "cause": "unknown",
+          "native_or_account_activity": false,
+          "local_raw_evidence": "/tmp/lc-candidate08-static-drift-summary.json"
+        },
+        "recovery_assignment": {
+          "owner": "original Support sess_cf375ab365ef4d0d",
+          "message_id": "handoff_e4834c5a05772dd32fd5836ee04dd53d",
+          "accepted": true,
+          "execution_started_at_dispatch": false,
+          "scope": "prepare exact artifact recovery from trusted existing local sources into fresh owned /tmp only; no downloads, live tests or existing stage mutation"
+        }
+      }
     }
   },
   "approved_ai_disabled_diagnostic": {

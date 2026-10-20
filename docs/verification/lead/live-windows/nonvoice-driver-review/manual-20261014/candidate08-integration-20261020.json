@@ -1,0 +1,60 @@
+{
+  "source_commit": "4acf80c1b32e282520bffe19a641e2f4626a919e",
+  "integrated_source": "9df52fa",
+  "support_source": "af0d8a1f5cb11765f688f1744cc031f037968303",
+  "support_integrated_as": "cae1d87d72c003a163d59bfe42960bed5f36f727",
+  "support_delivery": "handoff_9d4b43bcc4d0b7421da918520e0cc3b2",
+  "support_verdict": "READY for Lead integration/allocation decision; source/offline only",
+  "main_checks": {
+    "focused": {
+      "passed": 54,
+      "failed": 0,
+      "duration_ms": 2082.180877
+    },
+    "independent_lifecycle_cases": 5,
+    "independent_read_controls": 4,
+    "template_cases": 3,
+    "node_child_process_grants": false,
+    "node_write_grants": false,
+    "native": false,
+    "provider": false,
+    "initial_check_setup_failure": {
+      "result": "Node FileSystemRead denial before tests for random generated scratch existence check",
+      "correction": "Use documented read-only lc-qa-live-nonvoice-* scratch prefix; still no child or write grants",
+      "preserved_locally": "/tmp/lc-candidate08-main-focused.stderr"
+    }
+  },
+  "output_sha256": {
+    "focused.txt": "da7acf79b3d722e9d698f459c27b22c95a25d8c78001adf1e9aba7276bdb08b4",
+    "independent.json": "f0172c7b702ab2604f41ee623eca8e1d2ac4738fdc6273935964fe3292c7dd5b",
+    "template.json": "b396e97e4668789b0f9e395e9bb3682625578f0f8ca1fa8f721dff13861571f1"
+  },
+  "stage_drift": {
+    "check": "qa_admission_stage_check.py",
+    "outcome": "failed before allocation",
+    "expected_product_files": 81,
+    "matching_product_files": 0,
+    "missing_product_files": 81,
+    "differing_product_files": 0,
+    "runtime_electron_sha256": "49b61a030a520fc36a4b8fa5cce53fb4e935a7bdbbe4b80e9222f598e49cc7fa",
+    "runtime_missing": [
+      "version",
+      "resources/default_app.asar"
+    ],
+    "cause": "unknown",
+    "native_or_account_activity": false,
+    "local_raw_evidence": "/tmp/lc-candidate08-static-drift-summary.json"
+  },
+  "recovery_assignment": {
+    "owner": "original Support sess_cf375ab365ef4d0d",
+    "message_id": "handoff_e4834c5a05772dd32fd5836ee04dd53d",
+    "accepted": true,
+    "execution_started_at_dispatch": false,
+    "scope": "prepare exact artifact recovery from trusted existing local sources into fresh owned /tmp only; no downloads, live tests or existing stage mutation"
+  },
+  "allocation_issued": false,
+  "native_attempts": 0,
+  "real_actions": 0,
+  "qa_mode": "default; phase incomplete",
+  "next_action": "Lead verifies recovered stage/runtime, then issues a fresh exclusive allocation to original QA under existing human approvals; actual tool card remains human-owned."
+}

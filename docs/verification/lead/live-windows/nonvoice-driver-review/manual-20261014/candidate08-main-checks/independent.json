@@ -1,0 +1,964 @@
+{
+  "source": "4acf80c1b32e282520bffe19a641e2f4626a919e",
+  "scope": "Five focused mocked lifecycle cases and four pure bounded-read controls; no native/Windows/process/account activity.",
+  "rows": [
+    {
+      "mode": "normal",
+      "events": [
+        {
+          "kind": "look",
+          "at_ms": 0,
+          "image": "electron.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 0,
+          "image": "msedge.exe"
+        },
+        {
+          "kind": "watch-start",
+          "at_ms": 0,
+          "max_seconds": "570"
+        },
+        {
+          "kind": "write",
+          "at_ms": 0,
+          "file": "runner.ps1"
+        },
+        {
+          "kind": "write",
+          "at_ms": 0,
+          "file": "steps.json"
+        },
+        {
+          "kind": "write",
+          "at_ms": 0,
+          "file": "surface.html"
+        },
+        {
+          "kind": "write",
+          "at_ms": 0,
+          "file": "sub-live.json"
+        },
+        {
+          "kind": "write",
+          "at_ms": 0,
+          "file": "admission-checker.ps1"
+        },
+        {
+          "kind": "write",
+          "at_ms": 0,
+          "file": "admission-live.json"
+        },
+        {
+          "kind": "native",
+          "at_ms": 0
+        },
+        {
+          "kind": "write",
+          "at_ms": 250,
+          "file": "runner.stdout.bin"
+        },
+        {
+          "kind": "write",
+          "at_ms": 250,
+          "file": "runner.stderr.bin"
+        },
+        {
+          "kind": "look",
+          "at_ms": 250,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 250,
+          "image": "electron.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 250,
+          "image": "msedge.exe"
+        },
+        {
+          "kind": "write",
+          "at_ms": 250,
+          "file": "connector-watch.stop"
+        },
+        {
+          "kind": "write",
+          "at_ms": 250,
+          "file": "run-status.json"
+        },
+        {
+          "kind": "write",
+          "at_ms": 250,
+          "file": "ledger.json"
+        },
+        {
+          "kind": "write",
+          "at_ms": 250,
+          "file": "receipts-sanitized.json"
+        },
+        {
+          "kind": "write",
+          "at_ms": 250,
+          "file": "run.json"
+        },
+        {
+          "kind": "write",
+          "at_ms": 250,
+          "file": "publish-allowlist.json"
+        }
+      ],
+      "elapsed_ms": 250,
+      "runner_alive": false,
+      "watcher_alive": false,
+      "cleanup": {
+        "runner": "confirmed",
+        "electron": "confirmed",
+        "edge": "confirmed"
+      },
+      "release_blockers": [],
+      "launcher": {
+        "status": 0,
+        "signal": null,
+        "timeout": false,
+        "exit_seen": true,
+        "signalled": [],
+        "error": null,
+        "output_complete": true
+      },
+      "watch_stop": {
+        "requested": true,
+        "error": null,
+        "signalled": [],
+        "exited": true
+      },
+      "mechanics_passed": false,
+      "attempts_used": 4
+    },
+    {
+      "mode": "early-signal",
+      "events": [
+        {
+          "kind": "look",
+          "at_ms": 0,
+          "image": "electron.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 0,
+          "image": "msedge.exe"
+        },
+        {
+          "kind": "watch-start",
+          "at_ms": 0,
+          "max_seconds": "570"
+        },
+        {
+          "kind": "write",
+          "at_ms": 0,
+          "file": "runner.ps1"
+        },
+        {
+          "kind": "write",
+          "at_ms": 0,
+          "file": "steps.json"
+        },
+        {
+          "kind": "write",
+          "at_ms": 0,
+          "file": "surface.html"
+        },
+        {
+          "kind": "write",
+          "at_ms": 0,
+          "file": "sub-live.json"
+        },
+        {
+          "kind": "write",
+          "at_ms": 0,
+          "file": "admission-checker.ps1"
+        },
+        {
+          "kind": "write",
+          "at_ms": 0,
+          "file": "admission-live.json"
+        },
+        {
+          "kind": "native",
+          "at_ms": 0
+        },
+        {
+          "kind": "write",
+          "at_ms": 250,
+          "file": "runner.stdout.bin"
+        },
+        {
+          "kind": "write",
+          "at_ms": 250,
+          "file": "runner.stderr.bin"
+        },
+        {
+          "kind": "look",
+          "at_ms": 250,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 250,
+          "image": "electron.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 250,
+          "image": "msedge.exe"
+        },
+        {
+          "kind": "write",
+          "at_ms": 250,
+          "file": "connector-watch.stop"
+        },
+        {
+          "kind": "write",
+          "at_ms": 250,
+          "file": "run-status.json"
+        },
+        {
+          "kind": "write",
+          "at_ms": 250,
+          "file": "ledger.json"
+        },
+        {
+          "kind": "write",
+          "at_ms": 250,
+          "file": "receipts-sanitized.json"
+        },
+        {
+          "kind": "write",
+          "at_ms": 250,
+          "file": "run.json"
+        },
+        {
+          "kind": "write",
+          "at_ms": 250,
+          "file": "publish-allowlist.json"
+        }
+      ],
+      "elapsed_ms": 250,
+      "runner_alive": false,
+      "watcher_alive": false,
+      "cleanup": {
+        "runner": "confirmed",
+        "electron": "confirmed",
+        "edge": "confirmed"
+      },
+      "release_blockers": [
+        "the native launcher did not end cleanly by itself (a signal, an error or its ceiling)"
+      ],
+      "launcher": {
+        "status": null,
+        "signal": "SIGKILL",
+        "timeout": false,
+        "exit_seen": true,
+        "signalled": [],
+        "error": null,
+        "output_complete": true
+      },
+      "watch_stop": {
+        "requested": true,
+        "error": null,
+        "signalled": [],
+        "exited": true
+      },
+      "mechanics_passed": false,
+      "attempts_used": 4
+    },
+    {
+      "mode": "owned-stays",
+      "events": [
+        {
+          "kind": "look",
+          "at_ms": 0,
+          "image": "electron.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 0,
+          "image": "msedge.exe"
+        },
+        {
+          "kind": "watch-start",
+          "at_ms": 0,
+          "max_seconds": "570"
+        },
+        {
+          "kind": "write",
+          "at_ms": 0,
+          "file": "runner.ps1"
+        },
+        {
+          "kind": "write",
+          "at_ms": 0,
+          "file": "steps.json"
+        },
+        {
+          "kind": "write",
+          "at_ms": 0,
+          "file": "surface.html"
+        },
+        {
+          "kind": "write",
+          "at_ms": 0,
+          "file": "sub-live.json"
+        },
+        {
+          "kind": "write",
+          "at_ms": 0,
+          "file": "admission-checker.ps1"
+        },
+        {
+          "kind": "write",
+          "at_ms": 0,
+          "file": "admission-live.json"
+        },
+        {
+          "kind": "native",
+          "at_ms": 0
+        },
+        {
+          "kind": "write",
+          "at_ms": 250,
+          "file": "runner.stdout.bin"
+        },
+        {
+          "kind": "write",
+          "at_ms": 250,
+          "file": "runner.stderr.bin"
+        },
+        {
+          "kind": "look",
+          "at_ms": 250,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 500,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 750,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 1000,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 1250,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 1500,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 1750,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 2000,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 2250,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 2500,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 2750,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 3000,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 3250,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 3500,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 3750,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 4000,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 4250,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 4500,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 4750,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 5000,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 5250,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "runner-signal",
+          "at_ms": 5250,
+          "how": "close"
+        },
+        {
+          "kind": "look",
+          "at_ms": 5250,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 5500,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 5750,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 6000,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 6250,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "runner-signal",
+          "at_ms": 6250,
+          "how": "force"
+        },
+        {
+          "kind": "look",
+          "at_ms": 6250,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 6250,
+          "image": "electron.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 6250,
+          "image": "msedge.exe"
+        },
+        {
+          "kind": "write",
+          "at_ms": 6250,
+          "file": "connector-watch.stop"
+        },
+        {
+          "kind": "write",
+          "at_ms": 6250,
+          "file": "run-status.json"
+        },
+        {
+          "kind": "write",
+          "at_ms": 6250,
+          "file": "ledger.json"
+        },
+        {
+          "kind": "write",
+          "at_ms": 6250,
+          "file": "receipts-sanitized.json"
+        },
+        {
+          "kind": "write",
+          "at_ms": 6250,
+          "file": "run.json"
+        },
+        {
+          "kind": "write",
+          "at_ms": 6250,
+          "file": "publish-allowlist.json"
+        }
+      ],
+      "elapsed_ms": 6250,
+      "runner_alive": false,
+      "watcher_alive": false,
+      "cleanup": {
+        "runner": "confirmed",
+        "electron": "confirmed",
+        "edge": "confirmed"
+      },
+      "release_blockers": [
+        "the Windows runner was signalled by QA, or a look or signal about it failed"
+      ],
+      "launcher": {
+        "status": 0,
+        "signal": null,
+        "timeout": false,
+        "exit_seen": true,
+        "signalled": [],
+        "error": null,
+        "output_complete": true
+      },
+      "watch_stop": {
+        "requested": true,
+        "error": null,
+        "signalled": [],
+        "exited": true
+      },
+      "mechanics_passed": false,
+      "attempts_used": 4
+    },
+    {
+      "mode": "unresolved",
+      "events": [
+        {
+          "kind": "look",
+          "at_ms": 0,
+          "image": "electron.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 0,
+          "image": "msedge.exe"
+        },
+        {
+          "kind": "watch-start",
+          "at_ms": 0,
+          "max_seconds": "570"
+        },
+        {
+          "kind": "write",
+          "at_ms": 0,
+          "file": "runner.ps1"
+        },
+        {
+          "kind": "write",
+          "at_ms": 0,
+          "file": "steps.json"
+        },
+        {
+          "kind": "write",
+          "at_ms": 0,
+          "file": "surface.html"
+        },
+        {
+          "kind": "write",
+          "at_ms": 0,
+          "file": "sub-live.json"
+        },
+        {
+          "kind": "write",
+          "at_ms": 0,
+          "file": "admission-checker.ps1"
+        },
+        {
+          "kind": "write",
+          "at_ms": 0,
+          "file": "admission-live.json"
+        },
+        {
+          "kind": "native",
+          "at_ms": 0
+        },
+        {
+          "kind": "write",
+          "at_ms": 250,
+          "file": "runner.stdout.bin"
+        },
+        {
+          "kind": "write",
+          "at_ms": 250,
+          "file": "runner.stderr.bin"
+        },
+        {
+          "kind": "look",
+          "at_ms": 250,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 500,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 750,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 1000,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 1250,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 1500,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 1750,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 2000,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 2250,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 2500,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 2750,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 3000,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 3250,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 3500,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 3750,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 4000,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 4250,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 4500,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 4750,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 5000,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 5250,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 5250,
+          "image": "electron.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 5250,
+          "image": "msedge.exe"
+        },
+        {
+          "kind": "write",
+          "at_ms": 5250,
+          "file": "connector-watch.stop"
+        },
+        {
+          "kind": "write",
+          "at_ms": 5250,
+          "file": "run-status.json"
+        },
+        {
+          "kind": "write",
+          "at_ms": 5250,
+          "file": "ledger.json"
+        },
+        {
+          "kind": "write",
+          "at_ms": 5250,
+          "file": "receipts-sanitized.json"
+        },
+        {
+          "kind": "write",
+          "at_ms": 5250,
+          "file": "run.json"
+        },
+        {
+          "kind": "write",
+          "at_ms": 5250,
+          "file": "publish-allowlist.json"
+        }
+      ],
+      "elapsed_ms": 5250,
+      "runner_alive": true,
+      "watcher_alive": false,
+      "cleanup": {
+        "runner": "unknown",
+        "electron": "confirmed",
+        "edge": "confirmed"
+      },
+      "release_blockers": [
+        "the Windows runner's end is not proven"
+      ],
+      "launcher": {
+        "status": 0,
+        "signal": null,
+        "timeout": false,
+        "exit_seen": true,
+        "signalled": [],
+        "error": null,
+        "output_complete": true
+      },
+      "watch_stop": {
+        "requested": true,
+        "error": null,
+        "signalled": [],
+        "exited": true
+      },
+      "mechanics_passed": false,
+      "attempts_used": 4
+    },
+    {
+      "mode": "watch-term",
+      "events": [
+        {
+          "kind": "look",
+          "at_ms": 0,
+          "image": "electron.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 0,
+          "image": "msedge.exe"
+        },
+        {
+          "kind": "watch-start",
+          "at_ms": 0,
+          "max_seconds": "570"
+        },
+        {
+          "kind": "write",
+          "at_ms": 0,
+          "file": "runner.ps1"
+        },
+        {
+          "kind": "write",
+          "at_ms": 0,
+          "file": "steps.json"
+        },
+        {
+          "kind": "write",
+          "at_ms": 0,
+          "file": "surface.html"
+        },
+        {
+          "kind": "write",
+          "at_ms": 0,
+          "file": "sub-live.json"
+        },
+        {
+          "kind": "write",
+          "at_ms": 0,
+          "file": "admission-checker.ps1"
+        },
+        {
+          "kind": "write",
+          "at_ms": 0,
+          "file": "admission-live.json"
+        },
+        {
+          "kind": "native",
+          "at_ms": 0
+        },
+        {
+          "kind": "write",
+          "at_ms": 250,
+          "file": "runner.stdout.bin"
+        },
+        {
+          "kind": "write",
+          "at_ms": 250,
+          "file": "runner.stderr.bin"
+        },
+        {
+          "kind": "look",
+          "at_ms": 250,
+          "image": "powershell.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 250,
+          "image": "electron.exe"
+        },
+        {
+          "kind": "look",
+          "at_ms": 250,
+          "image": "msedge.exe"
+        },
+        {
+          "kind": "write",
+          "at_ms": 250,
+          "file": "connector-watch.stop"
+        },
+        {
+          "kind": "watch-signal",
+          "at_ms": 3250,
+          "signal": "SIGTERM"
+        },
+        {
+          "kind": "write",
+          "at_ms": 3250,
+          "file": "run-status.json"
+        },
+        {
+          "kind": "write",
+          "at_ms": 3250,
+          "file": "ledger.json"
+        },
+        {
+          "kind": "write",
+          "at_ms": 3250,
+          "file": "receipts-sanitized.json"
+        },
+        {
+          "kind": "write",
+          "at_ms": 3250,
+          "file": "run.json"
+        },
+        {
+          "kind": "write",
+          "at_ms": 3250,
+          "file": "publish-allowlist.json"
+        }
+      ],
+      "elapsed_ms": 3250,
+      "runner_alive": false,
+      "watcher_alive": false,
+      "cleanup": {
+        "runner": "confirmed",
+        "electron": "confirmed",
+        "edge": "confirmed"
+      },
+      "release_blockers": [
+        "the connector is not seen released"
+      ],
+      "launcher": {
+        "status": 0,
+        "signal": null,
+        "timeout": false,
+        "exit_seen": true,
+        "signalled": [],
+        "error": null,
+        "output_complete": true
+      },
+      "watch_stop": {
+        "requested": false,
+        "error": "synthetic stop-file failure",
+        "signalled": [
+          "SIGTERM"
+        ],
+        "exited": true
+      },
+      "mechanics_passed": false,
+      "attempts_used": 4
+    }
+  ],
+  "read_cases": [
+    {
+      "mode": "exact",
+      "opened": 1,
+      "read": 2,
+      "closed": 1
+    },
+    {
+      "mode": "oversize",
+      "opened": 1,
+      "read": 0,
+      "closed": 1
+    },
+    {
+      "mode": "growing",
+      "opened": 1,
+      "read": 1,
+      "closed": 1
+    },
+    {
+      "mode": "no-time",
+      "opened": 0,
+      "read": 0,
+      "closed": 0
+    }
+  ],
+  "actual_native_or_account_operations": 0,
+  "real_allocation_created": false
+}

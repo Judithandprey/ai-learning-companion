@@ -1,24 +1,26 @@
 # Candidate06 manual approval phase — 2026-10-14
 
-**Current delivery:** QA `58338a2` is independently approved by Support `7723f82`
-and integrated as `05fbc0c` / `574df91`. Resulting-main checks pass **41/41**, plus
-**11 independent wrapper scenarios and 2 validator cases**, with Node child-process
-and write permissions withheld. These checks use injected time/process/file effects,
-not Windows or account access. [Exact review and outputs](time-correction-review.json).
+**Current delivery (2026-10-20):** Candidate08 QA `4acf80c` is integrated as
+`9df52fa`; independent Support `af0d8a1` is integrated as `cae1d87` and closes the
+H1–H3 source findings. Resulting main passes 54 focused cases, five independent
+lifecycle cases, four read controls and three template cases. Changed-runner
+PowerShell parse evidence has zero errors. These are source/offline results,
+not native or product acceptance.
 
-**Execution remains held for a concrete cleanup-budget defect:** the current native
-timeout alone can consume the whole 600-second foreground cap. Support's mocked
-1-second preparation + 600-second native case reaches cleanup at 601 seconds and
-reporting at 603 seconds. No real timeout or resource leak was observed in this
-probe. The same original QA correction is actually dispatched as
-`handoff_b9b8ebe1097c10d063957708ce103660`: bound preparation, attached native work,
-cleanup and evidence within one foreground budget, preserve guards and exact-owned
-cleanup, and report unfinished steps/uncertain exits honestly. Support reviews that
-exact delta next. Dispatch acceptance is not execution proof.
+**Current execution dependency:** the actual read-only preallocation check found
+all 81 fixed product-stage files missing, plus cached runtime `version` and
+`resources/default_app.asar`. `electron.exe` still has its required digest; cause
+of missing files is unknown. Original Support has one concrete recovery-preparation
+handoff `handoff_e4834c5a05772dd32fd5836ee04dd53d`, restricted to trusted local artifacts
+and fresh owned preparation. Lead verifies restoration before a fresh allocation.
+No app, account or display was used; real actions remain **0/4**, QA stays `default`,
+and no lease was issued. [Exact integration, checks and drift](candidate08-integration-20261020.json).
 
-No fresh allocation or real action occurred: **0/4**; QA remains `default`, and the
-manual phase is incomplete. Existing product `0ff325b` and Candidate06 payloads are
-unchanged by the integrated ordering fix. Historical restart/refusal facts follow.
+**Prior ordering and budget findings (historical):** QA `58338a2` and Support
+`7723f82` integrate as `05fbc0c` / `574df91`; 41 owner-shaped, 11 independent wrapper
+and two validator checks passed. Candidate07's additional H1–H3 HOLD and its parser
+result are retained in [review history](foreground-budget-review.json); Candidate08
+supersedes that source HOLD, without claiming actual Windows timing guarantees.
 
 **2026-10-20 continuation:** the human explicitly resumed the same correction
 after Windows Update interrupted QA. Both dirty source/test files are preserved at

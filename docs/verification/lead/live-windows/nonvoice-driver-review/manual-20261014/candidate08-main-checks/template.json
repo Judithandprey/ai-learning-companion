@@ -1,0 +1,31 @@
+{
+  "kind": "qa-live-allocation-template-check/v1",
+  "template_sha256": "942b3c3687a7ec6ccbd30889b242aac67ddfcbd174663464439fb480270e2c52",
+  "candidate_sha256": "0847eeb6070c365661add6561118e8d5414e8dffc6d434dfad38864e28722b7e",
+  "wrapper_sha256": "efa634ca881b9aaf71f424879f1e0836981a4d83925dbc6ab9a753c7605fcef5",
+  "template_matches": {
+    "wrapper": true,
+    "candidate": true,
+    "connector": true,
+    "connector_commit": "0ff325beadb7c689244610307b6aa16d638fd2e6",
+    "copy_label": "/home/agentsdock/.local/share/lc-qa/subscription-source-52be105a148a"
+  },
+  "lead_owned_fields_filled_in_memory": [
+    "state",
+    "lead_reviewed",
+    "allocation_id",
+    "command_approval_ref",
+    "script_permission_ref",
+    "valid_from_utc",
+    "valid_until_utc"
+  ],
+  "cases": {
+    "saved_template": "refused: separate exact Lead-reviewed live allocation required",
+    "template_with_lead_fields_in_memory": "accepted",
+    "driver_07_template_with_lead_fields": "refused: separate exact Lead-reviewed live allocation required"
+  },
+  "allocation_prepared": false,
+  "lease": "NONE",
+  "run_live_candidate_called": false,
+  "limitation": "Pure validator only: the template stays inactive. The filled object exists only in this process and is not an allocation, approval or lease."
+}

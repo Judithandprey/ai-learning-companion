@@ -1,0 +1,154 @@
+{
+  "source_commit": "8bb900b7a773c9ec7790d0854d863a157285f777",
+  "parent": "58338a2fe8467125f00f0231abf5cfa194e71915",
+  "main_baseline": "725f91036130d8a73ae523074c01e195663d22a1",
+  "qa_delivery": "handoff_90b6338be8bf4a2694895b3b206465fe",
+  "pin_checks": {
+    "docs/verification/qa/p0-13-live-0ff325b/candidate-nonvoice-07/candidate.json": "b17b66c4bae78269762b24f8656883907a6ceccd9a6d9ab16ffdf40ac0832e9e",
+    "docs/verification/qa/p0-13-live-0ff325b/candidate-nonvoice-07/runner.ps1": "3cf37c29a3254a31b5afc204e95c38a712acf4a91ef4cbad3d3f37972275b6fd",
+    "tests/e2e/windows/qa_run_live_candidate.mjs": "691d5bebe61cfcf63a345a58386847329166d2596f78a31e8490d9d988e17e17",
+    "docs/verification/qa/p0-13-live-0ff325b/driver-nonvoice-07/allocation.template.json": "9d68ec00c39f8d481cc45ab286885b4a1cc7d79b1de8a37f85ea1306b28e427d",
+    "tests/e2e/windows/test_qa_live_candidate.mjs": "3db8da70d21400b07e7b7aa9b928bbe20ca09332ff4b7fa16db8debb9596c93b"
+  },
+  "all_five_pins_matched": true,
+  "unchanged_candidate06_payloads": {
+    "steps.json": true,
+    "surface.html": true,
+    "sub-live.json": true,
+    "admission-checker.ps1": true,
+    "admission-live.json": true
+  },
+  "owner_checks": "48/48 reported; not independently rerun by Lead",
+  "support_review": {
+    "message_id": "handoff_11effc4772f441b4a1bcef679f191f4b",
+    "accepted": true,
+    "execution_started_at_dispatch": false,
+    "scope": "same P0-13 changed budget/termination/accounting review, offline only",
+    "delivery_message": "handoff_31748b324ad448ebc83aeeef2629a991",
+    "evidence_commit": "d3ca9cad3dbf21e0ffa236a11192285b531c995c",
+    "report": "docs/verification/support/nonvoice-budget-8bb900b-review-20261020/README.md",
+    "verdict": "HOLD before allocation",
+    "offline_cases": 11,
+    "native_operations": 0,
+    "findings": {
+      "H1": "Nested Windows I/O and finally are not deadline-bound; a later send can follow an expired step. WSL launcher signals do not prove Windows runner termination.",
+      "H2": "Early SIGKILL before wrapper timeout can leave release_blockers empty. Mechanics still fails; no false product PASS demonstrated.",
+      "H3": "Read-only watcher can outlive the wrapper; synchronous evidence/final writes are not bounded. Injected late-completion witness reports609s; not a native measurement."
+    }
+  },
+  "qa_parse_check": {
+    "message_id": "handoff_044dbcb0c3e3b4c43aeb32f4711ad953",
+    "accepted": true,
+    "execution_started_at_dispatch": false,
+    "scope": "exact changed runner Parser.ParseFile only via normal QA default-mode human approval",
+    "delivery_message": "handoff_22f4c9e85c69281f355a3096ec5fc8ae",
+    "evidence_commit": "c6afeb6c4303d8395afb97639dcb6d34926d84c2",
+    "executed_at_utc": "2026-10-20T11:09:16Z",
+    "parse_errors": 0,
+    "exit_code": 0,
+    "stderr_bytes": 0,
+    "lead_evidence_checks": "check.ps1 hash, input hash, run.json and actual stdout agree; parser only, no runner execution",
+    "temporary_folder_cleanup": "QA reports removed; candidate scratch unused",
+    "qa_reported_no_pending_card": true
+  },
+  "integration_status": "Candidate08 integrated and focused checks pass; preallocation stage drift blocks execution",
+  "allocation_issued": false,
+  "native_attempts": 0,
+  "real_actions": 0,
+  "qa_mode": "default; manual phase incomplete",
+  "residual_review": "Candidate07 H1-H3 closed for Candidate08 by independent af0d8a1. Native lifetime behavior remains unmeasured; current concrete blocker is missing staged artifacts, not a repeated source approval.",
+  "same_owner_correction": {
+    "message_id": "handoff_0164c146dbbc3600006519636a4c2224",
+    "accepted": true,
+    "execution_started_at_dispatch": false,
+    "source_checkpoint": "c6afeb6c4303d8395afb97639dcb6d34926d84c2",
+    "scope": "same foreground wrapper/runner/watch deadline and terminal-evidence correction, targeted offline tests, regenerated pins and parser check only if bytes change",
+    "next_owner": "Original Support reviews exact correction; Lead integrates before fresh allocation"
+  },
+  "correction_delivery": {
+    "source_commit": "4acf80c1b32e282520bffe19a641e2f4626a919e",
+    "parent": "c6afeb6c4303d8395afb97639dcb6d34926d84c2",
+    "qa_delivery": "handoff_ae940bc191223949b1bf27dbaa3c8f04",
+    "report": "docs/verification/qa/p0-13-live-0ff325b/driver-nonvoice-08/README.md",
+    "candidate": "08",
+    "pins": {
+      "candidate_sha256": "0847eeb6070c365661add6561118e8d5414e8dffc6d434dfad38864e28722b7e",
+      "runner_sha256": "4655ec118a01c25839d94c2c004d963cc0f19893a1064dec9e3dea853340ae69",
+      "wrapper_sha256": "efa634ca881b9aaf71f424879f1e0836981a4d83925dbc6ab9a753c7605fcef5",
+      "watcher_sha256": "d5ccfa485f8e99731e105164d2819f66ce67df90346f2f9a129d5297093d9a56",
+      "inactive_template_sha256": "942b3c3687a7ec6ccbd30889b242aac67ddfcbd174663464439fb480270e2c52",
+      "tests_sha256": "b8a54528eab6cce5c8e01ffb1dcf8424dcf10e32dfc323cf03b677e1f2fa7e7c"
+    },
+    "lead_pin_checks": {
+      "matched": 6,
+      "unchanged_candidate06_payloads": [
+        "steps.json",
+        "surface.html",
+        "sub-live.json",
+        "admission-checker.ps1",
+        "admission-live.json"
+      ]
+    },
+    "owner_checks": {
+      "passed": 54,
+      "total": 54,
+      "independently_rerun_by_lead": false,
+      "native_acceptance": false
+    },
+    "parser_evidence": {
+      "source_commit": "4acf80c1b32e282520bffe19a641e2f4626a919e",
+      "executed_at_utc": "2026-10-20T11:53:31Z",
+      "powershell": "5.1.26100.9711",
+      "parse_errors": 0,
+      "exit_code": 0,
+      "stderr_bytes": 0,
+      "lead_checked": "check script hash, runner pin, run.json and actual stdout agree; no runner execution"
+    },
+    "support_review": {
+      "message_id": "handoff_50daaa70336c4619c722b2f7bcda58eb",
+      "accepted": true,
+      "execution_started_at_dispatch": false,
+      "scope": "same H1-H3 changed-path independent review; no repeat owner suite or unchanged parser",
+      "verdict": "READY for Lead decision",
+      "delivery": "handoff_9d4b43bcc4d0b7421da918520e0cc3b2",
+      "evidence_commit": "af0d8a1f5cb11765f688f1744cc031f037968303",
+      "integrated_as": "cae1d87d72c003a163d59bfe42960bed5f36f727",
+      "lifecycle_cases": 5,
+      "read_controls": 4
+    },
+    "integration_status": "integrated_source_9df52fa_support_cae1d87; execution awaits exact missing-stage recovery",
+    "reported_limits": [
+      "WSL signal delivery and exact Windows command form remain unmeasured; mismatches must block release",
+      "Uncancellable OS queries and synchronous filesystem stalls are not measured deadline guarantees",
+      "No real runner, checker, app, account, display or audio acceptance"
+    ],
+    "allocation_issued": false,
+    "native_attempts": 0,
+    "real_actions": 0,
+    "qa_mode": "default; manual phase incomplete",
+    "main_integration_record": "docs/verification/lead/live-windows/nonvoice-driver-review/manual-20261014/candidate08-integration-20261020.json",
+    "stage_drift": {
+      "check": "qa_admission_stage_check.py",
+      "outcome": "failed before allocation",
+      "expected_product_files": 81,
+      "matching_product_files": 0,
+      "missing_product_files": 81,
+      "differing_product_files": 0,
+      "runtime_electron_sha256": "49b61a030a520fc36a4b8fa5cce53fb4e935a7bdbbe4b80e9222f598e49cc7fa",
+      "runtime_missing": [
+        "version",
+        "resources/default_app.asar"
+      ],
+      "cause": "unknown",
+      "native_or_account_activity": false,
+      "local_raw_evidence": "/tmp/lc-candidate08-static-drift-summary.json"
+    },
+    "recovery_assignment": {
+      "owner": "original Support sess_cf375ab365ef4d0d",
+      "message_id": "handoff_e4834c5a05772dd32fd5836ee04dd53d",
+      "accepted": true,
+      "execution_started_at_dispatch": false,
+      "scope": "prepare exact artifact recovery from trusted existing local sources into fresh owned /tmp only; no downloads, live tests or existing stage mutation"
+    }
+  }
+}
