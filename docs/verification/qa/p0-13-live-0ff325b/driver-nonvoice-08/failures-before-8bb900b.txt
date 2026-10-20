@@ -1,0 +1,575 @@
+# 8bb900b sources (git archive c6afeb6, whose tests/ equal 8bb900b's) with the corrected test file and the candidate-nonvoice-08 folder; node v24.21.0 --permission (read-only: the archive and the unused scratch path; no child process, no write)
+✖ the candidate is offline-only, reproduces from the sources, and its scratch is unused (42.156351ms)
+✖ the runner is the reviewed r4 runner byte for byte, apart from the one work-folder name and the source-admission delta (1.60046ms)
+✖ the runner's work deadline reaches every in-flight operation (Support d3ca9ca H1): -WorkMs 320000 from its process's creation, every DevTools and HTTP wait bounded before it starts and cancellable, every effect after a wait checked, no loop swallowing it, -CloseMs 15000 for the finally; runner-only, the checker unchanged (0.628616ms)
+✔ the package pins are the Lead's staged 0ff325b build (81 files, its tree and entry; native helper, Electron 44.5.1 and Edge as in the accepted diagnostic) (1.32395ms)
+✔ the connector configuration is the trusted real one: the exact private 52be105 copy, the pinned codex binary, the product's own state (0.369208ms)
+✔ the steps hold exactly the four released actions, the actual UI Start once, and nothing fake, restarted or signed in (0.610411ms)
+✔ every action is bracketed: assigned only while the session is on with the exact count, and a stop leaves the rest NOT_RUN (0.635459ms)
+✔ the typed requests carry no card value and do not say the cards changed; they select explain, the circle is left at the product's hint (0.324663ms)
+✔ the live surface changes its cards in place: new values never shown before, same page, same geometry, same truth format (14.203456ms)
+✔ ledger: all four actions counted once each, the whole picture at the provider boundary for each answered one, the Stop fenced (9.54991ms)
+✔ ledger: unknown and proven not_submitted outcomes count; failed triggers count but are named; a session that never started counts nothing (2.174251ms)
+✔ ledger: a session that ended before an action leaves it and every later one NOT_RUN; extra requests, restarts and a disagreeing app count are flagged (1.43347ms)
+✔ fence: needs Stop by the user with the request out and settling after it, nothing shown or sent later; otherwise unknown or not fenced (1.288803ms)
+✔ transport: no receipt, another image, no text or image input, or a request not submitted is never the picture at the provider; tools are flagged (0.141702ms)
+✔ pixel rules: only values new after the change and absent from earlier AI text prove fresh pixels; formatted values are read; a question with a value is a leak (1.479308ms)
+✔ wrapper: nothing runs without --execute, a new evidence folder and an independently supplied allocation hash (1.38152ms)
+✔ wrapper: only an exact, active live allocation bound to the four-action bounds, no voice, no retry or restart, is accepted (1.020558ms)
+✔ wrapper: the connector side refuses a missing or inexact copy, anything running in it, or another codex binary, before any Windows call (0.570083ms)
+✔ wrapper: the mechanical result needs every term, the connector and its children gone, and keeps acceptance NOT_JUDGED (1.368415ms)
+✖ wrapper: the watch summary is released only with the whole lifecycle observed; anything less is unknown or left running (0.559012ms)
+✖ wrapper: with an exact allocation it still refuses at the connector checks before any Windows call, any folder or any process (13.905254ms)
+✖ time: late entry by one millisecond, or an expired allocation, has no effect at all (not even the Linux stage check) (7.173779ms)
+✖ time: exactly enough on a constant clock passes every check at equality; the one launch comes after the scratch (5.999924ms)
+✖ time: time lost in the prechecks refuses right before the watch and the output folder (5.701538ms)
+✖ time: time lost during the read-only looks refuses before a preflight record, even with a conflict present (5.565987ms)
+✖ time: time lost while the watch starts stops the watch; the scratch stays unused and nothing launches (5.816889ms)
+✖ time: after the scratch, the unchanged final check refuses at end - bound + 1 ms and launches at equality (5.698993ms)
+✖ budget: the phase ceilings fill the 600 s foreground maximum; native is the candidate's 360 s ceiling with the runner's 320 s work deadline (0.355602ms)
+✖ budget: preparation child calls share what is left of the 60 s, never a fresh full timeout, and are killed at that end; late preparation refuses before the watch, the output and the scratch (5.385882ms)
+✖ budget: the preparation spent while the watch starts refuses before the scratch and stops the watch; spent after the scratch, nothing launches (5.453131ms)
+✖ budget: a native runner past its 360 s ceiling is signalled and awaited in this same process, never launched twice; cleanup and the report follow in the budget, never a pass (5.980022ms)
+✖ budget: a slow cleanup is cut at its reserve: what it could not finish is unknown, never released or a pass; a spent evidence budget leaves the records explicitly incomplete; the report is still written before 600 s (6.208479ms)
+✖ release (Support d3ca9ca H2): a launcher ended by an outside signal before its ceiling, or with an error, blocks any release claim; the normal end does not (5.627757ms)
+✖ the Windows runner (Support H1): seen by its exact identity and proven gone before the app's cleanup; one still there is ended by that identity (a close request, then its end through its held handle) and blocks release; an unresolved one is never signalled and stays unproven (5.497775ms)
+✖ the watch (Support H3): it ends by itself at the cleanup's end at the latest; it is stopped and joined within its share (the stop file, then SIGTERM, then SIGKILL); one still there is a release blocker, never hidden, and the report is still written in time (5.357319ms)
+✖ evidence (Support H3): a small status record comes before the collection; a file over its bound or past a count is not read (an explicit error, kept in place); the report is bounded (8.097854ms)
+✖ a clean run is releasable and its evidence is copied whole within the bounds: the release path and the collection work when nothing is wrong (6.129665ms)
+✖ the watch's stop keeps to its time, also below 2 s: the stop file, then SIGTERM and SIGKILL, each awaited only its share (402.721138ms)
+✔ ledger: a launched run without readable results counts every slot as unknown, never NOT_RUN; known results keep their own accounting (0.665056ms)
+✔ L1: the actual account_ready step lets ordinary credits, an exhausted included window and an unknown quota through, and stops on a stated spend control (4.106357ms)
+✔ L2: a reached Start whose later records are missing counts the first look as used (unknown); a known pre-Start stop does not (0.587497ms)
+✔ D8: raw receipts are written outside the repository; only sanitized fields and an allowlist of generated files are for Git (0.649907ms)
+✔ F1: the spend/workspace veto reads only the bucket the connector applies to the selected model, as 52be105 chatgpt_rpc.py selects it (4.693093ms)
+✔ F4: Support's receipt witness cases fail the mechanics; collection, records, tools, digest and provider turns are judged for every action (2.694388ms)
+✖ F5: the watch must record its own clean start before anything can launch; not ready, it is stopped, a refusal is written and nothing runs (1.442077ms)
+✔ receipt reader: only this run's new launches, real folders and files, the connector format and this request id, checked before any byte is kept (2.316965ms)
+✖ F3 checker: the reviewed admission with exactly four overlay substitutions, the one shared predicate, read-only natives, and the Lead protocol (0.423683ms)
+✔ F3 configuration and runner delta: the frozen checker and Lead timings; LC_SOURCE_ADMISSION only for the product launch; the context after the launch is recorded; the one predicate in the runner point checks (0.538964ms)
+✖ F3 ledger: every possibly sent request needs an admitted send for its exact PNG naming an acquisition admitted before and after; a deny, a gap or an unrecorded send fails (1.930003ms)
+✔ F3 overlay predicate: the pure functions are cut unchanged into the prepared fixture check; every refusal has a negative fixture; read-only native type (not executed) (0.915456ms)
+✔ R1-R3 (Support 5083814): its two controls pass; an unclassified request, unexplained or inconsistent turns, and an ignored or missing phase all fail (4.32653ms)
+✖ R4-R5 (Support 5083814): an exited watcher is not ready; the lifecycle must be ordered; receipt values must be of the writer's bounded types before copy, and only typed values are published (324.151339ms)
+✔ Support c2ee58ae (937788d HOLD): its controls pass; a missing Stop-session link, a foreign capture, a contradictory main verdict and a sends-only main record all fail (2.026397ms)
+✔ Support b93fc60 (df536b8 HOLD P2): QA's checker log holds exactly one end of input, as its last line; an earlier or a second end is not one observed lifecycle (0.533343ms)
+ℹ tests 54
+ℹ suites 0
+ℹ pass 28
+ℹ fail 26
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 949.762882
+
+✖ failing tests:
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:28:1
+✖ the candidate is offline-only, reproduces from the sources, and its scratch is unused (42.156351ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    [
+      360000,
+      320000,
+  +   undefined
+  -   15000
+    ]
+  
+      at TestContext.<anonymous> (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:44:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.start (node:internal/test_runner/test:1262:17)
+      at startSubtestAfterBootstrap (node:internal/test_runner/harness:387:17) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [Array],
+    expected: [Array],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:48:1
+✖ the runner is the reviewed r4 runner byte for byte, apart from the one work-folder name and the source-admission delta (1.60046ms)
+  TypeError: revertDeadlineDelta is not a function
+      at TestContext.<anonymous> (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:52:111)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async startSubtestAfterBootstrap (node:internal/test_runner/harness:387:3)
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:58:1
+✖ the runner's work deadline reaches every in-flight operation (Support d3ca9ca H1): -WorkMs 320000 from its process's creation, every DevTools and HTTP wait bounded before it starts and cancellable, every effect after a wait checked, no loop swallowing it, -CloseMs 15000 for the finally; runner-only, the checker unchanged (0.628616ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    [
+  +   '-LinkDir',
+  +   'C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-live-nonvoice-90bb691af83e45698b8fca20dd03e752\\link',
+      '-WorkMs',
+      '320000',
+  -   '-CloseMs',
+  -   '15000'
+    ]
+  
+      at TestContext.<anonymous> (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:59:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [Array],
+    expected: [Array],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:467:1
+✖ wrapper: the watch summary is released only with the whole lifecycle observed; anything less is unknown or left running (0.559012ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    [
+  +   'unknown',
+  +   undefined,
+  +   undefined
+  -   'released',
+  -   true,
+  -   1
+    ]
+  
+      at TestContext.<anonymous> (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:474:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [Array],
+    expected: [Array],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:492:1
+✖ wrapper: with an exact allocation it still refuses at the connector checks before any Windows call, any folder or any process (13.905254ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /not exactly 0ff325b/. Input:
+  
+  'Error: separate exact Lead-reviewed live allocation required'
+  
+      at async TestContext.<anonymous> (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:512:5)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: separate exact Lead-reviewed live allocation required
+        at validateLiveAllocation (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/qa_run_live_candidate.mjs:82:150)
+        at Module.runLiveCandidate (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/qa_run_live_candidate.mjs:140:20)
+        at TestContext.<anonymous> (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:512:34)
+        at async Test.run (node:internal/test_runner/test:1409:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:974:7),
+    expected: /not exactly 0ff325b/,
+    operator: 'rejects',
+    diff: 'simple'
+  }
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:621:1
+✖ time: late entry by one millisecond, or an expired allocation, has no effect at all (not even the Linux stage check) (7.173779ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /too little time for the bounded native attempt and its pre-launch margin; nothing launched, scratch unused/. Input:
+  
+  'Error: separate exact Lead-reviewed live allocation required'
+  
+      at TestContext.<anonymous> (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:623:61)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Error: separate exact Lead-reviewed live allocation required',
+    expected: /too little time for the bounded native attempt and its pre-launch margin; nothing launched, scratch unused/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:626:1
+✖ time: exactly enough on a constant clock passes every check at equality; the one launch comes after the scratch (5.999924ms)
+  AssertionError [ERR_ASSERTION]: Error: separate exact Lead-reviewed live allocation required
+  + actual - expected
+  
+  + Error: separate exact Lead-reviewed live allocation required
+  +     at validateLiveAllocation (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/qa_run_live_candidate.mjs:82:150)
+  +     at Module.runLiveCandidate (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/qa_run_live_candidate.mjs:140:20)
+  +     at timedRun (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:615:32)
+  +     at async TestContext.<anonymous> (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:627:13)
+  +     at async Test.run (node:internal/test_runner/test:1409:7)
+  +     at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  - null
+  
+      at TestContext.<anonymous> (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:627:55)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: Error: separate exact Lead-reviewed live allocation required
+        at validateLiveAllocation (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/qa_run_live_candidate.mjs:82:150)
+        at Module.runLiveCandidate (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/qa_run_live_candidate.mjs:140:20)
+        at timedRun (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:615:32)
+        at async TestContext.<anonymous> (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:627:13)
+        at async Test.run (node:internal/test_runner/test:1409:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:974:7),
+    expected: null,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:630:1
+✖ time: time lost in the prechecks refuses right before the watch and the output folder (5.701538ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /too little time for the bounded native attempt and its pre-launch margin; nothing launched, scratch unused/. Input:
+  
+  'Error: separate exact Lead-reviewed live allocation required'
+  
+      at TestContext.<anonymous> (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:632:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Error: separate exact Lead-reviewed live allocation required',
+    expected: /too little time for the bounded native attempt and its pre-launch margin; nothing launched, scratch unused/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:634:1
+✖ time: time lost during the read-only looks refuses before a preflight record, even with a conflict present (5.565987ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /too little time for the bounded native attempt and its pre-launch margin; nothing launched, scratch unused/. Input:
+  
+  'Error: separate exact Lead-reviewed live allocation required'
+  
+      at TestContext.<anonymous> (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:636:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Error: separate exact Lead-reviewed live allocation required',
+    expected: /too little time for the bounded native attempt and its pre-launch margin; nothing launched, scratch unused/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:640:1
+✖ time: time lost while the watch starts stops the watch; the scratch stays unused and nothing launches (5.816889ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /too little time for the bounded native attempt and its pre-launch margin; nothing launched, scratch unused/. Input:
+  
+  'Error: separate exact Lead-reviewed live allocation required'
+  
+      at TestContext.<anonymous> (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:642:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Error: separate exact Lead-reviewed live allocation required',
+    expected: /too little time for the bounded native attempt and its pre-launch margin; nothing launched, scratch unused/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:644:1
+✖ time: after the scratch, the unchanged final check refuses at end - bound + 1 ms and launches at equality (5.698993ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + Error: separate exact Lead-reviewed live allocation required
+  +     at validateLiveAllocation (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/qa_run_live_candidate.mjs:82:150)
+  +     at Module.runLiveCandidate (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/qa_run_live_candidate.mjs:140:20)
+  +     at timedRun (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:615:32)
+  +     at async TestContext.<anonymous> (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:645:15)
+  +     at async Test.run (node:internal/test_runner/test:1409:7)
+  +     at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  - null
+  
+      at TestContext.<anonymous> (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:646:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: Error: separate exact Lead-reviewed live allocation required
+        at validateLiveAllocation (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/qa_run_live_candidate.mjs:82:150)
+        at Module.runLiveCandidate (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/qa_run_live_candidate.mjs:140:20)
+        at timedRun (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:615:32)
+        at async TestContext.<anonymous> (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:645:15)
+        at async Test.run (node:internal/test_runner/test:1409:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:974:7),
+    expected: null,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:653:1
+✖ budget: the phase ceilings fill the 600 s foreground maximum; native is the candidate's 360 s ceiling with the runner's 320 s work deadline (0.355602ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+    [
+      360000,
+      320000,
+  +   undefined,
+  -   15000,
+      60000
+    ]
+  
+      at TestContext.<anonymous> (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:656:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [Array],
+    expected: [Array],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:661:1
+✖ budget: preparation child calls share what is left of the 60 s, never a fresh full timeout, and are killed at that end; late preparation refuses before the watch, the output and the scratch (5.385882ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /the preparation budget is spent; nothing launched, scratch unused/. Input:
+  
+  'Error: separate exact Lead-reviewed live allocation required'
+  
+      at TestContext.<anonymous> (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:664:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Error: separate exact Lead-reviewed live allocation required',
+    expected: /the preparation budget is spent; nothing launched, scratch unused/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:671:1
+✖ budget: the preparation spent while the watch starts refuses before the scratch and stops the watch; spent after the scratch, nothing launches (5.453131ms)
+  AssertionError [ERR_ASSERTION]: The input did not match the regular expression /the preparation budget is spent; nothing launched, scratch unused/. Input:
+  
+  'Error: separate exact Lead-reviewed live allocation required'
+  
+      at TestContext.<anonymous> (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:673:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'Error: separate exact Lead-reviewed live allocation required',
+    expected: /the preparation budget is spent; nothing launched, scratch unused/,
+    operator: 'match',
+    diff: 'simple'
+  }
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:679:1
+✖ budget: a native runner past its 360 s ceiling is signalled and awaited in this same process, never launched twice; cleanup and the report follow in the budget, never a pass (5.980022ms)
+  AssertionError [ERR_ASSERTION]: Error: separate exact Lead-reviewed live allocation required
+  + actual - expected
+  
+  + Error: separate exact Lead-reviewed live allocation required
+  +     at validateLiveAllocation (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/qa_run_live_candidate.mjs:82:150)
+  +     at Module.runLiveCandidate (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/qa_run_live_candidate.mjs:140:20)
+  +     at timedRun (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:615:32)
+  +     at async TestContext.<anonymous> (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:681:15)
+  +     at async Test.run (node:internal/test_runner/test:1409:7)
+  +     at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  - null
+  
+      at TestContext.<anonymous> (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:682:12)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: Error: separate exact Lead-reviewed live allocation required
+        at validateLiveAllocation (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/qa_run_live_candidate.mjs:82:150)
+        at Module.runLiveCandidate (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/qa_run_live_candidate.mjs:140:20)
+        at timedRun (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:615:32)
+        at async TestContext.<anonymous> (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:681:15)
+        at async Test.run (node:internal/test_runner/test:1409:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:974:7),
+    expected: null,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:700:1
+✖ budget: a slow cleanup is cut at its reserve: what it could not finish is unknown, never released or a pass; a spent evidence budget leaves the records explicitly incomplete; the report is still written before 600 s (6.208479ms)
+  AssertionError [ERR_ASSERTION]: Error: separate exact Lead-reviewed live allocation required
+  + actual - expected
+  
+  + Error: separate exact Lead-reviewed live allocation required
+  +     at validateLiveAllocation (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/qa_run_live_candidate.mjs:82:150)
+  +     at Module.runLiveCandidate (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/qa_run_live_candidate.mjs:140:20)
+  +     at timedRun (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:615:32)
+  +     at async TestContext.<anonymous> (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:702:13)
+  +     at async Test.run (node:internal/test_runner/test:1409:7)
+  +     at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+  - null
+  
+      at TestContext.<anonymous> (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:703:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: Error: separate exact Lead-reviewed live allocation required
+        at validateLiveAllocation (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/qa_run_live_candidate.mjs:82:150)
+        at Module.runLiveCandidate (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/qa_run_live_candidate.mjs:140:20)
+        at timedRun (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:615:32)
+        at async TestContext.<anonymous> (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:702:13)
+        at async Test.run (node:internal/test_runner/test:1409:7)
+        at async Test.processPendingSubtests (node:internal/test_runner/test:974:7),
+    expected: null,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:717:1
+✖ release (Support d3ca9ca H2): a launcher ended by an outside signal before its ceiling, or with an error, blocks any release claim; the normal end does not (5.627757ms)
+  TypeError: Cannot read properties of null (reading 'launcher')
+      at TestContext.<anonymous> (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:719:30)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:726:1
+✖ the Windows runner (Support H1): seen by its exact identity and proven gone before the app's cleanup; one still there is ended by that identity (a close request, then its end through its held handle) and blocks release; an unresolved one is never signalled and stays unproven (5.497775ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly deep-equal:
+  + actual - expected
+  
+  + []
+  - [
+  -   'signal runner close',
+  -   'signal runner force'
+  - ]
+  
+      at TestContext.<anonymous> (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:729:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: [],
+    expected: [Array],
+    operator: 'deepStrictEqual',
+    diff: 'simple'
+  }
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:739:1
+✖ the watch (Support H3): it ends by itself at the cleanup's end at the latest; it is stopped and joined within its share (the stop file, then SIGTERM, then SIGKILL); one still there is a release blocker, never hidden, and the report is still written in time (5.357319ms)
+  AssertionError [ERR_ASSERTION]: NaN
+      at TestContext.<anonymous> (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:742:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:754:1
+✖ evidence (Support H3): a small status record comes before the collection; a file over its bound or past a count is not read (an explicit error, kept in place); the report is bounded (8.097854ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(w('run-status.json') >= 0 && w('run-status.json') < w('ledger.json') && w('ledger.json') < w('run.json'))
+  
+      at TestContext.<anonymous> (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:758:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:768:1
+✖ a clean run is releasable and its evidence is copied whole within the bounds: the release path and the collection work when nothing is wrong (6.129665ms)
+  TypeError: Cannot read properties of null (reading 'release_blockers')
+      at TestContext.<anonymous> (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:774:29)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:779:1
+✖ the watch's stop keeps to its time, also below 2 s: the stop file, then SIGTERM and SIGKILL, each awaited only its share (402.721138ms)
+  TypeError: Cannot read properties of undefined (reading 'signalled')
+      at TestContext.<anonymous> (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:785:34)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:926:1
+✖ F5: the watch must record its own clean start before anything can launch; not ready, it is stopped, a refusal is written and nothing runs (1.442077ms)
+  AssertionError [ERR_ASSERTION]: -1,6773,7224,9781
+      at TestContext.<anonymous> (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:958:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:1002:1
+✖ F3 checker: the reviewed admission with exactly four overlay substitutions, the one shared predicate, read-only natives, and the Lead protocol (0.423683ms)
+  TypeError: revertDeadlineDelta is not a function
+      at TestContext.<anonymous> (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:1004:20)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7)
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:1115:1
+✖ F3 ledger: every possibly sent request needs an admitted send for its exact PNG naming an acquisition admitted before and after; a deny, a gap or an unrecorded send fails (1.930003ms)
+  AssertionError [ERR_ASSERTION]: The expression evaluated to a falsy value:
+  
+    assert.ok(src.includes("take(join(candidate.work, 'out', 'admission-checker.jsonl'), EVIDENCE_MAX.checker)") && src.includes("report.source_admission = sourceAdmission(report.ledger, checkerLines, read('display_choice'), mainAdmission);"))
+  
+      at TestContext.<anonymous> (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:1140:10)
+      at Test.runInAsyncScope (node:async_hooks:227:14)
+      at Test.run (node:internal/test_runner/test:1402:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:974:18)
+      at Test.postRun (node:internal/test_runner/test:1542:19)
+      at Test.run (node:internal/test_runner/test:1467:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: false,
+    expected: true,
+    operator: '==',
+    diff: 'simple'
+  }
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:1311:1
+✖ R4-R5 (Support 5083814): an exited watcher is not ready; the lifecycle must be ordered; receipt values must be of the writer's bounded types before copy, and only typed values are published (324.151339ms)
+  AssertionError [ERR_ASSERTION]: Expected values to be strictly equal:
+  + actual - expected
+  
+  + 'unknown'
+  - 'released'
+  
+      at TestContext.<anonymous> (file:///tmp/qa-h123-before-iR1B/tests/e2e/windows/test_qa_live_candidate.mjs:1337:10)
+      at async Test.run (node:internal/test_runner/test:1409:7)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:974:7) {
+    generatedMessage: true,
+    code: 'ERR_ASSERTION',
+    actual: 'unknown',
+    expected: 'released',
+    operator: 'strictEqual',
+    diff: 'simple'
+  }
+exit=1

@@ -14,16 +14,16 @@ import * as fs from 'node:fs';
 import { homedir } from 'node:os';
 import { dirname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { CONNECTOR, NATIVE_BOUND_MS, NATIVE_WORK_MS, POLICY_MS, checkLiveCandidate, linkNames, names } from './qa_live_candidate.mjs';
+import { CONNECTOR, NATIVE_BOUND_MS, NATIVE_WORK_MS, POLICY_MS, RUNNER_CLOSE_MS, checkLiveCandidate, linkNames, names } from './qa_live_candidate.mjs';
 import { buildLedger, evidence, fenceVerdict, liveImportCheck, parseJsonl, sourceAdmission } from './qa_live_ledger.mjs';
 import { summarizeTtsPreflight, ttsAdmission } from './qa_run_tts_candidate.mjs';
 import { lookCommand, readLook, releaseOwned, windowsCalls } from './signin_cleanup.mjs';
 import { askPathCheck, compareCopy } from './sub_copy.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url)), repo = resolve(here, '../../..');
-export const candidateDir = join(repo, 'docs/verification/qa/p0-13-live-0ff325b/candidate-nonvoice-07');
-export const candidateHash = 'b17b66c4bae78269762b24f8656883907a6ceccd9a6d9ab16ffdf40ac0832e9e';
-export const pins = { 'runner.ps1': '3cf37c29a3254a31b5afc204e95c38a712acf4a91ef4cbad3d3f37972275b6fd', 'steps.json': '70e89d51c0489a8c9472bf25a8438b08ff493f5be2c59148bc92baf10778874f', 'surface.html': 'be82967ae45d36bece4ac4858d6f45d0e90e58d088203b71323b74e6ae5e1067', 'sub-live.json': '4729ca1a25ec09a64349c68c5ccb0eb41b4e9f83e161fb9c4a29b0ce26b948d4',
+export const candidateDir = join(repo, 'docs/verification/qa/p0-13-live-0ff325b/candidate-nonvoice-08');
+export const candidateHash = '0847eeb6070c365661add6561118e8d5414e8dffc6d434dfad38864e28722b7e';
+export const pins = { 'runner.ps1': '4655ec118a01c25839d94c2c004d963cc0f19893a1064dec9e3dea853340ae69', 'steps.json': '70e89d51c0489a8c9472bf25a8438b08ff493f5be2c59148bc92baf10778874f', 'surface.html': 'be82967ae45d36bece4ac4858d6f45d0e90e58d088203b71323b74e6ae5e1067', 'sub-live.json': '4729ca1a25ec09a64349c68c5ccb0eb41b4e9f83e161fb9c4a29b0ce26b948d4',
   'admission-checker.ps1': '9637db613373ef5ba63bc10753033aedaab90bf749aeaa982fed9b65c91eccf1', 'admission-live.json': '6e86df7d74f52ce54b879d1c14d6d71b7548c69127d0f787a0a1be2fb46d7cc3' };
 const psBin = '/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe';
 const managedState = '/home/agentsdock/.local/share/LearningCompanion/managed-chatgpt';   // state_dir null: the product's own
@@ -60,6 +60,9 @@ const LAUNCH_TAIL_MS = 10000;
 // The native ceiling includes the end of the child: in its last 12 s a runner still there is signalled (SIGTERM, then
 // SIGKILL, each awaited this long), and after an exit its output is awaited (its pipes close) this long.
 const NATIVE_GRACE_MS = 5000, NATIVE_CLOSE_MS = 2000;
+// The evidence copied from the scratch, each file and count bounded (more is an error and stays in place), and the report.
+const EVIDENCE_MAX = { results: 16 << 20, live: 8 << 20, admission: 8 << 20, ask: 1 << 20, checker: 8 << 20, watch: 4 << 20, captures: 8, asks: 64, requests: 64, launches: 8, total: 64 << 20 };
+const REPORT_MAX = 8 << 20;
 export function validateLiveAllocation(record, candidate, wrapperHash, now, interlock = interlockProduction) {
   if (typeof interlock !== 'string' || !/^[0-9a-f]{40}$/.test(interlock) || candidate?.production_commit !== interlock) {
     throw Error('the candidate does not pin a reviewed production build that starts the source-admission checker; no allocation is accepted');
@@ -70,7 +73,7 @@ export function validateLiveAllocation(record, candidate, wrapperHash, now, inte
       || record.voice !== false || record.max_native_attempts !== 1 || record.retry !== false || record.restart !== false
       || !equal(record.policy, POLICY_MS) || record.max_real_actions !== 4 || !Number.isInteger(record.real_actions_already_used) || record.real_actions_already_used !== 0
       || record.cleanup_only_after_expiry !== true
-      || record.native_bound_ms !== candidate.native_bound_ms || candidate.native_bound_ms !== BUDGET_MS.native || candidate.native_work_ms !== NATIVE_WORK_MS
+      || record.native_bound_ms !== candidate.native_bound_ms || candidate.native_bound_ms !== BUDGET_MS.native || candidate.native_work_ms !== NATIVE_WORK_MS || candidate.native_close_ms !== RUNNER_CLOSE_MS
       || typeof record.allocation_id !== 'string' || !/^[A-Za-z0-9._:-]{1,128}$/.test(record.allocation_id)
       || record.approval_scope !== 'real_subscription_nonvoice_four_actions'
       || typeof record.command_approval_ref !== 'string' || record.command_approval_ref.length < 8 || AI_DISABLED_APPROVALS.includes(record.command_approval_ref)
@@ -175,11 +178,18 @@ export async function runLiveCandidate(options, injected = {}) {
   const expectedApp = { exe: candidate.electron, app: [win(candidate.stage), `--remote-debugging-port=${candidate.appPort}`, '--remote-debugging-address=127.0.0.1'],
     checker: ['unlaunched-qa-checker'], markers: [`--remote-debugging-port=${candidate.appPort}`], notBefore: beforeApp.now };
   const expectedEdge = { exe: candidate.edge, app: candidate.edgeArgs, checker: ['unlaunched-qa-checker'], markers: [`--remote-debugging-port=${candidate.edgePort}`], notBefore: beforeEdge.now };
+  // The Windows runner by its exact identity (Support H1): powershell.exe with exactly this invocation, created since the
+  // preflight. Any other process that names this runner file is unresolved (never signalled). It holds no port of its own,
+  // so the look's listeners (the app's) are not its. Its launcher's exit proves nothing about it.
+  const runnerCalls = { look: async () => ({ ...readLook(ps(lookCommand(candidate.appPort, 'powershell.exe'))), listen: [] }), signal: appCalls.signal };
+  const expectedRunner = { exe: candidate.proposed_native_invocation.executable, app: candidate.proposed_native_invocation.arguments, checker: ['unlaunched-qa-checker'],
+    markers: [win(join(candidate.work, 'runner.ps1'))], notBefore: beforeApp.now };
   enoughTimeToPrepare();
   io.mkdirSync(out, { recursive: true, mode: 0o700 });
   // The read-only watch starts first and must be ready before anything can start a connector (F5). Not ready: nothing is
   // launched and the scratch stays unused.
-  const watch = await startWatch(io, start, sleep, out);
+  // The watch ends by itself at the cleanup's end at the latest (its own --max-seconds).
+  const watch = await startWatch(io, start, sleep, out, Math.max(1, Math.ceil((ends.cleanup - mono()) / 1000)), mono);
   if (!watch.ready.ready) throw Error(`the connector watch is not ready (${watch.ready.reason}); nothing launched, scratch unused`);
   const launchesBefore = watch.launchesBefore;
   // mkdir without recursive refuses an occupied scratch; it permanently consumes this candidate's one attempt. A refusal
@@ -221,35 +231,47 @@ export async function runLiveCandidate(options, injected = {}) {
     report.aborted = String(error?.message ?? error).slice(0, 200);
   } finally {
     enter('cleanup');
-    // Exact identities only; the product gets time to end its AI session and its connector before any force.
-    for (const [label, calls, expected, waitCloseMs] of [['electron', appCalls, expectedApp, 20000], ['edge', edgeCalls, expectedEdge, 5000]]) {
+    // Exact identities only, the Windows runner first: it must be seen gone (or be ended by its exact identity, verified)
+    // before the app's cleanup can be final. The product gets time to end its AI session and its connector before any force.
+    for (const [label, calls, expected, waitSelfMs, waitCloseMs] of [['runner', runnerCalls, expectedRunner, 5000, 1000], ['electron', appCalls, expectedApp, 1000, 20000], ['edge', edgeCalls, expectedEdge, 1000, 5000]]) {
       if (report.native_attempts === 0) { report.cleanup[label] = { exit: 'not_started', folder: 'kept' }; continue; }
       try { report.cleanup[label] = await releaseOwned({ ...calls, expected, ownsFolder: false, removeFolder: async () => false,
-        sleep, now, waitSelfMs: 1000, waitCloseMs, waitForceMs: 5000, stepMs: 250 }); }
+        sleep, now, waitSelfMs, waitCloseMs, waitForceMs: 5000, stepMs: 250 }); }
       catch { report.cleanup[label] = { exit: 'unknown', error: 'exact identity cleanup unavailable; scratch retained' }; }
     }
     // The connector ends with the app (its pipes close). Observed only: nothing in the copy or below it is ever signalled.
     let left = processesIn(CONNECTOR.copy, io);
     for (let waited = 0; left.length && waited < 15000 && remaining() > 0; waited += 500) { await sleep(500); left = processesIn(CONNECTOR.copy, io); }
     await watch.stop(Math.max(0, Math.min(5000, remaining())));
-    report.watch_error = watch.state.error; report.watch_exited = watch.state.exited;
+    report.watch_error = watch.state.error; report.watch_exited = watch.state.exited; report.watch_stop = watch.state.stop ?? null;
     report.connector_left_running = left;
     report.connector_watch = watchSummary(io, watch.file, report.native_attempts > 0);
-    enter('evidence');
-    try { collect(io, regularRead, candidate, out, report, launchesBefore, () => remaining() > 2000); }
-    catch (error) { report.collect_failed = String(error?.message ?? error).slice(0, 200); }
-    report.owned_launch_cleanup_confirmed = ['electron', 'edge'].every(label => report.cleanup[label]?.exit === 'confirmed');
-    // Nothing is claimed released while any of these stands (QA's explicit DISPLAY/ACCOUNT RELEASE quotes it).
+    report.owned_launch_cleanup_confirmed = ['runner', 'electron', 'edge'].every(label => report.cleanup[label]?.exit === 'confirmed');
+    // Nothing is claimed released while any of these stands (QA's explicit DISPLAY/ACCOUNT RELEASE quotes it): a launcher
+    // that did not end cleanly by itself (any signal, error or the ceiling), no proof of the Windows runner's end, or any
+    // signal QA sent it (Support H2).
+    const launcher = report.launcher ?? {}, ran = report.native_attempts > 0;
     report.release_blockers = [
-      ...(report.native_attempts > 0 && (report.launcher?.exit_seen !== true || report.launcher?.timeout === true) ? ['the native runner did not end by itself within its ceiling'] : []),
-      ...(report.native_attempts > 0 && !report.owned_launch_cleanup_confirmed ? ['the owned app and Edge are not confirmed gone'] : []),
-      ...(left.length > 0 || (report.native_attempts > 0 && report.connector_watch?.state !== 'released') ? ['the connector is not seen released'] : []),
+      ...(ran && !(launcher.exit_seen === true && launcher.status === 0 && launcher.signal === null && launcher.timeout !== true && (launcher.signalled ?? []).length === 0 && !launcher.error) ? ['the native launcher did not end cleanly by itself (a signal, an error or its ceiling)'] : []),
+      ...(ran && report.cleanup.runner?.exit !== 'confirmed' ? ['the Windows runner\'s end is not proven'] : []),
+      ...(ran && ((report.cleanup.runner?.signals ?? []).length > 0 || (report.cleanup.runner?.errors ?? []).length > 0) ? ['the Windows runner was signalled by QA, or a look or signal about it failed'] : []),
+      ...(ran && !['electron', 'edge'].every(label => report.cleanup[label]?.exit === 'confirmed') ? ['the owned app and Edge are not confirmed gone'] : []),
+      ...(left.length > 0 || (ran && report.connector_watch?.state !== 'released') ? ['the connector is not seen released'] : []),
       ...(watch.state.exited !== true ? ['the read-only watch was not seen ending'] : []),
     ];
+    enter('evidence');
+    // A small bounded record first: the outcome survives even if the collection that follows overruns.
+    const status = () => ({ kind: 'qa-live-run-status/1', native_attempts: report.native_attempts, aborted: report.aborted ?? null, launcher: report.launcher ?? null,
+      cleanup: Object.fromEntries(Object.entries(report.cleanup).map(([k, v]) => [k, v?.exit ?? null])), watch_exited: report.watch_exited, release_blockers: report.release_blockers,
+      budget: { ceilings_ms: { ...BUDGET_MS }, phase_started_after_ms: { ...marks }, status_after_ms: Math.round(mono() - t0) }, evidence_kept_in_place: candidate.work });
+    try { io.writeFileSync(join(out, 'run-status.json'), JSON.stringify(status(), null, 2) + '\n'); } catch (error) { report.status_record_error = msg(error); }
+    try { collect(io, regularRead, candidate, out, report, launchesBefore, () => remaining() > 2000); }
+    catch (error) { report.collect_failed = String(error?.message ?? error).slice(0, 200); }
     report.budget = { ceilings_ms: { ...BUDGET_MS }, phase_started_after_ms: { ...marks }, report_after_ms: Math.round(mono() - t0) };
     Object.assign(report, judgeMechanics(report));
-    // This does not close the runtime display/account lease; QA must explicitly report actual release to Lead.
-    io.writeFileSync(join(out, 'run.json'), JSON.stringify(report, null, 2) + '\n');
+    // This does not close the runtime display/account lease; QA must explicitly report actual release to Lead. Bounded: a
+    // report over REPORT_MAX characters is replaced by the status record.
+    io.writeFileSync(join(out, 'run.json'), reportText(report, status()));
     try { io.writeFileSync(join(out, 'publish-allowlist.json'), JSON.stringify(publishAllowlist(io, out), null, 2) + '\n'); } catch { /* run.json says what was collected */ }
   }
   return report;
@@ -261,17 +283,31 @@ export async function runLiveCandidate(options, injected = {}) {
  * receipt launches already present (so that only later ones are this run's). Not ready: the watch is stopped and a
  * refusal written. Nothing here starts a connector.
  */
-export async function startWatch(io, start, sleep, out) {
+export async function startWatch(io, start, sleep, out, maxSeconds = 3600, mono = () => performance.now()) {
   const file = join(out, 'connector-watch.jsonl'), stopFile = join(out, 'connector-watch.stop');
-  const watcher = start('python3', [join(here, 'qa_sub_watch.py'), '--root', CONNECTOR.copy, '--out', file, '--stop', stopFile], { cwd: '/tmp', stdio: 'ignore' });
-  const state = { error: null, exited: false, pid: Number.isInteger(watcher.pid) ? watcher.pid : null };
-  const exited = new Promise(r => { watcher.on?.('exit', () => { state.exited = true; r(); }); });
+  const watcher = start('python3', [join(here, 'qa_sub_watch.py'), '--root', CONNECTOR.copy, '--out', file, '--stop', stopFile, '--max-seconds', String(maxSeconds)], { cwd: '/tmp', stdio: 'ignore' });
+  const state = { error: null, exited: false, pid: Number.isInteger(watcher.pid) ? watcher.pid : null, stop: null };
+  watcher.on?.('exit', () => { state.exited = true; });
   watcher.on?.('error', error => { state.error = msg(error); });
+  // Stops and joins this exact watcher (QA's own child) within ms (Support H3): its stop file, then SIGTERM, then
+  // SIGKILL, each awaited; nothing else is signalled. state.stop records what it took.
   const stop = async (ms = 5000) => {
-    try { io.writeFileSync(stopFile, ''); } catch { /* the watch stops by itself after its own bound */ }
-    let t;
-    await Promise.race([exited, new Promise(r => { t = setTimeout(r, ms); })]);
-    clearTimeout(t);
+    const record = state.stop = { requested: false, error: null, signalled: [], exited: state.exited };
+    try { io.writeFileSync(stopFile, ''); record.requested = true; } catch (error) { record.error = msg(error); }
+    // Each wait at most its share of ms, by the clock and by the number of its sleeps.
+    const joined = async waitMs => {
+      const until = mono() + waitMs;
+      for (let waited = 0; !state.exited && waited < waitMs && mono() < until; waited += 50) await sleep(Math.min(50, waitMs - waited));
+      return state.exited;
+    };
+    const signalWait = Math.min(1000, ms / 4);
+    if (!(await joined(ms - 2 * signalWait))) {
+      for (const how of ['SIGTERM', 'SIGKILL']) {
+        try { watcher.kill?.(how); record.signalled.push(how); } catch (error) { record.error ??= msg(error); }
+        if (await joined(signalWait)) break;
+      }
+    }
+    record.exited = state.exited;
   };
   const ready = await watchReady(io, file, sleep);
   // Ready means running: a watcher that already exited or failed to start covers nothing (Support R4).
@@ -354,7 +390,7 @@ export async function watchReady(io, file, sleep, limitMs = 5000) {
 export function watchSummary(io, file, expected) {
   if (!expected) return { state: 'not_started' };
   let events;
-  try { events = parseJsonl(io.readFileSync(file, 'utf8')); } catch { return { state: 'unknown', note: 'the watch log could not be read' }; }
+  try { events = parseJsonl(boundedRead(io, file, EVIDENCE_MAX.watch).toString('utf8')); } catch { return { state: 'unknown', note: 'the watch log could not be read' }; }
   const start = events[0]?.event === 'watch_start' ? events[0] : null, end = events.findLast(e => e.event === 'watch_end');
   // One ordered lifecycle (Support R4): the start first, the end last, and between them each process (pid and start
   // ticks, a known role) appears once and then exits once; an exit before its appearance, a repeat, or a record after
@@ -462,9 +498,11 @@ export function receiptFault(r) {
  * are elsewhere; anything not listed here (for example a future private file) is excluded by default.
  */
 export function publishAllowlist(io, out) {
+  let seen = 0;
   const allowed = [], walk = (dir, rel) => { for (const name of io.readdirSync(dir)) { const full = join(dir, name), r = rel ? `${rel}/${name}` : name;
+    if (++seen > 1024) throw Error('more than 1024 entries in the evidence folder');
     if (io.statSync(full).isDirectory()) walk(full, r);
-    else if (/^(run|ledger|receipts-sanitized|runner-results|connector-watch|admission-checker)\.json(l)?$|^runner\.(stdout|stderr)\.bin$|^captures\/[0-9a-f]+\/(live\.jsonl|admission\.jsonl|asks\/[A-Za-z0-9._-]+\.json)$/.test(r)) allowed.push(r); } };
+    else if (/^(run|run-status|ledger|receipts-sanitized|runner-results|connector-watch|admission-checker)\.json(l)?$|^runner\.(stdout|stderr)\.bin$|^captures\/[0-9a-f]+\/(live\.jsonl|admission\.jsonl|asks\/[A-Za-z0-9._-]+\.json)$/.test(r)) allowed.push(r); } };
   walk(out, '');
   return { kind: 'qa-live-publish-allowlist/1', files: allowed.sort(), excluded_by_default: 'everything else; raw receipts are outside the repository', review: 'QA and the Lead read each listed file before commit' };
 }
@@ -485,11 +523,12 @@ export function receiptLaunches(io = fs, root = join(managedState, 'receipts')) 
  * file of at most 16 KiB, in the connector's receipt format with exactly its fields, naming that request id, and found in
  * one launch only. Anything else is an error, never a receipt. (The codex digest is judged in the ledger, not here.)
  */
-export function readOwnReceipts(io, before, requestIds, root = join(managedState, 'receipts')) {
+export function readOwnReceipts(io, before, requestIds, root = join(managedState, 'receipts'), enough = () => true) {
   const receipts = {}, raw = [], errors = [];
   let launches = [];
   try { launches = receiptLaunches(io, root).filter(n => !before.includes(n)); } catch (error) { return { receipts, raw, errors: ['receipts: ' + msg(error)], launches }; }
-  for (const launch of launches) {
+  if (launches.length > EVIDENCE_MAX.launches) errors.push(`receipts: ${launches.length} new launches; only the first ${EVIDENCE_MAX.launches} are read`);
+  for (const launch of launches.slice(0, EVIDENCE_MAX.launches)) {
     const dir = join(root, launch);
     try {
       if (!/^[0-9a-f]{32}$/.test(launch)) throw Error('an entry not named as the connector names a launch');
@@ -497,13 +536,14 @@ export function readOwnReceipts(io, before, requestIds, root = join(managedState
       if (!st.isDirectory() || st.isSymbolicLink() || io.realpathSync(dir) !== dir) throw Error('not a real folder inside receipts/');
     } catch (error) { errors.push(`receipts/${launch.slice(0, 40)}: ${msg(error)}`); continue; }
     for (const rid of requestIds) {
+      if (!enough()) { errors.push('the evidence budget is spent: the receipts are incomplete'); return { receipts, raw, errors, launches }; }
       const name = `${sha(Buffer.from(rid, 'utf8'))}.json`;
       let fd = null;
       try {
         try { fd = io.openSync(join(dir, name), fs.constants.O_RDONLY | fs.constants.O_NOFOLLOW); } catch (error) { if (error?.code === 'ENOENT') continue; throw error; }
         const st = io.fstatSync(fd);
         if (!st.isFile() || st.nlink !== 1 || st.size > 16384) throw Error('not a regular single-link file of at most 16 KiB');
-        const bytes = io.readFileSync(fd), r = JSON.parse(bytes.toString('utf8'));
+        const bytes = readAtMost(io, fd, st.size), r = JSON.parse(bytes.toString('utf8'));
         if (!r || typeof r !== 'object' || Array.isArray(r) || r.format !== 'lc-subscription-ask-receipt/1' || r.request_id !== rid || !equal(Object.keys(r).sort(), RECEIPT_KEYS)) throw Error('not this request\'s receipt in the connector\'s format');
         const fault = receiptFault(r);
         if (fault) throw Error(`the receipt's ${fault} is not of the connector's bounded type`);
@@ -517,65 +557,103 @@ export function readOwnReceipts(io, before, requestIds, root = join(managedState
   return { receipts, raw, errors, launches };
 }
 
+/** At most size bytes from an open file; more means it grew while it was read (not read, kept in place). */
+function readAtMost(io, fd, size) {
+  const buffer = Buffer.alloc(size + 1);
+  let n = 0, got;
+  while (n < buffer.length && (got = io.readSync(fd, buffer, n, buffer.length - n, n)) > 0) n += got;
+  if (n > size) throw Error('the file grew while it was read: not read (kept in place)');
+  return buffer.subarray(0, n);
+}
+/**
+ * One evidence file, read only while its phase has time left, opened without following a link, and at most maxBytes
+ * through that open file (a larger or growing one is an error and stays in place).
+ */
+export function boundedRead(io, path, maxBytes, enough = () => true) {
+  if (!enough()) throw Error('the evidence budget is spent: not read (kept in place)');
+  const fd = io.openSync(path, fs.constants.O_RDONLY | fs.constants.O_NOFOLLOW);
+  try {
+    const st = io.fstatSync(fd);
+    if (!st.isFile()) throw Error('regular file required');
+    if (!(st.size <= maxBytes)) throw Error(`not read: over ${maxBytes} bytes or of unknown size (kept in place)`);
+    return readAtMost(io, fd, st.size);
+  } finally { try { io.closeSync(fd); } catch { /* closed */ } }
+}
+/** The report as written: within max characters, or else the bounded status record and the reason. */
+export function reportText(report, status, max = REPORT_MAX) {
+  const text = JSON.stringify(report, null, 2) + '\n';
+  return text.length <= max ? text : JSON.stringify({ ...status, error: `the full report exceeded ${max} characters; the evidence is kept in place` }, null, 2) + '\n';
+}
 /**
  * This run's own results, records and receipts (a failed copy is reported, never fatal to the report), within the
- * evidence budget (enough): what is not read in time is an error, never a skipped success.
+ * evidence budget (enough) and EVIDENCE_MAX: whatever is not read or copied in time, or is over a bound, is an error and
+ * stays in the scratch, never a skipped success.
  */
 function collect(io, regularRead, candidate, out, report, launchesBefore, enough = () => true) {
   const errors = [];
+  let total = 0;
+  const take = (path, max) => { const bytes = boundedRead(io, path, Math.min(max, EVIDENCE_MAX.total - total), enough); total += bytes.length; return bytes; };
+  const put = (path, data, options) => { if (!enough()) throw Error('the evidence budget is spent: not copied (kept in place)'); io.writeFileSync(path, typeof data === 'function' ? data() : data, options); };
   let results = null;
   try {
-    const bytes = regularRead(join(candidate.work, 'out/results.json'));
-    io.writeFileSync(join(out, 'runner-results.json'), bytes);
+    const bytes = take(join(candidate.work, 'out/results.json'), EVIDENCE_MAX.results);
+    put(join(out, 'runner-results.json'), bytes);
     results = JSON.parse(bytes.toString('utf8').replace(/^\uFEFF/, ''));
-    report.aborted ??= results.aborted ?? null;
-  } catch { report.aborted ??= 'native result unreadable; scratch and raw evidence retained'; }
+    report.aborted ??= typeof results.aborted === 'string' ? results.aborted.slice(0, 2000) : null;
+  } catch (error) { errors.push('runner results: ' + msg(error)); report.aborted ??= 'native result unreadable; scratch and raw evidence retained'; }
   const steps = JSON.parse(regularRead(join(candidateDir, 'steps.json')));
   report.steps_ok = !!results && results.steps.length === steps.length && results.steps.every(s => s.ok === true);
   // The runner's own work deadline: the waits and sleeps it shortened, and whether it stopped the steps (later steps NOT_RUN).
-  report.work_deadline = results ? { stopped_the_steps: String(results.aborted ?? '').includes('native work deadline'), limited_steps: results.steps.filter(s => s.work_deadline_limited === true).map(s => s.i) } : null;
-  const liveLines = [], asks = [], requestIds = [], mainAdmission = {};
+  report.work_deadline = results ? { stopped_the_steps: String(results.aborted ?? '').includes('QA work deadline'), limited_steps: results.steps.filter(s => s.work_deadline_limited === true).map(s => s.i) } : null;
+  const liveLines = [], asks = [], mainAdmission = {};
   const captures = join(candidate.work, 'userdata', 'captures');
   // Every record file on its own: one unreadable file is an error (the evidence incomplete), never a skipped success.
   try {
-    if (io.existsSync(captures)) for (const cap of io.readdirSync(captures)) {
+    const folders = io.existsSync(captures) ? io.readdirSync(captures) : [];
+    if (folders.length > EVIDENCE_MAX.captures) errors.push(`records: ${folders.length} capture folders; only the first ${EVIDENCE_MAX.captures} are read (the rest kept in place)`);
+    for (const cap of folders.slice(0, EVIDENCE_MAX.captures)) {
       if (!enough()) { errors.push('the evidence budget is spent: the records are incomplete'); break; }
       const liveFile = join(captures, cap, 'live.jsonl');
       try {
         if (io.existsSync(liveFile)) {
-          const text = regularRead(liveFile);
+          const text = take(liveFile, EVIDENCE_MAX.live);
           io.mkdirSync(join(out, 'captures', cap), { recursive: true, mode: 0o700 });
-          io.writeFileSync(join(out, 'captures', cap, 'live.jsonl'), text);
+          put(join(out, 'captures', cap, 'live.jsonl'), text);
           liveLines.push(...parseJsonl(text));
         }
       } catch (error) { errors.push(`records ${cap.slice(0, 40)}/live.jsonl: ${msg(error)}`); }
       const admissionFile = join(captures, cap, 'admission.jsonl');
       try {
         if (io.existsSync(admissionFile)) {
-          const text = regularRead(admissionFile);
+          const text = take(admissionFile, EVIDENCE_MAX.admission);
           io.mkdirSync(join(out, 'captures', cap), { recursive: true, mode: 0o700 });
-          io.writeFileSync(join(out, 'captures', cap, 'admission.jsonl'), text);
+          put(join(out, 'captures', cap, 'admission.jsonl'), text);
           mainAdmission[cap] = parseJsonl(text);                                   // kept per capture folder (provenance)
         }
       } catch (error) { errors.push(`records ${cap.slice(0, 40)}/admission.jsonl: ${msg(error)}`); }
       const askDir = join(captures, cap, 'asks');
       try {
-        if (io.existsSync(askDir)) for (const name of io.readdirSync(askDir).filter(n => n.endsWith('.json'))) {
+        const names = io.existsSync(askDir) ? io.readdirSync(askDir).filter(n => n.endsWith('.json')) : [];
+        if (names.length > EVIDENCE_MAX.asks) errors.push(`records ${cap.slice(0, 40)}/asks: ${names.length} records; only the first ${EVIDENCE_MAX.asks} are read (the rest kept in place)`);
+        for (const name of names.slice(0, EVIDENCE_MAX.asks)) {
           try {
-            const bytes = regularRead(join(askDir, name));
+            const bytes = take(join(askDir, name), EVIDENCE_MAX.ask);
             io.mkdirSync(join(out, 'captures', cap, 'asks'), { recursive: true, mode: 0o700 });
-            io.writeFileSync(join(out, 'captures', cap, 'asks', name), bytes);
+            put(join(out, 'captures', cap, 'asks', name), bytes);
             asks.push(JSON.parse(bytes));
           } catch (error) { errors.push(`records ${cap.slice(0, 40)}/asks/${name.slice(0, 40)}: ${msg(error)}`); }
         }
       } catch (error) { errors.push(`records ${cap.slice(0, 40)}/asks: ${msg(error)}`); }
     }
   } catch (error) { errors.push('records: ' + msg(error)); }
-  for (const l of liveLines) if (l.request_id && !requestIds.includes(l.request_id)) requestIds.push(l.request_id);
-  for (const a of asks) for (const q of Array.isArray(a?.requests) ? a.requests : []) if (typeof q?.request_id === 'string' && !requestIds.includes(q.request_id)) requestIds.push(q.request_id);
+  const ids = new Set();
+  for (const l of liveLines) if (typeof l.request_id === 'string') ids.add(l.request_id);
+  for (const a of asks) for (const q of Array.isArray(a?.requests) ? a.requests : []) if (typeof q?.request_id === 'string') ids.add(q.request_id);
+  const requestIds = [...ids].slice(0, EVIDENCE_MAX.requests);
+  if (ids.size > EVIDENCE_MAX.requests) errors.push(`receipts: ${ids.size} request ids; only the first ${EVIDENCE_MAX.requests} are looked up`);
   // Only the receipts of this run's requests, in launches new since just before the native launch, each checked before it
   // is copied (readOwnReceipts). Nothing else in the product's managed state is opened or copied.
-  const own = enough() ? readOwnReceipts(io, launchesBefore ?? [], requestIds) : { receipts: {}, raw: [], launches: [], errors: ['the evidence budget is spent: the receipts are not read'] };
+  const own = enough() ? readOwnReceipts(io, launchesBefore ?? [], requestIds, undefined, enough) : { receipts: {}, raw: [], launches: [], errors: ['the evidence budget is spent: the receipts are not read'] };
   errors.push(...own.errors);
   report.receipt_launches_new = own.launches.length;
   try {
@@ -583,7 +661,7 @@ function collect(io, regularRead, candidate, out, report, launchesBefore, enough
       // Raw (they hold provider thread/turn ids): outside the repository, never in the evidence folder.
       const raw = join(rawReceiptsRoot, out.split('/').at(-1), 'receipts', launch);
       io.mkdirSync(raw, { recursive: true, mode: 0o700 });
-      io.writeFileSync(join(raw, name), bytes, { mode: 0o600, flag: 'wx' });
+      put(join(raw, name), bytes, { mode: 0o600, flag: 'wx' });
     }
   } catch (error) { errors.push('raw receipts: ' + msg(error)); }
   const receipts = own.receipts;
@@ -595,8 +673,8 @@ function collect(io, regularRead, candidate, out, report, launchesBefore, enough
   let checkerLines = [];
   if (!enough()) errors.push('the evidence budget is spent: the checker log is not read');
   else try {
-    const bytes = regularRead(join(candidate.work, 'out', 'admission-checker.jsonl'));
-    io.writeFileSync(join(out, 'admission-checker.jsonl'), bytes);
+    const bytes = take(join(candidate.work, 'out', 'admission-checker.jsonl'), EVIDENCE_MAX.checker);
+    put(join(out, 'admission-checker.jsonl'), bytes);
     checkerLines = parseJsonl(bytes.toString('utf8'));
     if (checkerLines.some(l => l.kind === 'unreadable_line')) errors.push('admission checker log: unreadable lines');
   } catch (error) { errors.push('admission checker log: ' + msg(error)); }
@@ -604,9 +682,9 @@ function collect(io, regularRead, candidate, out, report, launchesBefore, enough
   report.source_admission = sourceAdmission(report.ledger, checkerLines, read('display_choice'), mainAdmission);
   report.evidence = evidence({ ledger: report.ledger, liveLines, cards: { action2: read('action2_card'), action3: read('action3_card') }, truthBefore: read('surface_before'), truthAfter: read('surface_changed') });
   report.collect_errors = errors;
-  io.writeFileSync(join(out, 'ledger.json'), JSON.stringify(report.ledger, null, 2) + '\n');
+  put(join(out, 'ledger.json'), () => JSON.stringify(report.ledger, null, 2) + '\n');
   // Sanitized receipt facts (no thread or turn id, no executable path) for review; the raw files stay outside Git.
-  io.writeFileSync(join(out, 'receipts-sanitized.json'), JSON.stringify(sanitizeReceipts(receipts), null, 2) + '\n');
+  put(join(out, 'receipts-sanitized.json'), () => JSON.stringify(sanitizeReceipts(receipts), null, 2) + '\n');
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

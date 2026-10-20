@@ -13,7 +13,7 @@ import * as candidateModule from './qa_live_candidate.mjs';
 import * as ledgerModule from './qa_live_ledger.mjs';
 
 const { ACTIONS, ADMISSION_TIMING, ASSISTANCE, CONNECTOR, POLICY, POLICY_MS, QUESTIONS, REVIEWED_RUNNER, admissionChecker, applyAdmissionDelta, assertReviewedRunner, checkLiveCandidate,
-  checkerDefinitions, connectorConfig, linkNames, names, prepareLiveCandidate, revertAdmissionDelta, worstCaseMs, CHECKER_ADMISSION_SUBSTITUTIONS, checkerAdmission, overlayFixtureCheck, overlayPredicate, OVERLAY_PURE } = candidateModule;
+  checkerDefinitions, connectorConfig, linkNames, names, prepareLiveCandidate, revertAdmissionDelta, worstCaseMs, CHECKER_ADMISSION_SUBSTITUTIONS, checkerAdmission, overlayFixtureCheck, overlayPredicate, OVERLAY_PURE, applyDeadlineDelta, revertDeadlineDelta } = candidateModule;
 const { buildLedger, evidence, fenceVerdict, leaks, parseJsonl, pixelEvidence, sourceAdmission, transport } = ledgerModule;
 
 const identity = JSON.parse(readFileSync(new URL('../../../docs/verification/qa/p0-13-live-0ff325b/stage-identity.json', import.meta.url)));
@@ -41,7 +41,7 @@ test('the candidate is offline-only, reproduces from the sources, and its scratc
   assert.throws(() => checkLiveCandidate(base.manifest, base.payload, { ...identity, tree_sha256: '0'.repeat(64) }));
   // One fixed native ceiling inside the 600 s foreground budget (Support 7723f82): the work deadline, not the steps' sum, bounds the run.
   assert.equal(base.manifest.native_steps_sum_ms, worstCaseMs(steps)); assert.ok(base.manifest.native_steps_sum_ms > base.manifest.native_bound_ms);
-  assert.deepEqual([base.manifest.native_bound_ms, base.manifest.native_work_ms], [360000, 320000]);
+  assert.deepEqual([base.manifest.native_bound_ms, base.manifest.native_work_ms, base.manifest.native_close_ms], [360000, 320000, 15000]);
   for (const k of ['input_method', 'expected_fence', 'script_permission', 'talk']) assert.equal(typeof base.manifest[k], 'string', k);
   assert.ok(base.manifest.source_files['qa_run_tts_candidate.mjs'] && base.manifest.source_files['qa_sub_watch.py']);
 });
@@ -49,23 +49,55 @@ test('the runner is the reviewed r4 runner byte for byte, apart from the one wor
   assertReviewedRunner(runner, base.manifest.work);
   const r4 = readFileSync(new URL('../../../' + REVIEWED_RUNNER.file, import.meta.url), 'utf8');
   assert.equal(sha(r4), REVIEWED_RUNNER.sha256);
-  assert.equal(r4.replace(REVIEWED_RUNNER.folder, base.manifest.work.split('/').at(-1)), revertAdmissionDelta(runner));
-  assert.equal(applyAdmissionDelta(revertAdmissionDelta(runner)), runner);
+  assert.equal(r4.replace(REVIEWED_RUNNER.folder, base.manifest.work.split('/').at(-1)), revertAdmissionDelta(revertDeadlineDelta(runner)));
+  assert.equal(applyDeadlineDelta(applyAdmissionDelta(revertAdmissionDelta(revertDeadlineDelta(runner)))), runner);
   assert.throws(() => assertReviewedRunner(revertAdmissionDelta(runner), base.manifest.work), /delta missing/);
   assert.throws(() => assertReviewedRunner(runner.replace("throw 'owned generated surface window changed'", "throw 'x'"), base.manifest.work), /differs/);
   assert.equal(runner.includes('-LinkDir') || /\[string\]\$LinkDir/.test(runner), true);                         // the shared runner already takes it
 });
-test('the runner\'s work deadline is real source logic: -WorkMs 320000 from its own start, every wait and sleep limited to the time left, an abort before the next step (later steps NOT_RUN); 0 keeps the reviewed behaviour', () => {
-  assert.deepEqual(base.manifest.proposed_native_invocation.arguments.slice(-2), ['-WorkMs', '320000']);
-  for (const part of ['  [switch]$AllowForeign,\n  [int]$WorkMs = 0\n)\n', 'function Limit-QaWork([int]$ms) { if ($WorkMs -le 0) { return $ms };',
-    'if ($WorkMs -gt 0 -and $qaElapsed.ElapsedMilliseconds -ge $WorkMs) { throw "the native work deadline ($WorkMs ms) was reached before step ${i}: it and every later step stay NOT_RUN" }',
-    '$qaSleepMs = Limit-QaWork ([int]$step.sleep); if ($qaSleepMs -lt [int]$step.sleep) { $entry.work_deadline_limited = $true }; Start-Sleep -Milliseconds $qaSleepMs }\n',
-    '        $qaLimited = Limit-QaWork $timeout\n        if ($qaLimited -lt $timeout) { $entry.work_deadline_limited = $true; $timeout = $qaLimited }\n']) assert.equal(runner.split(part).length, 2, part);
-  // The check stands outside the step's own try: the deadline aborts the run (its outer catch), never a skipped step.
+test('the runner\'s work deadline reaches every in-flight operation (Support d3ca9ca H1): -WorkMs 320000 from its process\'s creation, every DevTools and HTTP wait bounded before it starts and cancellable, every effect after a wait checked, no loop swallowing it, -CloseMs 15000 for the finally; runner-only, the checker unchanged', () => {
+  assert.deepEqual(base.manifest.proposed_native_invocation.arguments.slice(-4), ['-WorkMs', '320000', '-CloseMs', '15000']);
+  const body = name => { const at = runner.indexOf(`function ${name}`); assert.ok(at > 0 && runner.indexOf(`function ${name}`, at + 1) < 0, name); return runner.slice(at, runner.indexOf('\n}\n', at) + 3); };
+  for (const name of ['Receive-Message', 'Send-Cdp', 'Invoke-Cdp', 'Get-Socket', 'Get-QaEdgeSocket', 'Get-QaDevToolsList']) {
+    const b = body(name);
+    assert.equal(b.includes('[Threading.CancellationToken]::None') || b.includes('$client.DownloadString'), false, name);
+  }
+  const lines = runner.split('\n');
+  lines.forEach((line, k) => {
+    if (/\.(ReceiveAsync|SendAsync|ConnectAsync|DownloadStringTaskAsync)\(/.test(line)) {
+      assert.ok(lines.slice(Math.max(0, k - 5), k).some(l => /\$qaWait = Get-QaWaitMs \d+/.test(l)) && /\.Wait\(\$qaWait\)/.test(line + lines[k + 1]), `the wait at line ${k + 1} is bounded before it starts`);
+      assert.ok(/qaCancel\.Token|DownloadStringTaskAsync/.test(line), `the call at line ${k + 1} can be cancelled`);
+    }
+  });
+  // Every effect that can follow a wait checks the time first (every DevTools command does so in Send-Cdp and Invoke-Cdp).
+  for (const effect of ['$script:app = Start-Process -FilePath $Electron', '$p = Start-Process -FilePath $Edge', '[QaWin]::Raise(', '[QaWin]::Front(', '$entry.posted = [QaWin]::PostMessage(']) {
+    const sites = lines.map((l, k) => [l, k]).filter(([l]) => l.includes(effect));
+    assert.ok(sites.length > 0, effect);
+    for (const [l, k] of sites) assert.ok(l.slice(0, l.indexOf(effect)).includes('Assert-QaWorkTime') || lines[k - 1].trim() === 'Assert-QaWorkTime', `${effect} at line ${k + 1}`);
+  }
+  for (const name of ['Send-Cdp', 'Invoke-Cdp']) assert.ok(body(name).indexOf('$qaWait = Get-QaWaitMs') < body(name).indexOf('.SendAsync('), name);
+  // No waiting loop swallows the deadline.
+  for (const site of ['try { $value = Eval ([string]$step.target) ([string]$step.waitEval) } catch { if (Test-QaDeadline $_) { throw } }',
+    '    } catch { if (Test-QaDeadline $_) { throw } }\n    if ((Get-Date) -gt $deadline) { throw "no DevTools target for $target" }', 'catch { if (Test-QaDeadline $_) { throw }; $pages = $null }']) assert.equal(runner.split(site).length, 2, site);
+  // One clock from the runner process's creation; the step entry aborts outside the step's own try; the finally's close gets its own time first.
+  assert.ok(runner.includes('$script:qaStartupMs = [int64][Math]::Max(0, ((Get-Date) - (Get-Process -Id $PID).StartTime).TotalMilliseconds)'));
+  assert.ok(runner.indexOf('$qaElapsed = [Diagnostics.Stopwatch]::StartNew()') < runner.indexOf('function Get-QaLeftMs'));
   const loop = runner.slice(runner.indexOf('  foreach ($step in $steps) {'), runner.indexOf('      if ($null -ne $step.sleep)'));
-  assert.ok(loop.indexOf('native work deadline') > 0 && loop.indexOf('native work deadline') < loop.indexOf('    try {'));
-  assert.ok(runner.indexOf('$qaElapsed = [Diagnostics.Stopwatch]::StartNew()') < runner.indexOf('function Limit-QaWork'));
-  assert.equal(base.payload['admission-checker.ps1'], admissionChecker(runner)); assert.equal(admissionChecker(runner).includes('WorkMs'), false);   // the checker is unchanged by it
+  assert.ok(loop.indexOf('QA work deadline: reached before step') > 0 && loop.indexOf('QA work deadline: reached before step') < loop.indexOf('    try {'));
+  const fin = runner.slice(runner.lastIndexOf('\nfinally {\n'));
+  assert.ok(fin.indexOf('$script:qaEndMs = $script:qaStartupMs + $qaElapsed.ElapsedMilliseconds + [int64]$CloseMs') > 0 && fin.indexOf('$script:qaEndMs') < fin.indexOf("Eval 'control' 'window.close(), true'"));
+  for (const part of ['$qaSleepMs = Limit-QaWork ([int]$step.sleep); if ($qaSleepMs -lt [int]$step.sleep) { $entry.work_deadline_limited = $true }; Start-Sleep -Milliseconds $qaSleepMs }\n',
+    '        $qaLimited = Limit-QaWork $timeout\n        if ($qaLimited -lt $timeout) { $entry.work_deadline_limited = $true; $timeout = $qaLimited }\n',
+    '$entry.exited = $script:app.WaitForExit((Limit-QaWork $wait))', 'if (-not $script:app.WaitForExit((Limit-QaWork 3000)))', 'if ($step.required -ne $false -or (Test-QaDeadline $_)) { $results.steps += $entry; throw }',
+    "if ($entry.work_deadline_limited) { throw 'QA work deadline: a wait it shortened ran out' }", '$results.work_deadline = [ordered]@{ work_ms = $WorkMs; close_ms = $CloseMs; startup_ms = $script:qaStartupMs;']) assert.equal(runner.split(part).length, 2, part);
+  // A wait that ran out is the deadline's when the deadline shortened it or had passed: receive, two sends, two connects, the target list (cancelled).
+  assert.equal((runner.match(/Stop-QaWait \$qaWait \d+ '/g) ?? []).length, 6); assert.ok(body('Get-QaDevToolsList').includes('$web.CancelAsync()'));
+  // Runner-only: below the delta lies candidate 06's runner byte for byte, and the checker is cut from that.
+  const admitted = revertDeadlineDelta(runner), saved = name => readFileSync(new URL(`../../../docs/verification/qa/p0-13-live-0ff325b/${name}/runner.ps1`, import.meta.url), 'utf8');
+  assert.equal(revertDeadlineDelta(saved('candidate-nonvoice-08')), saved('candidate-nonvoice-06')); assert.equal(applyDeadlineDelta(admitted), runner);
+  assert.equal(base.payload['admission-checker.ps1'], admissionChecker(admitted)); assert.equal(/Get-QaWaitMs|Assert-QaWorkTime|WorkMs|CloseMs/.test(base.payload['admission-checker.ps1']), false);
+  // The steps use none of the reviewed steps whose OS input or HTTP stays outside this deadline.
+  for (const k of ['osClick', 'keys', 'raceStop', 'dragHandle', 'targets', 'endHungApp', 'consoleStart', 'cursorBack', 'hostPause', 'hostResume']) assert.equal(steps.some(x => k in x), false, k);
 });
 test('the package pins are the Lead\'s staged 0ff325b build (81 files, its tree and entry; native helper, Electron 44.5.1 and Edge as in the accepted diagnostic)', () => {
   const r4 = JSON.parse(readFileSync(new URL('../../../docs/verification/qa/p0-13-tts-52be105/candidate-r4-20261009/candidate.json', import.meta.url)));
@@ -433,7 +465,7 @@ test('wrapper: the mechanical result needs every term, the connector and its chi
   const cut = structuredClone(ledger); cut.slots[3] = { slot: 4, state: 'NOT_RUN', counted: false }; assert.equal(wrapper.judgeMechanics({ ...report, ledger: cut }).mechanics_passed, false);
 });
 test('wrapper: the watch summary is released only with the whole lifecycle observed; anything less is unknown or left running', () => {
-  const io = text => ({ readFileSync: () => text });
+  const io = text => ({ openSync: () => 3, fstatSync: () => ({ isFile: () => true, size: Buffer.byteLength(text) }), readSync: (fd, b, off, len, pos) => Buffer.from(text).copy(b, off, pos, pos + len), closeSync: () => {} });
   assert.deepEqual(wrapper.watchSummary(io(''), 'w', false), { state: 'not_started' });
   const log = (...e) => e.map(x => JSON.stringify(x)).join('\n');
   const begin = { event: 'watch_start', root_exists: true, already_there: [] };
@@ -459,7 +491,7 @@ test('wrapper: the watch summary is released only with the whole lifecycle obser
 });
 test('wrapper: with an exact allocation it still refuses at the connector checks before any Windows call, any folder or any process', async () => {
   const realFs = await import('node:fs');
-  const saved = JSON.parse(realFs.readFileSync(new URL('../../../docs/verification/qa/p0-13-live-0ff325b/candidate-nonvoice-07/candidate.json', import.meta.url)));
+  const saved = JSON.parse(realFs.readFileSync(new URL('../../../docs/verification/qa/p0-13-live-0ff325b/candidate-nonvoice-08/candidate.json', import.meta.url)));
   const wrapperHash = sha(realFs.readFileSync(new URL('qa_run_live_candidate.mjs', import.meta.url)));
   const record = { ...goodAllocation(), wrapper_sha256: wrapperHash, native_bound_ms: saved.native_bound_ms,
     native_invocation: { executable: saved.proposed_native_invocation.executable, arguments: saved.proposed_native_invocation.arguments },
@@ -491,13 +523,14 @@ async function timedRun(clock) {
   clock.m ??= 0;
   const tick = ms => { clock.t += ms; clock.m += ms; };
   const realFs = await import('node:fs');
-  const saved = JSON.parse(realFs.readFileSync(new URL('../../../docs/verification/qa/p0-13-live-0ff325b/candidate-nonvoice-07/candidate.json', import.meta.url)));
+  const saved = JSON.parse(realFs.readFileSync(new URL('../../../docs/verification/qa/p0-13-live-0ff325b/candidate-nonvoice-08/candidate.json', import.meta.url)));
   const record = { ...goodAllocation(), wrapper_sha256: sha(realFs.readFileSync(new URL('qa_run_live_candidate.mjs', import.meta.url))), native_bound_ms: saved.native_bound_ms,
     native_invocation: { executable: saved.proposed_native_invocation.executable, arguments: saved.proposed_native_invocation.arguments },
     launch_identity: { source: saved.production_commit, stage: saved.stage, tree: saved.stage_tree_sha256, work: saved.work, electron: saved.electron, edge: saved.edge, appPort: saved.appPort, edgePort: saved.edgePort } };
   const allocationPath = '/tmp/qa-live-test-allocation.json', bytes = Buffer.from(JSON.stringify(record)), out = '/tmp/qa-live-test-out';
-  const calls = [], limits = [], exits = [], written = new Map();
-  let launched = false;
+  const psExe = '/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe';
+  const calls = [], limits = [], exits = [], written = new Map(), watchArgs = [];
+  let launched = false, runnerAlive = true;
   const at = event => { calls.push(event); clock.on?.(event); };
   // A child call lasts clock.slow(event, launched) ms (none by default); one longer than its timeout is killed at that timeout.
   const takes = (event, options = {}) => {
@@ -506,48 +539,81 @@ async function timedRun(clock) {
     if (options.timeout !== undefined && ms > options.timeout) { tick(options.timeout); throw Error(`${event} killed at its ${options.timeout} ms timeout`); }
     tick(ms);
   };
+  const winPath = p => p.replace('/mnt/c/', 'C:\\').replaceAll('/', '\\');
+  const appLine = `"${saved.electron}" "${winPath(saved.stage)}" --remote-debugging-port=${saved.appPort} --remote-debugging-address=127.0.0.1`;
+  // The Windows runner as Windows lists it: with clock.runner 'stays', its exact invocation until QA ends it; with
+  // 'unresolved', a process naming the runner file with other arguments. By default it is gone once its launcher is.
+  const invocation = saved.proposed_native_invocation, quote = a => (/\s/.test(a) ? `"${a}"` : a);
+  const runnerFile = invocation.arguments[invocation.arguments.indexOf('-File') + 1];
+  const runnerRows = () => (!launched || !clock.runner || !runnerAlive ? [] : [{ pid: 888, created: '2', exe: invocation.executable,
+    command_line: clock.runner === 'unresolved' ? `${invocation.executable} -File ${runnerFile}` : [invocation.executable, ...invocation.arguments].map(quote).join(' ') }]);
   // The looks: a port owner with clock.conflict; after the launch, with clock.appStays, the launched app (it never exits).
-  const appLine = `"${saved.electron}" "${saved.stage.replace('/mnt/c/', 'C:\\').replaceAll('/', '\\')}" --remote-debugging-port=${saved.appPort} --remote-debugging-address=127.0.0.1`;
-  const look = edge => Buffer.from(JSON.stringify({ now: '1', listen: clock.conflict ? [999] : [],
-    processes: launched && clock.appStays && !edge ? [{ pid: 777, created: '2', exe: saved.electron, command_line: appLine }] : [] })).toString('base64');
+  const look = code => Buffer.from(JSON.stringify({ now: '1', listen: clock.conflict ? [999] : [],
+    processes: code.includes("Name='powershell.exe'") ? runnerRows() : launched && clock.appStays && code.includes("Name='electron.exe'") ? [{ pid: 777, created: '2', exe: saved.electron, command_line: appLine }] : [] })).toString('base64');
+  const name = p => p.split('/').at(-1), captures = `${saved.work}/userdata/captures`;
+  // The scratch's files: clock.files by name (clock.asks for asks/), else what the run wrote, else absent.
+  const content = p => {
+    if (p === `${out}/connector-watch.jsonl`) return Buffer.from(clock.watchLog ?? '{"event":"watch_start","root_exists":true,"already_there":[]}\n');
+    if (p.startsWith(`${captures}/`) && p.includes('/asks/') && clock.asks?.[name(p)] !== undefined) return Buffer.from(clock.asks[name(p)]);
+    if (p.startsWith(saved.work) && clock.files?.[name(p)] !== undefined) return Buffer.from(clock.files[name(p)]);
+    if (written.has(p)) return written.get(p);
+    throw Object.assign(Error('ENOENT ' + p), { code: 'ENOENT' });
+  };
+  const fds = new Map();
+  let nextFd = 100;
   const fs = { ...realFs,
-    existsSync: p => (clock.captures && p === `${saved.work}/userdata/captures`) || (!p.startsWith('/tmp/') && !p.startsWith('/mnt/c/') && !p.startsWith('/home/agentsdock/.local/') && realFs.existsSync(p)),
-    lstatSync: p => (p === allocationPath || p.startsWith(saved.work) ? { isFile: () => true, isSymbolicLink: () => false } : realFs.lstatSync(p)),
+    existsSync: p => (clock.captures && p === captures) || (!!clock.asks && p.startsWith(`${captures}/`) && p.endsWith('/asks')) || (p.startsWith(saved.work) && clock.files?.[name(p)] !== undefined) || (!p.startsWith('/tmp/') && !p.startsWith('/mnt/c/') && !p.startsWith('/home/agentsdock/.local/') && realFs.existsSync(p)),
+    lstatSync: p => (p === allocationPath || p.startsWith(saved.work) || p.startsWith(out) ? { isFile: () => true, isSymbolicLink: () => false, size: clock.sizes?.[name(p)] ?? 100 } : realFs.lstatSync(p)),
     readFileSync: (p, o) => {
       if (p === allocationPath) return bytes;
-      if (p === `${out}/connector-watch.jsonl`) return '{"event":"watch_start","root_exists":true,"already_there":[]}\n';
       if (p === '/proc/4321/stat') return '4321 (python3) S 1 2 3';
-      if (p.startsWith(saved.work) || p.startsWith(out)) { if (!written.has(p)) throw Error('ENOENT ' + p); return written.get(p); }
+      if (p.startsWith(saved.work) || p.startsWith(out)) { const b = content(p); return o === 'utf8' ? b.toString('utf8') : b; }
       return realFs.readFileSync(p, o);
     },
-    readdirSync: p => (p === '/proc' ? [] : p === `${saved.work}/userdata/captures` ? ['0123456789abcdef'] : realFs.readdirSync(p)), readlinkSync: () => '/',
+    openSync: p => { if (!p.startsWith(saved.work) && !p.startsWith(out)) throw Error('unexpected open ' + p); content(p); fds.set(nextFd, p); return nextFd++; },
+    fstatSync: fd => ({ isFile: () => true, nlink: 1, size: clock.sizes?.[name(fds.get(fd))] ?? content(fds.get(fd)).length }),
+    readSync: (fd, buffer, offset, length, position) => content(fds.get(fd)).copy(buffer, offset, position, position + length),
+    closeSync: fd => { fds.delete(fd); },
+    readdirSync: p => (p === '/proc' ? [] : p === captures ? (clock.captureNames ?? ['0123456789abcdef']) : p.startsWith(`${captures}/`) && p.endsWith('/asks') ? Object.keys(clock.asks ?? {}) : realFs.readdirSync(p)), readlinkSync: () => '/',
     mkdirSync: p => at(`mkdir ${p}`),
-    writeFileSync: (p, data) => { at(`write ${p}`); written.set(p, Buffer.from(data)); if (p.endsWith('connector-watch.stop')) exits.splice(0).forEach(f => f()); } };
+    // The watch ends at its stop file by default; with clock.watch 'exits on SIGTERM' its stop file cannot be written, 'stuck' it never ends.
+    writeFileSync: (p, data) => { at(`write ${p}`);
+      if (p.endsWith('connector-watch.stop')) { if (clock.watch === 'exits on SIGTERM') throw Error('synthetic stop-file failure'); if (!clock.watch) exits.splice(0).forEach(f => f()); }
+      written.set(p, Buffer.from(data)); } };
   const exec = (file, args, options) => {
     if (file === 'python3') { at('exec stage-check'); takes('exec stage-check', options); return JSON.stringify(identity); }
-    const code = file === '/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe' ? Buffer.from(args.at(-1), 'base64').toString('utf16le') : '';
+    const code = file === psExe ? Buffer.from(args.at(-1), 'base64').toString('utf16le') : '';
     const event = code.includes('GetProcessById') ? 'ps signal' : code.includes('Win32_Process') ? 'ps look' : code.includes('Test-Path') ? 'ps edge-path' : code.includes('ParseFile') ? 'ps parse' : null;
     if (!event) throw Error('unexpected command in this test');
     at(event); takes(event, options);
-    return { 'ps signal': 'signalled', 'ps look': look(code.includes('msedge.exe')), 'ps edge-path': 'True', 'ps parse': '{"ok":true,"errors":[]}' }[event];
+    if (event === 'ps look') { calls.push(`look ${/Name='([a-z.]+)'/.exec(code)[1]}`); return look(code); }
+    if (event === 'ps signal') {
+      const isRunner = code.includes('GetProcessById(888)'), how = code.includes('CloseMainWindow') ? 'close' : 'force';
+      calls.push(`signal ${isRunner ? 'runner' : 'app'} ${how}`);
+      if (isRunner && how === 'force') runnerAlive = false;
+      return isRunner && how === 'close' ? 'no_window' : 'signalled';
+    }
+    return event === 'ps edge-path' ? 'True' : '{"ok":true,"errors":[]}';
   };
-  // The native runner: by default it exits 0 at once; clock.native 'never' (it never exits), 'exits on SIGTERM' or 'exits on SIGKILL'.
+  // The native launcher: by default it exits 0 at once; clock.native 'never' (it never exits), 'exits on SIGTERM' or 'exits
+  // on SIGKILL', or 'early SIGKILL' (killed from outside before its ceiling).
   const nativeChild = () => {
-    const handlers = {};
+    const handlers = {}, end = (code, signal) => { handlers.exit?.(code, signal); handlers.close?.(code, signal); };
     return { pid: 5555, stdout: { on: () => {} }, stderr: { on: () => {} },
-      on: (event, f) => { handlers[event] = f; if ((event === 'exit' || event === 'close') && !clock.native) f(0, null); },
-      kill: signal => { at(`kill ${signal}`); if (clock.native === `exits on ${signal}`) { handlers.exit?.(null, signal); handlers.close?.(null, signal); } return true; } };
+      on: (event, f) => { handlers[event] = f; if (event === 'close' && !clock.native) end(0, null); if (event === 'close' && clock.native === 'early SIGKILL') end(null, 'SIGKILL'); },
+      kill: signal => { at(`kill ${signal}`); if (clock.native === `exits on ${signal}`) end(null, signal); return true; } };
   };
   const injected = { fs, execFileSync: exec, now: () => clock.t, monotonic: () => clock.m, sleep: async ms => tick(ms),
     connectorAdmission: (io, checks, home, limit) => { at('connector checks'); takes('connector checks', limit(60000)); return { copy: CONNECTOR.copy, files: 280 }; },
     spawn: (file, args) => {
-      if (file === '/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe') { at('native'); launched = true; return nativeChild(); }
-      at(`spawn ${file} ${args[0].split('/').at(-1)}`); return { pid: 4321, on: (event, f) => { if (event === 'exit') exits.push(f); } };
+      if (file === psExe) { at('native'); launched = true; return nativeChild(); }
+      at(`spawn ${file} ${args[0].split('/').at(-1)}`); watchArgs.push(...args);
+      return { pid: 4321, on: (event, f) => { if (event === 'exit') exits.push(f); }, kill: signal => { at(`watch kill ${signal}`); if (clock.watch === `exits on ${signal}`) exits.splice(0).forEach(f => f()); return true; } };
     },
     spawnSync: () => { at('spawnSync'); throw Error('no synchronous child in this run'); } };
   let result = null, error = null;
   try { result = await wrapper.runLiveCandidate({ execute: true, out, allocation: allocationPath, allocationSha256: sha(bytes) }, injected); } catch (e) { error = e; }
-  return { calls, limits, result, error, out, scratch: saved.work };
+  return { calls, limits, result, error, out, scratch: saved.work, watchArgs, written };
 }
 const timeEnd = Date.parse('2026-10-09T06:30:00Z'), timeBound = 360000, timeMargin = wrapper.PRELAUNCH_MARGIN_MS ?? 60000, timeLatest = timeEnd - timeBound - timeMargin;
 const timeEffects = calls => calls.filter(c => /^(mkdir|write|spawn|native)/.test(c));
@@ -587,7 +653,7 @@ const budgetMs = wrapper.BUDGET_MS ?? {}, roomy = timeLatest - 600000;
 test('budget: the phase ceilings fill the 600 s foreground maximum; native is the candidate\'s 360 s ceiling with the runner\'s 320 s work deadline', () => {
   assert.deepEqual(budgetMs, { preparation: 60000, native: 360000, cleanup: 150000, evidence: 20000, headroom: 10000 });
   assert.equal(Object.values(budgetMs).reduce((a, b) => a + b, 0), 600000);
-  assert.deepEqual([base.manifest.native_bound_ms, base.manifest.native_work_ms, wrapper.PRELAUNCH_MARGIN_MS], [budgetMs.native, budgetMs.native - 40000, budgetMs.preparation]);
+  assert.deepEqual([base.manifest.native_bound_ms, base.manifest.native_work_ms, base.manifest.native_close_ms, wrapper.PRELAUNCH_MARGIN_MS], [budgetMs.native, budgetMs.native - 40000, 15000, budgetMs.preparation]);
   const at = Date.parse('2026-10-09T06:10:00Z');
   assert.throws(() => wrapper.validateLiveAllocation({ ...goodAllocation(), native_bound_ms: 600000 }, { ...base.manifest, native_bound_ms: 600000 }, 'w'.repeat(64), at), /separate exact/);   // the old 600 s native bound
   assert.throws(() => wrapper.validateLiveAllocation(goodAllocation(), { ...base.manifest, native_work_ms: 360000 }, 'w'.repeat(64), at), /separate exact/);   // no wind-down left
@@ -623,13 +689,13 @@ test('budget: a native runner past its 360 s ceiling is signalled and awaited in
     const cleanupAt = r.result.budget.phase_started_after_ms.cleanup;                                                 // the child's end inside the 360 s
     assert.ok(cleanupAt >= 348000 && cleanupAt <= 360000 && r.result.budget.report_after_ms <= 590000, JSON.stringify(r.result.budget));
     assert.ok(r.calls.includes(`write ${r.out}/run.json`)); assert.equal(r.result.mechanics_passed, false);
-    assert.ok(r.result.release_blockers.includes('the native runner did not end by itself within its ceiling'));
+    assert.ok(r.result.release_blockers.includes('the native launcher did not end cleanly by itself (a signal, an error or its ceiling)'));
   }
   // The normal path: the runner exits by itself; nothing is signalled.
   const n = await timedRun({ t: roomy });
   assert.deepEqual([n.result.launcher.timeout, n.result.launcher.exit_seen, n.result.launcher.signalled, n.result.launcher.output_complete], [false, true, [], true]);
   assert.equal(n.calls.some(c => c.startsWith('kill ')), false); assert.ok(n.result.budget.report_after_ms < budgetMs.preparation);
-  assert.equal(n.result.release_blockers.includes('the native runner did not end by itself within its ceiling'), false);
+  assert.equal(n.result.release_blockers.includes('the native launcher did not end cleanly by itself (a signal, an error or its ceiling)'), false);
 });
 test('budget: a slow cleanup is cut at its reserve: what it could not finish is unknown, never released or a pass; a spent evidence budget leaves the records explicitly incomplete; the report is still written before 600 s', async () => {
   // The app stays; at the first cleanup look only 4 s of the cleanup reserve are left.
@@ -648,6 +714,76 @@ test('budget: a slow cleanup is cut at its reserve: what it could not finish is 
   assert.ok(e.result.budget.report_after_ms <= 590000); assert.ok(e.calls.includes(`write ${e.out}/run.json`));
 });
 
+test('release (Support d3ca9ca H2): a launcher ended by an outside signal before its ceiling, or with an error, blocks any release claim; the normal end does not', async () => {
+  const r = await timedRun({ t: roomy, native: 'early SIGKILL' });
+  assert.deepEqual([r.result.launcher.exit_seen, r.result.launcher.status, r.result.launcher.signal, r.result.launcher.timeout], [true, null, 'SIGKILL', false]);
+  assert.ok(r.result.release_blockers.includes('the native launcher did not end cleanly by itself (a signal, an error or its ceiling)'));
+  assert.equal(r.result.mechanics_passed, false); assert.equal(r.result.ledger.attempts_used, 4);
+  const n = await timedRun({ t: roomy });
+  assert.equal(n.result.release_blockers.some(b => /launcher|Windows runner/.test(b)), false, JSON.stringify(n.result.release_blockers));
+  assert.deepEqual([n.result.cleanup.runner.exit, n.result.cleanup.runner.signals], ['confirmed', []]);
+});
+test('the Windows runner (Support H1): seen by its exact identity and proven gone before the app\'s cleanup; one still there is ended by that identity (a close request, then its end through its held handle) and blocks release; an unresolved one is never signalled and stays unproven', async () => {
+  const s = await timedRun({ t: roomy, runner: 'stays' });
+  const afterLaunch = s.calls.indexOf('native'), force = s.calls.indexOf('signal runner force');
+  assert.deepEqual(s.calls.filter(c => c.startsWith('signal ')), ['signal runner close', 'signal runner force']);
+  assert.ok(force > afterLaunch && force < s.calls.indexOf('look electron.exe', afterLaunch), 'the runner is ended before the app\'s cleanup');
+  assert.equal(s.result.cleanup.runner.exit, 'confirmed'); assert.ok(s.result.release_blockers.includes('the Windows runner was signalled by QA, or a look or signal about it failed'));
+  const u = await timedRun({ t: roomy, runner: 'unresolved' });
+  assert.equal(u.calls.some(c => c.startsWith('signal ')), false); assert.equal(u.result.cleanup.runner.exit, 'unknown');
+  assert.ok(u.result.release_blockers.includes('the Windows runner\'s end is not proven')); assert.equal(u.result.owned_launch_cleanup_confirmed, false);
+  const src = readFileSync(new URL('qa_run_live_candidate.mjs', import.meta.url), 'utf8');
+  for (const part of ["lookCommand(candidate.appPort, 'powershell.exe')", 'app: candidate.proposed_native_invocation.arguments', "markers: [win(join(candidate.work, 'runner.ps1'))]",
+    "[['runner', runnerCalls, expectedRunner, 5000, 1000], ['electron', appCalls, expectedApp, 1000, 20000]"]) assert.ok(src.includes(part), part);
+});
+test('the watch (Support H3): it ends by itself at the cleanup\'s end at the latest; it is stopped and joined within its share (the stop file, then SIGTERM, then SIGKILL); one still there is a release blocker, never hidden, and the report is still written in time', async () => {
+  const n = await timedRun({ t: roomy });
+  const max = Number(n.watchArgs[n.watchArgs.indexOf('--max-seconds') + 1]);
+  assert.ok(max > 0 && max <= (budgetMs.preparation + budgetMs.native + budgetMs.cleanup) / 1000, String(max));
+  assert.deepEqual([n.result.watch_stop.requested, n.result.watch_stop.signalled, n.result.watch_exited], [true, [], true]);
+  const f = await timedRun({ t: roomy, watch: 'exits on SIGTERM' });
+  assert.deepEqual([f.result.watch_stop.requested, f.result.watch_stop.signalled, f.result.watch_exited], [false, ['SIGTERM'], true]);
+  assert.match(f.result.watch_stop.error, /synthetic stop-file failure/); assert.equal(f.result.release_blockers.includes('the read-only watch was not seen ending'), false);
+  const k = await timedRun({ t: roomy, watch: 'stuck' });
+  assert.deepEqual([k.result.watch_stop.signalled, k.result.watch_exited], [['SIGTERM', 'SIGKILL'], false]);
+  assert.ok(k.result.release_blockers.includes('the read-only watch was not seen ending')); assert.equal(k.result.mechanics_passed, false);
+  assert.ok(k.calls.includes(`write ${k.out}/run.json`) && k.result.budget.report_after_ms <= 590000);
+  const py = readFileSync(new URL('qa_sub_watch.py', import.meta.url), 'utf8');
+  assert.ok(py.includes('a.add_argument("--max-seconds", type=float, default=3600)') && py.includes('deadline = time.monotonic() + args.max_seconds'));
+});
+test('evidence (Support H3): a small status record comes before the collection; a file over its bound or past a count is not read (an explicit error, kept in place); the report is bounded', async () => {
+  const r = await timedRun({ t: roomy, files: { 'results.json': '{"steps":[],"values":{}}' }, sizes: { 'results.json': (16 << 20) + 1 }, captures: true,
+    captureNames: Array.from({ length: 10 }, (_, k) => k.toString(16).padStart(16, '0')) });
+  const w = file => r.calls.indexOf(`write ${r.out}/${file}`);
+  assert.ok(w('run-status.json') >= 0 && w('run-status.json') < w('ledger.json') && w('ledger.json') < w('run.json'));
+  const status = JSON.parse(r.written.get(`${r.out}/run-status.json`));
+  assert.deepEqual([status.kind, status.native_attempts, status.evidence_kept_in_place], ['qa-live-run-status/1', 1, r.scratch]);
+  assert.ok(r.result.collect_errors.some(e => e.startsWith('runner results: not read: over 16777216 bytes')), JSON.stringify(r.result.collect_errors));
+  assert.ok(r.result.collect_errors.includes('records: 10 capture folders; only the first 8 are read (the rest kept in place)'));
+  assert.equal(r.result.ledger.attempts_used, 4); assert.equal(r.result.mechanics.collected, false);           // results not read: every slot unknown
+  const src = readFileSync(new URL('qa_run_live_candidate.mjs', import.meta.url), 'utf8');
+  const fallback = JSON.parse(wrapper.reportText({ big: 'x'.repeat(500) }, { kind: 'qa-live-run-status/1' }, 100));             // over its bound: the status record
+  assert.deepEqual([fallback.kind, /exceeded 100 characters/.test(fallback.error)], ['qa-live-run-status/1', true]); assert.ok(src.includes("io.writeFileSync(join(out, 'run.json'), reportText(report, status()));"));
+});
+test('a clean run is releasable and its evidence is copied whole within the bounds: the release path and the collection work when nothing is wrong', async () => {
+  const cap = '0123456789abcdef', life = [{ event: 'watch_start', root_exists: true, already_there: [] }, { event: 'appear', pid: 9, start_ticks: 1, role: 'in_root' }, { event: 'exit', pid: 9, start_ticks: 1 }, { event: 'watch_end', remaining: [] }];
+  const r = await timedRun({ t: roomy, captures: true, watchLog: life.map(e => JSON.stringify(e)).join('\n') + '\n',
+    files: { 'results.json': JSON.stringify({ steps: [], values: {}, aborted: 'x'.repeat(5000) }), 'live.jsonl': '{"kind":"started","session_id":"live-1"}\n',
+      'admission.jsonl': '{"kind":"checker_end","spawned":true,"exit_seen":true,"code":0,"signal":null,"killed":false}\n', 'admission-checker.jsonl': '{"event":"ready"}\n{"event":"eof","requests":0}\n' },
+    asks: { 'sel.1.json': '{"requests":[{"request_id":42}]}' } });                                                        // (a request id that is not a string is skipped, never a crash)
+  assert.deepEqual(r.result.release_blockers, []); assert.deepEqual(r.result.collect_errors, []);
+  for (const f of ['runner-results.json', `captures/${cap}/live.jsonl`, `captures/${cap}/admission.jsonl`, `captures/${cap}/asks/sel.1.json`, 'admission-checker.jsonl', 'ledger.json', 'receipts-sanitized.json', 'run-status.json', 'run.json'])
+    assert.ok(r.written.has(`${r.out}/${f}`), f);
+  assert.equal(r.result.aborted.length, 2000);                                                                     // the runner's abort text, bounded
+});
+test('the watch\'s stop keeps to its time, also below 2 s: the stop file, then SIGTERM and SIGKILL, each awaited only its share', async () => {
+  let m = 0;
+  const stuck = { pid: 7, on: () => {}, kill: () => true };
+  const io = { readFileSync: () => '{"event":"watch_start","root_exists":true,"already_there":[]}\n', writeFileSync: () => {}, existsSync: () => false };
+  const w = await wrapper.startWatch(io, () => stuck, async ms => { m += ms; }, '/tmp/qa-live-stop-test', 3600, () => m);
+  for (const ms of [400, 0]) { const before = m; await w.stop(ms); assert.ok(m - before <= ms, `${m - before} > ${ms}`); }
+  assert.deepEqual([w.state.stop.signalled, w.state.stop.exited], [['SIGTERM', 'SIGKILL'], false]);
+});
 test('ledger: a launched run without readable results counts every slot as unknown, never NOT_RUN; known results keep their own accounting', () => {
   const l = buildLedger({ steps, results: null });
   assert.deepEqual(l.slots.map(s => s.counted), [true, true, true, true]); assert.equal(l.attempts_used, 4);
@@ -818,7 +954,7 @@ test('F5: the watch must record its own clean start before anything can launch; 
   assert.equal(lw.ready.ready, false); assert.match(lw.ready.reason, /receipts folder/);
   // In the run: the watch is ready before the scratch is taken and before the native launch.
   const src = readFileSync(new URL('qa_run_live_candidate.mjs', import.meta.url), 'utf8'), body = src.slice(src.indexOf('export async function runLiveCandidate('), src.indexOf('export async function startWatch('));
-  const order = ['await startWatch(io, start, sleep, out)', 'if (!watch.ready.ready) throw', 'io.mkdirSync(candidate.work, { recursive: false })', 'runAttached(start, psBin, invocation.arguments'].map(x => body.indexOf(x));
+  const order = ['await startWatch(io, start, sleep, out,', 'if (!watch.ready.ready) throw', 'io.mkdirSync(candidate.work, { recursive: false })', 'runAttached(start, psBin, invocation.arguments'].map(x => body.indexOf(x));
   assert.ok(order.every(i => i > 0) && order.every((i, k) => k === 0 || i > order[k - 1]), String(order));
   assert.equal(body.includes("start('python3'"), false);                                                          // the only watch start is startWatch's
 });
@@ -834,7 +970,7 @@ test('receipt reader: only this run\'s new launches, real folders and files, the
     return { opened, existsSync: p => p in dirs, lstatSync: p => ({ isDirectory: () => p in dirs && !links.includes(p), isSymbolicLink: () => links.includes(p) }), realpathSync: p => real[p] ?? p,
       readdirSync: p => dirs[p], openSync: (p, flags) => { opened.push([p, flags]);
         if (links.includes(p)) throw Object.assign(Error('ELOOP'), { code: 'ELOOP' }); if (!(p in files)) throw Object.assign(Error('ENOENT'), { code: 'ENOENT' }); held.set(next, p); return next++; },
-      fstatSync: fd => ({ isFile: () => true, nlink: nlink[held.get(fd)] ?? 1, size: files[held.get(fd)].length }), readFileSync: fd => files[held.get(fd)], closeSync: fd => held.delete(fd) };
+      fstatSync: fd => ({ isFile: () => true, nlink: nlink[held.get(fd)] ?? 1, size: files[held.get(fd)].length }), readFileSync: fd => files[held.get(fd)], readSync: (fd, b, off, len, pos) => files[held.get(fd)].copy(b, off, pos, pos + len), closeSync: fd => held.delete(fd) };
   };
   const NOFOLLOW = fsConstants.O_NOFOLLOW;
   const good = fake({ dirs: { [R]: [OLD, A], [`${R}/${A}`]: [], [`${R}/${OLD}`]: [] }, files: { [`${R}/${A}/${nameOf(rid)}`]: full(rid), [`${R}/${OLD}/${nameOf(rid2)}`]: full(rid2) } });
@@ -864,9 +1000,10 @@ test('receipt reader: only this run\'s new launches, real folders and files, the
 
 // ---- F3 (Lead interface 4f7d9fa): QA's source-admission checker, its configuration, the runner delta and the binding ----
 test('F3 checker: the reviewed admission with exactly four overlay substitutions, the one shared predicate, read-only natives, and the Lead protocol', () => {
-  const checker = base.payload['admission-checker.ps1'], defs = checkerDefinitions(runner), derived = checkerAdmission(runner), predicate = overlayPredicate();
-  assert.equal(checker, admissionChecker(runner)); assert.ok(checker.includes(defs));
-  for (const block of defs.replace(derived, '').split(/\n(?=function |Add-Type @')/)) assert.ok(runner.includes(block.trimEnd()), block.slice(0, 60));   // byte for byte from the runner
+  // The checker is cut from the runner before its runner-only deadline delta.
+  const admitted = revertDeadlineDelta(runner), checker = base.payload['admission-checker.ps1'], defs = checkerDefinitions(admitted), derived = checkerAdmission(admitted), predicate = overlayPredicate();
+  assert.equal(checker, admissionChecker(admitted)); assert.ok(checker.includes(defs));
+  for (const block of defs.replace(derived, '').split(/\n(?=function |Add-Type @')/)) assert.ok(admitted.includes(block.trimEnd()), block.slice(0, 60));   // byte for byte from the runner
   assert.equal(/@@QA_(REVIEWED_ADMISSION_DEFINITIONS|OVERLAY_PREDICATE)@@/.test(checker), false);
   // The checker's admission = the reviewed one with exactly the four substitutions (Lead handoff_1698eb17/e893ca27).
   const at = runner.indexOf('function Assert-QaSurfaceAdmission('), admission = runner.slice(at, runner.indexOf('\n}\n', at) + 3);
@@ -1000,7 +1137,7 @@ test('F3 ledger: every possibly sent request needs an admitted send for its exac
   const noRequest = buildLedger({ steps, results: ranTo(stepIndex('action3_submit')), liveLines: look('live-1.look.1', 'a1'), asks: [{ requests: [entry('sel.1', 'focus')] }], receipts: {} });
   assert.equal(admitted(noRequest, checkerLog(noRequest)).all_bound, false);
   const src = readFileSync(new URL('qa_run_live_candidate.mjs', import.meta.url), 'utf8');
-  assert.ok(src.includes("regularRead(join(candidate.work, 'out', 'admission-checker.jsonl'))") && src.includes("report.source_admission = sourceAdmission(report.ledger, checkerLines, read('display_choice'), mainAdmission);"));
+  assert.ok(src.includes("take(join(candidate.work, 'out', 'admission-checker.jsonl'), EVIDENCE_MAX.checker)") && src.includes("report.source_admission = sourceAdmission(report.ledger, checkerLines, read('display_choice'), mainAdmission);"));
   // Main's own admission record must tell the same decisions (Web 48c20c4): its allows are QA allows, QA's allowed sends are its allows, no violation.
   const good2 = log(), cap = '0123456789abcdef', mainOf = (lines, edit) => { const m = mainLines(lines); edit(m); return { [cap]: m }; };
   assert.deepEqual([admitted(l, good2).main_record_agrees, admitted(l, good2).checker_released], [true, true]);
@@ -1193,7 +1330,8 @@ test('R4-R5 (Support 5083814): an exited watcher is not ready; the lifecycle mus
   // After the watch's check, right before the launch: the allocation's wall-clock recheck, then the preparation budget.
   const lease = body.indexOf("if (now() + record.native_bound_ms > deadline) throw Error('allocation has too little time for the bounded native attempt');"), spent = body.indexOf('if (mono() > ends.preparation) throw');
   assert.ok(at < lease && lease < spent && spent < body.indexOf('runAttached(start, psBin, invocation.arguments'), String([at, lease, spent]));
-  const io = events => ({ readFileSync: () => events.map(e => JSON.stringify(e)).join('\n') });
+  const io = events => { const text = Buffer.from(events.map(e => JSON.stringify(e)).join('\n'));
+    return { openSync: () => 3, fstatSync: () => ({ isFile: () => true, size: text.length }), readSync: (fd, b, off, len, pos) => text.copy(b, off, pos, pos + len), closeSync: () => {} }; };
   const a = { event: 'appear', pid: 7, start_ticks: 70, role: 'in_root' }, d = { event: 'appear', pid: 8, start_ticks: 80, role: 'descendant' }, x = e => ({ event: 'exit', pid: e.pid, start_ticks: e.start_ticks });
   const end = { event: 'watch_end', remaining: [] };
   assert.equal(wrapper.watchSummary(io([startRecord, a, d, x(d), x(a), end]), 'w', true).state, 'released');                            // control
@@ -1208,7 +1346,7 @@ test('R4-R5 (Support 5083814): an exited watcher is not ready; the lifecycle mus
     format: 'lc-subscription-ask-receipt/1', codex_executable: '/synthetic/codex', codex_version: '0.158.0', codex_sha256: CONNECTOR.codex_sha256, explicit_bin_override: true };
   const read = value => { const bytes = Buffer.from(JSON.stringify(value));
     return wrapper.readOwnReceipts({ existsSync: () => true, lstatSync: () => ({ isDirectory: () => true, isSymbolicLink: () => false }), realpathSync: p => p, readdirSync: () => [launch], openSync: () => 9,
-      fstatSync: () => ({ isFile: () => true, nlink: 1, size: bytes.length }), readFileSync: () => bytes, closeSync: () => {} }, [], [rid], '/synthetic/receipts'); };
+      fstatSync: () => ({ isFile: () => true, nlink: 1, size: bytes.length }), readFileSync: () => bytes, readSync: (fd, b, off, len, pos) => bytes.copy(b, off, pos, pos + len), closeSync: () => {} }, [], [rid], '/synthetic/receipts'); };
   const ok = read(good); assert.deepEqual([ok.errors, ok.raw.length], [[], 1]);
   const clean = wrapper.sanitizeReceipts(ok.receipts)[rid]; assert.equal('thread_id' in clean || 'turn_id' in clean || 'codex_executable' in clean, false);
   for (const [field, value] of [['actual_model', { thread_id: 'SYNTHETIC_NESTED_THREAD', turn_id: 'SYNTHETIC_NESTED_TURN' }], ['input_types', ['text', 'text']], ['input_types', ['video']], ['produced_item_types', [{ a: 1 }]],

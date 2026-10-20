@@ -1,0 +1,29 @@
+{
+  "assignment": "Lead handoff_0164c146dbbc3600006519636a4c2224: focused parser validation of the changed candidate-08 runner (Parser::ParseFile only); nothing executed",
+  "input": {
+    "file": "docs/verification/qa/p0-13-live-0ff325b/candidate-nonvoice-08/runner.ps1",
+    "sha256": "4655ec118a01c25839d94c2c004d963cc0f19893a1064dec9e3dea853340ae69"
+  },
+  "staging": "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-parse-24f3e39065ab404d8f3510a3f9ee1519\\runner.ps1 (fresh, owned; hash checked after the copy; removed afterwards)",
+  "command": "timeout 120 /mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe -NoProfile -NonInteractive -Command - < check.ps1",
+  "check_ps1_sha256": "028b767b8b53cc11e9903f96f59597c80afa6632dadde5a36d34ed45892ab34c",
+  "started_utc": "2026-10-20T11:53:31Z",
+  "ended_utc": "2026-10-20T11:53:32Z",
+  "exit_code": 0,
+  "stderr_bytes": 0,
+  "result": {
+    "powershell": "5.1.26100.9711",
+    "clr": "4.0.30319.42000",
+    "sha256": "4655ec118a01c25839d94c2c004d963cc0f19893a1064dec9e3dea853340ae69",
+    "parse": {
+      "errors": []
+    }
+  },
+  "not_done": [
+    "no dot-source, invocation or script-block evaluation",
+    "no C# compile (the literal C# blocks are unchanged since candidate 05)",
+    "no product, checker, Edge, account, model, display, microphone, audio or TTS action",
+    "the candidate scratch e72ea0f9 stayed unused",
+    "no allocation or lease"
+  ]
+}

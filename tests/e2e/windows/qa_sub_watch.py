@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Read-only process watch for the subscription-connector runs (WSL side). It signals and ends nothing.
 
-  qa_sub_watch.py --root <folder> --out <jsonl> --stop <file>
+  qa_sub_watch.py --root <folder> --out <jsonl> --stop <file> [--max-seconds <s>]
 
 Logs when a process whose working folder is inside <root> appears and exits (the connector, or QA's fake bridge: the app
 starts either with `--cd <root>`), and the same for every descendant of such a process (the official Codex app server the
@@ -64,10 +64,12 @@ def main():
     a.add_argument("--root", required=True)
     a.add_argument("--out", required=True)
     a.add_argument("--stop", required=True)
+    # It also ends by itself after this long (its caller's whole budget; 3600 s by default).
+    a.add_argument("--max-seconds", type=float, default=3600)
     args = a.parse_args()
     root = os.path.realpath(args.root)
     seen = {}
-    deadline = time.monotonic() + 3600
+    deadline = time.monotonic() + args.max_seconds
     with open(args.out, "a", encoding="utf-8") as log:
         def say(entry):
             log.write(json.dumps({**entry, "at": now()}) + "\n")

@@ -68,12 +68,14 @@ export const QUESTIONS = {
 // automatic circle request stays hint-first: the product itself caps it and the driver never touches its level.
 export const ASSISTANCE = 'explain';
 export const CIRCLE_ASSISTANCE = 'hint (the product\'s own cap for a circle without words)';
-// The native run's one fixed ceiling inside the wrapper's 600 s foreground budget (Support 7723f82; within the approved
-// 600 s). The runner's own work deadline (-WorkMs, from its start) leaves 40 s of it: normally about 28 s for the step in
-// progress and the runner's finally, then the wrapper's end of a runner still there (SIGTERM and SIGKILL, 5 s each, and
-// 2 s for its output). Not an execution approval.
+// The native run's one fixed ceiling inside the wrapper's 600 s foreground budget (Support 7723f82, d3ca9ca; within the
+// approved 600 s). The runner's own work deadline (-WorkMs, counted from its process's creation) cancels every pending
+// DevTools and HTTP wait and stops every effect at 320 s; its finally then has -CloseMs (15 s) for the graceful close. At
+// 348 s the wrapper signals a launcher still there (5 s each) and awaits its output (2 s); the Windows runner's own end is
+// then proven by its exact identity, or it is ended that way, before the app's cleanup. Not an execution approval.
 export const NATIVE_BOUND_MS = 360000;
 export const NATIVE_WORK_MS = NATIVE_BOUND_MS - 40000;
+export const RUNNER_CLOSE_MS = 15000;
 const sourceNames = ['qa_live_candidate.mjs', 'qa_tts_output_candidate.mjs', 'qa_visible_candidate.mjs', 'qa_edge_placement.ps1', 'qa_display_admission.ps1',
   'qa-electron-runner.ps1', 'qa_tts_stage_check.py', 'qa_live_stage_check.py', 'surface_live.html', 'sub_copy.mjs', 'qa_sub_copy_check.py', 'qa_live_copy_check.py',
   'signin_cleanup.mjs', 'qa_live_ledger.mjs', 'qa_run_tts_candidate.mjs', 'qa_sub_watch.py', 'qa_admission_checker.ps1', 'qa_overlay_predicate.ps1',
@@ -249,10 +251,12 @@ function reviewedRunner(ctx) {
   const built = buildVisibleCandidate(ctx);
   return applyPlacementGeometry(applyPlacementClient(applyAdmissionPoints(applyEdgeIdentity(applyScopedAdmission(built.runner, ctx)))));
 }
-function liveRunner(ctx) { return applyAdmissionDelta(reviewedRunner(ctx)); }
+// The runner: the reviewed bytes, its source-admission delta (the checker's definitions are cut from this), then its
+// runner-only deadline delta.
+function liveRunner(ctx) { return applyDeadlineDelta(applyAdmissionDelta(reviewedRunner(ctx))); }
 /** The reviewed runner with this run's folder plus exactly its delta (source admission, work deadline), or a refusal. */
 export function assertReviewedRunner(runner, work) {
-  runner = revertAdmissionDelta(runner);
+  runner = revertAdmissionDelta(revertDeadlineDelta(runner));
   const reviewed = readFileSync(join(repo, REVIEWED_RUNNER.file));
   if (sha(reviewed) !== REVIEWED_RUNNER.sha256) throw Error('reviewed r4 runner bytes changed');
   const folder = work.split('/').at(-1);
@@ -394,16 +398,6 @@ function runnerAdmissionDelta() { return [
    "  if ($subFile) { $results.processes[$key].sub_config_sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $subFile).Hash.ToLower() }\n  $results.processes[$key].admission = $admission\n  if ($admissionFile) { $results.processes[$key].admission_config_sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $admissionFile).Hash.ToLower() }\n"],
   ["        Start-App ([string]$step.as) ([string]$step.link) ([string]$step.sub)\n", "        Start-App ([string]$step.as) ([string]$step.link) ([string]$step.sub) ([string]$step.admission)\n"],
   ["function Assert-QaSurfaceAdmission([string]$phase) {", ADMISSION_CONTEXT_FUNCTION + overlayPredicate() + RUNNER_BINDING_FUNCTION + "function Assert-QaSurfaceAdmission([string]$phase) {"],
-  // The native work deadline (Support 7723f82): -WorkMs from the runner's own start (0, the reviewed default, keeps the
-  // reviewed behaviour). Every wait and sleep gets only the time left (marked work_deadline_limited when shortened), and at
-  // the deadline the run aborts before the next
-  // step (it and every later one NOT_RUN) into the reviewed finally.
-  ["  [switch]$AllowForeign\n)\n", "  [switch]$AllowForeign,\n  [int]$WorkMs = 0\n)\n"],
-  ["\n$i = 0\ntry {\n  Initialize-QaDisplayAdmission\n", "\nfunction Limit-QaWork([int]$ms) { if ($WorkMs -le 0) { return $ms }; return [int][Math]::Max([double]0, [Math]::Min([double]$ms, [double]$WorkMs - $qaElapsed.ElapsedMilliseconds)) }\n$i = 0\ntry {\n  Initialize-QaDisplayAdmission\n"],
-  ["    $i++\n    $entry = [ordered]@{ i = $i; ok = $true; at = (Get-Date).ToUniversalTime().ToString('o') }\n",
-   "    $i++\n    if ($WorkMs -gt 0 -and $qaElapsed.ElapsedMilliseconds -ge $WorkMs) { throw \"the native work deadline ($WorkMs ms) was reached before step ${i}: it and every later step stay NOT_RUN\" }\n    $entry = [ordered]@{ i = $i; ok = $true; at = (Get-Date).ToUniversalTime().ToString('o') }\n"],
-  ["Start-Sleep -Milliseconds ([int]$step.sleep) }\n", "$qaSleepMs = Limit-QaWork ([int]$step.sleep); if ($qaSleepMs -lt [int]$step.sleep) { $entry.work_deadline_limited = $true }; Start-Sleep -Milliseconds $qaSleepMs }\n"],
-  ["        $timeout = if ($step.timeoutMs) { [int]$step.timeoutMs } else { 15000 }\n", "        $timeout = if ($step.timeoutMs) { [int]$step.timeoutMs } else { 15000 }\n        $qaLimited = Limit-QaWork $timeout\n        if ($qaLimited -lt $timeout) { $entry.work_deadline_limited = $true; $timeout = $qaLimited }\n"],
 ]; }
 // The current capture's overlay binding for the runner's own point checks: main's test-only session state
 // (source_admission {capture_id, overlay {pid, hwnd}, active}, Lead handoff_e893ca27) must agree with the arm QA's
@@ -433,7 +427,105 @@ export function revertAdmissionDelta(runner) {
     if (runner.split(to).length !== 2) throw Error('source admission delta missing or changed');
     runner = runner.replace(to, () => from);
   }
-  if (/LC_SOURCE_ADMISSION|Write-QaAdmissionContext|admissionFile|QaOverlay|qaRunnerOverlayBinding|WorkMs|Limit-QaWork/.test(runner)) throw Error('runner delta left traces');
+  if (/LC_SOURCE_ADMISSION|Write-QaAdmissionContext|admissionFile|QaOverlay|qaRunnerOverlayBinding/.test(runner)) throw Error('source admission delta left traces');
+  return runner;
+}
+// ---- the native work deadline (Support 7723f82, d3ca9ca): runner-only, after the checker's definitions are cut ----
+// -WorkMs counts from this runner process's creation (its launcher's spawn). Every DevTools and HTTP wait gets only the time
+// left, its bound is taken before the call starts, and the pending call is cancelled at the end; nothing is sent, started,
+// raised or posted after it (a check right before each effect, after any wait), and no waiting loop swallows the deadline.
+// At the deadline the run aborts before the next step (it and every later one NOT_RUN) into the reviewed finally, which
+// gets -CloseMs of its own for the graceful close, with its waits within it. A wait that runs out once the deadline
+// shortened it, or after it, is reported as the deadline, and a deadline error in any step aborts the run. 0 (the reviewed
+// default) sets no deadline; the waits then keep fixed bounds: receive 60 s (as reviewed); send 60 s, connect 20 s and the
+// target list 30 s (new bounds; the reviewed send and connect had none).
+const RUNNER_DEADLINE_CORE = `# The native work deadline (-WorkMs, 0 = none) from this process's creation; the finally's close gets -CloseMs (qa_live_candidate.mjs).
+$script:qaStartupMs = [int64]0
+if ($WorkMs -gt 0) { $script:qaStartupMs = [int64][Math]::Max(0, ((Get-Date) - (Get-Process -Id $PID).StartTime).TotalMilliseconds) }
+$script:qaEndMs = $(if ($WorkMs -gt 0) { [int64]$WorkMs } else { [int64]::MaxValue })
+function Get-QaLeftMs { return $script:qaEndMs - ($script:qaStartupMs + $qaElapsed.ElapsedMilliseconds) }
+function Test-QaDeadline($err) { return ([string]$err.Exception.Message).StartsWith('QA work deadline', [StringComparison]::Ordinal) }
+function Get-QaWaitMs([int]$ms) {
+  $left = Get-QaLeftMs
+  if ($left -le 0) { throw 'QA work deadline: the runner''s time is over; nothing more is sent, started, raised or posted' }
+  return [int][Math]::Min([double]$ms, [double]$left)
+}
+function Assert-QaWorkTime { [void](Get-QaWaitMs 1) }
+# A wait that timed out: the deadline's when the deadline shortened it or has passed, else its own timeout.
+function Stop-QaWait([int]$waited, [int]$bound, [string]$what) {
+  if ($waited -lt $bound -or (Get-QaLeftMs) -le 0) { throw "QA work deadline: $what at the runner's deadline" }
+  throw $what
+}
+function Limit-QaWork([int]$ms) { return [int][Math]::Max([double]0, [Math]::Min([double]$ms, [double](Get-QaLeftMs))) }
+function Get-QaDevToolsList([int]$port) {
+  $qaWait = Get-QaWaitMs 30000
+  $web = New-Object System.Net.WebClient
+  $web.Proxy = $null
+  try {
+    $task = $web.DownloadStringTaskAsync("http://127.0.0.1:$port/json/list")
+    if (-not $task.Wait($qaWait)) { $web.CancelAsync(); Stop-QaWait $qaWait 30000 'DevTools target list timeout' }
+    return ,($task.Result | ConvertFrom-Json)
+  } finally { $web.Dispose() }
+}
+`;
+function runnerDeadlineDelta() {
+  const none = '[Threading.CancellationToken]::None';
+  const send = tail => [`  $socket.SendAsync($segment, [System.Net.WebSockets.WebSocketMessageType]::Text, $true, ${none}).Wait()\n${tail}`,
+    `  $qaWait = Get-QaWaitMs 60000\n  $qaCancel = New-Object Threading.CancellationTokenSource\n  if (-not $socket.SendAsync($segment, [System.Net.WebSockets.WebSocketMessageType]::Text, $true, $qaCancel.Token).Wait($qaWait)) { $qaCancel.Cancel(); Stop-QaWait $qaWait 60000 'CDP send timeout' }\n${tail}`];
+  const connect = tail => [`  $ws.ConnectAsync([Uri]$t.webSocketDebuggerUrl, ${none}).Wait()\n${tail}`,
+    `  $qaWait = Get-QaWaitMs 20000\n  $qaCancel = New-Object Threading.CancellationTokenSource\n  if (-not $ws.ConnectAsync([Uri]$t.webSocketDebuggerUrl, $qaCancel.Token).Wait($qaWait)) { $qaCancel.Cancel(); $ws.Dispose(); Stop-QaWait $qaWait 20000 'DevTools connect timeout' }\n${tail}`];
+  const list = indent => [`\n${indent}$list = $client.DownloadString("http://127.0.0.1:$port/json/list") | ConvertFrom-Json\n`, `\n${indent}$list = Get-QaDevToolsList $port\n`];
+  return [
+    ['  [switch]$AllowForeign\n)\n', '  [switch]$AllowForeign,\n  [int]$WorkMs = 0,\n  [int]$CloseMs = 0\n)\n'],
+    ['$qaElapsed = [Diagnostics.Stopwatch]::StartNew()\n', '$qaElapsed = [Diagnostics.Stopwatch]::StartNew()\n' + RUNNER_DEADLINE_CORE],
+    // DevTools and HTTP: each receive, send, connect and target list waits only the time left, cancelled at its end.
+    [`    $task = $socket.ReceiveAsync($segment, ${none})\n    if (-not $task.Wait(60000)) { throw 'CDP receive timeout' }\n`,
+     "    $qaWait = Get-QaWaitMs 60000\n    $qaCancel = New-Object Threading.CancellationTokenSource\n    $task = $socket.ReceiveAsync($segment, $qaCancel.Token)\n    if (-not $task.Wait($qaWait)) { $qaCancel.Cancel(); Stop-QaWait $qaWait 60000 'CDP receive timeout' }\n"],
+    send('  return $script:nextId\n'), send('  while ($true) {\n'),
+    list('    '), list('      '),
+    ['    } catch { }\n    if ((Get-Date) -gt $deadline) { throw "no DevTools target for $target" }\n', '    } catch { if (Test-QaDeadline $_) { throw } }\n    if ((Get-Date) -gt $deadline) { throw "no DevTools target for $target" }\n'],
+    connect('  $sockets[$target] = @{ ws = $ws; id = $t.id }\n'), connect("  $sockets['edge'] = @{ ws = $ws; id = $t.id }\n"),
+    ['    try { $pages = @(($client.DownloadString("http://127.0.0.1:$($script:edgePort)/json/list") | ConvertFrom-Json) | Where-Object { $_.type -eq \'page\' }) } catch { $pages = $null }\n',
+     "    try { $pages = @((Get-QaDevToolsList $script:edgePort) | Where-Object { $_.type -eq 'page' }) } catch { if (Test-QaDeadline $_) { throw }; $pages = $null }\n"],
+    // The effects that may follow a wait: each checks the time first (DevTools commands do so in Send-Cdp and Invoke-Cdp).
+    ['; $script:app = Start-Process -FilePath $Electron', '; Assert-QaWorkTime; $script:app = Start-Process -FilePath $Electron'],
+    ['        $p = Start-Process -FilePath $Edge -ArgumentList $edgeArgs -PassThru\n', '        Assert-QaWorkTime\n        $p = Start-Process -FilePath $Edge -ArgumentList $edgeArgs -PassThru\n'],
+    ['  $foreground = [QaWin]::Raise($window, $false)\n', '  Assert-QaWorkTime\n  $foreground = [QaWin]::Raise($window, $false)\n'],
+    ['  $entry.control_raised = [QaWin]::Raise($control)\n', '  Assert-QaWorkTime\n  $entry.control_raised = [QaWin]::Raise($control)\n'],
+    ['else { $entry.foreground = [QaWin]::Raise($h) } }', 'else { Assert-QaWorkTime; $entry.foreground = [QaWin]::Raise($h) } }'],
+    ["'front'    { $entry.foreground = [QaWin]::Front($h) }", "'front'    { Assert-QaWorkTime; $entry.foreground = [QaWin]::Front($h) }"],
+    ["        if ($via -eq 'wm_close') { $entry.posted = [QaWin]::PostMessage($h, 0x0010, [IntPtr]::Zero, [IntPtr]::Zero) }\n",
+     "        if ($via -eq 'wm_close') { Assert-QaWorkTime; $entry.posted = [QaWin]::PostMessage($h, 0x0010, [IntPtr]::Zero, [IntPtr]::Zero) }\n"],
+    // The steps: an abort before the next step at the deadline (outside the step's own try), each wait and sleep limited
+    // (marked when shortened), no waitEval swallowing the deadline.
+    ["    $i++\n    $entry = [ordered]@{ i = $i; ok = $true; at = (Get-Date).ToUniversalTime().ToString('o') }\n",
+     "    $i++\n    if ((Get-QaLeftMs) -le 0) { throw \"QA work deadline: reached before step ${i}; it and every later step stay NOT_RUN\" }\n    $entry = [ordered]@{ i = $i; ok = $true; at = (Get-Date).ToUniversalTime().ToString('o') }\n"],
+    ['Start-Sleep -Milliseconds ([int]$step.sleep) }\n', '$qaSleepMs = Limit-QaWork ([int]$step.sleep); if ($qaSleepMs -lt [int]$step.sleep) { $entry.work_deadline_limited = $true }; Start-Sleep -Milliseconds $qaSleepMs }\n'],
+    ['        $timeout = if ($step.timeoutMs) { [int]$step.timeoutMs } else { 15000 }\n', '        $timeout = if ($step.timeoutMs) { [int]$step.timeoutMs } else { 15000 }\n        $qaLimited = Limit-QaWork $timeout\n        if ($qaLimited -lt $timeout) { $entry.work_deadline_limited = $true; $timeout = $qaLimited }\n'],
+    ['          try { $value = Eval ([string]$step.target) ([string]$step.waitEval) } catch { }\n', '          try { $value = Eval ([string]$step.target) ([string]$step.waitEval) } catch { if (Test-QaDeadline $_) { throw } }\n'],
+    ['          if ((Get-Date) -gt $deadline) { throw "waitEval timed out: $($step.waitEval)" }\n', '          if ((Get-Date) -gt $deadline) { if ($entry.work_deadline_limited) { throw \'QA work deadline: a wait it shortened ran out\' }; throw "waitEval timed out: $($step.waitEval)" }\n'],
+    ['      if ($step.required -ne $false) { $results.steps += $entry; throw }\n', '      if ($step.required -ne $false -or (Test-QaDeadline $_)) { $results.steps += $entry; throw }\n'],
+    ['        $entry.exited = $script:app.WaitForExit($wait)\n', '        $entry.exited = $script:app.WaitForExit((Limit-QaWork $wait))\n'],
+    ['    if (-not $script:app.WaitForExit(3000)) { $results.processes[$script:appKey].awaits_identity_cleanup = $true }\n', '    if (-not $script:app.WaitForExit((Limit-QaWork 3000))) { $results.processes[$script:appKey].awaits_identity_cleanup = $true }\n'],
+    // The finally: the graceful close gets its own time, also after the work deadline.
+    ['finally {\n  # A host pause never outlives the steps (the watcher also resumes on its own).\n',
+     'finally {\n  # The graceful close gets -CloseMs of its own from here, also after the work deadline (its clock, recorded).\n  if ($WorkMs -gt 0) { $results.work_deadline = [ordered]@{ work_ms = $WorkMs; close_ms = $CloseMs; startup_ms = $script:qaStartupMs; finally_at_ms = $script:qaStartupMs + $qaElapsed.ElapsedMilliseconds }; $script:qaEndMs = $script:qaStartupMs + $qaElapsed.ElapsedMilliseconds + [int64]$CloseMs }\n  # A host pause never outlives the steps (the watcher also resumes on its own).\n'],
+  ];
+}
+/** The runner-only deadline delta (above), applied to the admitted runner; each site must be found exactly once. */
+export function applyDeadlineDelta(runner) {
+  for (const [from, to] of runnerDeadlineDelta()) {
+    if (runner.split(from).length !== 2 || runner.includes(to)) throw Error('runner changed; work deadline delta refused');
+    runner = runner.replace(from, () => to);
+  }
+  return runner;
+}
+export function revertDeadlineDelta(runner) {
+  for (const [from, to] of [...runnerDeadlineDelta()].reverse()) {
+    if (runner.split(to).length !== 2) throw Error('work deadline delta missing or changed');
+    runner = runner.replace(to, () => from);
+  }
+  if (/WorkMs|CloseMs|qaEndMs|qaStartupMs|Get-QaLeftMs|Get-QaWaitMs|Assert-QaWorkTime|Test-QaDeadline|Get-QaDevToolsList|Limit-QaWork|Stop-QaWait|qaCancel|qaWait|qaSleepMs|qaLimited|work_deadline_limited/.test(runner)) throw Error('work deadline delta left traces');
   return runner;
 }
 export function connectorConfig() {
@@ -444,11 +536,11 @@ function payloadFor(ctx, work) {
   const runner = liveRunner(ctx);
   assertReviewedRunner(runner, work);
   return { 'runner.ps1': runner, 'steps.json': JSON.stringify(liveSteps(ctx), null, 2) + '\n', 'surface.html': readFileSync(join(here, 'surface_live.html')), 'sub-live.json': connectorConfig(),
-    'admission-checker.ps1': admissionChecker(runner), 'admission-live.json': admissionConfig(work, ctx) };
+    'admission-checker.ps1': admissionChecker(revertDeadlineDelta(runner)), 'admission-live.json': admissionConfig(work, ctx) };
 }
 function manifestFor(work) {
   const ctx = context(work), payload = payloadFor(ctx, work);
-  const fileArgs = ['-File', win(join(work, 'runner.ps1')), '-Electron', electron, '-Stage', win(stage), '-UserData', win(join(work, 'userdata')), '-StepsFile', win(join(work, 'steps.json')), '-OutDir', win(join(work, 'out')), '-Edge', edge, '-AppTemp', win(join(work, 'apptemp')), '-LinkDir', ctx.linkDir, '-WorkMs', String(NATIVE_WORK_MS)];
+  const fileArgs = ['-File', win(join(work, 'runner.ps1')), '-Electron', electron, '-Stage', win(stage), '-UserData', win(join(work, 'userdata')), '-StepsFile', win(join(work, 'steps.json')), '-OutDir', win(join(work, 'out')), '-Edge', edge, '-AppTemp', win(join(work, 'apptemp')), '-LinkDir', ctx.linkDir, '-WorkMs', String(NATIVE_WORK_MS), '-CloseMs', String(RUNNER_CLOSE_MS)];
   const manifest = {
     kind: 'qa-live-nonvoice-offline-candidate/v1', prepared_only: true, execution_authorized: false,
     production_commit: source, release_commit: release, reviewed_runner: REVIEWED_RUNNER,
@@ -461,10 +553,10 @@ function manifestFor(work) {
     input_method: 'NONPHYSICAL (Lead D2): inside the product windows only, DevTools DOM value + input event for the three policy fields, the question and the help level; DOM clicks for Check connection, Start, ASK, Send and Stop the AI (the product\'s own handlers); CDP pen events for the circle. No OS typing, mouse, pen or keyboard.',
     circle_assistance: CIRCLE_ASSISTANCE, assistance_override: 'explain for the two typed visual-reading requests only (Lead D1, b63ecdc); recorded as a test override',
     stop_scope: 'Stop the AI (#liveStop) fences the AI requests; the capture keeps running until the wind-down capture Stop (Lead D3)',
-    native_bound_ms: NATIVE_BOUND_MS, native_work_ms: NATIVE_WORK_MS, lead_decisions: 'docs/verification/lead/live-windows/nonvoice-driver-review/README.md at b63ecdc (D1-D10)',
+    native_bound_ms: NATIVE_BOUND_MS, native_work_ms: NATIVE_WORK_MS, native_close_ms: RUNNER_CLOSE_MS, lead_decisions: 'docs/verification/lead/live-windows/nonvoice-driver-review/README.md at b63ecdc (D1-D10)',
     expected_fence: 'Stop is clicked as soon as the 4th request is out; the connector usually has not written turn/start yet, so the likely verdict is fenced_before_submission. Fencing a turn already at the provider would need a different trigger (a Lead decision).',
     native_steps_sum_ms: worstCaseMs(liveSteps(ctx)),
-    native_budget: 'The wrapper\'s 600 s foreground budget (Support 7723f82): 60 s preparation, this 360 s native ceiling (the runner\'s 320 s work deadline, then normally about 28 s for the step in progress and its finally; a runner still there 348 s after its launch gets SIGTERM, then SIGKILL, 5 s each, and 2 s for its output), 150 s owned cleanup and watch, 20 s evidence, 10 s headroom. native_steps_sum_ms is every step to its own time: a run that long stops at the work deadline with every later step NOT_RUN, never a truncated pass. A step or finally that hangs (one DevTools read may take 60 s) is cut at the ceiling: the runner\'s results may then be lost, and the ledger counts every slot as unknown.',
+    native_budget: 'The wrapper\'s 600 s foreground budget (Support 7723f82, d3ca9ca): 60 s preparation, this 360 s native ceiling, 150 s owned cleanup and watch, 20 s evidence, 10 s headroom. In the native ceiling: the runner\'s 320 s work deadline from its process\'s creation (every pending DevTools and HTTP wait cancelled at it, nothing sent, started, raised or posted after it, later steps NOT_RUN), then 15 s for its finally\'s graceful close (its waits within it); 348 s after the launch a launcher still there gets SIGTERM, then SIGKILL (5 s each) and 2 s for its output. Then the Windows runner\'s end is proven by its exact identity (or it is ended that way, which blocks any release claim) before the app\'s cleanup. native_steps_sum_ms is every step to its own time, never reached: the work deadline stops a run first. Not cancellable, bounded only by the ceiling: WMI, window and CIM reads, and the finally\'s Foreign-Electron read and results write. An unrelated powershell.exe started after the preflight whose command line cannot be read leaves the runner\'s end unproven and keeps QA from signalling it (fail closed, a release blocker).',
     raw_receipts: 'Kept outside the repository (~/.local/state/lc-qa-live/<run>/receipts, 0700); only an allowlisted, sanitized set of generated evidence is for Git (Lead D8).',
     script_permission: 'A separate, exact, process-only RemoteSigned permission is required for this runner with real subscription use AND for the checker the product starts per capture (Windows PowerShell -NoProfile -NonInteractive -ExecutionPolicy RemoteSigned -File admission-checker.ps1, from admission-live.json); the AI-disabled approvals do not carry over.',
     source_admission: 'F3 (Lead interface 4f7d9fa; decisions handoff_1698eb17, handoff_e893ca27; Support 5083814, c2ee58ae): product 0ff325b\'s main process starts admission-checker.ps1 once per capture from admission-live.json (LC_SOURCE_ADMISSION, this process only) and asks it at arm, before and after each frame acquisition and before each send; every decision is a fresh full native admission (the reviewed Assert-QaSurfaceAdmission with exactly four substitutions for the exact-overlay passage, and the normal band read on the admitted window with its process revalidated) against the context the runner froze after the launch (Edge, display, launched product), logged before it is answered. The overlay main names at arm (overlay {pid, hwnd}) is bound to the launched product for the capture; the same predicate (qa_overlay_predicate.ps1) serves every runner point check via main\'s source_admission session state. The ledger needs main\'s complete admission record of this one capture and a clean checker end. UNVERIFIED: no checker or predicate ran natively (the pure overlay fixture check was refused by the Windows execution policy, NOT_RUN); about 3 s per decision is inferred from the accepted diagnostic, not measured. Logical ordering only: an OS change between two native observations remains possible.',
