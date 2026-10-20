@@ -1,0 +1,25 @@
+{
+  "at_utc": "2026-10-20T12:20:27.858096+00:00",
+  "inventory_sha256": "b4615e963df0217e2344609cd64688d680762425ce2b92705db6bd4460fc5d16",
+  "mode": "install_missing_only",
+  "existing_overwritten": 0,
+  "applications_or_helpers_executed": false,
+  "account_provider_display_audio_access": false,
+  "downloaded": false,
+  "resource_allocation_issued": false,
+  "groups": {
+    "stage": {
+      "expected": 81,
+      "existing_matching": 0,
+      "missing": 81,
+      "restored": 81
+    },
+    "runtime": {
+      "expected": 73,
+      "existing_matching": 2,
+      "missing": 71,
+      "restored": 71
+    }
+  },
+  "installed_readback_files_matched": 154
+}

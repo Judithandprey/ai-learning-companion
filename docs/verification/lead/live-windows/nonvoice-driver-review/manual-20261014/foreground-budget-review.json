@@ -51,7 +51,7 @@
     "temporary_folder_cleanup": "QA reports removed; candidate scratch unused",
     "qa_reported_no_pending_card": true
   },
-  "integration_status": "Candidate08 integrated and focused checks pass; preallocation stage drift blocks execution",
+  "integration_status": "Candidate08 integrated and exact artifacts restored; fresh allocation prepared for original QA human approval",
   "allocation_issued": false,
   "native_attempts": 0,
   "real_actions": 0,
@@ -149,6 +149,14 @@
       "accepted": true,
       "execution_started_at_dispatch": false,
       "scope": "prepare exact artifact recovery from trusted existing local sources into fresh owned /tmp only; no downloads, live tests or existing stage mutation"
+    },
+    "recovery_result": {
+      "source_commit": "5c97ffb467bf1dbdb86e754e16732fecc1fd83eb",
+      "delivery": "handoff_4046e7c96305f60a2c90f9e2058d0f46",
+      "installed_verified": true,
+      "stage_files": 81,
+      "runtime_files": 73,
+      "execution_review": "/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node tests/e2e/windows/qa_run_live_candidate.mjs --execute docs/verification/qa/p0-13-live-0ff325b/execution-manual-20261020-candidate08-01 /tmp/lc-live-allocation-0dd413a4dcf64478b9a4360c633e959a.json 886712ef4ce541b2f30a20d2399e64d4fa90d7678aa60d3bb92d34f5e44160e4"
     }
   }
 }

@@ -7,14 +7,24 @@ lifecycle cases, four read controls and three template cases. Changed-runner
 PowerShell parse evidence has zero errors. These are source/offline results,
 not native or product acceptance.
 
-**Current execution dependency:** the actual read-only preallocation check found
-all 81 fixed product-stage files missing, plus cached runtime `version` and
-`resources/default_app.asar`. `electron.exe` still has its required digest; cause
-of missing files is unknown. Original Support has one concrete recovery-preparation
-handoff `handoff_e4834c5a05772dd32fd5836ee04dd53d`, restricted to trusted local artifacts
-and fresh owned preparation. Lead verifies restoration before a fresh allocation.
-No app, account or display was used; real actions remain **0/4**, QA stays `default`,
-and no lease was issued. [Exact integration, checks and drift](candidate08-integration-20261020.json).
+**Current execution readiness:** Support `5c97ffb` recovered all originals from
+existing local outputs/cache. Lead installed only the missing files and verified
+154/154 product/runtime files, the fixed product tree and native build receipt,
+and the 280-file connector/import/digest check. No app or helper ran. A current
+read-only Windows process/port check found no relevant conflict; other apps were
+untouched. [Restoration receipts](candidate08-recovery/installed.json).
+
+A fresh Candidate08 allocation is prepared for original QA only, valid
+`2026-10-20T12:24:29.852516Z` through `2026-10-20T14:24:29.852516Z`.
+[Exact command, hash and limits](candidate08-execution-review-20261020.json).
+The two-hour window permits human approval waiting; it does not increase the
+600s foreground ceiling, 360s native sub-budget, 60s session, one attempt or four
+actions. QA stays `default`; only the human handles its concrete Bash approval.
+Current source/display/account admission is checked again before operation.
+Real actions remain **0/4**, actual execution/release is pending, and auto restoration
+is not allowed while this phase remains incomplete. The original missing-artifact
+observation remains in [integration evidence](candidate08-integration-20261020.json);
+its cause is still unknown, with no files fabricated or old state erased.
 
 **Prior ordering and budget findings (historical):** QA `58338a2` and Support
 `7723f82` integrate as `05fbc0c` / `574df91`; 41 owner-shaped, 11 independent wrapper

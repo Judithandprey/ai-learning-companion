@@ -1,0 +1,24 @@
+{
+  "schema": "qa-tts-preflight-metadata/2",
+  "observed_at_utc": "2026-10-20T12:22:32.101Z",
+  "blocked": false,
+  "app_port": {
+    "port": 43123,
+    "observed_ticks": "639280957501956285",
+    "owners": []
+  },
+  "edge_port": {
+    "port": 45123,
+    "observed_ticks": "639280957520422459",
+    "owners": []
+  },
+  "electron_observed_ticks": "639280957501956285",
+  "edge_observed_ticks": "639280957520422459",
+  "electron_launch_conflicts": [],
+  "edge_launch_conflicts": [],
+  "other_owner_edge_count": 41,
+  "native_attempts": 0,
+  "provider_attempts": 0,
+  "signals_sent": 0,
+  "other_owner_electron_count": 0
+}

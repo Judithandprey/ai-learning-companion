@@ -1,0 +1,8 @@
+{
+  "copy": "/home/agentsdock/.local/share/lc-qa/subscription-source-52be105a148a",
+  "files": 280,
+  "ask_path_ok": true,
+  "live_path_ok": true,
+  "codex_sha256": "167c0148a849d2444f1b5a7fb5f8bb2de1de5ae13a2a504b833fc765980f5cd9",
+  "state_dir": "the product's own managed state (state_dir null). QA lists only its receipts/ folder names and reads only this run's receipts/<launch>/<sha256(request_id)>.json; nothing else there is listed or opened."
+}
