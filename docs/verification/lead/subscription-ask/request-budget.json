@@ -19,7 +19,7 @@
   "allocation_retired_reason": "QA actual handoff_ec31e85d736c7661fbb4022aa0d2cb52 confirms 0 of 1 used. This selected-image allocation is not additive to the next changed-flow allocation.",
   "live_changed_flow_allocation": {
     "allocation_id": "handoff_fd794043a20068a1b52853cbb6ff884e",
-    "status": "time_order_repair_interrupted_by_update_same_QA_continuation_delivered",
+    "status": "QA_recovery_read_confirmed_remaining_source_correction_pending",
     "candidate_commit": "24c48c38aee660b606ebff5285acbd2ccb300392",
     "maximum_potential_submissions": 5,
     "purpose_slots": [
@@ -600,7 +600,8 @@
       "accepted": true,
       "execution_started_at_dispatch": false,
       "record": "docs/verification/lead/live-windows/nonvoice-driver-review/manual-20261014/restart-continuation-20261020.json",
-      "new_native_attempt": false
+      "new_native_attempt": false,
+      "actual_owner_recovery_message": "handoff_02025a10f728b7b4e9af5ea2e600f7f0"
     }
   },
   "approved_ai_disabled_diagnostic": {

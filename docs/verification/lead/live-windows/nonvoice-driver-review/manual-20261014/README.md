@@ -8,6 +8,11 @@ correction. Lead sent one original-QA continuation, accepted as
 [Recovery boundaries and actual receipt](restart-continuation-20261020.json).
 There is no fresh allocation or native run. QA remains in human-owned `default`
 approval mode; Support reviews the eventual exact delivery before Lead integration.
+Actual QA recovery `handoff_02025a10f728b7b4e9af5ea2e600f7f0` confirms the first
+batch by Read-tool inspection. The interrupted second edit is absent: add the
+time check before preflight-conflict output and its separate conflict/control
+tests. Focused validation, inactive template pin and commit remain pending;
+no Bash or test execution occurred yet in this resumption.
 
 **Current: allocation retired without invocation.** Actual QA
 `handoff_22c51753a5f634046671830260b451c9` reports zero wrapper calls, zero native

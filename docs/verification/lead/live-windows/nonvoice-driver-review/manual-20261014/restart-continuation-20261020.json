@@ -47,5 +47,19 @@
   "manual_phase_complete": false,
   "restored_to_auto": false,
   "next_owner_action": "Original QA recovers saved review boundary, completes remaining time-order repair and focused validation, and delivers exact commit/pins. Original Support independently reviews that delivery before Lead integration and a fresh nonvoice allocation.",
-  "preserved_boundaries": "Same single native attempt <=600s,60s session,max4 generated-screen actions; no mic/audio/TTS/new billing/global policy changes. Human personally handles normal QA approval cards. No new monitoring or other-owner dispatch."
+  "preserved_boundaries": "Same single native attempt <=600s,60s session,max4 generated-screen actions; no mic/audio/TTS/new billing/global policy changes. Human personally handles normal QA approval cards. No new monitoring or other-owner dispatch.",
+  "actual_owner_recovery": {
+    "message_id": "handoff_02025a10f728b7b4e9af5ea2e600f7f0",
+    "at_utc": "2026-10-20T10:10:04Z",
+    "operation": "QA Read tool inspected both dirty files; no Bash or test execution yet in this resumption.",
+    "preserved_first_batch_confirmed": true,
+    "interrupted_second_batch_not_applied": true,
+    "evidence": "Neither pre-preflight time check nor split per-case/conflict tests from the interrupted command exists in the files. Dependent later steps treated as not run, with status check pending.",
+    "remaining_correction": "Add enough-time check before preflight-conflict output, split clock cases and include conflict/control; focused positive/negative tests, inactive wrapper-hash template and exact commit.",
+    "optional_refusal_record_change": "Not added; outside necessary minimal correction.",
+    "permission_path": "Future ordinary Bash cards for the human; default remains unchanged.",
+    "native_attempts": 0,
+    "real_actions": 0,
+    "current_approval_card_observed_by_lead": false
+  }
 }

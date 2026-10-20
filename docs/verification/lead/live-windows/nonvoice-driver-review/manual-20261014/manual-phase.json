@@ -4,7 +4,7 @@
   "session_id": "sess_06a4c3cc6e214e96",
   "mode_during_phase": "default",
   "operator_mode_readback_at": "2026-10-14T06:22:24.115395+00:00",
-  "state": "restart_continuation_delivered_awaiting_owner_recovery",
+  "state": "QA_recovery_read_confirmed_remaining_source_correction_pending",
   "phase_result_collected": true,
   "request_accounting_collected": true,
   "cleanup_and_release_collected": true,
@@ -23,5 +23,6 @@
   "independent_runtime_absence_verified": false,
   "source_correction_handoff": "handoff_f4a4b4aa5414452aa1bdc8f002713e04",
   "restart_continuation": "restart-continuation-20261020.json",
-  "latest_continuation_handoff": "handoff_bc87bc62c67cf9e75e06c841d0735446"
+  "latest_continuation_handoff": "handoff_bc87bc62c67cf9e75e06c841d0735446",
+  "owner_recovery_message": "handoff_02025a10f728b7b4e9af5ea2e600f7f0"
 }
