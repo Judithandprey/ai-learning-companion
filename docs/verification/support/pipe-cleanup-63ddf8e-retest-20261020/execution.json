@@ -1,0 +1,44 @@
+{
+  "verdict": "READY",
+  "s1": "closed at exact corrected source; held parent remains historical HOLD",
+  "incoming_message_id": "handoff_87e46f21723caee57836e60ccb82962e",
+  "read_request_id": "support-mail-20261020-1138",
+  "target_commit": "63ddf8e3e2a6763c0fae03e554b77e8685a9b3a5",
+  "parent_commit": "4c5e071e42b6bf49818c36b07278c228bb3667b8",
+  "support_baseline": "89bb04878f9f5f79ac00223511acaa833c660dc9",
+  "exact_export": "/tmp/support-pipe-close-63ddf8e-vou24kwx",
+  "source_sha256": {
+    "services/worker/connectors/chatgpt_rpc.py": "5793fa18b10ba6d1eb946cd2f27234e7bc2b6a7c8727ca871b3c050a75df6e4b",
+    "services/worker/connectors/tests/test_chatgpt_close_deadlines.py": "df2cc0d117a3286d490ceacd9b8f9eebee27926add8412d222ca3156e98b0853",
+    "services/worker/connectors/tests/test_chatgpt_rpc.py": "49ec6bf4561202098c080a561c8262a23bb535bf609ba966561f7afd1111c7d1"
+  },
+  "preserved_probe_sha256": "9d26049cdce02dc41e9e0fa6f8b43aca10afebb30dbe2334dfe8fe071625111e",
+  "retest_driver_sha256": "03682f685f6ad818856ad0c610045996e05b307280599239e55fa838626ec9ac",
+  "retest": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 /home/agentsdock/Projects/learning-companion/repo/.venv/bin/python tests/probes/support/retest_pipe_close_63ddf8e.py /tmp/support-pipe-close-63ddf8e-vou24kwx",
+    "cwd": "/home/agentsdock/Projects/learning-companion/wt-support",
+    "exit_code": 0,
+    "tool_wall_time_seconds": 0.18304105,
+    "result": "unchanged original scenario passes once against corrected source"
+  },
+  "focused_checks": {
+    "command": "PYTHONDONTWRITEBYTECODE=1 /home/agentsdock/Projects/learning-companion/repo/.venv/bin/python -m pytest -q -p no:cacheprovider --basetemp=/tmp/support-pipe-close-63ddf8e-vou24kwx/pytest-tmp services/worker/connectors/tests/test_chatgpt_close_deadlines.py services/worker/connectors/tests/test_chatgpt_rpc.py::test_receive_line_limit_still_applies_before_ignored_delta_filtering services/worker/connectors/tests/test_chatgpt_rpc.py::test_stdout_pipe_failure_does_not_skip_owned_child_reaping services/worker/connectors/tests/test_chatgpt_rpc.py::test_default_isolation_gate_prevents_inference -W error::pytest.PytestUnraisableExceptionWarning --tb=short",
+    "cwd": "/tmp/support-pipe-close-63ddf8e-vou24kwx",
+    "exit_code": 0,
+    "tool_wall_time_seconds": 0.603689226,
+    "result": "7 passed in 0.38s"
+  },
+  "evidence_sha256": {
+    "corrected-witness.stdout.json": "e3f3e0a048664a5277bf50c17b9b1e6968eb9aef44b95a6c26aeb67a200bbd3a",
+    "corrected-witness.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "focused.stdout.txt": "04da4a1ef16d2966b66b717dcd535d2104616be8ba69a5d926074d78f2d8946f",
+    "focused.stderr.txt": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "production_edits": false,
+  "installed_codex_account_provider_network_private_state": false,
+  "windows_display_audio_operations": false,
+  "live_lease_or_retry": false,
+  "python312_tested_or_installed": false,
+  "original_ci_warning_attributed_or_eliminated": false,
+  "candidate08_fixed": false
+}
