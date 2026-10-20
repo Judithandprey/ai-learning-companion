@@ -1,0 +1,23 @@
+{
+  "source_commit": "992140e37de51d4f4be5310ff70037a8422f71fd",
+  "backend_base": "4c5e071e42b6bf49818c36b07278c228bb3667b8",
+  "backend_correction": "63ddf8e3e2a6763c0fae03e554b77e8685a9b3a5",
+  "independent_review": "a90f51bb2161256b42885ce5dc30613740f5a2e3",
+  "command": "PYTHONDONTWRITEBYTECODE=1 .venv/bin/python -m pytest -q -p no:cacheprovider services/worker/connectors/tests/test_chatgpt_output_diagnostics.py services/worker/connectors/tests/test_chatgpt_receipts.py services/worker/connectors/tests/test_chatgpt_failure_outcomes.py services/worker/connectors/tests/test_chatgpt_close_deadlines.py -W error::pytest.PytestUnraisableExceptionWarning --tb=short",
+  "exit_code": 0,
+  "passed": 109,
+  "seconds": 4.06,
+  "python_version": "3.14.4",
+  "source_sha256": {
+    "services/worker/connectors/chatgpt_rpc.py": "5793fa18b10ba6d1eb946cd2f27234e7bc2b6a7c8727ca871b3c050a75df6e4b",
+    "services/worker/connectors/tests/test_chatgpt_close_deadlines.py": "df2cc0d117a3286d490ceacd9b8f9eebee27926add8412d222ca3156e98b0853",
+    "services/worker/connectors/tests/test_chatgpt_rpc.py": "49ec6bf4561202098c080a561c8262a23bb535bf609ba966561f7afd1111c7d1"
+  },
+  "source_matches_independent_review": true,
+  "python_output_sha256": "ea569944d29d0bba05d6535b786841a2892ae3142ceed34a4b47cbeafec57569",
+  "native_runs": 0,
+  "real_provider_calls": 0,
+  "new_allocations": 0,
+  "candidate08_failure_cause": "unknown",
+  "qa_permission_mode_changed": false
+}

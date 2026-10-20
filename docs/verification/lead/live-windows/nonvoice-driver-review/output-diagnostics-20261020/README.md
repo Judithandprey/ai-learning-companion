@@ -56,10 +56,15 @@ passes 119 focused cases in 8.40s (246 deselected), treating unraisable warnings
 errors. Independent Support review `89bb048` → `a2039d2` nevertheless finds **S1
 HOLD**: deadline cancellation poisons the shared stdin-close future, preventing
 fallback reaping. [Exact witness and limits](../../../../support/pipe-cleanup-4c5e071-review-20261020/README.md).
-That production patch is not integrated. Backend owns the same-card correction
-`handoff_4a1f8ae74602379fe783ea7cdf7584df`, followed by Support's exact-delta
-review. The reproduced paused-pipe defect does not prove which case produced the
-old hosted warning.
+That hold is now closed at corrected Backend `63ddf8e`, independently re-reviewed
+by Support `a90f51b` and integrated with its base as `c150d8c` / `7e6ef83`.
+The original failing evidence remains unchanged. Integrated main passes 109
+related Python checks; see the [correction review](../pipe-cleanup-20261020/README.md).
+The reproduced paused-pipe defect does not prove which case produced the old
+hosted warning or diagnose Candidate08. Original QA's next bounded action is
+offline preparation of the existing candidate against the published corrected
+connector, with exact new pins and an unused runtime-copy target; actual copying,
+accounts, display allocation and native execution are outside that handoff.
 QA's manual-stage restoration
 still belongs to the operator after the recorded runtime checks; this offline
 integration does not change its permission mode.

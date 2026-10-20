@@ -8,8 +8,11 @@ NOT_RUN. Real1/4, native1/1 consumed; DISPLAY/ACCOUNT released, allocation retir
 Backend's bounded output diagnostics and QA's compatible receipt reader are now
 integrated with 107 Python and 55 Node checks passing; this repairs missing
 diagnostic facts, not the unknown actual failure branch.
-[Integrated review](output-diagnostics-20261020/README.md). No repeat native test is
-assigned. The manual phase is complete, pending operator runtime checks and supported
+[Integrated review](output-diagnostics-20261020/README.md). The subprocess cleanup
+correction also passes independent re-review and 109 integrated checks;
+[source-only next candidate preparation](pipe-cleanup-20261020/README.md) retains
+the unknown actual failure. No repeat native test is assigned.
+The manual phase is complete, pending operator runtime checks and supported
 QA-only auto restoration. Full live/audio acceptance remains open.**
 
 The following preparation snapshots are historical; current execution supersedes

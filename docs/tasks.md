@@ -340,13 +340,20 @@ failure/phase/selection facts; legacy receipts and public wire behavior are pres
 The actual failure branch remains unknown; terminal completion does not prove a
 usable answer or pixel understanding. No additional native attempt is authorized
 by these source changes. Lead owns the next exact connector/candidate baseline;
-Backend delivered the bounded subprocess-teardown fix `4c5e071`; despite 119
-focused passes, independent Support `89bb048` → `a2039d2` reproduces shutdown
-regression S1 and places that patch on HOLD. Its timed-out stdin closure poisons
-the shared close future and prevents fallback reaping. The patch is not integrated.
-Backend received same-card correction `handoff_4a1f8ae74602379fe783ea7cdf7584df`;
-Support will re-review the exact correction. No duplicate task or full test
-campaign. This run phase has no remaining manual steps; operator must verify
+Backend's first subprocess-teardown patch `4c5e071` was held after Support
+`89bb048` → `a2039d2` reproduced S1: a timed-out stdin closure poisoned the
+shared close future and prevented fallback reaping. That failure remains recorded.
+Corrected Backend `63ddf8e` now integrates with its base as `c150d8c` / `7e6ef83`.
+Independent Support `a90f51b` → `992140e` closes S1 using the unchanged failure
+scenario and seven selected checks; integrated main passes 109 related Python
+checks with unraisable warnings treated as errors.
+[Correction and evidence](verification/lead/live-windows/nonvoice-driver-review/pipe-cleanup-20261020/README.md).
+Lead publishes the corrected connector baseline; original QA next prepares the
+existing nonvoice candidate offline with exact new pins and an unused connector
+copy target. No runtime copy, account operation, display allocation or native
+execution follows from that source-only preparation. Candidate08's actual failure
+is still unknown; the hosted warning's allocating test is also unproven.
+This run phase has no remaining manual steps; operator must verify
 runtime absence before restoring only QA to auto via supported GET/PATCH/GET.
 Human owns approval cards; no agent accepts them. Original refusal stays historical. Native execution failed; live-flow acceptance
 remains incomplete. Restore QA `auto` only after collected result,
