@@ -968,8 +968,31 @@ class ChatGPTAppServer:
             if self._active is not None:
                 if not self._active["done"].done():
                     self._active["done"].set_result({"failure": "closed"})
+            if self._reader is not None and self._reader is not asyncio.current_task():
+                self._reader.cancel()
+                await asyncio.gather(self._reader, return_exceptions=True)
             process = self._process
             if process is not None:
+                async def reap():
+                    # wait() can return on an observed exit while stdout is
+                    # still paused. Discard remaining bytes after stopping the
+                    # parser, so pipe EOF/closure completes on this live loop.
+                    if process.stdout is not None:
+                        try:
+                            while await process.stdout.read(64 * 1024):
+                                pass
+                        except (BrokenPipeError, ConnectionResetError):
+                            pass  # A failed pipe must not prevent child reaping.
+                    if process.stdin is not None:
+                        try:
+                            await process.stdin.wait_closed()
+                        except (BrokenPipeError, ConnectionResetError):
+                            pass  # The terminated child already closed stdin.
+                    await process.wait()
+                    # An already observed returncode makes wait() synchronous;
+                    # finish its queued pipe/process-exited callbacks too.
+                    await asyncio.sleep(0)
+
                 if process.stdin is not None:
                     process.stdin.close()
                 if process.returncode is None:
@@ -978,13 +1001,10 @@ class ChatGPTAppServer:
                     except ProcessLookupError:
                         pass
                 try:
-                    await asyncio.wait_for(process.wait(), self.shutdown_timeout)
+                    await asyncio.wait_for(reap(), self.shutdown_timeout)
                 except TimeoutError:
                     try:
                         process.kill()
                     except ProcessLookupError:
                         pass
-                    await asyncio.wait_for(process.wait(), self.shutdown_timeout)
-            if self._reader is not None and self._reader is not asyncio.current_task():
-                self._reader.cancel()
-                await asyncio.gather(self._reader, return_exceptions=True)
+                    await asyncio.wait_for(reap(), self.shutdown_timeout)

@@ -282,6 +282,26 @@ def test_receive_line_limit_still_applies_before_ignored_delta_filtering(tmp_pat
             assert c._process.returncode is not None
         finally:
             await c.close()
+        # Reaping a killed child is insufficient when its stdout was paused
+        # before EOF. All owned pipes must close while this loop is alive.
+        assert c._process.stdout.at_eof()
+        assert c._process._transport.is_closing()
+    asyncio.run(run())
+
+
+@pytest.mark.parametrize("pipe_error", [BrokenPipeError, ConnectionResetError])
+def test_stdout_pipe_failure_does_not_skip_owned_child_reaping(tmp_path, pipe_error):
+    async def run():
+        c = client(tmp_path, "hang", isolation_verified=True)
+        await c.start()
+        try:
+            c._process.stdout.set_exception(pipe_error("synthetic private pipe error"))
+            await c._reader
+            assert c._fatal == "protocol_error"
+        finally:
+            await c.close()
+        assert c._process.returncode is not None
+        assert c._process._transport.is_closing()
     asyncio.run(run())
 
 
@@ -347,6 +367,10 @@ def test_buffered_reader_yields_for_deadlines_and_close_even_without_an_ask(tmp_
                 self.reads += 1
                 # Finite even if the production fairness yield regresses.
                 return line if self.reads <= 1024 else b""
+
+            async def read(self, maximum):
+                assert self.returncode is not None and maximum == 64 * 1024
+                return b""
 
             def kill(self):
                 self.returncode = -9
