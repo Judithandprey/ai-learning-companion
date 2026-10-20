@@ -1,0 +1,62 @@
+{
+  "kind": "qa-connector-source-facts/v1",
+  "method": "read-only git (rev-parse, ls-tree, diff --name-only, log, grep); no copy made, no Python, Codex, Windows or account call",
+  "product_commit": "0ff325beadb7c689244610307b6aa16d638fd2e6",
+  "connector_commit": "260884e670c25da7ab8d0360cc8355f90c3697b6",
+  "packages_tree": {
+    "product": "4a0edf80e6d029e344b6775b0dd196062ea746bd",
+    "connector": "4a0edf80e6d029e344b6775b0dd196062ea746bd"
+  },
+  "services_tree": {
+    "product": "d9c485a1befb9785a6c0148ba294135cee9f4d93",
+    "connector": "559098bcc078b0d6b02c14716440035daf2d531a"
+  },
+  "copy_file_count_at_connector_commit": {
+    "services": 147,
+    "packages": 135,
+    "total": 282
+  },
+  "changed_paths_product_to_connector": [
+    "services/worker/connectors/chatgpt_live.py",
+    "services/worker/connectors/chatgpt_local.py",
+    "services/worker/connectors/chatgpt_receipts.py",
+    "services/worker/connectors/chatgpt_rpc.py",
+    "services/worker/connectors/tests/test_chatgpt_close_deadlines.py",
+    "services/worker/connectors/tests/test_chatgpt_failure_outcomes.py",
+    "services/worker/connectors/tests/test_chatgpt_live.py",
+    "services/worker/connectors/tests/test_chatgpt_local.py",
+    "services/worker/connectors/tests/test_chatgpt_output_diagnostics.py",
+    "services/worker/connectors/tests/test_chatgpt_receipts.py",
+    "services/worker/connectors/tests/test_chatgpt_rpc.py"
+  ],
+  "changed_non_test_paths": [
+    "services/worker/connectors/chatgpt_live.py",
+    "services/worker/connectors/chatgpt_local.py",
+    "services/worker/connectors/chatgpt_receipts.py",
+    "services/worker/connectors/chatgpt_rpc.py"
+  ],
+  "commits_touching_services_or_packages": [
+    "7e6ef83 Keep subprocess close recoverable after cancellation",
+    "c150d8c Close paused subprocess pipes before loop shutdown",
+    "e393e0d Record bounded connector output failure diagnostics",
+    "725f910 fix: synchronize RPC isolation test and preserve main CI runs"
+  ],
+  "receipt_writer_same_as_reviewed_4e840a4": true,
+  "non_test_changes_after_4e840a4": [
+    "services/worker/connectors/chatgpt_rpc.py"
+  ],
+  "offline_check_entry_points_present_at_connector_commit": {
+    "chatgpt_local._prepare": true,
+    "chatgpt_live module": true,
+    "services.learning.live_session module": true
+  },
+  "copy_destination": {
+    "path": "/home/agentsdock/.local/share/lc-qa/subscription-source-260884e670c2-nonvoice-09",
+    "exists": false
+  },
+  "earlier_copies_untouched_existence_only": {
+    "/home/agentsdock/.local/share/lc-qa/subscription-source-52be105a148a": true,
+    "/home/agentsdock/.local/share/lc-qa/subscription-source-3e4b40654460": true
+  },
+  "packages_identical": true
+}

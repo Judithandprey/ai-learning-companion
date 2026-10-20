@@ -1,0 +1,179 @@
+{
+  "kind": "qa-live-candidate-delta/v1",
+  "from": "candidate-nonvoice-08 (consumed: native 1/1, real actions 1/4)",
+  "to": "candidate-nonvoice-09 (prepared only)",
+  "scratch": {
+    "08": "/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-live-nonvoice-e72ea0f932d148c0a48d4c101c69d328",
+    "09": "/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-live-nonvoice-a4a1c3351f934979ac83776c01e9decc"
+  },
+  "connector": {
+    "08": {
+      "commit": "0ff325beadb7c689244610307b6aa16d638fd2e6",
+      "copy": "/home/agentsdock/.local/share/lc-qa/subscription-source-52be105a148a"
+    },
+    "09": {
+      "commit": "260884e670c25da7ab8d0360cc8355f90c3697b6",
+      "copy": "/home/agentsdock/.local/share/lc-qa/subscription-source-260884e670c2-nonvoice-09"
+    }
+  },
+  "connector_fields_unchanged": [
+    "python",
+    "codex_bin",
+    "codex_sha256",
+    "state_dir",
+    "distribution",
+    "user"
+  ],
+  "payloads": {
+    "runner.ps1": {
+      "sha256_08": "4655ec118a01c25839d94c2c004d963cc0f19893a1064dec9e3dea853340ae69",
+      "sha256_09": "45063b37328c65771f1c5d431af291a5586e560b57658e4ef9778115e498e36f",
+      "identical": false,
+      "scratch_leaf_occurrences": {
+        "08_old_leaf": 1,
+        "09_new_leaf": 1,
+        "09_old_leaf": 0
+      },
+      "copy_path_occurrences": {
+        "08_old_copy": 0,
+        "09_new_copy": 0,
+        "09_old_copy": 0
+      },
+      "differing_lines": 1,
+      "equal_to_08_after_putting_back_leaf_and_copy": true
+    },
+    "steps.json": {
+      "sha256_08": "70e89d51c0489a8c9472bf25a8438b08ff493f5be2c59148bc92baf10778874f",
+      "sha256_09": "8e3e7357ef4902adeccd6fb9148f61dc6bfd8f2c6afe82f976ccd89e71edc19a",
+      "identical": false,
+      "scratch_leaf_occurrences": {
+        "08_old_leaf": 2,
+        "09_new_leaf": 2,
+        "09_old_leaf": 0
+      },
+      "copy_path_occurrences": {
+        "08_old_copy": 0,
+        "09_new_copy": 0,
+        "09_old_copy": 0
+      },
+      "differing_lines": 2,
+      "equal_to_08_after_putting_back_leaf_and_copy": true
+    },
+    "surface.html": {
+      "sha256_08": "be82967ae45d36bece4ac4858d6f45d0e90e58d088203b71323b74e6ae5e1067",
+      "sha256_09": "be82967ae45d36bece4ac4858d6f45d0e90e58d088203b71323b74e6ae5e1067",
+      "identical": true,
+      "scratch_leaf_occurrences": {
+        "08_old_leaf": 0,
+        "09_new_leaf": 0,
+        "09_old_leaf": 0
+      },
+      "copy_path_occurrences": {
+        "08_old_copy": 0,
+        "09_new_copy": 0,
+        "09_old_copy": 0
+      },
+      "differing_lines": 0,
+      "equal_to_08_after_putting_back_leaf_and_copy": true
+    },
+    "sub-live.json": {
+      "sha256_08": "4729ca1a25ec09a64349c68c5ccb0eb41b4e9f83e161fb9c4a29b0ce26b948d4",
+      "sha256_09": "c38aaae0e38070c805972f71ebed085610427ddc8a2883ee52f1ee5ceec47478",
+      "identical": false,
+      "scratch_leaf_occurrences": {
+        "08_old_leaf": 0,
+        "09_new_leaf": 0,
+        "09_old_leaf": 0
+      },
+      "copy_path_occurrences": {
+        "08_old_copy": 1,
+        "09_new_copy": 1,
+        "09_old_copy": 0
+      },
+      "differing_lines": 1,
+      "equal_to_08_after_putting_back_leaf_and_copy": true
+    },
+    "admission-checker.ps1": {
+      "sha256_08": "9637db613373ef5ba63bc10753033aedaab90bf749aeaa982fed9b65c91eccf1",
+      "sha256_09": "9637db613373ef5ba63bc10753033aedaab90bf749aeaa982fed9b65c91eccf1",
+      "identical": true,
+      "scratch_leaf_occurrences": {
+        "08_old_leaf": 0,
+        "09_new_leaf": 0,
+        "09_old_leaf": 0
+      },
+      "copy_path_occurrences": {
+        "08_old_copy": 0,
+        "09_new_copy": 0,
+        "09_old_copy": 0
+      },
+      "differing_lines": 0,
+      "equal_to_08_after_putting_back_leaf_and_copy": true
+    },
+    "admission-live.json": {
+      "sha256_08": "6e86df7d74f52ce54b879d1c14d6d71b7548c69127d0f787a0a1be2fb46d7cc3",
+      "sha256_09": "f2c209e94c3b5cecb7f5c2f7e709b27d799c9007c7fc3e763376a9a364763964",
+      "identical": false,
+      "scratch_leaf_occurrences": {
+        "08_old_leaf": 3,
+        "09_new_leaf": 3,
+        "09_old_leaf": 0
+      },
+      "copy_path_occurrences": {
+        "08_old_copy": 0,
+        "09_new_copy": 0,
+        "09_old_copy": 0
+      },
+      "differing_lines": 1,
+      "equal_to_08_after_putting_back_leaf_and_copy": true
+    }
+  },
+  "manifest_top_level_fields_that_differ": [
+    "work",
+    "profile",
+    "surfaceUrl",
+    "edgeArgs",
+    "linkDir",
+    "files",
+    "source_files",
+    "connector",
+    "proposed_native_invocation"
+  ],
+  "source_files_that_differ": [
+    "qa_live_candidate.mjs"
+  ],
+  "generator_sha256": {
+    "08": "4ae64fb85491abdc50d740b933547d46a6356503ba32d83ad6a9c3b596ba2778",
+    "09": "9a93b225364a6b7a7252e22aa85f17c30c4d7a2feff22fdf765586129a576746"
+  },
+  "unchanged_pins": {
+    "production_commit": true,
+    "release_commit": true,
+    "stage": true,
+    "stage_tree_sha256": true,
+    "stage_payload_files": true,
+    "app_entry": true,
+    "electron": true,
+    "edge": true,
+    "policy_ms": true,
+    "native_bound_ms": true,
+    "native_work_ms": true,
+    "native_close_ms": true
+  },
+  "allocation_template": {
+    "previous": "docs/verification/qa/p0-13-live-0ff325b/driver-nonvoice-08/allocation.template.json",
+    "fields_that_differ": [
+      "wrapper_sha256",
+      "candidate_sha256",
+      "payload_sha256",
+      "connector",
+      "native_invocation",
+      "launch_identity"
+    ],
+    "wrapper_sha256": {
+      "previous_template": "efa634ca881b9aaf71f424879f1e0836981a4d83925dbc6ab9a753c7605fcef5",
+      "released_260884e_and_21668dd": "dc10b044bd703bd502d1af40458a03cab893b97af9f7e2a52fbaa81964dbcead",
+      "now": "7023257e0739787744a3a60a36cf5cc038e1f10ebdeb91b0e9dedda9c9ef3594"
+    }
+  }
+}

@@ -1,0 +1,54 @@
+{
+  "kind": "qa-live-nonvoice-command/v1",
+  "status": "NOT_AUTHORIZED_NOT_RUN",
+  "note": "The exact commands a future, separately authorized execution would use. Nothing here was run; no allocation exists.",
+  "prerequisite_not_run": {
+    "command": "node tests/e2e/windows/qa_live_candidate.mjs prepare-connector",
+    "effect": "Only if absent, creates the private copy /home/agentsdock/.local/share/lc-qa/subscription-source-260884e670c2-nonvoice-09 from git archive 260884e670c25da7ab8d0360cc8355f90c3697b6 services/ packages/ (0700); never overwrites an existing folder. Then compares it file for file with that commit and runs the offline ask-path and live-import checks with /home/agentsdock/Projects/learning-companion/repo/.venv/bin/python (no Codex, account or network). Exit 0 only if all three hold.",
+    "authorization": "Not allowed by handoff_6d184e39 (offline source assembly only); needs its own Lead authorization before any run."
+  },
+  "execute": {
+    "command": "node tests/e2e/windows/qa_run_live_candidate.mjs --execute <new QA evidence folder under docs/verification/qa/> <Lead allocation file under docs/verification/lead/ or /tmp/> <Lead-provided allocation SHA-256>",
+    "foreground_timeout_ms": 600000,
+    "retry": false,
+    "background": false,
+    "allocation": "allocation.template.json with the seven Lead-owned fields set by the Lead (state active, lead_reviewed true, allocation_id, command_approval_ref, script_permission_ref, valid_from_utc, valid_until_utc); anything else differing is refused.",
+    "wrapper_sha256": "7023257e0739787744a3a60a36cf5cc038e1f10ebdeb91b0e9dedda9c9ef3594",
+    "candidate_sha256": "9dad7058fa43becf5c76f76f816e85646a014af8a6398e377d33f62c2e73c5cf",
+    "allocation_template_sha256": "d7f51a719c43889a7e5ccffcfc8e8b30b9e039a4b526ae7efd62a07d2b17a7c4"
+  },
+  "native_invocation": {
+    "executable": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+    "arguments": [
+      "-NoProfile",
+      "-NonInteractive",
+      "-ExecutionPolicy",
+      "RemoteSigned",
+      "-File",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-live-nonvoice-a4a1c3351f934979ac83776c01e9decc\\runner.ps1",
+      "-Electron",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-electron-44.5.1-win32-x64\\electron.exe",
+      "-Stage",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-windows-admission-0ff325b",
+      "-UserData",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-live-nonvoice-a4a1c3351f934979ac83776c01e9decc\\userdata",
+      "-StepsFile",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-live-nonvoice-a4a1c3351f934979ac83776c01e9decc\\steps.json",
+      "-OutDir",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-live-nonvoice-a4a1c3351f934979ac83776c01e9decc\\out",
+      "-Edge",
+      "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+      "-AppTemp",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-live-nonvoice-a4a1c3351f934979ac83776c01e9decc\\apptemp",
+      "-LinkDir",
+      "C:\\Users\\ROG\\AppData\\Local\\Temp\\lc-qa-live-nonvoice-a4a1c3351f934979ac83776c01e9decc\\link",
+      "-WorkMs",
+      "320000",
+      "-CloseMs",
+      "15000"
+    ],
+    "status": "NOT_ALLOCATED_NOT_EXECUTED",
+    "persistent_policy_changes": false,
+    "note": "Started only by the wrapper after every admission; requires the process-only RemoteSigned permission for runner.ps1 and the product-started admission-checker.ps1."
+  }
+}

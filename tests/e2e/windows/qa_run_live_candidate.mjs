@@ -21,10 +21,10 @@ import { lookCommand, readLook, releaseOwned, windowsCalls } from './signin_clea
 import { askPathCheck, compareCopy } from './sub_copy.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url)), repo = resolve(here, '../../..');
-export const candidateDir = join(repo, 'docs/verification/qa/p0-13-live-0ff325b/candidate-nonvoice-08');
-export const candidateHash = '0847eeb6070c365661add6561118e8d5414e8dffc6d434dfad38864e28722b7e';
-export const pins = { 'runner.ps1': '4655ec118a01c25839d94c2c004d963cc0f19893a1064dec9e3dea853340ae69', 'steps.json': '70e89d51c0489a8c9472bf25a8438b08ff493f5be2c59148bc92baf10778874f', 'surface.html': 'be82967ae45d36bece4ac4858d6f45d0e90e58d088203b71323b74e6ae5e1067', 'sub-live.json': '4729ca1a25ec09a64349c68c5ccb0eb41b4e9f83e161fb9c4a29b0ce26b948d4',
-  'admission-checker.ps1': '9637db613373ef5ba63bc10753033aedaab90bf749aeaa982fed9b65c91eccf1', 'admission-live.json': '6e86df7d74f52ce54b879d1c14d6d71b7548c69127d0f787a0a1be2fb46d7cc3' };
+export const candidateDir = join(repo, 'docs/verification/qa/p0-13-live-0ff325b/candidate-nonvoice-09');
+export const candidateHash = '9dad7058fa43becf5c76f76f816e85646a014af8a6398e377d33f62c2e73c5cf';
+export const pins = { 'runner.ps1': '45063b37328c65771f1c5d431af291a5586e560b57658e4ef9778115e498e36f', 'steps.json': '8e3e7357ef4902adeccd6fb9148f61dc6bfd8f2c6afe82f976ccd89e71edc19a', 'surface.html': 'be82967ae45d36bece4ac4858d6f45d0e90e58d088203b71323b74e6ae5e1067', 'sub-live.json': 'c38aaae0e38070c805972f71ebed085610427ddc8a2883ee52f1ee5ceec47478',
+  'admission-checker.ps1': '9637db613373ef5ba63bc10753033aedaab90bf749aeaa982fed9b65c91eccf1', 'admission-live.json': 'f2c209e94c3b5cecb7f5c2f7e709b27d799c9007c7fc3e763376a9a364763964' };
 const psBin = '/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe';
 const managedState = '/home/agentsdock/.local/share/LearningCompanion/managed-chatgpt';   // state_dir null: the product's own
 // Raw provider receipts (thread/turn ids) stay outside the repository and Git: one 0700 folder per run (Lead D8).

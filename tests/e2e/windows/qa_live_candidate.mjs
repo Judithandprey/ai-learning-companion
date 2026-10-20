@@ -42,12 +42,16 @@ const edge = String.raw`C:\Program Files (x86)\Microsoft\Edge\Application\msedge
 export const REVIEWED_RUNNER = { file: 'docs/verification/qa/p0-13-tts-52be105/candidate-r4-20261009/runner.ps1',
   sha256: 'd6640e6c8f24b51dc87feb12f8ce83832c7a6c28c380de8f0b02d1eb644b28c2', folder: 'lc-qa-tts-output-27f0531f6f574cf2b67b1f650525e89d' };
 // The real connector, as one trusted configuration for this one app process (LC_SUBSCRIPTION_CONNECTOR): the exact-source
-// Backend copy (services/ and packages/ are identical at 52be105 and 0ff325b; the copy made for 52be105 is compared file
-// for file with this commit at every run), the repository's Python, the pinned codex binary (the default launcher resolves to 0.160, which
+// Backend copy of the Lead's released baseline 260884e (handoff_6d184e39), with Backend 4e840a4's receipt output
+// diagnostics and 63ddf8e's corrected subprocess close. Only services/worker/connectors differs from product 0ff325b;
+// packages/ (the contracts) is identical. The copy is a new folder of this candidate's own: the copy candidates 05-08
+// used (52be105a148a) and the sign-in launcher's copies stay as they are, never reused or overwritten. It is compared
+// file for file with this commit at every run. Then the repository's Python, the pinned codex binary (the default launcher resolves to 0.160, which
 // the released gate refuses), and the product's own managed state (state_dir null: where the user signs in; QA never
 // opens it). The connector admits codex only by its sha256; the wrapper checks it again before the launch.
+const connectorSource = '260884e670c25da7ab8d0360cc8355f90c3697b6';
 export const CONNECTOR = {
-  commit: source, copy: '/home/agentsdock/.local/share/lc-qa/subscription-source-52be105a148a',
+  commit: connectorSource, copy: '/home/agentsdock/.local/share/lc-qa/subscription-source-260884e670c2-nonvoice-09',
   python: '/home/agentsdock/Projects/learning-companion/repo/.venv/bin/python',
   codex_bin: '/home/agentsdock/.codex/packages/standalone/releases/0.158.0-x86_64-unknown-linux-musl/bin/codex',
   codex_sha256: '167c0148a849d2444f1b5a7fb5f8bb2de1de5ae13a2a504b833fc765980f5cd9',

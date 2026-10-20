@@ -92,9 +92,10 @@ test('the runner\'s work deadline reaches every in-flight operation (Support d3c
     "if ($entry.work_deadline_limited) { throw 'QA work deadline: a wait it shortened ran out' }", '$results.work_deadline = [ordered]@{ work_ms = $WorkMs; close_ms = $CloseMs; startup_ms = $script:qaStartupMs;']) assert.equal(runner.split(part).length, 2, part);
   // A wait that ran out is the deadline's when the deadline shortened it or had passed: receive, two sends, two connects, the target list (cancelled).
   assert.equal((runner.match(/Stop-QaWait \$qaWait \d+ '/g) ?? []).length, 6); assert.ok(body('Get-QaDevToolsList').includes('$web.CancelAsync()'));
-  // Runner-only: below the delta lies candidate 06's runner byte for byte, and the checker is cut from that.
+  // Runner-only: below the delta lies candidate 06's runner byte for byte (apart from candidate 09's new scratch name), and the checker is cut from that.
   const admitted = revertDeadlineDelta(runner), saved = name => readFileSync(new URL(`../../../docs/verification/qa/p0-13-live-0ff325b/${name}/runner.ps1`, import.meta.url), 'utf8');
-  assert.equal(revertDeadlineDelta(saved('candidate-nonvoice-08')), saved('candidate-nonvoice-06')); assert.equal(applyDeadlineDelta(admitted), runner);
+  const leaf = name => JSON.parse(readFileSync(new URL(`../../../docs/verification/qa/p0-13-live-0ff325b/${name}/candidate.json`, import.meta.url))).work.split('/').at(-1);
+  assert.equal(revertDeadlineDelta(saved('candidate-nonvoice-09')).replaceAll(leaf('candidate-nonvoice-09'), leaf('candidate-nonvoice-06')), saved('candidate-nonvoice-06')); assert.equal(applyDeadlineDelta(admitted), runner);
   assert.equal(base.payload['admission-checker.ps1'], admissionChecker(admitted)); assert.equal(/Get-QaWaitMs|Assert-QaWorkTime|WorkMs|CloseMs/.test(base.payload['admission-checker.ps1']), false);
   // The steps use none of the reviewed steps whose OS input or HTTP stays outside this deadline.
   for (const k of ['osClick', 'keys', 'raceStop', 'dragHandle', 'targets', 'endHungApp', 'consoleStart', 'cursorBack', 'hostPause', 'hostResume']) assert.equal(steps.some(x => k in x), false, k);
@@ -114,11 +115,35 @@ test('the package pins are the Lead\'s staged 0ff325b build (81 files, its tree 
   assert.deepEqual(args.slice(0, 4), ['-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'RemoteSigned']);
   assert.equal(args[args.indexOf('-LinkDir') + 1], base.manifest.work.replace('/mnt/c/', 'C:\\').replaceAll('/', '\\') + '\\link');
 });
-test('the connector configuration is the trusted real one: the exact private 52be105 copy, the pinned codex binary, the product\'s own state', () => {
+test('candidate 09 differs from the consumed candidate 08 only in its new scratch, its new connector copy and commit, and the generator (Lead handoff_6d184e39)', async () => {
+  const dir = n => new URL(`../../../docs/verification/qa/p0-13-live-0ff325b/candidate-nonvoice-${n}/`, import.meta.url);
+  const manifest = n => JSON.parse(readFileSync(new URL('candidate.json', dir(n))));
+  const [m08, m09] = [manifest('08'), manifest('09')], leaf = m => m.work.split('/').at(-1);
+  // A scratch no earlier candidate named (05-08 all named 08's, which its one run consumed), and a different copy.
+  for (const n of ['05', '06', '07', '08']) assert.notEqual(m09.work, manifest(n).work, n);
+  assert.notEqual(m09.connector.copy, m08.connector.copy);
+  const back = text => text.replaceAll(leaf(m09), leaf(m08)).replaceAll(m09.connector.copy, m08.connector.copy);
+  // Every payload is 08's once the scratch name and the copy are put back: the runner, steps, surface, checker and both configurations.
+  for (const name of names) assert.equal(back(readFileSync(new URL(name, dir('09')), 'utf8')), readFileSync(new URL(name, dir('08')), 'utf8'), name);
+  // The manifest too, apart from the payload hashes, the connector commit and the generator's own hash.
+  const strip = m => { const c = structuredClone(m); delete c.files; c.connector.commit = 'x'; c.source_files['qa_live_candidate.mjs'] = 'x'; return c; };
+  assert.deepEqual(strip(JSON.parse(back(JSON.stringify(m09)))), strip(m08));
+  assert.deepEqual([m08.connector.commit, m09.connector.commit], ['0ff325beadb7c689244610307b6aa16d638fd2e6', '260884e670c25da7ab8d0360cc8355f90c3697b6']);
+  assert.deepEqual(Object.keys(m09.files).filter(k => m09.files[k] !== m08.files[k]), ['runner.ps1', 'steps.json', 'sub-live.json', 'admission-live.json']);
+  assert.deepEqual(Object.keys(m09.source_files).filter(k => m09.source_files[k] !== m08.source_files[k]), ['qa_live_candidate.mjs']);
+  const pinned = await import('./qa_run_live_candidate.mjs');
+  assert.deepEqual([pinned.candidateDir.split('/').at(-1), pinned.candidateHash, pinned.pins], ['candidate-nonvoice-09', sha(readFileSync(new URL('candidate.json', dir('09')))), m09.files]);
+});
+test('the connector configuration is the trusted real one: the exact private copy of the released baseline 260884e in a new folder, the pinned codex binary, the product\'s own state', () => {
   const c = JSON.parse(base.payload['sub-live.json']);
   assert.equal(base.payload['sub-live.json'], connectorConfig());
   assert.deepEqual(c, { format: 'lc-windows-subscription-connector/v1', launch: { kind: 'wsl', distribution: 'Ubuntu', user: 'agentsdock', cd: CONNECTOR.copy, python: CONNECTOR.python }, state_dir: null, codex_bin: CONNECTOR.codex_bin });
-  assert.match(CONNECTOR.copy, /subscription-source-52be105a148a$/); assert.equal(CONNECTOR.commit, base.manifest.production_commit);
+  // Lead handoff_6d184e39: the connector is the released baseline 260884e (Backend 4e840a4 diagnostics, 63ddf8e close);
+  // the product stays 0ff325b. The copy is a new folder: no earlier candidate's copy and no sign-in launcher path.
+  assert.equal(CONNECTOR.commit, '260884e670c25da7ab8d0360cc8355f90c3697b6'); assert.equal(base.manifest.production_commit, '0ff325beadb7c689244610307b6aa16d638fd2e6');
+  assert.equal(CONNECTOR.copy, '/home/agentsdock/.local/share/lc-qa/subscription-source-260884e670c2-nonvoice-09'); assert.deepEqual(base.manifest.connector, CONNECTOR);
+  for (const n of ['05', '06', '07', '08']) assert.notEqual(JSON.parse(readFileSync(new URL(`../../../docs/verification/qa/p0-13-live-0ff325b/candidate-nonvoice-${n}/candidate.json`, import.meta.url))).connector.copy, CONNECTOR.copy, n);
+  assert.notEqual(CONNECTOR.copy, `/home/agentsdock/.local/share/lc-qa/subscription-source-${CONNECTOR.commit.slice(0, 12)}`);
   assert.match(CONNECTOR.codex_bin, /0\.158\.0-x86_64-unknown-linux-musl\/bin\/codex$/);
   assert.equal(/fake|bridge|stand-in/i.test(base.payload['sub-live.json']), false);
 });
@@ -430,7 +455,7 @@ test('wrapper: the connector side refuses a missing or inexact copy, anything ru
   const io = (over = {}) => ({ existsSync: p => p === CONNECTOR.copy, readdirSync: () => ['1', '2', 'self'], readlinkSync: p => (p === '/proc/2/cwd' ? '/home/agentsdock' : '/'), readFileSync: () => codex, ...over });
   const ok = { compareCopy: () => ({ equal: true, files: 280 }), askPathCheck: () => ({ ok: true }), liveImportCheck: () => ({ ok: true }) };
   assert.throws(() => wrapper.connectorAdmission(io({ existsSync: () => false }), ok), /copy is missing/);
-  assert.throws(() => wrapper.connectorAdmission(io(), { ...ok, compareCopy: () => ({ equal: false }) }), /not exactly 0ff325b/);
+  assert.throws(() => wrapper.connectorAdmission(io(), { ...ok, compareCopy: () => ({ equal: false }) }), /not exactly 260884e/);
   assert.throws(() => wrapper.connectorAdmission(io({ readlinkSync: () => CONNECTOR.copy + '/services' }), ok), /already runs/);
   assert.throws(() => wrapper.connectorAdmission(io(), { ...ok, liveImportCheck: () => ({ ok: false }) }), /cannot prepare/);
   assert.throws(() => wrapper.connectorAdmission(io(), { ...ok, askPathCheck: () => ({ ok: false }) }), /cannot prepare/);
@@ -491,13 +516,13 @@ test('wrapper: the watch summary is released only with the whole lifecycle obser
 });
 test('wrapper: with an exact allocation it still refuses at the connector checks before any Windows call, any folder or any process', async () => {
   const realFs = await import('node:fs');
-  const saved = JSON.parse(realFs.readFileSync(new URL('../../../docs/verification/qa/p0-13-live-0ff325b/candidate-nonvoice-08/candidate.json', import.meta.url)));
+  const saved = JSON.parse(realFs.readFileSync(new URL('../../../docs/verification/qa/p0-13-live-0ff325b/candidate-nonvoice-09/candidate.json', import.meta.url)));
   const wrapperHash = sha(realFs.readFileSync(new URL('qa_run_live_candidate.mjs', import.meta.url)));
   const record = { ...goodAllocation(), wrapper_sha256: wrapperHash, native_bound_ms: saved.native_bound_ms,
     native_invocation: { executable: saved.proposed_native_invocation.executable, arguments: saved.proposed_native_invocation.arguments },
     launch_identity: { source: saved.production_commit, stage: saved.stage, tree: saved.stage_tree_sha256, work: saved.work, electron: saved.electron, edge: saved.edge, appPort: saved.appPort, edgePort: saved.edgePort } };
   const allocationPath = '/tmp/qa-live-test-allocation.json', bytes = Buffer.from(JSON.stringify(record));
-  for (const [checks, codex, why] of [[{ compareCopy: () => ({ equal: false }) }, null, /not exactly 0ff325b/], [{ compareCopy: () => ({ equal: true, files: 280 }), askPathCheck: () => ({ ok: true }), liveImportCheck: () => ({ ok: true }) }, Buffer.from('not codex'), /codex binary digest/]]) {
+  for (const [checks, codex, why] of [[{ compareCopy: () => ({ equal: false }) }, null, /not exactly 260884e/], [{ compareCopy: () => ({ equal: true, files: 280 }), askPathCheck: () => ({ ok: true }), liveImportCheck: () => ({ ok: true }) }, Buffer.from('not codex'), /codex binary digest/]]) {
     const calls = [];
     const fs = { ...realFs, existsSync: p => { calls.push(['exists', p]); return p === CONNECTOR.copy || (!p.startsWith('/tmp/') && !p.startsWith('/mnt/c/') && realFs.existsSync(p)); },
       lstatSync: p => (p === allocationPath ? { isFile: () => true, isSymbolicLink: () => false } : realFs.lstatSync(p)),
@@ -523,7 +548,7 @@ async function timedRun(clock) {
   clock.m ??= 0;
   const tick = ms => { clock.t += ms; clock.m += ms; };
   const realFs = await import('node:fs');
-  const saved = JSON.parse(realFs.readFileSync(new URL('../../../docs/verification/qa/p0-13-live-0ff325b/candidate-nonvoice-08/candidate.json', import.meta.url)));
+  const saved = JSON.parse(realFs.readFileSync(new URL('../../../docs/verification/qa/p0-13-live-0ff325b/candidate-nonvoice-09/candidate.json', import.meta.url)));
   const record = { ...goodAllocation(), wrapper_sha256: sha(realFs.readFileSync(new URL('qa_run_live_candidate.mjs', import.meta.url))), native_bound_ms: saved.native_bound_ms,
     native_invocation: { executable: saved.proposed_native_invocation.executable, arguments: saved.proposed_native_invocation.arguments },
     launch_identity: { source: saved.production_commit, stage: saved.stage, tree: saved.stage_tree_sha256, work: saved.work, electron: saved.electron, edge: saved.edge, appPort: saved.appPort, edgePort: saved.edgePort } };
