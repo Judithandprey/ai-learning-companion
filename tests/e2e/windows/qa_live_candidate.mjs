@@ -68,8 +68,12 @@ export const QUESTIONS = {
 // automatic circle request stays hint-first: the product itself caps it and the driver never touches its level.
 export const ASSISTANCE = 'explain';
 export const CIRCLE_ASSISTANCE = 'hint (the product\'s own cap for a circle without words)';
-// One fixed outer bound for the native run: setup, the 60 s session and cleanup (Lead D6). Not an execution approval.
-export const NATIVE_BOUND_MS = 600000;
+// The native run's one fixed ceiling inside the wrapper's 600 s foreground budget (Support 7723f82; within the approved
+// 600 s). The runner's own work deadline (-WorkMs, from its start) leaves 40 s of it: normally about 28 s for the step in
+// progress and the runner's finally, then the wrapper's end of a runner still there (SIGTERM and SIGKILL, 5 s each, and
+// 2 s for its output). Not an execution approval.
+export const NATIVE_BOUND_MS = 360000;
+export const NATIVE_WORK_MS = NATIVE_BOUND_MS - 40000;
 const sourceNames = ['qa_live_candidate.mjs', 'qa_tts_output_candidate.mjs', 'qa_visible_candidate.mjs', 'qa_edge_placement.ps1', 'qa_display_admission.ps1',
   'qa-electron-runner.ps1', 'qa_tts_stage_check.py', 'qa_live_stage_check.py', 'surface_live.html', 'sub_copy.mjs', 'qa_sub_copy_check.py', 'qa_live_copy_check.py',
   'signin_cleanup.mjs', 'qa_live_ledger.mjs', 'qa_run_tts_candidate.mjs', 'qa_sub_watch.py', 'qa_admission_checker.ps1', 'qa_overlay_predicate.ps1',
@@ -232,8 +236,8 @@ export function liveSteps({ surfaceUrl, profile }) {
   ];
 }
 /**
- * The longest the steps can take before the runner itself ends (every wait to its timeout, and about what each other
- * step took in the accepted diagnostic): the native bound must not cut the runner off before its own cleanup.
+ * The steps' own time summed (every wait to its timeout, and about what each other step took in the accepted diagnostic).
+ * Informational: the runner's work deadline (NATIVE_WORK_MS) stops a longer run there, every later step NOT_RUN.
  */
 export function worstCaseMs(steps) {
   const fixed = { edgeStart: 6000, window: 6000, edgeFullscreen: 12000, onTop: 6000, productPlacement: 6000, launchApp: 6000, captureStart: 5000, stroke: 3000, edgeClose: 3000 };
@@ -246,7 +250,7 @@ function reviewedRunner(ctx) {
   return applyPlacementGeometry(applyPlacementClient(applyAdmissionPoints(applyEdgeIdentity(applyScopedAdmission(built.runner, ctx)))));
 }
 function liveRunner(ctx) { return applyAdmissionDelta(reviewedRunner(ctx)); }
-/** The reviewed runner with this run's folder plus exactly the source-admission delta, or a refusal. */
+/** The reviewed runner with this run's folder plus exactly its delta (source admission, work deadline), or a refusal. */
 export function assertReviewedRunner(runner, work) {
   runner = revertAdmissionDelta(runner);
   const reviewed = readFileSync(join(repo, REVIEWED_RUNNER.file));
@@ -390,6 +394,16 @@ function runnerAdmissionDelta() { return [
    "  if ($subFile) { $results.processes[$key].sub_config_sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $subFile).Hash.ToLower() }\n  $results.processes[$key].admission = $admission\n  if ($admissionFile) { $results.processes[$key].admission_config_sha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath $admissionFile).Hash.ToLower() }\n"],
   ["        Start-App ([string]$step.as) ([string]$step.link) ([string]$step.sub)\n", "        Start-App ([string]$step.as) ([string]$step.link) ([string]$step.sub) ([string]$step.admission)\n"],
   ["function Assert-QaSurfaceAdmission([string]$phase) {", ADMISSION_CONTEXT_FUNCTION + overlayPredicate() + RUNNER_BINDING_FUNCTION + "function Assert-QaSurfaceAdmission([string]$phase) {"],
+  // The native work deadline (Support 7723f82): -WorkMs from the runner's own start (0, the reviewed default, keeps the
+  // reviewed behaviour). Every wait and sleep gets only the time left (marked work_deadline_limited when shortened), and at
+  // the deadline the run aborts before the next
+  // step (it and every later one NOT_RUN) into the reviewed finally.
+  ["  [switch]$AllowForeign\n)\n", "  [switch]$AllowForeign,\n  [int]$WorkMs = 0\n)\n"],
+  ["\n$i = 0\ntry {\n  Initialize-QaDisplayAdmission\n", "\nfunction Limit-QaWork([int]$ms) { if ($WorkMs -le 0) { return $ms }; return [int][Math]::Max([double]0, [Math]::Min([double]$ms, [double]$WorkMs - $qaElapsed.ElapsedMilliseconds)) }\n$i = 0\ntry {\n  Initialize-QaDisplayAdmission\n"],
+  ["    $i++\n    $entry = [ordered]@{ i = $i; ok = $true; at = (Get-Date).ToUniversalTime().ToString('o') }\n",
+   "    $i++\n    if ($WorkMs -gt 0 -and $qaElapsed.ElapsedMilliseconds -ge $WorkMs) { throw \"the native work deadline ($WorkMs ms) was reached before step ${i}: it and every later step stay NOT_RUN\" }\n    $entry = [ordered]@{ i = $i; ok = $true; at = (Get-Date).ToUniversalTime().ToString('o') }\n"],
+  ["Start-Sleep -Milliseconds ([int]$step.sleep) }\n", "$qaSleepMs = Limit-QaWork ([int]$step.sleep); if ($qaSleepMs -lt [int]$step.sleep) { $entry.work_deadline_limited = $true }; Start-Sleep -Milliseconds $qaSleepMs }\n"],
+  ["        $timeout = if ($step.timeoutMs) { [int]$step.timeoutMs } else { 15000 }\n", "        $timeout = if ($step.timeoutMs) { [int]$step.timeoutMs } else { 15000 }\n        $qaLimited = Limit-QaWork $timeout\n        if ($qaLimited -lt $timeout) { $entry.work_deadline_limited = $true; $timeout = $qaLimited }\n"],
 ]; }
 // The current capture's overlay binding for the runner's own point checks: main's test-only session state
 // (source_admission {capture_id, overlay {pid, hwnd}, active}, Lead handoff_e893ca27) must agree with the arm QA's
@@ -419,7 +433,7 @@ export function revertAdmissionDelta(runner) {
     if (runner.split(to).length !== 2) throw Error('source admission delta missing or changed');
     runner = runner.replace(to, () => from);
   }
-  if (/LC_SOURCE_ADMISSION|Write-QaAdmissionContext|admissionFile|QaOverlay|qaRunnerOverlayBinding/.test(runner)) throw Error('source admission delta left traces');
+  if (/LC_SOURCE_ADMISSION|Write-QaAdmissionContext|admissionFile|QaOverlay|qaRunnerOverlayBinding|WorkMs|Limit-QaWork/.test(runner)) throw Error('runner delta left traces');
   return runner;
 }
 export function connectorConfig() {
@@ -434,8 +448,7 @@ function payloadFor(ctx, work) {
 }
 function manifestFor(work) {
   const ctx = context(work), payload = payloadFor(ctx, work);
-  if (worstCaseMs(liveSteps(ctx)) > NATIVE_BOUND_MS) throw Error('the steps can outlast the fixed native bound');
-  const fileArgs = ['-File', win(join(work, 'runner.ps1')), '-Electron', electron, '-Stage', win(stage), '-UserData', win(join(work, 'userdata')), '-StepsFile', win(join(work, 'steps.json')), '-OutDir', win(join(work, 'out')), '-Edge', edge, '-AppTemp', win(join(work, 'apptemp')), '-LinkDir', ctx.linkDir];
+  const fileArgs = ['-File', win(join(work, 'runner.ps1')), '-Electron', electron, '-Stage', win(stage), '-UserData', win(join(work, 'userdata')), '-StepsFile', win(join(work, 'steps.json')), '-OutDir', win(join(work, 'out')), '-Edge', edge, '-AppTemp', win(join(work, 'apptemp')), '-LinkDir', ctx.linkDir, '-WorkMs', String(NATIVE_WORK_MS)];
   const manifest = {
     kind: 'qa-live-nonvoice-offline-candidate/v1', prepared_only: true, execution_authorized: false,
     production_commit: source, release_commit: release, reviewed_runner: REVIEWED_RUNNER,
@@ -448,9 +461,10 @@ function manifestFor(work) {
     input_method: 'NONPHYSICAL (Lead D2): inside the product windows only, DevTools DOM value + input event for the three policy fields, the question and the help level; DOM clicks for Check connection, Start, ASK, Send and Stop the AI (the product\'s own handlers); CDP pen events for the circle. No OS typing, mouse, pen or keyboard.',
     circle_assistance: CIRCLE_ASSISTANCE, assistance_override: 'explain for the two typed visual-reading requests only (Lead D1, b63ecdc); recorded as a test override',
     stop_scope: 'Stop the AI (#liveStop) fences the AI requests; the capture keeps running until the wind-down capture Stop (Lead D3)',
-    native_bound_ms: NATIVE_BOUND_MS, lead_decisions: 'docs/verification/lead/live-windows/nonvoice-driver-review/README.md at b63ecdc (D1-D10)',
+    native_bound_ms: NATIVE_BOUND_MS, native_work_ms: NATIVE_WORK_MS, lead_decisions: 'docs/verification/lead/live-windows/nonvoice-driver-review/README.md at b63ecdc (D1-D10)',
     expected_fence: 'Stop is clicked as soon as the 4th request is out; the connector usually has not written turn/start yet, so the likely verdict is fenced_before_submission. Fencing a turn already at the provider would need a different trigger (a Lead decision).',
-    native_worst_case_ms: worstCaseMs(liveSteps(ctx)),
+    native_steps_sum_ms: worstCaseMs(liveSteps(ctx)),
+    native_budget: 'The wrapper\'s 600 s foreground budget (Support 7723f82): 60 s preparation, this 360 s native ceiling (the runner\'s 320 s work deadline, then normally about 28 s for the step in progress and its finally; a runner still there 348 s after its launch gets SIGTERM, then SIGKILL, 5 s each, and 2 s for its output), 150 s owned cleanup and watch, 20 s evidence, 10 s headroom. native_steps_sum_ms is every step to its own time: a run that long stops at the work deadline with every later step NOT_RUN, never a truncated pass. A step or finally that hangs (one DevTools read may take 60 s) is cut at the ceiling: the runner\'s results may then be lost, and the ledger counts every slot as unknown.',
     raw_receipts: 'Kept outside the repository (~/.local/state/lc-qa-live/<run>/receipts, 0700); only an allowlisted, sanitized set of generated evidence is for Git (Lead D8).',
     script_permission: 'A separate, exact, process-only RemoteSigned permission is required for this runner with real subscription use AND for the checker the product starts per capture (Windows PowerShell -NoProfile -NonInteractive -ExecutionPolicy RemoteSigned -File admission-checker.ps1, from admission-live.json); the AI-disabled approvals do not carry over.',
     source_admission: 'F3 (Lead interface 4f7d9fa; decisions handoff_1698eb17, handoff_e893ca27; Support 5083814, c2ee58ae): product 0ff325b\'s main process starts admission-checker.ps1 once per capture from admission-live.json (LC_SOURCE_ADMISSION, this process only) and asks it at arm, before and after each frame acquisition and before each send; every decision is a fresh full native admission (the reviewed Assert-QaSurfaceAdmission with exactly four substitutions for the exact-overlay passage, and the normal band read on the admitted window with its process revalidated) against the context the runner froze after the launch (Edge, display, launched product), logged before it is answered. The overlay main names at arm (overlay {pid, hwnd}) is bound to the launched product for the capture; the same predicate (qa_overlay_predicate.ps1) serves every runner point check via main\'s source_admission session state. The ledger needs main\'s complete admission record of this one capture and a clean checker end. UNVERIFIED: no checker or predicate ran natively (the pure overlay fixture check was refused by the Windows execution policy, NOT_RUN); about 3 s per decision is inferred from the accepted diagnostic, not measured. Logical ordering only: an OS change between two native observations remains possible.',

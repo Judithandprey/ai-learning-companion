@@ -83,7 +83,9 @@ export function buildLedger({ steps, results, liveLines = [], asks = [], receipt
   const admissions = Object.values(results?.values ?? {}).filter(v => v && typeof v === 'object');
   const startNeverRan = admissions.some(v => v.phase === 'before_capture_start' && v.accepted === false);
   const startReached = !!start && !startNeverRan && refusedStarts.length === 0;
-  const assigned = [starts > 0 || policy?.ok === true || startReached, !!triggers[1], !!triggers[2], !!triggers[3]];
+  // Without the runner's results (unreadable, or a runner cut at its ceiling) no step is known not to have run: every slot
+  // is counted as unknown (conservative), never NOT_RUN.
+  const assigned = Array.isArray(results?.steps) ? [starts > 0 || policy?.ok === true || startReached, !!triggers[1], !!triggers[2], !!triggers[3]] : [true, true, true, true];
   const looks = liveLines.filter(l => l.kind === 'look');
   const entriesAll = asks.filter(a => Array.isArray(a?.requests)).flatMap(a => a.requests.filter(q => q && typeof q === 'object').map(q => ({ ...q })))
     .sort((a, b) => String(a.submitted_at ?? '').localeCompare(String(b.submitted_at ?? '')));
@@ -289,11 +291,15 @@ export function evidence({ ledger, liveLines, cards, truthBefore, truthAfter }) 
   };
 }
 
-/** The connector copy's live path: the live modules load from the copy (offline; nothing is sent). Not for the tests. */
-export function liveImportCheck(python, dir) {
+/**
+ * The connector copy's live path: the live modules load from the copy (offline; nothing is sent). Not for the tests.
+ * `limit` gives its time options (60 s by default).
+ */
+export function liveImportCheck(python, dir, limit = ms => ({ timeout: ms })) {
   const code = readFileSync(join(HERE, 'qa_live_copy_check.py'), 'utf8');
+  const options = limit(60000);
   try {
-    const out = execFileSync(python, ['-B', '-c', code], { cwd: dir, encoding: 'utf8', timeout: 60000, env: { PATH: '/usr/bin:/bin', HOME: process.env.HOME, PYTHONDONTWRITEBYTECODE: '1' } });
+    const out = execFileSync(python, ['-B', '-c', code], { cwd: dir, encoding: 'utf8', ...options, env: { PATH: '/usr/bin:/bin', HOME: process.env.HOME, PYTHONDONTWRITEBYTECODE: '1' } });
     return JSON.parse(out.split('\n').filter(l => l.startsWith('{')).at(-1));
   } catch (error) {
     return { ok: false, error: String(error.stderr || error.message).split('\n').filter(Boolean).at(-1)?.slice(0, 300) ?? 'failed' };

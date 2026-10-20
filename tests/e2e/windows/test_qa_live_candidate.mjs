@@ -39,8 +39,9 @@ test('the candidate is offline-only, reproduces from the sources, and its scratc
   }
   assert.throws(() => checkLiveCandidate(base.manifest, { ...base.payload, 'steps.json': base.payload['steps.json'].replace('"live"', '"fake"') }, identity));
   assert.throws(() => checkLiveCandidate(base.manifest, base.payload, { ...identity, tree_sha256: '0'.repeat(64) }));
-  assert.equal(base.manifest.native_worst_case_ms, worstCaseMs(steps)); assert.ok(base.manifest.native_worst_case_ms > 300000);
-  assert.equal(base.manifest.native_bound_ms, 600000); assert.ok(base.manifest.native_worst_case_ms <= base.manifest.native_bound_ms);   // Lead D6: one fixed bound
+  // One fixed native ceiling inside the 600 s foreground budget (Support 7723f82): the work deadline, not the steps' sum, bounds the run.
+  assert.equal(base.manifest.native_steps_sum_ms, worstCaseMs(steps)); assert.ok(base.manifest.native_steps_sum_ms > base.manifest.native_bound_ms);
+  assert.deepEqual([base.manifest.native_bound_ms, base.manifest.native_work_ms], [360000, 320000]);
   for (const k of ['input_method', 'expected_fence', 'script_permission', 'talk']) assert.equal(typeof base.manifest[k], 'string', k);
   assert.ok(base.manifest.source_files['qa_run_tts_candidate.mjs'] && base.manifest.source_files['qa_sub_watch.py']);
 });
@@ -53,6 +54,18 @@ test('the runner is the reviewed r4 runner byte for byte, apart from the one wor
   assert.throws(() => assertReviewedRunner(revertAdmissionDelta(runner), base.manifest.work), /delta missing/);
   assert.throws(() => assertReviewedRunner(runner.replace("throw 'owned generated surface window changed'", "throw 'x'"), base.manifest.work), /differs/);
   assert.equal(runner.includes('-LinkDir') || /\[string\]\$LinkDir/.test(runner), true);                         // the shared runner already takes it
+});
+test('the runner\'s work deadline is real source logic: -WorkMs 320000 from its own start, every wait and sleep limited to the time left, an abort before the next step (later steps NOT_RUN); 0 keeps the reviewed behaviour', () => {
+  assert.deepEqual(base.manifest.proposed_native_invocation.arguments.slice(-2), ['-WorkMs', '320000']);
+  for (const part of ['  [switch]$AllowForeign,\n  [int]$WorkMs = 0\n)\n', 'function Limit-QaWork([int]$ms) { if ($WorkMs -le 0) { return $ms };',
+    'if ($WorkMs -gt 0 -and $qaElapsed.ElapsedMilliseconds -ge $WorkMs) { throw "the native work deadline ($WorkMs ms) was reached before step ${i}: it and every later step stay NOT_RUN" }',
+    '$qaSleepMs = Limit-QaWork ([int]$step.sleep); if ($qaSleepMs -lt [int]$step.sleep) { $entry.work_deadline_limited = $true }; Start-Sleep -Milliseconds $qaSleepMs }\n',
+    '        $qaLimited = Limit-QaWork $timeout\n        if ($qaLimited -lt $timeout) { $entry.work_deadline_limited = $true; $timeout = $qaLimited }\n']) assert.equal(runner.split(part).length, 2, part);
+  // The check stands outside the step's own try: the deadline aborts the run (its outer catch), never a skipped step.
+  const loop = runner.slice(runner.indexOf('  foreach ($step in $steps) {'), runner.indexOf('      if ($null -ne $step.sleep)'));
+  assert.ok(loop.indexOf('native work deadline') > 0 && loop.indexOf('native work deadline') < loop.indexOf('    try {'));
+  assert.ok(runner.indexOf('$qaElapsed = [Diagnostics.Stopwatch]::StartNew()') < runner.indexOf('function Limit-QaWork'));
+  assert.equal(base.payload['admission-checker.ps1'], admissionChecker(runner)); assert.equal(admissionChecker(runner).includes('WorkMs'), false);   // the checker is unchanged by it
 });
 test('the package pins are the Lead\'s staged 0ff325b build (81 files, its tree and entry; native helper, Electron 44.5.1 and Edge as in the accepted diagnostic)', () => {
   const r4 = JSON.parse(readFileSync(new URL('../../../docs/verification/qa/p0-13-tts-52be105/candidate-r4-20261009/candidate.json', import.meta.url)));
@@ -350,7 +363,7 @@ test('wrapper: nothing runs without --execute, a new evidence folder and an inde
 });
 const goodAllocation = () => ({ schema: 'qa-live-nonvoice-allocation/1', state: 'active', lead_reviewed: true, mode: 'REAL_SUBSCRIPTION_NONVOICE_GENERATED_SURFACE', exclusive_display: true,
   account_access: 'official_managed_lock_through_the_product', audio_access: false, microphone_access: false, voice: false, max_native_attempts: 1, retry: false, restart: false,
-  policy: { ...POLICY_MS }, max_real_actions: 4, real_actions_already_used: 0, cleanup_only_after_expiry: true, native_bound_ms: 600000, allocation_id: 'lc-live-nonvoice-test-01',
+  policy: { ...POLICY_MS }, max_real_actions: 4, real_actions_already_used: 0, cleanup_only_after_expiry: true, native_bound_ms: 360000, allocation_id: 'lc-live-nonvoice-test-01',
   approval_scope: 'real_subscription_nonvoice_four_actions', command_approval_ref: 'lead-review:test', script_permission_ref: 'human-script-permission:test', wrapper_sha256: 'w'.repeat(64), candidate_sha256: wrapper.candidateHash, payload_sha256: { ...wrapper.pins }, connector: { ...CONNECTOR },
   native_invocation: { executable: base.manifest.proposed_native_invocation.executable, arguments: base.manifest.proposed_native_invocation.arguments },
   launch_identity: { source: base.manifest.production_commit, stage: base.manifest.stage, tree: base.manifest.stage_tree_sha256, work: base.manifest.work, electron: base.manifest.electron, edge: base.manifest.edge, appPort: base.manifest.appPort, edgePort: base.manifest.edgePort },
@@ -365,7 +378,7 @@ test('wrapper: only an exact, active live allocation bound to the four-action bo
   assert.throws(() => wrapper.validateLiveAllocation(goodAllocation(), base.manifest, 'w'.repeat(64), at, 'a'.repeat(40)), /starts the source-admission checker/);
   assert.throws(() => wrapper.validateLiveAllocation({ ...goodAllocation(), state: 'TEMPLATE_NOT_ACTIVE (the wrapper refuses anything but active)' }, base.manifest, 'w'.repeat(64), at), /separate exact Lead-reviewed live allocation required/);   // the inactive template
   for (const [k, v] of [['schema', 'qa-tts-display-allocation/1'], ['mode', 'AI_DISABLED_GENERATED_SURFACE_ONLY'], ['account_access', true], ['voice', true], ['microphone_access', true],
-    ['retry', true], ['restart', true], ['max_native_attempts', 2], ['max_real_actions', 5], ['real_actions_already_used', 1], ['native_bound_ms', 1200000], ['native_bound_ms', 300000], ['native_bound_ms', 900000],
+    ['retry', true], ['restart', true], ['max_native_attempts', 2], ['max_real_actions', 5], ['real_actions_already_used', 1], ['native_bound_ms', 1200000], ['native_bound_ms', 300000], ['native_bound_ms', 900000], ['native_bound_ms', 600000],
     ['exclusive_display', false], ['audio_access', true], ['cleanup_only_after_expiry', false], ['payload_sha256', { ...wrapper.pins, 'steps.json': '0'.repeat(64) }],
     ['native_invocation', { executable: 'powershell.exe', arguments: [] }], ['approval_scope', 'ai_disabled_display_diagnostic'], ['command_approval_ref', 'short'],
     ['command_approval_ref', 'human-bounded-retest-20261008:d41dbbfae11448f7847e26cb54afcd44'], ['script_permission_ref', 'approved-two-gates-20261002:571427dcdc434c0f820236892925aedf'],
@@ -392,6 +405,12 @@ test('wrapper: the connector side refuses a missing or inexact copy, anything ru
   assert.throws(() => wrapper.connectorAdmission(io(), ok), /codex binary digest/);
   assert.throws(() => wrapper.connectorAdmission(io(), ok, '/home/someone-else'), /home is not the one/);           // the receipt roots assume this user
   assert.deepEqual(wrapper.processesIn(CONNECTOR.copy, io({ readlinkSync: p => (p === '/proc/1/cwd' ? CONNECTOR.copy : '/') })), [1]);
+  // The wrapper's shared time budget reaches every connector check (sub_copy, qa_live_ledger); without one, 60 s apiece as before.
+  const given = [], rec = { compareCopy: (c, d, limit) => (given.push(limit(30000)), { equal: true, files: 280 }), askPathCheck: (p, d, limit) => (given.push(limit(60000)), { ok: true }),
+    liveImportCheck: (p, d, limit) => (given.push(limit(60000)), { ok: true }) };
+  assert.throws(() => wrapper.connectorAdmission(io(), rec, undefined, ms => ({ timeout: Math.min(ms, 1234), killSignal: 'SIGKILL' })), /codex binary digest/);
+  assert.deepEqual(given, Array(3).fill({ timeout: 1234, killSignal: 'SIGKILL' }));
+  given.length = 0; assert.throws(() => wrapper.connectorAdmission(io(), rec), /codex binary digest/); assert.deepEqual(given.map(o => o.timeout), [30000, 60000, 60000]);
 });
 
 test('wrapper: the mechanical result needs every term, the connector and its children gone, and keeps acceptance NOT_JUDGED', () => {
@@ -440,7 +459,7 @@ test('wrapper: the watch summary is released only with the whole lifecycle obser
 });
 test('wrapper: with an exact allocation it still refuses at the connector checks before any Windows call, any folder or any process', async () => {
   const realFs = await import('node:fs');
-  const saved = JSON.parse(realFs.readFileSync(new URL('../../../docs/verification/qa/p0-13-live-0ff325b/candidate-nonvoice-06/candidate.json', import.meta.url)));
+  const saved = JSON.parse(realFs.readFileSync(new URL('../../../docs/verification/qa/p0-13-live-0ff325b/candidate-nonvoice-07/candidate.json', import.meta.url)));
   const wrapperHash = sha(realFs.readFileSync(new URL('qa_run_live_candidate.mjs', import.meta.url)));
   const record = { ...goodAllocation(), wrapper_sha256: wrapperHash, native_bound_ms: saved.native_bound_ms,
     native_invocation: { executable: saved.proposed_native_invocation.executable, arguments: saved.proposed_native_invocation.arguments },
@@ -466,19 +485,33 @@ test('wrapper: with an exact allocation it still refuses at the connector checks
 // The wrapper driven end to end on an injected clock (Lead handoff_f4a4b4aa), every process, Windows call and folder
 // mocked: which effects come before each time refusal. Entry, before a preflight record, before the watch and before the scratch need
 // now + PRELAUNCH_MARGIN_MS + native_bound_ms <= the allocation's end; right before the launch now + native_bound_ms <= the
-// end (unchanged). Equality passes; one millisecond more refuses. clock.on(event) may move clock.t at an event.
+// end (unchanged). Equality passes; one millisecond more refuses. clock.on(event) may move clock.t (the allocation's wall
+// clock) or clock.m (the foreground budget's monotonic clock) at an event; sleeps and child calls move both.
 async function timedRun(clock) {
+  clock.m ??= 0;
+  const tick = ms => { clock.t += ms; clock.m += ms; };
   const realFs = await import('node:fs');
-  const saved = JSON.parse(realFs.readFileSync(new URL('../../../docs/verification/qa/p0-13-live-0ff325b/candidate-nonvoice-06/candidate.json', import.meta.url)));
+  const saved = JSON.parse(realFs.readFileSync(new URL('../../../docs/verification/qa/p0-13-live-0ff325b/candidate-nonvoice-07/candidate.json', import.meta.url)));
   const record = { ...goodAllocation(), wrapper_sha256: sha(realFs.readFileSync(new URL('qa_run_live_candidate.mjs', import.meta.url))), native_bound_ms: saved.native_bound_ms,
     native_invocation: { executable: saved.proposed_native_invocation.executable, arguments: saved.proposed_native_invocation.arguments },
     launch_identity: { source: saved.production_commit, stage: saved.stage, tree: saved.stage_tree_sha256, work: saved.work, electron: saved.electron, edge: saved.edge, appPort: saved.appPort, edgePort: saved.edgePort } };
   const allocationPath = '/tmp/qa-live-test-allocation.json', bytes = Buffer.from(JSON.stringify(record)), out = '/tmp/qa-live-test-out';
-  const calls = [], exits = [], written = new Map();
+  const calls = [], limits = [], exits = [], written = new Map();
+  let launched = false;
   const at = event => { calls.push(event); clock.on?.(event); };
-  const look = Buffer.from(JSON.stringify({ now: '1', processes: [], listen: clock.conflict ? [999] : [] })).toString('base64');   // a conflict: a port owner
+  // A child call lasts clock.slow(event, launched) ms (none by default); one longer than its timeout is killed at that timeout.
+  const takes = (event, options = {}) => {
+    limits.push([event, options.timeout, options.killSignal]);
+    const ms = clock.slow?.(event, launched) ?? 0;
+    if (options.timeout !== undefined && ms > options.timeout) { tick(options.timeout); throw Error(`${event} killed at its ${options.timeout} ms timeout`); }
+    tick(ms);
+  };
+  // The looks: a port owner with clock.conflict; after the launch, with clock.appStays, the launched app (it never exits).
+  const appLine = `"${saved.electron}" "${saved.stage.replace('/mnt/c/', 'C:\\').replaceAll('/', '\\')}" --remote-debugging-port=${saved.appPort} --remote-debugging-address=127.0.0.1`;
+  const look = edge => Buffer.from(JSON.stringify({ now: '1', listen: clock.conflict ? [999] : [],
+    processes: launched && clock.appStays && !edge ? [{ pid: 777, created: '2', exe: saved.electron, command_line: appLine }] : [] })).toString('base64');
   const fs = { ...realFs,
-    existsSync: p => !p.startsWith('/tmp/') && !p.startsWith('/mnt/c/') && !p.startsWith('/home/agentsdock/.local/') && realFs.existsSync(p),
+    existsSync: p => (clock.captures && p === `${saved.work}/userdata/captures`) || (!p.startsWith('/tmp/') && !p.startsWith('/mnt/c/') && !p.startsWith('/home/agentsdock/.local/') && realFs.existsSync(p)),
     lstatSync: p => (p === allocationPath || p.startsWith(saved.work) ? { isFile: () => true, isSymbolicLink: () => false } : realFs.lstatSync(p)),
     readFileSync: (p, o) => {
       if (p === allocationPath) return bytes;
@@ -487,26 +520,36 @@ async function timedRun(clock) {
       if (p.startsWith(saved.work) || p.startsWith(out)) { if (!written.has(p)) throw Error('ENOENT ' + p); return written.get(p); }
       return realFs.readFileSync(p, o);
     },
-    readdirSync: p => (p === '/proc' ? [] : realFs.readdirSync(p)), readlinkSync: () => '/',
+    readdirSync: p => (p === '/proc' ? [] : p === `${saved.work}/userdata/captures` ? ['0123456789abcdef'] : realFs.readdirSync(p)), readlinkSync: () => '/',
     mkdirSync: p => at(`mkdir ${p}`),
     writeFileSync: (p, data) => { at(`write ${p}`); written.set(p, Buffer.from(data)); if (p.endsWith('connector-watch.stop')) exits.splice(0).forEach(f => f()); } };
-  const exec = (file, args) => {
-    if (file === 'python3') { at('exec stage-check'); return JSON.stringify(identity); }
+  const exec = (file, args, options) => {
+    if (file === 'python3') { at('exec stage-check'); takes('exec stage-check', options); return JSON.stringify(identity); }
     const code = file === '/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe' ? Buffer.from(args.at(-1), 'base64').toString('utf16le') : '';
-    if (code.includes('Win32_Process')) { at('ps look'); return look; }
-    if (code.includes('Test-Path')) { at('ps edge-path'); return 'True'; }
-    if (code.includes('ParseFile')) { at('ps parse'); return '{"ok":true,"errors":[]}'; }
-    throw Error('unexpected command in this test');
+    const event = code.includes('GetProcessById') ? 'ps signal' : code.includes('Win32_Process') ? 'ps look' : code.includes('Test-Path') ? 'ps edge-path' : code.includes('ParseFile') ? 'ps parse' : null;
+    if (!event) throw Error('unexpected command in this test');
+    at(event); takes(event, options);
+    return { 'ps signal': 'signalled', 'ps look': look(code.includes('msedge.exe')), 'ps edge-path': 'True', 'ps parse': '{"ok":true,"errors":[]}' }[event];
   };
-  const injected = { fs, execFileSync: exec, now: () => clock.t, sleep: async ms => { clock.t += ms; },
-    connectorAdmission: () => { at('connector checks'); return { copy: CONNECTOR.copy, files: 280 }; },
-    spawn: (file, args) => { at(`spawn ${file} ${args[0].split('/').at(-1)}`); return { pid: 4321, on: (event, f) => { if (event === 'exit') exits.push(f); } }; },
-    spawnSync: () => { at('native'); return { status: 0, signal: null, stdout: Buffer.alloc(0), stderr: Buffer.alloc(0) }; } };
+  // The native runner: by default it exits 0 at once; clock.native 'never' (it never exits), 'exits on SIGTERM' or 'exits on SIGKILL'.
+  const nativeChild = () => {
+    const handlers = {};
+    return { pid: 5555, stdout: { on: () => {} }, stderr: { on: () => {} },
+      on: (event, f) => { handlers[event] = f; if ((event === 'exit' || event === 'close') && !clock.native) f(0, null); },
+      kill: signal => { at(`kill ${signal}`); if (clock.native === `exits on ${signal}`) { handlers.exit?.(null, signal); handlers.close?.(null, signal); } return true; } };
+  };
+  const injected = { fs, execFileSync: exec, now: () => clock.t, monotonic: () => clock.m, sleep: async ms => tick(ms),
+    connectorAdmission: (io, checks, home, limit) => { at('connector checks'); takes('connector checks', limit(60000)); return { copy: CONNECTOR.copy, files: 280 }; },
+    spawn: (file, args) => {
+      if (file === '/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe') { at('native'); launched = true; return nativeChild(); }
+      at(`spawn ${file} ${args[0].split('/').at(-1)}`); return { pid: 4321, on: (event, f) => { if (event === 'exit') exits.push(f); } };
+    },
+    spawnSync: () => { at('spawnSync'); throw Error('no synchronous child in this run'); } };
   let result = null, error = null;
   try { result = await wrapper.runLiveCandidate({ execute: true, out, allocation: allocationPath, allocationSha256: sha(bytes) }, injected); } catch (e) { error = e; }
-  return { calls, result, error, out, scratch: saved.work };
+  return { calls, limits, result, error, out, scratch: saved.work };
 }
-const timeEnd = Date.parse('2026-10-09T06:30:00Z'), timeBound = 600000, timeMargin = wrapper.PRELAUNCH_MARGIN_MS ?? 60000, timeLatest = timeEnd - timeBound - timeMargin;
+const timeEnd = Date.parse('2026-10-09T06:30:00Z'), timeBound = 360000, timeMargin = wrapper.PRELAUNCH_MARGIN_MS ?? 60000, timeLatest = timeEnd - timeBound - timeMargin;
 const timeEffects = calls => calls.filter(c => /^(mkdir|write|spawn|native)/.test(c));
 const tooLittle = /too little time for the bounded native attempt and its pre-launch margin; nothing launched, scratch unused/;
 test('time: late entry by one millisecond, or an expired allocation, has no effect at all (not even the Linux stage check)', async () => {
@@ -537,6 +580,78 @@ test('time: after the scratch, the unchanged final check refuses at end - bound 
     assert.equal(r.error, null); assert.equal(r.result.aborted, 'allocation has too little time for the bounded native attempt'); assert.equal(r.result.native_attempts, 0); assert.equal(r.calls.includes('native'), false); }
   { const r = await timedRun({ t: timeLatest, on(e) { if (e === 'ps parse') this.t = timeEnd - timeBound; } });
     assert.equal(r.error, null); assert.equal(r.result.native_attempts, 1); assert.equal(r.calls.filter(c => c === 'native').length, 1); }
+});
+
+// ---- the 600 s foreground budget (Support 7723f82, Lead handoff_b9b8ebe1) ----
+const budgetMs = wrapper.BUDGET_MS ?? {}, roomy = timeLatest - 600000;
+test('budget: the phase ceilings fill the 600 s foreground maximum; native is the candidate\'s 360 s ceiling with the runner\'s 320 s work deadline', () => {
+  assert.deepEqual(budgetMs, { preparation: 60000, native: 360000, cleanup: 150000, evidence: 20000, headroom: 10000 });
+  assert.equal(Object.values(budgetMs).reduce((a, b) => a + b, 0), 600000);
+  assert.deepEqual([base.manifest.native_bound_ms, base.manifest.native_work_ms, wrapper.PRELAUNCH_MARGIN_MS], [budgetMs.native, budgetMs.native - 40000, budgetMs.preparation]);
+  const at = Date.parse('2026-10-09T06:10:00Z');
+  assert.throws(() => wrapper.validateLiveAllocation({ ...goodAllocation(), native_bound_ms: 600000 }, { ...base.manifest, native_bound_ms: 600000 }, 'w'.repeat(64), at), /separate exact/);   // the old 600 s native bound
+  assert.throws(() => wrapper.validateLiveAllocation(goodAllocation(), { ...base.manifest, native_work_ms: 360000 }, 'w'.repeat(64), at), /separate exact/);   // no wind-down left
+});
+test('budget: preparation child calls share what is left of the 60 s, never a fresh full timeout, and are killed at that end; late preparation refuses before the watch, the output and the scratch', async () => {
+  // 25 s in the stage check and 28 s in the connector checks: each look gets the 7 s left, then the budget refuses.
+  const r = await timedRun({ t: roomy, slow: e => ({ 'exec stage-check': 25000, 'connector checks': 28000 })[e] ?? 0 });
+  assert.match(String(r.error), /the preparation budget is spent; nothing launched, scratch unused/);
+  assert.deepEqual(r.limits, [['exec stage-check', 30000, 'SIGKILL'], ['connector checks', 35000, 'SIGKILL'], ['ps look', 7000, 'SIGKILL'], ['ps look', 7000, 'SIGKILL']]);
+  assert.deepEqual(timeEffects(r.calls), []);
+  // A call that outlasts its share is killed at it, and nothing follows.
+  const k = await timedRun({ t: roomy, slow: e => (e === 'exec stage-check' ? 40000 : 0) });
+  assert.match(String(k.error), /exec stage-check killed at its 30000 ms timeout/); assert.deepEqual(k.calls, ['exec stage-check']);
+});
+test('budget: the preparation spent while the watch starts refuses before the scratch and stops the watch; spent after the scratch, nothing launches', async () => {
+  const w = await timedRun({ t: roomy, on(e) { if (e.startsWith('spawn ')) this.m += 51000; } });
+  assert.match(String(w.error), /the preparation budget is spent; nothing launched, scratch unused/);
+  assert.deepEqual(timeEffects(w.calls), [`mkdir ${w.out}`, 'spawn python3 qa_sub_watch.py', `write ${w.out}/connector-watch.stop`]);
+  const p = await timedRun({ t: roomy, on(e) { if (e === 'ps parse') this.m = 60001; } });
+  assert.equal(p.error, null); assert.equal(p.result.aborted, 'the preparation budget is spent before the launch; nothing launched');
+  assert.equal(p.result.native_attempts, 0); assert.equal(p.calls.includes('native'), false); assert.equal(p.result.ledger.attempts_used, 0);   // never launched: nothing counted
+});
+test('budget: a native runner past its 360 s ceiling is signalled and awaited in this same process, never launched twice; cleanup and the report follow in the budget, never a pass', async () => {
+  for (const [native, signalled, seen] of [['exits on SIGTERM', ['SIGTERM'], true], ['exits on SIGKILL', ['SIGTERM', 'SIGKILL'], true], ['never', ['SIGTERM', 'SIGKILL'], false]]) {
+    const r = await timedRun({ t: roomy, native });
+    assert.equal(r.error, null, String(r.error)); assert.equal(r.calls.filter(c => c === 'native').length, 1); assert.equal(r.result.native_attempts, 1);
+    assert.deepEqual([r.result.launcher.timeout, r.result.launcher.signalled, r.result.launcher.exit_seen, r.result.launcher.output_complete], [true, signalled, seen, seen], native);
+    assert.match(r.result.aborted, seen ? /WSL launcher process then exited \(the Windows runner's own end is not observed\)/ : /its exit was not seen/);
+    assert.ok(r.result.ledger.slots.every(s => s.counted), native);                                                   // launched, no readable results: every slot unknown
+    assert.deepEqual(r.calls.filter(c => c.startsWith('kill ')), signalled.map(x => `kill ${x}`));
+    assert.match(r.result.aborted, /reached its 360000 ms ceiling/);
+    assert.ok(r.result.cleanup.electron && r.result.cleanup.edge);                                                   // the owned cleanup ran
+    const cleanupAt = r.result.budget.phase_started_after_ms.cleanup;                                                 // the child's end inside the 360 s
+    assert.ok(cleanupAt >= 348000 && cleanupAt <= 360000 && r.result.budget.report_after_ms <= 590000, JSON.stringify(r.result.budget));
+    assert.ok(r.calls.includes(`write ${r.out}/run.json`)); assert.equal(r.result.mechanics_passed, false);
+    assert.ok(r.result.release_blockers.includes('the native runner did not end by itself within its ceiling'));
+  }
+  // The normal path: the runner exits by itself; nothing is signalled.
+  const n = await timedRun({ t: roomy });
+  assert.deepEqual([n.result.launcher.timeout, n.result.launcher.exit_seen, n.result.launcher.signalled, n.result.launcher.output_complete], [false, true, [], true]);
+  assert.equal(n.calls.some(c => c.startsWith('kill ')), false); assert.ok(n.result.budget.report_after_ms < budgetMs.preparation);
+  assert.equal(n.result.release_blockers.includes('the native runner did not end by itself within its ceiling'), false);
+});
+test('budget: a slow cleanup is cut at its reserve: what it could not finish is unknown, never released or a pass; a spent evidence budget leaves the records explicitly incomplete; the report is still written before 600 s', async () => {
+  // The app stays; at the first cleanup look only 4 s of the cleanup reserve are left.
+  const c = await timedRun({ t: roomy, appStays: true, on(e) { if (e === 'native') this.after = true; else if (this.after && e === 'ps look' && !this.cut) { this.cut = true; this.m = 566000; } } });
+  assert.equal(c.error, null, String(c.error)); assert.equal(c.calls.filter(x => x === 'native').length, 1);
+  assert.deepEqual([c.result.cleanup.electron.exit, c.result.cleanup.edge.exit, c.result.owned_launch_cleanup_confirmed], ['unknown', 'unknown', false]);
+  assert.match(JSON.stringify(c.result.cleanup), /the cleanup budget is spent/);
+  assert.ok(c.result.release_blockers.includes('the owned app and Edge are not confirmed gone')); assert.equal(c.result.mechanics_passed, false);
+  assert.ok(c.result.budget.report_after_ms >= 566000 && c.result.budget.report_after_ms <= 590000, JSON.stringify(c.result.budget));
+  assert.ok(c.calls.includes(`write ${c.out}/run.json`));
+  // Evidence: 1.5 s left when the collection starts.
+  const e = await timedRun({ t: roomy, captures: true, on(x) { if (x === 'write /tmp/qa-live-test-out/connector-watch.stop') this.m = 588500; } });
+  for (const part of ['the records are incomplete', 'the receipts are not read', 'the checker log is not read']) assert.ok(e.result.collect_errors.includes('the evidence budget is spent: ' + part), part);
+  const control = await timedRun({ t: roomy, captures: true });                                                      // the same records with time: no budget error
+  assert.equal(control.result.collect_errors.some(x => x.includes('evidence budget')), false);
+  assert.ok(e.result.budget.report_after_ms <= 590000); assert.ok(e.calls.includes(`write ${e.out}/run.json`));
+});
+
+test('ledger: a launched run without readable results counts every slot as unknown, never NOT_RUN; known results keep their own accounting', () => {
+  const l = buildLedger({ steps, results: null });
+  assert.deepEqual(l.slots.map(s => s.counted), [true, true, true, true]); assert.equal(l.attempts_used, 4);
+  assert.deepEqual(buildLedger({ steps, results: { steps: [], values: {} } }).slots.map(s => s.counted), [false, false, false, false]);
 });
 
 // ---- Lead HOLD b63ecdc: L1 (credits beside an exhausted included window) and L2 (a reached Start with missing records) ----
@@ -703,7 +818,7 @@ test('F5: the watch must record its own clean start before anything can launch; 
   assert.equal(lw.ready.ready, false); assert.match(lw.ready.reason, /receipts folder/);
   // In the run: the watch is ready before the scratch is taken and before the native launch.
   const src = readFileSync(new URL('qa_run_live_candidate.mjs', import.meta.url), 'utf8'), body = src.slice(src.indexOf('export async function runLiveCandidate('), src.indexOf('export async function startWatch('));
-  const order = ['await startWatch(io, start, sleep, out)', 'if (!watch.ready.ready) throw', 'io.mkdirSync(candidate.work, { recursive: false })', 'run(psBin, invocation.arguments'].map(x => body.indexOf(x));
+  const order = ['await startWatch(io, start, sleep, out)', 'if (!watch.ready.ready) throw', 'io.mkdirSync(candidate.work, { recursive: false })', 'runAttached(start, psBin, invocation.arguments'].map(x => body.indexOf(x));
   assert.ok(order.every(i => i > 0) && order.every((i, k) => k === 0 || i > order[k - 1]), String(order));
   assert.equal(body.includes("start('python3'"), false);                                                          // the only watch start is startWatch's
 });
@@ -1074,7 +1189,10 @@ test('R4-R5 (Support 5083814): an exited watcher is not ready; the lifecycle mus
   await assert.rejects(wrapper.assertWatchRunning({ state: { exited: false, error: null, pid: 4321 } }, proc('4321 (python3) Z 1 2 3')), /no longer running/);   // a zombie
   await assert.rejects(wrapper.assertWatchRunning({ state: { exited: false, error: null, pid: 4321 } }, proc(null)), /no longer running/);                       // gone
   const src = readFileSync(new URL('qa_run_live_candidate.mjs', import.meta.url), 'utf8'), body = src.slice(src.indexOf('export async function runLiveCandidate('), src.indexOf('export async function startWatch('));
-  const at = body.indexOf('await assertWatchRunning(watch, io);'); assert.ok(at > 0 && at < body.indexOf('report.native_attempts = 1;') && body.indexOf('run(psBin, invocation.arguments') > at);
+  const at = body.indexOf('await assertWatchRunning(watch, io);'); assert.ok(at > 0 && at < body.indexOf('report.native_attempts = 1;') && body.indexOf('runAttached(start, psBin, invocation.arguments') > at);
+  // After the watch's check, right before the launch: the allocation's wall-clock recheck, then the preparation budget.
+  const lease = body.indexOf("if (now() + record.native_bound_ms > deadline) throw Error('allocation has too little time for the bounded native attempt');"), spent = body.indexOf('if (mono() > ends.preparation) throw');
+  assert.ok(at < lease && lease < spent && spent < body.indexOf('runAttached(start, psBin, invocation.arguments'), String([at, lease, spent]));
   const io = events => ({ readFileSync: () => events.map(e => JSON.stringify(e)).join('\n') });
   const a = { event: 'appear', pid: 7, start_ticks: 70, role: 'in_root' }, d = { event: 'appear', pid: 8, start_ticks: 80, role: 'descendant' }, x = e => ({ event: 'exit', pid: e.pid, start_ticks: e.start_ticks });
   const end = { event: 'watch_end', remaining: [] };

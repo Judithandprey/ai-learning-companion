@@ -1,0 +1,13 @@
+{
+  "kind": "qa-live-offline-admission/v1",
+  "identity_passed": true,
+  "scratch_unused": true,
+  "execution_admitted": false,
+  "native_executed": false,
+  "provider_attempts": 0,
+  "source_commit": "0ff325beadb7c689244610307b6aa16d638fd2e6",
+  "stage_tree_sha256": "081a130c1f492c98d78fec8d67463a36c80126ea1ca72eede99d043ca616a46a",
+  "runner_sha256": "3cf37c29a3254a31b5afc204e95c38a712acf4a91ef4cbad3d3f37972275b6fd",
+  "steps": 63,
+  "limitation": "Saved point-in-time static receipt and candidate identity only; not a live launch gate, account state, resource lease or acceptance."
+}

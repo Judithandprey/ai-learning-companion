@@ -11,7 +11,7 @@ import { fileURLToPath } from 'node:url';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 export const TREES = ['services', 'packages'];
-const root = () => execFileSync('git', ['-C', HERE, 'rev-parse', '--show-toplevel'], { encoding: 'utf8' }).trim();
+const root = (options = {}) => execFileSync('git', ['-C', HERE, 'rev-parse', '--show-toplevel'], { encoding: 'utf8', ...options }).trim();
 
 /** Extracts the commit's `services/` and `packages/` into `dir` (private, 0700). Existing files are overwritten. */
 export function makeCopy(commit, dir) {
@@ -21,13 +21,16 @@ export function makeCopy(commit, dir) {
   execFileSync('tar', ['-x', '-C', dir], { input: tar });
 }
 
-/** Every file of the commit's two trees is in `dir` with the same bytes; nothing else is there but Python's caches. */
-export function compareCopy(commit, dir) {
-  const listed = execFileSync('git', ['-C', root(), 'ls-tree', '-r', commit, '--', ...TREES], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 })
+/**
+ * Every file of the commit's two trees is in `dir` with the same bytes; nothing else is there but Python's caches. `limit`
+ * gives each Git call its time options (a caller's shared budget); none by default.
+ */
+export function compareCopy(commit, dir, limit = () => ({})) {
+  const listed = execFileSync('git', ['-C', root(limit(30000)), 'ls-tree', '-r', commit, '--', ...TREES], { encoding: 'utf8', maxBuffer: 64 * 1024 * 1024, ...limit(30000) })
     .split('\n').filter(Boolean).map((line) => { const [meta, path] = line.split('\t'); return { path, blob: meta.split(' ')[2] }; });
   const missing = listed.filter((f) => !existsSync(join(dir, f.path))).map((f) => f.path);
   const present = listed.filter((f) => !missing.includes(f.path));
-  const hashes = present.length ? execFileSync('git', ['hash-object', '--no-filters', '--stdin-paths'], { cwd: dir, encoding: 'utf8', input: present.map((f) => f.path).join('\n') + '\n', maxBuffer: 64 * 1024 * 1024 }).split('\n').filter(Boolean) : [];
+  const hashes = present.length ? execFileSync('git', ['hash-object', '--no-filters', '--stdin-paths'], { cwd: dir, encoding: 'utf8', input: present.map((f) => f.path).join('\n') + '\n', maxBuffer: 64 * 1024 * 1024, ...limit(30000) }).split('\n').filter(Boolean) : [];
   const differing = present.filter((f, i) => hashes[i] !== f.blob).map((f) => f.path);
   const known = new Set(listed.map((f) => f.path));
   const extra = [];
@@ -40,11 +43,13 @@ export function compareCopy(commit, dir) {
 /**
  * Runs the connector's own preparation of a question in the copy, as the app starts the connector: that Python, the copy
  * as the working folder, no PYTHONPATH. Offline: no Codex, no account, nothing sent. Returns { ok, prompt_bytes, ... }.
+ * `limit` gives its time options (60 s by default).
  */
-export function askPathCheck(python, dir) {
+export function askPathCheck(python, dir, limit = (ms) => ({ timeout: ms })) {
   const code = readFileSync(join(HERE, 'qa_sub_copy_check.py'), 'utf8');
+  const options = limit(60000);
   try {
-    const out = execFileSync(python, ['-B', '-c', code], { cwd: dir, encoding: 'utf8', timeout: 60000, env: { PATH: '/usr/bin:/bin', HOME: process.env.HOME, PYTHONDONTWRITEBYTECODE: '1' } });
+    const out = execFileSync(python, ['-B', '-c', code], { cwd: dir, encoding: 'utf8', ...options, env: { PATH: '/usr/bin:/bin', HOME: process.env.HOME, PYTHONDONTWRITEBYTECODE: '1' } });
     return JSON.parse(out.split('\n').filter((l) => l.startsWith('{')).at(-1));
   } catch (error) {
     return { ok: false, error: String(error.stderr || error.message).split('\n').filter(Boolean).at(-1)?.slice(0, 300) ?? 'failed' };

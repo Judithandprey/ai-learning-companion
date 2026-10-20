@@ -8,22 +8,22 @@
 // account/submission bounds, the codex digest and private-copy checks, a read-only watch of the connector processes,
 // and the copy of this run's own records (live.jsonl, asks/*.json) and receipts, from which the all-action ledger is made.
 // Nothing here retries, restarts, signs in, opens the account state or signals a process it did not start.
-import { execFileSync, spawn, spawnSync } from 'node:child_process';
+import { execFileSync, spawn } from 'node:child_process';
 import { createHash } from 'node:crypto';
 import * as fs from 'node:fs';
 import { homedir } from 'node:os';
 import { dirname, join, resolve, sep } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { CONNECTOR, POLICY_MS, checkLiveCandidate, linkNames, names } from './qa_live_candidate.mjs';
+import { CONNECTOR, NATIVE_BOUND_MS, NATIVE_WORK_MS, POLICY_MS, checkLiveCandidate, linkNames, names } from './qa_live_candidate.mjs';
 import { buildLedger, evidence, fenceVerdict, liveImportCheck, parseJsonl, sourceAdmission } from './qa_live_ledger.mjs';
 import { summarizeTtsPreflight, ttsAdmission } from './qa_run_tts_candidate.mjs';
 import { lookCommand, readLook, releaseOwned, windowsCalls } from './signin_cleanup.mjs';
 import { askPathCheck, compareCopy } from './sub_copy.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url)), repo = resolve(here, '../../..');
-export const candidateDir = join(repo, 'docs/verification/qa/p0-13-live-0ff325b/candidate-nonvoice-06');
-export const candidateHash = '288191f78a39ea242a59b867d0831808a3e22c762eff013c65669eed9d05c172';
-export const pins = { 'runner.ps1': '2fbb5eb3c5e734719f6b26fc8066b55626078d3ffdb075d5dc65936326ca2cdb', 'steps.json': '70e89d51c0489a8c9472bf25a8438b08ff493f5be2c59148bc92baf10778874f', 'surface.html': 'be82967ae45d36bece4ac4858d6f45d0e90e58d088203b71323b74e6ae5e1067', 'sub-live.json': '4729ca1a25ec09a64349c68c5ccb0eb41b4e9f83e161fb9c4a29b0ce26b948d4',
+export const candidateDir = join(repo, 'docs/verification/qa/p0-13-live-0ff325b/candidate-nonvoice-07');
+export const candidateHash = 'b17b66c4bae78269762b24f8656883907a6ceccd9a6d9ab16ffdf40ac0832e9e';
+export const pins = { 'runner.ps1': '3cf37c29a3254a31b5afc204e95c38a712acf4a91ef4cbad3d3f37972275b6fd', 'steps.json': '70e89d51c0489a8c9472bf25a8438b08ff493f5be2c59148bc92baf10778874f', 'surface.html': 'be82967ae45d36bece4ac4858d6f45d0e90e58d088203b71323b74e6ae5e1067', 'sub-live.json': '4729ca1a25ec09a64349c68c5ccb0eb41b4e9f83e161fb9c4a29b0ce26b948d4',
   'admission-checker.ps1': '9637db613373ef5ba63bc10753033aedaab90bf749aeaa982fed9b65c91eccf1', 'admission-live.json': '6e86df7d74f52ce54b879d1c14d6d71b7548c69127d0f787a0a1be2fb46d7cc3' };
 const psBin = '/mnt/c/Windows/System32/WindowsPowerShell/v1.0/powershell.exe';
 const managedState = '/home/agentsdock/.local/share/LearningCompanion/managed-chatgpt';   // state_dir null: the product's own
@@ -48,9 +48,18 @@ export function processesIn(dir, io = fs) {
 // Lead integrated and staged it (0ff325b, 194986d). An allocation for a candidate of any other build is refused (52be105
 // never starts the checker). Naming it here is not an execution allocation.
 export const interlockProduction = '0ff325beadb7c689244610307b6aa16d638fd2e6';
-// The preparation before the native launch (the stage and connector checks, the read-only looks, the watch, the payload
-// copy and the parse) gets this explicit margin on top of the fixed native bound. Not a lease, never an extension.
-export const PRELAUNCH_MARGIN_MS = 60000;
+// The whole foreground invocation fits the tool's 600 s maximum (Support 7723f82, Lead handoff_b9b8ebe1): one monotonic
+// budget from entry, with explicit phase ends. Engineering ceilings, not measured durations: the preparation (stage and
+// connector checks, looks, watch, payload copy, parse), the native runner with its own wind-down, the owned cleanup and
+// the watch, the bounded evidence and report, and headroom no phase uses.
+export const BUDGET_MS = { preparation: 60000, native: NATIVE_BOUND_MS, cleanup: 150000, evidence: 20000, headroom: 10000 };
+// The preparation also needs this much of the allocation on top of the native bound. Not a lease, never an extension.
+export const PRELAUNCH_MARGIN_MS = BUDGET_MS.preparation;
+// After the scratch: the payload copy, the 8 s parse and the last checks must still fit in the preparation budget.
+const LAUNCH_TAIL_MS = 10000;
+// The native ceiling includes the end of the child: in its last 12 s a runner still there is signalled (SIGTERM, then
+// SIGKILL, each awaited this long), and after an exit its output is awaited (its pipes close) this long.
+const NATIVE_GRACE_MS = 5000, NATIVE_CLOSE_MS = 2000;
 export function validateLiveAllocation(record, candidate, wrapperHash, now, interlock = interlockProduction) {
   if (typeof interlock !== 'string' || !/^[0-9a-f]{40}$/.test(interlock) || candidate?.production_commit !== interlock) {
     throw Error('the candidate does not pin a reviewed production build that starts the source-admission checker; no allocation is accepted');
@@ -61,7 +70,7 @@ export function validateLiveAllocation(record, candidate, wrapperHash, now, inte
       || record.voice !== false || record.max_native_attempts !== 1 || record.retry !== false || record.restart !== false
       || !equal(record.policy, POLICY_MS) || record.max_real_actions !== 4 || !Number.isInteger(record.real_actions_already_used) || record.real_actions_already_used !== 0
       || record.cleanup_only_after_expiry !== true
-      || record.native_bound_ms !== candidate.native_bound_ms || candidate.native_bound_ms !== 600000 || candidate.native_worst_case_ms > candidate.native_bound_ms
+      || record.native_bound_ms !== candidate.native_bound_ms || candidate.native_bound_ms !== BUDGET_MS.native || candidate.native_work_ms !== NATIVE_WORK_MS
       || typeof record.allocation_id !== 'string' || !/^[A-Za-z0-9._:-]{1,128}$/.test(record.allocation_id)
       || record.approval_scope !== 'real_subscription_nonvoice_four_actions'
       || typeof record.command_approval_ref !== 'string' || record.command_approval_ref.length < 8 || AI_DISABLED_APPROVALS.includes(record.command_approval_ref)
@@ -77,14 +86,14 @@ export function validateLiveAllocation(record, candidate, wrapperHash, now, inte
 }
 
 /** The connector side, before any Windows call: the exact private copy, its question and live paths, the codex digest. */
-export function connectorAdmission(io = fs, checks = { compareCopy, askPathCheck, liveImportCheck }, home = homedir()) {
+export function connectorAdmission(io = fs, checks = { compareCopy, askPathCheck, liveImportCheck }, home = homedir(), limit = ms => ({ timeout: ms })) {
   // The product's managed state and the raw-receipt root are this user's: the connector runs as this same WSL user.
   if (home !== `/home/${CONNECTOR.user}` || !managedState.startsWith(home + '/') || !rawReceiptsRoot.startsWith(home + '/')) throw Error('the connector user\'s home is not the one the receipt folders assume');
   if (!io.existsSync(CONNECTOR.copy)) throw Error('the private Backend copy is missing (qa_live_candidate.mjs prepare-connector)');
-  const same = checks.compareCopy(CONNECTOR.commit, CONNECTOR.copy);
+  const same = checks.compareCopy(CONNECTOR.commit, CONNECTOR.copy, limit);
   if (!same.equal) throw Error(`the private Backend copy is not exactly ${CONNECTOR.commit.slice(0, 7)} services/ and packages/`);
   if (processesIn(CONNECTOR.copy, io).length) throw Error('something already runs in the private Backend copy');
-  const ask = checks.askPathCheck(CONNECTOR.python, CONNECTOR.copy), livePath = checks.liveImportCheck(CONNECTOR.python, CONNECTOR.copy);
+  const ask = checks.askPathCheck(CONNECTOR.python, CONNECTOR.copy, limit), livePath = checks.liveImportCheck(CONNECTOR.python, CONNECTOR.copy, limit);
   if (!ask.ok || !livePath.ok) throw Error('the connector cannot prepare a request in the private copy');
   if (sha(io.readFileSync(CONNECTOR.codex_bin)) !== CONNECTOR.codex_sha256) throw Error('the pinned codex binary digest does not match');
   return { copy: CONNECTOR.copy, files: same.files, ask_path_ok: true, live_path_ok: true, codex_sha256: CONNECTOR.codex_sha256,
@@ -93,8 +102,20 @@ export function connectorAdmission(io = fs, checks = { compareCopy, askPathCheck
 
 export async function runLiveCandidate(options, injected = {}) {
   // Injection is for the offline boundary test, never a CLI option or a product path.
-  const io = injected.fs ?? fs, runFile = injected.execFileSync ?? execFileSync, run = injected.spawnSync ?? spawnSync, start = injected.spawn ?? spawn;
+  const io = injected.fs ?? fs, runFile = injected.execFileSync ?? execFileSync, start = injected.spawn ?? spawn;
   const now = injected.now ?? Date.now, sleep = injected.sleep ?? (ms => new Promise(r => setTimeout(r, ms)));
+  // The foreground budget's phase ends from entry (BUDGET_MS), on a monotonic clock apart from the allocation's wall clock.
+  // A child call gets at most what is left of its phase (never a fresh full timeout) and is killed, not asked, at that end.
+  const mono = injected.monotonic ?? (() => performance.now()), t0 = mono(), ends = {}, marks = { preparation: 0 };
+  let end = t0, phase = 'preparation';
+  for (const p of ['preparation', 'native', 'cleanup', 'evidence']) { end += BUDGET_MS[p]; ends[p] = end; }
+  const enter = p => { phase = p; marks[p] = Math.round(mono() - t0); };
+  const remaining = () => ends[phase] - mono();
+  const within = ms => {
+    const rest = Math.floor(remaining());
+    if (rest < 1000) throw Error(`the ${phase} budget is spent; nothing more is started in it`);
+    return { timeout: Math.min(ms, rest), killSignal: 'SIGKILL' };
+  };
   const checks = injected.checks ?? { compareCopy, askPathCheck, liveImportCheck };
   if (options?.execute !== true) throw Error('explicit --execute and separately reviewed allocation required');
   const out = options.out && resolve(options.out), allocationPath = options.allocation && resolve(options.allocation);
@@ -120,20 +141,21 @@ export async function runLiveCandidate(options, injected = {}) {
   const stillActive = () => { if (now() >= deadline) throw Error('allocation expired before admission/launch; no retry'); };
   // The allocation must still hold the margin and the whole native bound: on entry, before a preflight record, before
   // the watch and the output folder, and before the scratch is consumed. Exactly enough passes; a millisecond less
-  // refuses. The final check right before the launch (the bound alone) is unchanged.
+  // refuses. The same points need the rest of the preparation budget. The final checks right before the launch are apart.
   const enoughTimeToPrepare = () => {
     if (now() + PRELAUNCH_MARGIN_MS + record.native_bound_ms > deadline) throw Error('allocation has too little time for the bounded native attempt and its pre-launch margin; nothing launched, scratch unused; no retry');
+    if (remaining() < LAUNCH_TAIL_MS) throw Error('the preparation budget is spent; nothing launched, scratch unused; no retry');
   };
   enoughTimeToPrepare();
   // Linux file inspection only, after the allocation gate and before any Windows call.
-  const identity = JSON.parse(runFile('python3', ['-B', join(here, 'qa_admission_stage_check.py')], { encoding: 'utf8', timeout: 30000 }));
+  const identity = JSON.parse(runFile('python3', ['-B', join(here, 'qa_admission_stage_check.py')], { encoding: 'utf8', ...within(30000) }));
   checkLiveCandidate(candidate, payload, identity, { scratchExists: p => io.existsSync(p) });
   if (io.existsSync(candidate.work)) throw Error('candidate scratch already consumed; no retry');
-  const connector = (injected.connectorAdmission ?? connectorAdmission)(io, checks);
+  const connector = (injected.connectorAdmission ?? connectorAdmission)(io, checks, homedir(), within);
   stillActive();
   const ps = code => runFile(psBin, ['-NoProfile', '-NonInteractive', '-EncodedCommand',
     Buffer.from("$ProgressPreference='SilentlyContinue'; " + code, 'utf16le').toString('base64')],
-    { cwd: '/mnt/c', encoding: 'utf8', timeout: 8000, maxBuffer: 8 * 1024 * 1024 });
+    { cwd: '/mnt/c', encoding: 'utf8', maxBuffer: 8 * 1024 * 1024, ...within(8000) });
   const appCalls = windowsCalls(ps, candidate.appPort), edgeCalls = windowsCalls(ps, candidate.edgePort);
   edgeCalls.look = async () => readLook(ps(lookCommand(candidate.edgePort, 'msedge.exe')));
   const beforeApp = await appCalls.look();
@@ -179,21 +201,26 @@ export async function runLiveCandidate(options, injected = {}) {
     report.native_parse = JSON.parse(ps(`$p=[Text.Encoding]::UTF8.GetString([Convert]::FromBase64String('${encodedPath}')); $tokens=$null; $errors=$null; [void][Management.Automation.Language.Parser]::ParseFile($p,[ref]$tokens,[ref]$errors); @{ok=(@($errors).Count -eq 0);errors=@($errors | ForEach-Object { @{line=$_.Extent.StartLineNumber;column=$_.Extent.StartColumnNumber;id=$_.ErrorId} })} | ConvertTo-Json -Depth 4 -Compress`).trim());
     if (!report.native_parse.ok) report.aborted = 'exact saved runner parser rejected source; no app launched';
     else {
-      stillActive();
-      if (now() + record.native_bound_ms > deadline) throw Error('allocation has too little time for the bounded native attempt');
       // The mandatory watch must still be running right before the launch (a point-in-time check; else nothing launches).
       await assertWatchRunning(watch, io);
+      // After the watch's check, right before the launch: the allocation (wall clock), then the preparation budget.
+      stillActive();
+      if (now() + record.native_bound_ms > deadline) throw Error('allocation has too little time for the bounded native attempt');
+      if (mono() > ends.preparation) throw Error('the preparation budget is spent before the launch; nothing launched');
       report.native_attempts = 1;
+      enter('native');
       const invocation = candidate.proposed_native_invocation;
-      const result = run(psBin, invocation.arguments, { cwd: '/mnt/c', timeout: record.native_bound_ms, maxBuffer: 4 * 1024 * 1024 });
-      report.launcher = { status: result.status, signal: result.signal, timeout: result.error?.code === 'ETIMEDOUT' };
-      io.writeFileSync(join(out, 'runner.stdout.bin'), result.stdout ?? Buffer.alloc(0));
-      io.writeFileSync(join(out, 'runner.stderr.bin'), result.stderr ?? Buffer.alloc(0));
-      if (result.status !== 0) report.aborted = 'native launcher failed; preserved diagnostics, no retry';
+      const result = await runAttached(start, psBin, invocation.arguments, Math.min(record.native_bound_ms, remaining()), { sleep, mono, graceMs: NATIVE_GRACE_MS, closeMs: NATIVE_CLOSE_MS });
+      report.launcher = { status: result.status, signal: result.signal, timeout: result.timed_out, exit_seen: result.exit_seen, signalled: result.signalled, error: result.error, output_complete: result.output_complete };
+      io.writeFileSync(join(out, 'runner.stdout.bin'), result.stdout);
+      io.writeFileSync(join(out, 'runner.stderr.bin'), result.stderr);
+      if (result.timed_out) report.aborted = `the native runner reached its ${record.native_bound_ms} ms ceiling and was signalled (${result.signalled.join(', ')}); ${result.exit_seen ? 'its WSL launcher process then exited (the Windows runner\'s own end is not observed)' : 'its exit was not seen'}; no retry`;
+      else if (result.status !== 0) report.aborted = 'native launcher failed; preserved diagnostics, no retry';
     }
   } catch (error) {
     report.aborted = String(error?.message ?? error).slice(0, 200);
   } finally {
+    enter('cleanup');
     // Exact identities only; the product gets time to end its AI session and its connector before any force.
     for (const [label, calls, expected, waitCloseMs] of [['electron', appCalls, expectedApp, 20000], ['edge', edgeCalls, expectedEdge, 5000]]) {
       if (report.native_attempts === 0) { report.cleanup[label] = { exit: 'not_started', folder: 'kept' }; continue; }
@@ -202,15 +229,24 @@ export async function runLiveCandidate(options, injected = {}) {
       catch { report.cleanup[label] = { exit: 'unknown', error: 'exact identity cleanup unavailable; scratch retained' }; }
     }
     // The connector ends with the app (its pipes close). Observed only: nothing in the copy or below it is ever signalled.
-    let left = [];
-    for (let waited = 0; waited <= 15000; waited += 500) { left = processesIn(CONNECTOR.copy, io); if (!left.length) break; await sleep(500); }
-    await watch.stop();
+    let left = processesIn(CONNECTOR.copy, io);
+    for (let waited = 0; left.length && waited < 15000 && remaining() > 0; waited += 500) { await sleep(500); left = processesIn(CONNECTOR.copy, io); }
+    await watch.stop(Math.max(0, Math.min(5000, remaining())));
     report.watch_error = watch.state.error; report.watch_exited = watch.state.exited;
     report.connector_left_running = left;
     report.connector_watch = watchSummary(io, watch.file, report.native_attempts > 0);
-    try { collect(io, regularRead, candidate, out, report, launchesBefore); }
+    enter('evidence');
+    try { collect(io, regularRead, candidate, out, report, launchesBefore, () => remaining() > 2000); }
     catch (error) { report.collect_failed = String(error?.message ?? error).slice(0, 200); }
     report.owned_launch_cleanup_confirmed = ['electron', 'edge'].every(label => report.cleanup[label]?.exit === 'confirmed');
+    // Nothing is claimed released while any of these stands (QA's explicit DISPLAY/ACCOUNT RELEASE quotes it).
+    report.release_blockers = [
+      ...(report.native_attempts > 0 && (report.launcher?.exit_seen !== true || report.launcher?.timeout === true) ? ['the native runner did not end by itself within its ceiling'] : []),
+      ...(report.native_attempts > 0 && !report.owned_launch_cleanup_confirmed ? ['the owned app and Edge are not confirmed gone'] : []),
+      ...(left.length > 0 || (report.native_attempts > 0 && report.connector_watch?.state !== 'released') ? ['the connector is not seen released'] : []),
+      ...(watch.state.exited !== true ? ['the read-only watch was not seen ending'] : []),
+    ];
+    report.budget = { ceilings_ms: { ...BUDGET_MS }, phase_started_after_ms: { ...marks }, report_after_ms: Math.round(mono() - t0) };
     Object.assign(report, judgeMechanics(report));
     // This does not close the runtime display/account lease; QA must explicitly report actual release to Lead.
     io.writeFileSync(join(out, 'run.json'), JSON.stringify(report, null, 2) + '\n');
@@ -231,10 +267,10 @@ export async function startWatch(io, start, sleep, out) {
   const state = { error: null, exited: false, pid: Number.isInteger(watcher.pid) ? watcher.pid : null };
   const exited = new Promise(r => { watcher.on?.('exit', () => { state.exited = true; r(); }); });
   watcher.on?.('error', error => { state.error = msg(error); });
-  const stop = async () => {
+  const stop = async (ms = 5000) => {
     try { io.writeFileSync(stopFile, ''); } catch { /* the watch stops by itself after its own bound */ }
     let t;
-    await Promise.race([exited, new Promise(r => { t = setTimeout(r, 5000); })]);
+    await Promise.race([exited, new Promise(r => { t = setTimeout(r, ms); })]);
     clearTimeout(t);
   };
   const ready = await watchReady(io, file, sleep);
@@ -247,6 +283,44 @@ export async function startWatch(io, start, sleep, out) {
     io.writeFileSync(join(out, 'watch-refusal.json'), JSON.stringify({ ready, watch_error: state.error, native_attempts: 0, scratch_consumed: false }, null, 2) + '\n', { mode: 0o600, flag: 'wx' });
   }
   return { file, ready, launchesBefore, state, stop };
+}
+/**
+ * The native runner as an attached child of this same foreground process (never detached, unreferenced or handed to
+ * another executor), awaited within its ceiling ms, which includes its end: ms - 2 graceMs - closeMs after the launch a
+ * child still there gets SIGTERM, then SIGKILL, each awaited graceMs; after an exit its output is awaited up to closeMs
+ * (its pipes close). The waits are short polls, so no timer outlives the child. Output past maxBuffer, or not closed in
+ * time, makes output_complete false. A child not seen exiting is reported so.
+ */
+export async function runAttached(start, file, args, ms, { sleep, mono, graceMs = 5000, closeMs = 2000, stepMs = 250, maxBuffer = 4 * 1024 * 1024 }) {
+  const r = { status: null, signal: null, exit_seen: false, timed_out: false, signalled: [], error: null, output_complete: false, stdout: Buffer.alloc(0), stderr: Buffer.alloc(0) };
+  const parts = { stdout: [], stderr: [] };
+  let child, kept = 0, failed = false, closed = false, truncated = false;
+  try { child = start(file, args, { cwd: '/mnt/c', stdio: ['ignore', 'pipe', 'pipe'] }); } catch (error) { r.error = msg(error); return r; }
+  for (const name of ['stdout', 'stderr']) child[name]?.on('data', chunk => {
+    const room = maxBuffer - kept;
+    if (chunk.length > room) truncated = true;
+    if (room > 0) { parts[name].push(chunk.subarray(0, room)); kept += Math.min(room, chunk.length); }
+  });
+  child.on('exit', (code, signal) => { r.exit_seen = true; r.status = code; r.signal = signal; });
+  child.on('close', () => { closed = true; });
+  child.on('error', error => { r.error = msg(error); if (!Number.isInteger(child.pid)) failed = true; });   // never started
+  const wait = async (done, waitMs) => {
+    const end = mono() + waitMs;
+    while (!done() && mono() < end) await sleep(Math.min(stepMs, Math.max(1, end - mono())));
+    return done();
+  };
+  const ended = () => r.exit_seen || failed;
+  if (!(await wait(ended, ms - 2 * graceMs - closeMs))) {
+    r.timed_out = true;
+    for (const how of ['SIGTERM', 'SIGKILL']) {
+      try { child.kill(how); r.signalled.push(how); } catch (error) { r.error ??= msg(error); }
+      if (await wait(ended, graceMs)) break;
+    }
+  }
+  if (r.exit_seen) await wait(() => closed, closeMs);
+  r.output_complete = closed && !truncated;
+  r.stdout = Buffer.concat(parts.stdout); r.stderr = Buffer.concat(parts.stderr);
+  return r;
 }
 /**
  * Whether the watch still runs, read right now (Support R4): a short wait lets the event loop deliver an exit or error
@@ -323,10 +397,11 @@ export function judgeMechanics(report) {
   // A receipt's facts: no item beyond a plain question and answer, the pinned codex digest and the explicit binary.
   const clean = t => t?.receipt === true && Array.isArray(t.non_plain_items) && t.non_plain_items.length === 0 && t.identity_ok === true;
   const terms = {
-    launcher_ok: report.launcher?.status === 0, not_aborted: !report.aborted, steps_ok: report.steps_ok === true,
+    launcher_ok: report.launcher?.status === 0 && report.launcher.timeout !== true && report.launcher.output_complete !== false, not_aborted: !report.aborted, steps_ok: report.steps_ok === true,
     collected: !report.collect_failed && Array.isArray(report.collect_errors) && report.collect_errors.length === 0, records_complete: l?.records_complete === true,
     owned_cleanup_confirmed: report.owned_launch_cleanup_confirmed === true,
-    connector_released: (report.connector_left_running ?? ['?']).length === 0 && report.connector_watch?.state === 'released',
+    // ... and the read-only watch that saw it was itself seen ending.
+    connector_released: (report.connector_left_running ?? ['?']).length === 0 && report.connector_watch?.state === 'released' && report.watch_exited !== false,
     // A request sent through the connector ran in its Codex child: the watch must have seen a descendant.
     connector_lifecycle_correlated: !!l && (l.sent_receipts === 0 || report.connector_watch?.descendants > 0),
     ceiling_ok: l?.ceiling_ok === true, provider_turns_reconciled: l?.turns_consistent === true, no_retry_or_restart: !!l && !l.restarted && !l.retried, all_silent: l?.all_silent === true,
@@ -442,8 +517,11 @@ export function readOwnReceipts(io, before, requestIds, root = join(managedState
   return { receipts, raw, errors, launches };
 }
 
-/** This run's own results, records and receipts (a failed copy is reported, never fatal to the report). */
-function collect(io, regularRead, candidate, out, report, launchesBefore) {
+/**
+ * This run's own results, records and receipts (a failed copy is reported, never fatal to the report), within the
+ * evidence budget (enough): what is not read in time is an error, never a skipped success.
+ */
+function collect(io, regularRead, candidate, out, report, launchesBefore, enough = () => true) {
   const errors = [];
   let results = null;
   try {
@@ -454,11 +532,14 @@ function collect(io, regularRead, candidate, out, report, launchesBefore) {
   } catch { report.aborted ??= 'native result unreadable; scratch and raw evidence retained'; }
   const steps = JSON.parse(regularRead(join(candidateDir, 'steps.json')));
   report.steps_ok = !!results && results.steps.length === steps.length && results.steps.every(s => s.ok === true);
+  // The runner's own work deadline: the waits and sleeps it shortened, and whether it stopped the steps (later steps NOT_RUN).
+  report.work_deadline = results ? { stopped_the_steps: String(results.aborted ?? '').includes('native work deadline'), limited_steps: results.steps.filter(s => s.work_deadline_limited === true).map(s => s.i) } : null;
   const liveLines = [], asks = [], requestIds = [], mainAdmission = {};
   const captures = join(candidate.work, 'userdata', 'captures');
   // Every record file on its own: one unreadable file is an error (the evidence incomplete), never a skipped success.
   try {
     if (io.existsSync(captures)) for (const cap of io.readdirSync(captures)) {
+      if (!enough()) { errors.push('the evidence budget is spent: the records are incomplete'); break; }
       const liveFile = join(captures, cap, 'live.jsonl');
       try {
         if (io.existsSync(liveFile)) {
@@ -494,7 +575,7 @@ function collect(io, regularRead, candidate, out, report, launchesBefore) {
   for (const a of asks) for (const q of Array.isArray(a?.requests) ? a.requests : []) if (typeof q?.request_id === 'string' && !requestIds.includes(q.request_id)) requestIds.push(q.request_id);
   // Only the receipts of this run's requests, in launches new since just before the native launch, each checked before it
   // is copied (readOwnReceipts). Nothing else in the product's managed state is opened or copied.
-  const own = readOwnReceipts(io, launchesBefore ?? [], requestIds);
+  const own = enough() ? readOwnReceipts(io, launchesBefore ?? [], requestIds) : { receipts: {}, raw: [], launches: [], errors: ['the evidence budget is spent: the receipts are not read'] };
   errors.push(...own.errors);
   report.receipt_launches_new = own.launches.length;
   try {
@@ -507,11 +588,13 @@ function collect(io, regularRead, candidate, out, report, launchesBefore) {
   } catch (error) { errors.push('raw receipts: ' + msg(error)); }
   const receipts = own.receipts;
   const values = results?.values ?? {}, read = k => { try { return JSON.parse(values[k]); } catch { return null; } };
-  report.ledger = buildLedger({ steps, results, liveLines, asks, receipts, codexSha256: CONNECTOR.codex_sha256 });
+  // Never launched: nothing ran (no slot is counted). Launched without readable results: the ledger counts every slot as unknown.
+  report.ledger = buildLedger({ steps, results: results ?? (report.native_attempts > 0 ? null : { steps: [], values: {} }), liveLines, asks, receipts, codexSha256: CONNECTOR.codex_sha256 });
   report.fence = fenceVerdict(report.ledger, liveLines, values);
   // QA's own source-admission checker log (metadata only: phases, verdicts, sequences, hashes and admission times).
   let checkerLines = [];
-  try {
+  if (!enough()) errors.push('the evidence budget is spent: the checker log is not read');
+  else try {
     const bytes = regularRead(join(candidate.work, 'out', 'admission-checker.jsonl'));
     io.writeFileSync(join(out, 'admission-checker.jsonl'), bytes);
     checkerLines = parseJsonl(bytes.toString('utf8'));
@@ -531,6 +614,8 @@ if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.ur
   if (mode !== '--execute' || !out || !allocation || !allocationSha256 || extra) throw Error('no default run: --execute <new QA folder> <allocation.json> <Lead-provided SHA256>');
   const report = await runLiveCandidate({ execute: true, out, allocation, allocationSha256 });
   console.log(JSON.stringify({ mechanics_passed: report.mechanics_passed, acceptance: report.acceptance, aborted: report.aborted ?? null, native_attempts: report.native_attempts,
-    attempts_used: report.ledger?.attempts_used ?? null, fence: report.fence?.verdict ?? null, cleanup: report.cleanup, connector: report.connector_watch, scratch: report.scratch }));
-  process.exitCode = report.mechanics_passed ? 0 : 1;
+    attempts_used: report.ledger?.attempts_used ?? null, fence: report.fence?.verdict ?? null, cleanup: report.cleanup, connector: report.connector_watch, scratch: report.scratch, release_blockers: report.release_blockers, budget: report.budget }));
+  // The report is written: a child not seen exiting (a release blocker in it) must not hold this foreground invocation
+  // past its budget.
+  process.exit(report.mechanics_passed ? 0 : 1);
 }
