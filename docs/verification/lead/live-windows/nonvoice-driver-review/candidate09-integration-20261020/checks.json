@@ -1,0 +1,59 @@
+{
+  "reviewed_commit": "76606babfacabf3558ee3ee3aa0cb7d1ceedec63",
+  "connector_baseline": "260884e670c25da7ab8d0360cc8355f90c3697b6",
+  "payload_hashes": {
+    "runner.ps1": "45063b37328c65771f1c5d431af291a5586e560b57658e4ef9778115e498e36f",
+    "steps.json": "8e3e7357ef4902adeccd6fb9148f61dc6bfd8f2c6afe82f976ccd89e71edc19a",
+    "surface.html": "be82967ae45d36bece4ac4858d6f45d0e90e58d088203b71323b74e6ae5e1067",
+    "sub-live.json": "c38aaae0e38070c805972f71ebed085610427ddc8a2883ee52f1ee5ceec47478",
+    "admission-checker.ps1": "9637db613373ef5ba63bc10753033aedaab90bf749aeaa982fed9b65c91eccf1",
+    "admission-live.json": "f2c209e94c3b5cecb7f5c2f7e709b27d799c9007c7fc3e763376a9a364763964"
+  },
+  "six_payloads_equal_08_after_path_substitution": true,
+  "all_source_pins_match": true,
+  "wrapper_other_than_pin_lines_unchanged": true,
+  "native_calls": 0,
+  "provider_calls": 0,
+  "allocation_created": false,
+  "qa_delivery_message": "handoff_97d13fe0e4e90b64de2dd7e03d90a5a4",
+  "independent_review_owner": "support sess_cf375ab365ef4d0d",
+  "independent_review_dispatch": "handoff_c8970b75ded7832da300e51c843029ab",
+  "dispatch_state": "independent review delivered and integrated",
+  "next_action": "New human decision for one real nonvoice attempt, then fresh actual admission/allocation before original QA execution; previous allowance consumed",
+  "independent_review_commit": "cf83b67b49e11b229b68086d0ec7d65d355896e1",
+  "independent_review_delivery": "handoff_53b498a5f013e704a2ae87dca54d1ae8",
+  "independent_review_verdict": "READY offline source/pins only",
+  "qa_integrated_as": "86082f8",
+  "support_integrated_as": "13cea546d3d166a0e01b3883d65f40561d9b2da3",
+  "focused_node": {
+    "passed": 56,
+    "failed": 0,
+    "duration_ms": 2155.555032,
+    "exit_code": 0,
+    "child_process_grant": false,
+    "write_grant": false,
+    "test_isolation": "none",
+    "command": ".tools/node-v24.21.0-linux-x64/bin/node --permission --allow-fs-read=/home/agentsdock/Projects/learning-companion/repo '--allow-fs-read=/mnt/c/Users/ROG/AppData/Local/Temp/lc-qa-live-nonvoice-*' --test-isolation=none --test tests/e2e/windows/test_qa_live_candidate.mjs"
+  },
+  "connector_preparation": {
+    "exit_code": 0,
+    "fresh_destination_before_run": true,
+    "parent_not_redirected": true,
+    "mode": "0700",
+    "files": 282,
+    "equal": true,
+    "ask_path_ok": true,
+    "live_import_ok": true,
+    "real_provider_calls": 0,
+    "account_operations": 0,
+    "command": ".tools/node-v24.21.0-linux-x64/bin/node tests/e2e/windows/qa_live_candidate.mjs prepare-connector"
+  },
+  "output_hashes": {
+    "node.txt": "4f11d4cd02997d54dba52ee1c37b21deaaedc2e6077c5fb7bc37669005de34c3",
+    "connector-prepare.json": "a0c33aa5befa995c562751180b588bb79063ea78df518df12ff50d82e6b75b5d"
+  },
+  "before_preparation": {
+    "new_scratch_absent": true,
+    "new_copy_absent_including_dangling_link": true
+  }
+}

@@ -348,11 +348,19 @@ Independent Support `a90f51b` → `992140e` closes S1 using the unchanged failur
 scenario and seven selected checks; integrated main passes 109 related Python
 checks with unraisable warnings treated as errors.
 [Correction and evidence](verification/lead/live-windows/nonvoice-driver-review/pipe-cleanup-20261020/README.md).
-Lead publishes the corrected connector baseline; original QA next prepares the
-existing nonvoice candidate offline with exact new pins and an unused connector
-copy target. No runtime copy, account operation, display allocation or native
-execution follows from that source-only preparation. Candidate08's actual failure
-is still unknown; the hosted warning's allocating test is also unproven.
+Published connector baseline `260884e` passed both hosted Python jobs; its 3.12
+log records 7022 passed / 20 xfailed without the former cleanup warning.
+Original QA delivered Candidate09 `76606ba` → `86082f8`; independent Support
+`cf83b67` → `13cea54` returns READY for the offline delta. Lead's integrated
+56 checks pass. Lead then prepared the new candidate-specific connector copy:
+all 282 files match, and offline ASK preparation/live imports pass. No account,
+display, native or audio operation ran; no allocation is active.
+[Candidate09 integration and exact next boundary](verification/lead/live-windows/nonvoice-driver-review/candidate09-integration-20261020/README.md).
+Lead next needs a new human decision for one real nonvoice attempt before fresh
+admission/allocation and dispatch to original QA. The previous one-attempt
+authorization is consumed; unchanged scope or three unused action slots do not
+renew it. Candidate08's actual failure is still unknown; the hosted warning's
+original allocating test is also unproven.
 This run phase has no remaining manual steps; operator must verify
 runtime absence before restoring only QA to auto via supported GET/PATCH/GET.
 Human owns approval cards; no agent accepts them. Original refusal stays historical. Native execution failed; live-flow acceptance

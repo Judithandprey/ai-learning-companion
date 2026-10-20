@@ -1,0 +1,25 @@
+{
+ "copy": "/home/agentsdock/.local/share/lc-qa/subscription-source-260884e670c2-nonvoice-09",
+ "commit": "260884e670c25da7ab8d0360cc8355f90c3697b6",
+ "equal": true,
+ "files": 282,
+ "missing": 0,
+ "differing": 0,
+ "extra": 0,
+ "ask_path": {
+  "ok": true,
+  "prompt_bytes": 2094,
+  "project_modules_loaded": 9,
+  "modules_loaded_from_elsewhere": [],
+  "packages_contracts_loaded": true
+ },
+ "live_path": {
+  "ok": true,
+  "project_modules_loaded": 13,
+  "modules_loaded_from_elsewhere": [],
+  "live_modules": [
+   "services.learning.live_session",
+   "services.worker.connectors.chatgpt_live"
+  ]
+ }
+}
