@@ -1,0 +1,29 @@
+✖ tests/e2e/windows/test_qa_live_candidate.mjs (1.743946ms)
+ℹ tests 1
+ℹ suites 0
+ℹ pass 0
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 7.458287
+
+✖ failing tests:
+
+test at tests/e2e/windows/test_qa_live_candidate.mjs:1:1
+✖ tests/e2e/windows/test_qa_live_candidate.mjs (1.743946ms)
+  Error: Access to this API has been restricted. Use --allow-child-process to manage permissions.
+      at ChildProcess.spawn (node:internal/child_process:409:28)
+      at spawn (node:child_process:813:9)
+      at TestContext.<anonymous> (node:internal/test_runner/runner:529:19)
+      at FileTest.runInAsyncScope (node:async_hooks:227:14)
+      at FileTest.run (node:internal/test_runner/test:1402:25)
+      at FileTest.start (node:internal/test_runner/test:1262:17)
+      at runTestFile (node:internal/test_runner/runner:611:32)
+      at node:internal/test_runner/runner:1033:25
+      at node:internal/per_context/primordials:599:37
+      at new Promise (<anonymous>) {
+    code: 'ERR_ACCESS_DENIED',
+    permission: 'ChildProcess',
+    resource: '/home/agentsdock/Projects/learning-companion/repo/.tools/node-v24.21.0-linux-x64/bin/node'
+  }

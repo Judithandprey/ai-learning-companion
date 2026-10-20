@@ -1,0 +1,707 @@
+{
+  "source": "58338a2fe8467125f00f0231abf5cfa194e71915",
+  "scope": "Exact wrapper with injected clocks, process functions and memory I/O; no real allocation, resource operation or native/timing/model experiment.",
+  "wrapper_rows": 11,
+  "pure_gate_controls": 2,
+  "rows": [
+    {
+      "name": "inactive saved template",
+      "events": [],
+      "error": "separate exact Lead-reviewed live allocation required",
+      "aborted": null,
+      "native_attempts": 0,
+      "scratch_consumed": false,
+      "watch_stop": false,
+      "elapsed_ms": 0,
+      "report_written": false
+    },
+    {
+      "name": "late entry by one ms",
+      "events": [],
+      "error": "allocation has too little time for the bounded native attempt and its pre-launch margin; nothing launched, scratch unused; no retry",
+      "aborted": null,
+      "native_attempts": 0,
+      "scratch_consumed": false,
+      "watch_stop": false,
+      "elapsed_ms": 0,
+      "report_written": false
+    },
+    {
+      "name": "expired allocation",
+      "events": [],
+      "error": "allocation is not currently active",
+      "aborted": null,
+      "native_attempts": 0,
+      "scratch_consumed": false,
+      "watch_stop": false,
+      "elapsed_ms": 0,
+      "report_written": false
+    },
+    {
+      "name": "equality preserves output-watch-scratch-launch order",
+      "events": [
+        {
+          "kind": "stage",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "connector",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "look1",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "look2",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "edge-path",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "output",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "watch-start",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "watch-ready",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "scratch",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "scratch-child",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "scratch-child",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "scratch-child",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "parse",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "watch-stat",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "native",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "cleanup-look",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "cleanup-look",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "watch-stop",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "watch-summary",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "run-record",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 0
+        }
+      ],
+      "error": null,
+      "aborted": "native result unreadable; scratch and raw evidence retained",
+      "native_attempts": 1,
+      "scratch_consumed": true,
+      "watch_stop": true,
+      "elapsed_ms": 0,
+      "report_written": true
+    },
+    {
+      "name": "clock exhausted during conflicting look",
+      "events": [
+        {
+          "kind": "stage",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "connector",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "look1",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "look2",
+          "elapsed_ms": 0
+        }
+      ],
+      "error": "allocation has too little time for the bounded native attempt and its pre-launch margin; nothing launched, scratch unused; no retry",
+      "aborted": null,
+      "native_attempts": 0,
+      "scratch_consumed": false,
+      "watch_stop": false,
+      "elapsed_ms": 1,
+      "report_written": false
+    },
+    {
+      "name": "enough time preserves conflict evidence",
+      "events": [
+        {
+          "kind": "stage",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "connector",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "look1",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "look2",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "output",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "conflict-record",
+          "elapsed_ms": 0
+        }
+      ],
+      "error": "a launch or debugging-port owner relevant to this run is present; nothing started",
+      "aborted": null,
+      "native_attempts": 0,
+      "scratch_consumed": false,
+      "watch_stop": false,
+      "elapsed_ms": 0,
+      "report_written": false
+    },
+    {
+      "name": "clock exhausted after executable check",
+      "events": [
+        {
+          "kind": "stage",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "connector",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "look1",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "look2",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "edge-path",
+          "elapsed_ms": 0
+        }
+      ],
+      "error": "allocation has too little time for the bounded native attempt and its pre-launch margin; nothing launched, scratch unused; no retry",
+      "aborted": null,
+      "native_attempts": 0,
+      "scratch_consumed": false,
+      "watch_stop": false,
+      "elapsed_ms": 1,
+      "report_written": false
+    },
+    {
+      "name": "time lost while awaiting watcher readiness",
+      "events": [
+        {
+          "kind": "stage",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "connector",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "look1",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "look2",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "edge-path",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "output",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "watch-start",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "watch-ready",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "watch-stop",
+          "elapsed_ms": 1
+        }
+      ],
+      "error": "allocation has too little time for the bounded native attempt and its pre-launch margin; nothing launched, scratch unused; no retry",
+      "aborted": null,
+      "native_attempts": 0,
+      "scratch_consumed": false,
+      "watch_stop": true,
+      "elapsed_ms": 1,
+      "report_written": false
+    },
+    {
+      "name": "final native-bound check refuses after scratch",
+      "events": [
+        {
+          "kind": "stage",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "connector",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "look1",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "look2",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "edge-path",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "output",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "watch-start",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "watch-ready",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "scratch",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "scratch-child",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "scratch-child",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "scratch-child",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "parse",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "watch-stop",
+          "elapsed_ms": 60001
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 60001
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 60001
+        },
+        {
+          "kind": "run-record",
+          "elapsed_ms": 60001
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 60001
+        }
+      ],
+      "error": null,
+      "aborted": "allocation has too little time for the bounded native attempt",
+      "native_attempts": 0,
+      "scratch_consumed": true,
+      "watch_stop": true,
+      "elapsed_ms": 60001,
+      "report_written": true
+    },
+    {
+      "name": "final native-bound equality on mocked clock",
+      "events": [
+        {
+          "kind": "stage",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "connector",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "look1",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "look2",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "edge-path",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "output",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "watch-start",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "watch-ready",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "scratch",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "scratch-child",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "scratch-child",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "scratch-child",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "parse",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "watch-stat",
+          "elapsed_ms": 60000
+        },
+        {
+          "kind": "native",
+          "elapsed_ms": 60000
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 60000
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 60000
+        },
+        {
+          "kind": "cleanup-look",
+          "elapsed_ms": 60000
+        },
+        {
+          "kind": "cleanup-look",
+          "elapsed_ms": 60000
+        },
+        {
+          "kind": "watch-stop",
+          "elapsed_ms": 60000
+        },
+        {
+          "kind": "watch-summary",
+          "elapsed_ms": 60000
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 60000
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 60000
+        },
+        {
+          "kind": "run-record",
+          "elapsed_ms": 60000
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 60000
+        }
+      ],
+      "error": null,
+      "aborted": "native result unreadable; scratch and raw evidence retained",
+      "native_attempts": 1,
+      "scratch_consumed": true,
+      "watch_stop": true,
+      "elapsed_ms": 60000,
+      "report_written": true
+    },
+    {
+      "name": "virtual full native budget reaches cleanup after foreground cap",
+      "events": [
+        {
+          "kind": "stage",
+          "elapsed_ms": 0
+        },
+        {
+          "kind": "connector",
+          "elapsed_ms": 1000
+        },
+        {
+          "kind": "look1",
+          "elapsed_ms": 1000
+        },
+        {
+          "kind": "look2",
+          "elapsed_ms": 1000
+        },
+        {
+          "kind": "edge-path",
+          "elapsed_ms": 1000
+        },
+        {
+          "kind": "output",
+          "elapsed_ms": 1000
+        },
+        {
+          "kind": "watch-start",
+          "elapsed_ms": 1000
+        },
+        {
+          "kind": "watch-ready",
+          "elapsed_ms": 1000
+        },
+        {
+          "kind": "scratch",
+          "elapsed_ms": 1000
+        },
+        {
+          "kind": "scratch-child",
+          "elapsed_ms": 1000
+        },
+        {
+          "kind": "scratch-child",
+          "elapsed_ms": 1000
+        },
+        {
+          "kind": "scratch-child",
+          "elapsed_ms": 1000
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 1000
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 1000
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 1000
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 1000
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 1000
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 1000
+        },
+        {
+          "kind": "parse",
+          "elapsed_ms": 1000
+        },
+        {
+          "kind": "watch-stat",
+          "elapsed_ms": 1000
+        },
+        {
+          "kind": "native",
+          "elapsed_ms": 1000
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 601000
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 601000
+        },
+        {
+          "kind": "cleanup-look",
+          "elapsed_ms": 601000
+        },
+        {
+          "kind": "cleanup-look",
+          "elapsed_ms": 602000
+        },
+        {
+          "kind": "watch-stop",
+          "elapsed_ms": 603000
+        },
+        {
+          "kind": "watch-summary",
+          "elapsed_ms": 603000
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 603000
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 603000
+        },
+        {
+          "kind": "run-record",
+          "elapsed_ms": 603000
+        },
+        {
+          "kind": "write",
+          "elapsed_ms": 603000
+        }
+      ],
+      "error": null,
+      "aborted": "native launcher failed; preserved diagnostics, no retry",
+      "native_attempts": 1,
+      "scratch_consumed": true,
+      "watch_stop": true,
+      "elapsed_ms": 603000,
+      "report_written": true
+    }
+  ],
+  "gate_results": {
+    "active_shaped_memory_control": "accepted shape only",
+    "old_wrapper_pin": "refused"
+  },
+  "actual_native_or_account_operations": 0,
+  "real_allocation_created": false
+}

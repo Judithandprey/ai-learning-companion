@@ -1,6 +1,6 @@
 # Current-package nonvoice driver review — 2026-10-09
 
-**Interactive QA preparation completed, but Candidate06 was not invoked because approval waiting left insufficient time. Its allocation is retired, real0/4 and resources released. QA owns the focused time-check ordering correction before independent review and a fresh allocation.**
+**Current: the preparation-ordering fix is independently reviewed and integrated (`05fbc0c` / `574df91`); 41 focused and 13 independent main checks pass. QA is correcting the same foreground call to reserve cleanup/report time inside 600 seconds before any fresh allocation. No native invocation; real0/4; QA remains in human-owned `default` mode.**
 Web's reviewed source through `ebbd1ed` integrates as `0ff325b`; its Windows tree
 matches exactly. Lead's final holding-membership case passes, and TypeScript plus
 static packaging pass. The distinct 81-file `%TEMP%\lc-windows-admission-0ff325b`

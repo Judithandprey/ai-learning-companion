@@ -19,7 +19,7 @@
   "allocation_retired_reason": "QA actual handoff_ec31e85d736c7661fbb4022aa0d2cb52 confirms 0 of 1 used. This selected-image allocation is not additive to the next changed-flow allocation.",
   "live_changed_flow_allocation": {
     "allocation_id": "handoff_fd794043a20068a1b52853cbb6ff884e",
-    "status": "QA_time_order_source_delivered_independent_review_pending",
+    "status": "ordering_integrated_foreground_budget_correction_assigned",
     "candidate_commit": "24c48c38aee660b606ebff5285acbd2ccb300392",
     "maximum_potential_submissions": 5,
     "purpose_slots": [
@@ -49,7 +49,7 @@
       "account/model/billing change",
       "automatic restart or retry"
     ],
-    "next_owner": "Support independently reviews58338a2 and foreground-runtime feasibility; Lead integrates reviewed delta before fresh allocation. QA manual phase remains incomplete.",
+    "next_owner": "Original QA fixes the same foreground call budget with cleanup/report reserve; Support reviews exact new source, then Lead integrates before fresh allocation. QA stays default; real0/4 and no active lease.",
     "production_source_commit": "175515308f509fb8c0f531dbdb10e57313fcde5a",
     "stage_name": "lc-windows-live-1755153",
     "stage_tree_sha256": "3387824a0dee70013104388d4acec2b810475e98953e7c3f196063a8781fd154",
@@ -607,7 +607,16 @@
       "qa_commit": "58338a2fe8467125f00f0231abf5cfa194e71915",
       "delivery_message": "handoff_484857e56a97c01fa87339e6a69c0221",
       "support_message": "handoff_a37671510175f1d2dbd18cdc4d63068e",
-      "new_native_attempt": false
+      "new_native_attempt": false,
+      "integrated_as": "05fbc0cd8b852e437fd489d31e9e9a977c0ed4f1",
+      "support_commit": "7723f824d1b3a56ca0d60c888c3c4a49da96f457",
+      "support_integrated_as": "574df9176dd8b482b4c89e6a6c4abf9b6a571d6f",
+      "support_delivery_message": "handoff_442ba6ea8ebfdfcc24bb1a42a1ac1313",
+      "source_verdict": "APPROVE ordering delta",
+      "execution_verdict": "HOLD foreground whole-call budget",
+      "main_focused_checks": 41,
+      "main_independent_checks": 13,
+      "next_correction_message": "handoff_b9b8ebe1097c10d063957708ce103660"
     }
   },
   "approved_ai_disabled_diagnostic": {

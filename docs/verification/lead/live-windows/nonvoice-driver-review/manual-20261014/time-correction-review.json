@@ -26,10 +26,42 @@
   "support_review_handoff": "handoff_a37671510175f1d2dbd18cdc4d63068e",
   "support_review_accepted": true,
   "support_review_execution_started_at_dispatch": false,
-  "remaining_executable_review": "Foreground600s tool cap versus preparation+native+cleanup; Support assesses in this same bounded review. No background or alternate executor.",
+  "remaining_executable_review": "Original QA implements one shared foreground budget with reserved cleanup/report time; original Support independently reviews its exact delta before any fresh allocation.",
   "new_allocation": false,
   "native_attempts": 0,
   "real_actions": 0,
   "permission_mode": "QA default; manual phase incomplete",
-  "verdict": "source_delta_reviewed_awaiting_independent_review_before_integration"
+  "verdict": "ordering_source_integrated_focused_checks_pass_foreground_budget_correction_assigned",
+  "integrated_source_commit": "05fbc0cd8b852e437fd489d31e9e9a977c0ed4f1",
+  "integrated_review_commit": "574df9176dd8b482b4c89e6a6c4abf9b6a571d6f",
+  "support_review_delivery": "handoff_442ba6ea8ebfdfcc24bb1a42a1ac1313",
+  "support_review_source": "7723f824d1b3a56ca0d60c888c3c4a49da96f457",
+  "support_verdict": "Preparation-ordering delta ready; current foreground invocation blocked because native timeout alone consumes the 600-second cap before cleanup.",
+  "main_checks": {
+    "baseline": "574df9176dd8b482b4c89e6a6c4abf9b6a571d6f",
+    "node": "24.21.0",
+    "focused_cases_passed": 41,
+    "independent_wrapper_cases_passed": 11,
+    "independent_validator_cases_passed": 2,
+    "child_process_permission": false,
+    "node_write_permission": false,
+    "focused_output": "time-main-tests.tap",
+    "independent_output": "time-main-independent.json",
+    "launch_correction": "Initial --test invocation could not start Node test isolation under the intentionally withheld child-process permission; no cases ran. Ran the same node:test file directly in-process, retaining the same no-child/no-write grants; 41/41 passed.",
+    "initial_not_run_evidence": "time-main-test-launch-not-run.txt",
+    "native_account_display_operations": 0,
+    "artifacts_sha256": {
+      "time-main-tests.tap": "69c788a7e6f697fd2f3a15a645eb5ed62e6bcba51213344328a6f51b3b4227d9",
+      "time-main-tests.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "time-main-independent.json": "d1ff67ef65345ff9ce95b5c670b8b765abe357ef11d47b0ba00513968da5a24b",
+      "time-main-independent.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "time-main-test-launch-not-run.txt": "3bc7ea89c6a95f686bca5c0ad4abfc51c657713cc9c16600143cdb21a708a34c"
+    }
+  },
+  "next_qa_dispatch": {
+    "message_id": "handoff_b9b8ebe1097c10d063957708ce103660",
+    "accepted": true,
+    "execution_started_at_dispatch": false,
+    "scope": "same P0-13 source/offline foreground-budget correction; no production/CI-reserved paths or live allocation"
+  }
 }

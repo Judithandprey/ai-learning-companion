@@ -1,12 +1,24 @@
 # Candidate06 manual approval phase — 2026-10-14
 
-**Current delivery:** QA `58338a2` completes the time-order correction with41/41
-focused owner checks (37/41 with guards reverted). Lead inspected the delta and
-verified ten exact file pins; no native action. [Review record](time-correction-review.json).
-Original Support has accepted the exact independent review as
-`handoff_a37671510175f1d2dbd18cdc4d63068e`, including the concrete600s foreground
-timeout versus preparation/native/cleanup residual. Source delivery is not yet
-integrated or allocated for execution. Historical restart and refusal facts follow.
+**Current delivery:** QA `58338a2` is independently approved by Support `7723f82`
+and integrated as `05fbc0c` / `574df91`. Resulting-main checks pass **41/41**, plus
+**11 independent wrapper scenarios and 2 validator cases**, with Node child-process
+and write permissions withheld. These checks use injected time/process/file effects,
+not Windows or account access. [Exact review and outputs](time-correction-review.json).
+
+**Execution remains held for a concrete cleanup-budget defect:** the current native
+timeout alone can consume the whole 600-second foreground cap. Support's mocked
+1-second preparation + 600-second native case reaches cleanup at 601 seconds and
+reporting at 603 seconds. No real timeout or resource leak was observed in this
+probe. The same original QA correction is actually dispatched as
+`handoff_b9b8ebe1097c10d063957708ce103660`: bound preparation, attached native work,
+cleanup and evidence within one foreground budget, preserve guards and exact-owned
+cleanup, and report unfinished steps/uncertain exits honestly. Support reviews that
+exact delta next. Dispatch acceptance is not execution proof.
+
+No fresh allocation or real action occurred: **0/4**; QA remains `default`, and the
+manual phase is incomplete. Existing product `0ff325b` and Candidate06 payloads are
+unchanged by the integrated ordering fix. Historical restart/refusal facts follow.
 
 **2026-10-20 continuation:** the human explicitly resumed the same correction
 after Windows Update interrupted QA. Both dirty source/test files are preserved at
@@ -16,13 +28,13 @@ correction. Lead sent one original-QA continuation, accepted as
 [Recovery boundaries and actual receipt](restart-continuation-20261020.json).
 There is no fresh allocation or native run. QA remains in human-owned `default`
 approval mode; Support reviews the eventual exact delivery before Lead integration.
-Actual QA recovery `handoff_02025a10f728b7b4e9af5ea2e600f7f0` confirms the first
+Historical QA recovery `handoff_02025a10f728b7b4e9af5ea2e600f7f0` confirmed the first
 batch by Read-tool inspection. The interrupted second edit is absent: add the
 time check before preflight-conflict output and its separate conflict/control
-tests. Focused validation, inactive template pin and commit remain pending;
-no Bash or test execution occurred yet in this resumption.
+tests. At that recovery checkpoint, focused validation, inactive template pin and commit
+were pending; the delivered/integrated correction above supersedes that state.
 
-**Current: allocation retired without invocation.** Actual QA
+**Preserved 2026-10-14 result: allocation retired without invocation.** Actual QA
 `handoff_22c51753a5f634046671830260b451c9` reports zero wrapper calls, zero native
 attempts and real **0/4**, with explicit DISPLAY and ACCOUNT RELEASE. No account,
 display, Windows process or provider was used. [Actual result](actual-result.json).
@@ -47,7 +59,7 @@ settings. Human alone handles approval cards. No broad allow rule, alternate
 executor or automatic approval is authorized. Previous refusal evidence stays
 historical and its allocation is retired.
 
-Current read-only drift checks pass: reviewed Candidate06/wrapper/six payloads,
+Historical 2026-10-14 read-only drift checks passed: reviewed Candidate06/wrapper/six payloads,
 81-file stage, cached runtime,280-file connector/imports/digest. At06:25:05Z no
 relevant process/port conflict was found. Other-owner Edge processes were untouched.
 No product/account/display/audio action ran in those checks. QA still performs
