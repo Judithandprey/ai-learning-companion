@@ -340,10 +340,13 @@ failure/phase/selection facts; legacy receipts and public wire behavior are pres
 The actual failure branch remains unknown; terminal completion does not prove a
 usable answer or pixel understanding. No additional native attempt is authorized
 by these source changes. Lead owns the next exact connector/candidate baseline;
-Backend delivered the bounded subprocess-teardown fix `4c5e071`; Lead reproduced
-119 focused passes and Support owns independent review
-`handoff_efced72b704d037870c153100d3c1867` before integration. No duplicate task or
-full test campaign. This run phase has no remaining manual steps; operator must verify
+Backend delivered the bounded subprocess-teardown fix `4c5e071`; despite 119
+focused passes, independent Support `89bb048` → `a2039d2` reproduces shutdown
+regression S1 and places that patch on HOLD. Its timed-out stdin closure poisons
+the shared close future and prevents fallback reaping. The patch is not integrated.
+Backend received same-card correction `handoff_4a1f8ae74602379fe783ea7cdf7584df`;
+Support will re-review the exact correction. No duplicate task or full test
+campaign. This run phase has no remaining manual steps; operator must verify
 runtime absence before restoring only QA to auto via supported GET/PATCH/GET.
 Human owns approval cards; no agent accepts them. Original refusal stays historical. Native execution failed; live-flow acceptance
 remains incomplete. Restore QA `auto` only after collected result,

@@ -53,9 +53,13 @@ authorized real attempt. Backend delivered `4c5e071` for the narrow non-failing
 Python 3.12 subprocess-teardown warning from main CI `39423782479`; its existing
 handoff is `handoff_43ccd426e23914ad237d9dc3319def79`. Lead's exact-export check
 passes 119 focused cases in 8.40s (246 deselected), treating unraisable warnings as
-errors. Support independently reviews that delivery under
-`handoff_efced72b704d037870c153100d3c1867` before integration. The reproduced
-paused-pipe defect does not prove which case produced the old hosted warning.
+errors. Independent Support review `89bb048` → `a2039d2` nevertheless finds **S1
+HOLD**: deadline cancellation poisons the shared stdin-close future, preventing
+fallback reaping. [Exact witness and limits](../../../../support/pipe-cleanup-4c5e071-review-20261020/README.md).
+That production patch is not integrated. Backend owns the same-card correction
+`handoff_4a1f8ae74602379fe783ea7cdf7584df`, followed by Support's exact-delta
+review. The reproduced paused-pipe defect does not prove which case produced the
+old hosted warning.
 QA's manual-stage restoration
 still belongs to the operator after the recorded runtime checks; this offline
 integration does not change its permission mode.
