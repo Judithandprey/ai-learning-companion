@@ -256,6 +256,14 @@ is accepted: enforce time sufficiency before output/watch/scratch consumption,
 retain the final launch check, and add focused clock-boundary checks. Support
 reviews the exact delivery; Lead integrates and issues a fresh longer approval
 window under the unchanged scope. No new native attempt has been dispatched.
+Windows Update subsequently interrupted that same source repair. The human's
+2026-10-20 continuation is actually dispatched to original QA as
+`handoff_bc87bc62c67cf9e75e06c841d0735446`: preserve the two dirty files, finish
+the remaining review correction and deliver exact source/pins with focused checks.
+The saved36/36 result precedes that correction and is not final validation.
+[Recovery record](verification/lead/live-windows/nonvoice-driver-review/manual-20261014/restart-continuation-20261020.json).
+No replay of the old Bash request, fresh lease or new native attempt is authorized
+by the dispatch itself; Support review and Lead integration precede allocation.
 Human owns approval cards; no agent accepts them. Original refusal stays historical. Native/live acceptance
 is NOT_RUN until actual results. Restore QA `auto` only after collected result,
 accounting/cleanup/release and verified absence of remaining manual steps, pending

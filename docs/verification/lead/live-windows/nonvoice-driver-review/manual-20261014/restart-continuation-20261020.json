@@ -1,0 +1,51 @@
+{
+  "schema": "qa-restart-continuation/1",
+  "authorization_id": "human-resume-after-restart-20261020:4bc3bf4fbf2a4e4aa6c2952228a4c695",
+  "human_instruction": "让他们继续。",
+  "observed_at_utc": "2026-10-20T10:09:13Z",
+  "same_task_handoff": "handoff_f4a4b4aa5414452aa1bdc8f002713e04",
+  "main_baseline": "a1af3a5",
+  "qa_session": "sess_06a4c3cc6e214e96",
+  "qa_head": "8aadd9027974c851e24f6c5ce6dfea6dd5126cb3",
+  "qa_dirty_files_sha256": {
+    "tests/e2e/windows/qa_run_live_candidate.mjs": "2d6fd1aaf0e0ac50d31a451f361539645138c34e21f415277627777c9b39404b",
+    "tests/e2e/windows/test_qa_live_candidate.mjs": "a8f1b42c6e5df0d11faff4a76c6ea964e2c393671370337e248272e5a2d05ae8"
+  },
+  "lead_read_only_git_observation": "Both dirty files preserved on QA branch; diff --check passed. No owner files edited and no tests rerun by Lead.",
+  "operator_source": {
+    "file": "client-recovery-20261017.json",
+    "sha256": "2d64f12f5370464adfb40b8225f4d6e4d4cbbd216de48622be5948d2fbe785e0"
+  },
+  "operator_reported_interruption": {
+    "cause": "Windows Update restart",
+    "qa_run": "run_bc99113db67b4782",
+    "closed_at_utc": "2026-10-14T14:34:12Z",
+    "accepted_message_replayed": false,
+    "historical_focused_test_result": {
+      "at_utc": "2026-10-14T11:24:29Z",
+      "passed": 36,
+      "failed": 0
+    },
+    "remaining_correction_approval_requested_at": "2026-10-14T11:28:54Z",
+    "remaining_correction_completed_execution_evidence": false,
+    "historical_passes_are_final_delivery": false
+  },
+  "dispatch": {
+    "route_id": "route_6fd5946d12ac46e98ef15d2140c7261f",
+    "message_id": "handoff_bc87bc62c67cf9e75e06c841d0735446",
+    "accepted": true,
+    "duplicate": false,
+    "state": "unread",
+    "execution_started": false
+  },
+  "native_attempts_this_continuation": 0,
+  "real_actions_last_confirmed": 0,
+  "max_real_actions": 4,
+  "fresh_allocation_issued": false,
+  "old_allocations_retired": true,
+  "permission_mode": "default per current human/operator report; no Lead configuration change",
+  "manual_phase_complete": false,
+  "restored_to_auto": false,
+  "next_owner_action": "Original QA recovers saved review boundary, completes remaining time-order repair and focused validation, and delivers exact commit/pins. Original Support independently reviews that delivery before Lead integration and a fresh nonvoice allocation.",
+  "preserved_boundaries": "Same single native attempt <=600s,60s session,max4 generated-screen actions; no mic/audio/TTS/new billing/global policy changes. Human personally handles normal QA approval cards. No new monitoring or other-owner dispatch."
+}

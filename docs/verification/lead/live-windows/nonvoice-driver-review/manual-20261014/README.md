@@ -1,5 +1,14 @@
 # Candidate06 manual approval phase — 2026-10-14
 
+**2026-10-20 continuation:** the human explicitly resumed the same correction
+after Windows Update interrupted QA. Both dirty source/test files are preserved at
+QA `8aadd902`; the historical36/36 local result predates an unfinished review
+correction. Lead sent one original-QA continuation, accepted as
+`handoff_bc87bc62c67cf9e75e06c841d0735446`, without replaying an old command.
+[Recovery boundaries and actual receipt](restart-continuation-20261020.json).
+There is no fresh allocation or native run. QA remains in human-owned `default`
+approval mode; Support reviews the eventual exact delivery before Lead integration.
+
 **Current: allocation retired without invocation.** Actual QA
 `handoff_22c51753a5f634046671830260b451c9` reports zero wrapper calls, zero native
 attempts and real **0/4**, with explicit DISPLAY and ACCOUNT RELEASE. No account,
