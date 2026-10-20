@@ -997,6 +997,50 @@ test('receipt reader: only this run\'s new launches, real folders and files, the
   const src = readFileSync(new URL('qa_run_live_candidate.mjs', import.meta.url), 'utf8'), collectBody = src.slice(src.indexOf('function collect('));
   assert.ok(collectBody.includes('for (const { launch, name, bytes } of own.raw)')); assert.equal(/regularRead\(file\)|managedState, 'receipts'\)/.test(collectBody), false);
 });
+test('receipt reader (Backend 4e840a4): exactly the legacy or the complete extended field set; every diagnostic a bounded enum, boolean or count whose phases add up; a malformed one is never admitted, copied or echoed; the sanitized view keeps only valid diagnostics', () => {
+  const fixture = name => readFileSync(new URL(`../../../docs/verification/qa/p0-13-live-0ff325b/receipt-diagnostics-4e840a4/fixtures/${name}`, import.meta.url));
+  const legacy = JSON.parse(fixture('receipt-legacy.json')), extended = JSON.parse(fixture('receipt-commentary-only.json')), rid = legacy.request_id;
+  const read = value => { const bytes = Buffer.isBuffer(value) ? value : Buffer.from(JSON.stringify(value)), launch = 'a'.repeat(32);
+    return wrapper.readOwnReceipts({ existsSync: () => true, lstatSync: () => ({ isDirectory: () => true, isSymbolicLink: () => false }), realpathSync: p => p, readdirSync: () => [launch],
+      openSync: () => 9, fstatSync: () => ({ isFile: () => true, nlink: 1, size: bytes.length }), readSync: (fd, b, off, len, pos) => bytes.copy(b, off, pos, pos + len), closeSync: () => {} }, [], [rid], '/synthetic/receipts'); };
+  // The delivered synthetic fixtures, byte for byte: both admitted; an old receipt keeps its meaning and gains nothing.
+  const old = read(fixture('receipt-legacy.json')), now = read(fixture('receipt-commentary-only.json'));
+  for (const [name, r] of [['legacy', old], ['extended', now]]) assert.deepEqual([r.errors, Object.keys(r.receipts), r.raw.length], [[], [rid], 1], name);
+  const clean = wrapper.sanitizeReceipts({ a: now.receipts[rid], b: old.receipts[rid] });
+  assert.deepEqual([clean.a.failure_code, clean.a.terminal_items_view, clean.a.terminal_error_present, clean.a.completed_commentary_count, clean.a.answer_selection, clean.a.answer_text_state],
+    ['incomplete_turn', 'full', false, 1, 'none', 'empty']);
+  assert.equal(Object.keys(wrapper.DIAGNOSTICS).some(k => k in clean.b), false); assert.equal(clean.b.outcome, 'failed');
+  for (const c of [clean.a, clean.b]) assert.equal(['thread_id', 'turn_id', 'codex_executable'].some(k => k in c), false);
+  // Valid boundaries.
+  for (const over of [{ failure_code: null, terminal_items_view: null, terminal_error_present: null, answer_selection: null, answer_text_state: null },
+    { completed_message_count: 16777216, completed_final_answer_count: 16777216, completed_commentary_count: 0 }, { terminal_error_present: true, terminal_items_view: 'notLoaded', failure_code: 'closed' }])
+    assert.deepEqual(read({ ...extended, ...over }).errors, [], JSON.stringify(over));
+  // A mixed, partial or extra key set is never this request's receipt.
+  const { answer_text_state, ...partial } = extended;
+  assert.equal(answer_text_state, 'empty');
+  for (const value of [partial, { ...legacy, failure_code: 'incomplete_turn' }, { ...extended, provider_text: 'x' }]) {
+    const r = read(value);
+    assert.deepEqual([Object.keys(r.receipts), r.raw], [[], []]); assert.match(r.errors.join(' | '), /not this request's receipt in the connector's format/);
+  }
+  // Every invalid value is refused before a byte is kept, and its bytes are never echoed.
+  const MARK = 'SECRET-DIAGNOSTIC-MARKER';
+  for (const [field, value] of [['failure_code', 'made_up'], ['failure_code', MARK + 'x'.repeat(3000)], ['failure_code', { code: MARK }], ['terminal_items_view', 'FULL'], ['terminal_items_view', MARK],
+    ['terminal_error_present', 'false'], ['terminal_error_present', 0], ['completed_commentary_count', true], ['completed_commentary_count', 0.5], ['completed_final_answer_count', -1],
+    ['completed_commentary_count', '1'], ['completed_unphased_count', null], ['completed_message_count', 16777217], ['answer_selection', 'commentary'], ['answer_text_state', 'blank'], ['answer_text_state', [MARK]]]) {
+    const r = read({ ...extended, [field]: value }), what = `${field}=${JSON.stringify(value).slice(0, 40)}`;
+    assert.deepEqual([Object.keys(r.receipts), r.raw.length], [[], 0], what);
+    assert.ok(r.errors.some(e => e.includes(`the receipt's ${field} is not of the connector's bounded type`)), `${what}: ${r.errors.join(' | ')}`);
+    assert.equal(r.errors.join(' ').includes(MARK), false, what);
+  }
+  // The completed messages must add up by phase.
+  assert.match(read({ ...extended, completed_message_count: 2 }).errors.join(' '), /the receipt's completed_message_count is not/);
+  assert.equal(wrapper.receiptFault({ ...extended, completed_unphased_count: 1 }), 'completed_message_count');
+  // The sanitizer, given malformed diagnostics directly (defensive), keeps none of them and echoes nothing.
+  const p = wrapper.sanitizeReceipts({ x: { ...extended, failure_code: MARK, completed_commentary_count: true, answer_selection: 'none' } }).x;
+  assert.deepEqual(['failure_code' in p, 'completed_commentary_count' in p, p.answer_selection], [false, false, 'none']); assert.equal(JSON.stringify(p).includes(MARK), false);
+  // The size and link guards stay: a receipt over 16 KiB is refused before it is read.
+  assert.match(read(Buffer.alloc(16385, 32)).errors.join(' '), /not a regular single-link file of at most 16 KiB/);
+});
 
 // ---- F3 (Lead interface 4f7d9fa): QA's source-admission checker, its configuration, the runner delta and the binding ----
 test('F3 checker: the reviewed admission with exactly four overlay substitutions, the one shared predicate, read-only natives, and the Lead protocol', () => {

@@ -459,18 +459,33 @@ export function judgeMechanics(report) {
 
 const RECEIPT_FIELDS = ['request_id', 'input_types', 'text_bytes', 'image_bytes', 'image_sha256', 'submission', 'terminal_status', 'outcome', 'produced_item_types', 'thread_start_count', 'turn_start_count', 'actual_model', 'codex_version', 'codex_sha256', 'explicit_bin_override'];
 /**
- * Only the receipt fields the review needs, as typed values (a scalar, or a list of strings): never thread_id, turn_id,
- * the executable path, an object or anything else (a value of another shape is left out).
+ * Only the receipt fields the review needs, as typed values (a scalar, or a list of strings), and the connector's output
+ * diagnostics (Backend 4e840a4), each only with a valid bounded value: never thread_id, turn_id, the executable path, an
+ * object, content or anything else (a value of another shape is left out).
  */
 export function sanitizeReceipts(receipts) {
   const typed = v => v === null || ['string', 'number', 'boolean'].includes(typeof v) || (Array.isArray(v) && v.every(x => typeof x === 'string'));
-  return Object.fromEntries(Object.entries(receipts).map(([rid, r]) => [rid, Object.fromEntries(RECEIPT_FIELDS.filter(k => k in (r ?? {}) && typed(r[k])).map(k => [k, Array.isArray(r[k]) ? [...r[k]] : r[k]]))]));
+  return Object.fromEntries(Object.entries(receipts).map(([rid, r]) => [rid, Object.fromEntries(RECEIPT_FIELDS.filter(k => k in (r ?? {}) && typed(r[k])).map(k => [k, Array.isArray(r[k]) ? [...r[k]] : r[k]])
+    .concat(DIAGNOSTIC_KEYS.filter(k => k in (r ?? {}) && DIAGNOSTICS[k](r[k])).map(k => [k, r[k]])))]));
 }
 // The connector writer's own bounded schema (52be105 chatgpt_receipts.py _metadata and its identity), checked before a
 // receipt is admitted or copied (Support R5). Returns the first fault, or null.
 const text = (v, max) => typeof v === 'string' && v.length > 0 && v.length <= max && !/[\p{Cc}\p{Cs}]/u.test(v);
 const count = (v, max) => Number.isInteger(v) && v >= 0 && v <= max;
 const digest = v => v === null || (typeof v === 'string' && /^[0-9a-f]{64}$/.test(v));
+// Backend 4e840a4 (handoff_1b30e743): the private output diagnostics the connector may add, all of them or none. Each is a
+// nullable fixed enum, a nullable boolean, or a count 0..MAX_TURN_EVENTS**2 (4096**2), and the completed messages add up
+// by phase. Never content.
+const FAILURE_CODES = ['unavailable', 'protocol_error', 'request_failed', 'timeout', 'outcome_unknown', 'cancelled', 'cancellation_uncertain', 'isolation_unverified',
+  'unauthenticated', 'unsupported_model', 'model_mismatch', 'tool_activity', 'incomplete_turn', 'quota_exhausted', 'rate_limited', 'workspace_limit', 'usage_not_allowed',
+  'session_budget_exceeded', 'context_limit', 'overloaded', 'session_stopped', 'budget_reached', 'stale_context', 'busy', 'invalid_request', 'login_not_found', 'login_failed', 'closed'];
+const oneOf = values => v => v === null || (typeof v === 'string' && values.includes(v));
+const completed = v => count(v, 4096 ** 2);
+export const DIAGNOSTICS = { failure_code: oneOf(FAILURE_CODES), terminal_items_view: oneOf(['full', 'summary', 'notLoaded', 'invalid']),
+  terminal_error_present: v => v === null || typeof v === 'boolean', completed_message_count: completed, completed_final_answer_count: completed,
+  completed_commentary_count: completed, completed_unphased_count: completed, answer_selection: oneOf(['final_answer', 'unphased', 'none']),
+  answer_text_state: oneOf(['empty', 'whitespace', 'nonempty']) };
+const DIAGNOSTIC_KEYS = Object.keys(DIAGNOSTICS);
 export function receiptFault(r) {
   if (!text(r.request_id, 128)) return 'request_id';
   if (!Array.isArray(r.input_types) || r.input_types.length > 2 || new Set(r.input_types).size !== r.input_types.length || !r.input_types.every(x => x === 'text' || x === 'image')) return 'input_types';
@@ -491,6 +506,14 @@ export function receiptFault(r) {
   if (!(typeof r.codex_version === 'string' && /^(?:codex-cli )?[0-9][A-Za-z0-9._+-]{0,63}$/.test(r.codex_version))) return 'codex_version';
   if (!(typeof r.codex_sha256 === 'string' && /^[0-9a-f]{64}$/.test(r.codex_sha256))) return 'codex_sha256';
   if (typeof r.explicit_bin_override !== 'boolean') return 'explicit_bin_override';
+  // The output diagnostics: all of them or none, each valid, and the completed messages adding up by phase.
+  const present = DIAGNOSTIC_KEYS.filter(k => k in r);
+  if (present.length > 0 && present.length !== DIAGNOSTIC_KEYS.length) return DIAGNOSTIC_KEYS.find(k => !(k in r));
+  if (present.length > 0) {
+    const invalid = DIAGNOSTIC_KEYS.find(k => !DIAGNOSTICS[k](r[k]));
+    if (invalid) return invalid;
+    if (r.completed_message_count !== r.completed_final_answer_count + r.completed_commentary_count + r.completed_unphased_count) return 'completed_message_count';
+  }
   return null;
 }
 /**
@@ -509,6 +532,8 @@ export function publishAllowlist(io, out) {
 
 const RECEIPT_KEYS = ['request_id', 'input_types', 'text_bytes', 'text_sha256', 'image_bytes', 'image_sha256', 'submission', 'terminal_status', 'outcome', 'produced_item_types',
   'thread_start_count', 'turn_start_count', 'actual_model', 'thread_id', 'turn_id', 'format', 'codex_executable', 'codex_version', 'codex_sha256', 'explicit_bin_override'].sort();
+// ... or exactly these and every output diagnostic (Backend 4e840a4); a mixed, partial or extra set is no receipt.
+const RECEIPT_KEYS_EXTENDED = [...RECEIPT_KEYS, ...DIAGNOSTIC_KEYS].sort();
 /** The launch folder names under the product's receipts/ (names only; nothing opened), or none. */
 export function receiptLaunches(io = fs, root = join(managedState, 'receipts')) {
   if (!io.existsSync(root)) return [];
@@ -520,7 +545,8 @@ export function receiptLaunches(io = fs, root = join(managedState, 'receipts')) 
  * This run's own receipts, each checked before a byte of it is copied: only launch folders that did not exist just before
  * the native launch, each a real folder named as the connector names it, inside the real receipts/ folder; only
  * <launch>/<sha256(request_id)>.json for this run's request ids, opened without following a link, a regular single-link
- * file of at most 16 KiB, in the connector's receipt format with exactly its fields, naming that request id, and found in
+ * file of at most 16 KiB, in the connector's receipt format with exactly its fields (the legacy set, or that set and every
+ * output diagnostic), naming that request id, and found in
  * one launch only. Anything else is an error, never a receipt. (The codex digest is judged in the ledger, not here.)
  */
 export function readOwnReceipts(io, before, requestIds, root = join(managedState, 'receipts'), enough = () => true) {
@@ -544,7 +570,7 @@ export function readOwnReceipts(io, before, requestIds, root = join(managedState
         const st = io.fstatSync(fd);
         if (!st.isFile() || st.nlink !== 1 || st.size > 16384) throw Error('not a regular single-link file of at most 16 KiB');
         const bytes = readAtMost(io, fd, st.size), r = JSON.parse(bytes.toString('utf8'));
-        if (!r || typeof r !== 'object' || Array.isArray(r) || r.format !== 'lc-subscription-ask-receipt/1' || r.request_id !== rid || !equal(Object.keys(r).sort(), RECEIPT_KEYS)) throw Error('not this request\'s receipt in the connector\'s format');
+        if (!r || typeof r !== 'object' || Array.isArray(r) || r.format !== 'lc-subscription-ask-receipt/1' || r.request_id !== rid || ![RECEIPT_KEYS, RECEIPT_KEYS_EXTENDED].some(keys => equal(Object.keys(r).sort(), keys))) throw Error('not this request\'s receipt in the connector\'s format');
         const fault = receiptFault(r);
         if (fault) throw Error(`the receipt's ${fault} is not of the connector's bounded type`);
         if (rid in receipts) throw Error('the request has receipts in two launches');
